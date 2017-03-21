@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 } catch (OperationCanceledException) {
                 }
 
-                await _mainThread.SwitchToMainThreadAsync(cancellationToken);
+                await _mainThread.SwitchToAsync(cancellationToken);
 
                 var oldSelection = _selectedEnvironment;
                 _environments.ReplaceWith(success ? envs : _errorEnvironments);

@@ -83,20 +83,5 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public bool IsUnitTestEnvironment { get; set; }
         #endregion
-
-        #region IMainThread
-        public int ThreadId => MainThread.ManagedThreadId;
-        public void Post(Action action, CancellationToken cancellationToken) {
-            if (MainThreadDispatcher.HasShutdownStarted) {
-                throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
-            }
-
-            var awaiter = ThreadHelper.JoinableTaskFactory
-                .SwitchToMainThreadAsync(cancellationToken)
-                .GetAwaiter();
-
-            awaiter.OnCompleted(action);
-        }
-        #endregion
     }
 }

@@ -11,7 +11,7 @@ namespace Microsoft.Common.Core.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface ICoreShell: IIdleTimeService, IMainThread {
+    public interface ICoreShell: IIdleTimeService {
         /// <summary>
         /// Application name to use in log, system events, etc.
         /// </summary>

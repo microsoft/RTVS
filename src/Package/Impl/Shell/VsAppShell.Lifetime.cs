@@ -33,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             CheckVsStarted();
 
+            ConfigureCore();
             ConfigureServices();
             ConfigureIdleSource();
         }

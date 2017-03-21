@@ -219,11 +219,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Shell\CompositionCatalog.cs" />
+    <Compile Include="Shell\VsAppShell.Core.cs" />
     <Compile Include="Shell\VsAppShell.Lifetime.cs" />
     <Compile Include="Shell\VsEditorSupport.cs" />
+    <Compile Include="Shell\VsMainThread.cs" />
     <Compile Include="Shell\VsPlatformServices.cs" />
     <Compile Include="Shell\VsUIServices.cs" />
-    <Compile Include="Shell\VsAppShell.Core.cs" />
     <Compile Include="Shell\VsAppShell.Idle.cs" />
     <Compile Include="Shell\VsAppShell.Services.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />

@@ -35,6 +35,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(catalog)
                 .AddService(catalog.ExportProvider)
                 .AddService(catalog.CompositionService)
+                .AddService(UIThreadHelper.Instance)
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
@@ -69,33 +70,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         #region IIdleTimeSource
         public void DoIdle() {
             UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
-            DoEvents();
-        }
-
-        public void DoEvents() {
-            var disp = GetDispatcher();
-            if (disp != null) {
-                DispatcherFrame frame = new DispatcherFrame();
-                disp.BeginInvoke(DispatcherPriority.Background,
-                        new DispatcherOperationCallback(ExitFrame), frame);
-                Dispatcher.PushFrame(frame);
-            }
-        }
-
-        public object ExitFrame(object f) {
-            ((DispatcherFrame)f).Continue = false;
-            return null;
-        }
-
-        private Dispatcher GetDispatcher(Thread thread = null) {
-            if (thread == null) {
-                if (_creatorThread != null && _creatorThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
-                    return Dispatcher.FromThread(_creatorThread);
-                }
-            } else {
-                return Dispatcher.FromThread(thread);
-            }
-            return null;
+            UIThreadHelper.Instance.DoEvents();
         }
         #endregion
     }

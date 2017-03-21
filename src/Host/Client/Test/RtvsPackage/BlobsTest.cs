@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         private readonly IRSession _session;
 
         public BlobsTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell);
+            _sessionProvider = new RSessionProvider(_coreShell.Services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

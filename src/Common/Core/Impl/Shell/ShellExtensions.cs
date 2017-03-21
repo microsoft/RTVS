@@ -6,31 +6,34 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.Common.Core.Shell {
     public static class ShellExtensions {
         public static T GetService<T>(this ICoreShell shell, Type type = null) where T: class  => shell.Services.GetService<T>(type);
-        public static IActionLog Log(this ICoreShell shell) => shell.GetService<IActionLog>();
-        public static IFileSystem FileSystem(this ICoreShell shell) => shell.GetService<IFileSystem>();
-        public static IProcessServices Process(this ICoreShell shell) => shell.GetService<IProcessServices>();
-        public static ITelemetryService Telemetry(this ICoreShell shell) => shell.GetService<ITelemetryService>();
-        public static ISecurityService Security(this ICoreShell shell) => shell.GetService<ISecurityService>();
-        public static ITaskService Tasks(this ICoreShell shell) => shell.GetService<ITaskService>();
-        public static IUIService UI(this ICoreShell shell) => shell.GetService<IUIService>();
-
+        public static IActionLog Log(this ICoreShell shell) => shell.Services.Log();
+        public static IFileSystem FileSystem(this ICoreShell shell) => shell.Services.FileSystem();
+        public static IProcessServices Process(this ICoreShell shell) => shell.Services.Process();
+        public static ITelemetryService Telemetry(this ICoreShell shell) => shell.Services.Telemetry();
+        public static ISecurityService Security(this ICoreShell shell) => shell.Services.Security();
+        public static ITaskService Tasks(this ICoreShell shell) => shell.Services.Tasks();
+        public static IUIService UI(this ICoreShell shell) => shell.Services.UI();
+        public static IMainThread MainThread(this ICoreShell shell) => shell.Services.MainThread();
+        
         /// <summary>
         /// Displays application-specific modal progress window
         /// </summary>
-        public static IProgressDialog ProgressDialog(this ICoreShell shell) => shell.GetService<IProgressDialog>();
+        public static IProgressDialog ProgressDialog(this ICoreShell shell) => shell.Services.ProgressDialog();
 
         /// <summary>
         /// Displays platform-specific file selection window
         /// </summary>
-        public static IFileDialog FileDialog(this ICoreShell shell) => shell.GetService<IFileDialog>();
+        public static IFileDialog FileDialog(this ICoreShell shell) => shell.Services.FileDialog();
 
         /// <summary>
         /// Displays error message in a host-specific UI

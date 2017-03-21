@@ -7,8 +7,6 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
-using Microsoft.Extensions.Logging;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.Options.R;
@@ -35,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(componentModel.DefaultCompositionService)
                 .AddService(componentModel.DefaultExportProvider)
                 .AddService(new CompositionCatalog(componentModel.DefaultCompositionService, componentModel.DefaultExportProvider))
+                .AddService(new VsMainThread())
                 .AddService(new VsTaskService())
                 .AddService(new VsUIServices(this))
                 .AddService(new SecurityService(this))

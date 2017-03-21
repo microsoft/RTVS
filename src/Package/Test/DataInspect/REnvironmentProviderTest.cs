@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private readonly IRSession _session;
 
         public REnvironmentProviderTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell);
+            _sessionProvider = new RSessionProvider(_coreShell.Services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

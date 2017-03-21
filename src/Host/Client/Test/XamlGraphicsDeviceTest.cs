@@ -236,7 +236,7 @@ namespace Microsoft.R.Host.Client.Test {
         }
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(XamlGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(_testMethod.Name);
                 await session.StartHostAsync(new RHostStartupInfo (), new RHostClientTestApp(), 50000);

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
@@ -28,7 +28,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
         private Process _brokerProcess;
 
@@ -43,12 +43,12 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreShell coreShell, IConsole console, string rhostDirectory = null)
-            : base(name, connectionInfo, _credentials, coreShell.Log(), console) {
+        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, string rhostDirectory = null)
+            : base(name, connectionInfo, _credentials, services.Log(), console) {
 
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             _rHome = connectionInfo.Uri.LocalPath;
-            _coreShell = coreShell;
+            _services = services;
 
             IsVerified = true;
         }
@@ -77,12 +77,12 @@ namespace Microsoft.R.Host.Client.Host {
             Trace.Assert(_brokerProcess == null);
 
             string rhostExe = Path.Combine(_rhostDirectory, RHostExe);
-            if (!_coreShell.FileSystem().FileExists(rhostExe)) {
+            if (!_services.FileSystem().FileExists(rhostExe)) {
                 throw new RHostBinaryMissingException();
             }
 
             string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
-            if (!_coreShell.FileSystem().FileExists(rhostBrokerExe)) {
+            if (!_services.FileSystem().FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }
 
@@ -170,10 +170,10 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         private Process StartBroker(ProcessStartInfo psi) {
-            var process = _coreShell.Process().Start(psi);
+            var process = _services.Process().Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {
-                var message = _coreShell.Process().MessageFromExitCode(process.ExitCode);
+                var message = _services.Process().MessageFromExitCode(process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) {
                     throw new RHostDisconnectedException(Resources.Error_UnableToStartBrokerException.FormatInvariant(Name, message), new Win32Exception(message));
                 }

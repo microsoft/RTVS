@@ -23,7 +23,7 @@ namespace Microsoft.R.RtvsPackage.Test {
         private readonly IRSession _session;
 
         public JsonTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell);
+            _sessionProvider = new RSessionProvider(_coreShell.Services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

@@ -12,7 +12,7 @@ using Microsoft.Common.Core.UI;
 namespace Microsoft.Common.Core.Shell {
     public static class CoreShellExtensions {
         public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell, CancellationToken cancellationToken = default(CancellationToken))
-             => MainThreadExtensions.SwitchToMainThreadAsync(coreShell, cancellationToken);
+             => coreShell.MainThread().SwitchToAsync(cancellationToken);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message, CancellationToken cancellationToken = default(CancellationToken)) {
             await coreShell.SwitchToMainThreadAsync(cancellationToken);
@@ -26,7 +26,7 @@ namespace Microsoft.Common.Core.Shell {
 
         [Conditional("TRACE")]
         public static void AssertIsOnMainThread(this ICoreShell coreShell, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0) {
-            if (coreShell.ThreadId != Thread.CurrentThread.ManagedThreadId) {
+            if (coreShell.MainThread().ThreadId != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
             }
         }

@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var workflow = _shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
-            _environmentProvider = new REnvironmentProvider(_session, shell);
+            _environmentProvider = new REnvironmentProvider(_session, shell.MainThread());
             EnvironmentComboBox.DataContext = _environmentProvider;
             _environmentProvider.RefreshEnvironmentsAsync().DoNotWait();
         }

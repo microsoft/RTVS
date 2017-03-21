@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
         public async Task ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(ValidateEncodings));
                 using (var script = new VsRHostScript(sessionProvider)) {
                     foreach (var cp in codePages) {

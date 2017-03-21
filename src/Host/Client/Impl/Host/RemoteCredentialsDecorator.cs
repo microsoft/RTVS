@@ -7,20 +7,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Security;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private volatile Credentials _credentials;
         private readonly AsyncReaderWriterLock _lock;
         private readonly string _authority;
         private readonly string _workspaceName;
 
-        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, IServiceContainer services) {
+            _services = services;
             _authority = credentialAuthority;
             _lock = new AsyncReaderWriterLock();
             _workspaceName = workspaceName;
@@ -37,10 +37,10 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
 
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _services.MainThread().SwitchToAsync(cancellationToken);
 
             try {
-                var credentials = _credentials ?? _coreShell.Security().GetUserCredentials(_authority, _workspaceName);
+                var credentials = _credentials ?? _services.Security().GetUserCredentials(_authority, _workspaceName);
                 _credentials = credentials;
             } catch (Exception) {
                 token.Dispose();
@@ -54,7 +54,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void InvalidateCredentials() {
             _credentials = null;
-            _coreShell.Security().DeleteCredentials(_authority);
+            _services.Security().DeleteCredentials(_authority);
         }
     }
 }

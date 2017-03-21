@@ -180,7 +180,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreShell, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreShell.Services, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
 
@@ -203,7 +203,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreShell, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreShell.Services, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();
@@ -245,7 +245,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         private static IBrokerClient CreateLocalBrokerClient(ICoreShell coreShell, string name) 
             => new LocalBrokerClient(name, 
                 BrokerConnectionInfo.Create(null, "Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
-                coreShell, 
+                coreShell.Services, 
                 new NullConsole());
 
         private static Task<int> GetRSessionProcessId(IRSession session) 

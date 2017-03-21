@@ -23,7 +23,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         private readonly IRSession _session;
 
         public BreakpointsTest(TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(_coreShell);
+            _sessionProvider = new RSessionProvider(_coreShell.Services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Microsoft.Common.Core.Threading {
     public static class MainThreadExtensions {
-        public static MainThreadAwaitable SwitchToMainThreadAsync(this IMainThread mainThread, CancellationToken cancellationToken = default(CancellationToken))
+        public static MainThreadAwaitable SwitchToAsync(this IMainThread mainThread, CancellationToken cancellationToken = default(CancellationToken))
             => new MainThreadAwaitable(mainThread, cancellationToken);
     }
 }

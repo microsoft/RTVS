@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void Lifecycle() {
-            var sessionProvider = new RSessionProvider(_coreShell);
+            var sessionProvider = new RSessionProvider(_coreShell.Services);
             // ReSharper disable once AccessToDisposedClosure
             Action a = () => sessionProvider.GetOrCreate(nameof(Lifecycle));
             a.ShouldNotThrow();
@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void GetOrCreate() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var guid = Guid.NewGuid().ToString();
                 var session1 = sessionProvider.GetOrCreate(guid);
                 session1.Should().NotBeNull();
@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void ParallelAccess() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var guids = new[] { nameof(ParallelAccess) + 1, nameof(ParallelAccess) + 2 };
                 ParallelTools.Invoke(100, i => {
                     var session = sessionProvider.GetOrCreate(guids[i % 2]);
@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task ConnectWhenSwitching() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session1 = sessionProvider.GetOrCreate(nameof(ConnectWhenSwitching) + 1);
                 var session2 = sessionProvider.GetOrCreate(nameof(ConnectWhenSwitching) + 2);
                 var switchTask = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching));
@@ -80,7 +80,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task ConnectWhenSwitching_SwitchFailed() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching_SwitchFailed));
                 var switchTask = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(ConnectWhenSwitching_SwitchFailed) + "1", BrokerConnectionInfo.Create(null, "JHFFR", @"\\JHF\F\R"));
                 await Task.Yield();
@@ -97,7 +97,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchWhenConnecting() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session = sessionProvider.GetOrCreate(nameof(SwitchWhenConnecting));
                 session.RestartOnBrokerSwitch = true;
 
@@ -122,7 +122,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchMultipleSessions() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchMultipleSessions)).Should().BeCompletedAsync();
 
                 var sessions = new IRSession[4];
@@ -140,7 +140,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchToInvalid() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session = sessionProvider.GetOrCreate(nameof(SwitchToInvalid));
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToInvalid));
                 await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 1000);
@@ -159,7 +159,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchWhileEnsureHostStartedAsyncFailed() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session = sessionProvider.GetOrCreate(nameof(SwitchWhileEnsureHostStartedAsyncFailed));
                 session.RestartOnBrokerSwitch = true;
 
@@ -174,7 +174,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchToTheSameBroker() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session = sessionProvider.GetOrCreate(nameof(SwitchToTheSameBroker));
                 session.RestartOnBrokerSwitch = true;
 
@@ -192,7 +192,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task SwitchToTheSameBroker_NoSessions() {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var switch1Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker_NoSessions));
                 var switch2Task = sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchToTheSameBroker_NoSessions));
                 await ParallelTools.WhenAll(30000, switch1Task, switch2Task);
@@ -212,7 +212,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [InlineData(800)]
         [CompositeTest]
         public async Task SwitchBrokerWithCancellation(int timeout) {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session = sessionProvider.GetOrCreate(nameof(SwitchBrokerWithCancellation));
                 await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(SwitchBrokerWithCancellation));
                 await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 1000);
@@ -245,7 +245,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [InlineData(800, false)]
         [CompositeTest]
         public async Task SwitchBroker_DisposeSession(int timeout, bool restartOnBrokerSwitch) {
-            using (var sessionProvider = new RSessionProvider(_coreShell)) {
+            using (var sessionProvider = new RSessionProvider(_coreShell.Services)) {
                 var session = sessionProvider.GetOrCreate(nameof(SwitchBroker_DisposeSession));
                 session.RestartOnBrokerSwitch = restartOnBrokerSwitch;
 
@@ -270,7 +270,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [InlineData(800)]
         [CompositeTest]
         public async Task SwitchBroker_DisposeSessionProvider(int timeout) {
-            var sessionProvider = new RSessionProvider(_coreShell);
+            var sessionProvider = new RSessionProvider(_coreShell.Services);
             var session1 = sessionProvider.GetOrCreate(nameof(SwitchBroker_DisposeSessionProvider) + 1);
             var session2 = sessionProvider.GetOrCreate(nameof(SwitchBroker_DisposeSessionProvider) + 2);
             session2.RestartOnBrokerSwitch = true;
@@ -293,7 +293,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task RemoveBroker() {
-            var sessionProvider = new RSessionProvider(_coreShell);
+            var sessionProvider = new RSessionProvider(_coreShell.Services);
             var session1 = sessionProvider.GetOrCreate(nameof(RemoveBroker) + 1);
             var session2 = sessionProvider.GetOrCreate(nameof(RemoveBroker) + 2);
             session2.RestartOnBrokerSwitch = true;
