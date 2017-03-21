@@ -64,7 +64,7 @@ namespace Microsoft.R.Interpreters {
             var engines = GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
             // Among duplicates by path (MRC registers under multiple keys) take the highest version
             var microsoftEngines = engines.Where(e => e.Name.Contains("Microsoft") || e.InstallPath.Contains("Microsoft"));
-            var installLocations = microsoftEngines.Select(e => e.InstallPath).Distinct();
+            var installLocations = microsoftEngines.Select(e => e.InstallPath.TrimTrailingSlash()).Distinct();
             var list = new List<IRInterpreterInfo>();
 
             foreach (var path in installLocations) {
