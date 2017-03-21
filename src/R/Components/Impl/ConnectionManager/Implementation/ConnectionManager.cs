@@ -213,7 +213,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<string, IConnection> GetConnectionsFromSettings() {
-            if (_settings.Connections == null) {
+            if(_settings.Connections == null) {
                 return new Dictionary<string, IConnection>();
             }
 
@@ -224,7 +224,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo(c))
+                .Select(c => new ConnectionInfo (c))
                 .ToArray();
             _settings.SaveSettingsAsync().DoNotWait();
         }
@@ -250,15 +250,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
-            // Remove automatically created local connections and replace them
-            // with the actual detected ones.
-            foreach (var kvp in connections.Where(c => !c.Value.IsRemote && !c.Value.IsUserCreated).ToList()) {
+            // For MRS and MRC always use generated name. These upgrade in place
+            // so keeping old name with old version doesn't make sense.
+            // TODO: handle this better in the future by storing version.
+            foreach (var kvp in connections.Where(c => c.Value.Path.ContainsIgnoreCase("R_SERVER")).ToList()) {
                 connections.Remove(kvp.Key);
             }
 
-            // Add detected local engines
+            // Add newly installed engines
             foreach (var e in localEngines) {
-                connections[e.Name] = new Connection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {
+                    connections[e.Name] = new Connection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                }
             }
 
             // Verify that most recently used connection is still valid
