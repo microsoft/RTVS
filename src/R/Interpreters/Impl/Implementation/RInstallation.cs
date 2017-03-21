@@ -77,21 +77,6 @@ namespace Microsoft.R.Interpreters {
         }
 
         /// <summary>
-        /// Attempts to extract version from registry key.For example '3.3.2 Microsoft R Client'. 
-        /// Returns null if first part of the key name does not appear to be the version.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns>Version or null if key doesn't represent version</returns>
-        private Version VersionFromKey(string key) {
-            var index = key.IndexOf(' ');
-            var versionString = index > 0 ? key.Substring(0, index) : key;
-            try {
-                return new Version(versionString);
-            } catch (ArgumentException) { }
-            return null;
-        }
-
-        /// <summary>
         /// Retrieves information on installed R versions in registry.
         /// </summary>
         private IEnumerable<IRInterpreterInfo> GetInstalledEnginesFromRegistry() {
