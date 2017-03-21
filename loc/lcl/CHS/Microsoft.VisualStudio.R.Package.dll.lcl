@@ -368,7 +368,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading Microsoft R Client setup application...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在下载 Microsoft R 客户端安装应用程序...]]></Val>
+            <Val><![CDATA[正在下载 Microsoft R Client 安装应用程序...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -545,7 +545,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Unable to download Microsoft R Client. Exception {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[无法下载 Microsoft R 客户端。异常 {0}。]]></Val>
+            <Val><![CDATA[无法下载 Microsoft R Client。异常 {0}。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -554,7 +554,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Timeout downloading Microsoft R Client installer executable.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[下载 Microsoft R 客户端安装程序可执行文件时超时。]]></Val>
+            <Val><![CDATA[下载 Microsoft R Client 安装程序可执行文件时超时。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1190,7 +1190,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R 标记]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1199,7 +1199,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft R Client is already installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已安装 Microsoft R 客户端。]]></Val>
+            <Val><![CDATA[已安装 Microsoft R Client。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1208,7 +1208,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Current R engine is already set to the Microsoft R Client.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已将当前 R 引擎设置为 Microsoft R 客户端。]]></Val>
+            <Val><![CDATA[已将当前 R 引擎设置为 Microsoft R Client。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1325,7 +1325,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Microsoft R 客户端安装即将开始。请立即关闭 Visual Studio，并在安装完成后将其重新打开。]]></Val>
+            <Val><![CDATA[Microsoft R Client 安装即将开始。请立即关闭 Visual Studio，并在安装完成后将其重新打开。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1397,7 +1397,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Visual Studio 检测到最近已安装 Microsoft R 客户端。是否要开始从 Microsoft R 客户端中使用 R?]]></Val>
+            <Val><![CDATA[Visual Studio 检测到最近已安装 Microsoft R Client。是否要开始从 Microsoft R Client 中使用 R?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1406,7 +1406,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[未安装 Microsoft R 客户端。如果要立即开始 Microsoft R 客户端安装，请单击“是”。安装应用程序启动后请关闭 Visual Studio，并在 Microsoft R 客户端安装完成后将其重新打开。]]></Val>
+            <Val><![CDATA[未安装 Microsoft R Client。如果要立即开始 Microsoft R Client 安装，请单击“是”。安装应用程序启动后请关闭 Visual Studio，并在 Microsoft R Client 安装完成后将其重新打开。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1424,7 +1424,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Interactive Prompts]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R 交互式提示]]></Val>
+            <Val><![CDATA[R 交互窗口提示]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1505,7 +1505,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Please briefly describe what you were doing that led to the issue, if applicable:]D;]A;]D;]A;...]D;]A;]D;]A;If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.]D;]A;]D;]A;A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including information about installed packages and their contents, your complete R Interactive command history and outputs, and values of variables in your present and past sessions.]D;]A;]D;]A;]D;]A;]D;]A;Additional information:]D;]A;]D;]A;{1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[如果适用，请简要说明导致此问题的操作:]D;]A;]D;]A;...]D;]A;]D;]A;如果有可说明此问题的任何屏幕截图，请将其一并包含在内，以帮助我们更好地诊断问题。]D;]A;]D;]A;已在 {0} 中创建详细的诊断日志，并已打开该位置的 Windows 资源管理器窗口，其中已选中该日志文件。可将该文件附加到电子邮件以帮助我们更好地诊断问题。但是，请注意此日志可能包含敏感信息，包括有关已安装程序包及其内容、完整的 R 交互命令历史记录及输出、当前和过去会话中的变量值的信息。]D;]A;]D;]A;]D;]A;]D;]A;更多信息:]D;]A;]D;]A;{1}]]></Val>
+            <Val><![CDATA[如果适用，请简要说明导致此问题的操作:]D;]A;]D;]A;...]D;]A;]D;]A;如果有可说明此问题的任何屏幕截图，请将其一并包含在内，以帮助我们更好地诊断问题。]D;]A;]D;]A;已在 {0} 中创建详细的诊断日志，并已打开该位置的 Windows 资源管理器窗口，其中已选中该日志文件。可将该文件附加到电子邮件以帮助我们更好地诊断问题。但是，请注意此日志可能包含敏感信息，包括有关已安装程序包及其内容、完整的 R 交互窗口命令历史记录及输出、当前和过去会话中的变量值的信息。]D;]A;]D;]A;]D;]A;]D;]A;更多信息:]D;]A;]D;]A;{1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1784,7 +1784,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Automatically evaluate active bindings and display the resulting value. Warning: when this option is on, inspecting active bindings in Variable Explorer and debugger tool windows may change program state]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自动评估活动绑定并显示生成的值。警告: 启用此选项后，在可变资源管理器中检查活动绑定，调试器工具窗口可能会更改程序状态]]></Val>
+            <Val><![CDATA[自动评估活动绑定并显示生成的值。警告: 启用此选项后，在变量资源管理器中检查活动绑定，调试器工具窗口可能会更改程序状态]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2162,7 +2162,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Show variables that have names beginning with "." in Variable Explorer and debugger tool windows.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[在可变资源管理器和调试器工具窗口中显示名称以 "." 开头的变量。]]></Val>
+            <Val><![CDATA[在变量资源管理器和调试器工具窗口中显示名称以 "." 开头的变量。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2810,7 +2810,7 @@
         <Str Cat="Text">
           <Val><![CDATA[No R Interactive]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[无 R 交互]]></Val>
+            <Val><![CDATA[无 R 交互窗口]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2909,7 +2909,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Variable Explorer]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[可变资源管理器]]></Val>
+            <Val><![CDATA[变量资源管理器]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3247,7 +3247,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Variable Explorer Context]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[可变资源管理器上下文]]></Val>
+              <Val><![CDATA[变量资源管理器上下文]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3649,7 +3649,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Install Microsoft &R Client...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[安装 Microsoft R 客户端(&R)...]]></Val>
+              <Val><![CDATA[安装 Microsoft R Client (&R)...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3658,7 +3658,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Install Microsoft R Client]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[安装 Microsoft R 客户端]]></Val>
+              <Val><![CDATA[安装 Microsoft R Client]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3691,7 +3691,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Selected File(s)]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[源选定的文件(&S)]]></Val>
+              <Val><![CDATA[源化选定的文件(&S)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3838,7 +3838,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source Selected File(s) with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[源选定的带有回响的文件(&E)]]></Val>
+              <Val><![CDATA[源化选定的带有回响的文件(&E)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4315,7 +4315,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source R Script]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[源 R 脚本]]></Val>
+              <Val><![CDATA[源化 R 脚本]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4324,7 +4324,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source R Script]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[源 R 脚本(&S)]]></Val>
+              <Val><![CDATA[源化 R 脚本(&S)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4408,7 +4408,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Attach to R Interactive]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[附加到 R 交互]]></Val>
+              <Val><![CDATA[附加到 R 交互窗口]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4417,7 +4417,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Attach to R I&nteractive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[附加到 R 交互(&N)]]></Val>
+              <Val><![CDATA[附加到 R 交互窗口(&N)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4429,7 +4429,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source R Script with Echo]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[带有回响的源 R 脚本]]></Val>
+              <Val><![CDATA[源化带有回响的 R 脚本]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4438,7 +4438,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source R Script with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[带有回响的源 R 脚本(&E)]]></Val>
+              <Val><![CDATA[源化带有回响的 R 脚本(&E)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5302,7 +5302,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Variable Explorer]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[可变资源管理器]]></Val>
+              <Val><![CDATA[变量资源管理器]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5443,7 +5443,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Interactive]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 交互]]></Val>
+              <Val><![CDATA[R 交互窗口]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5461,7 +5461,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&R Interactive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 交互(&R)]]></Val>
+              <Val><![CDATA[R 交互窗口(&R)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5503,7 +5503,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Variable Explorer]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[可变资源管理器]]></Val>
+              <Val><![CDATA[变量资源管理器]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5512,7 +5512,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Variable Explorer]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[显示可变资源管理器]]></Val>
+              <Val><![CDATA[显示变量资源管理器]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5521,7 +5521,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Variable Explorer]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[可变资源管理器(&V)]]></Val>
+              <Val><![CDATA[变量资源管理器(&V)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5759,7 +5759,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R 标记]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5849,7 +5849,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R 标记]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

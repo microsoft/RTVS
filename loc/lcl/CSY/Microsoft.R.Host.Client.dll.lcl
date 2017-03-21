@@ -35,7 +35,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0}  is missing from the installation directory.]D;]A;Please reinstall R Tools for Visual Studio 2015]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[V adresáři instalace chybí soubor {0}.]D;]A;Přeinstalujte Nástroje jazyka R pro Visual Studio 2015.]]></Val>
+            <Val><![CDATA[V adresáři instalace chybí soubor {0}.]D;]A;Přeinstalujte Nástroje R pro Visual Studio 2015.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -44,7 +44,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} is missing from the installation directory.]D;]A;Please reinstall Data Science workload or repair the Visual Studio installation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[V adresáři instalace chybí soubor {0}.]D;]A;Přeinstalujte úlohu Data Science nebo opravte instalaci sady Visual Studio.]]></Val>
+            <Val><![CDATA[V adresáři instalace chybí soubor {0}.]D;]A;Přeinstalujte úlohu Datové vědy nebo opravte instalaci sady Visual Studio.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -98,7 +98,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Specified R interpreter [{0}]5D; was not found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Zadaný překladač R [{0}]5D; nebyl nalezen.]]></Val>
+            <Val><![CDATA[Zadaný interpret R [{0}]5D; nebyl nalezen.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -170,7 +170,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Verze služby R na vzdáleném počítači ({0})]D;]A;je vyšší než verze nástrojů jazyka R na místním počítači ({1}). ]D;]A;Proveďte upgrade místní instalace nástrojů jazyka R, aby si verze odpovídaly.]]></Val>
+            <Val><![CDATA[Verze služby R na vzdáleném počítači ({0})]D;]A;je vyšší než verze Nástrojů R na místním počítači ({1}). ]D;]A;Proveďte upgrade místní instalace Nástrojů R, aby si verze odpovídaly.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -179,7 +179,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Verze služby R na vzdáleném počítači ({0})]D;]A;je nižší než verze nástrojů jazyka R na místním počítači ({1}). ]D;]A;Proveďte upgrade instalace vzdálené služby R, aby si verze odpovídaly.]]></Val>
+            <Val><![CDATA[Verze služby R na vzdáleném počítači ({0})]D;]A;je nižší než verze Nástrojů R na místním počítači ({1}). ]D;]A;Proveďte upgrade instalace vzdálené služby R, aby si verze odpovídaly.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -361,7 +361,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +382,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -411,14 +411,14 @@
       <Str Cat="Text">
         <Val><![CDATA[R Tools for Visual Studio]]></Val>
         <Tgt Cat="Text" Stat="Loc" Orig="New">
-          <Val><![CDATA[Nástroje jazyka R pro Visual Studio]]></Val>
+          <Val><![CDATA[Nástroje R pro Visual Studio]]></Val>
         </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

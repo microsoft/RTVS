@@ -29,7 +29,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to delete user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No se pudo eliminar el perfil del usuario {0}\{1}, con error de Win32 {2}.]]></Val>
+            <Val><![CDATA[No se pudo eliminar el perfil de usuario {0}\{1}, con error de Win32 {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -47,7 +47,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to create user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No se pudo crear el perfil del usuario {0}\{1}, con error de Win32 {2}.]]></Val>
+            <Val><![CDATA[No se pudo crear el perfil de usuario {0}\{1}, con error de Win32 {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -74,7 +74,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User profile deleted for user {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Se ha eliminado el perfil del usuario {0}\{1}.]]></Val>
+            <Val><![CDATA[Se ha eliminado el perfil de usuario {0}\{1}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -83,7 +83,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deleting user profile for user {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eliminando el perfil del usuario {0}\{1}.]]></Val>
+            <Val><![CDATA[Eliminando el perfil de usuario {0}\{1}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -92,7 +92,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User profile already exists for user  {0}\{1}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ya existe el perfil del usuario {0}\{1}.]]></Val>
+            <Val><![CDATA[Ya existe el perfil de usuario {0}\{1}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -110,7 +110,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User profile directory was found for user {0}\{1}, path: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Se ha encontrado el directorio de perfil del usuario {0}\{1}, ruta de acceso: {2}.]]></Val>
+            <Val><![CDATA[Se ha encontrado el directorio de perfil de usuario {0}\{1}, ruta de acceso: {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -148,7 +148,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -169,7 +169,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -205,7 +205,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
