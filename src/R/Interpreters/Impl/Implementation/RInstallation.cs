@@ -42,28 +42,8 @@ namespace Microsoft.R.Interpreters {
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var list = new List<IRInterpreterInfo>();
 
-            // Get MRC from SQL
-            var mrc = SqlRClientInstallation.GetMicrosoftRClientInfo(_registry, _fileSystem);
-            if (mrc != null) {
-                list.Add(mrc);
-            }
-
             var engines = GetCompatibleEnginesFromRegistry(svl);
-            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem))
-                             .OrderBy(e => e.Version);
-
-            if (mrc == null) {
-                // If MRC didn't come with SQL, try finding one in the R engines
-                mrc = engines.FirstOrDefault(e => e.Name.Contains("Microsoft R"));
-                if (mrc != null) {
-                    list.Add(mrc);
-                }
-            }
-
-            if (mrc != null) { 
-                // Remove MRC and its duplicates
-                engines = engines.Where(e => !e.InstallPath.PathEquals(mrc.InstallPath));
-            }
+            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
 
             list.AddRange(engines);
             if (list.Count == 0) {
@@ -82,13 +62,33 @@ namespace Microsoft.R.Interpreters {
         private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svr) {
             svr = svr ?? new SupportedRVersionRange();
             var engines = GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
-            // Remove duplicates (MRC registers under multiple keys)
-            var mrc = engines.FirstOrDefault(e => e.Name.Contains("Microsoft"));
-            if(mrc != null) {
-                var dupes = engines.Where(e => e.InstallPath.EqualsIgnoreCase(mrc.InstallPath)).Except(new IRInterpreterInfo[] { mrc });
-                engines = engines.Except(dupes);
+            // Among duplicates by path (MRC registers under multiple keys) take the highest version
+            var microsoftEngines = engines.Where(e => e.Name.Contains("Microsoft") || e.InstallPath.Contains("Microsoft"));
+            var installLocations = microsoftEngines.Select(e => e.InstallPath).Distinct();
+            var list = new List<IRInterpreterInfo>();
+
+            foreach (var path in installLocations) {
+                var value = microsoftEngines.Where(e => e.InstallPath.EqualsIgnoreCase(path)).OrderByDescending(e => e.Version).First();
+                list.Add(value);
             }
-            return engines;
+
+            list.AddRange(engines.Except(microsoftEngines));
+            return list;
+        }
+
+        /// <summary>
+        /// Attempts to extract version from registry key.For example '3.3.2 Microsoft R Client'. 
+        /// Returns null if first part of the key name does not appear to be the version.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>Version or null if key doesn't represent version</returns>
+        private Version VersionFromKey(string key) {
+            var index = key.IndexOf(' ');
+            var versionString = index > 0 ? key.Substring(0, index) : key;
+            try {
+                return new Version(versionString);
+            } catch (ArgumentException) { }
+            return null;
         }
 
         /// <summary>
@@ -127,9 +127,9 @@ namespace Microsoft.R.Interpreters {
                 if (index == 0) {
                     return key; // 'Microsoft R Open 'version'
                 }
-                if(index > 0) {
+                if (index > 0) {
                     // 3.2.2.803 Microsoft R [Open | Client]
-                    if(Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
+                    if (Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
                         return Invariant($"{key.Substring(index).TrimEnd()} ({v})");
                     }
                 }
