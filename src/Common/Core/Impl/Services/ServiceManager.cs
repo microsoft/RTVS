@@ -2,16 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.Common.Core.Services {
     public class ServiceManager : IServiceManager {
-        private readonly Dictionary<Type, object> _services = new Dictionary<Type, object>();
-        private readonly Dictionary<Type, Func<object>> _deferredServices = new Dictionary<Type, Func<object>>();
-        private readonly object _lock = new object();
+        private readonly DisposeToken _disposeToken = DisposeToken.Create<ServiceManager>();
+        private readonly ConcurrentDictionary<Type, object> _s = new ConcurrentDictionary<Type, object>();
 
         /// <summary>
         /// Fire when service is added
@@ -28,12 +31,11 @@ namespace Microsoft.Common.Core.Services {
         /// <typeparam name="T">Service type</typeparam>
         /// <param name="service">Service instance</param>
         public virtual IServiceManager AddService<T>(T service) where T : class {
+            _disposeToken.ThrowIfDisposed();
+
             var type = typeof(T);
             Check.ArgumentNull(nameof(service), service);
-            lock (_lock) {
-                Check.InvalidOperation(() => _services.ContainsKey(type));
-                _services[type] = service;
-            }
+            Check.Operation(() => _s.TryAdd(type, service));
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
             return this;
         }
@@ -41,18 +43,17 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Adds on-demand created service
         /// </summary>
-        /// <param name="type">Service type</param>
         /// <param name="factory">Optional creator function. If not provided, reflection with default constructor will be used.</param>
-        /// <param name="parameters">Factory parameters</param>
-        public virtual IServiceManager AddService(Type type, Func<object> factory) {
-            Check.ArgumentNull(nameof(type), type);
-            lock (_lock) {
-                Check.InvalidOperation(() => _services.ContainsKey(type));
-                Check.InvalidOperation(() => _deferredServices.ContainsKey(type));
-                _deferredServices[type] = factory;
-            }
+        public virtual IServiceManager AddService<T>(Func<T> factory) {
+            _disposeToken.ThrowIfDisposed();
 
-            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
+            var type = typeof(T);
+            var lazy = factory != null 
+                ? new Lazy<object>(() => factory()) 
+                : new Lazy<object>(() => Activator.CreateInstance(type));
+
+            Check.Operation(() => _s.TryAdd(type, lazy));
+            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             return this;
         }
 
@@ -62,93 +63,68 @@ namespace Microsoft.Common.Core.Services {
         /// <typeparam name="T">Service type</typeparam>
         /// <returns>Service instance or null if it doesn't exist</returns>
         public virtual T GetService<T>(Type type = null) where T : class {
+            _disposeToken.ThrowIfDisposed();
+
             type = type ?? typeof(T);
-
-            lock (_lock) {
-                object service;
-                if (_services.TryGetValue(type, out service)) {
-                    return service as T;
-                }
-
-                // Try walk through and cast. Perhaps someone is asking for IFoo
-                // that is implemented on class Bar but Bar was added as Bar, not as IFoo
-                service = _services.Values.Where(s => s is T).FirstOrDefault();
-                if (service != null) {
-                    return service as T;
-                }
-
-                // Check deferred
-                Func<object> factory;
-                if (_deferredServices.TryGetValue(type, out factory)) {
-                    return CreateService(type, factory) as T;
-                }
-
-                foreach (var key in _deferredServices.Keys) {
-                    if (type.GetTypeInfo().IsAssignableFrom(key)) {
-                        return CreateService(key, _deferredServices[key]) as T;
-                    }
-                }
-
-                return null;
+            if (!_s.TryGetValue(type, out object value)) {
+                value = _s.FirstOrDefault(kvp => type.GetTypeInfo().IsAssignableFrom(kvp.Key));
             }
-        }
 
-        private object CreateService(Type type, Func<object> factory) {
-            var serviceInstance = factory != null ? factory() : Activator.CreateInstance(type, this);
-            _services[type] = serviceInstance;
-            _deferredServices.Remove(type);
-            return serviceInstance;
+            return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);
         }
 
         public virtual void RemoveService<T>() where T : class {
-            bool fireEvent = false;
-            lock (_lock) {
-                fireEvent = _services.Remove(typeof(T)) || _deferredServices.Remove(typeof(T));
-            }
+            _disposeToken.ThrowIfDisposed();
 
-            if (fireEvent) {
+            if (_s.TryRemove(typeof(T), out object dummy)) {
                 ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             }
         }
 
         public virtual IEnumerable<Type> Services {
             get {
-                lock (_lock) {
-                    var list = _services.Keys.ToList();
-                    list.AddRange(_deferredServices.Keys);
-                    return list;
-                }
+                _disposeToken.ThrowIfDisposed();
+                return _s.Keys.ToList();
             }
         }
 
         public virtual IEnumerable<T> GetServices<T>() where T : class {
-            lock (_lock) {
-                // Perhaps someone is asking for IFoo that is implemented on class Bar 
-                // but Bar was added as Bar, not as IFoo
-                foreach(var s in _services.Values.Where(s => s is T)) {
-                    yield return s as T;
-                }
+            _disposeToken.ThrowIfDisposed();
 
-                foreach (var key in _deferredServices.Keys) {
-                    if (typeof(T).GetTypeInfo().IsAssignableFrom(key)) {
-                        yield return CreateService(key, _deferredServices[key]) as T;
-                    }
-                }
+            var type = typeof(T);
+            foreach (var value in _s.Values.OfType<T>()) {
+                CheckDisposed(value);
+                yield return value;
+            }
+
+            // Perhaps someone is asking for IFoo that is implemented on class Bar 
+            // but Bar was added as Bar, not as IFoo
+            foreach (var kvp in _s.Where(kvp => kvp.Value is Lazy<object> && type.GetTypeInfo().IsAssignableFrom(kvp.Key))) {
+                yield return (T)CheckDisposed(((Lazy<object>)kvp.Value).Value);
             }
         }
 
-        #region IDisposable
-        protected virtual void Dispose(bool disposing) {
-            Dispose();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private object CheckDisposed(object service) {
+            if (_disposeToken.IsDisposed) {
+                (service as IDisposable)?.Dispose();
+                _disposeToken.ThrowIfDisposed();
+            }
+
+            return service;
         }
 
+        #region IDisposable
         public void Dispose() {
-            lock (_lock) {
-                foreach (var d in _services.Values.OfType<IDisposable>()) {
-                    d.Dispose();
+            if (_disposeToken.TryMarkDisposed()) {
+                foreach (var service in _s.Values) {
+                    var lazy = service as Lazy<object>;
+                    if (lazy != null && lazy.IsValueCreated) {
+                        (lazy.Value as IDisposable)?.Dispose();
+                    } else {
+                        (service as IDisposable)?.Dispose();
+                    }
                 }
-                _services.Clear();
-                _deferredServices.Clear();
             }
         }
         #endregion

@@ -15,9 +15,8 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Adds on-demand created service
         /// </summary>
-        /// <param name="type">Service type</param>
         /// <param name="factory">Optional service factory. If not provided, reflection with default constructor will be used.</param>
-        IServiceManager AddService(Type type, Func<object> factory = null);
+        IServiceManager AddService<T>(Func<T> factory = null);
 
         /// <summary>
         /// Removes service from container
