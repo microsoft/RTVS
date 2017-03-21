@@ -62,22 +62,12 @@ namespace Microsoft.R.Interpreters {
         private IEnumerable<IRInterpreterInfo> GetCompatibleEnginesFromRegistry(ISupportedRVersionRange svr) {
             svr = svr ?? new SupportedRVersionRange();
             var engines = GetInstalledEnginesFromRegistry().Where(e => svr.IsCompatibleVersion(e.Version));
-            // Among duplicates by path (MRC registers under multiple keys) take the highest version
-            var microsoftEngines = engines.Where(e => e.Name.Contains("Microsoft") || e.InstallPath.Contains("Microsoft"));
-            var installLocations = microsoftEngines.Select(e => e.InstallPath.TrimTrailingSlash()).Distinct();
-            var list = new List<IRInterpreterInfo>();
-
-            foreach (var path in installLocations) {
-                var value = microsoftEngines
-                    .Where(e => e.InstallPath.TrimTrailingSlash().EqualsIgnoreCase(path))
-                    .OrderByDescending(e => e.Version)
-                    .First();
-
-                list.Add(value);
-            }
-
-            list.AddRange(engines.Except(microsoftEngines));
-            return list;
+            // Among duplicates by path take the highest version
+            return
+                from e in engines
+                group e by e.InstallPath.TrimTrailingSlash()
+                into g
+                select g.OrderByDescending(e => e.Version).First();
         }
 
         /// <summary>
