@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completions.Providers;
@@ -45,7 +46,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void LocalFiles() {
             var shell = Substitute.For<ICoreShell>();
-            var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), shell);
+            var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Substitute.For<IServiceContainer>());
             var entries = provider.GetEntries(null);
             entries.Should().NotBeEmpty();
             entries.Should().Contain(e => e.DisplayText == _testFolderName);
@@ -57,7 +58,7 @@ namespace Microsoft.R.Editor.Test.Completions {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
-                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _coreShell, forceR: true);
+                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Substitute.For<IServiceContainer>(), forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
                 entries.Should().Contain(e => e.DisplayText == _testFolderName);

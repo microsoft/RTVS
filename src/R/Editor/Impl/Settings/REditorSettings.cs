@@ -26,8 +26,7 @@ namespace Microsoft.R.Editor.Settings {
         private static IEditorSettingsStorage _storage;
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
-        public static void Initialize(ICoreShell coreShell) {
-            var cc = coreShell.GetService<ICompositionCatalog>();
+        public static void Initialize(ICompositionCatalog cc) {
             _storage = CommonSettings.GetSettingsStorage(cc, RContentTypeDefinition.LanguageName);
             Debug.Assert(_storage != null);
             _storage.SettingsChanged += OnSettingsChanged;

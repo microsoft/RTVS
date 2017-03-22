@@ -9,8 +9,14 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.StubBuilders;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Xunit.Sdk;
 
 namespace Microsoft.Languages.Editor.Test {
@@ -42,7 +48,12 @@ namespace Microsoft.Languages.Editor.Test {
         protected class LanguagesEditorTestExportProvider : TestExportProvider {
             private readonly ICoreShell _coreShell;
             public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer) : base(compositionContainer) {
-                _coreShell = new TestCoreShell(new TestCompositionCatalog(compositionContainer));
+                var tcs = new TestCoreShell(new TestCompositionCatalog(compositionContainer));
+                tcs.ServiceManager.AddService(new TestEditorSupport());
+                _coreShell = tcs;
+
+                // TODO: get rid of static
+                REditorSettings.Initialize(_coreShell.GetService<ICompositionCatalog>());
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
@@ -52,6 +63,18 @@ namespace Microsoft.Languages.Editor.Test {
                 CompositionContainer.Compose(batch);
                 return base.InitializeAsync(testInput, messageBus);
             }
+        }
+
+        class TestEditorSupport : IApplicationEditorSupport {
+            public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) => commandTarget as ICommandTarget;
+            public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) => commandTarget;
+            public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) => new TestCompoundAction();
+        }
+
+        class TestCompoundAction : ICompoundUndoAction {
+            public void Dispose() { }
+            public void Open(string name) { }
+            public void Commit() { }
         }
     }
 }

@@ -27,12 +27,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             var loggingPermissions = new LoggingPermissions(platformServices, telemetry, new RegistryImpl());
             var settings = new RToolsSettingsImplementation(this, new VsSettingsStorage(), loggingPermissions);
+            var compositionCatalog = new CompositionCatalog(componentModel.DefaultCompositionService, componentModel.DefaultExportProvider);
 
             _services
                 .AddService(componentModel)
                 .AddService(componentModel.DefaultCompositionService)
                 .AddService(componentModel.DefaultExportProvider)
-                .AddService(new CompositionCatalog(componentModel.DefaultCompositionService, componentModel.DefaultExportProvider))
+                .AddService(compositionCatalog)
                 .AddService(new VsMainThread())
                 .AddService(new VsTaskService())
                 .AddService(new VsUIServices(this))
@@ -52,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             settings.LoadSettings();
 
             // TODO: get rid of static
-            REditorSettings.Initialize(this);
+            REditorSettings.Initialize(compositionCatalog);
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.R.Host.Client;
@@ -29,6 +30,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
         public async Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string filename, string contentType, IRSessionProvider sessionProvider) {
             var shell = exportProvider.GetExportedValue<ICoreShell>();
+
             var coreEditor = await InUI(() => new CoreEditor(shell, text, filename, contentType));
             var containerDisposable = await AddToHost(coreEditor.Control);
 

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Data {
         private static readonly char[] NameTrimChars = new char[] { '$' };
         private static readonly string HiddenVariablePrefix = ".";
 
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
         private readonly object syncObj = new object();
         private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask = null;
@@ -28,16 +28,16 @@ namespace Microsoft.R.Editor.Data {
         protected const int DefaultMaxReprLength = 100;
         protected const int DefaultMaxGrandChildren = 20;
 
-        protected RSessionDataObject(ICoreShell coreShell) {
+        protected RSessionDataObject(IServiceContainer services) {
             MaxReprLength = DefaultMaxReprLength;
-            Shell = coreShell;
+            Services = services;
         }
 
         /// <summary>
         /// Create new instance of <see cref="DataEvaluation"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
-        public RSessionDataObject(IREvaluationResultInfo evaluation, ICoreShell coreShell, int? maxChildrenCount = null) : this(coreShell) {
+        public RSessionDataObject(IREvaluationResultInfo evaluation, IServiceContainer services, int? maxChildrenCount = null) : this(services) {
             DebugEvaluation = evaluation;
 
             Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);
@@ -126,7 +126,7 @@ namespace Microsoft.R.Editor.Data {
                         AttributeCountProperty |
                         DimProperty |
                         FlagsProperty |
-                        (Shell.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
+                        (Services.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
                     var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                     return EvaluateChildren(children);
                 }
@@ -138,7 +138,7 @@ namespace Microsoft.R.Editor.Data {
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
-                result.Add(new RSessionDataObject(children[i], Shell, GetMaxChildrenCount(children[i])));
+                result.Add(new RSessionDataObject(children[i], Services, GetMaxChildrenCount(children[i])));
             }
             return result;
         }

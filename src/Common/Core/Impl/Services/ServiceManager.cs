@@ -67,7 +67,7 @@ namespace Microsoft.Common.Core.Services {
 
             type = type ?? typeof(T);
             if (!_s.TryGetValue(type, out object value)) {
-                value = _s.FirstOrDefault(kvp => type.GetTypeInfo().IsAssignableFrom(kvp.Key));
+                value = _s.FirstOrDefault(kvp => type.GetTypeInfo().IsAssignableFrom(kvp.Key)).Value;
             }
 
             return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);

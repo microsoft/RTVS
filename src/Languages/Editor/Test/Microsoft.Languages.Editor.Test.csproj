@@ -84,6 +84,10 @@
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{D6EEEF87-CE3A-4804-A409-39966B96C850}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>

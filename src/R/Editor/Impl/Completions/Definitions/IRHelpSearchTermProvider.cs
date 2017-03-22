@@ -3,16 +3,14 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.R.Editor.Completions
-{
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// An interface implemented by R completion provider that supplies
     /// list of entries to help search. Help terms are similar to the editor
     /// completion items but exclude things like file names or workspace variables.
     /// Providers are exported via MEF.
     /// </summary>
-    public interface IRHelpSearchTermProvider
-    {
+    public interface IRHelpSearchTermProvider {
         /// <summary>
         /// Retrieves list of search terms
         /// </summary>

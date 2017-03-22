@@ -19,17 +19,15 @@ namespace Microsoft.R.Editor.Comments {
 
         #region ICommand
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            SnapshotSpan selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
+            var selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
             RCommenter.UncommentBlock(TextView, TextView.TextBuffer,
-                new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell);
+                new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell.Services);
 
             return CommandResult.Executed;
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
-        }
+        public override CommandStatus Status(Guid group, int id)=> CommandStatus.SupportedAndEnabled;
         #endregion
     }
 }

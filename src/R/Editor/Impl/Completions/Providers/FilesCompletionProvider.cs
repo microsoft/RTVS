@@ -7,13 +7,13 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -30,7 +30,6 @@ namespace Microsoft.R.Editor.Completions.Providers {
         }
 
         private readonly IImagesProvider _imagesProvider;
-        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IGlyphService _glyphService;
 
@@ -41,15 +40,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private Mode _mode = Mode.Other;
         private volatile string _rootDirectory;
 
-        public FilesCompletionProvider(string directoryCandidate, ICoreShell coreShell, bool forceR = false) {
-            if (directoryCandidate == null) {
-                throw new ArgumentNullException(nameof(directoryCandidate));
-            }
+        public FilesCompletionProvider(string directoryCandidate, IServiceContainer services, bool forceR = false) {
+            Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
-            _coreShell = coreShell;
-            _imagesProvider = _coreShell.GetService<IImagesProvider>();
-            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _glyphService = _coreShell.GetService<IGlyphService>();
+            _imagesProvider = services.GetService<IImagesProvider>();
+            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _glyphService = services.GetService<IGlyphService>();
             _forceR = forceR;
 
             _enteredDirectory = ExtractDirectory(directoryCandidate);

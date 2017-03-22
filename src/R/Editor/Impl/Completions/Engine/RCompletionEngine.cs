@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
             string directory;
             if (CanShowFileCompletion(context.AstRoot, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    providers.Add(new FilesCompletionProvider(directory, shell));
+                    providers.Add(new FilesCompletionProvider(directory, shell.Services));
                 }
                 return providers;
             }
