@@ -151,7 +151,7 @@
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
     <ItemGroup>
-      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.exe">
+      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
         <Authenticode>Microsoft</Authenticode>
         <StrongName>StrongName</StrongName>
       </FilesToSign>
