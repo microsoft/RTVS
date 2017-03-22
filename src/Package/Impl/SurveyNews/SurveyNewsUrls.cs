@@ -3,7 +3,7 @@
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     internal static class SurveyNewsUrls {
-        public const string Index = "http://aka.ms/rtvs-news-index";
-        public const string Feed = "http://aka.ms/rtvs-news-feed";
+        public const string Index = "https://aka.ms/rtvs-news-index";
+        public const string Feed = "https://aka.ms/rtvs-news-feed";
     }
 }

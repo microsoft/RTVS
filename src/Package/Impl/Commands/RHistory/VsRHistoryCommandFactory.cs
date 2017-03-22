@@ -4,13 +4,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.History.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -40,8 +38,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, interactiveWorkflow);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
-            var shell = VsAppShell.Current;
-            var settings = shell.GetService<IRToolsSettings>();
 
             return new ICommand[] {
                 new LoadHistoryCommand(textView, _historyProvider, interactiveWorkflow),
@@ -58,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                 new HistoryWindowVsStd2KCmdIdEnd(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdPageUp(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdPageDown(textView, _historyProvider), 
-                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, interactiveWorkflow, settings), 
+                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, interactiveWorkflow), 
                 new CopySelectedHistoryCommand(textView, _historyProvider, interactiveWorkflow)
             };
         }

@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Bing: search?q=item+site%3Astackoverflow.com
             var tokens = _settings.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var sb = new StringBuilder("http://" + Invariant($"www.bing.com/search?q={Uri.EscapeUriString(item)}"));
+            var sb = new StringBuilder("https://" + Invariant($"www.bing.com/search?q={Uri.EscapeUriString(item)}"));
             foreach (var t in tokens) {
                 sb.Append('+');
                 sb.Append(Uri.EscapeUriString(t));

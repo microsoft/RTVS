@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -31,6 +33,14 @@ namespace Microsoft.Common.Core.Services {
         /// Displays platform-specific file selection window
         /// </summary>
         public static IFileDialog FileDialog(this IServiceContainer sc) => sc.GetService<IFileDialog>();
+
+        /// <summary>
+        /// Switches to UI thread asynchonously and then displays the message
+        /// </summary>
+        public static async Task ShowErrorMessageAsync(this IServiceContainer sc, string message, CancellationToken cancellationToken = default(CancellationToken)) {
+            await sc.MainThread().SwitchToAsync(cancellationToken);
+            sc.UI().ShowErrorMessage(message);
+        }
 
         /// <summary>
         /// Displays error message in a host-specific UI

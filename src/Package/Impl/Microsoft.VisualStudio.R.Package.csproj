@@ -135,7 +135,6 @@
     <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
-    <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
     <Compile Include="Debugger\DataTips\DataTipTextViewFilter.cs" />
     <Compile Include="Debugger\DataTips\DataTipTextViewConnectionListener.cs" />
     <Compile Include="Editors\BaseLanguageService.cs" />
@@ -222,6 +221,7 @@
     <Compile Include="Shell\VsAppShell.Core.cs" />
     <Compile Include="Shell\VsAppShell.Lifetime.cs" />
     <Compile Include="Shell\VsEditorSupport.cs" />
+    <Compile Include="Shell\VsIdleTimeService.cs" />
     <Compile Include="Shell\VsMainThread.cs" />
     <Compile Include="Shell\VsPlatformServices.cs" />
     <Compile Include="Shell\VsUIServices.cs" />

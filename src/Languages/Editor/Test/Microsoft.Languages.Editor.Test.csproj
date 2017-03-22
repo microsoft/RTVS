@@ -44,7 +44,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ContainedLanguage\CommandTargetProxyTest.cs" />
-    <Compile Include="Fakes\Shell\TestUIServices.cs" />
     <Compile Include="Helpers\HelpersTest.cs" />
     <Compile Include="Idle\IdleTaskQueueTest.cs" />
     <Compile Include="LanguagesEditorMefCatalogFixture.cs" />

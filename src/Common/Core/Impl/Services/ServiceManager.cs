@@ -44,7 +44,7 @@ namespace Microsoft.Common.Core.Services {
         /// Adds on-demand created service
         /// </summary>
         /// <param name="factory">Optional creator function. If not provided, reflection with default constructor will be used.</param>
-        public virtual IServiceManager AddService<T>(Func<T> factory) {
+        public virtual IServiceManager AddService<T>(Func<T> factory) where T: class {
             _disposeToken.ThrowIfDisposed();
 
             var type = typeof(T);

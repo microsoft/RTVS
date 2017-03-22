@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Commands;
@@ -38,17 +39,17 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
 
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
-        public PreviewCommand(ITextView textView, int id,
-            IRInteractiveWorkflowProvider workflowProvider, ICoreShell shell)
+        protected PreviewCommand(ITextView textView, int id,
+            IRInteractiveWorkflowProvider workflowProvider, IServiceContainer services)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
-            Shell = shell;
-            _fs = shell.FileSystem();
-            _pss = shell.Process();
+            Services = services;
+            _fs = services.FileSystem();
+            _pss = services.Process();
 
-            var exp = shell.GetService<ExportProvider>();
+            var exp = services.GetService<ExportProvider>();
             var handlers = exp.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
@@ -86,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
                 if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
                     // Text buffer operations should be performed in UI thread
-                    await Shell.SwitchToMainThreadAsync();
+                    await Services.MainThread().SwitchToAsync();
                     if (await CheckPrerequisitesAsync()) {
                         var textBuffer = SaveFile();
                         if (textBuffer != null) {
@@ -96,16 +97,16 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                             try {
                                 _fs.DeleteFile(_outputFilePath);
                             } catch (IOException ex) {
-                                Shell.ShowErrorMessage(ex.Message);
+                                Services.UI().ShowErrorMessage(ex.Message);
                                 return;
                             }
 
                             var session = workflow.RSession;
-                            await flavorHandler.PublishAsync(session, Shell, _fs, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
+                            await flavorHandler.PublishAsync(session, Services, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
                         }
                     }
                 } else {
-                    await Shell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
+                    await Services.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
                 }
             });
 
@@ -116,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
             var tb = document.TextBuffer;
             if (!tb.CanBeSavedInCurrentEncoding()) {
-                if (MessageButtons.No == Shell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                if (MessageButtons.No == Services.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                     return null;
                 }
                 tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -130,8 +131,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await CheckExistsOnPathAsync("pandoc.exe")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
-                await Shell.ShowErrorMessageAsync(message);
-                _pss.Start("http://pandoc.org/installing.html");
+                await Services.ShowErrorMessageAsync(message);
+                _pss.Start("https://pandoc.org/installing.html");
                 return false;
             }
             return true;

@@ -3,13 +3,10 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
@@ -17,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         public PreviewPdfCommand(
             ITextView textView,
             IRInteractiveWorkflowProvider workflowProvider,
-            ICoreShell shell)
-            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, shell) { }
+            IServiceContainer services)
+            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, services) { }
 
         protected override string FileExtension => "pdf";
          protected override PublishFormat Format => PublishFormat.Pdf;
@@ -30,8 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await CheckExistsOnPathAsync("pdflatex.exe")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
-                await Shell.ShowErrorMessageAsync(message);
-                Process.Start("http://miktex.org/2.9/setup");
+                await Services.ShowErrorMessageAsync(message);
+                Process.Start("https://miktex.org/2.9/setup");
                 return false;
             }
             return true;

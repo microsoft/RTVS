@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
@@ -18,10 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         private readonly IRToolsSettings _settings;
         private readonly IRHistory _history;
 
-        public ToggleMultilineHistorySelectionCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow, IRToolsSettings settings)
+        public ToggleMultilineHistorySelectionCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdToggleMultilineSelection, false) {
             _history = historyProvider.GetAssociatedRHistory(textView);
-            _settings = settings;
+            _settings = interactiveWorkflow.Shell.GetService<IRToolsSettings>();
             _interactiveWorkflow = interactiveWorkflow;
         }
 

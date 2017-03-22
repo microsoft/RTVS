@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class ReportIssueCommand : PackageCommand {
-        private const string _url = @"http://go.microsoft.com/fwlink/?LinkID=760668&body={0}";
+        private const string _url = @"https://go.microsoft.com/fwlink/?LinkID=760668&body={0}";
         private readonly ILoggingPermissions _permissions;
         private readonly IProcessServices _pss;
 

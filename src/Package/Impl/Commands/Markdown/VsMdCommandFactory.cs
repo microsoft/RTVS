@@ -4,8 +4,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.OS;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -13,7 +11,6 @@ using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands.Markdown;
 using Microsoft.VisualStudio.R.Package.Publishing.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -40,10 +37,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
                     .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false));
             }
 
+            var services = workflow.Shell.Services;
             return new ICommand[] {
-                new PreviewHtmlCommand(textView, _workflowProvider, VsAppShell.Current),
-                new PreviewPdfCommand(textView, _workflowProvider, VsAppShell.Current),
-                new PreviewWordCommand(textView, _workflowProvider, VsAppShell.Current),
+                new PreviewHtmlCommand(textView, _workflowProvider, services),
+                new PreviewPdfCommand(textView, _workflowProvider, services),
+                new PreviewWordCommand(textView, _workflowProvider, services),
                 new ClearReplCommand(textView, workflow),
                 new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)
             };
