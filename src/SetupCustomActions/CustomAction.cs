@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Deployment.WindowsInstaller;
-using Microsoft.Win32;
 using System.IO;
 
 namespace SetupCustomActions {
@@ -16,7 +15,7 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
             session.Log("Start ShowMicrosoftROfferings action");
-            Process.Start("http://microsoft.github.io/RTVS-docs/installer.html");
+            Process.Start("https://microsoft.github.io/RTVS-docs/installer.html");
             session.Log("End ShowMicrosoftROfferings action");
             return ActionResult.Success;
         }
