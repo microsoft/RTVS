@@ -25,12 +25,10 @@ namespace Microsoft.R.DataInspection.Test {
     [ExcludeFromCodeCoverage]
     public class ValuesTest : IAsyncLifetime {
         private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
-        private readonly ServiceManagerFixture _services;
-        private readonly IRSessionProvider _sessionProvider;
+       private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public ValuesTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
-            _services = services;
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

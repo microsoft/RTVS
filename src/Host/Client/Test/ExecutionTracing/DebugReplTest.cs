@@ -16,13 +16,11 @@ using Xunit;
 namespace Microsoft.R.ExecutionTracing.Test {
     [ExcludeFromCodeCoverage]
     public class DebugReplTest : IAsyncLifetime {
-        private readonly ServiceManagerFixture _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public DebugReplTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
-            _services = services;
-            _sessionProvider = new RSessionProvider(services);
+             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

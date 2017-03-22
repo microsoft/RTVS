@@ -19,12 +19,10 @@ namespace Microsoft.R.RtvsPackage.Test {
     public class JsonTest : IAsyncLifetime {
         private const string SameAsInput = "<INPUT>";
 
-        private readonly ServiceManagerFixture _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public JsonTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
-            _services = services;
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

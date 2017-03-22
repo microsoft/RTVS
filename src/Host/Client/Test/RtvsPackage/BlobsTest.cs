@@ -18,12 +18,10 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.RtvsPackage {
     [ExcludeFromCodeCoverage]
     public class BlobsTest : IAsyncLifetime {
-        private readonly ServiceManagerFixture _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public BlobsTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
-            _services = services;
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
