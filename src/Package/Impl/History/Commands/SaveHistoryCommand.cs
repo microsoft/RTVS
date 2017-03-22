@@ -22,9 +22,9 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         private readonly IRToolsSettings _settings;
         private readonly IRHistory _history;
 
-        public SaveHistoryCommand(IUIService ui, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
-            _ui = ui;
+            _ui = interactiveWorkflow.Shell.UI();
             _interactiveWorkflow = interactiveWorkflow;
             _settings = _interactiveWorkflow.Shell.GetService<IRToolsSettings>();
             _history = historyProvider.GetAssociatedRHistory(textView);

@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _vsShellBroadcastEventsCookie;
 
         public VsUIServices(ICoreShell coreShell) {
-            ProgressDialog = new VsProgressDialog(coreShell);
+            ProgressDialog = new VsProgressDialog(coreShell.Services);
             FileDialog = new VsFileDialog(coreShell);
 
             _coreShell = coreShell;

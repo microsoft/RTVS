@@ -41,15 +41,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, interactiveWorkflow);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
             var shell = VsAppShell.Current;
-            var ui = shell.UI();
             var settings = shell.GetService<IRToolsSettings>();
 
             return new ICommand[] {
-                new LoadHistoryCommand(shell, textView, _historyProvider, interactiveWorkflow),
-                new SaveHistoryCommand(ui, textView, _historyProvider, interactiveWorkflow),
+                new LoadHistoryCommand(textView, _historyProvider, interactiveWorkflow),
+                new SaveHistoryCommand(textView, _historyProvider, interactiveWorkflow),
                 sendToReplCommand,
                 sendToSourceCommand,
-                new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow, ui),
+                new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow),
                 new DeleteAllHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow),
                 new HistoryWindowVsStd2KCmdIdReturnCommand(textView, sendToReplCommand, sendToSourceCommand),
                 new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider, interactiveWorkflow),

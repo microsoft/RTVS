@@ -3,9 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.Documentation;
 using Microsoft.R.Components.Documentation.Commands;
@@ -22,7 +20,7 @@ using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Options.R.Tools;
+using Microsoft.VisualStudio.R.Package.Options.R.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -51,21 +49,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pcsp = shell.GetService<IProjectConfigurationSettingsProvider>();
             var dbcs = shell.GetService<IDbConnectionService>();
             var settings = shell.GetService<IRToolsSettings>();
-            var logPerms = shell.GetService<ILoggingPermissions>();
             var ui = shell.UI();
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
-                new GoToOptionsCommand(),
-                new GoToEditorOptionsCommand(),
-                new ImportRSettingsCommand(),
-                new InstallRClientCommand(shell),
-                new SurveyNewsCommand(shell),
+                new GoToOptionsCommand(shell.Services),
+                new GoToEditorOptionsCommand(shell.Services),
+                new ImportRSettingsCommand(shell.Services),
+                new InstallRClientCommand(shell.Services),
+                new SurveyNewsCommand(shell.Services),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(shell),
-                new SendSmileCommand(shell),
-                new SendFrownCommand(shell),
+                new ReportIssueCommand(shell.Services),
+                new SendSmileCommand(shell.Services),
+                new SendFrownCommand(shell.Services),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),

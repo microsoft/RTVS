@@ -55,8 +55,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public IServiceContainer Services => ServiceManager;
 
-        public void DispatchOnUIThread(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
-
 #pragma warning disable 67
         public event EventHandler<EventArgs> Started;
         public event EventHandler<EventArgs> Idle;

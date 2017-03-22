@@ -6,22 +6,21 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
-        public SendMailCommand(Guid group, int id, ICoreShell coreShell) :
+        public SendMailCommand(Guid group, int id, IServiceContainer services) :
             base(group, id) {
-            Shell = coreShell;
+            Services = services;
         }
 
         protected override void SetStatus() {
-            Enabled = Visible = Shell.GetService<ILoggingPermissions>().IsFeedbackPermitted;
+            Enabled = Visible = Services.GetService<ILoggingPermissions>().IsFeedbackPermitted;
         }
 
         protected void SendMail(string body, string subject, string attachmentFile) {
@@ -43,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             try {
                 outlookApp = new Application();
             } catch (System.Exception ex) {
-                Shell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message);
+                Services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "Unable to start Outlook: " + ex.Message);
             }
 
             if (outlookApp == null) {
@@ -60,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     "mailto:rtvsuserfeedback@microsoft.com?subject={0}&body={1}",
                     Uri.EscapeDataString(subject),
                     Uri.EscapeDataString(body));
-                Shell.GetService<IProcessServices>().Start(psi);
+                Services.Process().Start(psi);
             } else {
                 try {
                     MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
@@ -69,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
-                    Shell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message);
+                    Services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "Error composing Outlook e-mail: " + ex.Message);
                 }
             }
         }

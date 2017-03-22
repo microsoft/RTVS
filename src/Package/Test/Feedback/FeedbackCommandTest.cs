@@ -25,19 +25,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         [Test]
         public void ReportIssue() {
-            var cmd = new ReportIssueCommand(_coreShell);
+            var cmd = new ReportIssueCommand(_coreShell.Services);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendFrown() {
-            var cmd = new SendFrownCommand(_coreShell);
+            var cmd = new SendFrownCommand(_coreShell.Services);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendSmile() {
-            var cmd = new SendSmileCommand(_coreShell);
+            var cmd = new SendSmileCommand(_coreShell.Services);
             TestStatus(cmd);
         }
 

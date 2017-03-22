@@ -38,7 +38,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public bool ProcessMessage(string message) {
-            // Note: DispatchOnUIThread is expensive, and can saturate the message pump when there's a lot of output,
+            // Note: Post() to UI thread is expensive, and can saturate the message pump when there's a lot of output,
             // making UI non-responsive. So avoid using it unless we need it - and we only need it for FlushOutput,
             // and we only need it to handle CR.
             if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {

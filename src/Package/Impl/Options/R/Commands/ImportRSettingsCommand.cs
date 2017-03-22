@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -14,16 +14,19 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
-    public sealed class ImportRSettingsCommand : MenuCommand {
+namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
+    public sealed class ImportRSettingsCommand : System.ComponentModel.Design.MenuCommand {
         private const string _settingsFileName = "R.vssettings";
         private const string _profilesFolder = @"Profiles\";
+        private static IServiceContainer _services;
 
-        public ImportRSettingsCommand() :
-            base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportRSettings)) { }
+        public ImportRSettingsCommand(IServiceContainer services) :
+            base(OnCommand, new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportRSettings)) {
+            _services = _services ?? services;
+        }
 
         public static void OnCommand(object sender, EventArgs args) {
-            if (MessageButtons.Yes == VsAppShell.Current.ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
+            if (MessageButtons.Yes == _services.UI().ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
                 var shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 

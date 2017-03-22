@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
@@ -20,6 +19,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using ServiceManager = Microsoft.Languages.Editor.Services.ServiceManager;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     [Guid(WindowGuidString)]
@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             BitmapImageMoniker = KnownMonikers.History;
             Caption = Resources.HistoryWindowCaption;
-            ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
+            ToolBar = new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
         }
 
         protected override void OnCreate() {
@@ -96,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Shell);
+            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Shell.Services);
         }
 
         public override void ClearSearch() {
@@ -113,17 +113,17 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
         private sealed class HistorySearchTask : VsSearchTask {
             private readonly IRHistoryFiltering _historyFiltering;
-            private readonly ICoreShell _coreShell;
+            private readonly IServiceContainer _services;
 
-            public HistorySearchTask(uint dwCookie, IRHistoryFiltering historyFiltering, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, ICoreShell coreShell)
+            public HistorySearchTask(uint dwCookie, IRHistoryFiltering historyFiltering, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, IServiceContainer services)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
                 _historyFiltering = historyFiltering;
-                _coreShell = coreShell;
+                _services = services;
             }
 
             protected override void OnStartSearch() {
                 base.OnStartSearch();
-                _coreShell.MainThread().Post(() => _historyFiltering.Filter(SearchQuery.SearchString));
+                _services.MainThread().Post(() => _historyFiltering.Filter(SearchQuery.SearchString));
             }
         }
     }

@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                 await ExecCommandAsync(clientApp, new HelpNextCommand(component));
                 clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
-                await ExecCommandAsync(clientApp, new HelpHomeCommand(VsAppShell.Current));
+                await ExecCommandAsync(clientApp, new HelpHomeCommand(VsAppShell.Current.Services));
                 clientApp.Uri.PathAndQuery.Should().Be("/doc/html/index.html");
             }
         }

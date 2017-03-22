@@ -174,7 +174,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                     if (!showConnectionsWindow) {
                         var installer = Shell.GetService<IMicrosoftRClientInstaller>();
-                        installer.LaunchRClientSetup(Shell);
+                        installer.LaunchRClientSetup(Shell.Services);
                     } else {
                         Connections.GetOrCreateVisualComponent().Container.Show(focus: false, immediate: false);
                     }

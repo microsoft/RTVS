@@ -20,9 +20,8 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public LoadHistoryCommand(ICoreShell coreShell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public LoadHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadHistory, false) {
-            _coreShell = coreShell;
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
@@ -36,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var settings = _coreShell.GetService<IRToolsSettings>();
             var initialPath = settings.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(settings.WorkingDirectory) : null;
-            var file = _coreShell.FileDialog().ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
+            var file = _interactiveWorkflow.Shell.FileDialog().ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
             if (file != null) {
                 _history.TryLoadFromFile(file);
             }

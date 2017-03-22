@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs((string)null);
 
             var inst = new MicrosoftRClientInstaller();
-            inst.LaunchRClientSetup(coreShell, downloader);
+            inst.LaunchRClientSetup(coreShell.Services, downloader);
 
             telemetryEvents.Should().HaveCount(1);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs("Failed");
 
             telemetryEvents.Clear();
-            inst.LaunchRClientSetup(coreShell, downloader);
+            inst.LaunchRClientSetup(coreShell.Services, downloader);
 
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             coreShell.Process().Returns(ps);
 
             telemetryEvents.Clear();
-            inst.LaunchRClientSetup(coreShell, downloader);
+            inst.LaunchRClientSetup(coreShell.Services, downloader);
 
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
