@@ -58,8 +58,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _securityService = _shell.GetService<ISecurityService>();
             _log = _shell.GetService<IActionLog>();
 
-            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
-            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell);
+            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell.Services);
+            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)

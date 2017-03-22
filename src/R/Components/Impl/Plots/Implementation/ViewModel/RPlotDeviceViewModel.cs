@@ -4,21 +4,19 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
     public class RPlotDeviceViewModel : BindableBase, IRPlotDeviceViewModel {
         private readonly IRPlotManager _plotManager;
-        private readonly ICoreShell _shell;
-        private readonly DelayedAsyncAction _resizeAction = new DelayedAsyncAction(250);
+        private readonly IMainThread _mainThread;
 
         private IRPlotDevice _device;
         private BitmapImage _plotImage;
@@ -34,17 +32,12 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         public event EventHandler PlotChanged;
         public event EventHandler LocatorModeChanged;
 
-        public RPlotDeviceViewModel(IRPlotManager plotManager, ICoreShell shell, int instanceId) {
-            if (plotManager == null) {
-                throw new ArgumentNullException(nameof(plotManager));
-            }
-
-            if (shell == null) {
-                throw new ArgumentNullException(nameof(shell));
-            }
+        public RPlotDeviceViewModel(IRPlotManager plotManager, IMainThread mainThread, int instanceId) {
+            Check.ArgumentNull(nameof(plotManager), plotManager);
+            Check.ArgumentNull(nameof(mainThread), mainThread);
 
             _plotManager = plotManager;
-            _shell = shell;
+            _mainThread = mainThread;
             InstanceId = instanceId;
             _showWatermark = true;
         }
@@ -84,7 +77,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void Assign(IRPlotDevice device) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             _device = device;
             _device.PlotAddedOrUpdated += PlotAddedOrUpdated;
@@ -96,7 +89,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void Unassign() {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             if (_device != null) {
                 _device.PlotAddedOrUpdated -= PlotAddedOrUpdated;
@@ -117,7 +110,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void ClickPlot(int pixelX, int pixelY) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             if (LocatorMode) {
                 var result = LocatorResult.CreateClicked(pixelX, pixelY);
@@ -126,7 +119,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public async Task CopyPlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, bool isMove) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             if (_device == null) {
                 await _plotManager.NewDeviceAsync(InstanceId);
@@ -137,7 +130,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void DeviceLocatorModeChanged(object sender, RPlotDeviceEventArgs e) {
-            _shell.MainThread().Post(() => {
+            _mainThread.Post(() => {
                 LocatorMode = e.Device.LocatorMode;
                 LocatorModeChanged?.Invoke(this, EventArgs.Empty);
             });
@@ -156,7 +149,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void Refresh(IRPlot plot) {
-            _shell.MainThread().Post(() => {
+            _mainThread.Post(() => {
                 if (plot != null) {
                     PlotImage = plot.Image;
                     ShowWatermark = false;

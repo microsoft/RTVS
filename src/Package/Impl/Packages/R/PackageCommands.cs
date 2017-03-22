@@ -14,7 +14,6 @@ using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Sql;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Feedback;
@@ -45,7 +44,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
             var contentTypeRegistryService = shell.GetService<IContentTypeRegistryService>();
             var pss = shell.GetService<IProjectSystemServices>();
-            var wbs = shell.GetService<IWebBrowserServices>();
             var pcsp = shell.GetService<IProjectConfigurationSettingsProvider>();
             var dbcs = shell.GetService<IDbConnectionService>();
             var settings = shell.GetService<IRToolsSettings>();
@@ -122,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
-                new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker, wbs),
+                new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
                 new GotoSolutionExplorerCommand(),
 

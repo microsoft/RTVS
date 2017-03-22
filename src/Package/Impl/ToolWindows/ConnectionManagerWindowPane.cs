@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
@@ -22,14 +23,14 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         private IOleCommandTarget _commandTarget;
 
-        public ConnectionManagerWindowPane(IConnectionManager connectionManager, ICoreShell coreShell): base(coreShell) {
+        public ConnectionManagerWindowPane(IConnectionManager connectionManager, IServiceContainer services): base(services) {
             _connectionManager = connectionManager;
             BitmapImageMoniker = KnownMonikers.ImmediateWindow;
             Caption = Resources.WorkspacesWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new ConnectionManagerVisualComponent(_connectionManager, this, Shell);
+            Component = new ConnectionManagerVisualComponent(_connectionManager, this, Services);
             base.OnCreate();
         }
 

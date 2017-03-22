@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.VisualStudio.Imaging;
@@ -24,17 +23,17 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotHistoryWindowPane(IRPlotManager plotManager, ICoreShell coreShell): base(coreShell) {
+        public PlotHistoryWindowPane(IRPlotManager plotManager, IServiceContainer services): base(services) {
             _plotManager = plotManager;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.ChartFilter;
             Caption = Resources.PlotHistoryWindowCaption;
-            ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotHistoryWindowToolBarId);
+            ToolBar = new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotHistoryWindowToolBarId);
         }
 
         protected override void OnCreate() {
-            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, this, Shell);
+            var visualComponent = new RPlotHistoryVisualComponent(_plotManager, this, Services);
             Component = visualComponent;
 
             var commands = new RPlotHistoryCommands(_plotManager.InteractiveWorkflow, visualComponent);

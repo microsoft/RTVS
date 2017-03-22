@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         public IVisualComponentContainer<IRPlotDeviceVisualComponent> GetOrCreate(IRPlotManager plotManager, IRSession session, int instanceId = 0) {
-            return GetOrCreate(instanceId, i => new PlotDeviceWindowPane(plotManager, session, i, _coreShell));
+            return GetOrCreate(instanceId, i => new PlotDeviceWindowPane(plotManager, session, i, _coreShell.Services));
         }
     }
 }

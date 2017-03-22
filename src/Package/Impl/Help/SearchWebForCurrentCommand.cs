@@ -9,7 +9,6 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using static System.FormattableString;
 
@@ -24,17 +23,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// with OLECMDTEXTF_NAME requesting changing names.
     /// </remarks>
     internal sealed class SearchWebForCurrentCommand : HelpOnCurrentCommandBase {
-        private readonly IWebBrowserServices _webBrowserServices;
         private readonly IRToolsSettings _settings;
 
         public SearchWebForCurrentCommand(
             IRInteractiveWorkflow workflow,
             IActiveWpfTextViewTracker textViewTracker,
-            IActiveRInteractiveWindowTracker activeReplTracker,
-            IWebBrowserServices webBrowserServices) :
+            IActiveRInteractiveWindowTracker activeReplTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSearchWebForCurrent,
                 workflow, textViewTracker, activeReplTracker, Resources.SearchWebFor) {
-            _webBrowserServices = webBrowserServices;
             _settings = workflow.Shell.GetService<IRToolsSettings>();
         }
 
@@ -48,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 sb.Append(Uri.EscapeUriString(t));
             }
 
-            var wbs = VsAppShell.Current.GetService<IWebBrowserServices>();
+            var wbs = Workflow.Shell.GetService<IWebBrowserServices>();
             wbs.OpenBrowser(WebBrowserRole.Help, sb.ToString());
         }
     }

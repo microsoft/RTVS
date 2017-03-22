@@ -3,7 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.Search;
@@ -21,21 +21,19 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         private readonly IRPackageManager _packageManager;
         private readonly ISearchControlProvider _searchControlProvider;
-        private readonly IRSettings _settings;
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, ICoreShell coreShell): base(coreShell) {
+        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, IServiceContainer services): base(services) {
             _packageManager = packageManager;
             _searchControlProvider = searchControlProvider;
-            _settings = coreShell.GetService<IRSettings>();
             BitmapImageMoniker = KnownMonikers.Package;
             Caption = Resources.PackageManagerWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new RPackageManagerVisualComponent(_packageManager, this, _searchControlProvider, _settings, Shell);
+            Component = new RPackageManagerVisualComponent(_packageManager, this, _searchControlProvider, Services);
             base.OnCreate();
         }
 

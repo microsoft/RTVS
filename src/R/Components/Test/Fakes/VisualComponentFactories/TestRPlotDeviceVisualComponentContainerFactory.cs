@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
@@ -13,8 +12,8 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [ExcludeFromCodeCoverage]
-    [Export(typeof (IRPlotDeviceVisualComponentContainerFactory))]
-    [Export(typeof (TestRPlotDeviceVisualComponentContainerFactory))]
+    [Export(typeof(IRPlotDeviceVisualComponentContainerFactory))]
+    [Export(typeof(TestRPlotDeviceVisualComponentContainerFactory))]
     internal sealed class TestRPlotDeviceVisualComponentContainerFactory : ContainerFactoryBase<IRPlotDeviceVisualComponent>, IRPlotDeviceVisualComponentContainerFactory {
         private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
@@ -28,7 +27,9 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
         public PlotDeviceProperties? DeviceProperties { get; set; } = new PlotDeviceProperties(360, 360, 96);
 
         public IVisualComponentContainer<IRPlotDeviceVisualComponent> GetOrCreate(IRPlotManager plotManager, IRSession session, int instanceId = 0) {
-            return GetOrCreate(instanceId, container => new RPlotDeviceVisualComponent(plotManager, instanceId, container, _coreShell) { TestDeviceProperties=DeviceProperties });
+            return GetOrCreate(instanceId, container
+                => new RPlotDeviceVisualComponent(plotManager, instanceId, container, _coreShell.Services) 
+                { TestDeviceProperties = DeviceProperties });
         }
     }
 }

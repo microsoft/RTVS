@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Windows;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Windows;
@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.R.Package.Windows;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal abstract class VisualComponentToolWindow<T> : RToolWindowPane, IVisualComponentContainer<T> where T : IVisualComponent {
         private readonly VisualComponentToolWindowAdapter<T> _adapter;
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
         public T Component {
             get { return _adapter.Component; }
@@ -32,9 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public bool IsOnScreen => _adapter?.IsOnScreen ?? false;
 
-        protected VisualComponentToolWindow(ICoreShell coreShell) {
-            Shell = coreShell;
-            _adapter = new VisualComponentToolWindowAdapter<T>(this, coreShell);
+        protected VisualComponentToolWindow(IServiceContainer services) {
+            Services = services;
+            _adapter = new VisualComponentToolWindowAdapter<T>(this, services);
         }
 
         public void Hide() => _adapter?.Hide();

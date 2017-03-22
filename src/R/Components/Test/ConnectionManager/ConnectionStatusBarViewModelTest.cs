@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void Construction() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell);
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
             m.SelectedConnection.Should().BeNullOrEmpty();
             m.IsActive.Should().BeFalse();
             m.IsConnected.Should().BeFalse();
@@ -35,7 +35,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void ConnectStates() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell);
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
             m.IsConnected = true;
             m.IsRunning.Should().BeFalse();
 
@@ -46,7 +46,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void StateChanges() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell);
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
 
             _cm.IsConnected.Returns(true);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);

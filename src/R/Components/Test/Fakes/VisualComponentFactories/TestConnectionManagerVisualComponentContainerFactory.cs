@@ -18,6 +18,6 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
         }
 
         public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0)
-            => GetOrCreate(instanceId, container => new ConnectionManagerVisualComponent(connectionManager, container, _shell));
+            => GetOrCreate(instanceId, container => new ConnectionManagerVisualComponent(connectionManager, container, _shell.Services));
     }
 }

@@ -31,7 +31,7 @@ namespace Microsoft.R.Components.Test.Information {
 
         [Test]
         public void Update() {
-            var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell);
+            var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell.MainThread());
             var eventArgs = new HostLoadChangedEventArgs(_hostLoad);
             _sessionProvider.HostLoadChanged += Raise.Event<EventHandler<HostLoadChangedEventArgs>>(_sessionProvider, eventArgs);
 

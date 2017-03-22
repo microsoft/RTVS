@@ -18,6 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0) 
-            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, _coreShell));
+            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, _coreShell.Services));
     }
 }

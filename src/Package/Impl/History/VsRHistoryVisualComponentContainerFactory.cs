@@ -21,6 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public IVisualComponentContainer<IRHistoryWindowVisualComponent> GetOrCreate(ITextBuffer historyTextBuffer, int instanceId) 
-            => GetOrCreate(instanceId, i => new HistoryWindowPane(historyTextBuffer, _historyProvider, _coreShell));
+            => GetOrCreate(instanceId, i => new HistoryWindowPane(historyTextBuffer, _historyProvider, _coreShell.Services));
     }
 }

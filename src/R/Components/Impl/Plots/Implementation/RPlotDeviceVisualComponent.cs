@@ -3,11 +3,12 @@
 
 using System;
 using System.Globalization;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Plots.ViewModel;
@@ -17,26 +18,18 @@ using Microsoft.R.Host.Client;
 namespace Microsoft.R.Components.Plots.Implementation {
     public class RPlotDeviceVisualComponent : IRPlotDeviceVisualComponent {
         private readonly DisposableBag _disposableBag;
-        private readonly ICoreShell _shell;
-        private readonly IRPlotManager _plotManager;
         private readonly IRPlotDeviceViewModel _viewModel;
+        private readonly IMainThread _mainThread;
 
-        public RPlotDeviceVisualComponent(IRPlotManager plotManager, int instanceId, IVisualComponentContainer<IRPlotDeviceVisualComponent> container, ICoreShell coreShell) {
-            if (plotManager == null) {
-                throw new ArgumentNullException(nameof(plotManager));
-            }
+        public RPlotDeviceVisualComponent(IRPlotManager plotManager
+            , int instanceId
+            , IVisualComponentContainer<IRPlotDeviceVisualComponent> container
+            , IServiceContainer services) {
+            Check.ArgumentNull(nameof(plotManager), plotManager);
+            Check.ArgumentNull(nameof(plotManager), plotManager);
 
-            if (container == null) {
-                throw new ArgumentNullException(nameof(container));
-            }
-
-            if (coreShell == null) {
-                throw new ArgumentNullException(nameof(coreShell));
-            }
-
-            _plotManager = plotManager;
-            _viewModel = new RPlotDeviceViewModel(plotManager, coreShell, instanceId);
-            _shell = coreShell;
+            _mainThread = services.MainThread();
+            _viewModel = new RPlotDeviceViewModel(plotManager, _mainThread, instanceId);
 
             var control = new RPlotDeviceControl {
                 DataContext = _viewModel,
@@ -47,13 +40,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 .Add(() => _viewModel.DeviceNameChanged -= ViewModel_DeviceNameChanged)
                 .Add(() => _viewModel.LocatorModeChanged -= ViewModel_LocatorModeChanged)
                 .Add(() => _viewModel.PlotChanged -= ViewModel_PlotChanged)
-                .Add(() => _plotManager.ActiveDeviceChanged -= PlotManager_ActiveDeviceChanged);
+                .Add(() => plotManager.ActiveDeviceChanged -= PlotManager_ActiveDeviceChanged);
 
             control.ContextMenuRequested += Control_ContextMenuRequested;
             _viewModel.DeviceNameChanged += ViewModel_DeviceNameChanged;
             _viewModel.LocatorModeChanged += ViewModel_LocatorModeChanged;
             _viewModel.PlotChanged += ViewModel_PlotChanged;
-            _plotManager.ActiveDeviceChanged += PlotManager_ActiveDeviceChanged;
+            plotManager.ActiveDeviceChanged += PlotManager_ActiveDeviceChanged;
 
             Control = control;
             Container = container;
@@ -64,51 +57,16 @@ namespace Microsoft.R.Components.Plots.Implementation {
         /// Device properties to use when running tests without UI.
         /// </summary>
         public PlotDeviceProperties? TestDeviceProperties { get; set; }
-
         public FrameworkElement Control { get; }
-
         public IVisualComponentContainer<IVisualComponent> Container { get; }
 
         public bool HasPlot => _viewModel.PlotImage != null;
-
-        public int ActivePlotIndex {
-            get {
-                if (_viewModel.Device == null) {
-                    return -1;
-                }
-                return _viewModel.Device.ActiveIndex;
-            }
-        }
-
-        public int PlotCount {
-            get {
-                if (_viewModel.Device == null) {
-                    return 0;
-                }
-                return _viewModel.Device.PlotCount;
-            }
-        }
-
-        public string DeviceName {
-            get {
-                return _viewModel.DeviceName;
-            }
-        }
-
-        public bool IsDeviceActive {
-            get {
-                return _viewModel.IsDeviceActive;
-            }
-        }
-
-        public int InstanceId {
-            get {
-                return _viewModel.InstanceId;
-            }
-        }
-
+        public int ActivePlotIndex => _viewModel.Device == null ? -1 : _viewModel.Device.ActiveIndex;
+        public int PlotCount => _viewModel.Device == null ? 0 : _viewModel.Device.PlotCount;
+        public string DeviceName => _viewModel.DeviceName;
+        public bool IsDeviceActive => _viewModel.IsDeviceActive;
+        public int InstanceId=> _viewModel.InstanceId;
         public IRPlotDevice Device => _viewModel.Device;
-
         public IRPlot ActivePlot => _viewModel.Device.ActivePlot;
 
         public PlotDeviceProperties GetDeviceProperties() {
@@ -125,7 +83,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public void Unassign() {
-             _viewModel.Unassign();
+            _viewModel.Unassign();
             Container.UpdateCommandStatus(false);
         }
 
@@ -146,20 +104,20 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private void ViewModel_LocatorModeChanged(object sender, EventArgs e) {
-            _shell.MainThread().Post(() => {
+            _mainThread.Post(() => {
                 UpdateCaption();
                 UpdateStatus();
             });
         }
 
         private void ViewModel_DeviceNameChanged(object sender, EventArgs e) {
-            _shell.MainThread().Post(() => {
+            _mainThread.Post(() => {
                 UpdateCaption();
             });
         }
 
         private void PlotManager_ActiveDeviceChanged(object sender, EventArgs e) {
-            _shell.MainThread().Post(() => {
+            _mainThread.Post(() => {
                 UpdateCaption();
             });
         }

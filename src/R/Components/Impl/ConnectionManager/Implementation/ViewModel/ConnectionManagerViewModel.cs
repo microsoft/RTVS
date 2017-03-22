@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
@@ -29,10 +29,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isEditingNew;
         private bool _hasLocalConnections;
 
-        public ConnectionManagerViewModel(IConnectionManager connectionManager, ICoreShell shell) :
-            base(connectionManager, shell) {
-            _ui = shell.UI();
-            _settings = shell.GetService<IRSettings>();
+        public ConnectionManagerViewModel(IConnectionManager connectionManager, IServiceContainer services) :
+            base(connectionManager, services) {
+            _ui = services.UI();
+            _settings = services.GetService<IRSettings>();
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
             RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
@@ -63,7 +63,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         private bool TryStartEditing(IConnectionViewModel connection) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
 
             // When 'Edit' button is clicked second time, we close the panel.
             // If panel has changes, offer save the changes. 
@@ -92,20 +92,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool TryEditNew() {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             IsEditingNew = TryStartEditing(new ConnectionViewModel());
             return IsEditingNew;
         }
 
         public void CancelEdit() {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             EditedConnection?.Reset();
             EditedConnection = null;
             IsEditingNew = false;
         }
 
         public void BrowseLocalPath(IConnectionViewModel connection) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             if (connection == null) {
                 return;
             }
@@ -139,7 +139,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool TryEdit(IConnectionViewModel connection) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             if (connection == null) {
                 return false;
             }
@@ -148,7 +148,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void CancelTestConnection() {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             if (_testingConnection != null) {
                 _testingConnection.TestingConnectionCts?.Cancel();
                 _testingConnection.TestingConnectionCts = null;
@@ -158,7 +158,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public async Task TestConnectionAsync(IConnectionViewModel connection) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             if (connection == null) {
                 return;
             }
@@ -195,7 +195,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void Save(IConnectionViewModel connectionViewModel) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             if (connectionViewModel == null || !connectionViewModel.HasChanges) {
                 return;
             }
@@ -230,7 +230,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool TryDelete(IConnectionViewModel connection) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             CancelTestConnection();
 
             if (connection == null) {
@@ -260,7 +260,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public void Connect(IConnectionViewModel connection, bool connectToEdited) {
-            Shell.AssertIsOnMainThread();
+            Services.MainThread().Assert();
             if (connection == null || !connection.IsValid) {
                 return;
             }

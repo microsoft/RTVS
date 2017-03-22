@@ -37,17 +37,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             VsAppShell.Current.AssertIsOnMainThread();
 
-            IVsInteractiveWindow vsWindow;
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value;
-            vsWindow = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator,
+            var vsWindow2 = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator,
                                    0, RGuidList.RCmdSetGuid, RPackageCommandId.replWindowToolBarId, null);
 
             var contentType = _contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
-            vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
+            vsWindow2.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 
-            var toolWindow = (ToolWindowPane)vsWindow;
-            var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow, _shell);
-            var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer, sessionProvider, _shell);
+            var toolWindow = (ToolWindowPane)vsWindow2;
+            var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow, _shell.Services);
+            var component = new RInteractiveWindowVisualComponent(vsWindow2.InteractiveWindow, componentContainer, sessionProvider, _shell);
             componentContainer.Component = component;
 
             RegisterFocusPreservingWindow(toolWindow);
@@ -60,10 +59,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (frame != null) {
                 Guid persistenceSlot;
                 if (frame.GetGuidProperty((int)__VSFPROPID.VSFPROPID_GuidPersistenceSlot, out persistenceSlot) >= 0) {
-                    var debugger = _shell.GetService<SVsShellDebugger>() as IVsDebugger6;
-                    if (debugger != null) {
-                        debugger.RegisterFocusPreservingWindow(persistenceSlot);
-                    }
+                    var debugger = _shell.GetService<IVsDebugger6>(typeof(SVsShellDebugger));
+                    debugger?.RegisterFocusPreservingWindow(persistenceSlot);
                 }
             }
         }

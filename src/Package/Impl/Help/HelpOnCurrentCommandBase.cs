@@ -19,11 +19,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     internal abstract class HelpOnCurrentCommandBase : PackageCommand {
         private const int MaxHelpItemLength = 64;
         private readonly string _baseCommandName;
+        private readonly IActiveRInteractiveWindowTracker _activeReplTracker;
 
-        protected readonly IRInteractiveWorkflow _workflow;
-        protected readonly IActiveWpfTextViewTracker _textViewTracker;
+        protected IRInteractiveWorkflow Workflow { get; }
+        protected IActiveWpfTextViewTracker TextViewTracker { get; }
 
-        private IActiveRInteractiveWindowTracker _activeReplTracker;
         public HelpOnCurrentCommandBase(
             Guid group, int id,
             IRInteractiveWorkflow workflow, 
@@ -32,8 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string baseCommandName) :
             base(group, id) {
             _activeReplTracker = activeReplTracker;
-            _workflow = workflow;
-            _textViewTracker = textViewTracker;
+            Workflow = workflow;
+            TextViewTracker = textViewTracker;
             _baseCommandName = baseCommandName;
         }
 
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Handle() {
             try {
-                if (!_workflow.RSession.IsHostRunning) {
+                if (!Workflow.RSession.IsHostRunning) {
                     return;
                 }
 
@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (activeReplWindow != null && _activeReplTracker.IsActive) {
                 return activeReplWindow.InteractiveWindow.TextView;
             }
-            return _textViewTracker.LastActiveTextView;
+            return TextViewTracker.LastActiveTextView;
         }
     }
 }

@@ -34,10 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private IRHistory _history;
         private IRHistoryFiltering _historyFiltering;
 
-        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ICoreShell coreShell): base(coreShell) {
+        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, IServiceContainer services): base(services) {
             _historyTextBuffer = historyTextBuffer;
             _historyProvider = historyProvider;
-            _textEditorFactory = coreShell.GetService<ITextEditorFactoryService>();
+            _textEditorFactory = services.GetService<ITextEditorFactoryService>();
 
             BitmapImageMoniker = KnownMonikers.History;
             Caption = Resources.HistoryWindowCaption;
@@ -96,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Shell.Services);
+            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Services);
         }
 
         public override void ClearSearch() {
@@ -105,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void OnHistoryChanged(object sender, EventArgs e) {
-            var settings = Shell.GetService<IRToolsSettings>();
+            var settings = Services.GetService<IRToolsSettings>();
             if (settings.ClearFilterOnAddHistory) {
                 SearchHost.SearchAsync(null);
             }

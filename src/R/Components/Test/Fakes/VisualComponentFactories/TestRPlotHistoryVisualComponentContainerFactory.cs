@@ -24,7 +24,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
         public PlotDeviceProperties DeviceProperties { get; set; } = new PlotDeviceProperties(360, 360, 96);
 
         public IVisualComponentContainer<IRPlotHistoryVisualComponent> GetOrCreate(IRPlotManager plotManager, int instanceId = 0) {
-            return GetOrCreate(instanceId, container => new RPlotHistoryVisualComponent(plotManager, container, _coreShell));
+            return GetOrCreate(instanceId, container => new RPlotHistoryVisualComponent(plotManager, container, _coreShell.Services));
         }
     }
 }

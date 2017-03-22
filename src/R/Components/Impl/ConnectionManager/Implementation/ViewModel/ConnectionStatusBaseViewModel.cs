@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Wpf;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
@@ -15,12 +15,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isConnected;
         private bool _isRunning;
 
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
         protected IConnectionManager ConnectionManager { get; }
 
-        protected ConnectionStatusBaseViewModel(IConnectionManager connectionManager, ICoreShell shell) {
+        protected ConnectionStatusBaseViewModel(IConnectionManager connectionManager, IServiceContainer services) {
             ConnectionManager = connectionManager;
-            Shell = shell;
+            Services = services;
 
             _disposableBag = DisposableBag.Create<ConnectionStatusBarViewModel>()
                 .Add(() => connectionManager.ConnectionStateChanged -= ConnectionStateChanged);
@@ -41,7 +41,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         protected abstract void ConnectionStateChanged();
 
         private void ConnectionStateChanged(object sender, EventArgs e) {
-            Shell.MainThread().Post(ConnectionStateChangedOnMainThread);
+            Services.MainThread().Post(ConnectionStateChangedOnMainThread);
         }
 
         private void ConnectionStateChangedOnMainThread() {

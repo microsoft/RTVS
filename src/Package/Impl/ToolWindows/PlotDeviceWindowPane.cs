@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.R.Host.Client;
@@ -26,18 +25,18 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, ICoreShell coreShell): base(coreShell) {
+        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, IServiceContainer services): base(services) {
             _plotManager = plotManager;
             _instanceId = instanceId;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.LineChart;
             Caption = Resources.PlotWindowCaption;
-            ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
+            ToolBar = new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
         }
 
         protected override void OnCreate() {
-            Component = new RPlotDeviceVisualComponent(_plotManager, _instanceId, this, Shell);
+            Component = new RPlotDeviceVisualComponent(_plotManager, _instanceId, this, Services);
             _plotManager.RegisterVisualComponent(Component);
 
             var commands = new RPlotDeviceCommands(_plotManager.InteractiveWorkflow, Component);
