@@ -398,6 +398,11 @@ namespace Microsoft.R.Host.Client.Session {
 
                 await LoadRtvsPackage(evaluator, libPath);
 
+                var suggest_mro = await evaluator.EvaluateAsync<bool>("!exists('Revo.version')", REvaluationKind.Normal);
+                if (suggest_mro) {
+                    await WriteOutputAsync(Resources.Message_SuggestMRO);
+                }
+
                 var wd = startupInfo.WorkingDirectory;
                 if (!IsRemote && !string.IsNullOrEmpty(wd)) {
                     try {
@@ -609,6 +614,13 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
         private Task WriteErrorAsync(string format, params object[] args) =>
             WriteErrorAsync(format.FormatCurrent(args));
+
+        private async Task WriteOutputAsync(string text) {
+            await ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Output, CancellationToken.None);
+        }
+
+        private Task WriteOutputAsync(string format, params object[] args) =>
+            WriteOutputAsync(format.FormatCurrent(args));
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));
