@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         protected override void OnCreate() {
             Component = new HelpVisualComponent { Container = this };
             var controller = new AsyncCommandController()
-                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(Shell))
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(Shell.Services))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpNext, new HelpNextCommand(Component))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpPrevious, new HelpPreviousCommand(Component))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpRefresh, new HelpRefreshCommand(Component));

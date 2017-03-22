@@ -13,7 +13,6 @@ using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -35,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var target = ServiceManager.GetService<IOleCommandTarget>(textView);
             if (target == null) {
                 var controller = ReplCommandController.Attach(textView, textView.TextBuffer);
-                var es = VsAppShell.Current.GetService<IApplicationEditorSupport>();
+                var es = _shell.GetService<IApplicationEditorSupport>();
                 // Wrap controller into OLE command target
                 target = es.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
                 Debug.Assert(target != null);

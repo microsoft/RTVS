@@ -18,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// services and so on.
     /// </summary>
     [Export(typeof(ICoreShell))]
-    [Export(typeof(IMainThread))]
     public sealed partial class VsAppShell : ICoreShell, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
         private static ICoreShell _testShell;
@@ -32,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             get {
                 if (_testShell == null && _instance == null) {
                     // Try test environment
-                    _testShell = CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsshell");
+                    _testShell = CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsShell");
                 }
 
                 return _testShell ?? GetInstance();

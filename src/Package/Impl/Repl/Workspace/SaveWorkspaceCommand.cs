@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -57,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             try {
                 await _rSession.SaveWorkspaceAsync(file);
             } catch (RException ex) {
-                var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, ex.Message);
+                var message = Resources.SaveWorkspaceFailedMessageFormat.FormatCurrent(file, ex.Message);
                 _shell.ShowErrorMessage(message);
             } catch (OperationCanceledException) {
             }

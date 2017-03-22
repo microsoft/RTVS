@@ -18,7 +18,7 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit.Sdk;
 
 namespace Microsoft.Common.Core.Test.Fixtures {
-    public class ServiceManagerFixture : MethodFixtureBase, IServiceContainer {
+    public class ServiceManagerFixture : MethodFixtureBase, IServiceManager {
         private readonly LogProxy _log;
         private readonly TestServiceManager _serviceManager;
 
@@ -66,6 +66,13 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         public event EventHandler<ServiceContainerEventArgs> ServiceAdded;
         public event EventHandler<ServiceContainerEventArgs> ServiceRemoved;
 #pragma warning restore 67
+        #endregion
+
+        #region IServiceManager
+        public void Dispose() { }
+        public IServiceManager AddService<T>(T service) where T : class => _serviceManager.AddService(service);
+        public IServiceManager AddService<T>(Func<T> factory = null) => _serviceManager.AddService(factory);
+        public void RemoveService<T>() where T : class => _serviceManager.RemoveService<T>();
         #endregion
 
         private class MaxLoggingPermissions : ILoggingPermissions {

@@ -105,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 // Directory management
                 new SetDirectoryToSourceCommand(interactiveWorkflow, textViewTracker),
                 new SetDirectoryToProjectCommand(interactiveWorkflow, pss),
-                new SelectWorkingDirectoryCommand(interactiveWorkflow, shell),
+                new SelectWorkingDirectoryCommand(interactiveWorkflow),
 
                 new ImportDataSetTextFileCommand(shell, interactiveWorkflow.RSession),
                 new ImportDataSetUrlCommand(interactiveWorkflow.RSession),

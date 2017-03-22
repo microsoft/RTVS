@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -150,7 +149,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 return;
             }
 
-            var message = string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUpdateWarning, package.Name);
+            var message = Resources.PackageManager_PackageUpdateWarning.FormatCurrent(package.Name);
             var confirmUpdate = _coreShell.ShowMessage(message, MessageButtons.YesNo);
             if (confirmUpdate != MessageButtons.Yes) {
                 return;
@@ -221,7 +220,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 return;
             }
 
-            var confirmUninstall = _coreShell.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath), MessageButtons.YesNo);
+            var confirmUninstall = _coreShell.ShowMessage(
+                Resources.PackageManager_PackageUninstallWarning.FormatCurrent(package.Name, package.LibraryPath), 
+                MessageButtons.YesNo);
             if (confirmUninstall != MessageButtons.Yes) {
                 return;
             }
@@ -233,7 +234,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 try {
                     await _packageManager.UnloadPackageAsync(package.Name, cancellationToken);
                 } catch (RHostDisconnectedException) {
-                    _errorMessages.Add(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(
+                        Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), 
+                        ErrorMessageType.PackageOperations);
                 } catch (RPackageManagerException ex) {
                     _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
                 }

@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Shell;
 
@@ -14,7 +14,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly Thread _mainThread;
 
         public VsMainThread() {
-            _mainThread = Thread.CurrentThread;
+            Check.Operation(() => Thread.CurrentThread.ManagedThreadId == ThreadHelper.JoinableTaskContext.MainThread.ManagedThreadId);
+
+            _mainThread = ThreadHelper.JoinableTaskContext.MainThread;
             _mainThreadDispatcher = Dispatcher.FromThread(_mainThread);
         }
 

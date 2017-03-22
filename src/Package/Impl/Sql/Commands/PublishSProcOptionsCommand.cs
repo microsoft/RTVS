@@ -5,14 +5,14 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.Sql.Publish;
-using Microsoft.VisualStudio.R.Package.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Sql.Publish;
-using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
+using Microsoft.VisualStudio.R.Package.Sql.Publish;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 if (_dacServicesProvider.GetDacPackageServices() != null) {
                     var dlg = await SqlPublshOptionsDialog.CreateAsync(_shell, _pss, _pcsp, _settings);
 
-                    await _shell.SwitchToMainThreadAsync();
+                    await _shell.MainThread().SwitchToAsync();
                     dlg.ShowModal();
                 } 
                 return true;

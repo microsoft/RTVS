@@ -5,7 +5,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -30,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            var debugger = VsAppShell.Current.GetService<IVsDebugger>(typeof(SVsShellDebugger));
+            var debugger = _interactiveWorkflow.Shell.GetService<IVsDebugger>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

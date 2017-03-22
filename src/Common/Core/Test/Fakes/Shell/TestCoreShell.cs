@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
@@ -20,17 +21,20 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         private readonly ICompositionCatalog _catalog;
         private readonly Thread _creatorThread;
 
-        public TestServiceManager ServiceManager { get; }
+        public IServiceManager ServiceManager { get; }
 
-        public TestCoreShell(ICompositionCatalog catalog
-            , IActionLog log = null
-            , ILoggingPermissions loggingPermissions = null
-            , IFileSystem fs = null
-            , IRegistry registry = null
-            , IProcessServices ps = null) {
+        public TestCoreShell(ICompositionCatalog catalog, IServiceManager services) {
             _catalog = catalog;
             _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = new TestServiceManager(catalog.ExportProvider);
+            ServiceManager = services;
+        }
+
+        public TestCoreShell(ICompositionCatalog catalog
+        , IActionLog log = null
+        , ILoggingPermissions loggingPermissions = null
+        , IFileSystem fs = null
+        , IRegistry registry = null
+        , IProcessServices ps = null) : this(catalog, new TestServiceManager(catalog.ExportProvider)) { 
             ServiceManager
                 .AddService(catalog)
                 .AddService(catalog.ExportProvider)

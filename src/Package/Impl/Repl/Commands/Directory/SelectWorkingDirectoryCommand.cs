@@ -13,13 +13,11 @@ using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class SelectWorkingDirectoryCommand : PackageCommand {
-        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public SelectWorkingDirectoryCommand(IRInteractiveWorkflow workflow, ICoreShell coreShell) :
+        public SelectWorkingDirectoryCommand(IRInteractiveWorkflow workflow) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory) {
             _workflow = workflow;
-            _coreShell = coreShell;
         }
 
         protected override void SetStatus() {
@@ -28,8 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void Handle() {
-            var ps = _coreShell.GetService<IPlatformServices>();
-            var settings = _coreShell.GetService<IRToolsSettings>();
+            var ps = _workflow.Shell.GetService<IPlatformServices>();
+            var settings = _workflow.Shell.GetService<IRToolsSettings>();
             var currentDirectory = settings.WorkingDirectory;
             var newDirectory = Dialogs.BrowseForDirectory(ps.ApplicationWindowHandle, currentDirectory, Resources.ChooseDirectory);
             if (!string.IsNullOrEmpty(newDirectory)) {
