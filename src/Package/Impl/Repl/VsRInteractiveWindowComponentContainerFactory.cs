@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
@@ -35,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            _shell.MainThread().Assert();
 
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value;
             var vsWindow2 = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator,

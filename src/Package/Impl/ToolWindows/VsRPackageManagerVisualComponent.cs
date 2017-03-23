@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsRPackageManagerVisualComponentContainerFactory(ISearchControlProvider searchControlProvider, ICoreShell coreShell) {
+        public VsRPackageManagerVisualComponentContainerFactory(ISearchControlProvider searchControlProvider, ICoreShell coreShell) : base(coreShell.Services) {
             _searchControlProvider = searchControlProvider;
             _coreShell = coreShell;
         }

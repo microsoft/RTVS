@@ -9,7 +9,6 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -22,6 +21,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
     [Name("Visual Studio R History Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsRHistoryTextViewConnectionListener : RTextViewConnectionListener {
+        private readonly ICoreShell _coreShell;
+
+        [ImportingConstructor]
+        public VsRHistoryTextViewConnectionListener(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
+
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
             // Only attach controllers if the document is editable
             if (textView.Roles.Contains(PredefinedTextViewRoles.Interactive)) {
@@ -37,14 +43,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    var adapterService = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
+                    var adapterService = _coreShell.GetService<IVsEditorAdaptersFactoryService>();
                     var viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null) {
                         // Create OLE shim that wraps main controller ICommandTarget and represents
                         // it as IOleCommandTarget that is accepted by VS IDE.
                         var oleController = new CommandTargetToOleShim(textView, mainController);
-                        var es = VsAppShell.Current.GetService<IApplicationEditorSupport>();
+                        var es = _coreShell.GetService<IApplicationEditorSupport>();
 
                         IOleCommandTarget nextOleTarget;
                         viewAdapter.AddCommandFilter(oleController, out nextOleTarget);

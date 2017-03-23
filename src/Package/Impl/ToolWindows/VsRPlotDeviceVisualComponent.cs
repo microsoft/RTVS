@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsRPlotDeviceVisualComponentContainerFactory(ICoreShell coreShell) {
+        public VsRPlotDeviceVisualComponentContainerFactory(ICoreShell coreShell) : base(coreShell.Services) {
             _coreShell = coreShell;
         }
 

@@ -102,9 +102,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SetDirectoryToProjectCommand(interactiveWorkflow, pss),
                 new SelectWorkingDirectoryCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(shell, interactiveWorkflow.RSession),
-                new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
-                new DeleteAllVariablesCommand(interactiveWorkflow.RSession),
+                new ImportDataSetTextFileCommand(shell.Services, interactiveWorkflow.RSession),
+                new ImportDataSetUrlCommand(shell.Services, interactiveWorkflow.RSession),
+                new DeleteAllVariablesCommand(interactiveWorkflow),
                 new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
                 new AddDsnCommand(shell, interactiveWorkflow),
                 new ManageDsnCommand(shell, interactiveWorkflow),
@@ -122,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
-                new GotoSolutionExplorerCommand(),
+                new GotoSolutionExplorerCommand(shell),
 
                 // Plot commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),

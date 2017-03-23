@@ -9,6 +9,7 @@ using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
@@ -41,10 +42,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(IREvaluationResultInfo evaluation, ICoreShell coreShell, int index = -1, int? maxChildrenCount = null) :
-            base(evaluation, coreShell.Services, maxChildrenCount) {
-            _coreShell = coreShell;
-            _aggregator = coreShell.GetService<IObjectDetailsViewerAggregator>();
+        public VariableViewModel(IREvaluationResultInfo evaluation, IServiceContainer services, int index = -1, int? maxChildrenCount = null) :
+            base(evaluation, services, maxChildrenCount) {
+            _aggregator = services.GetService<IObjectDetailsViewerAggregator>();
             Index = index;
             var result = DebugEvaluation as IRValueInfo;
             if (result != null) {
@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new VariableViewModel(children[i], _coreShell, i, GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], Services, i, GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter

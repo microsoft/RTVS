@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 await session.LoadWorkspaceAsync(file);
             } catch (RException ex) {
                 var message = Resources.LoadWorkspaceFailedMessageFormat.FormatCurrent(file, ex.Message);
-                VsAppShell.Current.ShowErrorMessage(message);
+                await _shell.ShowErrorMessageAsync(message);
             } catch (OperationCanceledException) {
             }
         }

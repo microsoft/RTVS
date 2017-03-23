@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsConnectionManagerVisualComponentContainerFactory(ICoreShell coreShell) {
+        public VsConnectionManagerVisualComponentContainerFactory(ICoreShell coreShell): base(coreShell.Services) {
             _coreShell = coreShell;
         }
 

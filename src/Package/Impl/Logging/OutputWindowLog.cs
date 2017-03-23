@@ -6,17 +6,18 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
     internal sealed class OutputWindowLogWriter {
+        private readonly IServiceContainer _services;
+        private readonly string _windowName;
         private IVsOutputWindowPane _pane;
         private Guid _paneGuid;
-        private readonly string _windowName;
 
-        public OutputWindowLogWriter(Guid paneGuid, string windowName) {
+        public OutputWindowLogWriter(IServiceContainer services, Guid paneGuid, string windowName) {
+            _services = services;
             _paneGuid = paneGuid;
             _windowName = windowName;
         }
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         private void EnsurePaneVisible() {
             if (_pane == null) {
                 // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
-                var outputWindow = VsAppShell.Current?.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
+                var outputWindow = _services.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
                 outputWindow?.GetPane(ref _paneGuid, out _pane);
                 if (_pane == null && outputWindow != null) {
                     outputWindow.CreatePane(ref _paneGuid, _windowName, fInitVisible: 1, fClearWithSolution: 1);
@@ -36,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             _pane?.Activate();
 
-            var dte = VsAppShell.Current?.GetService<DTE>();
+            var dte = _services.GetService<DTE>();
             var window = dte?.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
             window?.Activate();
         }

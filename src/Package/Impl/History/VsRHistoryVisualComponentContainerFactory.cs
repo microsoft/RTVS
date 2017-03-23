@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsRHistoryVisualComponentContainerFactory(ICoreShell coreShell, IRHistoryProvider historyProvider) {
+        public VsRHistoryVisualComponentContainerFactory(ICoreShell coreShell, IRHistoryProvider historyProvider) : base(coreShell.Services) {
             _coreShell = coreShell;
             _historyProvider = historyProvider;
         }

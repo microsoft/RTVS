@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override void ClearSearch() {
-            VsAppShell.Current.MainThread().Post(() => _historyFiltering.ClearFilter());
+            Services.MainThread().Post(() => _historyFiltering.ClearFilter());
             base.ClearSearch();
         }
 

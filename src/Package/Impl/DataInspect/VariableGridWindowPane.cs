@@ -3,6 +3,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
 using static System.FormattableString;
@@ -14,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public VariableGridWindowPane() {
             Caption = Resources.VariableGrid_Caption;
-            Content = _gridHost = new VariableGridHost();
+            Content = _gridHost = new VariableGridHost(VsAppShell.Current.Services);
             BitmapImageMoniker = KnownMonikers.VariableProperty;
         }
 

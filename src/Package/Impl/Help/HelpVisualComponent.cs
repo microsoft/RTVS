@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Tasks;
@@ -38,15 +39,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// </summary>
         private readonly ContentControl _windowContentControl;
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private IRSession _session;
         private WindowsFormsHost _host;
 
-        public HelpVisualComponent() {
-            _coreShell = VsAppShell.Current;
+        public HelpVisualComponent(IServiceContainer services) {
+            _services = services;
 
-            _codeColorBuilder = _coreShell.GetService<IVignetteCodeColorBuilder>();
-            var workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _codeColorBuilder = _services.GetService<IVignetteCodeColorBuilder>();
+            var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
             _session = workflow.RSession;
@@ -75,12 +76,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            var settings = _coreShell.GetService<IRToolsSettings>();
+            var settings = _services.GetService<IRToolsSettings>();
             if (settings.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
-                var wbs = VsAppShell.Current.GetService<IWebBrowserServices>();
+                var wbs = _services.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.Shiny, url);
             }
         }
@@ -90,13 +91,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            VsAppShell.Current.MainThread().Post(CloseBrowser);
+            _services.MainThread().Post(CloseBrowser);
         }
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (!e.IsConnected) {
                 // Event mey fire on a background thread
-                VsAppShell.Current.MainThread().Post(CloseBrowser);
+                _services.MainThread().Post(CloseBrowser);
             }
         }
 
@@ -189,7 +190,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                var ui = _coreShell.UI();
+                var ui = _services.UI();
                 cssfileName = ui.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
             }
 
@@ -216,7 +217,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                var wbs = VsAppShell.Current.GetService<IWebBrowserServices>();
+                var wbs = _services.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.External, url);
             }
         }
@@ -229,7 +230,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 

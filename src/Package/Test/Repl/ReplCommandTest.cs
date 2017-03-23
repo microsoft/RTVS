@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         private readonly TestCoreShell _coreShell = new TestCoreShell(null);
 
         public ReplCommandTest() {
-            _debuggerModeTracker = new VsDebuggerModeTracker();
+            _debuggerModeTracker = new VsDebuggerModeTracker(_coreShell);
             _coreShell.ServiceManager.AddService(new TestRToolsSettings());
 
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(

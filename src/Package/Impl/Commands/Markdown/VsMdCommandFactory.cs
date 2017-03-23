@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -20,13 +21,15 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [Export(typeof(ICommandFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class VsMdCommandFactory : ICommandFactory {
+        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IWebBrowserServices _wbs;
 
         [ImportingConstructor]
-        public VsMdCommandFactory(IRInteractiveWorkflowProvider workflowProvider,  IWebBrowserServices wbs) {
-            _workflowProvider = workflowProvider;
-            _wbs = wbs;
+        public VsMdCommandFactory(ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _workflowProvider = coreShell.GetService<IRInteractiveWorkflowProvider>();
+            _wbs = coreShell.GetService<IWebBrowserServices>();
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
@@ -43,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
                 new PreviewPdfCommand(textView, _workflowProvider, services),
                 new PreviewWordCommand(textView, _workflowProvider, services),
                 new ClearReplCommand(textView, workflow),
-                new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)
+                new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD, _coreShell.Services)
             };
         }
     }

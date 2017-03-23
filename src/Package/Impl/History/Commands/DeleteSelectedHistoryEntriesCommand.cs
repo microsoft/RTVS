@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
-    internal class DeleteSelectedHistoryEntriesCommand : ViewCommand {
+    internal sealed class DeleteSelectedHistoryEntriesCommand : ViewCommand {
         private readonly IUIService _ui;
         private readonly IRHistory _history;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;

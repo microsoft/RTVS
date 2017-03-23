@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// Represents telemetry operations in RTVS
     /// </summary>
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
-        private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
+        private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker(VsAppShell.Current.Services);
         private readonly IPackageIndex _packageIndex;
         private static IRToolsSettings _settings;
 

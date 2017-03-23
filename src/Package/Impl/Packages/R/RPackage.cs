@@ -118,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            ProjectIconProvider.LoadProjectImages();
+            ProjectIconProvider.LoadProjectImages(VsAppShell.Current.Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
             RtvsTelemetry.Initialize(_packageIndex, VsAppShell.Current.GetService<IRToolsSettings>());

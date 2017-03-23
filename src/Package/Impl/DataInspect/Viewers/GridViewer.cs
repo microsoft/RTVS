@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         [ImportingConstructor]
         public GridViewer(ICoreShell coreShell, IDataObjectEvaluator evaluator) :
-            base(coreShell, evaluator) { }
+            base(coreShell.Services, evaluator) { }
 
         #region IObjectDetailsViewer
 

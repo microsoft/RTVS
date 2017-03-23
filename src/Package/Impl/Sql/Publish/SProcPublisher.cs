@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _pss = pss;
             _fs = fs;
             _dacServices = dacServices;
-            _outputWindow = new OutputWindowLogWriter(VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, string.Empty);
+            _outputWindow = new OutputWindowLogWriter(_shell.Services, VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, string.Empty);
         }
 
         public void Publish(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {

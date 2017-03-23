@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         #endregion
 
         private void OpenVsBrowser(WebBrowserRole role, string url) {
-            VsAppShell.Current.MainThread().Post(() => {
+            _coreShell.MainThread().Post(() => {
                 DoOpenVsBrowser(role, url);
             });
         }
@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
             if (!string.IsNullOrEmpty(url)) {
                 IdleTimeAction.Create(() => {
                     OpenVsBrowser(role, url);
-                }, 100, typeof(WebBrowserServices), VsAppShell.Current);
+                }, 100, typeof(WebBrowserServices), _coreShell);
             }
         }
 

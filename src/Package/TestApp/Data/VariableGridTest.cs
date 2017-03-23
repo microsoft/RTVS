@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             DoIdle(100);
 
             var result = await hostScript.EvaluateAsync(expression);
-            VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current);
+            VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.Services);
 
             DoIdle(2000);
             wrapper.Should().NotBeNull();

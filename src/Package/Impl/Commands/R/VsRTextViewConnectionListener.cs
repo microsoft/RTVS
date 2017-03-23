@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
                 RMainController mainController = RMainController.FromTextView(textView);
                 if (textBuffer == mainController?.TextBuffer) {
                     // Connect main controller to VS text view filter chain.
-                    OleControllerChain.ConnectController(_adapterService, textView, mainController);
+                    OleControllerChain.ConnectController(_coreShell.Services, textView, mainController);
                 }
             }
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
@@ -63,8 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             var clh = ContainedLanguageHost.GetHost(textView, textBuffer, _coreShell);
-
-            OleControllerChain.InitEditorInstance(textBuffer);
+            OleControllerChain.InitEditorInstance(textBuffer, _coreShell.Services);
             base.OnTextBufferCreated(textView, textBuffer);
         }
     }

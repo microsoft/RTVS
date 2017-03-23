@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         protected override void OnCreate() {
-            Component = new HelpVisualComponent { Container = this };
+            Component = new HelpVisualComponent(Services) { Container = this };
             var controller = new AsyncCommandController()
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(Services))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpNext, new HelpNextCommand(Component))
@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HelpSearchTask(dwCookie, pSearchQuery, pSearchCallback);
+            return new HelpSearchTask(dwCookie, pSearchQuery, pSearchCallback, Services);
         }
 
         private sealed class HelpSearchTask : VsSearchTask {
@@ -64,10 +64,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             private readonly IVsSearchCallback _callback;
             private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
-            public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+            public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, IServiceContainer services)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
                 _callback = pSearchCallback;
-                _workflowProvider = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>();
+                _workflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             }
 
             protected override void OnStartSearch() {

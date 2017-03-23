@@ -10,6 +10,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
@@ -26,6 +27,7 @@ namespace Microsoft.Common.Core.Services {
         public static ITaskService Tasks(this IServiceContainer sc) => sc.GetService<ITaskService>();
         public static IUIService UI(this IServiceContainer sc) => sc.GetService<IUIService>();
         public static IMainThread MainThread(this IServiceContainer sc) => sc.GetService<IMainThread>();
+        public static IIdleTimeService IdleTime(this IServiceContainer sc) => sc.GetService<IIdleTimeService>();
 
         /// <summary>
         /// Displays application-specific modal progress window

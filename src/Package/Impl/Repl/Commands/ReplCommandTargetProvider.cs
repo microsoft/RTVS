@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
             var target = ServiceManager.GetService<IOleCommandTarget>(textView);
             if (target == null) {
-                var controller = ReplCommandController.Attach(textView, textView.TextBuffer);
+                var controller = ReplCommandController.Attach(textView, textView.TextBuffer, _shell.Services);
                 var es = _shell.GetService<IApplicationEditorSupport>();
                 // Wrap controller into OLE command target
                 target = es.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;

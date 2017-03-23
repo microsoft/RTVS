@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsHelpVisualComponentContainerFactory(ICoreShell coreShell) {
+        public VsHelpVisualComponentContainerFactory(ICoreShell coreShell) : base(coreShell.Services) {
             _coreShell = coreShell;
         }
 

@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
 
         public static void OnCommand(object sender, EventArgs args) {
             if (MessageButtons.Yes == _services.UI().ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
-                var shell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+                var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
 
                 var asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());

@@ -16,6 +16,7 @@ using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public partial class VsAppShell {
+        private readonly VsIdleTimeService _idleTimeService = new VsIdleTimeService();
         private VsServiceManager _services;
 
         public IServiceContainer Services => _services;
@@ -36,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(compositionCatalog)
                 .AddService(new VsMainThread())
                 .AddService(new VsTaskService())
+                .AddService(_idleTimeService)
                 .AddService(new VsUIServices(this))
                 .AddService(new SecurityService(this))
                 .AddService(loggingPermissions)

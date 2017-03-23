@@ -18,12 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public bool CanShowDataGrid(IREvaluationResultInfo evaluationResult) {
-            var wrapper = new VariableViewModel(evaluationResult, _coreShell);
+            var wrapper = new VariableViewModel(evaluationResult, _coreShell.Services);
             return wrapper.CanShowDetail;
         }
 
         public void ShowDataGrid(IREvaluationResultInfo evaluationResult) {
-            var wrapper = new VariableViewModel(evaluationResult, _coreShell);
+            var wrapper = new VariableViewModel(evaluationResult, _coreShell.Services);
             if (!wrapper.CanShowDetail) {
                 throw new InvalidOperationException("Cannot show data grid on evaluation result " + evaluationResult);
             }

@@ -11,7 +11,6 @@ using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
@@ -41,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Locates project that is currently active in Solution Explorer
         /// </summary>
         public T GetSelectedProject<T>() where T : class {
-            var monSel = VsAppShell.Current.GetService<IVsMonitorSelection>();
+            var monSel = _coreShell.GetService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
 
             try {

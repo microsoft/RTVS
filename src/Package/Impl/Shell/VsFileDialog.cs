@@ -25,9 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileSave(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
 
-
-        private static string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            var uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+        private string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            var uiShell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (uiShell == null) {
                 return null;
             }
@@ -62,12 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        private static string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
+        private string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
             if (string.IsNullOrEmpty(initialPath)) {
                 initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
             }
 
-            var uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (null == uiShell) {
                 return null;
             }
@@ -101,6 +100,5 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
         }
-
     }
 }
