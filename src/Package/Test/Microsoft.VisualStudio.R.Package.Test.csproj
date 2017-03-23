@@ -187,6 +187,10 @@
       <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
       <Name>Microsoft.VisualStudio.R.Package</Name>

@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Win32;
 using static System.FormattableString;
 
@@ -25,6 +26,7 @@ namespace Microsoft.R.Interpreters {
 
         private readonly IRegistry _registry;
         private readonly IFileSystem _fileSystem;
+        private readonly IServiceManager _services;
 
         public RInstallation() :
             this(new RegistryImpl(), new FileSystem()) { }
@@ -32,6 +34,9 @@ namespace Microsoft.R.Interpreters {
         public RInstallation(IRegistry registry, IFileSystem fileSystem) {
             _registry = registry;
             _fileSystem = fileSystem;
+            _services = new ServiceManager()
+                .AddService(_registry)
+                .AddService(_fileSystem);
         }
 
         /// <summary>
@@ -43,7 +48,8 @@ namespace Microsoft.R.Interpreters {
             var list = new List<IRInterpreterInfo>();
 
             var engines = GetCompatibleEnginesFromRegistry(svl);
-            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
+            engines = engines.Where(e => e.VerifyInstallation(_services, svl))
+                             .OrderBy(e => e.Version);
 
             list.AddRange(engines);
             if (list.Count == 0) {
@@ -158,7 +164,7 @@ namespace Microsoft.R.Interpreters {
                 var name = string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build);
                 var path = Path.Combine(baseRFolder, name);
                 var ri = new RInterpreterInfo(name, path);
-                if (ri.VerifyInstallation(supportedVersions)) {
+                if (ri.VerifyInstallation(_services, supportedVersions)) {
                     return ri;
                 }
             }

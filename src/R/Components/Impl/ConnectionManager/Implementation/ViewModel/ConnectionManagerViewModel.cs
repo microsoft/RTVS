@@ -132,7 +132,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             if (path != null) {
                 // Verify path
                 var ri = new RInterpreterInfo(string.Empty, path);
-                if (ri.VerifyInstallation(null, null, _ui)) {
+                if (ri.VerifyInstallation(Services, null)) {
                     connection.Path = path;
                 }
             }

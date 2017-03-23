@@ -6,8 +6,8 @@
     <ProjectGuid>{D73325D8-2406-47FF-9E7A-E295A847268B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.R.Interpreters.Test</RootNamespace>
-    <AssemblyName>Microsoft.R.Interpreters.Test</AssemblyName>
+    <RootNamespace>Microsoft.R.Interpreters.Windows.Test</RootNamespace>
+    <AssemblyName>Microsoft.R.Interpreters.Windows.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -21,7 +21,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
@@ -40,29 +40,33 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445a4fb-4443-432c-94e8-1408559b7f58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
+    <ProjectReference Include="..\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

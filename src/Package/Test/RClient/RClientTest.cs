@@ -34,21 +34,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
                      .Do(x => telemetryEvents.Add(x.Args()[1] as string));
 
             var coreShell = Substitute.For<ICoreShell>();
-            coreShell.Telemetry().Returns(telemetry);
+            var coreServices = Substitute.For<ICoreServices>();
+            coreServices.Telemetry.Returns(telemetry);
 
             var ps = Substitute.For<IProcessServices>();
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 c.Args()[0].Should().NotBeNull();
             });
-            coreShell.Process().Returns(ps);
+            coreServices.Process.Returns(ps);
 
+            coreShell.Services.Returns(coreServices);
             coreShell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
+            var services = new ServiceManager().AddService(coreShell);
 
             var downloader = Substitute.For<IFileDownloader>();
             downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs((string)null);
 
             var inst = new MicrosoftRClientInstaller();
-            inst.LaunchRClientSetup(coreShell.Services, downloader);
+            inst.LaunchRClientSetup(services, downloader);
 
             telemetryEvents.Should().HaveCount(1);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -56,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs("Failed");
 
             telemetryEvents.Clear();
-            inst.LaunchRClientSetup(coreShell.Services, downloader);
+            inst.LaunchRClientSetup(services, downloader);
 
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -68,10 +71,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 throw new Win32Exception((unchecked((int)0x800704C7)));
             });
-            coreShell.Process().Returns(ps);
+            coreServices.Process.Returns(ps);
 
             telemetryEvents.Clear();
-            inst.LaunchRClientSetup(coreShell.Services, downloader);
+            inst.LaunchRClientSetup(services, downloader);
 
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);

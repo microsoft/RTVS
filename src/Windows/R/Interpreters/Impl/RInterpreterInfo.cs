@@ -39,7 +39,9 @@ namespace Microsoft.R.Interpreters {
             Version = DetermineVersion(fs = fs ?? new FileSystem());
         }
 
-        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, IUIService ui = null) {
+        public bool VerifyInstallation(IServiceContainer services = null, ISupportedRVersionRange svr = null) {
+            var ui = services?.GetService<IUIService>();
+            var fs = services?.GetService<IFileSystem>();
             if (_isValid.HasValue) {
                 return _isValid.Value;
             }
@@ -94,7 +96,7 @@ namespace Microsoft.R.Interpreters {
             return new Version(fvi.Major, minor, revision);
         }
 
-        internal static string NormalizeRPath(string path) {
+        public static string NormalizeRPath(string path) {
             string[] suffixes = { @"\bin", @"\bin\x64" };
             foreach (var s in suffixes) {
                 if (path.EndsWith(s, StringComparison.OrdinalIgnoreCase)) {
