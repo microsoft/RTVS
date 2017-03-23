@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
         private readonly IObjectDetailsViewerAggregator _aggregator;
-        private readonly ICoreShell _coreShell;
 
         private IObjectDetailsViewer _detailsViewer;
         private string _title;
@@ -114,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     DimProperty |
                     FlagsProperty |
                     CanCoerceToDataFrameProperty |
-                    (_coreShell.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
+                    (Services.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();

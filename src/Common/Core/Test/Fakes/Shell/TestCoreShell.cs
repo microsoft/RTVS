@@ -4,13 +4,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Windows.Threading;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
@@ -29,16 +27,36 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             ServiceManager = services;
         }
 
+        /// <summary>
+        /// Creates core shell with a set of basic services.
+        /// Does not delegate to MEF or host-provided (global) 
+        /// service provider
+        /// </summary>
+        public TestCoreShell() {
+            _creatorThread = UIThreadHelper.Instance.Thread;
+            ServiceManager = new ServiceManager();
+            AddBasicServices();
+        }
+
         public TestCoreShell(ICompositionCatalog catalog
         , IActionLog log = null
         , ILoggingPermissions loggingPermissions = null
         , IFileSystem fs = null
         , IRegistry registry = null
-        , IProcessServices ps = null) : this(catalog, new TestServiceManager(catalog.ExportProvider)) { 
+        , IProcessServices ps = null) : this(catalog, new TestServiceManager(catalog.ExportProvider)) {
+            AddBasicServices(log, loggingPermissions, fs, registry, ps);
             ServiceManager
                 .AddService(catalog)
                 .AddService(catalog.ExportProvider)
-                .AddService(catalog.CompositionService)
+                .AddService(catalog.CompositionService);
+        }
+
+        private void AddBasicServices(IActionLog log = null
+            , ILoggingPermissions loggingPermissions = null
+            , IFileSystem fs = null
+            , IRegistry registry = null
+            , IProcessServices ps = null) {
+            ServiceManager
                 .AddService(UIThreadHelper.Instance)
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
@@ -46,6 +64,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(fs ?? new FileSystem())
                 .AddService(registry ?? new RegistryImpl())
                 .AddService(ps ?? new ProcessServices())
+                .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
                 .AddService(new TestPlatformServices());
         }

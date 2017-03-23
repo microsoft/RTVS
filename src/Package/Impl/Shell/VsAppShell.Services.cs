@@ -22,7 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public IServiceContainer Services => _services;
 
         private void ConfigureServices() {
-            _services = new VsServiceManager(this);
             var platformServices = new VsPlatformServices();
             var telemetry = new VsTelemetryService();
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));

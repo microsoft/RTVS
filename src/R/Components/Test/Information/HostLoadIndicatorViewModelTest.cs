@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Information;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Protocol;
@@ -17,17 +18,13 @@ namespace Microsoft.R.Components.Test.Information {
     [Category.Information]
     public sealed class HostLoadIndicatorViewModelTest {
         private readonly IRSessionProvider _sessionProvider = Substitute.For<IRSessionProvider>();
-        private readonly ICoreShell _coreShell = Substitute.For<ICoreShell>();
+        private readonly ICoreShell _coreShell = new TestCoreShell();
 
         private readonly HostLoad _hostLoad = new HostLoad() {
             CpuLoad = 30,
             MemoryLoad = 40,
             NetworkLoad = 50
         };
-
-        public HostLoadIndicatorViewModelTest() {
-            _coreShell.When(x => x.MainThread().Post(Arg.Any<Action>())).Do(c => ((Action)c.Args()[0])());
-        }
 
         [Test]
         public void Update() {

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 
@@ -30,12 +29,17 @@ namespace Microsoft.Common.Core.Services {
         /// </summary>
         /// <typeparam name="T">Service type</typeparam>
         /// <param name="service">Service instance</param>
-        public virtual IServiceManager AddService<T>(T service) where T : class {
+        /// <param name="type">
+        /// Optional type to register the instance for. In Visual Studio
+        /// some global services are registered as 'SVsService` while
+        /// actual interface type is IVsService.
+        /// </param>
+        public virtual IServiceManager AddService<T>(T service, Type type = null) where T : class {
             _disposeToken.ThrowIfDisposed();
 
-            var type = typeof(T);
+            type = type ?? typeof(T);
             Check.ArgumentNull(nameof(service), service);
-            Check.Operation(() => _s.TryAdd(type, service));
+            Check.InvalidOperation(() => _s.TryAdd(type, service), "Service already exists");
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
             return this;
         }
@@ -52,7 +56,7 @@ namespace Microsoft.Common.Core.Services {
                 ? new Lazy<object>(() => factory()) 
                 : new Lazy<object>(() => Activator.CreateInstance(type));
 
-            Check.Operation(() => _s.TryAdd(type, lazy));
+            Check.InvalidOperation(() => _s.TryAdd(type, lazy), "Service already exists");
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             return this;
         }
@@ -81,7 +85,7 @@ namespace Microsoft.Common.Core.Services {
             }
         }
 
-        public virtual IEnumerable<Type> Services {
+        public virtual IEnumerable<Type> AllServices {
             get {
                 _disposeToken.ThrowIfDisposed();
                 return _s.Keys.ToList();

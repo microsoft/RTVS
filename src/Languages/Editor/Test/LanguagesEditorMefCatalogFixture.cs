@@ -9,10 +9,10 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.StubBuilders;
+using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
@@ -52,8 +52,8 @@ namespace Microsoft.Languages.Editor.Test {
                 tcs.ServiceManager.AddService(new TestEditorSupport());
                 _coreShell = tcs;
 
-                // TODO: get rid of static
-                REditorSettings.Initialize(_coreShell.GetService<ICompositionCatalog>());
+                var batch = new CompositionBatch().AddValue(new TestSettingsStorage());
+                compositionContainer.Compose(batch);
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {

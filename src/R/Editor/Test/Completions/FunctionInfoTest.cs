@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
@@ -13,7 +15,7 @@ using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
-namespace Microsoft.R.Support.Test.Functions {
+namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class FunctionInfoTest : IAsyncLifetime {
@@ -23,6 +25,7 @@ namespace Microsoft.R.Support.Test.Functions {
         private readonly IRInteractiveWorkflow _workflow;
 
         public FunctionInfoTest(IExportProvider exportProvider) {
+            REditorSettings.Initialize(new TestSettingsStorage());
             _exportProvider = exportProvider;
             _workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();

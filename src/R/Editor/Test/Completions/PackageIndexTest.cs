@@ -1,26 +1,26 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Help.Packages;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
-namespace Microsoft.R.Support.Test.Packages {
+namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
+    [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class PackageIndexTest : IAsyncLifetime {
         private readonly TestCoreShell _shell = new TestCoreShell(null);
@@ -28,6 +28,7 @@ namespace Microsoft.R.Support.Test.Packages {
         private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(IExportProvider exportProvider) {
+            REditorSettings.Initialize(new TestSettingsStorage());
             _shell.ServiceManager.AddService(new TestRToolsSettings());
             _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;
@@ -38,7 +39,6 @@ namespace Microsoft.R.Support.Test.Packages {
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
-        [Category.R.Completion]
         public async Task BuildPackageIndexTest() {
             string[] packageNames = {
                 "base",
@@ -89,7 +89,6 @@ namespace Microsoft.R.Support.Test.Packages {
         }
 
         [Test]
-        [Category.R.Completion]
         public async Task PackageDescriptionTest() {
             PackageIndex packageIndex;
             using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {

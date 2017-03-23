@@ -136,6 +136,8 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
+    <Compile Include="Completions\FunctionInfoTest.cs" />
+    <Compile Include="Completions\PackageIndexTest.cs" />
     <Compile Include="Completions\PackageInstallTest.cs" />
     <Compile Include="Completions\FileCompletionProviderTest.cs" />
     <Compile Include="Completions\RFunctionCompletionSourceTest.cs" />
@@ -164,7 +166,6 @@
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
     <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
-    <Compile Include="Settings\TestSettingsStorage.cs" />
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />
     <Compile Include="Signatures\ComputeCurrentParameterTest.cs" />
     <Compile Include="Signatures\ParameterTest.cs" />

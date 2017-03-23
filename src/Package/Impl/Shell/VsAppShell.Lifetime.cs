@@ -3,9 +3,7 @@
 
 using System;
 using System.Threading;
-using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

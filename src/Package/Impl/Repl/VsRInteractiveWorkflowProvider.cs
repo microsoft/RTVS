@@ -29,21 +29,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
 
         [ImportingConstructor]
-        public VsRInteractiveWorkflowProvider(IConnectionManagerProvider connectionsProvider
-            , IRHistoryProvider historyProvider
-            , IRPackageManagerProvider packagesProvider
-            , IRPlotManagerProvider plotsProvider
-            , IActiveWpfTextViewTracker activeTextViewTracker
-            , IDebuggerModeTracker debuggerModeTracker
-            , ICoreShell shell) {
-
-            _connectionsProvider = connectionsProvider;
-            _historyProvider = historyProvider;
-            _packagesProvider = packagesProvider;
-            _plotsProvider = plotsProvider;
-            _activeTextViewTracker = activeTextViewTracker;
-            _debuggerModeTracker = debuggerModeTracker;
+        public VsRInteractiveWorkflowProvider(ICoreShell shell) {
             _shell = shell;
+
+            _connectionsProvider = shell.GetService<IConnectionManagerProvider>();
+            _historyProvider = shell.GetService<IRHistoryProvider>();
+            _packagesProvider = shell.GetService<IRPackageManagerProvider>();
+            _plotsProvider = shell.GetService<IRPlotManagerProvider>();
+            _activeTextViewTracker = shell.GetService<IActiveWpfTextViewTracker>();
+            _debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
+            _connectionsProvider = shell.GetService<IConnectionManagerProvider>();
 
             _shell.Terminating += OnApplicationTerminating;
         }

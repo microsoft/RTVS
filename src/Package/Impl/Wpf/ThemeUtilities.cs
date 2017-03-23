@@ -15,6 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
     internal sealed class ThemeUtilities : IThemeUtilities {
         private readonly ICoreShell _coreShell;
 
+        [ImportingConstructor]
         public ThemeUtilities(ICoreShell coreShell) {
             _coreShell = coreShell;
         }

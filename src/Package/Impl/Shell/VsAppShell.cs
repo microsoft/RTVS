@@ -3,12 +3,10 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
-using System.Threading;
-using System.Windows.Threading;
+using System.Linq;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Threading;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -20,7 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ICoreShell))]
     public sealed partial class VsAppShell : ICoreShell, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
-        private static ICoreShell _testShell;
+
+        public VsAppShell() {
+            Debug.Assert(_instance == null, "VsAppShell is a singleton and cannot be created twice");
+            _instance = this;
+            _services = new VsServiceManager(this);
+        }
 
         /// <summary>
         /// Current application shell instance. Provides access to services
@@ -29,27 +32,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static ICoreShell Current {
             get {
-                if (_testShell == null && _instance == null) {
-                    // Try test environment
-                    _testShell = CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsShell");
+                _instance  = _instance ?? new VsAppShell();
+                if(!_instance.Services.AllServices.Any()) {
+                    // Assuming test mode since otherwise VS package 
+                    // would have called Initialize() by now.
+                    _instance.IsUnitTestEnvironment = true;
+                    SetupTestInstance();
                 }
 
-                return _testShell ?? GetInstance();
+                return _instance.IsUnitTestEnvironment ? _instance : GetInstance();
             }
         }
-
-        #region ICoreShell
-        /// <summary>
-        /// Fires when host application has completed it's startup sequence
-        /// </summary>
-        public event EventHandler<EventArgs> Started;
-
-        /// <summary>
-        /// Fires when host application is terminating
-        /// </summary>
-        public event EventHandler<EventArgs> Terminating;
-
-        public bool IsUnitTestEnvironment { get; set; }
-        #endregion
     }
 }

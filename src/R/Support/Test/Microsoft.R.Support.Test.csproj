@@ -129,8 +129,6 @@
     <Compile Include="Html\Utility\TreeWriter.cs" />
     <Compile Include="Html\VisitorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Functions\FunctionInfoTest.cs" />
-    <Compile Include="Packages\PackageIndexTest.cs" />
     <Compile Include="RD\BraceMatch\BraceMatchTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />

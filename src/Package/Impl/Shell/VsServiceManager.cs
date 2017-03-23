@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -13,14 +14,36 @@ using VsPackage = Microsoft.VisualStudio.Shell.Package;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsServiceManager : ServiceManager {
         private readonly ICoreShell _shell;
-        private readonly ICompositionService _compositionService;
-        private readonly ExportProvider _exportProvider;
+        private Lazy<IComponentModel> _componentModel = new Lazy<IComponentModel>(() => (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel)));
+        private ICompositionService _compositionService;
+        private ExportProvider _exportProvider;
 
         public VsServiceManager(ICoreShell shell) {
             _shell = shell;
-            var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
-            _compositionService = componentModel.DefaultCompositionService;
-            _exportProvider = componentModel.DefaultExportProvider;
+        }
+
+        private IComponentModel ComponentModel => _componentModel.Value;
+
+        internal ICompositionService CompositionService {
+            get {
+                _compositionService = _compositionService ?? ComponentModel.DefaultCompositionService;
+                return _compositionService;
+            }
+            set {
+                Debug.Assert(_compositionService == null);
+                _compositionService = value;
+            }
+        }
+
+        internal ExportProvider ExportProvider {
+            get {
+                _exportProvider = _exportProvider ?? ComponentModel.DefaultExportProvider;
+                return _exportProvider;
+            }
+            set {
+                Debug.Assert(_exportProvider == null);
+                _exportProvider = value;
+            }
         }
 
         #region IServiceContainer
@@ -28,20 +51,20 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             type = type ?? typeof(T);
 
             if(type == typeof(ExportProvider)) {
-                return _exportProvider as T;
+                return ExportProvider as T;
             }
             if (type == typeof(ICompositionService)) {
-                return _compositionService as T;
+                return CompositionService as T;
             }
             if (type == typeof(ICompositionCatalog)) {
-                return (T) (ICompositionCatalog) new CompositionCatalog(_compositionService, _exportProvider);
+                return (T) (ICompositionCatalog) new CompositionCatalog(CompositionService, ExportProvider);
             }
 
             // First try internal services
             var service = base.GetService<T>(type);
             if (service == null) {
                 // First try MEF
-                service = _exportProvider.GetExportedValueOrDefault<T>();
+                service = ExportProvider.GetExportedValueOrDefault<T>();
                 if (service == null) {
                     // Now try VS services. Only allowed on UI thread.
                     _shell.AssertIsOnMainThread();

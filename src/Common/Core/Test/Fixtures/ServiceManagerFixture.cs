@@ -59,7 +59,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         #region IServiceContainer
         public T GetService<T>(Type type = null) where T : class => _serviceManager.GetService<T>(type);
-        public IEnumerable<Type> Services => _serviceManager.Services;
+        public IEnumerable<Type> AllServices => _serviceManager.AllServices;
         public IEnumerable<T> GetServices<T>() where T : class => _serviceManager.GetServices<T>();
 
 #pragma warning disable 67
@@ -70,7 +70,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         #region IServiceManager
         public void Dispose() { }
-        public IServiceManager AddService<T>(T service) where T : class => _serviceManager.AddService(service);
+        public IServiceManager AddService<T>(T service, Type type = null) where T : class => _serviceManager.AddService(service, type);
         public IServiceManager AddService<T>(Func<T> factory = null) where T : class => _serviceManager.AddService(factory);
         public void RemoveService<T>() where T : class => _serviceManager.RemoveService<T>();
         #endregion

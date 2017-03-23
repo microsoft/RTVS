@@ -27,8 +27,13 @@ namespace Microsoft.R.Editor.Settings {
         private static RFormatOptions _formatOptions = new RFormatOptions();
 
         public static void Initialize(ICompositionCatalog cc) {
-            _storage = CommonSettings.GetSettingsStorage(cc, RContentTypeDefinition.LanguageName);
-            Debug.Assert(_storage != null);
+            var storage = CommonSettings.GetSettingsStorage(cc, RContentTypeDefinition.LanguageName);
+            Initialize(storage as IWritableEditorSettingsStorage);
+        }
+
+        public static void Initialize(IWritableEditorSettingsStorage storage) {
+            Debug.Assert(storage != null);
+            _storage = storage;
             _storage.SettingsChanged += OnSettingsChanged;
         }
 
