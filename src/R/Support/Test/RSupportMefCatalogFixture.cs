@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -35,6 +36,7 @@ namespace Microsoft.R.Support.Test {
             public override async Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
                 var result = await base.InitializeAsync(testInput, messageBus);
                 var batch = new CompositionBatch()
+                    .AddValue<IRInstallationService>(new RInstallation())
                     .AddValue<IRSettings>(new TestRToolsSettings(testInput.FileSytemSafeName));
                 CompositionContainer.Compose(batch);
                 return result;

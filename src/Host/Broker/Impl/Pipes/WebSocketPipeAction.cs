@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.R.Host.Broker.Sessions;
 
 namespace Microsoft.R.Host.Broker.Pipes {
     public class WebSocketPipeAction : IActionResult {
@@ -60,13 +59,16 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
                 int index = (int)buffer.Length;
                 buffer.SetLength(index + blockSize);
+                buffer.TryGetBuffer(out ArraySegment<byte> bufferSegment);
 
-                var wsrr = await socket.ReceiveAsync(new ArraySegment<byte>(buffer.GetBuffer(), index, blockSize), cancellationToken);
+                var wsrr = await socket.ReceiveAsync(new ArraySegment<byte>(bufferSegment.Array, index, blockSize), cancellationToken);
                 buffer.SetLength(index + wsrr.Count);
 
                 if (wsrr.CloseStatus != null) {
                     break;
-                } else if (wsrr.EndOfMessage) {
+                }
+
+                if (wsrr.EndOfMessage) {
                     pipe.Write(buffer.ToArray());
                     buffer.SetLength(0);
                 }

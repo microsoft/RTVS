@@ -8,11 +8,10 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.R.Host.Broker.Startup;
-using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Security {
-    internal sealed class TlsConfiguration {
+    public sealed class TlsConfiguration {
         private readonly ILogger _logger;
         private readonly SecurityOptions _securityOptions;
 

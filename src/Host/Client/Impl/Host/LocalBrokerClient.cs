@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class LocalBrokerClient : BrokerClient {
-        private const string RHostBrokerExe = "Microsoft.R.Host.Broker.exe";
+        private const string RHostBrokerExe = "Microsoft.R.Host.Broker.Windows.exe";
         private const string RHostExe = "Microsoft.R.Host.exe";
         private const string InterpreterId = "local";
 

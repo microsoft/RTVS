@@ -1101,11 +1101,6 @@
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
-      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Name>Microsoft.R.Host.Broker</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -1174,6 +1169,11 @@
     <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
+      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
+      <Name>Microsoft.R.Host.Broker.Windows</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
@@ -1561,6 +1561,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebUtilities.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Server.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Broker.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Win32.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Buffers.dll" />

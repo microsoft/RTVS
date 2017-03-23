@@ -69,9 +69,7 @@ namespace Microsoft.R.Interpreters.Test {
             engines.Should().NotBeEmpty();
 
             var e = engines.FirstOrDefault();
-            var services = new ServiceManager()
-                .AddService(fs);
-            e.VerifyInstallation(services, svl).Should().BeTrue();
+            e.VerifyInstallation(svl).Should().BeTrue();
             
             e.Version.Major.Should().BeGreaterOrEqualTo(3);
             e.Version.Minor.Should().BeGreaterOrEqualTo(2);
@@ -139,10 +137,7 @@ namespace Microsoft.R.Interpreters.Test {
             var coreShell = Substitute.For<ICoreShell>();
 
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
-            var services = new ServiceManager()
-                .AddService(fs)
-                .AddService(coreShell);
-            e.VerifyInstallation(services, svl).Should().BeFalse();
+            e.VerifyInstallation(svl, new ServiceManager().AddService(coreShell)).Should().BeFalse();
             coreShell.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("not compatible");
@@ -193,13 +188,10 @@ namespace Microsoft.R.Interpreters.Test {
             var e = ri.GetCompatibleEngines(svl).FirstOrDefault();
             e.Should().NotBeNull();
 
+            fs = Substitute.For<IFileSystem>();
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
             var coreShell = Substitute.For<ICoreShell>();
-            fs = Substitute.For<IFileSystem>();
-            var services = new ServiceManager()
-                .AddService(fs)
-                .AddService(coreShell);
-            e.VerifyInstallation(services, svl).Should().BeFalse();
+            e.VerifyInstallation(svl, new ServiceManager().AddService(coreShell)).Should().BeFalse();
 
             coreShell.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;

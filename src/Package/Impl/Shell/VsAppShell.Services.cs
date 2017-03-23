@@ -48,7 +48,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new FileSystem())
                 .AddService(new ProcessServices())
                 .AddService(new RegistryImpl())
-                .AddService(typeof(MicrosoftRClientInstaller));
+                .AddService(typeof(MicrosoftRClientInstaller))
+                .AddService<IRInstallationService>(new RInstallation());
             // TODO: add more
 
             settings.LoadSettings();

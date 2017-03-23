@@ -10,6 +10,7 @@ using System.Security;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionManager {
         private const int MaximumConcurrentClientWindowsUsers = 1;
 
-        private readonly InterpreterManager _interpManager;
         private readonly LoggingOptions _loggingOptions;
         private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
 
@@ -37,7 +37,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             ILogger<MessagePipe> messageLogger,
             ILogger<Process> hostOutputLogger
         ) {
-            _interpManager = interpManager;
             _loggingOptions = loggingOptions.Value;
             _sessionLogger = sessionLogger;
 
@@ -72,8 +71,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     }
                 }
                 _blockedUsers.Add(user.Name);
-
-                return new UserSessionCreationBlocker(this, user);
+                return Disposable.Create(() => UnblockSessionCreationForUser(user));
             }
         }
 
@@ -155,19 +153,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
                         _sessions.Remove(session.User.Name);
                     }
                 }
-            }
-        }
-
-        private class UserSessionCreationBlocker : IDisposable {
-            private readonly SessionManager _sessionManager;
-            private readonly IIdentity _user;
-            public UserSessionCreationBlocker(SessionManager sessionManager, IIdentity user) {
-                _sessionManager = sessionManager;
-                _user = user;
-            }
-
-            public void Dispose() {
-                _sessionManager.UnblockSessionCreationForUser(_user);
             }
         }
     }

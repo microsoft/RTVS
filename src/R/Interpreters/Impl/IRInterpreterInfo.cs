@@ -30,6 +30,6 @@ namespace Microsoft.R.Interpreters {
         /// <summary>
         /// Verifies actual installation on disk
         /// </summary>
-        bool VerifyInstallation(IServiceContainer services, ISupportedRVersionRange svl = null);
+        bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null);
     }
 }

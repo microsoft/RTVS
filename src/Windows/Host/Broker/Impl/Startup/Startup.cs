@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
@@ -14,6 +15,7 @@ using Microsoft.R.Host.Broker.RemoteUri;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Broker.UserProfile;
+using Microsoft.R.Interpreters;
 using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Startup {
@@ -33,7 +35,9 @@ namespace Microsoft.R.Host.Broker.Startup {
                     .AddSingleton<SecurityManager>()
                     .AddSingleton<InterpreterManager>()
                     .AddSingleton<SessionManager>()
-                    .AddSingleton<UserProfileManager>();
+                    .AddSingleton<UserProfileManager>()
+                    .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
+                    .AddSingleton<IRInstallationService, RInstallation>();
 
             services.AddAuthorization(options => options.AddPolicy(
                 Policies.RUser,
@@ -41,7 +45,9 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             services.AddRouting();
 
-            services.AddMvc();
+            services
+                .AddMvc()
+                .AddApplicationPart(typeof(InterpreterManager).Assembly);
         }
 
         public void Configure(

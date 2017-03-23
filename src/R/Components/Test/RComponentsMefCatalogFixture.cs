@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.StubFactories;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
@@ -47,6 +48,7 @@ namespace Microsoft.R.Components.Test {
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
                 var coreShell = new TestCoreShell(new TestCompositionCatalog(CompositionContainer));
                 var batch = new CompositionBatch()
+                    .AddValue<IRInstallationService>(new RInstallation())
                     .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName))
                     .AddValue<ICoreShell>(coreShell)
                     .AddValue(coreShell);
