@@ -10,6 +10,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Stubs.Shell;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
@@ -35,6 +36,12 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public TestCoreShell() {
             _creatorThread = UIThreadHelper.Instance.Thread;
             ServiceManager = new ServiceManager();
+            AddBasicServices();
+        }
+
+        public TestCoreShell(IExportProvider exportProvider) {
+            _creatorThread = UIThreadHelper.Instance.Thread;
+            ServiceManager = new TestServiceManager(exportProvider);
             AddBasicServices();
         }
 

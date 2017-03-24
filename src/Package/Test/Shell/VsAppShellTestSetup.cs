@@ -13,6 +13,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
@@ -55,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(UIThreadHelper.Instance)
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
-                .AddService(Substitute.For<ILoggingPermissions>())
+                .AddService(new MaxLoggingPermissions())
                 .AddService(new FileSystem())
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())

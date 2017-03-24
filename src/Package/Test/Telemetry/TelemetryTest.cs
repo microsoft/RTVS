@@ -5,6 +5,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Telemetry;
+using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
@@ -30,6 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
             package1.Name.Returns("user_package");
 
             _packageIndex.Packages.Returns(new IPackageInfo[] { package1, package2 });
+
+            REditorSettings.Initialize(new TestSettingsStorage());
         }
 
         [Test]

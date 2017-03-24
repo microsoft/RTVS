@@ -67,10 +67,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 service = ExportProvider.GetExportedValueOrDefault<T>();
                 if (service == null) {
                     // Now try VS services. Only allowed on UI thread.
-                    _shell.AssertIsOnMainThread();
                     if (_shell.IsUnitTestEnvironment) {
-                        service = RPackage.Current.GetService(type) as T;
+                        service = RPackage.Current != null ? RPackage.Current.GetService(type) as T : null;
                     } else {
+                        _shell.AssertIsOnMainThread();
                         service = VsPackage.GetGlobalService(type) as T;
                     }
                 }

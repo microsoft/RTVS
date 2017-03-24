@@ -13,6 +13,7 @@ using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
@@ -52,8 +53,8 @@ namespace Microsoft.Languages.Editor.Test {
                 tcs.ServiceManager.AddService(new TestEditorSupport());
                 _coreShell = tcs;
 
-                var batch = new CompositionBatch().AddValue(new TestSettingsStorage());
-                compositionContainer.Compose(batch);
+                // TODO: HACK - remove after REditorSettings turn into service.
+                REditorSettings.Initialize(new TestSettingsStorage());
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Host.Client;
@@ -23,12 +24,10 @@ namespace Microsoft.R.Editor.Test.Completions {
         private const string _testFolderName = "_Rtvs_FileCompletionTest_";
 
         private readonly ICoreShell _coreShell;
-        private readonly IExportProvider _exportProvider;
         private readonly string _testFolder;
 
         public FileCompletionProviderTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _coreShell = Substitute.For<ICoreShell>();
+            _coreShell = new TestCoreShell(exportProvider);
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _testFolder = Path.Combine(myDocs, _testFolderName);
@@ -54,11 +53,11 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public async Task RemoteFiles() {
-            using (var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
-                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Substitute.For<IServiceContainer>(), forceR: true);
+                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _coreShell.Services, forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
                 entries.Should().Contain(e => e.DisplayText == _testFolderName);

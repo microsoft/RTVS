@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -23,17 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
     public class PublishOptionsDialogModelTest {
-        private readonly ICoreShell _coreShell;
-        private readonly IProjectSystemServices _pss;
-        private readonly IProjectConfigurationSettingsProvider _pcsp;
-        private readonly ISettingsStorage _storage;
-
-        public PublishOptionsDialogModelTest() {
-            _coreShell = Substitute.For<ICoreShell>();
-            _pss = Substitute.For<IProjectSystemServices>();
-            _pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
-            _storage = Substitute.For<ISettingsStorage>();
-        }
+        private readonly ICoreShell _coreShell = new TestCoreShell();
+        private readonly IProjectSystemServices _pss = Substitute.For<IProjectSystemServices>();
+        private readonly IProjectConfigurationSettingsProvider _pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
+        private readonly ISettingsStorage _storage = Substitute.For<ISettingsStorage>();
 
         [Test(ThreadType.UI)]
         public async Task Constructor() {
@@ -229,11 +223,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
                 return VSConstants.S_OK;
             });
             _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
-
-            _coreShell.When(cs => cs.MainThread().Post(Arg.Any<Action>())).Do(c => {
-                var action = (Action)c.Args()[0];
-                action();
-            });
         }
     }
 }

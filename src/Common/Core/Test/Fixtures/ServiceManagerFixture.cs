@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Test.Telemetry;
 using Microsoft.UnitTests.Core.Threading;
@@ -20,11 +21,11 @@ using Xunit.Sdk;
 namespace Microsoft.Common.Core.Test.Fixtures {
     public class ServiceManagerFixture : MethodFixtureBase, IServiceManager {
         private readonly LogProxy _log;
-        private readonly TestServiceManager _serviceManager;
+        private readonly IServiceManager _serviceManager;
 
         public ServiceManagerFixture() {
             _log = new LogProxy();
-            _serviceManager = new TestServiceManager(null);
+            _serviceManager = new ServiceManager();
             _serviceManager
                 .AddService(UIThreadHelper.Instance)
                 .AddService(_log)
@@ -74,12 +75,6 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         public IServiceManager AddService<T>(Func<T> factory = null) where T : class => _serviceManager.AddService(factory);
         public void RemoveService<T>() where T : class => _serviceManager.RemoveService<T>();
         #endregion
-
-        private class MaxLoggingPermissions : ILoggingPermissions {
-            public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
-            public bool IsFeedbackPermitted => true;
-            public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
-        }
 
         private class LogProxy : IActionLog {
             private IActionLog _log;

@@ -91,9 +91,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 if (!string.IsNullOrEmpty(directory)) {
                     IEnumerable<RCompletion> entries = null;
 
-                    if (_forceR || _workflow.RSession.IsRemote) {
+                    if (_forceR) {
+                        entries = GetRemoteDirectoryItemsAsync(directory).Result;
+                    } else if (_workflow.RSession.IsRemote) {
                         var t = GetRemoteDirectoryItemsAsync(directory);
-                        entries = t.WaitTimeout(_forceR ? 5000 : 1000);
+                        entries = t.WaitTimeout(1000);
                     } else {
                         entries = GetLocalDirectoryItems(directory);
                     }

@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.XUnit;
@@ -13,6 +14,8 @@ namespace Microsoft.R.Editor.Test.Settings {
     public class SettingsTest {
         [Test]
         public void Settings_TestDefaults() {
+            REditorSettings.Initialize(new TestSettingsStorage());
+
             REditorSettings.CommitOnSpace.Should().BeFalse();
             REditorSettings.CompletionEnabled.Should().BeTrue();
             REditorSettings.FormatOnPaste.Should().BeTrue();
