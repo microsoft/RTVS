@@ -23,6 +23,10 @@ locstr <- function(id) {
     send_request_and_get_response('?LocStr', id)[[1]]
 }
 
+askYesNo <- function(message) {
+    send_request_and_get_response('?YesNo', message)[[1]]
+}
+
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
     call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
 }
@@ -272,9 +276,9 @@ query_reload_autosave <- function() {
     }
 
     msg <- locstr('rtvs_SessionTerminatedUnexpectedly');
-    res <- winDialog('yesno', sprintf(msg, autosave_filename));
+    res <- askYesNo(sprintf(msg, autosave_filename))[[1]];
 
-    if (identical(res, 'YES')) {
+    if (identical(res, 'Y')) {
         # Use try instead of tryCatch, so that any errors are printed as usual.
         loaded <- FALSE;
         try({
@@ -293,8 +297,8 @@ query_reload_autosave <- function() {
         }
     } else {
         msg <- locstr('rtvs_ConfirmDeleteWorkspace');
-        res <- winDialog('yesno', sprintf(msg, autosave_filename));
-        return(identical(res, 'YES'));
+        res <-askYesNo(sprintf(msg, autosave_filename))[[1]];
+        return(identical(res, 'Y'));
     }
 }
 

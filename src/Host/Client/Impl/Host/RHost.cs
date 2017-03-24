@@ -149,11 +149,23 @@ namespace Microsoft.R.Host.Client {
 
         private async Task ShowDialog(Message request, MessageButtons buttons, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            request.ExpectArguments(2);
-            var contexts = GetContexts(request);
-            var s = request.GetString(1, "s", allowNull: true);
 
-            MessageButtons input = await _callbacks.ShowDialog(contexts, s, buttons, ct);
+            RContext[] contexts;
+            string message;
+            switch (request.ArgumentCount) {
+                case 1:
+                    contexts = new RContext[0];
+                    message = request.GetString(0, "s", allowNull: true);
+                    break;
+                case 2:
+                    contexts = GetContexts(request);
+                    message = request.GetString(1, "s", allowNull: true);
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid number of argument in ShowDialog");
+            }
+
+            MessageButtons input = await _callbacks.ShowDialog(contexts, message, buttons, ct);
             ct.ThrowIfCancellationRequested();
 
             string response;
