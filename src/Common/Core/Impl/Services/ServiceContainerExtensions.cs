@@ -32,12 +32,12 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Displays application-specific modal progress window
         /// </summary>
-        public static IProgressDialog ProgressDialog(this IServiceContainer sc) => sc.GetService<IProgressDialog>();
+        public static IProgressDialog ProgressDialog(this IServiceContainer sc) => sc.UI().ProgressDialog;
 
         /// <summary>
         /// Displays platform-specific file selection window
         /// </summary>
-        public static IFileDialog FileDialog(this IServiceContainer sc) => sc.GetService<IFileDialog>();
+        public static IFileDialog FileDialog(this IServiceContainer sc) => sc.UI().FileDialog;
 
         /// <summary>
         /// Switches to UI thread asynchonously and then displays the message

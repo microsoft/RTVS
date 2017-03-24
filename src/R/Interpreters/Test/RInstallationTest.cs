@@ -218,7 +218,7 @@ namespace Microsoft.R.Interpreters.Test {
             fsi.FullName.Returns(dir);
             fs.GetDirectoryInfo(@"C:\Program Files\Microsoft\R Client\R_SERVER").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
 
-            var fvi = SimulateFileVersion(3, 22);
+            var fvi = SimulateFileVersion(3, 32);
             fs.GetVersionInfo(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
 
             PretendRFilesAvailable(fs, dir);
@@ -228,7 +228,7 @@ namespace Microsoft.R.Interpreters.Test {
             engines.Should().HaveCount(1);
 
             var e = engines.First();
-            e.Name.Should().Contain("Microsoft R");
+            e.Name.Should().Contain("Microsoft R Server");
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
         }
 
@@ -257,7 +257,7 @@ namespace Microsoft.R.Interpreters.Test {
             return new[] {
                 new RegistryKeyMock(
                      @"SOFTWARE\R-core\R64", 
-                     new RegistryKeyMock(@"3.2.2.803",
+                     new RegistryKeyMock(@"3.3.2 Microsoft R Server ",
                          new RegistryKeyMock[0],
                          new[] {"InstallPath"},
                          new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" }),
