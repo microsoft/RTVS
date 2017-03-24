@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
     public class PublishOptionsDialogModelTest {
-        private readonly ICoreShell _coreShell = new TestCoreShell();
+        private readonly ICoreShell _coreShell = TestCoreShell.CreateBasic();
         private readonly IProjectSystemServices _pss = Substitute.For<IProjectSystemServices>();
         private readonly IProjectConfigurationSettingsProvider _pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
         private readonly ISettingsStorage _storage = Substitute.For<ISettingsStorage>();

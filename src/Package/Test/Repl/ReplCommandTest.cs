@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly TestCoreShell _coreShell = new TestCoreShell();
+        private readonly TestCoreShell _coreShell = TestCoreShell.CreateBasic();
 
         public ReplCommandTest() {
             _debuggerModeTracker = new VsDebuggerModeTracker(_coreShell);

@@ -17,11 +17,7 @@ namespace Microsoft.Languages.Editor.Application.Host {
             var documentFactoryImportComposer = new ContentTypeImportComposer<IEditorDocumentFactory>(compositionService);
             var documentFactory = documentFactoryImportComposer.GetImport(textBuffer.ContentType.TypeName);
 
-            // Debug.Assert(factory != null, String.Format("No editor factory found for content type {0}", textBuffer.ContentType.TypeName));
-            if(factory != null) // may be null if file type only support colorization, like VBScript
-                return factory.CreateEditorInstance(textBuffer, documentFactory);
-
-            return null;
+             return factory?.CreateEditorInstance(textBuffer, documentFactory);
         }
     }
 }

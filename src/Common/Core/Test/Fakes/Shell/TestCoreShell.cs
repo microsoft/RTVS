@@ -19,27 +19,40 @@ using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
-    public enum TestCoreShellMode {
-        Empty,
-        Substitute,
-        Basic
-    }
-
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
-        private readonly ICompositionCatalog _catalog;
         private readonly Thread _creatorThread;
 
         public IServiceManager ServiceManager { get; }
 
-        /// <summary>
-        /// Creates an empty core shell or with with a set of basic services.
-        /// Does not delegate to MEF or host-provided (global) service provider
-        /// </summary>
-        public TestCoreShell(TestCoreShellMode mode = TestCoreShellMode.Basic) {
+        private TestCoreShell(IServiceManager serviceManager) {
             _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = new ServiceManager();
-            AddServices(mode);
+            ServiceManager = serviceManager;
+        }
+
+        /// <summary>
+        /// Creates an empty shell. Caller can add services as needed.
+        /// </summary>
+        public static TestCoreShell CreateEmpty() {
+            return new TestCoreShell(new ServiceManager());
+        }
+
+        /// <summary>
+        /// Creates shell with a set of basic functional services. 
+        /// </summary>
+        public static TestCoreShell CreateBasic() {
+            var shell = new TestCoreShell(new ServiceManager());
+            shell.AddBasicServices();
+            return shell;
+        }
+
+        /// <summary>
+        /// Creates shell with a set of basic services which are substitutes 
+        /// </summary>
+        public static TestCoreShell CreateSubstitute() {
+            var shell = new TestCoreShell(new ServiceManager());
+            shell.AddSubstiteServices();
+            return shell;
         }
 
         /// <summary>
@@ -47,36 +60,16 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         /// to the supplied export provider for additional services.
         /// </summary>
         /// <param name="exportProvider"></param>
-        public TestCoreShell(IExportProvider exportProvider) {
-            _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = new TestServiceManager(exportProvider);
+        public TestCoreShell(IExportProvider exportProvider): this(new TestServiceManager(exportProvider)) {
             AddBasicServices();
         }
 
-        /// <summary>
-        /// Creates test core shell based on the propulated set of services
-        /// </summary>
-        public TestCoreShell(IServiceManager services) {
-            _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = services;
-        }
-
-        public TestCoreShell(ICompositionCatalog catalog): this(TestCoreShellMode.Basic) { 
+        public TestCoreShell(ICompositionCatalog catalog) : this(new TestServiceManager(catalog.ExportProvider)) {
+            AddBasicServices();
             ServiceManager
                 .AddService(catalog)
                 .AddService(catalog.ExportProvider)
                 .AddService(catalog.CompositionService);
-        }
-
-        private void AddServices(TestCoreShellMode mode) {
-            switch (mode) {
-                case TestCoreShellMode.Substitute:
-                    AddSubstiteServices();
-                    break;
-                case TestCoreShellMode.Basic:
-                    AddBasicServices();
-                    break;
-            }
         }
 
         private void AddSubstiteServices() {

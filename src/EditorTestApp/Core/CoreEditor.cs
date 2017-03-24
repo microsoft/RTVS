@@ -117,11 +117,11 @@ namespace Microsoft.Languages.Editor.Application.Core {
         #endregion
 
         private void CreateTextViewHost(string text, string filePath) {
-            if (text == null)
-                text = string.Empty;
+            text = text ?? string.Empty;
 
             var diskBuffer = _textBufferFactoryService.CreateTextBuffer(text, ContentType);
-            _editorIntance = EditorInstanceFactory.CreateEditorInstance(diskBuffer, _coreShell.GetService<ICompositionService>());
+            var cs = _coreShell.GetService<ICompositionService>();
+            _editorIntance = EditorInstanceFactory.CreateEditorInstance(diskBuffer, cs);
 
             ITextDataModel textDataModel;
 

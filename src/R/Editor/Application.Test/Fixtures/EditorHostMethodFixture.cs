@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
@@ -29,7 +30,7 @@ namespace Microsoft.R.Editor.Application.Test {
             StartScript(exportProvider, text, "filename", contentType, null);
 
         public async Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string filename, string contentType, IRSessionProvider sessionProvider) {
-            var shell = exportProvider.GetExportedValue<ICoreShell>();
+            var shell = new TestCoreShell(exportProvider);
 
             var coreEditor = await InUI(() => new CoreEditor(shell, text, filename, contentType));
             var containerDisposable = await AddToHost(coreEditor.Control);

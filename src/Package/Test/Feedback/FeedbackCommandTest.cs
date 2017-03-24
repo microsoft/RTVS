@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class FeedbackCommandTest {
-        private readonly TestCoreShell _coreShell = new TestCoreShell(TestCoreShellMode.Substitute);
+        private readonly TestCoreShell _coreShell = TestCoreShell.CreateSubstitute();
 
         [Test]
         public void ReportIssue() {

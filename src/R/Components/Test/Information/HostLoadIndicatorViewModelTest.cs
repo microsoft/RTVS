@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.Test.Information {
     [Category.Information]
     public sealed class HostLoadIndicatorViewModelTest {
         private readonly IRSessionProvider _sessionProvider = Substitute.For<IRSessionProvider>();
-        private readonly ICoreShell _coreShell = new TestCoreShell();
+        private readonly ICoreShell _coreShell = TestCoreShell.CreateBasic();
 
         private readonly HostLoad _hostLoad = new HostLoad() {
             CpuLoad = 30,

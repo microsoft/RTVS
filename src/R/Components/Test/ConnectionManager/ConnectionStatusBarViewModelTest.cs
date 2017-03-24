@@ -17,7 +17,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [Category.Connections]
     public sealed class ConnectionStatusBarViewModelTest {
         private readonly IConnectionManager _cm = Substitute.For<IConnectionManager>();
-        private readonly ICoreShell _shell = new TestCoreShell();
+        private readonly ICoreShell _shell = TestCoreShell.CreateBasic();
 
         [Test]
         public void Construction() {
