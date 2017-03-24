@@ -6,11 +6,9 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
@@ -26,10 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly IRSession _rSession;
         private VariableViewModel _evaluation;
 
-        public VariableGridHost(IServiceContainer services) {
+        public VariableGridHost() {
             InitializeComponent();
 
-            _services = services;
+            _services = VsAppShell.Current.Services;
             _rSession = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
         }
