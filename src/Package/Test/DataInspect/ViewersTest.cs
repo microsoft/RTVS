@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -33,6 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private readonly IRInteractiveWorkflow _workflow;
 
         public ViewersTest(TestMethodFixture testMethod) {
+            REditorSettings.Initialize(new TestSettingsStorage());
+
             _testMethod = testMethod;
             _aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
             _workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();

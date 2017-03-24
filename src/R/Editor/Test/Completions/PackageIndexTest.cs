@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class PackageIndexTest : IAsyncLifetime {
-        private readonly TestCoreShell _shell = new TestCoreShell(null);
+        private readonly TestCoreShell _shell = new TestCoreShell();
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRSessionProvider _sessionProvider;
 

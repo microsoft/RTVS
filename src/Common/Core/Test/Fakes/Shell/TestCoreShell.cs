@@ -7,14 +7,24 @@ using System.Threading;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
+using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
+    public enum TestCoreShellMode {
+        Empty,
+        Substitute,
+        Basic
+    }
+
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
         private readonly ICompositionCatalog _catalog;
@@ -22,40 +32,65 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         public IServiceManager ServiceManager { get; }
 
-        public TestCoreShell(ICompositionCatalog catalog, IServiceManager services) {
-            _catalog = catalog;
+        /// <summary>
+        /// Creates an empty core shell or with with a set of basic services.
+        /// Does not delegate to MEF or host-provided (global) service provider
+        /// </summary>
+        public TestCoreShell(TestCoreShellMode mode = TestCoreShellMode.Basic) {
             _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = services;
+            ServiceManager = new ServiceManager();
+            AddServices(mode);
         }
 
         /// <summary>
-        /// Creates core shell with a set of basic services.
-        /// Does not delegate to MEF or host-provided (global) 
-        /// service provider
+        /// Creates test core shell with basic services and delegation
+        /// to the supplied export provider for additional services.
         /// </summary>
-        public TestCoreShell() {
-            _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = new ServiceManager();
-            AddBasicServices();
-        }
-
+        /// <param name="exportProvider"></param>
         public TestCoreShell(IExportProvider exportProvider) {
             _creatorThread = UIThreadHelper.Instance.Thread;
             ServiceManager = new TestServiceManager(exportProvider);
             AddBasicServices();
         }
 
-        public TestCoreShell(ICompositionCatalog catalog
-        , IActionLog log = null
-        , ILoggingPermissions loggingPermissions = null
-        , IFileSystem fs = null
-        , IRegistry registry = null
-        , IProcessServices ps = null) : this(catalog, new TestServiceManager(catalog.ExportProvider)) {
-            AddBasicServices(log, loggingPermissions, fs, registry, ps);
+        /// <summary>
+        /// Creates test core shell based on the propulated set of services
+        /// </summary>
+        public TestCoreShell(IServiceManager services) {
+            _creatorThread = UIThreadHelper.Instance.Thread;
+            ServiceManager = services;
+        }
+
+        public TestCoreShell(ICompositionCatalog catalog): this(TestCoreShellMode.Basic) { 
             ServiceManager
                 .AddService(catalog)
                 .AddService(catalog.ExportProvider)
                 .AddService(catalog.CompositionService);
+        }
+
+        private void AddServices(TestCoreShellMode mode) {
+            switch (mode) {
+                case TestCoreShellMode.Substitute:
+                    AddSubstiteServices();
+                    break;
+                case TestCoreShellMode.Basic:
+                    AddBasicServices();
+                    break;
+            }
+        }
+
+        private void AddSubstiteServices() {
+            ServiceManager
+                .AddService(Substitute.For<IMainThread>())
+                .AddService(Substitute.For<IActionLog>())
+                .AddService(Substitute.For<ISecurityService>())
+                .AddService(Substitute.For<ILoggingPermissions>())
+                .AddService(Substitute.For<IFileSystem>())
+                .AddService(Substitute.For<IRegistry>())
+                .AddService(Substitute.For<IProcessServices>())
+                .AddService(Substitute.For<ITaskService>())
+                .AddService(Substitute.For<IUIService>())
+                .AddService(Substitute.For<IPlatformServices>());
         }
 
         private void AddBasicServices(IActionLog log = null

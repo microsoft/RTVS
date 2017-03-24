@@ -15,13 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class FeedbackCommandTest {
-        private readonly ILoggingPermissions _lp;
-        private readonly ICoreShell _coreShell;
-
-        public FeedbackCommandTest() {
-            _lp = Substitute.For<ILoggingPermissions>();
-            _coreShell = new TestCoreShell(null, null, _lp);
-        }
+        private readonly TestCoreShell _coreShell = new TestCoreShell(TestCoreShellMode.Substitute);
 
         [Test]
         public void ReportIssue() {
@@ -42,10 +36,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         }
 
         private void TestStatus(OleMenuCommand cmd) {
-            _lp.IsFeedbackPermitted.Returns(false);
+            var lp = _coreShell.GetService<ILoggingPermissions>();
+
+            lp.IsFeedbackPermitted.Returns(false);
             cmd.Should().BeInvisibleAndDisabled();
 
-            _lp.IsFeedbackPermitted.Returns(true);
+            lp.IsFeedbackPermitted.Returns(true);
             cmd.Should().BeEnabled();
         }
     }
