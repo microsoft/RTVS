@@ -655,22 +655,22 @@ This prompt can be suppressed in R Tools | Options.
     <value>Run plotting command in R Interactive Window</value>
   </data>
   <data name="rtvs_AutosavingWorkspace" xml:space="preserve">
-    <value>Autosaving workspace to image "%s" ...</value>
+    <value>Autosaving workspace to image '{0}' ...</value>
   </data>
   <data name="rtvs_ConfirmDeleteWorkspace" xml:space="preserve">
-    <value>Delete autosaved workspace image "%s"?</value>
+    <value>Delete autosaved workspace image '{0}'?</value>
   </data>
   <data name="rtvs_DeletingWorkspace" xml:space="preserve">
-    <value>Deleting autosaved workspace image "%s".</value>
+    <value>Deleting autosaved workspace image '{0}'.</value>
   </data>
   <data name="rtvs_FailedToLoadWorkspace" xml:space="preserve">
-    <value>Failed to load workspace from autosaved image "%s".</value>
+    <value>Failed to load workspace from autosaved image '{0}'.</value>
   </data>
   <data name="rtvs_LoadedWorkspace" xml:space="preserve">
-    <value>Loaded workspace from autosaved image "%s".</value>
+    <value>Loaded workspace from autosaved image '{0}'.</value>
   </data>
   <data name="rtvs_SessionTerminatedUnexpectedly" xml:space="preserve">
-    <value>Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?</value>
+    <value>Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?</value>
   </data>
   <data name="rtvs_WorkspaceSavedSuccessfully" xml:space="preserve">
     <value> workspace saved successfully.</value>

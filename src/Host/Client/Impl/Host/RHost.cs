@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -571,7 +572,7 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "?LocStr":
-                                await RespondAsync(message, ct, _callbacks.GetLocalizedString(message.GetString(0, "id")));
+                                await RespondAsync(message, ct, GetLocalizedString(message));
                                 break;
 
                             default:
@@ -594,6 +595,15 @@ namespace Microsoft.R.Host.Client {
             }
 
             return null;
+        }
+
+        private string GetLocalizedString(Message message) {
+            var s = _callbacks.GetLocalizedString(message.GetString(0, "id"));
+            if (message.ArgumentCount == 2) {
+                var args = message.GetArgument(1, "a", JTokenType.Array).Select(o => o.Value<object>()).ToArray();
+                s = string.Format(CultureInfo.CurrentCulture, s, args);
+            }
+            return s;
         }
 
         private CancellationToken UpdateCancelAllCtsLink(ref CancellationTokenSource cancelAllCtsLink, CancellationToken loopCt) {

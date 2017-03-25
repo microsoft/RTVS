@@ -19,8 +19,8 @@ send_request_and_get_response <- function(name, ...) {
     call_embedded('send_request_and_get_response', name, list(...))
 }
 
-locstr <- function(id) {
-    send_request_and_get_response('?LocStr', id)[[1]]
+locstr <- function(id, ...) {
+    send_request_and_get_response('?LocStr', id, list(...))[[1]]
 }
 
 askYesNo <- function(message) {
@@ -275,8 +275,8 @@ query_reload_autosave <- function() {
         return(FALSE);
     }
 
-    msg <- locstr('rtvs_SessionTerminatedUnexpectedly');
-    res <- askYesNo(sprintf(msg, autosave_filename))[[1]];
+    msg <- locstr('rtvs_SessionTerminatedUnexpectedly', autosave_filename);
+    res <- askYesNo(msg)[[1]];
 
     if (identical(res, 'Y')) {
         # Use try instead of tryCatch, so that any errors are printed as usual.
@@ -287,17 +287,17 @@ query_reload_autosave <- function() {
         });
 
         if (loaded) {
-            message(sprintf(locstr('rtvs_LoadedWorkspace'), autosave_filename));
+            message(locstr('rtvs_LoadedWorkspace', autosave_filename));
             # If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
             # state now, and if there's another disconnect, it will be autosaved again.
             return(TRUE);
         } else {
-            warning(sprintf(locstr('rtvs_FailedToLoadWorkspace'), autosave_filename), call. = FALSE, immediate. = TRUE);
+            warning(locstr('rtvs_FailedToLoadWorkspace', autosave_filename), call. = FALSE, immediate. = TRUE);
             return(FALSE);
         }
     } else {
-        msg <- locstr('rtvs_ConfirmDeleteWorkspace');
-        res <-askYesNo(sprintf(msg, autosave_filename))[[1]];
+        msg <- locstr('rtvs_ConfirmDeleteWorkspace', autosave_filename);
+        res <-askYesNo(msg)[[1]];
         return(identical(res, 'Y'));
     }
 }
@@ -306,9 +306,9 @@ save_state <- function() {
     # This function runs when client is already disconnected, so locstr() cannot be used, since it requires
     # a connected client to provide translated strings. However, since messages are not user-visible and are
     # here for logging purposes only, they don't need to be localized in the first place.
-    message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename), appendLF = FALSE);
+    #message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename), appendLF = FALSE);
     save.image(autosave_filename);
-    message(' workspace saved successfully.');
+    #message(' workspace saved successfully.');
 }
 
 enable_autosave <- function(delete_existing) {
@@ -316,7 +316,7 @@ enable_autosave <- function(delete_existing) {
         set_disconnect_callback(save_state);
 
         if (delete_existing) {
-            message(sprintf(locstr('rtvs_DeletingWorkspace'), autosave_filename));
+            message(locstr('rtvs_DeletingWorkspace', autosave_filename));
             unlink(autosave_filename);
         }
     });
