@@ -19,10 +19,6 @@ send_request_and_get_response <- function(name, ...) {
     call_embedded('send_request_and_get_response', name, list(...))
 }
 
-locstr <- function(id, ...) {
-    send_request_and_get_response('?LocStr', id, list(...))[[1]]
-}
-
 loc_message <- function(id, ...) {
     send_notification("!LocMessage", id, list(...))
 }
@@ -309,7 +305,7 @@ query_reload_autosave <- function() {
 }
 
 save_state <- function() {
-    # This function runs when client is already disconnected, so locstr() cannot be used, since it requires
+    # This function runs when client is already disconnected, so loc_message() cannot be used, since it requires
     # a connected client to provide translated strings. However, since messages are not user-visible and are
     # here for logging purposes only, they don't need to be localized in the first place.
     #message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename), appendLF = FALSE);

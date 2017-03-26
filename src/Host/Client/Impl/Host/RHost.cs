@@ -590,10 +590,6 @@ namespace Microsoft.R.Host.Client {
                                 }).DoNotWait();
                                 break;
 
-                            case "?LocStr":
-                                await RespondAsync(message, ct, GetLocalizedString(message));
-                                break;
-
                             case "!LocMessage":
                                 _callbacks.WriteConsoleEx(GetLocalizedString(message) + Environment.NewLine, OutputType.Output, ct).DoNotWait();
                                 break;
