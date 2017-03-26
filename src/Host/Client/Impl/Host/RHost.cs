@@ -148,23 +148,25 @@ namespace Microsoft.R.Host.Client {
             tcs?.TrySetResult(true);
         }
 
+        private async Task ShowLocalizedDialogFormat(Message request, MessageButtons buttons, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+            var response = await ShowDialog(new RContext[0], GetLocalizedString(request), buttons, ct);
+            await RespondAsync(request, ct, response);
+        }
+
         private async Task ShowDialog(Message request, MessageButtons buttons, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            RContext[] contexts;
-            string message;
-            switch (request.ArgumentCount) {
-                case 1:
-                    contexts = new RContext[0];
-                    message = request.GetString(0, "s", allowNull: true);
-                    break;
-                case 2:
-                    contexts = GetContexts(request);
-                    message = request.GetString(1, "s", allowNull: true);
-                    break;
-                default:
-                    throw new InvalidOperationException("Invalid number of argument in ShowDialog");
-            }
+            request.ExpectArguments(2);
+            var contexts = GetContexts(request);
+            var s = request.GetString(1, "s", allowNull: true);
+
+            var response = await ShowDialog(contexts, s, buttons, ct);
+            await RespondAsync(request, ct, response);
+        }
+
+        private async Task<string> ShowDialog(RContext[] contexts, string message, MessageButtons buttons, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
 
             MessageButtons input = await _callbacks.ShowDialog(contexts, message, buttons, ct);
             ct.ThrowIfCancellationRequested();
@@ -186,8 +188,7 @@ namespace Microsoft.R.Host.Client {
                         throw new InvalidOperationException(error);
                     }
             }
-
-            await RespondAsync(request, ct, response);
+            return response;
         }
 
         private async Task ReadConsole(Message request, CancellationToken ct) {
@@ -459,6 +460,24 @@ namespace Microsoft.R.Host.Client {
                                     .DoNotWait();
                                 break;
 
+                            case "?LocYesNoCancel":
+                                ShowLocalizedDialogFormat(message, MessageButtons.YesNoCancel, ct)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
+                                break;
+
+                            case "?LocYesNo":
+                                ShowLocalizedDialogFormat(message, MessageButtons.YesNo, ct)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
+                                break;
+
+                            case "?LocOkCancel":
+                                ShowLocalizedDialogFormat(message, MessageButtons.OKCancel, ct)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
+                                break;
+
                             case "?>":
                                 ReadConsole(message, ct)
                                     .SilenceException<MessageTransportException>()
@@ -573,6 +592,14 @@ namespace Microsoft.R.Host.Client {
 
                             case "?LocStr":
                                 await RespondAsync(message, ct, GetLocalizedString(message));
+                                break;
+
+                            case "!LocMessage":
+                                _callbacks.WriteConsoleEx(GetLocalizedString(message) + Environment.NewLine, OutputType.Output, ct).DoNotWait();
+                                break;
+
+                            case "!LocWarning":
+                                _callbacks.WriteConsoleEx(GetLocalizedString(message) + Environment.NewLine, OutputType.Error, ct).DoNotWait();
                                 break;
 
                             default:

@@ -23,8 +23,16 @@ locstr <- function(id, ...) {
     send_request_and_get_response('?LocStr', id, list(...))[[1]]
 }
 
-askYesNo <- function(message) {
-    send_request_and_get_response('?YesNo', message)[[1]]
+loc_message <- function(id, ...) {
+    send_notification("!LocMessage", id, list(...))
+}
+
+loc_warning <- function(id, ...) {
+    send_notification("!LocWarning", id, list(...))
+}
+
+loc_askYesNo <- function(id, ...) {
+    send_request_and_get_response('?LocYesNo', id, list(...))[[1]]
 }
 
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
@@ -275,8 +283,7 @@ query_reload_autosave <- function() {
         return(FALSE);
     }
 
-    msg <- locstr('rtvs_SessionTerminatedUnexpectedly', autosave_filename);
-    res <- askYesNo(msg)[[1]];
+    res <- loc_askYesNo('rtvs_SessionTerminatedUnexpectedly', autosave_filename)[[1]];
 
     if (identical(res, 'Y')) {
         # Use try instead of tryCatch, so that any errors are printed as usual.
@@ -287,17 +294,16 @@ query_reload_autosave <- function() {
         });
 
         if (loaded) {
-            message(locstr('rtvs_LoadedWorkspace', autosave_filename));
+            loc_warning('rtvs_LoadedWorkspace', autosave_filename);
             # If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
             # state now, and if there's another disconnect, it will be autosaved again.
             return(TRUE);
         } else {
-            warning(locstr('rtvs_FailedToLoadWorkspace', autosave_filename), call. = FALSE, immediate. = TRUE);
+            loc_warning('rtvs_FailedToLoadWorkspace', autosave_filename);
             return(FALSE);
         }
     } else {
-        msg <- locstr('rtvs_ConfirmDeleteWorkspace', autosave_filename);
-        res <-askYesNo(msg)[[1]];
+        res <-loc_askYesNo('rtvs_ConfirmDeleteWorkspace', autosave_filename)[[1]];
         return(identical(res, 'Y'));
     }
 }
@@ -316,7 +322,7 @@ enable_autosave <- function(delete_existing) {
         set_disconnect_callback(save_state);
 
         if (delete_existing) {
-            message(locstr('rtvs_DeletingWorkspace', autosave_filename));
+            loc_warning('rtvs_DeletingWorkspace', autosave_filename);
             unlink(autosave_filename);
         }
     });
