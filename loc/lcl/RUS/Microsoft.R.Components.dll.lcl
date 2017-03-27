@@ -1824,54 +1824,54 @@
       </Item>
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+          <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автоматическое сохранение рабочей области в образе "%s"...]]></Val>
+            <Val><![CDATA[Автоматическое сохранение рабочей области в образе '{0}'...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+          <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Удалить автоматически сохраненный образ рабочей области "%s"?]]></Val>
+            <Val><![CDATA[Удалить автоматически сохраненный образ рабочей области '{0}'?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+          <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполняется удаление автоматически сохраненного образа рабочей области "%s".]]></Val>
+            <Val><![CDATA[Выполняется удаление автоматически сохраненного образа рабочей области '{0}'.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+          <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось загрузить рабочую область из автоматически сохраненного образа "%s".]]></Val>
+            <Val><![CDATA[Не удалось загрузить рабочую область из автоматически сохраненного образа '{0}'.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+          <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Рабочая область загружена из автоматически сохраненного образа "%s".]]></Val>
+            <Val><![CDATA[Рабочая область загружена из автоматически сохраненного образа '{0}'.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Предыдущий сеанс R завершен, а его глобальная рабочая область была сохранена в образе "%s". Вы хотите перезагрузить ее?]]></Val>
+            <Val><![CDATA[Предыдущий сеанс R завершен, а его глобальная рабочая область была сохранена в образе '{0}'. Вы хотите перезагрузить ее?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
