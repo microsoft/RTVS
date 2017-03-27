@@ -132,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
                 await AppShell.ShowErrorMessageAsync(message);
-                _pss.Start("http://pandoc.org/installing.html");
+                _pss.Start("https://pandoc.org/installing.html");
                 return false;
             }
             return true;

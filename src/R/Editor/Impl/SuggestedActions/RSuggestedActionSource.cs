@@ -12,6 +12,7 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.SuggestedActions.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -20,7 +21,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.SuggestedActions {
     internal sealed class RSuggestedActionSource : ISuggestedActionsSource {
-        private IEnumerable<IRSuggestedActionProvider> _suggestedActionProviders;
+        private readonly IEnumerable<IRSuggestedActionProvider> _suggestedActionProviders;
         private ITextBuffer _textBuffer;
         private ITextView _textView;
         IREditorDocument _document;
@@ -115,8 +116,8 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         public bool TryGetTelemetryId(out Guid telemetryId) {
-            telemetryId = Guid.Empty;
-            return false;
+            telemetryId = REditorCommands.REditorCmdSetGuid;
+            return true;
         }
 
         public void Dispose() {

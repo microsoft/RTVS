@@ -82,5 +82,7 @@ namespace Microsoft.R.Host.Client {
         Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken);
 
         string GetLocalizedString(string id);
+        Task BeforePackagesInstalledAsync(CancellationToken cancellationToken);
+        Task AfterPackagesInstalledAsync(CancellationToken cancellationToken);
     }
 }

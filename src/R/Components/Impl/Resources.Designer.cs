@@ -1525,7 +1525,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Autosaving workspace to image &quot;%s&quot; ....
+        ///   Looks up a localized string similar to Autosaving workspace to image &apos;{0}&apos; ....
         /// </summary>
         public static string rtvs_AutosavingWorkspace {
             get {
@@ -1534,7 +1534,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Delete autosaved workspace image &quot;%s&quot;?.
+        ///   Looks up a localized string similar to Delete autosaved workspace image &apos;{0}&apos;?.
         /// </summary>
         public static string rtvs_ConfirmDeleteWorkspace {
             get {
@@ -1543,7 +1543,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deleting autosaved workspace image &quot;%s&quot;..
+        ///   Looks up a localized string similar to Deleting autosaved workspace image &apos;{0}&apos;..
         /// </summary>
         public static string rtvs_DeletingWorkspace {
             get {
@@ -1552,7 +1552,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to load workspace from autosaved image &quot;%s&quot;..
+        ///   Looks up a localized string similar to Failed to load workspace from autosaved image &apos;{0}&apos;..
         /// </summary>
         public static string rtvs_FailedToLoadWorkspace {
             get {
@@ -1561,7 +1561,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loaded workspace from autosaved image &quot;%s&quot;..
+        ///   Looks up a localized string similar to Loaded workspace from autosaved image &apos;{0}&apos;..
         /// </summary>
         public static string rtvs_LoadedWorkspace {
             get {
@@ -1570,7 +1570,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Previous R session terminated, and its global workspace has been saved to image &quot;%s&quot;. Would you like to reload it?.
+        ///   Looks up a localized string similar to Previous R session terminated, and its global workspace has been saved to image &apos;{0}&apos;. Would you like to reload it?.
         /// </summary>
         public static string rtvs_SessionTerminatedUnexpectedly {
             get {

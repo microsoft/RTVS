@@ -112,5 +112,8 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             GetLocalizedStringCalls.Add(id);
             return null;
         }
+
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }

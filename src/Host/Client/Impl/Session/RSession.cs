@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -718,8 +717,15 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
-        void IRCallbacks.PackagesInstalled() {
+        Task IRCallbacks.BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
+            var callback = _callback;
+            return callback.BeforePackagesInstalledAsync(cancellationToken);
+        }
+
+        Task IRCallbacks.AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
             PackagesInstalled?.Invoke(this, EventArgs.Empty);
+            var callback = _callback;
+            return callback.AfterPackagesInstalledAsync(cancellationToken);
         }
 
         void IRCallbacks.PackagesRemoved() {

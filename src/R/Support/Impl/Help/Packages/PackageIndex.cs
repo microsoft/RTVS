@@ -8,15 +8,16 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -26,6 +27,7 @@ namespace Microsoft.R.Support.Help.Packages {
     /// Index of packages available from the R engine.
     /// </summary>
     [Export(typeof(IPackageIndex))]
+    [Export(typeof(IPackageInstallationNotifications))]
     public sealed class PackageIndex : IPackageIndex {
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
@@ -49,8 +51,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
             _interactiveSession = _workflow.RSession;
             _interactiveSession.Connected += OnSessionConnected;
-            _interactiveSession.PackagesInstalled += OnPackagesChanged;
-            _interactiveSession.PackagesRemoved += OnPackagesChanged;
+            _interactiveSession.PackagesRemoved += OnPackagesRemoved;
 
             _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
@@ -69,8 +70,19 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private void OnPackagesChanged(object sender, EventArgs e) {
-            UpdateInstalledPackagesAsync().DoNotWait();
+        public Task BeforePackagesInstalledAsync(CancellationToken ct) {
+            var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeoutCts.CancelAfter(5000);
+            return _host.StopSessionAsync(timeoutCts.Token);
+        }
+
+        public Task AfterPackagesInstalledAsync(CancellationToken ct) {
+            UpdateInstalledPackagesAsync(ct).DoNotWait();
+            return Task.CompletedTask;
+        }
+
+        private void OnPackagesRemoved(object sender, EventArgs e) {
+            RemovePackagesAsync().DoNotWait();
         }
 
         #region IPackageIndex
@@ -166,8 +178,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public void Dispose() {
             if (_interactiveSession != null) {
-                _interactiveSession.PackagesInstalled -= OnPackagesChanged;
-                _interactiveSession.PackagesRemoved -= OnPackagesChanged;
+                _interactiveSession.PackagesRemoved -= OnPackagesRemoved;
                 _interactiveSession.Connected -= OnSessionConnected;
                 _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged;
             }
@@ -176,6 +187,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task LoadInstalledPackagesIndexAsync() {
             try {
+                await _host.StartSessionAsync();
                 var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
                 foreach (var package in packagesFunctions) {
                     var name = package.Value<string>("Package");
@@ -202,7 +214,7 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        private async Task UpdateInstalledPackagesAsync() {
+        private async Task RemovePackagesAsync() {
             var token = await _buildIndexLock.ResetAsync();
             if (!token.IsSet) {
                 try {
@@ -212,6 +224,18 @@ namespace Microsoft.R.Support.Help.Packages {
                     var currentNames = _packages.Keys.ToArray();
                     var removedNames = currentNames.Except(installedNames);
                     _packages.RemoveWhere((kvp) => removedNames.Contains(kvp.Key));
+                } catch (RException) { } catch (OperationCanceledException) { } finally {
+                    token.Reset();
+                }
+            }
+        }
+
+        private async Task UpdateInstalledPackagesAsync(CancellationToken ct) {
+            var token = await _buildIndexLock.ResetAsync(ct);
+            if (!token.IsSet) {
+                try {
+                    var installed = await GetInstalledPackagesAsync();
+                    var currentNames = _packages.Keys.ToArray();
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
                     await AddPackagesToIndexAsync(added);
@@ -251,18 +275,10 @@ namespace Microsoft.R.Support.Help.Packages {
             return list;
         }
 
-        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
-            await _host.StartSessionAsync();
+        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync(CancellationToken ct = default(CancellationToken)) {
+            await _host.StartSessionAsync(ct);
             var result = await _host.Session.InstalledPackagesAsync();
             return result.Select(p => p.ToObject<RPackage>());
-        }
-
-        private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
-            try {
-                await _host.StartSessionAsync();
-                return _host.LoadedPackageNames;
-            } catch (RException) { } catch (OperationCanceledException) { }
-            return Enumerable.Empty<string>();
         }
 
         internal static string CacheFolderPath =>

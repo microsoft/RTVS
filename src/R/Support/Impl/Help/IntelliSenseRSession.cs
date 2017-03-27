@@ -81,20 +81,27 @@ namespace Microsoft.R.Support.Help {
         /// <summary>
         /// Starts intellisense session.
         /// </summary>
-        public async Task StartSessionAsync() {
-            var token = await _lock.ResetAsync();
+        public async Task StartSessionAsync(CancellationToken ct = default(CancellationToken)) {
+            var token = await _lock.ResetAsync(ct);
             try {
-                if (!_sessionProvider.HasBroker) {
-                    throw new RHostDisconnectedException();
-                }
-
                 if (Session == null) {
                     Session = _sessionProvider.GetOrCreate(SessionNames.Intellisense);
                 }
 
                 if (!Session.IsHostRunning) {
                     int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
-                    await Session.EnsureHostStartedAsync(new RHostStartupInfo(RToolsSettings.Current.CranMirror, codePage: RToolsSettings.Current.RCodePage), null, timeout);
+                    await Session.EnsureHostStartedAsync(new RHostStartupInfo(RToolsSettings.Current.CranMirror, codePage: RToolsSettings.Current.RCodePage), null, timeout, ct);
+                }
+            } finally {
+                token.Set();
+            }
+        }
+
+        public async Task StopSessionAsync(CancellationToken ct = default(CancellationToken)) {
+            var token = await _lock.ResetAsync(ct);
+            try {
+                if (Session.IsHostRunning) {
+                    await Session.StopHostAsync(waitForShutdown: true, cancellationToken: ct);
                 }
             } finally {
                 token.Set();

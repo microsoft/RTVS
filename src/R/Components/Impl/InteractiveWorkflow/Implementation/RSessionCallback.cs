@@ -149,5 +149,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public string GetLocalizedString(string id) =>
             Resources.ResourceManager.GetString(id, Resources.Culture);
+
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
+            var notifications = _coreShell.ExportProvider.GetExportedValue<IPackageInstallationNotifications>();
+            return notifications.BeforePackagesInstalledAsync(cancellationToken);
+        }
+
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
+            var notifications = _coreShell.ExportProvider.GetExportedValue<IPackageInstallationNotifications>();
+            return notifications.AfterPackagesInstalledAsync(cancellationToken);
+        }
     }
 }
