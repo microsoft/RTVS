@@ -152,12 +152,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Resources.ResourceManager.GetString(id, Resources.Culture);
 
         public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
-            var notifications = _coreShell.ExportProvider.GetExportedValue<IPackageInstallationNotifications>();
+            var notifications = _coreShell.GetService<IPackageInstallationNotifications>();
             return notifications.BeforePackagesInstalledAsync(cancellationToken);
         }
 
         public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
-            var notifications = _coreShell.ExportProvider.GetExportedValue<IPackageInstallationNotifications>();
+            var notifications = _coreShell.GetService<IPackageInstallationNotifications>();
             return notifications.AfterPackagesInstalledAsync(cancellationToken);
         }
     }

@@ -98,6 +98,17 @@ namespace Microsoft.R.Support.Help {
             }
         }
 
+        public async Task StopSessionAsync(CancellationToken ct = default(CancellationToken)) {
+            var token = await _lock.ResetAsync(ct);
+            try {
+                if (Session.IsHostRunning) {
+                    await Session.StopHostAsync(waitForShutdown: true, cancellationToken: ct);
+                }
+            } finally {
+                token.Set();
+            }
+        }
+
         /// <summary>
         /// Retrieves names of packages loaded into the interactive session.
         /// </summary>
