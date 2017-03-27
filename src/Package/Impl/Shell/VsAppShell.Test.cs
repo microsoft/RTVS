@@ -16,7 +16,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// such as composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    [Export(typeof(ICoreShell))]
     public sealed partial class VsAppShell {
         private static void SetupTestInstance() {
             var thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
