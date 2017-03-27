@@ -27,8 +27,8 @@ namespace Microsoft.Windows.Core.Test.Logging {
         [InlineData(true, -1, -1, (int)LogVerbosity.Traffic, true)]
         [InlineData(false, 42, 42, (int)LogVerbosity.Minimal, false)]
         public void Overrides(bool telemetryEnabled, int? logVerbosity, int? feedbackSetting, LogVerbosity expectedMaxLogLevel, bool expectedFeedback) {
-            var constants = Substitute.For<IApplicationConstants>();
-            constants.LocalMachineHive.Returns("rtvs");
+            var platform = Substitute.For<IPlatformServices>();
+            platform.LocalMachineHive.Returns("rtvs");
 
             var rtvsKey = Substitute.For<IRegistryKey>();
             rtvsKey.GetValue(LoggingPermissions.LogVerbosityValueName).Returns(logVerbosity);
@@ -43,7 +43,7 @@ namespace Microsoft.Windows.Core.Test.Logging {
             var telemetry = Substitute.For<ITelemetryService>();
             telemetry.IsEnabled.Returns(telemetryEnabled);
 
-            var permissions = new LoggingPermissions(constants, telemetry, registry);
+            var permissions = new LoggingPermissions(platform, telemetry, registry);
             permissions.MaxVerbosity.Should().Be(expectedMaxLogLevel);
             permissions.IsFeedbackPermitted.Should().Be(expectedFeedback);
 

@@ -6,7 +6,7 @@ using Microsoft.Languages.Editor.Completion;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

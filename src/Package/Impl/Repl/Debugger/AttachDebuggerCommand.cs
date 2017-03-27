@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
@@ -25,12 +24,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
             _interactiveWorkflow = interactiveWorkflow;
         }
 
-        protected unsafe override void Handle() {
+        protected override unsafe void Handle() {
             if (!RSession.IsHostRunning) {
                 return;
             }
 
-            var debugger = VsAppShell.Current.GlobalServices.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
+            var debugger = _interactiveWorkflow.Shell.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

@@ -6,34 +6,33 @@ using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using EnvDTE;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Sql.Publish;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using EnvDTE;
-using Microsoft.R.Components.Sql.Publish;
-using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class PublishSProcCommand : ICommandGroupHandler {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
         private readonly IDacPackageServicesProvider _dacServicesProvider;
         private readonly ISettingsStorage _settings;
 
         [ImportingConstructor]
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) :
-            this(appShell, pss, new FileSystem(), dacServicesProvider, settings) {
+        public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) :
+            this(shell, pss, new FileSystem(), dacServicesProvider, settings) {
         }
 
-        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) {
-            _appShell = appShell;
+        public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) {
+            _shell = shell;
             _pss = pss;
             _fs = fs;
             _dacServicesProvider = dacServicesProvider;
@@ -64,17 +63,17 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 if (sprocFiles.Any()) {
                     try {
                         // Make sure all files are saved and up to date on disk.
-                        var dte = _appShell.GlobalServices.GetService<DTE>(typeof(DTE));
+                        var dte = _shell.GetService<DTE>(typeof(DTE));
                         dte.ExecuteCommand("File.SaveAll");
 
-                        var publisher = new SProcPublisher(_appShell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());
+                        var publisher = new SProcPublisher(_shell, _pss, _fs, _dacServicesProvider.GetDacPackageServices());
                         var settings = new SqlSProcPublishSettings(_settings);
                         publisher.Publish(settings, sprocFiles);
                     } catch (Exception ex) {
-                        _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishError, ex.Message));
+                        _shell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishError, ex.Message));
                     }
                 } else {
-                    _appShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
+                    _shell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
                 }
             }
         }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -30,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         /// Loads settings via language (editor) tools options page
         /// </summary>
         public override void LoadFromStorage() {
-            IVsShell shell = VsAppShell.Current.GlobalServices.GetService<IVsShell>(typeof(SVsShell));
+            IVsShell shell = VsAppShell.Current.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 IVsPackage package;
                 shell.LoadPackage(ref _packageGuid, out package);

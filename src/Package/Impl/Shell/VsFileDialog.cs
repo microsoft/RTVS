@@ -5,13 +5,14 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal class VsFileDialog : IFileDialog {
-        private readonly IApplicationShell _shell;
+        private readonly ICoreShell _shell;
 
-        public VsFileDialog(IApplicationShell shell) {
+        public VsFileDialog(ICoreShell shell) {
             _shell = shell;
         }
 
@@ -24,9 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileSave(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
 
-
-        private static string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
-            IVsUIShell uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+        private string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            var uiShell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (uiShell == null) {
                 return null;
             }
@@ -61,12 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        private static string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
+        private string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
             if (string.IsNullOrEmpty(initialPath)) {
                 initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
             }
 
-            IVsUIShell uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (null == uiShell) {
                 return null;
             }
@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
             }
 
-            VSSAVEFILENAMEW[] saveInfo = new VSSAVEFILENAMEW[1];
+            var saveInfo = new VSSAVEFILENAMEW[1];
             saveInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
             saveInfo[0].dwFlags = 0x00000002; // OFN_OVERWRITEPROMPT
             saveInfo[0].pwzFilter = filter.Replace('|', '\0') + "\0";
@@ -100,6 +100,5 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
         }
-
     }
 }

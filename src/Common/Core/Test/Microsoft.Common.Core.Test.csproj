@@ -60,14 +60,16 @@
     <Compile Include="Disposables\DisposeTokenTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
-    <Compile Include="Fakes\Shell\TestCoreServices.cs" />
+    <Compile Include="Fakes\Shell\TestCompositionCatalog.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
     <Compile Include="Fakes\Shell\TestProgressDialog.cs" />
     <Compile Include="Fakes\Shell\TestServiceManager.cs" />
+    <Compile Include="Fakes\Shell\TestUIServices.cs" />
+    <Compile Include="Fixtures\ServiceManagerFixture.cs" />
+    <Compile Include="Logging\MaxLoggingPermissions.cs" />
     <Compile Include="Services\ServiceManagerTests.cs" />
     <Compile Include="Stubs\Shell\SecurityServiceStub.cs" />
     <Compile Include="Fakes\Shell\TestTaskService.cs" />
-    <Compile Include="Fixtures\CoreServicesFixture.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />
     <Compile Include="Match\MatchNull.cs" />
@@ -75,7 +77,7 @@
     <Compile Include="Match\MatchAny.cs" />
     <Compile Include="Match\MatchMembers.cs" />
     <Compile Include="Script\EventsPump.cs" />
-    <Compile Include="Fakes\Shell\TestAppConstants.cs" />
+    <Compile Include="Fakes\Shell\TestPlatformServices.cs" />
     <Compile Include="Fakes\Shell\TestCoreShell.cs" />
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />

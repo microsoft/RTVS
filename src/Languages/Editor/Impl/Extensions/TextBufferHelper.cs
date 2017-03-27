@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.Languages.Editor.Extensions {
+namespace Microsoft.Languages.Editor {
     public class TextChangeExtent {
         public TextChangeExtent(int start, int oldEnd, int newEnd) {
             Start = start;
@@ -20,21 +20,18 @@ namespace Microsoft.Languages.Editor.Extensions {
             NewEnd = newEnd;
         }
 
-        public int Start { get; private set; }
-        public int OldEnd { get; private set; }
-        public int NewEnd { get; private set; }
+        public int Start { get; }
+        public int OldEnd { get; }
+        public int NewEnd { get; }
     }
 
     public static class TextBufferExtensions {
         public static ITextView CurrentTextView(this ITextBuffer viewBuffer) {
             ITextView textView = null;
             if (viewBuffer != null) {
-                TextViewData textViewData = TextViewConnectionListener.GetTextViewDataForBuffer(viewBuffer);
-                if (textViewData != null) {
-                    textView = textViewData.LastActiveView;
-                }
+                var textViewData = TextViewConnectionListener.GetTextViewDataForBuffer(viewBuffer);
+                textView = textViewData?.LastActiveView;
             }
-
             return textView;
         }
 
@@ -43,7 +40,7 @@ namespace Microsoft.Languages.Editor.Extensions {
 
             allBuffers.Add(textBuffer);
             for (int i = 0; i < allBuffers.Count; i++) {
-                IProjectionBuffer currentBuffer = allBuffers[i] as IProjectionBuffer;
+                var currentBuffer = allBuffers[i] as IProjectionBuffer;
                 if (currentBuffer != null) {
                     foreach (ITextBuffer sourceBuffer in currentBuffer.SourceBuffers) {
                         if (!allBuffers.Contains(sourceBuffer))
@@ -55,9 +52,8 @@ namespace Microsoft.Languages.Editor.Extensions {
             return allBuffers;
         }
 
-        public static bool IsContributingBuffer(this ITextBuffer buffer, ITextBuffer contributingBuffer) {
-            return buffer.GetContributingBuffers().FirstOrDefault<ITextBuffer>((t) => t == contributingBuffer) != null;
-        }
+        public static bool IsContributingBuffer(this ITextBuffer buffer, ITextBuffer contributingBuffer) 
+            => buffer.GetContributingBuffers().FirstOrDefault<ITextBuffer>((t) => t == contributingBuffer) != null;
 
         public static string GetFileName(this ITextBuffer textBuffer) {
             string path = string.Empty;
@@ -72,8 +68,7 @@ namespace Microsoft.Languages.Editor.Extensions {
 
         public static ITextDocument GetTextDocument(this ITextBuffer textBuffer) {
             ITextDocument document = null;
-
-            IEnumerable<ITextBuffer> searchBuffers = textBuffer.GetContributingBuffers();
+            var searchBuffers = textBuffer.GetContributingBuffers();
 
             foreach (ITextBuffer buffer in searchBuffers) {
                 if (buffer.Properties.TryGetProperty(typeof(ITextDocument), out document)) {
@@ -109,13 +104,12 @@ namespace Microsoft.Languages.Editor.Extensions {
         /// Converts line and column positions to a stream buffer position.
         /// </summary>
         /// <returns>Stream position or null if conversion failed</returns>
-        public static int? GetPositionFromLineColumn(this ITextBuffer textBuffer, int line, int column) {
-            return textBuffer.CurrentSnapshot.GetPositionFromLineColumn(line, column);
-        }
+        public static int? GetPositionFromLineColumn(this ITextBuffer textBuffer, int line, int column)
+            => textBuffer.CurrentSnapshot.GetPositionFromLineColumn(line, column);
 
         public static int? GetPositionFromLineColumn(this ITextSnapshot snapshot, int line, int column) {
             if ((line >= 0) && (line < snapshot.LineCount)) {
-                ITextSnapshotLine textLine = snapshot.GetLineFromLineNumber(line);
+                var textLine = snapshot.GetLineFromLineNumber(line);
 
                 // Non-strict equality below, because caret can be position *after*
                 // the last character of the line. So for line of length 1 both 
@@ -128,13 +122,12 @@ namespace Microsoft.Languages.Editor.Extensions {
             return null;
         }
 
-        public static bool IsSignatureHelpBuffer(this ITextBuffer textBuffer) {
-            return textBuffer.ContentType.TypeName.EndsWithIgnoreCase(" Signature Help");
-        }
+        public static bool IsSignatureHelpBuffer(this ITextBuffer textBuffer) 
+            => textBuffer.ContentType.TypeName.EndsWithIgnoreCase(" Signature Help");
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
             if (shell != null) {
-                ITextDocumentFactoryService textDocumentFactoryService = shell.GlobalServices.GetService<ITextDocumentFactoryService>();
+                var textDocumentFactoryService = shell.GetService<ITextDocumentFactoryService>();
                 ITextDocument textDocument;
 
                 if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument)) {
@@ -167,7 +160,7 @@ namespace Microsoft.Languages.Editor.Extensions {
             int position = Int32.MaxValue;
             int deltaLen = 0;
             while (oldVersion != newVersion) {
-                INormalizedTextChangeCollection changes = oldVersion.Changes;
+                var changes = oldVersion.Changes;
                 if (changes.Count > 0) {
                     ITextChange firstChange = changes[0];
                     ITextChange lastChange = changes[changes.Count - 1];

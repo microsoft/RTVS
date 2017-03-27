@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
@@ -14,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Test {
         protected IRSessionProvider SessionProvider { get; }
 
         public InteractiveTest() {
-            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             SessionProvider = workflow.RSessions;
         }
 

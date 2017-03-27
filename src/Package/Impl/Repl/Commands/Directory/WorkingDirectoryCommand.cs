@@ -5,8 +5,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -19,6 +20,7 @@ using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRToolsSettings _settings;
         private IRSession _session;
 
         public Task InitializationTask { get; }
@@ -30,6 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }, false) {
 
             _interactiveWorkflow = interactiveWorkflow;
+            _settings = _interactiveWorkflow.Shell.GetService<IRToolsSettings>();
+
             _session = interactiveWorkflow.RSession;
             _session.Connected += OnSessionConnected;
             _session.DirectoryChanged += OnCurrentDirectoryChanged;
@@ -64,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             string directory = await _interactiveWorkflow.RSession.GetRWorkingDirectoryAsync();
             if (!string.IsNullOrEmpty(directory)) {
-                RToolsSettings.Current.WorkingDirectory = directory;
+                _settings.WorkingDirectory = directory;
             }
         }
 
@@ -88,8 +92,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 case RPackageCommandId.icmdSetWorkingDirectory:
                     if (inputArg == null) {
                         // Return currently selected item
-                        if (!string.IsNullOrEmpty(RToolsSettings.Current.WorkingDirectory)) {
-                            outputArg = GetFriendlyDirectoryName(RToolsSettings.Current.WorkingDirectory);
+                        if (!string.IsNullOrEmpty(_settings.WorkingDirectory)) {
+                            outputArg = GetFriendlyDirectoryName(_settings.WorkingDirectory);
                         }
                     } else {
                         SetDirectory(inputArg as string);
@@ -101,11 +105,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         internal Task SetDirectory(string friendlyName) {
-            string currentDirectory = GetFullPathName(RToolsSettings.Current.WorkingDirectory);
+            string currentDirectory = GetFullPathName(_settings.WorkingDirectory);
             string newDirectory = GetFullPathName(friendlyName);
 
             if (newDirectory != null && currentDirectory != newDirectory) {
-                RToolsSettings.Current.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
+                _settings.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
                 _session.SetWorkingDirectoryAsync(newDirectory)
                     .SilenceException<RException>()
                     .DoNotWait();
@@ -115,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         internal string[] GetFriendlyDirectoryNames() {
-            return RToolsSettings.Current.WorkingDirectoryList
+            return _settings.WorkingDirectoryList
                 .Select(GetFriendlyDirectoryName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray();

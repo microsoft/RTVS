@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Common.Core.UI;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -39,15 +39,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// </summary>
         private readonly ContentControl _windowContentControl;
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private IRSession _session;
         private WindowsFormsHost _host;
 
-        public HelpVisualComponent() {
-            _codeColorBuilder = VsAppShell.Current.GlobalServices.GetService<IVignetteCodeColorBuilder>();
-            _coreShell = VsAppShell.Current.GlobalServices.GetService<ICoreShell>();
+        public HelpVisualComponent(IServiceContainer services) {
+            _services = services;
 
-            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _codeColorBuilder = _services.GetService<IVignetteCodeColorBuilder>();
+            var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
             _session = workflow.RSession;
@@ -76,11 +76,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            if (RToolsSettings.Current.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
+            var settings = _services.GetService<IRToolsSettings>();
+            if (settings.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
-                var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
+                var wbs = _services.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.Shiny, url);
             }
         }
@@ -90,13 +91,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+            _services.MainThread().Post(CloseBrowser);
         }
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (!e.IsConnected) {
                 // Event mey fire on a background thread
-                VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
+                _services.MainThread().Post(CloseBrowser);
             }
         }
 
@@ -189,7 +190,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                cssfileName = _coreShell.AppConstants.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
+                var ui = _services.UI();
+                cssfileName = ui.UIColorTheme == UIColorTheme.Dark ? "Dark.css" : "Light.css";
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {
@@ -215,7 +217,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                var wbs = VsAppShell.Current.GlobalServices.GetService<IWebBrowserServices>();
+                var wbs = _services.GetService<IWebBrowserServices>();
                 wbs.OpenBrowser(WebBrowserRole.External, url);
             }
         }
@@ -228,7 +230,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
+            IVsUIShell shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 

@@ -52,7 +52,7 @@ namespace Microsoft.R.Support.Help.Functions {
         }
 
         public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
-            packageIndex = packageIndex ?? _coreShell.GlobalServices.GetService<IPackageIndex>();
+            packageIndex = packageIndex ?? _coreShell.GetService<IPackageIndex>();
             var lockToken = await _buildIndexLock.WaitAsync();
             try {
                 if (!lockToken.IsSet) {
@@ -174,7 +174,7 @@ namespace Microsoft.R.Support.Help.Functions {
             if (string.IsNullOrEmpty(packageName)) {
                 // Even if nothing is found, still notify the callback
                 if (infoReadyCallback != null) {
-                    _coreShell.DispatchOnUIThread(() => {
+                    _coreShell.MainThread().Post(() => {
                         infoReadyCallback(null, null);
                     });
                 }
@@ -197,7 +197,7 @@ namespace Microsoft.R.Support.Help.Functions {
                         // If package is found update data in the index
                         UpdateIndex(functionName, packageName, rdData);
                     }
-                    _coreShell.DispatchOnUIThread(() => infoReadyCallback(parameter, packageName));
+                    _coreShell.MainThread().Post(() => infoReadyCallback(parameter, packageName));
                 });
             return packageName;
         }

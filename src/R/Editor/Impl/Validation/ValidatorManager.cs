@@ -31,10 +31,10 @@ namespace Microsoft.R.Editor.Validation
 
         public ValidatorManager()
         {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+            shell.Current.CompositionService.SatisfyImportsOnce(this);
 
             // Import validator providers
-            var validatorImportComposer = new ContentTypeImportComposer<IValidatorProvider>(EditorShell.Current.CompositionService);
+            var validatorImportComposer = new ContentTypeImportComposer<IValidatorProvider>(shell.Current.CompositionService);
             var validatorProviderImports = validatorImportComposer.GetAllLazy(RContentTypeDefinition.ContentType);
 
             foreach (var import in validatorProviderImports)

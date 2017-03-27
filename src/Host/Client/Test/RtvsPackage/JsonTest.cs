@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Fakes.Shell;
@@ -24,8 +22,8 @@ namespace Microsoft.R.RtvsPackage.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public JsonTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(coreServices);
+        public JsonTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

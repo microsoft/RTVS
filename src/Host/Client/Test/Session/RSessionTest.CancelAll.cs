@@ -18,17 +18,15 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class CancelAll : IAsyncLifetime {
-            private readonly TestMethodFixture _testMethod;
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public CancelAll(CoreServicesFixture coreServices, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+            public CancelAll(ServiceManagerFixture services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
-                _testMethod = testMethod;
                 _callback = new RSessionCallbackStub();
-                _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(CancelAll));
+                _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(CancelAll));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
             }
 

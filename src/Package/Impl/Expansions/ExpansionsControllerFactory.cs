@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
@@ -19,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     [Order(Before = "Default")]
     internal class ExpansionsControllerFactory : IControllerFactory {
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
-            var textManager = VsAppShell.Current.GlobalServices.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
 
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);

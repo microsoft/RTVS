@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
@@ -19,10 +20,10 @@ namespace Microsoft.R.Editor.Outline {
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class OutliningTaggerProvider : ITaggerProvider {
-        private readonly IEditorShell _shell;
+        private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public OutliningTaggerProvider(IEditorShell shell) {
+        public OutliningTaggerProvider(ICoreShell shell) {
             _shell = shell;
         }
 

@@ -2,28 +2,31 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 using CommandStatus = Microsoft.Common.Core.UI.Commands.CommandStatus;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly IUIService _ui;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRToolsSettings _settings;
         private readonly IRHistory _history;
 
-        public SaveHistoryCommand(IApplicationShell appShell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
-            _appShell = appShell;
+            _ui = interactiveWorkflow.Shell.UI();
             _interactiveWorkflow = interactiveWorkflow;
+            _settings = _interactiveWorkflow.Shell.GetService<IRToolsSettings>();
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
@@ -34,8 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
-            var file = _appShell.FileDialog.ShowSaveFileDialog(Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
+            var initialPath = _settings.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(_settings.WorkingDirectory) : null;
+            var file = _ui.FileDialog.ShowSaveFileDialog(Resources.HistoryFileFilter, initialPath, Resources.SaveHistoryAsTitle);
             if (file != null) {
                 _history.TrySaveToFile(file);
             }

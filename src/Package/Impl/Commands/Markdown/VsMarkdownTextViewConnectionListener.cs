@@ -8,7 +8,6 @@ using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -21,12 +20,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
     [Name("Visual Studio Markdown Editor Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsMarkdownTextViewConnectionListener : MdTextViewConnectionListener {
+        private readonly ICoreShell _coreShell;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
         private CommandTargetToOleShim _oleController;
 
         [ImportingConstructor]
-        public VsMarkdownTextViewConnectionListener(IVsEditorAdaptersFactoryService adapterService) {
-            _adapterService = adapterService;
+        public VsMarkdownTextViewConnectionListener(ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _adapterService = coreShell.GetService<IVsEditorAdaptersFactoryService>();
         }
 
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
@@ -43,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
                     // is represented by OLE command target as well. Since HTML controller
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
-                    OleControllerChain.ConnectController(_adapterService, textView, mainController);
+                    OleControllerChain.ConnectController(_coreShell.Services, textView, mainController);
                 }
             }
 
@@ -65,9 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
         }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
-            // Force creations
-            var appShell = VsAppShell.Current;
-            OleControllerChain.InitEditorInstance(textBuffer);
+            OleControllerChain.InitEditorInstance(textBuffer, _coreShell.Services);
             base.OnTextBufferCreated(textView, textBuffer);
         }
     }

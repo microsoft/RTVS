@@ -13,7 +13,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
@@ -28,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
     /// </summary>
     public partial class ImportDataWindow : PlatformDialogWindow {
         private const int MaxPreviewLines = 20;
+        private readonly IServiceContainer _services;
         private string _utf8FilePath;
 
         public IDictionary<string, string> Separators { get; } = new Dictionary<string, string> {
@@ -71,8 +75,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             PopulateEncodingList();
         }
 
-        public ImportDataWindow(string filePath, string name)
+        public ImportDataWindow(IServiceContainer services, string filePath, string name)
             : this() {
+            _services = services;
             SetFilePath(filePath, name);
         }
 
@@ -129,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
-            string filePath = VsAppShell.Current.FileDialog.ShowOpenFileDialog(Package.Resources.CsvFileFilter);
+            string filePath = _services.FileDialog().ShowOpenFileDialog(Package.Resources.CsvFileFilter);
             if (!string.IsNullOrEmpty(filePath)) {
                 SetFilePath(filePath);
             }
@@ -169,7 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
 
         private bool Execute(string expression) {
             try {
-                var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 workflow.Operations.ExecuteExpression(expression);
                 return true;
             } catch (Exception ex) {
@@ -179,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void OnError(string errorText) {
-            VsAppShell.Current.ShowErrorMessage(errorText);
+            _services.ShowErrorMessage(errorText);
             ProgressBarText.Text = string.Empty;
             ProgressBar.Value = -10;
         }
@@ -318,7 +323,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private async Task DoDefaultAction() {
-            await VsAppShell.Current.SwitchToMainThreadAsync();
+            await _services.MainThread().SwitchToAsync();
             RunButton.IsEnabled = CancelButton.IsEnabled = false;
             var result = false;
 
@@ -329,7 +334,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                 int nrows = Int32.MaxValue;
                 if (!string.IsNullOrWhiteSpace(nRowsString)) {
                     if (!Int32.TryParse(nRowsString, out nrows) || nrows <= 0) {
-                        VsAppShell.Current.ShowErrorMessage(Package.Resources.ImportData_NRowsError);
+                        _services.ShowErrorMessage(Package.Resources.ImportData_NRowsError);
                         return;
                     }
                     nrows++; // for possible header
@@ -353,13 +358,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private async Task StartReportProgress(string message) {
-            await VsAppShell.Current.SwitchToMainThreadAsync();
+            await _services.MainThread().SwitchToAsync();
             ProgressBarText.Text = message;
             ProgressBar.Value = 0;
         }
 
         private async Task ReportProgress(double value) {
-            await VsAppShell.Current.SwitchToMainThreadAsync();
+            await _services.MainThread().SwitchToAsync();
             ProgressBar.Value = value;
         }
 

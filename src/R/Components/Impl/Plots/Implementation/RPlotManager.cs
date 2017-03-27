@@ -13,7 +13,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
@@ -196,7 +195,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _locatorTcs = new TaskCompletionSource<LocatorResult>();
             _locatorCancelTokenRegistration = cancellationToken.Register(() => CancelLocatorMode(device));
 
-            _shell.DispatchOnUIThread(() => {
+            _shell.MainThread().Post(() => {
                 var visualComponent = GetVisualComponentForDevice(deviceId);
                 visualComponent?.Container.Show(focus: false, immediate: true);
             });
@@ -433,7 +432,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             // If we have no plot window to reuse, create one
             if (component == null) {
-                var containerFactory = InteractiveWorkflow.Shell.GlobalServices.GetService<IRPlotDeviceVisualComponentContainerFactory>();
+                var containerFactory = InteractiveWorkflow.Shell.GetService<IRPlotDeviceVisualComponentContainerFactory>();
                 component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId());
             }
 

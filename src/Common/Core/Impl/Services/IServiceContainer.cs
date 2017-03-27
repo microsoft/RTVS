@@ -14,7 +14,7 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Enumerates all available services
         /// </summary>
-        IEnumerable<Type> Services { get; }
+        IEnumerable<Type> AllServices { get; }
 
         /// <summary>
         /// Returns collection of services impelementing T

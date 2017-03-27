@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.Mef;
@@ -44,10 +43,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 => MethodFixtureBase.DefaultInitializeTask;
 
             public Task DisposeAsync(RunSummary result, IMessageBus messageBus) => Task.CompletedTask;
-            public T GetExportedValue<T>() => default(T);
-            public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) => default(T);
-            public IEnumerable<Lazy<T>> GetExports<T>() => null;
-            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() => null;
+            public T GetExportedValue<T>() where T : class => default(T);
+            public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) where T : class => default(T);
+            public IEnumerable<Lazy<T>> GetExports<T>() where T : class => null;
+            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() where T : class => null;
         }
 
         protected class TestExportProvider : IExportProvider {
@@ -68,11 +67,15 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 return Task.CompletedTask;
             }
 
-            public T GetExportedValue<T>() {
+            public T GetExportedValue<T>() where T: class {
+                if(typeof(T) == typeof(ICompositionService)) {
+                    // TODO: remove when editor no longer uses SatisfyImportsOnce.
+                    return CompositionContainer as T;
+                }
                 return CompositionContainer.GetExportedValue<T>();
             }
 
-            public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) {
+            public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) where T : class {
                 var exports = CompositionContainer.GetExports<T, IDictionary<string, object>>();
 
                 return exports.Single(e => {
@@ -90,11 +93,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 }).Value;
             }
 
-            public IEnumerable<Lazy<T>> GetExports<T>() {
+            public IEnumerable<Lazy<T>> GetExports<T>() where T : class {
                 return CompositionContainer.GetExports<T>();
             }
 
-            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() {
+            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() where T : class {
                 return CompositionContainer.GetExports<T, TMetadataView>();
             }
         }

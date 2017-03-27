@@ -29,6 +29,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
+        private readonly IActionLog _log;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
         private readonly DisposableBag _disposableBag;
@@ -54,10 +55,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _shell = interactiveWorkflow.Shell;
-            _securityService = _shell.Services.Security;
+            _securityService = _shell.GetService<ISecurityService>();
+            _log = _shell.GetService<IActionLog>();
 
-            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
-            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell);
+            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell.Services);
+            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
@@ -101,7 +103,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 return VisualComponent;
             }
 
-            var visualComponentContainerFactory = _shell.GlobalServices.GetService<IConnectionManagerVisualComponentContainerFactory>();
+            var visualComponentContainerFactory = _shell.GetService<IConnectionManagerVisualComponentContainerFactory>();
             VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }
@@ -289,7 +291,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var info = new RInterpreterInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }
@@ -299,7 +301,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 Uri uri;
                 return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }
@@ -361,7 +363,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SaveActiveConnectionToSettings() {
-            _shell.DispatchOnUIThread(() => _settings.LastActiveConnection = ActiveConnection == null
+            _shell.MainThread().Post(() => _settings.LastActiveConnection = ActiveConnection == null
                 ? null
                 : new ConnectionInfo(ActiveConnection));
         }

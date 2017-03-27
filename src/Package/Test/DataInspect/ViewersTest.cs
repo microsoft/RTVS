@@ -2,23 +2,25 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Viewers;
 using Microsoft.VisualStudio.R.Package.Shell;
 using NSubstitute;
 using Xunit;
-using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
@@ -33,9 +35,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private readonly IRInteractiveWorkflow _workflow;
 
         public ViewersTest(TestMethodFixture testMethod) {
+            REditorSettings.Initialize(new TestSettingsStorage());
+
             _testMethod = testMethod;
-            _aggregator = VsAppShell.Current.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
-            _workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
+            _workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _sessionProvider = _workflow.RSessions;
         }
 
@@ -133,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("as.complex")]
         public async Task GridViewerDimLengthTest(string cast) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new GridViewer(_aggregator, e);
+            var viewer = new GridViewer(VsAppShell.Current, e);
             viewer.CanView(null).Should().BeFalse();
 
             using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -190,7 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("setClass('X', representation(x = 'logical'))()")]
         public async Task GridViewerExcludeTest(string expr) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new GridViewer(_aggregator, e);
+            var viewer = new GridViewer(VsAppShell.Current, e);
             viewer.CanView(null).Should().BeFalse();
 
             using (var hostScript = new RHostScript(_sessionProvider)) {

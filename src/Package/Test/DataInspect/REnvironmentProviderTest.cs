@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -28,8 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public REnvironmentProviderTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(coreServices);
+        public REnvironmentProviderTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

@@ -34,7 +34,8 @@ namespace Microsoft.Common.Core.Security {
                 // is in modal state due to the progress dialog. Note that native message
                 // box appearance is a bit different from VS dialogs and matches OS theme
                 // rather than VS fonts and colors.
-                if (Win32MessageBox.Show(_coreShell.AppConstants.ApplicationWindowHandle, message, 
+                var platform = _coreShell.GetService<IPlatformServices>();
+                if (Win32MessageBox.Show(platform.ApplicationWindowHandle, message, 
                     Win32MessageBox.Flags.YesNo | Win32MessageBox.Flags.IconWarning) == Win32MessageBox.Result.Yes) {
                     certificate2.Reset();
                     return true;
@@ -79,7 +80,7 @@ namespace Microsoft.Common.Core.Security {
         private Credentials PromptForWindowsCredentials(string authority, string workspaceName) {
             var credui = new NativeMethods.CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(NativeMethods.CREDUI_INFO)),
-                hwndParent = _coreShell.AppConstants.ApplicationWindowHandle,
+                hwndParent = _coreShell.GetService<IPlatformServices>().ApplicationWindowHandle,
                 pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
 

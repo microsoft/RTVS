@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
@@ -40,10 +39,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 await Session.StopHostAsync();
             }
 
-            await Session.StartHostAsync(
-                new RHostStartupInfo(RToolsSettings.Current.CranMirror, codePage: RToolsSettings.Current.RCodePage),
-                _clientApp ?? new RHostClientTestApp(),
-                50000);
+            await Session.StartHostAsync(new RHostStartupInfo(), _clientApp ?? new RHostClientTestApp(), 50000);
         }
 
         public void Dispose() {

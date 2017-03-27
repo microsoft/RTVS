@@ -17,32 +17,28 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private readonly IRemoteUriWebService _remoteUriService;
         private readonly string _baseAddress;
-        private readonly ICoreServices _services;
-        private readonly IConsole _console;
         private readonly IActionLog _log;
+        private readonly IConsole _console;
         private readonly string _name;
 
         private HttpListener _listener;
-
-        
 
         public string LocalHost { get; }
         public int LocalPort { get; private set; }
         public string RemoteHost { get; }
         public int RemotePort { get; }
 
-        private WebServer(string remoteHostIp, int remotePort, string baseAddress, string name, ICoreServices services, IConsole console) {
+        private WebServer(string remoteHostIp, int remotePort, string baseAddress, string name, IActionLog log, IConsole console) {
             _name = name.ToUpperInvariant();
             _baseAddress = baseAddress;
-            _services = services;
+            _log = log;
             _console = console;
-            _log = _services.Log;
 
             LocalHost = IPAddress.Loopback.ToString();
             RemoteHost = remoteHostIp;
             RemotePort = remotePort;
 
-            _remoteUriService = new RemoteUriWebService(baseAddress, services, console);
+            _remoteUriService = new RemoteUriWebService(baseAddress, log, console);
         }
 
         public async Task InitializeAsync(CancellationToken ct) {
@@ -136,13 +132,13 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
         }
 
-        public static async Task<string> CreateWebServerAsync(string remoteUrl, string baseAddress, string name, ICoreServices services, IConsole console, CancellationToken ct = default(CancellationToken)) {
-            Uri remoteUri = new Uri(remoteUrl);
-            UriBuilder localUri = new UriBuilder(remoteUri);
+        public static async Task<string> CreateWebServerAsync(string remoteUrl, string baseAddress, string name, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken)) {
+            var remoteUri = new Uri(remoteUrl);
+            var localUri = new UriBuilder(remoteUri);
 
             WebServer server;
             if(!Servers.TryGetValue(remoteUri.Port, out server)) {
-                server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress, name, services, console);
+                server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress, name, log, console);
                 await server.InitializeAsync(ct);
                 Servers.TryAdd(remoteUri.Port, server);
             }

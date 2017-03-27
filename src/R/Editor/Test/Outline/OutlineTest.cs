@@ -17,12 +17,12 @@ using Microsoft.VisualStudio.Editor.Mocks;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     public class OutlineTest {
-        public static OutlineRegionCollection BuildOutlineRegions(IEditorShell editorShell, string content) {
+        public static OutlineRegionCollection BuildOutlineRegions(ICoreShell shell, string content) {
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            using (var tree = new EditorTree(textBuffer, editorShell)) {
+            using (var tree = new EditorTree(textBuffer, shell)) {
                 tree.Build();
                 using (var editorDocument = new EditorDocumentMock(tree)) {
-                    using (var ob = new ROutlineRegionBuilder(editorDocument, editorShell)) {
+                    using (var ob = new ROutlineRegionBuilder(editorDocument, shell)) {
                         OutlineRegionCollection rc = new OutlineRegionCollection(0);
                         ob.BuildRegions(rc);
                         return rc;
@@ -34,12 +34,12 @@ namespace Microsoft.R.Editor.Test.Outline {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void OutlineFile(IEditorShell editorShell, EditorTestFilesFixture fixture, string name) {
+        public static void OutlineFile(ICoreShell shell, EditorTestFilesFixture fixture, string name) {
             string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".outline";
             string text = fixture.LoadDestinationFile(name);
 
-            OutlineRegionCollection rc = BuildOutlineRegions(editorShell, text);
+            OutlineRegionCollection rc = BuildOutlineRegions(shell, text);
             string actual = TextRangeCollectionWriter.WriteCollection(rc);
 
             if (_regenerateBaselineFiles) {

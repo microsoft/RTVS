@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -122,7 +123,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             };
 
             using (var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()) {
-                var security = (SecurityServiceStub)workflow.Shell.Services.Security;
+                var security = (SecurityServiceStub)workflow.Shell.Security();
                 security.GetUserCredentialsHandler = delegate { throw new RHostDisconnectedException(); };
 
                 var connectionManager = workflow.Connections;

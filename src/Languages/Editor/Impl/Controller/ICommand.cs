@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.Controller;
 
 namespace Microsoft.Languages.Editor.Controller {

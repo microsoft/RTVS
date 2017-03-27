@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using EnvDTE;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -19,11 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const REvaluationResultProperties _properties =
            ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-        private readonly IObjectDetailsViewerAggregator _aggregator;
+        private readonly IServiceContainer _services;
 
-        public GridViewerBase(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
-            base(evaluator) {
-            _aggregator = aggregator;
+        public GridViewerBase(IServiceContainer services, IDataObjectEvaluator evaluator) : base(evaluator) {
+            _services = services;
         }
 
         #region IObjectDetailsViewer
@@ -47,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 }
 
                 title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
-                pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
+                pane.SetEvaluation(new VariableViewModel(evaluation, _services), title);
             }
         }
         #endregion

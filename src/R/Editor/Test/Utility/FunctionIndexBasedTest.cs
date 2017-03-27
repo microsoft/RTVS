@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public abstract class FunctionIndexBasedTest : IAsyncLifetime {
         protected IExportProvider ExportProvider { get; }
-        protected IEditorShell EditorShell { get; }
+        protected ICoreShell shell { get; }
         protected IPackageIndex PackageIndex { get; }
         protected IFunctionIndex FunctionIndex { get; }
         protected IRInteractiveWorkflow Workflow { get; }
@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         protected FunctionIndexBasedTest(IExportProvider exportProvider) {
             ExportProvider = exportProvider;
             Workflow = UIThreadHelper.Instance.Invoke(() => ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
-            EditorShell = ExportProvider.GetExportedValue<IEditorShell>();
+            shell = ExportProvider.GetExportedValue<ICoreShell>();
             FunctionIndex = ExportProvider.GetExportedValue<IFunctionIndex>();
             PackageIndex = ExportProvider.GetExportedValue<IPackageIndex>();
         }

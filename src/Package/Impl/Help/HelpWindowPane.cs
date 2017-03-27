@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Help.Commands;
@@ -26,19 +26,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public const string WindowGuidString = "9E909526-A616-43B2-A82B-FD639DCD40CB";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        private readonly ICoreShell _coreShell;
-
-        public HelpWindowPane(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public HelpWindowPane(IServiceContainer services): base(services) {
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
-            ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
+            ToolBar = new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
         }
 
         protected override void OnCreate() {
-            Component = new HelpVisualComponent { Container = this };
+            Component = new HelpVisualComponent(Services) { Container = this };
             var controller = new AsyncCommandController()
-                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(_coreShell.ExportProvider))
+                .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome, new HelpHomeCommand(Services))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpNext, new HelpNextCommand(Component))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpPrevious, new HelpPreviousCommand(Component))
                 .AddCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpRefresh, new HelpRefreshCommand(Component));
@@ -58,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HelpSearchTask(dwCookie, pSearchQuery, pSearchCallback);
+            return new HelpSearchTask(dwCookie, pSearchQuery, pSearchCallback, Services);
         }
 
         private sealed class HelpSearchTask : VsSearchTask {
@@ -67,10 +64,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             private readonly IVsSearchCallback _callback;
             private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
-            public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+            public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, IServiceContainer services)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
                 _callback = pSearchCallback;
-                _workflowProvider = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>();
+                _workflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             }
 
             protected override void OnStartSearch() {

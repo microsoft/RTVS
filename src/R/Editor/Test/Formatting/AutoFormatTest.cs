@@ -4,8 +4,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x(a,b,c,d)", 6, "x(a, b,\nc,d)")]
         [InlineData("x(a,b,    c, d)", 8, "x(a, b,\n  c, d)")]
         public void FormatTest(string content, int position, string expected) {
-            ITextView textView = TestAutoFormat(position, content);
+            var textView = TestAutoFormat(position, content);
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
@@ -46,11 +46,11 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [Test]
         public void SmartIndentTest05() {
             AstRoot ast;
-            ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
+            var textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
 
-                ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>("ContentTypes", RContentTypeDefinition.ContentType);
-                SmartIndenter indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
+                var provider = _exportProvider.GetExportedValue<ISmartIndentProvider>("ContentTypes", RContentTypeDefinition.ContentType);
+                var indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
 
                 int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
                 indent.Should().HaveValue().And.Be(2);
@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
 
         private ITextView TestAutoFormat(int position, string initialContent = "") {
             AstRoot ast;
-            ITextView textView = TextViewTest.MakeTextView(initialContent, position, out ast);
+            var textView = TextViewTest.MakeTextView(initialContent, position, out ast);
 
             textView.TextBuffer.Changed += (object sender, TextContentChangedEventArgs e) => {
                 ast.ReflectTextChanges(e.ConvertToRelative(), new TextProvider(textView.TextBuffer.CurrentSnapshot));
@@ -69,10 +69,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<IEditorShell>());
+                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<ICoreShell>());
                     }
                 } else {
-                    ITextSnapshotLine line = e.After.GetLineFromPosition(position);
+                    var line = e.After.GetLineFromPosition(position);
                     textView.Caret.MoveTo(new SnapshotPoint(e.After, Math.Min(e.After.Length, line.Length + 1)));
                 }
             };

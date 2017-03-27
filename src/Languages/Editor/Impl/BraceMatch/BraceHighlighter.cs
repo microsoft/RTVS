@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.Languages.Editor.Composition;
@@ -37,7 +38,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 if(_braceMatcher == null && !_created) {
                     _created = true;
 
-                    var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(_shell.CompositionService);
+                    var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(_shell.GetService<ICompositionService>());
                     var braceMatcherProvider = importComposer.GetImport(_textBuffer.ContentType.TypeName);
                     if (braceMatcherProvider != null) {
                         _braceMatcher = braceMatcherProvider.CreateBraceMatcher(_textView, _textBuffer);

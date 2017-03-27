@@ -2,12 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -20,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PlotDeviceWindowPane : VisualComponentToolWindow<IRPlotDeviceVisualComponent>, IOleCommandTarget {
         private readonly IRPlotManager _plotManager;
-        private readonly ICoreShell _coreShell;
         private readonly int _instanceId;
         private IOleCommandTarget _commandTarget;
 
@@ -28,19 +25,18 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, IRSettings settings, ICoreShell coreShell) {
+        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, IServiceContainer services): base(services) {
             _plotManager = plotManager;
             _instanceId = instanceId;
-            _coreShell = coreShell;
 
             // this value matches with icmdShowPlotWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.LineChart;
             Caption = Resources.PlotWindowCaption;
-            ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
+            ToolBar = new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
         }
 
         protected override void OnCreate() {
-            Component = new RPlotDeviceVisualComponent(_plotManager, _instanceId, this, _coreShell);
+            Component = new RPlotDeviceVisualComponent(_plotManager, _instanceId, this, Services);
             _plotManager.RegisterVisualComponent(Component);
 
             var commands = new RPlotDeviceCommands(_plotManager.InteractiveWorkflow, Component);
@@ -71,12 +67,10 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             base.Dispose(disposing);
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
-            return _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-        }
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+            => _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
-        }
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) 
+            =>_commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
     }
 }

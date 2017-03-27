@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Help.Functions;
@@ -60,9 +59,7 @@ namespace Microsoft.R.Support.Help.Packages {
                         }
                     }
                     _saved = true;
-                } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                    EditorShell.Current.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
-                }
+                } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) { }
             }
         }
         #endregion

@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -15,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Images {
         [Test]
         [Category.Project.Services]
         public void ImagesProvider_Test() {
-            IImagesProvider p = VsAppShell.Current.GlobalServices.GetService<IImagesProvider>();
+            IImagesProvider p = VsAppShell.Current.GetService<IImagesProvider>();
             p.Should().NotBeNull();
 
             p.GetFileIcon("foo.R").Should().NotBeNull();

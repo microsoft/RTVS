@@ -9,7 +9,6 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -22,12 +21,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Name("Visual Studio R Editor Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsRTextViewConnectionListener : RTextViewConnectionListener {
+        private readonly ICoreShell _coreShell;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
         private CommandTargetToOleShim _oleController;
 
         [ImportingConstructor]
-        public VsRTextViewConnectionListener(IVsEditorAdaptersFactoryService adapterService) {
-            _adapterService = adapterService;
+        public VsRTextViewConnectionListener(ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _adapterService = coreShell.GetService< IVsEditorAdaptersFactoryService>();
         }
 
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
@@ -40,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
                 RMainController mainController = RMainController.FromTextView(textView);
                 if (textBuffer == mainController?.TextBuffer) {
                     // Connect main controller to VS text view filter chain.
-                    OleControllerChain.ConnectController(_adapterService, textView, mainController);
+                    OleControllerChain.ConnectController(_coreShell.Services, textView, mainController);
                 }
             }
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
@@ -61,11 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
         }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
-            // Force creations
-            var appShell = VsAppShell.Current;
-            var clh = ContainedLanguageHost.GetHost(textView, textBuffer, appShell);
-
-            OleControllerChain.InitEditorInstance(textBuffer);
+            var clh = ContainedLanguageHost.GetHost(textView, textBuffer, _coreShell);
+            OleControllerChain.InitEditorInstance(textBuffer, _coreShell.Services);
             base.OnTextBufferCreated(textView, textBuffer);
         }
     }

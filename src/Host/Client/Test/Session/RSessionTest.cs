@@ -4,12 +4,10 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
@@ -23,14 +21,14 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest : IDisposable {
-        private readonly ICoreServices _coreServices;
+        private readonly ServiceManagerFixture _services;
         private readonly TestMethodFixture _testMethod;
         private readonly IBrokerClient _brokerClient;
 
-        public RSessionTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _coreServices = coreServices;
+        public RSessionTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _services = services;
             _testMethod = testMethod;
-            _brokerClient = CreateLocalBrokerClient(_coreServices, nameof(RSessionTest));
+            _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest));
         }
 
         public void Dispose() {
@@ -183,7 +181,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreServices, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _services, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
 
@@ -206,7 +204,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _coreServices, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\"), _services, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();
@@ -245,10 +243,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
 
-        private static IBrokerClient CreateLocalBrokerClient(ICoreServices coreServices, string name) 
+        private static IBrokerClient CreateLocalBrokerClient(IServiceContainer services, string name) 
             => new LocalBrokerClient(name, 
                 BrokerConnectionInfo.Create(null, "Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath),
-                coreServices, 
+                services, 
                 new NullConsole());
 
         private static Task<int> GetRSessionProcessId(IRSession session) 

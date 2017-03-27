@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 
 namespace Microsoft.R.Interpreters {
     public sealed class RInterpreterInfo : IRInterpreterInfo {
@@ -39,7 +39,7 @@ namespace Microsoft.R.Interpreters {
             Version = DetermineVersion(fs = fs ?? new FileSystem());
         }
 
-        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, ICoreShell coreShell = null) {
+        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IFileSystem fs = null, IUIService ui = null) {
             if (_isValid.HasValue) {
                 return _isValid.Value;
             }
@@ -64,16 +64,16 @@ namespace Microsoft.R.Interpreters {
                     var fileVersion = GetRVersionFromBinary(fs, rDllPath);
                     _isValid = IsSameVersion(fileVersion, Version) && svr.IsCompatibleVersion(Version);
                     if (!_isValid.Value) {
-                        coreShell?.ShowMessage(
+                        ui?.ShowMessage(
                             string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
                             Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
                             svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);
                     }
                 } else {
-                    coreShell?.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);
+                    ui?.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);
                 }
             } catch (Exception ex) when (ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException) {
-                coreShell?.ShowErrorMessage(
+                ui?.ShowErrorMessage(
                     string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, ex.Message));
             }
 

@@ -4,14 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.PackageManager.Model;
@@ -23,8 +24,9 @@ using Microsoft.R.Host.Client.Host;
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageManagerViewModel : BindableBase, IRPackageManagerViewModel {
         private readonly IRPackageManager _packageManager;
+        private readonly IServiceContainer _services;
         private readonly IRSettings _settings;
-        private readonly ICoreShell _coreShell;
+        private readonly IMainThread _mainThread;
         private readonly BinaryAsyncLock _availableLock;
         private readonly BinaryAsyncLock _installedAndLoadedLock;
         private readonly BatchObservableCollection<object> _items;
@@ -41,10 +43,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private bool _hasMultipleErrors;
         private IRPackageViewModel _selectedPackage;
 
-        public RPackageManagerViewModel(IRPackageManager packageManager, IRSettings settings, ICoreShell coreShell) {
+        public RPackageManagerViewModel(IRPackageManager packageManager, IServiceContainer services) {
             _packageManager = packageManager;
-            _settings = settings;
-            _coreShell = coreShell;
+            _services = services;
+            _settings = services.GetService<IRSettings>();
+            _mainThread = services.MainThread();
+
             _selectedTab = Tab.None;
             _availablePackages = new List<IRPackageViewModel>();
             _installedPackages = new List<IRPackageViewModel>();
@@ -93,12 +97,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task ReloadCurrentTabAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _services.MainThread().SwitchToAsync(cancellationToken);
             await ReloadTabContentAsync(_selectedTab, cancellationToken);
         }
 
         public void SelectPackage(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             if (package == _selectedPackage) {
                 return;
             }
@@ -107,7 +111,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task DefaultActionAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             if (SelectedPackage == null) {
                 return;
             }
@@ -122,7 +126,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task InstallAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             if (package.IsInstalled || package.IsChanging) {
                 return;
             }
@@ -144,12 +148,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task UpdateAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
 
-            var confirmUpdate = _coreShell.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo);
+            var message = Resources.PackageManager_PackageUpdateWarning.FormatCurrent(package.Name);
+            var confirmUpdate = _services.ShowMessage(message, MessageButtons.YesNo);
             if (confirmUpdate != MessageButtons.Yes) {
                 return;
             }
@@ -162,7 +167,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private void ReplaceItems(Tab startingTab) {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             if (startingTab == _selectedTab) {
                 switch (_selectedTab) {
@@ -181,7 +186,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task UpdateImplAsync(IRPackageViewModel package, CancellationToken cancellationToken) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             if (package.IsLoaded) {
                 try {
@@ -214,12 +219,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task UninstallAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
 
-            var confirmUninstall = _coreShell.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath), MessageButtons.YesNo);
+            var confirmUninstall = _services.ShowMessage(
+                Resources.PackageManager_PackageUninstallWarning.FormatCurrent(package.Name, package.LibraryPath), 
+                MessageButtons.YesNo);
             if (confirmUninstall != MessageButtons.Yes) {
                 return;
             }
@@ -231,7 +238,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 try {
                     await _packageManager.UnloadPackageAsync(package.Name, cancellationToken);
                 } catch (RHostDisconnectedException) {
-                    _errorMessages.Add(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
+                    _errorMessages.Add(
+                        Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), 
+                        ErrorMessageType.PackageOperations);
                 } catch (RPackageManagerException ex) {
                     _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
                 }
@@ -258,7 +267,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task LoadAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             if (package.IsLoaded) {
                 return;
             }
@@ -279,7 +288,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task UnloadAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             if (!package.IsLoaded) {
                 return;
@@ -308,34 +317,34 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private void AfterLoadUnload(IRPackageViewModel package, Tab startingTab) {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             ReplaceItems(startingTab);
             package.IsChanging = false;
         }
 
         public void DismissErrorMessage() {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             _errorMessages.RemoveCurrent();
         }
         
         public void DismissAllErrorMessages() {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             _errorMessages.Clear();
         }
         
         private void ShowPackageLockedMessage(PackageLockState packageLockState, string packageName) {
             switch (packageLockState) {
                 case PackageLockState.LockedByRSession:
-                    _coreShell.ShowErrorMessage(Resources.PackageManager_PackageLockedByRSession.FormatCurrent(packageName));
+                    _services.ShowErrorMessage(Resources.PackageManager_PackageLockedByRSession.FormatCurrent(packageName));
                     break;
                 case PackageLockState.LockedByOther:
-                    _coreShell.ShowErrorMessage(Resources.PackageManager_PackageLocked.FormatCurrent(packageName));
+                    _services.ShowErrorMessage(Resources.PackageManager_PackageLocked.FormatCurrent(packageName));
                     break;
             }
         }
         
         public async Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync();
+            await _mainThread.SwitchToAsync();
             if (SetTab(Tab.AvailablePackages)) {
                 await EnsureAvailablePackagesLoadedAsync(false, cancellationToken);
                 ReplaceItems(Tab.AvailablePackages);
@@ -378,7 +387,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task SwitchToInstalledPackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync();
+            await _mainThread.SwitchToAsync();
             if (SetTab(Tab.InstalledPackages)) {
                 await EnsureInstalledAndLoadedPackagesAsync(true, cancellationToken);
                 ReplaceItems(Tab.InstalledPackages);
@@ -386,7 +395,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private bool SetTab(Tab tab) {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             if (_selectedTab == tab) {
                 return false;
             }
@@ -397,7 +406,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task ReloadTabContentAsync(Tab tab, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             if (tab == _selectedTab) {
                 IsLoading = true;
             }
@@ -542,7 +551,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task MarkUninstalledAndUnloaded(CancellationToken cancellationToken) {
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             foreach (var package in _installedPackages) {
                 package.IsInstalled = false;
@@ -552,7 +561,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task SwitchToLoadedPackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            await _coreShell.SwitchToMainThreadAsync();
+            await _mainThread.SwitchToAsync();
             if (SetTab(Tab.LoadedPackages)) {
                 await EnsureInstalledAndLoadedPackagesAsync(false, cancellationToken);
                 ReplaceItems(Tab.LoadedPackages);
@@ -560,7 +569,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private void ReplaceItems(IList<IRPackageViewModel> packages) {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             if (string.IsNullOrEmpty(_searchString)) {
                 _items.ReplaceWith(packages);
                 UpdateSelectedPackage(packages);
@@ -604,7 +613,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private int Search(IList<IRPackageViewModel> packages, string searchString, CancellationToken cancellationToken) {
             if (string.IsNullOrEmpty(searchString)) {
-                _coreShell.DispatchOnUIThread(() => ApplySearch(packages, cancellationToken));
+                _mainThread.Post(() => ApplySearch(packages, cancellationToken));
                 return packages.Count;
             }
 
@@ -633,12 +642,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
             }
 
-            _coreShell.DispatchOnUIThread(() => ApplySearch(result, cancellationToken));
+            _mainThread.Post(() => ApplySearch(result, cancellationToken));
             return result.Count;
         }
 
         private void ApplySearch(IList<IRPackageViewModel> packages, CancellationToken cancellationToken) {
-            _coreShell.AssertIsOnMainThread();
+            _mainThread.Assert();
             if (cancellationToken.IsCancellationRequested) {
                 return;
             }

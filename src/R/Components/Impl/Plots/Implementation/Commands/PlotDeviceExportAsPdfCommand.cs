@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -23,7 +24,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task InvokeAsync() {
-            var filePath = InteractiveWorkflow.Shell.FileDialog.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
+            var fd = InteractiveWorkflow.Shell.FileDialog();
+            var filePath = fd.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 try {
                     await InteractiveWorkflow.Plots.ExportToPdfAsync(

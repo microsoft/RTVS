@@ -101,18 +101,20 @@ namespace Microsoft.R.Interpreters {
             Version v;
             if (Version.TryParse(key, out v)) {
                 return Invariant($"R {v}");
-            } else {
-                var index = key.IndexOfOrdinal("Microsoft R");
-                if (index == 0) {
-                    return key; // 'Microsoft R Open 'version'
-                }
-                if (index > 0) {
-                    // 3.2.2.803 Microsoft R [Open | Client]
-                    if (Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
-                        return Invariant($"{key.Substring(index).TrimEnd()} ({v})");
-                    }
+            }
+
+            var index = key.IndexOfOrdinal("Microsoft R");
+            if (index == 0) {
+                return key; // 'Microsoft R Open 'version'
+            }
+
+            if (index > 0) {
+                // 3.2.2.803 Microsoft R [Open | Client]
+                if (Version.TryParse(key.Substring(0, index).TrimEnd(), out v)) {
+                    return Invariant($"{key.Substring(index).TrimEnd()} ({v})");
                 }
             }
+
             return key; // fallback
         }
 

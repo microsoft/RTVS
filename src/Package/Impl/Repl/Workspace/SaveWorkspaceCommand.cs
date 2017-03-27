@@ -2,29 +2,28 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class SaveWorkspaceCommand : PackageCommand {
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public SaveWorkspaceCommand(IApplicationShell appShell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public SaveWorkspaceCommand(ICoreShell shell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveWorkspace) {
-            _appShell = appShell;
+            _shell = shell;
             _rSession = interactiveWorkflow.RSession;
             _projectServiceAccessor = projectServiceAccessor;
             _interactiveWorkflow = interactiveWorkflow;
@@ -45,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
             var initialPath = lastLoadedProject != null ? lastLoadedProject.GetProjectDirectory() : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var file = _appShell.FileDialog.ShowSaveFileDialog(Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
+            var file = _shell.FileDialog().ShowSaveFileDialog(Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
             if (file == null) {
                 return;
             }
@@ -57,8 +56,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             try {
                 await _rSession.SaveWorkspaceAsync(file);
             } catch (RException ex) {
-                var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, ex.Message);
-                _appShell.ShowErrorMessage(message);
+                var message = Resources.SaveWorkspaceFailedMessageFormat.FormatCurrent(file, ex.Message);
+                _shell.ShowErrorMessage(message);
             } catch (OperationCanceledException) {
             }
         }

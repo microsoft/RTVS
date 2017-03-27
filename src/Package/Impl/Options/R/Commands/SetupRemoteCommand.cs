@@ -7,16 +7,16 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
+namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
     public sealed class SetupRemoteCommand : MenuCommand {
-        private const string _remoteSetupPage = "https://aka.ms/rtvs-remote-setup-instructions";
+        private const string RemoteSetupPage = "https://aka.ms/rtvs-remote-setup-instructions";
 
         public SetupRemoteCommand() :
             base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetupRemote)) {
         }
 
         public static void OnCommand(object sender, EventArgs args) {
-            Process.Start(_remoteSetupPage);
+            Process.Start(RemoteSetupPage);
         }
     }
 }

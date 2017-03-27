@@ -14,22 +14,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class RemoteUriWebService : IRemoteUriWebService {
-        private readonly ICoreServices _services;
-        private readonly IConsole _console;
         private readonly IActionLog _log;
+        private readonly IConsole _console;
 
-        public RemoteUriWebService(string baseUri, ICoreServices services, IConsole console) {
+        public RemoteUriWebService(string baseUri, IActionLog log, IConsole console) {
             PostUri = new Uri(new Uri(baseUri), new Uri("/remoteuri", UriKind.Relative));
-            _services = services;
+            _log = log;
             _console = console;
-            _log = _services.Log;
-        }
+         }
 
         private Uri PostUri { get; }
 
@@ -86,7 +83,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             } catch (OperationCanceledException) {
                 WebServer.Stop(remoteUri.Port);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _log?.WriteLine(LogVerbosity.Normal, MessageCategory.Error, Resources.Error_RemoteWebServerException.FormatInvariant(ex.Message));
+                _log.WriteLine(LogVerbosity.Normal, MessageCategory.Error, Resources.Error_RemoteWebServerException.FormatInvariant(ex.Message));
                 _console?.WriteErrorLine(Resources.Error_RemoteWebServerException.FormatInvariant(ex.Message));
                 WebServer.Stop(remoteUri.Port);
             } finally {

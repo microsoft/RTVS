@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     VisualComponent.Device.PixelHeight,
                     VisualComponent.Device.Resolution);
 
-                InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
+                InteractiveWorkflow.Shell.MainThread().Post(() => {
                     try {
                         var image = BitmapImageFactory.Load(filePath);
                         Clipboard.SetImage(image);

@@ -3,16 +3,17 @@
 
 using System;
 using System.Threading;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.UI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal class VsProgressDialog : IProgressDialog {
-        private readonly IApplicationShell _shell;
+        private readonly IServiceContainer _services;
 
-        public VsProgressDialog(IApplicationShell shell) {
-            _shell = shell;
+        public VsProgressDialog(IServiceContainer services) {
+            _services = services;
         }
 
         public void Show(Func<CancellationToken, System.Threading.Tasks.Task> method, string waitMessage, int delayToShowDialogMs = 0) {
@@ -50,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private ThreadedWaitDialogHelper.Session StartWaitDialog(string waitMessage, int delayToShowDialogMs) {
-            var dialogFactory = _shell.GlobalServices.GetService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
+            var dialogFactory = _services.GetService<IVsThreadedWaitDialogFactory>(typeof(SVsThreadedWaitDialogFactory));
             var initialProgress = new ThreadedWaitDialogProgressData(waitMessage, isCancelable: true);
             return dialogFactory.StartWaitDialog(null, initialProgress, TimeSpan.FromMilliseconds(delayToShowDialogMs));
         }

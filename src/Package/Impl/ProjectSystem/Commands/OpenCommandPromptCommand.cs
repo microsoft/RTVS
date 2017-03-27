@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 
@@ -14,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class OpenCommandPromptCommand : CommandPromptCommand {
         [ImportingConstructor]
-        public OpenCommandPromptCommand(ICoreServices services) :
-            base(RPackageCommandId.icmdOpenCmdPromptHere, services.Process) { }
+        public OpenCommandPromptCommand(ICoreShell coreShell) :
+            base(RPackageCommandId.icmdOpenCmdPromptHere, coreShell.Process()) { }
 
         protected override void SetFlags(ProcessStartInfo psi, string path) {
             psi.WorkingDirectory = path;

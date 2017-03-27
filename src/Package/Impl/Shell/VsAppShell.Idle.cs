@@ -15,6 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         #region IIdleTimeService
+        // TODO: remove Idle from core shell
         /// <summary>
         /// Fires when host application enters idle state.
         /// </summary>
@@ -23,7 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region IIdleTimeSource
         public void DoIdle() {
+            // TODO: remove Idle from core shell
             Idle?.Invoke(this, EventArgs.Empty);
+            _idleTimeService.FireIdle();
         }
         #endregion
 
@@ -31,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             DoIdle();
         }
 
-        private void OnApplicationStarted(object sender, EventArgs e) => _appConstants.Initialize();
+        private void OnApplicationStarted(object sender, EventArgs e) { }
         private void OnApplicationClosing(object sender, EventArgs e) => Terminating?.Invoke(this, EventArgs.Empty);
     }
 }

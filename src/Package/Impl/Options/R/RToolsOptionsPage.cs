@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private SettingsHolder _holder;
 
         public RToolsOptionsPage() {
-            _settings = VsAppShell.Current.GlobalServices.GetService<IRSettings>();
+            _settings = VsAppShell.Current.GetService<IRSettings>();
             _holder = new SettingsHolder(_settings);
         }
 

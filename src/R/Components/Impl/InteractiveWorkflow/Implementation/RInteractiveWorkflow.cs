@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -54,12 +55,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , ICoreShell coreShell
-            , IRSettings settings) {
+            , ICoreShell coreShell) {
 
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
-            _settings = settings;
+            _settings = coreShell.GetService<IRSettings>();
 
             Shell = coreShell;
             Console = new InteractiveWindowConsole(this);
@@ -69,8 +69,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Connections = connectionsProvider.CreateConnectionManager(this);
 
             History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(settings, this);
-            Plots = plotsProvider.CreatePlotManager(settings, this, new FileSystem());
+            Packages = packagesProvider.CreateRPackageManager(_settings, this);
+            Plots = plotsProvider.CreatePlotManager(_settings, this, new FileSystem());
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
@@ -109,11 +109,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // In VS 2017 and above, this is handled by the debugger itself, via IVsDebugger6.RegisterFocusPreservingWindow.
             if (_debuggerModeTracker.IsFocusStolenOnBreak && !ActiveWindow.TextView.HasAggregateFocus && !string.IsNullOrEmpty(e.New?.TextBuffer?.GetFilePath())) {
                 _replLostFocus = true;
-                Shell.DispatchOnUIThread(CheckPossibleBreakModeFocusChange);
+                Shell.MainThread().Post(CheckPossibleBreakModeFocusChange);
             }
 
             if (ActiveWindow.TextView.HasAggregateFocus) {
-                Shell.DispatchOnUIThread(Operations.PositionCaretAtPrompt);
+                Shell.MainThread().Post(Operations.PositionCaretAtPrompt);
             }
         }
 
@@ -154,7 +154,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private async Task CreateVisualComponentAsync(int instanceId) {
-            var factory = Shell.GlobalServices.GetService<IInteractiveWindowComponentContainerFactory>();
+            var factory = Shell.GetService<IInteractiveWindowComponentContainerFactory>();
             var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings, new InteractiveWindowConsole(this));
 
             var window = factory.Create(instanceId, evaluator, RSessions);
@@ -168,12 +168,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     var showConnectionsWindow = Connections.RecentConnections.Any();
                     if (!showConnectionsWindow) {
                         var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                        showConnectionsWindow = Shell.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
+                        var ui = Shell.UI();
+                        showConnectionsWindow = ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
                     }
 
                     if (!showConnectionsWindow) {
-                        var installer = Shell.GlobalServices.GetService<IMicrosoftRClientInstaller>();
-                        installer.LaunchRClientSetup(Shell);
+                        var installer = Shell.GetService<IMicrosoftRClientInstaller>();
+                        installer.LaunchRClientSetup(Shell.Services);
                     } else {
                         Connections.GetOrCreateVisualComponent().Container.Show(focus: false, immediate: false);
                     }

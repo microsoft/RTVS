@@ -26,7 +26,7 @@ namespace Microsoft.Common.Core.Logging {
         internal const string LogVerbosityValueName = "LogVerbosity";
         internal const string FeedbackValueName = "Feedback";
 
-        private readonly IApplicationConstants _appConstants;
+        private readonly IPlatformServices _platform;
         private readonly ITelemetryService _telemetryService;
         private readonly IRegistry _registry;
 
@@ -34,8 +34,8 @@ namespace Microsoft.Common.Core.Logging {
         private LogVerbosity? _registryVerbosity;
         private int? _registryFeedbackSetting;
 
-        public LoggingPermissions(IApplicationConstants appConstants, ITelemetryService telemetryService, IRegistry registry) {
-            _appConstants = appConstants;
+        public LoggingPermissions(IPlatformServices platform, ITelemetryService telemetryService, IRegistry registry) {
+            _platform = platform;
             _telemetryService = telemetryService;
             _registry = registry;
 
@@ -87,12 +87,12 @@ namespace Microsoft.Common.Core.Logging {
         }
 
         private int? GetValueFromRegistry(string name, int minValue, int maxValue) {
-            if(_appConstants.LocalMachineHive == null) {
+            if(_platform.LocalMachineHive == null) {
                 return maxValue;
             }
             using (var hlkm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                 try {
-                    using (var key = hlkm.OpenSubKey(_appConstants.LocalMachineHive)) {
+                    using (var key = hlkm.OpenSubKey(_platform.LocalMachineHive)) {
                         var value = (int?)key.GetValue(name);
                         if (value.HasValue && value.Value >= minValue && value.Value <= maxValue) {
                             return value;

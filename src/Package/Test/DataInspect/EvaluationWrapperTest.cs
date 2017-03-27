@@ -6,11 +6,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
@@ -20,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private VariableRHostScript _hostScript;
 
         public Task InitializeAsync() {
-            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _hostScript = new VariableRHostScript(workflow.RSessions);
             return workflow.Connections.ConnectAsync(workflow.Connections.RecentConnections[0]);
         }
@@ -522,7 +525,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             evaluationResult.Name.Should().BeNull();
             evaluationResult.Expression.Should().Be("idonotexist");
 
-            var model = new VariableViewModel(evaluationResult, null);
+            var model = new VariableViewModel(evaluationResult, Substitute.For<IServiceContainer>());
             model.TypeName.Should().BeNull();
             model.Value.Should().BeNull();
         }

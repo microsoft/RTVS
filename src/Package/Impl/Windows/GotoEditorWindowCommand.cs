@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -37,8 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
         }
 
         private IVsWindowFrame FindDocumentFrame(string filePath) {
-            var uiShell = VsAppShell.Current.GlobalServices.GetService<IVsUIShell>(typeof(SVsUIShell));
-            IVsWindowFrame[] frames = new IVsWindowFrame[1];
+            var uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var frames = new IVsWindowFrame[1];
             IEnumWindowFrames windowEnum;
             uiShell.GetDocumentWindowEnum(out windowEnum);
             if (windowEnum != null) {

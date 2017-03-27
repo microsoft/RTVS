@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;

@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Feedback;
@@ -15,37 +15,33 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class FeedbackCommandTest {
-        private readonly ILoggingPermissions _lp;
-        private readonly ICoreServices _services;
-
-        public FeedbackCommandTest() {
-            _lp = Substitute.For<ILoggingPermissions>();
-            _services = TestCoreServices.CreateSubstitute(_lp);
-        }
+        private readonly TestCoreShell _coreShell = TestCoreShell.CreateSubstitute();
 
         [Test]
         public void ReportIssue() {
-            var cmd = new ReportIssueCommand(_services);
+            var cmd = new ReportIssueCommand(_coreShell.Services);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendFrown() {
-            var cmd = new SendFrownCommand(_services);
+            var cmd = new SendFrownCommand(_coreShell.Services);
             TestStatus(cmd);
         }
 
         [Test]
         public void SendSmile() {
-            var cmd = new SendSmileCommand(_services);
+            var cmd = new SendSmileCommand(_coreShell.Services);
             TestStatus(cmd);
         }
 
         private void TestStatus(OleMenuCommand cmd) {
-            _lp.IsFeedbackPermitted.Returns(false);
+            var lp = _coreShell.GetService<ILoggingPermissions>();
+
+            lp.IsFeedbackPermitted.Returns(false);
             cmd.Should().BeInvisibleAndDisabled();
 
-            _lp.IsFeedbackPermitted.Returns(true);
+            lp.IsFeedbackPermitted.Returns(true);
             cmd.Should().BeEnabled();
         }
     }

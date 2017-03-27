@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Composition;
 using Microsoft.Common.Core.Shell;
@@ -45,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 attributeList.Add(new DescriptionAttribute(Setting.Description));
             }
             if (!string.IsNullOrEmpty(Setting.EditorType)) {
-                var expl = new NamedExportLocator<IConfigurationSettingUIEditorProvider>(_coreShell.CompositionService);
+                var expl = new NamedExportLocator<IConfigurationSettingUIEditorProvider>(_coreShell.GetService<ICompositionService>());
                 var provider = expl.GetExport(Setting.EditorType);
                 if (provider != null) {
                     attributeList.Add(new EditorAttribute(provider.EditorType, typeof(UITypeEditor)));

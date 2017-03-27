@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +11,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.Controller;
@@ -36,7 +37,8 @@ using Brushes = Microsoft.R.Wpf.Brushes;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {
         private readonly IRToolsSettings _settings;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
+        private readonly IUIService _ui;
         private readonly IRSession _session;
         private readonly IREnvironmentProvider _environmentProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
@@ -44,26 +46,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _keyDownSeen;
         private ObservableTreeNode _rootNode;
 
-        public VariableView() : this(null, VsAppShell.Current) { }
+        public VariableView() : this(VsAppShell.Current.Services) { }
 
-        public VariableView(IRToolsSettings settings, ICoreShell shell) {
-            _settings = settings;
-            _shell = shell;
-            _shell.UIThemeChanged += OnUIThemeChanged;
+        public VariableView(IServiceContainer services) {
+            _settings = services.GetService<IRToolsSettings>();
+            _services = services;
+            _ui = _services.UI();
+            _ui.UIThemeChanged += OnUIThemeChanged;
 
             InitializeComponent();
             SetImageBackground();
 
-            _aggregator = _shell.GlobalServices.GetService<IObjectDetailsViewerAggregator>();
+            _aggregator = _services.GetService<IObjectDetailsViewerAggregator>();
             SetRootNode(VariableViewModel.Ellipsis);
 
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var workflow = VsAppShell.Current.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
 
-            _environmentProvider = new REnvironmentProvider(_session, shell.Services.MainThread);
+            _environmentProvider = new REnvironmentProvider(_session, _services.MainThread());
             EnvironmentComboBox.DataContext = _environmentProvider;
             _environmentProvider.RefreshEnvironmentsAsync().DoNotWait();
         }
@@ -73,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void SetImageBackground() {
-            var theme = _shell.GlobalServices.GetService<IThemeUtilities>();
+            var theme = _services.GetService<IThemeUtilities>();
             theme.SetImageBackgroundColor(RootTreeGrid, Brushes.ToolWindowBackgroundColorKey);
             theme.SetThemeScrollBars(RootTreeGrid);
         }
@@ -108,12 +111,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task SetRootModelAsync(REnvironment env) {
-            _shell.AssertIsOnMainThread();
+            _services.MainThread().Assert();
 
             if (env.Kind != REnvironmentKind.Error) {
                 try {
                     var result = await EvaluateAndDescribeAsync(env);
-                    var wrapper = new VariableViewModel(result, _aggregator);
+                    var wrapper = new VariableViewModel(result, _services);
                     _rootNode.Model = new VariableNode(_settings, wrapper);
                 } catch (RException ex) {
                     SetRootNode(VariableViewModel.Error(ex.Message));
@@ -126,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             // Some of the Variable Explorer tool bar buttons are depend on the R Environment (e.g., Delete all Variables button).
             // This will give those UI elements a chance to update state.
-            _shell.UpdateCommandStatus();
+            _ui.UpdateCommandStatus();
         }
 
         private async Task<IRValueInfo> EvaluateAndDescribeAsync(REnvironment env) {
@@ -146,20 +149,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private ListSortDirection SortDirection { get; set; }
 
-        private int Comparison(ITreeNode left, ITreeNode right) {
-            return VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
-        }
+        private int Comparison(ITreeNode left, ITreeNode right)
+            => VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
 
-        private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            HandleDefaultAction();
-        }
+        private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) => HandleDefaultAction();
 
         private void GridRow_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var row = sender as DataGridRow;
             if (row != null) {
                 SelectRow(row);
                 var pt = PointToScreen(e.GetPosition(this));
-                _shell.ShowContextMenu(new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                _services.ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
                 e.Handled = true;
             }
         }
@@ -205,8 +205,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var focus = Keyboard.FocusedElement as FrameworkElement;
             if (focus != null) {
                 var pt = focus.PointToScreen(new Point(1, 1));
-                _shell.ShowContextMenu(
-                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                _services.ShowContextMenu(
+                    new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
             }
         }
 
@@ -222,7 +222,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 DeleteCurrentVariableAsync().DoNotWait();
             } else if (e.Key == Key.Apps) {
                 ShowContextMenu();
-            } else if(e.Key == Key.Space) {
+            } else if (e.Key == Key.Space) {
                 var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
                 if (selection != null && selection.HasChildren) {
                     selection.IsExpanded = !selection.IsExpanded;

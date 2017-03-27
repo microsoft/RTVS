@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -15,15 +16,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             : base(interactiveWorkflow, visualComponent) {
         }
 
-        public CommandStatus Status {
-            get {
-                if (HasCurrentPlot && !IsInLocatorMode) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-
-                return CommandStatus.Supported;
-            }
-        }
+        public CommandStatus Status => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
             string filePath = Path.GetTempFileName();
@@ -35,12 +28,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     PixelsToInches(VisualComponent.Device.PixelHeight),
                     VisualComponent.Device.Resolution);
 
-                InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
+                InteractiveWorkflow.Shell.MainThread().Post(() => {
                     try {
                         var mf = new System.Drawing.Imaging.Metafile(filePath);
                         Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
                     } catch (Exception e) when (!e.IsCriticalException()) {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_CopyToClipboardError, e.Message));
+                        InteractiveWorkflow.Shell.ShowErrorMessage(Resources.Plots_CopyToClipboardError.FormatInvariant(e.Message));
                     } finally {
                         try {
                             File.Delete(filePath);
@@ -54,8 +47,6 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             }
         }
 
-        private static double PixelsToInches(int pixels) {
-            return pixels / 96.0;
-        }
+        private static double PixelsToInches(int pixels) => pixels / 96.0;
     }
 }

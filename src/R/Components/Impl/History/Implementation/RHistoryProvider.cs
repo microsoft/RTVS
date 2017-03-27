@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.Text;
@@ -24,19 +25,13 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Dictionary<ITextBuffer, IRHistory> _histories;
 
         [ImportingConstructor]
-        public RHistoryProvider(ITextBufferFactoryService textBufferFactory 
-            , IContentTypeRegistryService contentTypeRegistryService
-            , IEditorOperationsFactoryService editorOperationsFactory
-            , IRtfBuilderService rtfBuilderService
-            , ITextSearchService2 textSearchService
-            , IRSettings settings) {
-            _textBufferFactory = textBufferFactory;
-            _editorOperationsFactory = editorOperationsFactory;
-            _rtfBuilderService = rtfBuilderService;
-            _textSearchService = textSearchService;
-            _settings = settings;
-            _rtfBuilderService = rtfBuilderService;
-            _contentTypeRegistryService = contentTypeRegistryService;
+        public RHistoryProvider(ICoreShell coreShell) {
+            _textBufferFactory = coreShell.GetService<ITextBufferFactoryService>();
+            _contentTypeRegistryService = coreShell.GetService<IContentTypeRegistryService>();
+            _editorOperationsFactory = coreShell.GetService<IEditorOperationsFactoryService>();
+            _rtfBuilderService = coreShell.GetService<IRtfBuilderService>();
+            _textSearchService = coreShell.GetService<ITextSearchService2>();
+            _settings = coreShell.GetService<IRSettings>();
             _histories = new Dictionary<ITextBuffer, IRHistory>();
         }
 

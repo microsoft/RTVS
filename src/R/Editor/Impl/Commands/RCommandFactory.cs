@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Comments;
@@ -25,27 +25,27 @@ namespace Microsoft.R.Editor.Commands {
     internal class RCommandFactory : ICommandFactory {
         private readonly IObjectViewer _objectViewer;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public RCommandFactory([Import(AllowDefault = true)] IObjectViewer objectViewer, [Import(AllowDefault = true)] IRInteractiveWorkflowProvider workflowProvider, IEditorShell editorShell) {
+        public RCommandFactory([Import(AllowDefault = true)] IObjectViewer objectViewer, [Import(AllowDefault = true)] IRInteractiveWorkflowProvider workflowProvider, ICoreShell shell) {
             _objectViewer = objectViewer;
             _workflowProvider = workflowProvider;
-            _editorShell = editorShell;
+            _shell = shell;
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var commands = new List<ICommand> {
-                new GotoBraceCommand(textView, textBuffer, _editorShell),
-                new CommentCommand(textView, textBuffer, _editorShell),
-                new UncommentCommand(textView, textBuffer, _editorShell),
-                new FormatDocumentCommand(textView, textBuffer, _editorShell),
-                new FormatSelectionCommand(textView, textBuffer, _editorShell),
-                new FormatOnPasteCommand(textView, textBuffer, _editorShell),
+                new GotoBraceCommand(textView, textBuffer, _shell),
+                new CommentCommand(textView, textBuffer, _shell),
+                new UncommentCommand(textView, textBuffer, _shell),
+                new FormatDocumentCommand(textView, textBuffer, _shell),
+                new FormatSelectionCommand(textView, textBuffer, _shell),
+                new FormatOnPasteCommand(textView, textBuffer, _shell),
                 new SelectWordCommand(textView, textBuffer),
-                new RTypingCommandHandler(textView, _editorShell),
+                new RTypingCommandHandler(textView, _shell),
                 new RCompletionCommandHandler(textView),
-                new PeekDefinitionCommand(textView, textBuffer, _editorShell.GlobalServices.GetService<IPeekBroker>()),
+                new PeekDefinitionCommand(textView, textBuffer, _shell.GetService<IPeekBroker>()),
                 new InsertRoxygenBlockCommand(textView, textBuffer)
             };
 

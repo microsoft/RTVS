@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.UnitTests.Core.XUnit;
@@ -15,18 +16,12 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
     [Category.Connections]
     public sealed class ConnectionStatusBarViewModelTest {
-        private readonly IConnectionManager _cm;
-        private readonly ICoreShell _shell;
-
-        public ConnectionStatusBarViewModelTest() {
-            _cm = Substitute.For<IConnectionManager>();
-            _shell = Substitute.For<ICoreShell>();
-            _shell.When(x => x.DispatchOnUIThread(Arg.Any<Action>())).Do(c => ((Action)c.Args()[0])());
-         }
+        private readonly IConnectionManager _cm = Substitute.For<IConnectionManager>();
+        private readonly ICoreShell _shell = TestCoreShell.CreateBasic();
 
         [Test]
         public void Construction() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell);
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
             m.SelectedConnection.Should().BeNullOrEmpty();
             m.IsActive.Should().BeFalse();
             m.IsConnected.Should().BeFalse();
@@ -35,7 +30,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void ConnectStates() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell);
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
             m.IsConnected = true;
             m.IsRunning.Should().BeFalse();
 
@@ -46,7 +41,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void StateChanges() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell);
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
 
             _cm.IsConnected.Returns(true);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.UnitTests.Core.Mef;
@@ -18,18 +19,18 @@ namespace Microsoft.Languages.Editor.Test.Services {
     [ExcludeFromCodeCoverage]
     public class IdleTaskQueueTest {
         private readonly IExportProvider _exportProvider;
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
 
         public IdleTaskQueueTest(IExportProvider exportProvider) {
             _exportProvider = exportProvider;
-            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _shell = _exportProvider.GetExportedValue<ICoreShell>();
         }
 
         [Test]
         [Category.Languages.Core]
         public void OperationsTest() {
             var results = new List<Result>();
-            var queue = new IdleTimeAsyncTaskQueue(_editorShell);
+            var queue = new IdleTimeAsyncTaskQueue(_shell);
 
             var ta = new TaskAction(1, results);
             queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
@@ -72,7 +73,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
         private void RunThreads() {
             for (int i = 0; i < 10; i++) {
-                _editorShell.DoIdle();
+                ((IIdleTimeSource)_shell).DoIdle();
                 Thread.Sleep(100);
             }
         }

@@ -7,9 +7,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Help;
@@ -26,9 +25,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// Represents telemetry operations in RTVS
     /// </summary>
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
-        private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker();
+        private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker(VsAppShell.Current.Services);
         private readonly IPackageIndex _packageIndex;
-        private static IRSettings _settings;
+        private static IRToolsSettings _settings;
 
         public static IRtvsTelemetry Current { get; set; }
 
@@ -56,16 +55,16 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
+        public static void Initialize(IPackageIndex packageIndex, IRToolsSettings settings, ITelemetryService service = null) {
             if (Current == null) {
                 Current = new RtvsTelemetry(packageIndex, settings, service);
             }
         }
 
-        public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, ITelemetryService service = null) {
+        public RtvsTelemetry(IPackageIndex packageIndex, IRToolsSettings settings, ITelemetryService service = null) {
             _packageIndex = packageIndex;
             _settings = settings;
-            TelemetryService = service ?? VsAppShell.Current.GlobalServices.GetService<ITelemetryService>();
+            TelemetryService = service ?? VsAppShell.Current.GetService<ITelemetryService>();
         }
 
         public ITelemetryService TelemetryService { get; }
@@ -140,12 +139,12 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 try {
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, SettingEvents.Settings,
                             new {
-                                Cran = RToolsSettings.Current.CranMirror,
-                                Locale = RToolsSettings.Current.RCodePage,
-                                LoadRData = RToolsSettings.Current.LoadRDataOnProjectLoad,
-                                SaveRData = RToolsSettings.Current.SaveRDataOnProjectUnload,
-                                MultilineHistorySelection = RToolsSettings.Current.MultilineHistorySelection,
-                                AlwaysSaveHistory = RToolsSettings.Current.AlwaysSaveHistory,
+                                Cran = _settings.CranMirror,
+                                Locale = _settings.RCodePage,
+                                LoadRData = _settings.LoadRDataOnProjectLoad,
+                                SaveRData = _settings.SaveRDataOnProjectUnload,
+                                MultilineHistorySelection = _settings.MultilineHistorySelection,
+                                AlwaysSaveHistory = _settings.AlwaysSaveHistory,
                                 AutoFormat = REditorSettings.AutoFormat,
                                 CommitOnEnter = REditorSettings.CommitOnEnter,
                                 CommitOnSpace = REditorSettings.CommitOnSpace,
@@ -156,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 CompletionEnabled = REditorSettings.CompletionEnabled,
                                 SyntaxCheckInRepl = REditorSettings.SyntaxCheckInRepl,
                                 PartialArgumentNameMatch = REditorSettings.PartialArgumentNameMatch,
-                                RCommandLineArguments = RToolsSettings.Current.LastActiveConnection.RCommandLineArguments
+                                RCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments
                             });
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);

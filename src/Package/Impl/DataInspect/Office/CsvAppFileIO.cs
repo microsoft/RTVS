@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,14 +12,13 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -32,14 +30,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private const string _variableNameReplacement = "variable";
         private static int _busy;
 
-        public static async Task OpenDataCsvApp(IREvaluationResultInfo result, IApplicationShell appShell, IFileSystem fileSystem, IProcessServices processServices) {
-            await appShell.SwitchToMainThreadAsync();
+        public static async Task OpenDataCsvApp(IREvaluationResultInfo result, ICoreShell shell, IFileSystem fileSystem, IProcessServices processServices) {
+            await shell.SwitchToMainThreadAsync();
 
             if (Interlocked.Exchange(ref _busy, 1) > 0) {
                 return;
             }
 
-            var workflow = appShell.GlobalServices.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var session = workflow.RSession;
 
             var folder = GetTempCsvFilesFolder();
@@ -47,24 +45,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
-            var pss = appShell.GlobalServices.GetService<IProjectSystemServices>();
+            var pss = shell.GetService<IProjectSystemServices>();
             var variableName = result.Name ?? _variableNameReplacement;
-            var csvFileName = MakeCsvFileName(appShell, pss, variableName);
+            var csvFileName = MakeCsvFileName(shell, pss, variableName);
 
             var file = pss.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
 
             string currentStatusText;
-            var statusBar = appShell.GlobalServices.GetService<IVsStatusbar>(typeof(SVsStatusbar));
+            var statusBar = shell.GetService<IVsStatusbar>(typeof(SVsStatusbar));
             statusBar.GetText(out currentStatusText);
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                appShell.ProgressDialog.Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, appShell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
+                shell.ProgressDialog().Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, shell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }
             } catch (Exception ex) when (ex is Win32Exception || ex is IOException || ex is UnauthorizedAccessException) {
-                appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
+                shell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } finally {
                 statusBar.SetText(currentStatusText);
             }
@@ -110,12 +108,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             return Path.Combine(folder, @"RTVS_CSV_Exports\");
         }
 
-        private static string MakeCsvFileName(IApplicationShell appShell, IProjectSystemServices pss, string variableName) {
+        private static string MakeCsvFileName(ICoreShell shell, IProjectSystemServices pss, string variableName) {
             var project = pss.GetActiveProject();
             var projectName = project?.FileName;
 
-            var contentTypeService = appShell.GlobalServices.GetService<IContentTypeRegistryService>();
-            var viewTracker = appShell.GlobalServices.GetService<IActiveWpfTextViewTracker>();
+            var contentTypeService = shell.GetService<IContentTypeRegistryService>();
+            var viewTracker = shell.GetService<IActiveWpfTextViewTracker>();
 
             var activeView = viewTracker.GetLastActiveTextView(contentTypeService.GetContentType(RContentTypeDefinition.ContentType));
             var filePath = activeView.GetFilePath();
