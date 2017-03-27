@@ -3,7 +3,6 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
 using static System.FormattableString;

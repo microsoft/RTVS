@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
