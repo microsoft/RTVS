@@ -76,10 +76,6 @@
     <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="About\AboutController.cs" />
-    <Compile Include="About\LoadController.cs" />
-    <Compile Include="Lifetime\LifetimeManager.cs" />
-    <Compile Include="Lifetime\PingController.cs" />
     <Compile Include="RBrokerServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -87,11 +83,9 @@
       <DependentUpon>RBrokerServiceInstaller.cs</DependentUpon>
     </Compile>
     <Compile Include="RemoteUri\RemoteUriHelper.cs" />
-    <Compile Include="Security\WindowsAuthenticationService.cs" />
-    <Compile Include="Sessions\Session.cs" />
-    <Compile Include="Sessions\SessionManager.cs" />
-    <Compile Include="Sessions\SessionsController.cs" />
-    <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
+    <Compile Include="Services\WindowsRHostProcessService.cs" />
+    <Compile Include="Services\WindowsAuthenticationService.cs" />
+    <Compile Include="Services\WindowsSystemInfoService.cs" />
     <Compile Include="Startup\BrokerService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -173,6 +167,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

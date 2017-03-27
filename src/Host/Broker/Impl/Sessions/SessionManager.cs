@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Security;
@@ -17,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Pipes;
+using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Sessions {
@@ -24,20 +24,16 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private const int MaximumConcurrentClientWindowsUsers = 1;
 
         private readonly LoggingOptions _loggingOptions;
-        private readonly ILogger _hostOutputLogger, _messageLogger, _sessionLogger;
+        private readonly ILogger _hostOutputLogger, _messageLogger;
+        private readonly IRHostProcessService _processService;
+        private readonly ILogger _sessionLogger;
 
         private readonly Dictionary<string, List<Session>> _sessions = new Dictionary<string, List<Session>>();
         private readonly HashSet<string> _blockedUsers = new HashSet<string>();
 
-        [ImportingConstructor]
-        public SessionManager(
-            InterpreterManager interpManager,
-            IOptions<LoggingOptions> loggingOptions,
-            ILogger<Session> sessionLogger,
-            ILogger<MessagePipe> messageLogger,
-            ILogger<Process> hostOutputLogger
-        ) {
+        public SessionManager(IRHostProcessService processService, IOptions<LoggingOptions> loggingOptions, ILogger<Session> sessionLogger, ILogger<MessagePipe> messageLogger, ILogger<Process> hostOutputLogger) {
             _loggingOptions = loggingOptions.Value;
+            _processService = processService;
             _sessionLogger = sessionLogger;
 
             if (_loggingOptions.LogPackets) {
@@ -127,7 +123,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 }
 
                 var userSessions = GetOrCreateSessionList(user);
-                session = new Session(this, user, id, interpreter, commandLineArguments, isInteractive, _sessionLogger, _messageLogger);
+                session = new Session(this, _processService, user, id, interpreter, commandLineArguments, isInteractive, _sessionLogger, _messageLogger);
                 session.StateChanged += Session_StateChanged;
 
                 userSessions.Add(session);

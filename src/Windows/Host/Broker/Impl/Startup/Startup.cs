@@ -2,17 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.R.Host.Broker.About;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Lifetime;
 using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.RemoteUri;
 using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Interpreters;
@@ -20,8 +21,7 @@ using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public class Startup {
-        public Startup(IHostingEnvironment env) {
-        }
+        public Startup(IHostingEnvironment env) {}
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddOptions()
@@ -37,7 +37,9 @@ namespace Microsoft.R.Host.Broker.Startup {
                     .AddSingleton<SessionManager>()
                     .AddSingleton<UserProfileManager>()
                     .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
-                    .AddSingleton<IRInstallationService, RInstallation>();
+                    .AddSingleton<IRHostProcessService, WindowsRHostProcessService>()
+                    .AddSingleton<IRInstallationService, RInstallation>()
+                    .AddSingleton<ISystemInfoService, WindowsSystemInfoService> ();
 
             services.AddAuthorization(options => options.AddPolicy(
                 Policies.RUser,
@@ -70,17 +72,11 @@ namespace Microsoft.R.Host.Broker.Startup {
             routeBuilder.MapRoute("help_and_shiny", "remoteuri");
             app.UseRouter(routeBuilder.Build());
 
-            app.UseBasicAuthentication(options => {
-                options.Events = new BasicEvents { OnSignIn = securityManager.SignInAsync };
-            });
+            app.UseBasicAuthentication(options => options.Events = new BasicEvents { OnSignIn = securityManager.SignInAsync });
 
-            app.Use((context, next) => {
-                if (!context.User.Identity.IsAuthenticated) {
-                    return context.Authentication.ChallengeAsync();
-                } else {
-                    return next();
-                }
-            });
+            app.Use((context, next) => context.User.Identity.IsAuthenticated 
+                ? next() 
+                : context.Authentication.ChallengeAsync());
 
             app.UseMvc();
         }

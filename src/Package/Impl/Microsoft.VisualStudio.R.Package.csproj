@@ -1597,6 +1597,7 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Threading.Tasks.Dataflow.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Threading.Tasks.Extensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Threading.Thread.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.ValueTuple.dll" /
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XmlDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.XDocument.dll" />

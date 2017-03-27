@@ -62,6 +62,51 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Designated parent process {0} not found.
+        /// </summary>
+        internal static string Critical_ParentProcessNotFound {
+            get {
+                return ResourceManager.GetString("Critical_ParentProcessNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ping timed out, terminating.
+        /// </summary>
+        internal static string Critical_PingTimeOut {
+            get {
+                return ResourceManager.GetString("Critical_PingTimeOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default.
+        /// </summary>
+        internal static string Default {
+            get {
+                return ResourceManager.GetString("Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} session creation blocked due to pending profile deletion..
+        /// </summary>
+        internal static string Error_BlockedByProfileDeletion {
+            get {
+                return ResourceManager.GetString("Error_BlockedByProfileDeletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Host Exited with Win32 error : {0}.
+        /// </summary>
+        internal static string Error_ExitRHost {
+            get {
+                return ResourceManager.GetString("Error_ExitRHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to retrieve R installation data for interpreter \&quot;{0}\&quot; at \&quot;{1}\&quot;.
         /// </summary>
         internal static string Error_FailedRInstallationData {
@@ -98,6 +143,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R session process failed to start. Error: {0}.
+        /// </summary>
+        internal static string Error_RHostFailedToStart {
+            get {
+                return ResourceManager.GetString("Error_RHostFailedToStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pipe already has a client end.
         /// </summary>
         internal static string Exception_PipeHasClientEnd {
@@ -112,6 +166,42 @@ namespace Microsoft.R.Host.Broker {
         internal static string Exception_PipeHasHostEnd {
             get {
                 return ResourceManager.GetString("Exception_PipeHasHostEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monitoring parent process {0}.
+        /// </summary>
+        internal static string Info_MonitoringParentProcess {
+            get {
+                return ResourceManager.GetString("Info_MonitoringParentProcess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent process {0} exited, shutting down.
+        /// </summary>
+        internal static string Info_ParentProcessExited {
+            get {
+                return ResourceManager.GetString("Info_ParentProcessExited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R session started for connection {0} of user {1}.
+        /// </summary>
+        internal static string Info_StartedRHost {
+            get {
+                return ResourceManager.GetString("Info_StartedRHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting R session for connection {0} of user {1} with command line: {2}.
+        /// </summary>
+        internal static string Info_StartingRHost {
+            get {
+                return ResourceManager.GetString("Info_StartingRHost", resourceCulture);
             }
         }
         
@@ -148,6 +238,15 @@ namespace Microsoft.R.Host.Broker {
         internal static string Trace_DetectedR {
             get {
                 return ResourceManager.GetString("Trace_DetectedR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to |{0}|: {1}.
+        /// </summary>
+        internal static string Trace_ErrorDataReceived {
+            get {
+                return ResourceManager.GetString("Trace_ErrorDataReceived", resourceCulture);
             }
         }
     }

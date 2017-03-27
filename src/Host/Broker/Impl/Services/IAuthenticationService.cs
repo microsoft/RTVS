@@ -4,8 +4,8 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Host.Broker.Security {
+namespace Microsoft.R.Host.Broker.Services {
     public interface IAuthenticationService {
-        Task<ClaimsPrincipal> SignIn(string username, string password, string authenticationScheme);
+        Task<ClaimsPrincipal> SignInAsync(string username, string password, string authenticationScheme);
     }
 }

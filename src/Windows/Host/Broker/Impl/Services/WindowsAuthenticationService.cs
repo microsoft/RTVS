@@ -10,11 +10,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Host.Protocol;
-using Odachi.AspNetCore.Authentication.Basic;
 
-namespace Microsoft.R.Host.Broker.Security {
+namespace Microsoft.R.Host.Broker.Services {
     public class WindowsAuthenticationService : IAuthenticationService {
         private readonly SecurityOptions _options;
         private readonly ILogger<IAuthenticationService> _logger;
@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Broker.Security {
             _logger = logger;
         }
 
-        public async Task<ClaimsPrincipal> SignIn(string username, string password, string authenticationScheme) {
+        public async Task<ClaimsPrincipal> SignInAsync(string username, string password, string authenticationScheme) {
             var user = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
