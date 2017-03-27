@@ -307,10 +307,12 @@ query_reload_autosave <- function() {
 save_state <- function() {
     # This function runs when client is already disconnected, so loc_message() cannot be used, since it requires
     # a connected client to provide translated strings. However, since messages are not user-visible and are
-    # here for logging purposes only, they don't need to be localized in the first place.
-    #message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename), appendLF = FALSE);
+    # here for logging purposes only, they don't need to be localized in the first place. Also, they 
+    # cannot be localized since 'message' and 'sprintf' depend on currely set R locale which may or 
+    # may not be the same as current client UI locale (VS UI language is set indedendently from OS and R).
+    message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename), appendLF = FALSE);
     save.image(autosave_filename);
-    #message(' workspace saved successfully.');
+    message(' workspace saved successfully.');
 }
 
 enable_autosave <- function(delete_existing) {
