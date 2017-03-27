@@ -251,4 +251,9 @@ Please upgrade remote R Services installation to match.</value>
   <data name="Error_RemoteUriNotSupported" xml:space="preserve">
     <value>Remote R requested to open {0}, but only http:// URIs are supported for remote.</value>
   </data>
+  <data name="Message_SuggestMRO" xml:space="preserve">
+    <value>Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.
+
+</value>
+  </data>
 </root>

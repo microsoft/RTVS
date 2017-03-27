@@ -75,6 +75,7 @@ namespace Microsoft.R.Support.Help.Packages {
             var functions = TryRestoreFromCache();
             if (functions == null || !functions.Any()) {
                 try {
+                    await _host.StartSessionAsync();
                     var result = await _host.Session.PackagesFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
                     functions = result.Children<JValue>().Select(v => (string)v.Value);
                 } catch (RException) { }

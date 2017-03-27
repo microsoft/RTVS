@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -399,6 +398,11 @@ namespace Microsoft.R.Host.Client.Session {
 
                 await LoadRtvsPackage(evaluator, libPath);
 
+                var suggest_mro = await evaluator.EvaluateAsync<bool>("!exists('Revo.version')", REvaluationKind.Normal);
+                if (suggest_mro) {
+                    await WriteOutputAsync(Resources.Message_SuggestMRO);
+                }
+
                 var wd = startupInfo.WorkingDirectory;
                 if (!IsRemote && !string.IsNullOrEmpty(wd)) {
                     try {
@@ -611,6 +615,13 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         private Task WriteErrorAsync(string format, params object[] args) =>
             WriteErrorAsync(format.FormatCurrent(args));
 
+        private async Task WriteOutputAsync(string text) {
+            await ((IRCallbacks)this).WriteConsoleEx(text + "\n", OutputType.Output, CancellationToken.None);
+        }
+
+        private Task WriteOutputAsync(string format, params object[] args) =>
+            WriteOutputAsync(format.FormatCurrent(args));
+
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));
             return Task.CompletedTask;
@@ -719,8 +730,15 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewObjectAsync(obj, title, cancellationToken) ?? Task.CompletedTask;
         }
 
-        void IRCallbacks.PackagesInstalled() {
+        Task IRCallbacks.BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
+            var callback = _callback;
+            return callback.BeforePackagesInstalledAsync(cancellationToken);
+        }
+
+        Task IRCallbacks.AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
             PackagesInstalled?.Invoke(this, EventArgs.Empty);
+            var callback = _callback;
+            return callback.AfterPackagesInstalledAsync(cancellationToken);
         }
 
         void IRCallbacks.PackagesRemoved() {

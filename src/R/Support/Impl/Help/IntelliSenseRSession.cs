@@ -81,13 +81,9 @@ namespace Microsoft.R.Support.Help {
         /// <summary>
         /// Starts intellisense session.
         /// </summary>
-        public async Task StartSessionAsync() {
-            var token = await _lock.ResetAsync();
+        public async Task StartSessionAsync(CancellationToken ct = default(CancellationToken)) {
+            var token = await _lock.ResetAsync(ct);
             try {
-                if (!_sessionProvider.HasBroker) {
-                    throw new RHostDisconnectedException();
-                }
-
                 if (Session == null) {
                     Session = _sessionProvider.GetOrCreate(SessionNames.Intellisense);
                 }

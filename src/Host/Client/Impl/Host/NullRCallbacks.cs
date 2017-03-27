@@ -36,10 +36,11 @@ namespace Microsoft.R.Host.Client.Host {
         public Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
         public void DirectoryChanged() { }
         public Task ViewObject(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
-        public void PackagesInstalled() { }
         public void PackagesRemoved() {}
         public Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlocbId, string localPath, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
         public string GetLocalizedString(string id) => null;
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await _mrs.WaitAsync(ct);

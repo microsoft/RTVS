@@ -19,8 +19,16 @@ send_request_and_get_response <- function(name, ...) {
     call_embedded('send_request_and_get_response', name, list(...))
 }
 
-locstr <- function(id) {
-    send_request_and_get_response('?LocStr', id)[[1]]
+loc_message <- function(id, ...) {
+    send_notification("!LocMessage", id, list(...))
+}
+
+loc_warning <- function(id, ...) {
+    send_notification("!LocWarning", id, list(...))
+}
+
+loc_askYesNo <- function(id, ...) {
+    send_request_and_get_response('?LocYesNo', id, list(...))[[1]]
 }
 
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
@@ -271,10 +279,9 @@ query_reload_autosave <- function() {
         return(FALSE);
     }
 
-    msg <- locstr('rtvs_SessionTerminatedUnexpectedly');
-    res <- winDialog('yesno', sprintf(msg, autosave_filename));
+    res <- loc_askYesNo('rtvs_SessionTerminatedUnexpectedly', autosave_filename)[[1]];
 
-    if (identical(res, 'YES')) {
+    if (identical(res, 'Y')) {
         # Use try instead of tryCatch, so that any errors are printed as usual.
         loaded <- FALSE;
         try({
@@ -283,25 +290,26 @@ query_reload_autosave <- function() {
         });
 
         if (loaded) {
-            message(sprintf(locstr('rtvs_LoadedWorkspace'), autosave_filename));
+            loc_warning('rtvs_LoadedWorkspace', autosave_filename);
             # If we loaded the file successfully, it's safe to delete it - this session contains the reloaded
             # state now, and if there's another disconnect, it will be autosaved again.
             return(TRUE);
         } else {
-            warning(sprintf(locstr('rtvs_FailedToLoadWorkspace'), autosave_filename), call. = FALSE, immediate. = TRUE);
+            loc_warning('rtvs_FailedToLoadWorkspace', autosave_filename);
             return(FALSE);
         }
     } else {
-        msg <- locstr('rtvs_ConfirmDeleteWorkspace');
-        res <- winDialog('yesno', sprintf(msg, autosave_filename));
-        return(identical(res, 'YES'));
+        res <-loc_askYesNo('rtvs_ConfirmDeleteWorkspace', autosave_filename)[[1]];
+        return(identical(res, 'Y'));
     }
 }
 
 save_state <- function() {
-    # This function runs when client is already disconnected, so locstr() cannot be used, since it requires
+    # This function runs when client is already disconnected, so loc_message() cannot be used, since it requires
     # a connected client to provide translated strings. However, since messages are not user-visible and are
-    # here for logging purposes only, they don't need to be localized in the first place.
+    # here for logging purposes only, they don't need to be localized in the first place. Also, they 
+    # cannot be localized since 'message' and 'sprintf' depend on currely set R locale which may or 
+    # may not be the same as current client UI locale (VS UI language is set indedendently from OS and R).
     message(sprintf('Autosaving workspace to image "%s" ...', autosave_filename), appendLF = FALSE);
     save.image(autosave_filename);
     message(' workspace saved successfully.');
@@ -312,7 +320,7 @@ enable_autosave <- function(delete_existing) {
         set_disconnect_callback(save_state);
 
         if (delete_existing) {
-            message(sprintf(locstr('rtvs_DeletingWorkspace'), autosave_filename));
+            loc_warning('rtvs_DeletingWorkspace', autosave_filename);
             unlink(autosave_filename);
         }
     });

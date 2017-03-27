@@ -54,6 +54,8 @@ namespace Microsoft.R.Host.Client.Test.Script {
             throw new NotImplementedException();
         }
 
-        public string GetLocalizedString(string id)=> throw new NotImplementedException();
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public string GetLocalizedString(string id) => throw new NotImplementedException();
     }
 }
