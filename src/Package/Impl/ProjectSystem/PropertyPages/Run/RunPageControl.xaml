@@ -56,9 +56,9 @@
             x:Uid="chkResetReplOnRun"
             Content="_Reset R Interactive on run"
             IsChecked="{Binding Path=ResetReplOnRun, Mode=TwoWay}"/>
-        
+
         <Separator/>
-        
+
         <Grid HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
@@ -69,12 +69,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Column="0" x:Uid="RemoteProjectPathLabel" Content="Remote Project Path" Target="{Binding ElementName=txtRemoteProjectPath}" />
+            <Label Grid.Column="0" x:Uid="RemoteProjectPathLabel" Content="Remote Project Path" Target="{Binding ElementName=txtRemoteProjectPath, Mode=OneWay}" />
             <TextBlock Grid.Column="1" Text=":" />
             <TextBox Grid.Column="2" x:Name="txtRemoteProjectPath" Text="{Binding Path=RemoteProjectPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Grid.Row="1" Grid.Column="2" >
-                <Run Text="{Binding ElementName=txtRemoteProjectPath, Path=Text, UpdateSourceTrigger=PropertyChanged}"/>
-                <Run Text="{Binding Path=ProjectName}"/>
+                <Run Text="{Binding ElementName=txtRemoteProjectPath, Path=Text, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                <Run Text="{Binding Path=ProjectName, Mode=OneWay}"/>
             </TextBlock>
         </Grid>
 
