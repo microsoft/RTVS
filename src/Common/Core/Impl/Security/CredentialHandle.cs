@@ -4,6 +4,8 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Win32.SafeHandles;
 using static Microsoft.Common.Core.NativeMethods;
 
@@ -31,7 +33,7 @@ namespace Microsoft.Common.Core {
             throw new InvalidOperationException(Resources.Error_CredentialHandleInvalid);
         }
 
-        public static CredentialHandle ReadFromCredentialManager(string authority) {
+        public static CredentialHandle ReadFromCredentialManager(string authority, ICoreShell coreShell) {
             IntPtr creds;
             if (CredRead(authority, CRED_TYPE.GENERIC, 0, out creds)) {
                 return new CredentialHandle(creds);
@@ -40,7 +42,7 @@ namespace Microsoft.Common.Core {
                 // if credentials were not found then continue to prompt user for credentials.
                 // otherwise there was an error while reading credentials. 
                 if (error != ERROR_NOT_FOUND) {
-                    throw new Win32Exception(error, Resources.Error_CredReadFailed);
+                    coreShell.ShowErrorMessage(Resources.Error_CredReadFailed + " " + ErrorCodeConverter.MessageFromErrorCode(error));
                 }
             }
 
