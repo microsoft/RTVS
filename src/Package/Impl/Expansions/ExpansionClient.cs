@@ -2,14 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Core.AST.Expressions;
-using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
