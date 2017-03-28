@@ -5347,7 +5347,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&R Tools]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&R Tools]]></Val>
+              <Val><![CDATA[&Инструменты R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5407,7 +5407,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Windows]]></Val>
+              <Val><![CDATA[&Окна]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5795,7 +5795,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Tools]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Tools]]></Val>
+            <Val><![CDATA[Инструменты R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
