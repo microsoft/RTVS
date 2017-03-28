@@ -135,12 +135,16 @@
                         <Button 
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}"
+                            AutomationProperties.Name="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.ShowDetailCommandAutomationName}}"
+                            AutomationProperties.HelpText="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.ShowDetailCommandAutomationHelpText}}"
                             VerticalAlignment="Center">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
                         </Button>
                         <Button
                             Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}"
+                            AutomationProperties.Name="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.OpenCsvAppCommandAutomationName}}"
+                            AutomationProperties.HelpText="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.OpenCsvAppCommandAutomationHelpText}}"
                             VerticalAlignment="Center">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
                         </Button>
