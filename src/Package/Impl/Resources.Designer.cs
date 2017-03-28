@@ -1179,6 +1179,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open {0} variable in Microsoft Excel or another app registered for CSV files.
+        /// </summary>
+        public static string OpenCsvAppCommandAutomationHelpText {
+            get {
+                return ResourceManager.GetString("OpenCsvAppCommandAutomationHelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export {0} variable into CSV.
+        /// </summary>
+        public static string OpenCsvAppCommandAutomationName {
+            get {
+                return ResourceManager.GetString("OpenCsvAppCommandAutomationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open in Microsoft Excel or another app registered for CSV files.
         /// </summary>
         public static string OpenCsvAppCommandTooltip {
@@ -2460,6 +2478,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ShinyWindowTitle {
             get {
                 return ResourceManager.GetString("ShinyWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open {0} variable details in separate window.
+        /// </summary>
+        public static string ShowDetailCommandAutomationHelpText {
+            get {
+                return ResourceManager.GetString("ShowDetailCommandAutomationHelpText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show {0} variable details.
+        /// </summary>
+        public static string ShowDetailCommandAutomationName {
+            get {
+                return ResourceManager.GetString("ShowDetailCommandAutomationName", resourceCulture);
             }
         }
         

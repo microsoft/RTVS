@@ -87,6 +87,7 @@
             </ListView.ItemTemplate>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
+                    <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.PlotHistory_AutomationName}" />
                     <EventSetter Event="MouseDoubleClick" Handler="item_MouseDoubleClick"/>
                     <EventSetter Event="KeyUp" Handler="item_KeyUp"/>
                 </Style>
