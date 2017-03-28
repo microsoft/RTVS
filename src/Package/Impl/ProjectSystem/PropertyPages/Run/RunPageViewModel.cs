@@ -54,12 +54,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
         public IEnumerable<string> RFilePaths {
             get { return _rFilePaths; }
-            private set { OnPropertyChanged(ref _rFilePaths, value); }
+            set { OnPropertyChanged(ref _rFilePaths, value); }
         }
 
         public string ProjectName {
             get { return _projectName; }
-            private set { OnPropertyChanged(ref _projectName, value); }
+            set { OnPropertyChanged(ref _projectName, value); }
         }
 
         public async override Task Initialize() {
