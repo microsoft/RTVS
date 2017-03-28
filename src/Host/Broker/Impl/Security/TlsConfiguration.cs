@@ -8,9 +8,6 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.R.Host.Broker.Startup;
-using Microsoft.R.Host.Protocol;
-using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Security {
     internal sealed class TlsConfiguration {
@@ -40,9 +37,7 @@ namespace Microsoft.R.Host.Broker.Security {
                 return null; // localhost, no TLS
             }
 
-            X509Certificate2 certificate = null;
-            var certName = _securityOptions.X509CertificateName ?? Invariant($"CN={Environment.MachineName}");
-            certificate = Certificates.GetCertificateForEncryption(certName);
+            X509Certificate2 certificate = Certificates.GetCertificateForEncryption(_securityOptions);
             if (certificate == null) {
 #if DEBUG
                 return null;
