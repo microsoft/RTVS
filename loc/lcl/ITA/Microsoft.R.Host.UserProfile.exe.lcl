@@ -29,7 +29,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to delete user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non è stato possibile eliminare il profilo per l'utente {0}\{1}, con errore Win32 {2}.]]></Val>
+            <Val><![CDATA[Non è stato possibile eliminare il profilo utente per l'utente {0}\{1}, con errore Win32 {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -47,7 +47,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to create user profile for user {0}\{1}, with Win32 error {2}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non è stato possibile creare il profilo per l'utente {0}\{1}, con errore Win32 {2}.]]></Val>
+            <Val><![CDATA[Non è stato possibile creare il profilo utente per l'utente {0}\{1}, con errore Win32 {2}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -148,7 +148,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30228.2203]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -169,7 +169,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30228.2203]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -198,14 +198,14 @@
       <Str Cat="Text">
         <Val><![CDATA[R Tools for Visual Studio]]></Val>
         <Tgt Cat="Text" Stat="Loc" Orig="New">
-          <Val><![CDATA[R Tools for Visual Studio]]></Val>
+          <Val><![CDATA[R Tools per Visual Studio]]></Val>
         </Tgt>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30228.2203]]></Val>
+        <Val><![CDATA[1.0.30310.2203]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

@@ -3616,7 +3616,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Microsoft R Products...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Produtos do &Microsoft R...]]></Val>
+              <Val><![CDATA[Produtos do M&icrosoft R...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5104,7 +5104,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Import Dataset Into R Session From Web &URL...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Importar Conjunto de Dados na Sessão R da &URL da Web...]]></Val>
+              <Val><![CDATA[Importar Conjunto de Dados na Sessão R da U&RL da Web...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5134,7 +5134,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Import Dataset Into R Session From &Text File...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Importar Conjunto de Dados na Sessão R do Arquivo de &Texto...]]></Val>
+              <Val><![CDATA[Importar Conjunto de Dados na Sessão R do Arquivo &de Texto...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5155,7 +5155,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Delete &All Variables]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Excluir &Todas as Variáveis]]></Val>
+              <Val><![CDATA[Excluir Todas as &Variáveis]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5347,7 +5347,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&R Tools]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&R Tools]]></Val>
+              <Val><![CDATA[&Ferramentas do R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5407,7 +5407,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Windows]]></Val>
+              <Val><![CDATA[&Janelas]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5419,7 +5419,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Working Director&y]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Diretório de Trabalh&o]]></Val>
+              <Val><![CDATA[Diretório de &Trabalho]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5746,7 +5746,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[R D&ocumentation]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[D&ocumentação do R]]></Val>
+              <Val><![CDATA[Doc&umentação do R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5795,7 +5795,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Tools]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Tools]]></Val>
+            <Val><![CDATA[Ferramentas do R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
