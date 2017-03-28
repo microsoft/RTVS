@@ -4426,7 +4426,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Attach to R I&nteractive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 対話型に接続(&N)]]></Val>
+              <Val><![CDATA[R Interactive にアタッチ(&N)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5407,7 +5407,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Windows(&W)]]></Val>
+              <Val><![CDATA[ウィンドウ(&W)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5632,7 +5632,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source Editor]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[エディターのソース化]]></Val>
+              <Val><![CDATA[ソース エディター]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[エディターのソース化(&S)]]></Val>
+              <Val><![CDATA[ソース エディター(&S)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
