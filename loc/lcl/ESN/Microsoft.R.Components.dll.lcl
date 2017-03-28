@@ -1574,7 +1574,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Locator is active. Click in the plot window to select points then choose End Locator.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[El localizador está activado. Haga clic en la ventana del trazado para seleccionar los puntos y, después, elija Finalizar localizador.]]></Val>
+            <Val><![CDATA[El localizador está activado. Haga clic en la ventana de trazados para seleccionar los puntos y, después, elija Finalizar localizador.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

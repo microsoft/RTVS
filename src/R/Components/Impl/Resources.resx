@@ -651,6 +651,9 @@ This prompt can be suppressed in R Tools | Options.
   <data name="PlotHistory_EmptyWatermark" xml:space="preserve">
     <value>Plot history is empty</value>
   </data>
+  <data name="PlotHistory_AutomationName" xml:space="preserve">
+    <value>Plot</value>
+  </data>
   <data name="Plot_EmptyWatermark" xml:space="preserve">
     <value>Run plotting command in R Interactive Window</value>
   </data>

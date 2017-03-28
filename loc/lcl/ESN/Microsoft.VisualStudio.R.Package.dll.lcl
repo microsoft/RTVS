@@ -2006,7 +2006,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Al hacer un solo clic en la ventana Historial de R, se selecciona todo el fragmento que se ha enviado a R. Las flechas arriba y abajo de la ventana de R inreactivo navegan por los fragmentos en vez de hacerlo por líneas únicas.]]></Val>
+            <Val><![CDATA[Al hacer un solo clic en la ventana Historial de R, se selecciona todo el fragmento que se ha enviado a R. Las flechas arriba y abajo de la ventana de R interactivo permiten navegar por los fragmentos en vez de hacerlo por líneas únicas.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4033,7 +4033,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Editor Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Opciones del editor...]]></Val>
+              <Val><![CDATA[Op&ciones del editor...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4906,7 +4906,7 @@
           <Str Cat="Button">
             <Val><![CDATA[New Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Nueva ventana de trazado]]></Val>
+              <Val><![CDATA[Nueva ventana de trazados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4915,7 +4915,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&New Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Nueva ventana de trazado]]></Val>
+              <Val><![CDATA[&Nueva ventana de trazados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4927,7 +4927,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Activate Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Activar ventana de trazado]]></Val>
+              <Val><![CDATA[Activar ventana de trazados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4936,7 +4936,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Activate Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Activar ventana de trazado]]></Val>
+              <Val><![CDATA[&Activar ventana de trazados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5263,7 +5263,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Ventana de trazado]]></Val>
+              <Val><![CDATA[Ventana de trazados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5323,7 +5323,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Plots]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Trazados]]></Val>
+              <Val><![CDATA[Tra&zados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5359,7 +5359,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Session]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Sesión]]></Val>
+              <Val><![CDATA[S&esión]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5407,7 +5407,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Windows]]></Val>
+              <Val><![CDATA[&Ventanas]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5746,7 +5746,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[R D&ocumentation]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[D&ocumentación de R]]></Val>
+              <Val><![CDATA[&Documentación de R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -6086,7 +6086,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provides project system, R Interactive window, plotting, and more for the R programming language.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Proporciona el sistema del proyecto, la ventana interactiva de R, el trazado y más para el lenguaje de programación de R.]]></Val>
+            <Val><![CDATA[Proporciona el sistema del proyecto, la ventana de R interactivo, el trazado y más para el lenguaje de programación de R.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

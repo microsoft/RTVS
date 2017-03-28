@@ -5278,7 +5278,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[R Help Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 説明視窗]]></Val>
+              <Val><![CDATA[R 說明視窗]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5338,7 +5338,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&R Tools]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Tools(&R)]]></Val>
+              <Val><![CDATA[R 工具(&R)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5398,7 +5398,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Windows(&W)]]></Val>
+              <Val><![CDATA[視窗(&W)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5602,7 +5602,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Help Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 説明視窗]]></Val>
+              <Val><![CDATA[R 說明視窗]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5786,7 +5786,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Tools]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Tools]]></Val>
+            <Val><![CDATA[R 工具]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
