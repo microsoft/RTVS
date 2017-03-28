@@ -54,6 +54,20 @@ show_file <- function(files, header, title, delete.file) {
     }
 }
 
+
+# Override for edit(...). Opens file in VS editor and blocks until the file is closed.
+edit_file <- function(name, file, title) {
+    if(!is.null(name) && is.function(name)) {
+        source <- send_request_and_get_response("?EditFile", paste0(deparse(name), collapse = '\n'), NULL);
+        parsed <- try(eval.parent(parse(text = source)));
+        return(parsed);
+    } else if(!is.null(file)) {
+        send_request_and_get_response("?EditFile", NULL, file);
+    } else {
+        utils:::edit(name, file, title);
+    }
+}
+
 install.packages <- function(...) {
     invisible(rtvs:::send_request_and_get_response('?BeforePackagesInstalled'))
     utils::install.packages(...)

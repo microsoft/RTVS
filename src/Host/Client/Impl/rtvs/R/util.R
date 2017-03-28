@@ -338,14 +338,3 @@ exists_on_path <- function(filename) {
     }
     return(FALSE);
 }
-
-# Overload for edit(...). Opens file in VS editor and blocks until the file is closed.
-edit_file <- function(name, file, title) {
-    if(!is.null(name) && is.function(name)) {
-        send_request_and_get_response("?EditFile", paste0(deparse(name), collapse = '\n'), NULL);
-    } else if(!is.null(file)) {
-        send_request_and_get_response("?EditFile", NULL, file);
-    } else {
-        utils:::edit(name, file, title);
-    }
-}
