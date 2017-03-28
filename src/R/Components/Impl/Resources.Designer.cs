@@ -1291,6 +1291,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plot.
+        /// </summary>
+        public static string PlotHistory_AutomationName {
+            get {
+                return ResourceManager.GetString("PlotHistory_AutomationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plot history is empty.
         /// </summary>
         public static string PlotHistory_EmptyWatermark {
