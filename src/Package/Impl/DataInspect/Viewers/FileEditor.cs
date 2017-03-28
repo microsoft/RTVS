@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Settings;
@@ -62,37 +63,49 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private class FileEditorWindow : IVsWindowFrameEvents {
             private readonly IApplicationShell _appShell;
             private readonly IVsEditorAdaptersFactoryService _adapterService;
+            private readonly TaskCompletionSource<string> _tcs;
             private readonly string _fileName;
-            private IVsWindowFrame _editorFrame;
+            private volatile IVsWindowFrame _editorFrame;
             private ITextBuffer _textBuffer;
             private IVsUIShell7 _uiShell;
-            private TaskCompletionSource<string> _tcs;
             private uint _cookie;
 
             public FileEditorWindow(IApplicationShell appShell, IVsEditorAdaptersFactoryService adapterService, string fileName) {
                 _appShell = appShell;
                 _adapterService = adapterService;
                 _fileName = fileName;
+                _tcs = new TaskCompletionSource<string>();
                 _appShell.Terminating += OnAppTerminating;
             }
 
-            public Task<string> ShowAsync(CancellationToken cancellationToken) {
-                _tcs = new TaskCompletionSource<string>();
-                _tcs.RegisterForCancellation(cancellationToken)
-                    .UnregisterOnCompletion(_tcs.Task);
-
-                _appShell.DispatchOnUIThread(Show);
-                return _tcs.Task;
+            public async Task<string> ShowAsync(CancellationToken cancellationToken) {
+                var registration = _tcs.RegisterForCancellation(cancellationToken);
+                try {
+                    _appShell.DispatchOnUIThread(Show);
+                    return await _tcs.Task;
+                } finally {
+                    registration.Dispose();
+                    if (_tcs.Task.IsCanceled && _editorFrame != null) {
+                        _appShell.DispatchOnUIThread(Close);
+                    }
+                }
             }
 
             private void Show() {
                 IVsUIHierarchy hier;
                 uint itemid;
                 IVsTextView view;
+                IVsWindowFrame vsWindowFrame;
+                VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out vsWindowFrame, out view);
 
-                VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out _editorFrame, out view);
+                _editorFrame = vsWindowFrame;
                 if (view == null || _editorFrame == null) {
                     _tcs.TrySetResult(string.Empty);
+                    return;
+                }
+
+                if (_tcs.Task.IsCompleted) {
+                    Close();
                     return;
                 }
 
@@ -103,21 +116,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 _uiShell = _appShell.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
                 _cookie = _uiShell.AdviseWindowFrameEvents(this);
             }
+            
+            private void Close() {
+                _editorFrame.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_NoSave);
+            }
 
             private void OnAppTerminating(object sender, EventArgs e) {
                 if (_cookie != 0) {
-                    _uiShell?.UnadviseWindowFrameEvents(_cookie);
-                    _cookie = 0;
-                    _tcs?.TrySetCanceled();
+                    UnadviseWindowFrameEvents();
+                    _tcs.TrySetCanceled();
                 }
+            }
+
+            private void UnadviseWindowFrameEvents() {
+                _appShell.AssertIsOnMainThread();
+                _uiShell.UnadviseWindowFrameEvents(_cookie);
+                _cookie = 0;
             }
 
             #region IVsWindowFrameEvents
             public void OnFrameDestroyed(IVsWindowFrame frame) {
                 if (frame == _editorFrame) {
-                    _uiShell.UnadviseWindowFrameEvents(_cookie);
-                    _cookie = 0;
-                    _tcs?.TrySetResult(_textBuffer.CurrentSnapshot.GetText());
+                    UnadviseWindowFrameEvents();
+                    _tcs.TrySetResult(_textBuffer.CurrentSnapshot.GetText());
                 }
             }
 
