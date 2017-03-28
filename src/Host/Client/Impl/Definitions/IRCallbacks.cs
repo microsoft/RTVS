@@ -82,6 +82,11 @@ namespace Microsoft.R.Host.Client {
         Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken);
 
         /// <summary>
+        /// Invoked when R calls 'edit()'
+        /// </summary>
+        Task<string> EditFile(string content, string fileName, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Called when working directory has changed in R.
         /// </summary>
         void DirectoryChanged();

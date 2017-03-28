@@ -690,4 +690,7 @@ This prompt can be suppressed in R Tools | Options.
   <data name="Package_AccessibleState_NotLoaded" xml:space="preserve">
     <value>Not loaded</value>
   </data>
+  <data name="Error_CannotEditExpression" xml:space="preserve">
+    <value>Expression does not evaluate to function.</value>
+  </data>
 </root>

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Globalization;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -31,9 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
                 RSession.ExecuteAsync("rm(list = ls(all = TRUE))").DoNotWait();
             } catch (RException ex) {
                 VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
-            } catch (ComponentBinaryMissingException ex) {
-                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
-            }
+            } catch (OperationCanceledException) { }
         }
     }
 }

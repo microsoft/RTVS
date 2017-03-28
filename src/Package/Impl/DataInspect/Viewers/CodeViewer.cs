@@ -42,8 +42,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             var functionName = evaluation.Expression;
-            var session = _workflow.RSession;
-
             string functionCode = await GetFunctionCode(functionName, cancellationToken);
             if (!string.IsNullOrEmpty(functionCode)) {
 
@@ -74,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             string functionCode = null;
             try {
                 functionCode = await session.GetFunctionCodeAsync(functionName, cancellationToken);
-            } catch (RException) { } catch (ComponentBinaryMissingException) { }
+            } catch (RException) { } catch (OperationCanceledException) { }
 
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
