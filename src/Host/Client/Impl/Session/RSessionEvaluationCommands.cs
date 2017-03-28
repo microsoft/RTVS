@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -191,8 +190,19 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, ExportPdfParameters pdfParams) {
-            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {pdfParams.PdfDevice}, {pdfParams.WidthInInches}, {pdfParams.HeightInInches}, {pdfParams.PaperName.ToRStringLiteral()})");
+        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string pdfDevice, string paper, double inchWidth, double inchHeight) {
+            return (pdfDevice == "cairo_pdf") ?
+                ExportToCairoPdfAsync(evaluation, deviceId, plotId, pdfDevice, inchWidth, inchHeight) :
+                ExportToDefaultPdfAsync(evaluation, deviceId, plotId, pdfDevice, paper, inchWidth, inchHeight);
+        }
+
+        private static Task<ulong> ExportToCairoPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string pdfDevice, double inchWidth, double inchHeight) {
+            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {pdfDevice}, {inchWidth}, {inchHeight})");
+            return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
+        }
+
+        private static Task<ulong> ExportToDefaultPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string pdfDevice, string paper, double inchWidth, double inchHeight) {
+            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {pdfDevice}, {inchWidth}, {inchHeight}, {paper.ToRStringLiteral()})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 

@@ -10,18 +10,11 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public string OpenFilePath { get; set; }
         public string BrowseDirectoryPath { get; set; }
         public string SaveFilePath { get; set; }
-        public ExportImageParameters ExportImageParameters { get; set; }
-        public ExportPdfParameters ExportPdfParameters { get; set; }
 
         public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) => OpenFilePath;
 
         public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) => BrowseDirectoryPath;
 
         public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) => SaveFilePath;
-
-        public ExportImageParameters ShowExportImageDialog(ExportArguments imageArguements, string filter, string initialPath = null, string title = null) => ExportImageParameters;
-
-        public ExportPdfParameters ShowExportPdfDialog(ExportArguments pdfArguements, string filter, string initialPath = null, string title = null) => ExportPdfParameters;
-            
     }
 }

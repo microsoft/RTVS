@@ -4,14 +4,14 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Components.Plots;
 using Microsoft.VisualStudio.R.Package.ExportDialog;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    internal class VsFileDialog : IFileDialog {
+    internal class VsFileDialog : IFileDialog, IRPlotExportDialogs {
         private readonly ICoreShell _shell;
 
         public VsFileDialog(ICoreShell shell) {
@@ -32,9 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public ExportPdfParameters ShowExportPdfDialog(ExportArguments pdfArguements, string filter, string initialPath = null, string title = null) =>
             ShowSaveExportPdfDialog(_shell.GetDialogOwnerWindow(),pdfArguements, filter, initialPath, title);
-        
 
-        private static ExportPdfParameters ShowSaveExportPdfDialog(IntPtr owner,ExportArguments pdfArguments, string filter, string initialPath = null, string title = null) {
+        private ExportPdfParameters ShowSaveExportPdfDialog(IntPtr owner,ExportArguments pdfArguments, string filter, string initialPath = null, string title = null) {
             ExportPdfParameters pdfParameters = null;
             ExportPDFDialog exportPdfDialog = new ExportPDFDialog(pdfArguments);
             exportPdfDialog.ShowModal();
@@ -48,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return pdfParameters;
         }
 
-        private static ExportImageParameters ShowSaveExportImageDialog(IntPtr owner, ExportArguments imageArguments,string filter, string initialPath = null, string title = null) {
+        private ExportImageParameters ShowSaveExportImageDialog(IntPtr owner, ExportArguments imageArguments,string filter, string initialPath = null, string title = null) {
             ExportImageParameters exportParameters = null;
             ExportImageDialog exportImageDialog = new ExportImageDialog(imageArguments);
             exportImageDialog.ShowModal();
@@ -138,6 +137,5 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             }
         }
-
     }
 }

@@ -214,47 +214,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cairo PDF.
-        /// </summary>
-        public static string Combobox_CairoPdf {
-            get {
-                return ResourceManager.GetString("Combobox_CairoPdf", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Custom.
         /// </summary>
         public static string Combobox_Custom {
             get {
                 return ResourceManager.GetString("Combobox_Custom", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Default PDF.
-        /// </summary>
-        public static string Combobox_DefaultPdf {
-            get {
-                return ResourceManager.GetString("Combobox_DefaultPdf", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Landscape.
-        /// </summary>
-        public static string Combobox_Landscape {
-            get {
-                return ResourceManager.GetString("Combobox_Landscape", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Portrait.
-        /// </summary>
-        public static string Combobox_Portrait {
-            get {
-                return ResourceManager.GetString("Combobox_Portrait", resourceCulture);
             }
         }
         
@@ -934,7 +898,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Height :.
+        ///   Looks up a localized string similar to Height:.
         /// </summary>
         public static string label_Height {
             get {
@@ -1024,7 +988,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Width :.
+        ///   Looks up a localized string similar to Width:.
         /// </summary>
         public static string label_Width {
             get {

@@ -12,12 +12,17 @@
         ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
         Title="{x:Static pkg:Resources.ExportPDFDialog_Title}" 
         VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+        Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
+        Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
         SizeToContent="WidthAndHeight">
-    <Window.Resources>
-        <local:OrientationEnumConverter x:Key="orientationEnumConverter"></local:OrientationEnumConverter>
-        <local:PrintOptionsEnumConverter x:Key="pdfPrintOptionsEnumConverter"></local:PrintOptionsEnumConverter>
-        <local:PDFPaperSizeConverter x:Key="pdfPaperSizeConverter"></local:PDFPaperSizeConverter>
-    </Window.Resources>
+    <ui:PlatformDialogWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <wpf:CommonResources />
+            </ResourceDictionary.MergedDictionaries>
+            <local:PDFPaperSizeConverter x:Key="pdfPaperSizeConverter"></local:PDFPaperSizeConverter>
+        </ResourceDictionary>
+    </ui:PlatformDialogWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -39,18 +44,35 @@
                 <RowDefinition  Height="auto"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_PdfSize}" VerticalAlignment="Center" Margin="10,5"/>
-            <ComboBox Grid.Row="0" Grid.Column="2" Name="PdfSizeComboBox" AllowDrop="True"  Width="100" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="0"  ItemsSource="{Binding Path=PDFPapers}" SelectedValue="{Binding SelectedPDFPaperType}"  />
+            <ComboBox Grid.Row="0" Grid.Column="2" Name="PdfSizeComboBox" AllowDrop="True"  Width="100" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="0"  ItemsSource="{Binding Path=PDFPapers}" SelectedValue="{Binding SelectedPDFPaperType}" DisplayMemberPath="PaperName">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="AutomationProperties.Name" Value="{Binding PaperName}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
             <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Orientation}" VerticalAlignment="Center" Margin="10,5"/>
-            <ComboBox Grid.Row="1" Grid.Column="2" Name="OrientationCombobox"  AllowDrop="True" Width="100" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="3" ItemsSource="{Binding Path=Orientations,Converter={StaticResource orientationEnumConverter}}" SelectedItem="{Binding SelectedOrientation, Converter={StaticResource orientationEnumConverter}}"/>
-
+            <ComboBox Grid.Row="1" Grid.Column="2" Name="OrientationCombobox"  AllowDrop="True" Width="100" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="3" ItemsSource="{Binding Orientations}" SelectedItem="{Binding SelectedOrientation}">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="AutomationProperties.Name" Value="{Binding SelectedOrientation}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
             <TextBox Grid.Row="0" Grid.Column="3" x:Name="VariableWidthBox" HorizontalAlignment="Left" TextWrapping="Wrap"  VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,5" KeyboardNavigation.TabIndex="1"
-                         IsEnabled="{Binding Path=SelectedPDFPaperType,Converter={StaticResource pdfPaperSizeConverter}}" Text="{Binding Path=SelectedPDFPaperType.PaperWidth,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" LostFocus="VariableWidthTextBox_LostFocus"></TextBox>
+                         IsEnabled="{Binding Path=SelectedPDFPaperType,Converter={StaticResource pdfPaperSizeConverter}}" Text="{Binding Path=SelectedPDFPaperType.PaperWidth,Mode=TwoWay,UpdateSourceTrigger=LostFocus}" LostFocus="VariableWidthTextBox_LostFocus"></TextBox>
             <TextBlock Grid.Row="0" Grid.Column="4"  Text="{x:Static pkg:Resources.Label_X}" VerticalAlignment="Center"/>
             <TextBox Grid.Row="0" Grid.Column="5" x:Name="VariableHeightBox" HorizontalAlignment="Left"  TextWrapping="Wrap"  VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,5" KeyboardNavigation.TabIndex="2"
-                         IsEnabled="{Binding Path=SelectedPDFPaperType,Converter={StaticResource pdfPaperSizeConverter}}" Text="{Binding Path=SelectedPDFPaperType.PaperHeight,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" LostFocus="VariableHeightTextBox_LostFocus"></TextBox>
+                         IsEnabled="{Binding Path=SelectedPDFPaperType,Converter={StaticResource pdfPaperSizeConverter}}" Text="{Binding Path=SelectedPDFPaperType.PaperHeight,Mode=TwoWay,UpdateSourceTrigger=LostFocus}" LostFocus="VariableHeightTextBox_LostFocus"></TextBox>
             <TextBlock Grid.Row="0" Grid.Column="6" Text="{x:Static pkg:Resources.Label_Inches}" VerticalAlignment="Center" Margin="10,5"/>
             <TextBlock Grid.Row="1" Grid.Column="3" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Options}" VerticalAlignment="Center" Margin="10,5"/>
-            <ComboBox Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Name="OptionsCombobox" AllowDrop="True" Width="138" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="4" ItemsSource="{Binding Path=PrintOptions,Converter={StaticResource pdfPrintOptionsEnumConverter}}" SelectedItem="{Binding SelectedDevice, Converter={StaticResource pdfPrintOptionsEnumConverter}}"/>
+            <ComboBox Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Name="OptionsCombobox" AllowDrop="True" Width="138" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="4" ItemsSource="{Binding PrintOptions}" SelectedItem="{Binding SelectedDevice}">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="AutomationProperties.Name" Value="{Binding SelectedDevice}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
         </Grid>
         <Separator Grid.Row="1"/>
         <Grid Grid.Row="2">
@@ -60,8 +82,8 @@
             </Grid.ColumnDefinitions>
             <CheckBox Name="ViewPlotCheckbox" Content="{x:Static pkg:Resources.CheckBox_ViewPlot}" Grid.Column="0" Margin="10,5" KeyboardNavigation.TabIndex="5" IsChecked="{Binding ViewPlotAfterSaving, UpdateSourceTrigger = PropertyChanged, Mode = TwoWay}" VerticalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
-                <Button x:Name="SaveButton" Content="{x:Static components:Resources.Save}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10"  KeyboardNavigation.TabIndex="6" Click="SaveButton_Click"/>
-                <Button x:Name="CancelButton" Content="{x:Static components:Resources.Cancel}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10"  KeyboardNavigation.TabIndex="7" Click="CancelButton_Click"/>
+                <Button x:Name="SaveButton" Content="{x:Static components:Resources.Save}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10"  KeyboardNavigation.TabIndex="6" Click="SaveButton_Click" IsDefault="True" IsEnabled="{Binding IsSaveEnabled,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <Button x:Name="CancelButton" Content="{x:Static components:Resources.Cancel}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10"  KeyboardNavigation.TabIndex="7" Click="CancelButton_Click" IsCancel="True"/>
             </StackPanel>
         </Grid>
 

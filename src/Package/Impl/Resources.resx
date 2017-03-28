@@ -1333,10 +1333,10 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
     <value>Export Image</value>
   </data>
   <data name="label_Height" xml:space="preserve">
-    <value>Height :</value>
+    <value>Height:</value>
   </data>
   <data name="label_Width" xml:space="preserve">
-    <value>Width :</value>
+    <value>Width:</value>
   </data>
   <data name="ExportPDFDialog_Title" xml:space="preserve">
     <value>Export PDF</value>
@@ -1355,18 +1355,6 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   </data>
   <data name="Label_X" xml:space="preserve">
     <value>x</value>
-  </data>
-  <data name="Combobox_CairoPdf" xml:space="preserve">
-    <value>Cairo PDF</value>
-  </data>
-  <data name="Combobox_DefaultPdf" xml:space="preserve">
-    <value>Default PDF</value>
-  </data>
-  <data name="Combobox_Landscape" xml:space="preserve">
-    <value>Landscape</value>
-  </data>
-  <data name="Combobox_Portrait" xml:space="preserve">
-    <value>Portrait</value>
   </data>
   <data name="Combobox_Custom" xml:space="preserve">
     <value>Custom</value>

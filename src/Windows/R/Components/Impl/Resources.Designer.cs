@@ -88,6 +88,141 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 4 x 6 in..
+        /// </summary>
+        public static string Combobox_4x6inches {
+            get {
+                return ResourceManager.GetString("Combobox_4x6inches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5 x 7 in..
+        /// </summary>
+        public static string Combobox_5x7inches {
+            get {
+                return ResourceManager.GetString("Combobox_5x7inches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 6 x 8 in..
+        /// </summary>
+        public static string Combobox_6x8inches {
+            get {
+                return ResourceManager.GetString("Combobox_6x8inches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A4.
+        /// </summary>
+        public static string Combobox_A4 {
+            get {
+                return ResourceManager.GetString("Combobox_A4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A5.
+        /// </summary>
+        public static string Combobox_A5 {
+            get {
+                return ResourceManager.GetString("Combobox_A5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A6.
+        /// </summary>
+        public static string Combobox_A6 {
+            get {
+                return ResourceManager.GetString("Combobox_A6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cairo PDF.
+        /// </summary>
+        public static string Combobox_CairoPdf {
+            get {
+                return ResourceManager.GetString("Combobox_CairoPdf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string Combobox_Custom {
+            get {
+                return ResourceManager.GetString("Combobox_Custom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default PDF.
+        /// </summary>
+        public static string Combobox_DefaultPdf {
+            get {
+                return ResourceManager.GetString("Combobox_DefaultPdf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device Size.
+        /// </summary>
+        public static string Combobox_DeviceSize {
+            get {
+                return ResourceManager.GetString("Combobox_DeviceSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Landscape.
+        /// </summary>
+        public static string Combobox_Landscape {
+            get {
+                return ResourceManager.GetString("Combobox_Landscape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Portrait.
+        /// </summary>
+        public static string Combobox_Portrait {
+            get {
+                return ResourceManager.GetString("Combobox_Portrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to US Executive.
+        /// </summary>
+        public static string Combobox_USExecutive {
+            get {
+                return ResourceManager.GetString("Combobox_USExecutive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to US Legal.
+        /// </summary>
+        public static string Combobox_UsLegal {
+            get {
+                return ResourceManager.GetString("Combobox_UsLegal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to US Letter.
+        /// </summary>
+        public static string Combobox_UsLetter {
+            get {
+                return ResourceManager.GetString("Combobox_UsLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Syntax error.
         /// </summary>
         public static string ConfigurationError_Syntax {

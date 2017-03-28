@@ -149,7 +149,6 @@
     <Compile Include="Editors\BaseLanguageService.cs" />
     <Compile Include="Editors\LanguageSettingsStorage.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
-    <Compile Include="ExportDialog\EnumValueConverter.cs" />
     <Compile Include="ExportDialog\ExportImageDialog.xaml.cs">
       <DependentUpon>ExportImageDialog.xaml</DependentUpon>
     </Compile>
@@ -157,8 +156,8 @@
       <DependentUpon>ExportPDFDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="ExportDialog\PDFPaperSizeConverter.cs" />
-    <Compile Include="ExportDialog\PrintOptionsEnumConverter.cs" />
-    <Compile Include="ExportDialog\OrientationEnumConverter.cs" />
+    <Compile Include="ExportDialog\ExportImageViewModel.cs" />
+    <Compile Include="ExportDialog\ExportPdfViewModel.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
     <Compile Include="Commands\R\InstallRClientCommand.cs" />
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
@@ -1454,7 +1453,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExportDialog\ExportImageDialog.xaml">
+     <Page Include="ExportDialog\ExportImageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

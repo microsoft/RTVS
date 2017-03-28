@@ -4,7 +4,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
-using Microsoft.Common.Core;
+using Microsoft.R.Components.Plots;
 
 namespace Microsoft.VisualStudio.R.Package.ExportDialog {
     public class PDFPaperSizeConverter : IValueConverter {

@@ -198,14 +198,14 @@ namespace Microsoft.R.Components.Plots {
         /// <summary>
         /// Execute code in the session to export the active plot as a PDF.
         /// </summary>
-        /// <param name="exportPdfParameters">Parameters to be passed to pdf export function, includes save file path.</param>
+        /// <param name="outputFilePath">File to save to.</param>
         /// <exception cref="RPlotManagerException">
         /// An error occurred with the session and the user should be notified.
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ExportToPdfAsync(IRPlot plot, ExportPdfParameters exportPdfParameters);
+        Task ExportToPdfAsync(IRPlot plot, string pdfDevice, string paper, string outputFilePath, double inchWidth, double inchHeight);
 
         /// <summary>
         /// Execute code in the session to change the active graphics device.

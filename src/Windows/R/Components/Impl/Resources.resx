@@ -699,6 +699,51 @@ This prompt can be suppressed in R Tools | Options.
   <data name="Error_OdbcDriver" xml:space="preserve">
     <value>Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}.</value>
   </data>
+  <data name="Combobox_4x6inches" xml:space="preserve">
+    <value>4 x 6 in.</value>
+  </data>
+  <data name="Combobox_5x7inches" xml:space="preserve">
+    <value>5 x 7 in.</value>
+  </data>
+  <data name="Combobox_6x8inches" xml:space="preserve">
+    <value>6 x 8 in.</value>
+  </data>
+  <data name="Combobox_A4" xml:space="preserve">
+    <value>A4</value>
+  </data>
+  <data name="Combobox_A5" xml:space="preserve">
+    <value>A5</value>
+  </data>
+  <data name="Combobox_A6" xml:space="preserve">
+    <value>A6</value>
+  </data>
+  <data name="Combobox_Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Combobox_DeviceSize" xml:space="preserve">
+    <value>Device Size</value>
+  </data>
+  <data name="Combobox_UsLegal" xml:space="preserve">
+    <value>US Legal</value>
+  </data>
+  <data name="Combobox_UsLetter" xml:space="preserve">
+    <value>US Letter</value>
+  </data>
+  <data name="Combobox_USExecutive" xml:space="preserve">
+    <value>US Executive</value>
+  </data>
+  <data name="Combobox_CairoPdf" xml:space="preserve">
+    <value>Cairo PDF</value>
+  </data>
+  <data name="Combobox_DefaultPdf" xml:space="preserve">
+    <value>Default PDF</value>
+  </data>
+  <data name="Combobox_Landscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Combobox_Portrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
   </data>

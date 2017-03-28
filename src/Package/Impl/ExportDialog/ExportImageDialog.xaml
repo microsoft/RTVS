@@ -13,6 +13,13 @@
         Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
         Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
         Title="{x:Static pkg:Resources.ExportImageDialog_Title}" SizeToContent="WidthAndHeight">
+    <ui:PlatformDialogWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <wpf:CommonResources />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ui:PlatformDialogWindow.Resources>
     <Grid Margin="0,0,0,-3">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -35,6 +42,7 @@
                 <TextBox x:Name="VariableHeightBox" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="{Binding Path=UserHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,0" KeyboardNavigation.TabIndex="1" LostFocus="HeightTextbox_LostFocus"/>
             </StackPanel>
             <CheckBox x:Name="AspectRatioCheckBox" Grid.Column="2" Content="{x:Static pkg:Resources.CheckBox_AspectRatio}" VerticalAlignment="Center" Margin="20,0" KeyboardNavigation.TabIndex="2" IsChecked="{Binding MaintainAspectRatio,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"/>
+
         </Grid>
         <Separator Grid.Row="2"/>
         <Grid Grid.Row="3">
@@ -42,11 +50,11 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <CheckBox Name="ViewPlotCheckBox" Content="{x:Static pkg:Resources.CheckBox_ViewPlot}" HorizontalAlignment="Left" Margin="10,10" KeyboardNavigation.TabIndex="3" IsChecked="{Binding ViewPlotAfterSaving,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" VerticalAlignment="Center"/> 
+            <CheckBox Name="ViewPlotCheckBox" Content="{x:Static pkg:Resources.CheckBox_ViewPlot}" HorizontalAlignment="Left" Margin="10,10" KeyboardNavigation.TabIndex="3" IsChecked="{Binding ViewPlotAfterSaving,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" VerticalAlignment="Center"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="SaveButton" Content="{x:Static components:Resources.Save}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10,10" Click="SaveButton_Click" KeyboardNavigation.TabIndex="4"/>
-                <Button x:Name="CancelButton" Content="{x:Static components:Resources.Cancel}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10,10" Click="CancelButton_Click" KeyboardNavigation.TabIndex="5"/>
+                <Button x:Name="SaveButton" Content="{x:Static components:Resources.Save}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10,10" Click="SaveButton_Click" KeyboardNavigation.TabIndex="4" IsEnabled="{Binding IsSaveEnabled}" PreviewKeyUp="SaveButton_PreviewKeyUp" IsDefault="True"/>
+                <Button x:Name="CancelButton" Content="{x:Static components:Resources.Cancel}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10,10" Click="CancelButton_Click" KeyboardNavigation.TabIndex="5" PreviewKeyUp="CancelButton_PreviewKeyUp" IsCancel="True"/>
             </StackPanel>
-        </Grid>       
+        </Grid>
     </Grid>
 </ui:PlatformDialogWindow>
