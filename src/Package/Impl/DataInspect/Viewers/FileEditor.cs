@@ -29,21 +29,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private ITextBuffer _textBuffer;
         private IVsUIShell7 _uiShell;
         private TaskCompletionSource<string> _tcs;
-        private uint _cookie;
+        private volatile uint _cookie;
 
         [ImportingConstructor]
         public FileEditor(IApplicationShell appShell, IVsEditorAdaptersFactoryService adapterService) {
             _appShell = appShell;
             _adapterService = adapterService;
             _appShell.Terminating += OnAppTerminating;
-        }
-
-        private void OnAppTerminating(object sender, EventArgs e) {
-            if (_cookie != 0) {
-                _uiShell?.UnadviseWindowFrameEvents(_cookie);
-                _cookie = 0;
-                _tcs?.SetCanceled();
-            }
         }
 
         public Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -69,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     fileName = fileName?.FromRPath();
                 }
 
-                if(!string.IsNullOrEmpty(fileName)) {
+                if (!string.IsNullOrEmpty(fileName)) {
                     cancellationToken.ThrowIfCancellationRequested();
                     await _appShell.SwitchToMainThreadAsync(cancellationToken);
 
@@ -82,6 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         return string.Empty;
                     }
                     cancellationToken.ThrowIfCancellationRequested();
+                    cancellationToken.Register(CancelEditing);
 
                     IVsTextLines vsTextLines;
                     view.GetBuffer(out vsTextLines);
@@ -100,11 +93,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }, cancellationToken);
         }
 
+        private void CancelEditing() {
+            if (_cookie != 0) {
+                _tcs?.SetCanceled();
+            }
+        }
+
+        private void DisconnectFromShellEvents() {
+            if (_cookie != 0) {
+                _uiShell?.UnadviseWindowFrameEvents(_cookie);
+                _cookie = 0;
+            }
+        }
+
+        private void OnAppTerminating(object sender, EventArgs e) => DisconnectFromShellEvents();
+
         #region IVsWindowFrameEvents
         public void OnFrameDestroyed(IVsWindowFrame frame) {
-            if (frame == _editorFrame) {
-                _uiShell.UnadviseWindowFrameEvents(_cookie);
-                _cookie = 0;
+            if (frame == _editorFrame && _cookie != 0) {
+                DisconnectFromShellEvents();
                 _tcs?.SetResult(_textBuffer.CurrentSnapshot.GetText());
             }
         }
