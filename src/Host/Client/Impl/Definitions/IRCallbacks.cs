@@ -84,7 +84,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Invoked when R calls 'edit()'
         /// </summary>
-        Task<string> EditFile(string content, string fileName, CancellationToken cancellationToken);
+        Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken);
 
         /// <summary>
         /// Called when working directory has changed in R.

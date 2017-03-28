@@ -79,7 +79,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Edits file or deparsed object
         /// </summary>
-        Task<string> EditFile(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken));
+        Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Saves data to file sent from RHost.

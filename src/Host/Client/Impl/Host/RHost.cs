@@ -526,7 +526,7 @@ namespace Microsoft.R.Host.Client {
                             case "?EditFile":
                                 message.ExpectArguments(2);
                                 // Opens file in editor and blocks until file is closed.
-                                var content = await _callbacks.EditFile(message.GetString(0, "name", allowNull: true), message.GetString(1, "file", allowNull: true), ct);
+                                var content = await _callbacks.EditFileAsync(message.GetString(0, "name", allowNull: true), message.GetString(1, "file", allowNull: true), ct);
                                 await RespondAsync(message, ct, content);
                                 break;
 

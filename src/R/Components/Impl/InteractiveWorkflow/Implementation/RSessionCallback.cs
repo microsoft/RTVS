@@ -125,7 +125,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        public async Task<string> EditFile(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
             var editor = _coreShell.ExportProvider.GetExportedValue<IFileEditor>();
 
