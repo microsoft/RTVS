@@ -125,7 +125,7 @@ namespace Microsoft.R.Host.Client {
         public async Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) 
             => await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
 
-        public async Task<string> EditFile(string expression, string fileName, CancellationToken cancellationToken) { 
+        public async Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) { 
             await Console.Error.WriteAsync(Invariant($"EditFile({expression}, {fileName})"));
             return string.Empty;
         }

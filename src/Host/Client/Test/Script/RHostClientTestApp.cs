@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public Task<string> EditFile(string expression, string fileName, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
 
         public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
             if (LocatorHandler != null) {

@@ -104,7 +104,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task<string> EditFile(string expression, string fileName, CancellationToken cancellationToken) {
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) {
             EditFileCalls.Add(new Tuple<string, string>(expression, fileName));
             EditFileHandler?.Invoke(expression, fileName);
             return Task.FromResult(string.Empty);

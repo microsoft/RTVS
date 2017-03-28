@@ -705,9 +705,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             return callback?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
         }
 
-        Task<string> IRCallbacks.EditFile(string content, string fileName, CancellationToken cancellationToken) {
+        Task<string> IRCallbacks.EditFileAsync(string content, string fileName, CancellationToken cancellationToken) {
             var callback = _callback;
-            return callback?.EditFile(content, fileName, cancellationToken);
+            return callback?.EditFileAsync(content, fileName, cancellationToken);
         }
 
         void IRCallbacks.DirectoryChanged() {

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
@@ -18,108 +19,134 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IFileEditor))]
-    internal sealed class FileEditor : IFileEditor, IVsWindowFrameEvents {
+    internal sealed class FileEditor : IFileEditor {
         private readonly IApplicationShell _appShell;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
-        private IVsWindowFrame _editorFrame;
-        private ITextBuffer _textBuffer;
-        private IVsUIShell7 _uiShell;
-        private TaskCompletionSource<string> _tcs;
-        private volatile uint _cookie;
 
         [ImportingConstructor]
         public FileEditor(IApplicationShell appShell, IVsEditorAdaptersFactoryService adapterService) {
             _appShell = appShell;
             _adapterService = adapterService;
-            _appShell.Terminating += OnAppTerminating;
         }
 
-        public Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            return Task.Run(async () => {
-                _tcs = new TaskCompletionSource<string>();
+        public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            
+            if (!string.IsNullOrEmpty(content)) {
+                var formatter = new RFormatter(REditorSettings.FormatOptions);
+                content = formatter.Format(content);
 
-                if (!string.IsNullOrEmpty(content)) {
-                    var formatter = new RFormatter(REditorSettings.FormatOptions);
-                    content = formatter.Format(content);
-
-                    var fs = _appShell.Services.FileSystem;
-                    fileName = Path.ChangeExtension(Path.GetTempFileName(), ".r");
-                    try {
-                        if (fs.FileExists(fileName)) {
-                            fs.DeleteFile(fileName);
-                        }
-                        using (var sw = new StreamWriter(fileName)) {
-                            sw.Write(content);
-                        }
-                    } catch (IOException) { } catch (UnauthorizedAccessException) { }
-                } else {
-                    fileName = fileName?.FromRPath();
-                }
-
-                if (!string.IsNullOrEmpty(fileName)) {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await _appShell.SwitchToMainThreadAsync(cancellationToken);
-
-                    IVsUIHierarchy hier;
-                    uint itemid;
-                    IVsTextView view;
-
-                    VsShellUtilities.OpenDocument(RPackage.Current, fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out _editorFrame, out view);
-                    if (view == null || _editorFrame == null) {
-                        return string.Empty;
+                var fs = _appShell.Services.FileSystem;
+                fileName = Path.ChangeExtension(Path.GetTempFileName(), ".r");
+                try {
+                    if (fs.FileExists(fileName)) {
+                        fs.DeleteFile(fileName);
                     }
-                    cancellationToken.ThrowIfCancellationRequested();
-                    cancellationToken.Register(CancelEditing);
+                    using (var sw = new StreamWriter(fileName)) {
+                        sw.Write(content);
+                    }
+                } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            } else {
+                fileName = fileName?.FromRPath();
+            }
 
-                    IVsTextLines vsTextLines;
-                    view.GetBuffer(out vsTextLines);
-                    _textBuffer = _adapterService.GetDataBuffer(vsTextLines as IVsTextBuffer);
+            if (!string.IsNullOrEmpty(fileName)) {
+                return await new FileEditorWindow(_appShell, _adapterService, fileName).ShowAsync(cancellationToken);
+            }
 
-                    _uiShell = _appShell.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
-                    _cookie = _uiShell.AdviseWindowFrameEvents(this);
+            return string.Empty;
+        }
 
-                    await TaskUtilities.SwitchToBackgroundThread();
-                    cancellationToken.ThrowIfCancellationRequested();
+        private class FileEditorWindow : IVsWindowFrameEvents {
+            private readonly IApplicationShell _appShell;
+            private readonly IVsEditorAdaptersFactoryService _adapterService;
+            private readonly TaskCompletionSource<string> _tcs;
+            private readonly string _fileName;
+            private volatile IVsWindowFrame _editorFrame;
+            private ITextBuffer _textBuffer;
+            private IVsUIShell7 _uiShell;
+            private uint _cookie;
 
+            public FileEditorWindow(IApplicationShell appShell, IVsEditorAdaptersFactoryService adapterService, string fileName) {
+                _appShell = appShell;
+                _adapterService = adapterService;
+                _fileName = fileName;
+                _tcs = new TaskCompletionSource<string>();
+                _appShell.Terminating += OnAppTerminating;
+            }
+
+            public async Task<string> ShowAsync(CancellationToken cancellationToken) {
+                var registration = _tcs.RegisterForCancellation(cancellationToken);
+                try {
+                    _appShell.DispatchOnUIThread(Show);
                     return await _tcs.Task;
+                } finally {
+                    registration.Dispose();
+                    if (_tcs.Task.IsCanceled && _editorFrame != null) {
+                        _appShell.DispatchOnUIThread(Close);
+                    }
+                }
+            }
+
+            private void Show() {
+                IVsUIHierarchy hier;
+                uint itemid;
+                IVsTextView view;
+                IVsWindowFrame vsWindowFrame;
+                VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out vsWindowFrame, out view);
+
+                _editorFrame = vsWindowFrame;
+                if (view == null || _editorFrame == null) {
+                    _tcs.TrySetResult(string.Empty);
+                    return;
                 }
 
-                return string.Empty;
-            }, cancellationToken);
-        }
+                if (_tcs.Task.IsCompleted) {
+                    Close();
+                    return;
+                }
 
-        private void CancelEditing() {
-            if (_cookie != 0) {
-                _tcs?.SetCanceled();
+                IVsTextLines vsTextLines;
+                view.GetBuffer(out vsTextLines);
+                _textBuffer = _adapterService.GetDataBuffer(vsTextLines);
+
+                _uiShell = _appShell.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
+                _cookie = _uiShell.AdviseWindowFrameEvents(this);
             }
-        }
+            
+            private void Close() {
+                _editorFrame.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_NoSave);
+            }
 
-        private void DisconnectFromShellEvents() {
-            if (_cookie != 0) {
-                _uiShell?.UnadviseWindowFrameEvents(_cookie);
+            private void OnAppTerminating(object sender, EventArgs e) {
+                if (_cookie != 0) {
+                    UnadviseWindowFrameEvents();
+                    _tcs.TrySetCanceled();
+                }
+            }
+
+            private void UnadviseWindowFrameEvents() {
+                _appShell.AssertIsOnMainThread();
+                _uiShell.UnadviseWindowFrameEvents(_cookie);
                 _cookie = 0;
             }
-        }
 
-        private void OnAppTerminating(object sender, EventArgs e) => DisconnectFromShellEvents();
-
-        #region IVsWindowFrameEvents
-        public void OnFrameDestroyed(IVsWindowFrame frame) {
-            if (frame == _editorFrame && _cookie != 0) {
-                DisconnectFromShellEvents();
-                _tcs?.SetResult(_textBuffer.CurrentSnapshot.GetText());
+            #region IVsWindowFrameEvents
+            public void OnFrameDestroyed(IVsWindowFrame frame) {
+                if (frame == _editorFrame) {
+                    UnadviseWindowFrameEvents();
+                    _tcs.TrySetResult(_textBuffer.CurrentSnapshot.GetText());
+                }
             }
-        }
 
-        public void OnFrameCreated(IVsWindowFrame frame) { }
-        public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) { }
-        public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen) { }
-        public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) { }
-        #endregion
+            public void OnFrameCreated(IVsWindowFrame frame) { }
+            public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) { }
+            public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen) { }
+            public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) { }
+            #endregion
+        }        
     }
 }
