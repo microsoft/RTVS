@@ -5,7 +5,12 @@ using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Core.AST.Expressions;
+using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.Parser;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
@@ -171,10 +176,20 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
                 var textBuffer = vsTextLines.ToITextBuffer();
-                RangeFormatter.FormatRange(TextView, textBuffer, TextRange.FromBounds(startPos, endPos), REditorSettings.FormatOptions, VsAppShell.Current);
+                var range = TextRange.FromBounds(startPos, endPos);
+                // Do not format standalone operators
+                var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
+                if (CanFormat(text)) {
+                    RangeFormatter.FormatRange(TextView, textBuffer, range, REditorSettings.FormatOptions, VsAppShell.Current);
+                }
             }
             return hr;
         }
+
+        private bool CanFormat(string text) {
+            var tokens = (new RTokenizer()).Tokenize(text);
+            return tokens.Count != 1 || tokens[0].TokenType != RTokenType.Operator;
+       }
 
         public int GetExpansionFunction(MSXML.IXMLDOMNode xmlFunctionNode, string bstrFieldName, out IVsExpansionFunction pFunc) {
             pFunc = null;
