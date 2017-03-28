@@ -15,14 +15,14 @@ namespace Microsoft.R.Host.Broker.Security {
         /// </summary>
         public string X509CertificateName { get; set; }
 
-		/// <summary>
-		/// Path to the certificate for use with TLS (SSL)
-		/// </summary>
-		public string X509CertificateFile { get; set; }
+        /// <summary>
+        /// Path to the certificate for use with TLS (SSL)
+        /// </summary>
+        public string X509CertificateFile { get; set; }
 
-		/// <summary>
-		/// Password to access private key in the certificate <see cref="X509CertificateFile"/>
-		/// </summary>
-		public string X509CertificatePassword { get; set; }
+        /// <summary>
+        /// Password to access private key in the certificate <see cref="X509CertificateFile"/>
+        /// </summary>
+        public string X509CertificatePassword { get; set; }
     }
 }
