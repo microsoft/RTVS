@@ -965,9 +965,6 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
   <data name="Info_TransferringFilesDone" xml:space="preserve">
     <value>Transferring files to remote machine... completed.</value>
   </data>
-  <data name="Error_CannotAccess" xml:space="preserve">
-    <value />
-  </data>
   <data name="Error_CannotTransferFile" xml:space="preserve">
     <value>Unable to transfer file. Exception: {0}.</value>
   </data>

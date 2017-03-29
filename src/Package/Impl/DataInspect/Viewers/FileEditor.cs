@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -24,17 +25,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IFileEditor))]
     internal sealed class FileEditor : IFileEditor {
         private readonly IApplicationShell _appShell;
+        private readonly IRToolsSettings _settings;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
 
         [ImportingConstructor]
-        public FileEditor(IApplicationShell appShell, IVsEditorAdaptersFactoryService adapterService) {
+        public FileEditor(IApplicationShell appShell, IRToolsSettings settings, IVsEditorAdaptersFactoryService adapterService) {
             _appShell = appShell;
+            _settings = settings;
             _adapterService = adapterService;
         }
 
         public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            
+
             if (!string.IsNullOrEmpty(content)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
                 content = formatter.Format(content);
@@ -54,6 +57,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             if (!string.IsNullOrEmpty(fileName)) {
+                try {
+                    if (!Path.IsPathRooted(fileName)) {
+                        fileName = Path.Combine(_settings.WorkingDirectory, fileName);
+                    }
+                } catch (ArgumentException) {
+                    return string.Empty;
+                }
                 return await new FileEditorWindow(_appShell, _adapterService, fileName).ShowAsync(cancellationToken);
             }
 
@@ -92,11 +102,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             private void Show() {
-                IVsUIHierarchy hier;
-                uint itemid;
                 IVsTextView view;
                 IVsWindowFrame vsWindowFrame;
-                VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out vsWindowFrame, out view);
+
+                try {
+                    IVsUIHierarchy hier;
+                    uint itemid;
+                    VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out vsWindowFrame, out view);
+                } catch (Exception ex) {
+                    _appShell.ShowErrorMessage(Resources.Error_ExceptionAccessingPath.FormatInvariant(_fileName, ex.Message));
+                    _tcs.TrySetResult(string.Empty);
+                    return;
+                }
 
                 _editorFrame = vsWindowFrame;
                 if (view == null || _editorFrame == null) {
@@ -116,7 +133,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 _uiShell = _appShell.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
                 _cookie = _uiShell.AdviseWindowFrameEvents(this);
             }
-            
+
             private void Close() {
                 _editorFrame.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_NoSave);
             }
@@ -147,6 +164,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen) { }
             public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) { }
             #endregion
-        }        
+        }
     }
 }

@@ -286,15 +286,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string Error_CannotAccess {
-            get {
-                return ResourceManager.GetString("Error_CannotAccess", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to collect and package logs. Exception: {0}.
         /// </summary>
         public static string Error_CannotCollectLogs {
