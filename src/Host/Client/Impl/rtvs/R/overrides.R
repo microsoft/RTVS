@@ -63,6 +63,7 @@ edit_file <- function(name = NULL, file = NULL, title = NULL) {
         source <- send_request_and_get_response("?EditFile", NULL, file);
     }
     if(!is.null(source)) {
+        source <- gsub("\r", "", source)
         result <- try(eval.parent(parse(text = source)));
         return(result);
     }
