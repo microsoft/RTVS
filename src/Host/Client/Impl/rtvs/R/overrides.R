@@ -54,6 +54,8 @@ show_file <- function(files, header, title, delete.file) {
     }
 }
 
+defaultEditor <- getOption('editor')
+
 # Override for edit(...). Opens file in VS editor and blocks until the file is closed.
 edit_file <- function(name = NULL, file = NULL, title = NULL) {
     source <- NULL;
@@ -67,17 +69,7 @@ edit_file <- function(name = NULL, file = NULL, title = NULL) {
         result <- try(eval.parent(parse(text = source)));
         return(result);
     }
-    editor <- getOption("externalEditor");
-    if(is.null(editor)) {
-        editor <- "notepad";
-    }
-    if(is.null(title) || identical(title, "")) {
-        title <- "default.r";
-    }
-    if(is.null(file)) {
-        file <- "";
-    }
-    .External2(utils:::C_edit, name, file, title, editor);
+    edit(name, file, title, editor = defaultEditor);
 }
 
 install.packages <- function(...) {
