@@ -23,9 +23,7 @@ namespace Microsoft.Common.Core.Security {
 
         public Credentials GetUserCredentials(string authority, string workspaceName, CancellationToken cancellationToken = default(CancellationToken)) {
             _coreShell.AssertIsOnMainThread();
-
-            var credentials = Credentials.ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
-            return credentials;
+            return Credentials.ReadSavedCredentials(authority) ?? GetUserCredentials(workspaceName, cancellationToken);
         }
 
         private Credentials GetUserCredentials(string workspaceName, CancellationToken cancellationToken) {
@@ -90,7 +88,7 @@ namespace Microsoft.Common.Core.Security {
                 // is in modal state due to the progress dialog. Note that native message
                 // box appearance is a bit different from VS dialogs and matches OS theme
                 // rather than VS fonts and colors.
-                if (Win32MessageBox.Show(_coreShell.AppConstants.ApplicationWindowHandle, message, 
+                if (Win32MessageBox.Show(_coreShell.AppConstants.ApplicationWindowHandle, message,
                     Win32MessageBox.Flags.YesNo | Win32MessageBox.Flags.IconWarning) == Win32MessageBox.Result.Yes) {
                     certificate2.Reset();
                     return true;
