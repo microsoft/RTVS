@@ -21,6 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
         public IList<int> ViewLibraryCalls { get; } = new List<int>();
         public IList<Tuple<string, string, bool>> ShowFileCalls { get; } = new List<Tuple<string, string, bool>>();
+        public IList<Tuple<string, string>> EditFileCalls { get; } = new List<Tuple<string, string>>();
         public IList<Tuple<string, string>> SaveFileCalls { get; } = new List<Tuple<string, string>>();
         public IList<string> GetLocalizedStringCalls { get; } = new List<string>();
 
@@ -37,6 +38,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
         public Action ViewLibraryHandler { get; set; } = () => { };
         public Func<string, string, bool, Task> ShowFileHandler { get; set; } = (f, t, d) => Task.CompletedTask;
+        public Func<string, string, Task<string>> EditFileHandler { get; set; } = (e, f) => Task.FromResult(string.Empty);
         public Func<string, ulong, string, Task<string>> SaveFileHandler { get; set; } = (r, b, l) => Task.FromResult(string.Empty);
 
         public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -100,6 +102,12 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             ShowFileCalls.Add(new Tuple<string, string, bool>(fileName, tabName, deleteFile));
             ShowFileHandler?.Invoke(fileName, tabName, deleteFile);
             return Task.CompletedTask;
+        }
+
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) {
+            EditFileCalls.Add(new Tuple<string, string>(expression, fileName));
+            EditFileHandler?.Invoke(expression, fileName);
+            return Task.FromResult(string.Empty);
         }
 
         public Task<string> FetchFileAsync(string remotePath, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {

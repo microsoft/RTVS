@@ -205,6 +205,7 @@ grDevices::deviceIsInteractive('ide')
 @"options(help_type = 'html')
   options(browser = rtvs:::open_url)
   options(pager = rtvs:::show_file)
+  options(editor = rtvs:::edit_file)
 ";
             return evaluation.ExecuteAsync(script);
         }

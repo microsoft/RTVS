@@ -523,6 +523,14 @@ namespace Microsoft.R.Host.Client {
                                     ct).DoNotWait();
                                 break;
 
+                            case "?EditFile":
+                                message.ExpectArguments(2);
+                                // Opens file in editor and blocks until file is closed.
+                                var content = await _callbacks.EditFileAsync(message.GetString(0, "name", allowNull: true), message.GetString(1, "file", allowNull: true), ct);
+                                ct.ThrowIfCancellationRequested();
+                                await RespondAsync(message, ct, content);
+                                break;
+
                             case "!View":
                                 message.ExpectArguments(2);
                                 _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"), ct)
@@ -566,11 +574,13 @@ namespace Microsoft.R.Host.Client {
 
                             case "?BeforePackagesInstalled":
                                 await _callbacks.BeforePackagesInstalledAsync(ct);
+                                ct.ThrowIfCancellationRequested();
                                 await RespondAsync(message, ct, true);
                                 break;
 
                             case "?AfterPackagesInstalled":
                                 await _callbacks.AfterPackagesInstalledAsync(ct);
+                                ct.ThrowIfCancellationRequested();
                                 await RespondAsync(message, ct, true);
                                 break;
 

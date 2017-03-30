@@ -120,6 +120,7 @@
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\VariableSearchTask.cs" />
     <Compile Include="DataInspect\Viewers\DebugObjectEvaluator.cs" />
+    <Compile Include="DataInspect\Viewers\FileEditor.cs" />
     <Compile Include="DataInspect\Viewers\FileViewer.cs" />
     <Compile Include="DataInspect\Viewers\CodeViewer.cs" />
     <Compile Include="DataInspect\Viewers\GridViewerBase.cs" />

@@ -48,9 +48,9 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public Task ViewLibraryAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) {
-            return Task.CompletedTask;
-        }
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
+
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
 
         public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) {
             if (LocatorHandler != null) {

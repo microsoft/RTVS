@@ -598,6 +598,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expression does not evaluate to function..
+        /// </summary>
+        public static string Error_CannotEditExpression {
+            get {
+                return ResourceManager.GetString("Error_CannotEditExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The connection string appears to be in incorrect format. Would you like to re-create it?.
         /// </summary>
         public static string Error_ConnectionStringFormat {

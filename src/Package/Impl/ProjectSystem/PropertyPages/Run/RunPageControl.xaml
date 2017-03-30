@@ -56,9 +56,9 @@
             x:Uid="chkResetReplOnRun"
             Content="_Reset R Interactive on run"
             IsChecked="{Binding Path=ResetReplOnRun, Mode=TwoWay}"/>
-        
+
         <Separator/>
-        
+
         <Grid HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
