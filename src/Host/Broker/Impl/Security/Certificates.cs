@@ -1,15 +1,26 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Common.Core;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Security {
     internal static class Certificates {
-        public static X509Certificate2 GetCertificateForEncryption(string certName) {
-            return FindCertificate(certName);
+        public static X509Certificate2 GetCertificateForEncryption(SecurityOptions securityOptions) {
+            if (string.IsNullOrWhiteSpace(securityOptions.X509CertificateFile)) {
+                var certName = securityOptions.X509CertificateName ?? Invariant($"CN={Environment.MachineName}");
+                return FindCertificate(certName);
+            } else {
+                if (securityOptions.X509CertificatePassword != null) {
+                    return new X509Certificate2(securityOptions.X509CertificateFile, securityOptions.X509CertificatePassword);
+                } else {
+                    return new X509Certificate2(securityOptions.X509CertificateFile);
+                }
+            }
         }
 
         private static X509Certificate2 FindCertificate(string name) {

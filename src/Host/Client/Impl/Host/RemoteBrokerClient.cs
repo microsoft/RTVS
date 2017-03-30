@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, CancellationToken cancellationToken)
-            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services.Security, services.MainThread), services.Log, console) {
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services.Security, services.MainThread, console), services.Log, console) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;

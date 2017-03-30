@@ -46,7 +46,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="StartupFileLabel" Content="Startup file" Target="{Binding ElementName=txtStartupFile}" />
+            <Label Grid.Column="0" x:Uid="StartupFileLabel" Content="Startup file" Target="{Binding ElementName=txtStartupFile, Mode=OneWay}" />
             <TextBlock Grid.Column="1" Text=":"/>
             <ComboBox Grid.Column="2" SelectedItem="{Binding Path=StartupFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=RFilePaths}"/>
         </Grid>
@@ -73,7 +73,7 @@
             <TextBlock Grid.Column="1" Text=":" />
             <TextBox Grid.Column="2" x:Name="txtRemoteProjectPath" Text="{Binding Path=RemoteProjectPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Grid.Row="1" Grid.Column="2" >
-                <Run Text="{Binding ElementName=txtRemoteProjectPath, Path=Text, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                <Run Text="{Binding ElementName=txtRemoteProjectPath, Path=Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Run Text="{Binding Path=ProjectName, Mode=OneWay}"/>
             </TextBlock>
         </Grid>
@@ -92,7 +92,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="TransferFilesFilterLabel" Content="Files to transfer" Target="{Binding ElementName=txtTransferFilesFilter}" />
+            <Label Grid.Column="0" x:Uid="TransferFilesFilterLabel" Content="Files to transfer" Target="{Binding ElementName=txtTransferFilesFilter, Mode=OneWay}" />
             <Label Grid.Column="1" Content=":" />
             <TextBox Grid.Column="2" x:Name="txtTransferFilesFilter" Text="{Binding Path=TransferFilesFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
