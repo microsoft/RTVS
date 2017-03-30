@@ -59,7 +59,7 @@ edit_file <- function(name = NULL, file = NULL, title = NULL) {
     source <- NULL;
     if(is.function(name)) {
         source <- send_request_and_get_response("?EditFile", paste0(deparse(name), collapse = '\n'), NULL);
-    } else if(!is.null(file) && is.character(file) && file != "") {
+    } else if(!is.null(file) && is.character(file) && !identical(file, "")) {
         source <- send_request_and_get_response("?EditFile", NULL, file);
     }
     if(!is.null(source)) {
@@ -71,7 +71,7 @@ edit_file <- function(name = NULL, file = NULL, title = NULL) {
     if(is.null(editor)) {
         editor <- "notepad";
     }
-    if(is.null(title) || title == "") {
+    if(is.null(title) || identical(title, "")) {
         title <- "default.r";
     }
     if(is.null(file)) {
