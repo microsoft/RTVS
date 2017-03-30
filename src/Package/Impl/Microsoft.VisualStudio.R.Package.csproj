@@ -1109,6 +1109,7 @@
       <SetPlatform>Platform=x64</SetPlatform>
       <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
       <Name>Microsoft.R.Host</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
@@ -1593,19 +1594,14 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\zip.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\ProjectTemplates\**\*.*">
         <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       </VSIXSourceItem>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-      <VSIXSourceItem Include="$(OutputPath)\zlibd.dll" />
-    </ItemGroup>
-    <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-      <VSIXSourceItem Include="$(OutputPath)\zlib.dll" />
     </ItemGroup>
   </Target>
   <Target Name="AfterBuild">
