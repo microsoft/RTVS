@@ -575,7 +575,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove the '{0}' connection?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否确实要删除“{0}”连接?]]></Val>
+            <Val><![CDATA[确定要删除“{0}”连接吗?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -629,7 +629,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to switch from '{0}' to '{1}'? Switching will stop your current session, all unsaved data will be lost.]D;]A;]D;]A;This prompt can be suppressed in R Tools | Options.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否确实要从“{0}”切换到“{1}”? 切换将停止当前会话，所有未保存的数据将丢失。]D;]A;]D;]A;此提示可在“R 工具 | 选项”中取消。]]></Val>
+            <Val><![CDATA[确定要从“{0}”切换到“{1}”吗? 切换将停止当前会话，所有未保存的数据将丢失。]D;]A;]D;]A;此提示可在“R 工具 | 选项”中取消。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1541,7 +1541,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove all plots from {0}?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否确实要删除 {0} 中的所有绘图?]]></Val>
+            <Val><![CDATA[确定要删除 {0} 中的所有绘图吗?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1550,7 +1550,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove the current plot from {0}?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否确实要删除 {0} 中的当前绘图?]]></Val>
+            <Val><![CDATA[确定要删除 {0} 中的当前绘图吗?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1811,61 +1811,61 @@
         <Str Cat="Text">
           <Val><![CDATA[Terminating R will immediately abort calculations and all workspace objects will be discarded. This action cannot be undone.]D;]A;]D;]A;Are you sure you want to terminate R session?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[终止 R 将立即中止计算，并将弃用所有工作区对象。此操作无法撤消。]D;]A;]D;]A;是否确实要终止 R 会话?]]></Val>
+            <Val><![CDATA[终止 R 将立即中止计算，并将弃用所有工作区对象。此操作无法撤消。]D;]A;]D;]A;确定要终止 R 会话吗?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
+          <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在将工作区自动保存到图像 '{0}'...]]></Val>
+            <Val><![CDATA[正在将工作区自动保存到图像“%s”...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
+          <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否要删除自动保存的工作区图像 '{0}'?]]></Val>
+            <Val><![CDATA[是否要删除自动保存的工作区图像“%s”?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
+          <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在删除自动保存的工作区图像 '{0}'。]]></Val>
+            <Val><![CDATA[正在删除自动保存的工作区图像“%s”。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
+          <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[未能从自动保存的图像 '{0}' 加载工作区。]]></Val>
+            <Val><![CDATA[未能从自动保存的图像“%s”加载工作区。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
+          <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已从自动保存的图像 '{0}' 加载工作区。]]></Val>
+            <Val><![CDATA[已从自动保存的图像“%s”加载工作区。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
+          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已终止上一个 R 会话，并且已将它的全局工作区保存到图像 '{0}'。是否要重新加载它?]]></Val>
+            <Val><![CDATA[已终止上一个 R 会话，并且已将它的全局工作区保存到图像“%s”。是否要重新加载它?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

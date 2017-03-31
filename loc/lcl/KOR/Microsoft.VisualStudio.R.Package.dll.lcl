@@ -1034,7 +1034,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Quote:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[따옴표:]]></Val>
+            <Val><![CDATA[인용:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1628,7 +1628,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Automatic formatting]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 서식 지정]]></Val>
+            <Val><![CDATA[자동 포매팅]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1799,7 +1799,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Format on paste]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[붙여넣기 서식 지정]]></Val>
+            <Val><![CDATA[붙여넣기 시 포맷]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1817,7 +1817,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Format scope on }]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[}에서 범위 서식 지정]]></Val>
+            <Val><![CDATA[} 입력 시 범위 포맷]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1970,7 +1970,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Markdown preview browser]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown 미리 보기 브라우저]]></Val>
+            <Val><![CDATA[마크다운 미리 보기 브라우저]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1988,7 +1988,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[가격 인하]]></Val>
+            <Val><![CDATA[마크다운]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2951,7 +2951,7 @@
         <Str Cat="Text">
           <Val><![CDATA[This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools > Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이렇게 하면 Visual Studio 창 레이아웃이 데이터 과학자 프로필로 다시 설정됩니다. 기존 Visual Studio 설정을 저장하려면 도구 > 가져오기/내보내기 설정을 사용하여 프로필을 전환하세요. 가져오기/내보내기 설정을 통해 원래 VS 설정 프로필로 돌아갈 수도 있습니다. 계속하시겠습니까?]]></Val>
+            <Val><![CDATA[이렇게 하면 Visual Studio 창 레이아웃이 데이터 과학자 프로필로 다시 설정됩니다. 기존 Visual Studio 설정을 저장하려면 프로필 전환이 아닌 도구 > 가져오기/내보내기 설정을 사용하세요. 가져오기/내보내기 설정을 통해 원래 VS 설정 프로필로 돌아갈 수도 있습니다. 계속하시겠습니까?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
