@@ -27,13 +27,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         public EnvDTE.Project GetActiveProject() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
-            if (dte.Solution.Projects.Count > 0) {
+            var projects = dte?.Solution?.Projects;
+            if (projects != null && projects.Count > 0) {
                 try {
-                    var projects = dte.Solution?.SolutionBuild?.StartupProjects as IEnumerable;
-                    var e = projects?.GetEnumerator();
+                    var startupProjects = dte.Solution.SolutionBuild?.StartupProjects as IEnumerable;
+                    var e = startupProjects?.GetEnumerator();
                     e?.MoveNext();
                     var projectName = e?.Current as string;
-                    return !string.IsNullOrEmpty(projectName) ? dte.Solution.Projects.Item(projectName) : null;
+                    return !string.IsNullOrEmpty(projectName) ? projects.Item(projectName) : null;
                 } catch (COMException) { }
             }
             return null;
