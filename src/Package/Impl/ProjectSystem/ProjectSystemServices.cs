@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -28,7 +29,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             if (dte.Solution.Projects.Count > 0) {
                 try {
-                    return dte.Solution?.Projects?.Cast<EnvDTE.Project>()?.First();
+                    var projects = dte.Solution?.SolutionBuild?.StartupProjects as IEnumerable;
+                    var e = projects?.GetEnumerator();
+                    e?.MoveNext();
+                    var projectName = e?.Current as string;
+                    EnvDTE.Project p = null;
+                    if (!string.IsNullOrEmpty(projectName)) {
+                        p = dte.Solution.Projects.Item(projectName);
+                    }
+                     return p;
                 } catch (COMException) { }
             }
             return null;
