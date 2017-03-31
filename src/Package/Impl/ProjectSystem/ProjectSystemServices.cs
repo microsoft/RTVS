@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -30,10 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             var projects = dte?.Solution?.Projects;
             if (projects != null && projects.Count > 0) {
                 try {
-                    var startupProjects = dte.Solution.SolutionBuild?.StartupProjects as IEnumerable;
-                    var e = startupProjects?.GetEnumerator();
-                    e?.MoveNext();
-                    var projectName = e?.Current as string;
+                    var projectName = (dte.Solution.SolutionBuild?.StartupProjects as IEnumerable)?.Cast<string>().FirstOrDefault();
                     return !string.IsNullOrEmpty(projectName) ? projects.Item(projectName) : null;
                 } catch (COMException) { }
             }
