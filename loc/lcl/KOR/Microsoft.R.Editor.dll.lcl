@@ -26,7 +26,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Automatic formatting]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 서식 지정]]></Val>
+            <Val><![CDATA[자동 포매팅]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

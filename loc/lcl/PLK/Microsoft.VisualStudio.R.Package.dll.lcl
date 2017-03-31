@@ -3532,7 +3532,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Intro to R...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Wprowadzenie do języka R...]]></Val>
+              <Val><![CDATA[Wprowa&dzenie do języka R...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3637,7 +3637,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Check for Updates...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Wyszukaj aktualizacje...]]></Val>
+              <Val><![CDATA[W&yszukaj aktualizacje...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4033,7 +4033,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Editor Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Opcje edytora...]]></Val>
+              <Val><![CDATA[Opcje edy&tora...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4291,7 +4291,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Interrupt R]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Przerwij działanie języka R]]></Val>
+              <Val><![CDATA[Przerwij działanie języka &R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4789,7 +4789,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Clear &All Plots]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Wyczyść &wszystkie wykresy]]></Val>
+              <Val><![CDATA[Wyczyść wsz&ystkie wykresy]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5104,7 +5104,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Import Dataset Into R Session From Web &URL...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Importuj zestaw danych do sesji języka R z internetowego adresu &URL...]]></Val>
+              <Val><![CDATA[Importuj zestaw danych do sesji języka R z internetowego adresu U&RL...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5407,7 +5407,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Okna]]></Val>
+              <Val><![CDATA[Okn&a]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5419,7 +5419,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Working Director&y]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Katalog roboczy]]></Val>
+              <Val><![CDATA[Kata&log roboczy]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5620,7 +5620,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[H&elp]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Pomoc]]></Val>
+              <Val><![CDATA[Po&moc]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Edytor źródeł]]></Val>
+              <Val><![CDATA[E&dytor źródeł]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5680,7 +5680,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Files]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Pliki]]></Val>
+              <Val><![CDATA[P&liki]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5692,7 +5692,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Feedback]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Opinia]]></Val>
+              <Val><![CDATA[Op&inia]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5746,7 +5746,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[R D&ocumentation]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[D&okumentacja języka R]]></Val>
+              <Val><![CDATA[Dokumentacja &języka R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

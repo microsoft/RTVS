@@ -4585,7 +4585,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Clear Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Interactive をクリア]]></Val>
+              <Val><![CDATA[対話型ウィンドウをクリア]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4603,7 +4603,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Clear Interactive &Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Interactive をクリア(&W)]]></Val>
+              <Val><![CDATA[対話型ウィンドウをクリア(&W)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4885,7 +4885,7 @@
           <Str Cat="Button">
             <Val><![CDATA[End Locator]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[終了ロケーター]]></Val>
+              <Val><![CDATA[ロケーターの終了]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4894,7 +4894,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&End Locator]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[終了ロケーター(&E)]]></Val>
+              <Val><![CDATA[ロケーターの終了(&E)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
