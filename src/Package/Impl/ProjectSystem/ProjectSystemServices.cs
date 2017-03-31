@@ -33,11 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     var e = projects?.GetEnumerator();
                     e?.MoveNext();
                     var projectName = e?.Current as string;
-                    EnvDTE.Project p = null;
-                    if (!string.IsNullOrEmpty(projectName)) {
-                        p = dte.Solution.Projects.Item(projectName);
-                    }
-                     return p;
+                    return !string.IsNullOrEmpty(projectName) ? dte.Solution.Projects.Item(projectName) : null;
                 } catch (COMException) { }
             }
             return null;
