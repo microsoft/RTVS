@@ -71,7 +71,7 @@ namespace Microsoft.Common.Core.Security {
             using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
                 if (ch != null) {
                     var credData = ch.GetCredentialData();
-                    Credentials.Create(credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob));
+                    return Credentials.Create(credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob));
                 }
                 return null;
             }
