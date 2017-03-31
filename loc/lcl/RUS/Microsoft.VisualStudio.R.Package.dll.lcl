@@ -4033,7 +4033,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Editor Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[П&араметры редактора...]]></Val>
+              <Val><![CDATA[Параметр&ы редактора...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4096,7 +4096,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Data Science Se&ttings...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Парам&етры обработки и анализа данных...]]></Val>
+              <Val><![CDATA[Па&раметры обработки и анализа данных...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4138,7 +4138,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Survey/&News...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Опросы/&новости...]]></Val>
+              <Val><![CDATA[Опросы/ново&сти...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4312,7 +4312,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[A&ttach Debugger]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Подк&лючить отладчик]]></Val>
+              <Val><![CDATA[Подключит&ь отладчик]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4501,7 +4501,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Terminate R...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Завершить R...]]></Val>
+              <Val><![CDATA[Завершить &R...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4894,7 +4894,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&End Locator]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Конечный указатель]]></Val>
+              <Val><![CDATA[Конечны&й указатель]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5155,7 +5155,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Delete &All Variables]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Удалить &все переменные]]></Val>
+              <Val><![CDATA[Удалить в&се переменные]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

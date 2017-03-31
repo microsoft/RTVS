@@ -3700,7 +3700,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Selected File(s)]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Kaynak Seçili Dosyaları]]></Val>
+              <Val><![CDATA[&Seçili Dosyaları Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3847,7 +3847,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source Selected File(s) with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Echo ile Seçili Dosyalardan Kaynak Oluştur]]></Val>
+              <Val><![CDATA[&Seçili Dosyaları Echo ile Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4324,7 +4324,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source R Script]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Betiği Kaynağı Oluştur]]></Val>
+              <Val><![CDATA[R Betiğini Yürütme için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4333,7 +4333,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source R Script]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Kaynak R Betiği]]></Val>
+              <Val><![CDATA[&R Betiğini Yürütme için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4438,7 +4438,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source R Script with Echo]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Echo ile R Betiği Kaynağı Oluştur]]></Val>
+              <Val><![CDATA[R Betiğini Echo ile Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4447,7 +4447,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source R Script with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Echo ile R Betiği Kaynağı Oluştur]]></Val>
+              <Val><![CDATA[R Betiğini &Echo ile Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4573,7 +4573,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Reset]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Sıfırla]]></Val>
+              <Val><![CDATA[Sıfır&la]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4885,7 +4885,7 @@
           <Str Cat="Button">
             <Val><![CDATA[End Locator]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Konum Belirleyiciyi Sonlandır]]></Val>
+              <Val><![CDATA[Bulucuyu Sonlandır]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4894,7 +4894,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&End Locator]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Konum Belirleyiciyi &Sonlandır]]></Val>
+              <Val><![CDATA[Bulucuyu &Sonlandır]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5227,7 +5227,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Manage Data Sources...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Veri Kaynaklarını Yönet...]]></Val>
+              <Val><![CDATA[Ve&ri Kaynaklarını Yönet...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5632,7 +5632,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source Editor]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Kaynak Düzenleyicisi]]></Val>
+              <Val><![CDATA[Düzenleyiciyi Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Kaynak Düzenleyicisi]]></Val>
+              <Val><![CDATA[&Düzenleyiciyi Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5680,7 +5680,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Files]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Dosyalar]]></Val>
+              <Val><![CDATA[D&osyalar]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5722,7 +5722,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[W&orkspaces]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Çalışma &Alanları]]></Val>
+              <Val><![CDATA[Çalışma A&lanları]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

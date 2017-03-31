@@ -3616,7 +3616,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Microsoft R Products...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Produkt R &Microsoft...]]></Val>
+              <Val><![CDATA[&Produkt R Microsoft...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3637,7 +3637,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Check for Updates...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Zkontrolovat aktualiza&ce...]]></Val>
+              <Val><![CDATA[Zkontrolovat aktua&lizace...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4198,7 +4198,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[E&xecute In Interactive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Pro&vést v interaktivním okně]]></Val>
+              <Val><![CDATA[&Provést v interaktivním okně]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4291,7 +4291,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Interrupt R]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Přeruš&it R]]></Val>
+              <Val><![CDATA[Přerušit &R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4312,7 +4312,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[A&ttach Debugger]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Připoji&t ladicí program]]></Val>
+              <Val><![CDATA[Připo&jit ladicí program]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4936,7 +4936,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Activate Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Aktivovat okno diagramů]]></Val>
+              <Val><![CDATA[A&ktivovat okno diagramů]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5227,7 +5227,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Manage Data Sources...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[S&pravovat zdroje dat...]]></Val>
+              <Val><![CDATA[&Spravovat zdroje dat...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5692,7 +5692,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Feedback]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Váš názor]]></Val>
+              <Val><![CDATA[V&áš názor]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5734,7 +5734,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[RTVS Documentation and Sa&mples]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Doku&mentace a ukázky RTVS]]></Val>
+              <Val><![CDATA[Dok&umentace a ukázky RTVS]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

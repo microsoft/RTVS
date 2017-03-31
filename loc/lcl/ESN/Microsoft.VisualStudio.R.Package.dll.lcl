@@ -3532,7 +3532,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Intro to R...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Introducción a R...]]></Val>
+              <Val><![CDATA[I&ntroducción a R...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4789,7 +4789,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Clear &All Plots]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Borrar &todos los trazados]]></Val>
+              <Val><![CDATA[Borrar t&odos los trazados]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5104,7 +5104,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Import Dataset Into R Session From Web &URL...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Importar conjunto de datos en la sesión de R a partir de una &URL web...]]></Val>
+              <Val><![CDATA[Importar conjunto de datos en la sesión de R a partir de una URL &web...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5227,7 +5227,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Manage Data Sources...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Administrar orígenes de datos...]]></Val>
+              <Val><![CDATA[A&dministrar orígenes de datos...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Editor de origen]]></Val>
+              <Val><![CDATA[E&ditor de origen]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5680,7 +5680,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Files]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Archivos]]></Val>
+              <Val><![CDATA[&Comentarios]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

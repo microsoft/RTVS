@@ -1466,7 +1466,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Run plotting command in R Interactive Window]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R 대화형 창에서 그리기 명령을 실행합니다.]]></Val>
+            <Val><![CDATA[R 대화형 창에서 플로팅 명령을 실행합니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
