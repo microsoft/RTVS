@@ -190,12 +190,16 @@
     <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
     <Compile Include="History\Commands\CopySelectedHistoryCommand.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdDown.cs" />
+    <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdDownExt.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdEnd.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdHome.cs" />
+    <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdLeftExt.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdPageDown.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdPageUp.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdReturnCommand.cs" />
+    <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdRightExt.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdUp.cs" />
+    <Compile Include="History\Commands\HistoryWindowVsStd2KCmdIdUpExt.cs" />
     <Compile Include="History\Commands\HistoryWindowVsStd97CmdIdSelectAllCommand.cs" />
     <Compile Include="History\Commands\LoadHistoryCommand.cs" />
     <Compile Include="History\Commands\NavigationCommandBase.cs" />

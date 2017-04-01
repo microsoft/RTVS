@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core.Collections;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Components.History.Implementation {
@@ -12,18 +14,25 @@ namespace Microsoft.R.Components.History.Implementation {
         private static readonly IComparer<Entry> EntryComparer = Comparer<Entry>.Create((e1, e2) => e1.Index.CompareTo(e2.Index));
 
         private long _index;
+        private bool _isRangeSelected;
         private readonly List<Entry> _entries = new List<Entry>();
-        private List<Entry> _selectedEntries = new List<Entry>();
+        private readonly List<Entry> _selectedStack = new List<Entry>();
 
         public abstract bool IsMultiline { get; }
 
         public IReadOnlyList<IRHistoryEntry> GetEntries() => new List<IRHistoryEntry>(_entries);
-        public IReadOnlyList<IRHistoryEntry> GetSelectedEntries() => new List<IRHistoryEntry>(_selectedEntries);
+        public IReadOnlyList<IRHistoryEntry> GetSelectedEntries() {
+            var sortedList = new List<Entry>(_selectedStack);
+            sortedList.Sort(EntryComparer);
+            return sortedList;
+        }
+
         public IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate) => _entries.First(predicate);
         public IRHistoryEntry First() => _entries.First();
         public IRHistoryEntry Last() => _entries.Last();
+        public IRHistoryEntry LastSelected() => _selectedStack[_selectedStack.Count - 1];
         public bool HasEntries => _entries.Count > 0;
-        public bool HasSelectedEntries => _selectedEntries.Count > 0;
+        public bool HasSelectedEntries => _selectedStack.Count > 0;
 
         public abstract void Add(ITrackingSpan span);
 
@@ -40,40 +49,46 @@ namespace Microsoft.R.Components.History.Implementation {
             return entry;
         }
 
-        public void Remove(IRHistoryEntry historyEntry) {
-            var entry = historyEntry as Entry;
-            if (entry == null || entry.Owner != this) {
-                throw new ArgumentException(nameof(historyEntry));
+        public void SelectRangeTo(IRHistoryEntry entry) {
+            var rangeEnd = entry as Entry;
+            if (rangeEnd == null) {
+                throw new ArgumentException(nameof(entry));
             }
 
-            _selectedEntries.RemoveSorted(entry, EntryComparer);
-            DeleteEntry(entry);
+            var rangeEndIndex = _entries.BinarySearch(rangeEnd, EntryComparer);
+            if (rangeEndIndex < 0) {
+                throw new ArgumentException(nameof(entry));
+            }
+
+            var rangeStart = _isRangeSelected ? _selectedStack[0] : _selectedStack[_selectedStack.Count - 1];
+            var rangeStartIndex = _entries.BinarySearch(rangeStart, EntryComparer);
+            Entry[] range;
+            if (rangeStartIndex < rangeEndIndex) {
+                range = new Entry[rangeEndIndex - rangeStartIndex + 1];
+                _entries.CopyTo(rangeStartIndex, range, 0, range.Length);
+            } else {
+                range = new Entry[rangeStartIndex - rangeEndIndex + 1];
+                _entries.CopyTo(rangeEndIndex, range, 0, range.Length);
+                Array.Reverse(range);
+            }
+ 
+            SelectRange(range);
         }
 
         public void SelectAll() {
-            _selectedEntries = new List<Entry>(_entries);
-
-            foreach (var entry in _selectedEntries) {
-                entry.MarkSelected();
-            }
+            SelectRange(_entries);
         }
 
         public void UnselectAll() {
-            var selectedEntries = _selectedEntries;
-            _selectedEntries = new List<Entry>();
-
-            foreach (var entry in selectedEntries) {
-                entry.IsSelected = false;
-            }
+            ClearSelection();
         }
 
         public void RemoveSelected() {
-            var selectedEntries = _selectedEntries;
-            _selectedEntries = new List<Entry>();
-
-            foreach (var entry in selectedEntries) {
+            foreach (var entry in _selectedStack) {
                 DeleteEntry(entry);
             }
+
+            ClearSelection();
         }
 
         public void RemoveAll() {
@@ -82,7 +97,7 @@ namespace Microsoft.R.Components.History.Implementation {
             }
 
             _entries.Clear();
-            _selectedEntries.Clear();
+            ClearSelection();
             _index = 0;
         }
 
@@ -108,10 +123,35 @@ namespace Microsoft.R.Components.History.Implementation {
 
         private void ChangeSelection(Entry entry, bool isSelected) {
             if (isSelected) {
-                _selectedEntries.AddSorted(entry, EntryComparer);
+                _selectedStack.Add(entry);
             } else {
-                _selectedEntries.RemoveSorted(entry, EntryComparer);
+                _selectedStack.Remove(entry);
             }
+
+            _isRangeSelected = false;
+        }
+        
+        private void SelectRange(IEnumerable<Entry> entries) {
+            foreach (var entry in _selectedStack) {
+                entry.MarkUnselected();
+            }
+
+            _selectedStack.Clear();
+            _selectedStack.AddRange(entries);
+
+            foreach (var entry in _selectedStack) {
+                entry.MarkSelected();
+            }
+            _isRangeSelected = true;
+        }
+
+        private void ClearSelection() {
+            foreach (var entry in _selectedStack) {
+                entry.MarkUnselected();
+            }
+            _selectedStack.Clear();
+
+            _isRangeSelected = false;
         }
 
         private class Entry : IRHistoryEntry, IDisposable {
@@ -132,7 +172,6 @@ namespace Microsoft.R.Components.History.Implementation {
             public IRHistoryEntry Next { get; set; }
             public IRHistoryEntry Previous { get; set; }
 
-
             public bool IsSelected {
                 get { return _isSelected; }
                 set {
@@ -146,6 +185,10 @@ namespace Microsoft.R.Components.History.Implementation {
 
             public void MarkSelected() {
                 _isSelected = true;
+            }
+
+            public void MarkUnselected() {
+                _isSelected = false;
             }
 
             public void Dispose() {

@@ -136,6 +136,9 @@
     <Compile Include="History\Implementation\HistoryTextViewMouseProcessorProvider.cs" />
     <Compile Include="History\Implementation\MultilineRHistoryEntries.cs" />
     <Compile Include="History\Implementation\RHistory.cs" />
+    <Compile Include="History\Implementation\RHistory.ISelector.cs" />
+    <Compile Include="History\Implementation\RHistory.NextPreviousEntrySelector.cs" />
+    <Compile Include="History\Implementation\RHistory.ToggleSelectionEndSelector.cs" />
     <Compile Include="History\Implementation\RHistoryEntries.cs" />
     <Compile Include="History\Implementation\RHistoryFiltering.cs" />
     <Compile Include="History\Implementation\RHistoryProvider.cs" />

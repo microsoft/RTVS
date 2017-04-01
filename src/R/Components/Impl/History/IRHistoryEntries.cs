@@ -12,11 +12,12 @@ namespace Microsoft.R.Components.History {
         IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate);
         IRHistoryEntry First();
         IRHistoryEntry Last();
+        IRHistoryEntry LastSelected();
         bool IsMultiline { get; }
         bool HasEntries { get; }
         bool HasSelectedEntries { get; }
         void Add(ITrackingSpan entrySpan);
-        void Remove(IRHistoryEntry historyEntry);
+        void SelectRangeTo(IRHistoryEntry entry);
         void SelectAll();
         void UnselectAll();
         void RemoveSelected();
