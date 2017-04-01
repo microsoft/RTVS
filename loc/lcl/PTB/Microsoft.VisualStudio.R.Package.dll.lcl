@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Editor de &Origem]]></Val>
+              <Val><![CDATA[&Editor de Origem]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
