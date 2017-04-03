@@ -82,3 +82,25 @@ remove.packages <- function(...) {
     utils::remove.packages(...)
     invisible(rtvs:::send_notification('!PackagesRemoved'))
 }
+
+suppress_function <- function(function_name, package_name) {
+    package_spec <- paste("package:", package_name, sep='');
+    # The message may only become visible in remote session.
+    # TODO: provide localized replacement.
+    replacement <- eval(parse(text = "function(...) { stop('Not supported') }"));
+
+    original <- get(function_name, package_spec, mode="function");
+    if (!is.null(original)) {
+      env <- as.environment(package_spec);
+      unlockBinding(function_name, env);
+      assign(function_name, replacement, package_spec);
+      lockBinding(function_name, env);
+   }
+
+   if (package_name %in% loadedNamespaces()) {
+        ns <- asNamespace(package_name)
+        unlockBinding(function_name, ns)
+        assign(function_name, replacement, envir = ns)
+        lockBinding(function_name, ns)
+    }
+}
