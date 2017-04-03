@@ -285,6 +285,21 @@
                 </DataTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="FocusVisualStyle">
+            <Setter.Value>
+                <Style>
+                    <Setter Property="Control.Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border>
+                                    <Rectangle Stroke="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" StrokeDashArray="1 2" StrokeThickness="1" Margin="2,2,2,-2" SnapsToDevicePixels="true"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="{x:Type ButtonBase}" x:Key="HyperlinkButton">
