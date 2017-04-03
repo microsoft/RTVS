@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.VisualStudio.Text;
@@ -27,11 +28,18 @@ namespace Microsoft.R.Components.History.Implementation {
             return sortedList;
         }
 
-        public IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate) => _entries.First(predicate);
+        public IRHistoryEntry FindEntryContainingSpan(SnapshotSpan span, ITextSnapshot snapshot) => 
+            _entries.First(e => e.Span?.GetSpan(snapshot).Contains(span) == true);
+        public IRHistoryEntry FindEntryContainingPoint(SnapshotPoint point, ITextSnapshot snapshot) => 
+            _entries.First(e => e.Span?.GetSpan(snapshot).Contains(point) == true);
+        public int FindEntryIndexContainingSpan(SnapshotSpan span, ITextSnapshot snapshot) =>
+            _entries.IndexWhere(e => e.Span?.GetSpan(snapshot).Contains(span) == true).First();
+
         public IRHistoryEntry First() => _entries.First();
         public IRHistoryEntry Last() => _entries.Last();
         public IRHistoryEntry LastSelected() => _selectedStack[_selectedStack.Count - 1];
-        public bool HasEntries => _entries.Count > 0;
+        public int LastSelectedIndex() => _entries.BinarySearch(_selectedStack[_selectedStack.Count - 1], EntryComparer);
+        public int Count => _entries.Count;
         public bool HasSelectedEntries => _selectedStack.Count > 0;
 
         public abstract void Add(ITrackingSpan span);
@@ -49,15 +57,9 @@ namespace Microsoft.R.Components.History.Implementation {
             return entry;
         }
 
-        public void SelectRangeTo(IRHistoryEntry entry) {
-            var rangeEnd = entry as Entry;
-            if (rangeEnd == null) {
-                throw new ArgumentException(nameof(entry));
-            }
-
-            var rangeEndIndex = _entries.BinarySearch(rangeEnd, EntryComparer);
-            if (rangeEndIndex < 0) {
-                throw new ArgumentException(nameof(entry));
+        public void SelectRangeTo(int rangeEndIndex) {
+            if (rangeEndIndex < 0 || rangeEndIndex >= Count) {
+                throw new ArgumentOutOfRangeException(nameof(rangeEndIndex));
             }
 
             var rangeStart = _isRangeSelected ? _selectedStack[0] : _selectedStack[_selectedStack.Count - 1];

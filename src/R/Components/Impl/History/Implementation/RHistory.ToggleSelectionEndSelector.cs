@@ -13,10 +13,10 @@ namespace Microsoft.R.Components.History.Implementation {
             }
 
             public void EntriesSelected() {
-                var lastSelected = _history._entries.LastSelected();
-                var rangeEnd = _isUp ? lastSelected.Previous : lastSelected.Next;
-                if (rangeEnd != null) {
-                    _history._entries.SelectRangeTo(rangeEnd);
+                var lastSelectedIndex = _history._entries.LastSelectedIndex();
+                var index = _isUp ? lastSelectedIndex - 1 : lastSelectedIndex + 1;
+                if (index >= 0 && index < _history._entries.Count) {
+                    _history._entries.SelectRangeTo(index);
                     _history.OnSelectionChanged();
                 }
             }

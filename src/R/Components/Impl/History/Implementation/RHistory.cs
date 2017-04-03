@@ -73,7 +73,7 @@ namespace Microsoft.R.Components.History.Implementation {
             MakeTextBufferReadOnly();
         }
 
-        public bool HasEntries => _entries.HasEntries;
+        public bool HasEntries => _entries.Count > 0;
         public bool HasSelectedEntries => _entries.HasSelectedEntries;
 
         public bool IsMultiline {
@@ -92,7 +92,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 
                 if (_currentEntry != null) {
                     var currentEntryStart = _currentEntry.Span.GetStartPoint(snapshot);
-                    _currentEntry = _entries.Find(e => e.Span.GetSpan(snapshot).Contains(currentEntryStart));
+                    _currentEntry = _entries.FindEntryContainingPoint(currentEntryStart, snapshot);
                 }
 
                 _isMultiline = value;
@@ -308,8 +308,8 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
         public void SelectHistoryEntriesRangeTo(int lineNumber) {
-            var entry = GetHistoryEntryFromLineNumber(lineNumber);
-            _entries.SelectRangeTo(entry);
+            var index = GetHistoryEntryIndexFromLineNumber(lineNumber);
+            _entries.SelectRangeTo(index);
             OnSelectionChanged();
         }
 
@@ -434,7 +434,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 return;
             }
 
-            var hasEntries = _entries.HasEntries;
+            var hasEntries = _entries.Count > 0;
             var snapshot = _historyTextBuffer.CurrentSnapshot;
 
             using (AdjustAddToHistoryScrolling())
@@ -557,13 +557,19 @@ namespace Microsoft.R.Components.History.Implementation {
         private IRHistoryEntry GetHistoryEntryFromPosition(int position) {
             var snapshot = _historyTextBuffer.CurrentSnapshot;
             var line = snapshot.GetLineFromPosition(position);
-            return _entries.Find(b => b.Span != null && b.Span.GetSpan(snapshot).Contains(line.Extent));
+            return _entries.FindEntryContainingSpan(line.Extent, snapshot);
         }
 
         private IRHistoryEntry GetHistoryEntryFromLineNumber(int lineNumber) {
             var snapshot = _historyTextBuffer.CurrentSnapshot;
             var line = snapshot.GetLineFromLineNumber(lineNumber);
-            return _entries.Find(b => b.Span != null && b.Span.GetSpan(snapshot).Contains(line.Extent));
+            return _entries.FindEntryContainingSpan(line.Extent, snapshot);
+        }
+
+        private int GetHistoryEntryIndexFromLineNumber(int lineNumber) {
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            var line = snapshot.GetLineFromLineNumber(lineNumber);
+            return _entries.FindEntryIndexContainingSpan(line.Extent, snapshot);
         }
 
         public void Dispose() {
