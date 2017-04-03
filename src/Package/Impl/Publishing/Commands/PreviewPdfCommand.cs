@@ -24,11 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             if (!await base.CheckPrerequisitesAsync()) {
                 return false;
             }
-            if (!await CheckExistsOnPathAsync("pdflatex.exe")) {
+            if (!await CheckExecutableExistsOnPathAsync("pdflatex")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
                 await Services.ShowErrorMessageAsync(message);
-                Process.Start("https://miktex.org/2.9/setup");
                 return false;
             }
             return true;
