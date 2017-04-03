@@ -350,13 +350,7 @@ exists_on_path_posix <- function(filename) {
     return(FALSE);
 }
 
-exists_on_path <- function(filename) {
-    if(.Platform$OS.type == "windows"){
-        return(exists_on_path_windows(filename));
-    } else {
-        return(exists_on_path_posix(filename));
-    }
-}
+exists_on_path <- if(.Platform$OS.type == "windows") exists_on_path_windows else exists_on_path_posix;
 
 executable_exists_on_path <- function(filename_no_extension) {
     filename <- filename_no_extension;

@@ -28,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PdfLatexMissingRemote : Resources.Error_PdfLatexMissingLocal;
                 await Services.ShowErrorMessageAsync(message);
+                Process.Start("https://miktex.org/2.9/setup");
                 return false;
             }
             return true;
