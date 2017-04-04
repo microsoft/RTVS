@@ -9,6 +9,8 @@ namespace Microsoft.R.Wpf {
         public static object BackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object BorderBrushKey { get; set; } = SystemColors.InactiveBorderBrushKey;
         public static object ButtonFaceBrushKey { get; set; } = SystemColors.ControlBrushKey;
+        public static object ButtonHighlightBrushKey { get; set; } = SystemColors.ControlLightLightBrushKey;
+        public static object ButtonShadowBrushKey { get; set; } = SystemColors.ControlDarkBrushKey;
         public static object ButtonTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ComboBoxBorderKey { get; set; } = SystemColors.InactiveBorderBrushKey;
         public static object ContentBrushKey { get; set; } = SystemColors.WindowBrushKey;
@@ -43,15 +45,27 @@ namespace Microsoft.R.Wpf {
         public static object ListPaneBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
         public static object SplitterBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
 
-        public static object ToolWindowBackgroundColorKey { get; set; } = SystemColors.WindowColorKey;
-        public static object ToolWindowBackgroundKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ToolWindowBorderKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ToolWindowButtonDownBorderKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ToolWindowButtonDownKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ToolWindowButtonHoverActiveBorderKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ToolWindowButtonHoverActiveKey { get; set; } = SystemColors.WindowBrushKey;
-        public static object ToolWindowTextKey { get; set; } = SystemColors.ControlTextBrushKey;
-        public static object UITextKey { get; set; } = SystemColors.ControlTextBrushKey;
+        public static object ToolWindowBackgroundColorKey { get; set; } = SystemColors.ControlColorKey;
+        public static object ToolWindowBackgroundBrushKey { get; set; } = SystemColors.ControlBrushKey;
+        public static object ToolWindowBorderColorKey { get; set; } = SystemColors.ControlDarkColorKey;
+        public static object ToolWindowBorderBrushKey { get; set; } = SystemColors.ControlDarkBrushKey;
+        public static object ToolWindowButtonActiveGlyphBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonDownBrushKey { get; set; } = SystemColors.HighlightBrushKey;
+        public static object ToolWindowButtonDownActiveGlyphBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonDownBorderBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonDownInactiveGlyphBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonHoverActiveBrushKey { get; set; } = SystemColors.HighlightBrushKey;
+        public static object ToolWindowButtonHoverActiveBorderBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonHoverActiveGlyphBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonHoverInactiveBrushKey { get; set; } = SystemColors.HighlightBrushKey;
+        public static object ToolWindowButtonHoverInactiveBorderBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonHoverInactiveGlyphBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ToolWindowButtonInactiveBrushKey { get; set; } = SystemColors.InactiveCaptionTextBrushKey;
+        public static object ToolWindowButtonInactiveBorderBrushKey { get; set; } = SystemColors.InactiveCaptionTextBrushKey;
+        public static object ToolWindowButtonInactiveGlyphBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object ToolWindowTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
+
+        public static object UITextKey { get; set; } = SystemColors.WindowTextBrushKey;
         public static object WindowTextKey { get; set; } = SystemColors.WindowTextBrushKey;
         public static object WindowKey { get; set; } = SystemColors.WindowBrushKey;
 
