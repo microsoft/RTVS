@@ -87,11 +87,11 @@ namespace Microsoft.R.Interpreters {
 
         private Version GetRVersionFromBinary(IFileSystem fs, string basePath) {
             string rDllPath = Path.Combine(BinPath, "R.dll");
-            IFileVersionInfo fvi = fs.GetVersionInfo(rDllPath);
+            var fvi = fs.GetFileVersion(rDllPath);
             int minor, revision;
 
-            GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
-            return new Version(fvi.FileMajorPart, minor, revision);
+            GetRVersionPartsFromFileMinorVersion(fvi.Minor, out minor, out revision);
+            return new Version(fvi.Major, minor, revision);
         }
 
         internal static string NormalizeRPath(string path) {

@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 namespace Microsoft.R.Components.Sql {
     public static class ConnectionStringConverter {
         public const string OdbcSqlDriver = "{SQL Server}";
+        public const string OdbcSql13Driver = "{ODBC Driver 13 for SQL Server}";
 
         public const string OdbcDriverKey = "Driver";
         public const string OdbcServerKey = "Server";
@@ -27,8 +28,9 @@ namespace Microsoft.R.Components.Sql {
             }
             try {
                 var sql = new SqlConnectionStringBuilder(sqlClientString);
+                var sqlDriver = sql.Authentication == SqlAuthenticationMethod.ActiveDirectoryIntegrated ? OdbcSql13Driver : OdbcSqlDriver;
                 var odbc = new OdbcConnectionStringBuilder {
-                    [OdbcDriverKey] = OdbcSqlDriver,
+                    [OdbcDriverKey] = sqlDriver,
                     [OdbcServerKey] = sql.DataSource,
                     [OdbcDatabaseKey] = sql.InitialCatalog
                 };
@@ -44,8 +46,12 @@ namespace Microsoft.R.Components.Sql {
                     odbc[OdbcTrustServerCertificateKey] = "yes";
                 }
 
-                odbc[OdbcUidKey] = sql.UserID;
-                odbc[OdbcPasswordKey] = sql.Password;
+                if (!string.IsNullOrEmpty(sql.UserID)) {
+                    odbc[OdbcUidKey] = sql.UserID;
+                }
+                if (!string.IsNullOrEmpty(sql.Password)) {
+                    odbc[OdbcPasswordKey] = sql.Password;
+                }
 
                 return odbc.ConnectionString;
             } catch (ArgumentException) { }
@@ -67,9 +73,17 @@ namespace Microsoft.R.Components.Sql {
                     var sql = new SqlConnectionStringBuilder {
                         DataSource = server,
                         InitialCatalog = database,
-                        UserID = odbc.GetValue(OdbcUidKey),
-                        Password = odbc.GetValue(OdbcPasswordKey)
                     };
+
+                    var userId = odbc.GetValue(OdbcUidKey);
+                    if(!string.IsNullOrEmpty(userId)) {
+                        sql.UserID = odbc.GetValue(OdbcUidKey);
+                    }
+
+                    var password = odbc.GetValue(OdbcPasswordKey);
+                    if (!string.IsNullOrEmpty(password)) {
+                        sql.Password = password;
+                    }
 
                     // If no password and user name, assume integrated authentication
                     sql.IntegratedSecurity = string.IsNullOrEmpty(sql.UserID) && string.IsNullOrEmpty(sql.Password);

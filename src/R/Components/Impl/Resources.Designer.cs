@@ -634,6 +634,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}..
+        /// </summary>
+        public static string Error_OdbcDriver {
+            get {
+                return ResourceManager.GetString("Error_OdbcDriver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error rendering plot.
         /// </summary>
         public static string Error_RenderingPlot {
