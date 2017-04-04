@@ -34,7 +34,6 @@
 
             <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource ToolWindowButtonStyle}">
                 <EventSetter Event="Click" Handler="ButtonDelete_Click" />
-                <Setter Property="Opacity" Value="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}" />
                 <Setter Property="IsEnabled" Value="{Binding Path=IsUserCreated}" />
                 <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
                 <Style.Triggers>
@@ -140,7 +139,7 @@
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <AdornerDecorator>
                     <Grid Margin="0,6,0,8" PreviewKeyUp="EditConnection_PreviewKeyUp"
-                          Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
+                          Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -189,7 +188,7 @@
                         <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
                             <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
                                     VerticalAlignment="Center" Click="ButtonSave_Click" 
-                                    ToolTipService.ShowOnDisabled="True"
+                                    Style="{StaticResource ToolWindowButtonStyle}"  ToolTipService.ShowOnDisabled="True"
                                     Content="{x:Static components:Resources.ConnectionManager_Save}" 
                                     ToolTip="{Binding Path=SaveButtonTooltip}">
                                 <Button.IsEnabled>
@@ -260,7 +259,7 @@
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
                 <Border BorderThickness="0,0,0,0" 
                         BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" x:Name="Container">
-                    <Grid MinHeight="20" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" >
+                    <Grid MinHeight="20" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -297,15 +296,14 @@
                         <!-- connect button -->
                         <Button x:Name="ButtonConnect" Grid.Row="0"  Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonConnect_Click" 
                                 Visibility="{Binding Path=IsConnected, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
-                                Margin="0,0,8,0" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}"
-                                IsEnabled="{Binding Path=IsValid}"
+                                Margin="0,0,8,0" IsEnabled="{Binding Path=IsValid}"
                                 AutomationProperties.Name="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}"
-                                AutomationProperties.HelpText="{Binding Path=ConnectionTooltip}"
-                                Opacity="{Binding Path=IsValid, Converter={x:Static rwpf:Converters.FalseIsGrayedOut}}">
+                                AutomationProperties.HelpText="{Binding Path=ConnectionTooltip}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.ConnectionManager_ConnectTooltip}}" />
                             </Button.ToolTip>
-                            <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.ConnectArrow}" />
+                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.ConnectArrow}"
+                                                Grayscale="{Binding Path=IsValid, Converter={x:Static rwpf:Converters.Not}}"/>
                         </Button>
 
                         <!-- edit/properties button -->
@@ -315,7 +313,8 @@
 
                         <!-- delete button -->
                         <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}">
-                            <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
+                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" 
+                                                Grayscale="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}" />
                         </Button>
 
                         <ContentPresenter Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6"
@@ -351,7 +350,7 @@
             </Style>
 
             <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}">
-                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" />
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
                 <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
@@ -399,7 +398,7 @@
 
             <!-- Add button and settings panel -->
             <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0"
-                       Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
+                       Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
                 <WrapPanel DockPanel.Dock="Top" Margin="1,4,0,6">
                     <Button x:Name="ToggleButtonAdd" Style="{StaticResource HyperlinkDownArrowButton}"
                             IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
@@ -410,7 +409,7 @@
                 <!-- Add options panel -->
                 <Border DockPanel.Dock="Top" Margin="0,0,6,6" Style="{StaticResource InputBorderStyle}"
                         Visibility="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"
-                        Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}">
+                        Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
                     <ContentPresenter Content="{Binding Path=EditedConnection, Mode=OneWay}" ContentTemplate="{StaticResource EditConnectionDataTemplate}" />
                 </Border>
             </DockPanel>

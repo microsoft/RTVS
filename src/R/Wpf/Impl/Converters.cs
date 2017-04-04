@@ -29,7 +29,6 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter TrueIsNotHidden { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Visible : Visibility.Hidden);
         public static IValueConverter FalseIsHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Hidden : Visibility.Visible);
         public static IValueConverter FalseIsNotHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Visible : Visibility.Hidden);
-        public static IValueConverter FalseIsGrayedOut { get; } = LambdaConverter.Create<bool>(x => x ? 1.0 : 0.25);
         public static IValueConverter Not { get; } = LambdaConverter.Create<bool>(x => !x);
         public static IValueConverter NullOrEmptyIsTrue { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext());
         public static IValueConverter NullOrEmptyIsFalse { get; } = LambdaConverter.Create<IEnumerable>(x => x != null && x.GetEnumerator().MoveNext());

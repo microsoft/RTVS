@@ -119,9 +119,9 @@
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="true">
                                         <Setter Property="BorderBrush"
-                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
+                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBorderBrushKey}}" />
                                         <Setter Property="Background"
-                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
+                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBrushKey}}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -208,7 +208,8 @@
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}"
                                         Width="2*" 
                                         CanUserSort="True" SortMemberPath="DummyValue" />
-                <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
+                <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}"
+                                        Width="3*" CanUserSort="False" />
             </DataGrid.Columns>
         </local:TreeGrid>
     </Grid>
