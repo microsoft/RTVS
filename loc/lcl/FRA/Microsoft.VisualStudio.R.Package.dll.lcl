@@ -263,7 +263,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Collecting R Tools for Visual Studio logs]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Collecte des journaux R Tools pour Visual Studio]]></Val>
+            <Val><![CDATA[Collecte des journaux Outils R pour Visual Studio]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -485,7 +485,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Microsoft.R.Host.exe is missing. Please reinstall or repair R Tools for Visual Studio.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Microsoft.R.Host.exe est manquant. Réinstallez ou réparez R Tools pour Visual Studio.]]></Val>
+            <Val><![CDATA[Microsoft.R.Host.exe est manquant. Réinstallez ou réparez Outils R pour Visual Studio.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -638,7 +638,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Type text to search for in R Help]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Taper le texte à rechercher dans l'aide sur R]]></Val>
+            <Val><![CDATA[Taper le texte à rechercher dans l'aide R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -656,7 +656,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Help]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Aide sur R]]></Val>
+            <Val><![CDATA[Aide R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1196,7 +1196,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown R]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1214,7 +1214,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Current R engine is already set to the Microsoft R Client.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Le client Microsoft R est déjà configuré comme moteur R actuel.]]></Val>
+            <Val><![CDATA[Microsoft R Client est déjà configuré comme moteur R actuel.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1430,7 +1430,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Interactive Prompts]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Invites R Interactive]]></Val>
+            <Val><![CDATA[Invites de la fenêtre interactive R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1511,7 +1511,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Please briefly describe what you were doing that led to the issue, if applicable:]D;]A;]D;]A;...]D;]A;]D;]A;If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.]D;]A;]D;]A;A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including information about installed packages and their contents, your complete R Interactive command history and outputs, and values of variables in your present and past sessions.]D;]A;]D;]A;]D;]A;]D;]A;Additional information:]D;]A;]D;]A;{1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Si possible, décrivez brièvement ce que vous faisiez avant l'apparition du problème :]D;]A;]D;]A;...]D;]A;]D;]A;Si vous avez des captures d'écran qui illustrent le problème, joignez-les pour nous aider à diagnostiquer votre problème.]D;]A;]D;]A;Un journal de diagnostic détaillé a été créé à l'emplacement {0} ; ce fichier journal est sélectionné dans la fenêtre de l'Explorateur Windows ouverte à cet emplacement. Pour nous aider à diagnostiquer le problème, vous pouvez joindre ce fichier à votre e-mail. Sachez toutefois que le journal peut contenir des données sensibles, notamment des informations sur les packages installés et leur contenu, l'historique complet des commandes R Interactive et les sorties, ainsi que les valeurs des variables dans vos sessions actuelles et passées.]D;]A;]D;]A;]D;]A;]D;]A;Informations supplémentaires :]D;]A;]D;]A;{1}]]></Val>
+            <Val><![CDATA[Si possible, décrivez brièvement ce que vous faisiez avant l'apparition du problème :]D;]A;]D;]A;...]D;]A;]D;]A;Si vous avez des captures d'écran qui illustrent le problème, joignez-les pour nous aider à diagnostiquer votre problème.]D;]A;]D;]A;Un journal de diagnostic détaillé a été créé à l'emplacement {0} ; ce fichier journal est sélectionné dans la fenêtre de l'Explorateur Windows ouverte à cet emplacement. Pour nous aider à diagnostiquer le problème, vous pouvez joindre ce fichier à votre e-mail. Sachez toutefois que le journal peut contenir des données sensibles, notamment des informations sur les packages installés et leur contenu, l'historique complet des commandes de la fenêtre interactive R et les sorties, ainsi que les valeurs des variables dans vos sessions actuelles et passées.]D;]A;]D;]A;]D;]A;]D;]A;Informations supplémentaires :]D;]A;]D;]A;{1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1853,7 +1853,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Help Browser]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Navigateur d'aide sur R]]></Val>
+            <Val><![CDATA[Navigateur de l'aide R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2006,7 +2006,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Un clic simple dans la fenêtre d'historique R permet de sélectionner l'intégralité du fragment envoyé à R. Les flèches Haut/Bas dans la fenêtre R Interactive permettent de parcourir des blocs plutôt que des lignes simples.]]></Val>
+            <Val><![CDATA[Un clic simple dans la fenêtre d'historique R permet de sélectionner l'intégralité du fragment envoyé à R. Les flèches Haut/Bas dans la fenêtre interactive R permettent de parcourir des blocs plutôt que des lignes simples.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2816,7 +2816,7 @@
         <Str Cat="Text">
           <Val><![CDATA[No R Interactive]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sans R Interactive]]></Val>
+            <Val><![CDATA[Aucune fenêtre interactive R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2960,7 +2960,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The project appears to be on a network share. R Tools for Visual Studio may not work correctly when files are on a remote share. ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Le projet semble être sur un partage réseau. R Tools pour Visual Studio peut ne pas fonctionner correctement si les fichiers se trouvent sur un partage distant. ]]></Val>
+            <Val><![CDATA[Le projet semble être sur un partage réseau. Outils R pour Visual Studio peut ne pas fonctionner correctement si les fichiers se trouvent sur un partage distant. ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3400,7 +3400,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Send selected to R Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Envoyer la sélection à la fenêtre R Interactive]]></Val>
+              <Val><![CDATA[Envoyer la sélection à la fenêtre interactive R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3616,7 +3616,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Microsoft R Products...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Produits &Microsoft R...]]></Val>
+              <Val><![CDATA[&Produits Microsoft R...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3700,7 +3700,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Selected File(s)]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Fichier(s) sélectionné(s) du code source]]></Val>
+              <Val><![CDATA[&Approvisionner les fichier(s) sélectionné(s)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3847,7 +3847,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source Selected File(s) with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Fichier(s) sélectionné(s) du code source avec &Echo]]></Val>
+              <Val><![CDATA[Approvisionner les fichier(s) sélectionné(s) avec &Echo]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4096,7 +4096,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Data Science Se&ttings...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Paramè&tres de science des données...]]></Val>
+              <Val><![CDATA[Param&ètres de science des données...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4324,7 +4324,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source R Script]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Script R source]]></Val>
+              <Val><![CDATA[Approvisionner le script R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4333,7 +4333,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source R Script]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Script R source]]></Val>
+              <Val><![CDATA[&Approvisionner le script R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4417,7 +4417,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Attach to R Interactive]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Joindre à R Interactive]]></Val>
+              <Val><![CDATA[Joindre à la fenêtre interactive R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4426,7 +4426,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Attach to R I&nteractive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Joindre à R I&nteractive]]></Val>
+              <Val><![CDATA[Joindre à la fenêtre i&nteractive R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4438,7 +4438,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Source R Script with Echo]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Script R source avec Echo]]></Val>
+              <Val><![CDATA[Approvisionner le script R avec Echo]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4447,7 +4447,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source R Script with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Script R source avec &Echo]]></Val>
+              <Val><![CDATA[Approvisionner le script R avec &Echo]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4906,7 +4906,7 @@
           <Str Cat="Button">
             <Val><![CDATA[New Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Nouvelle fenêtre de tracé]]></Val>
+              <Val><![CDATA[Nouvelle fenêtre de tracés]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4915,7 +4915,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&New Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Nouvelle fenêtre de tracé]]></Val>
+              <Val><![CDATA[&Nouvelle fenêtre de tracés]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4927,7 +4927,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Activate Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Activer la fenêtre de tracé]]></Val>
+              <Val><![CDATA[Activer la fenêtre de tracés]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4936,7 +4936,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Activate Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Activer la fenêtre de tracé]]></Val>
+              <Val><![CDATA[Activer &la fenêtre de tracés]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5104,7 +5104,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Import Dataset Into R Session From Web &URL...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Importer le jeu de données dans la session R à partir d'une &URL web...]]></Val>
+              <Val><![CDATA[Importer le jeu de données dans la session R à partir d'une U&RL web...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5263,7 +5263,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Fenêtre de tracé]]></Val>
+              <Val><![CDATA[Fenêtre de tracés]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5287,7 +5287,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[R Help Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Fenêtre d'aide sur R]]></Val>
+              <Val><![CDATA[Fenêtre d'aide R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5452,7 +5452,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Interactive]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Interactive]]></Val>
+              <Val><![CDATA[Fenêtre interactive R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5461,7 +5461,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show R Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Afficher la fenêtre R Interactive]]></Val>
+              <Val><![CDATA[Afficher la fenêtre interactive R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5470,7 +5470,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&R Interactive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Fenêtre Interactive R]]></Val>
+              <Val><![CDATA[&Fenêtre interactive R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5611,7 +5611,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Help Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Fenêtre d'aide sur R]]></Val>
+              <Val><![CDATA[Fenêtre d'aide R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5734,7 +5734,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[RTVS Documentation and Sa&mples]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Documentation et exe&mples RTVS]]></Val>
+              <Val><![CDATA[Documentation et exemples RT&VS]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5746,7 +5746,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[R D&ocumentation]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[D&ocumentation R]]></Val>
+              <Val><![CDATA[Documentat&ion R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5768,7 +5768,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown R]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5858,7 +5858,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Markdown]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Markdown R]]></Val>
+            <Val><![CDATA[R Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6077,7 +6077,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Tools for Visual Studio]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Tools pour Visual Studio]]></Val>
+            <Val><![CDATA[Outils R pour Visual Studio]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6086,7 +6086,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provides project system, R Interactive window, plotting, and more for the R programming language.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fournit le système de projet, la fenêtre R Interactive, le traçage, etc. pour le langage de programmation R.]]></Val>
+            <Val><![CDATA[Fournit le système de projet, la fenêtre interactive R, le traçage, etc. pour le langage de programmation R.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6131,7 +6131,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provides RStudio-compatible keyboard shortcuts for many functions in R Tools for Visual Studio.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fournit des raccourcis clavier compatibles avec RStudio pour de nombreuses fonctions dans R Tools pour Visual Studio.]]></Val>
+            <Val><![CDATA[Fournit des raccourcis clavier compatibles avec RStudio pour de nombreuses fonctions dans Outils R pour Visual Studio.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -6219,7 +6219,7 @@
       <Str Cat="Text">
         <Val><![CDATA[R Tools for Visual Studio]]></Val>
         <Tgt Cat="Text" Stat="Loc" Orig="New">
-          <Val><![CDATA[R Tools pour Visual Studio]]></Val>
+          <Val><![CDATA[Outils R pour Visual Studio]]></Val>
         </Tgt>
       </Str>
       <Disp Icon="Str" />

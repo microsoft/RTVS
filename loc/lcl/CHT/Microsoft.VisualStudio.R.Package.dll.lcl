@@ -1640,7 +1640,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Expanded braces]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已展開大括號]]></Val>
+            <Val><![CDATA[將大括號展開]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3343,7 +3343,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Help On Current]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[說明主題: 目前]]></Val>
+              <Val><![CDATA[關於目前内容的説明]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3355,7 +3355,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Search Web For Current]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[搜尋目前的網頁]]></Val>
+              <Val><![CDATA[在網路上搜尋目前内容]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3586,7 +3586,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Writing R Extensions...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[寫入 R 延伸模組(&W)...]]></Val>
+              <Val><![CDATA[編寫 R 延伸模組(&W)...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3595,7 +3595,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Writing R Extensions]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 寫入 R 延伸模組]]></Val>
+              <Val><![CDATA[R 編寫 R 延伸模組]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4576,7 +4576,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Clear Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[清除 Interactive 視窗]]></Val>
+              <Val><![CDATA[清除互動視窗]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

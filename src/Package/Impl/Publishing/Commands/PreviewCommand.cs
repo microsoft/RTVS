@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         }
 
         protected virtual async Task<bool> CheckPrerequisitesAsync() {
-            if (!await CheckExistsOnPathAsync("pandoc.exe")) {
+            if (!await CheckExecutableExistsOnPathAsync("pandoc")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
                 await Services.ShowErrorMessageAsync(message);
@@ -190,6 +190,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         protected Task<bool> CheckExistsOnPathAsync(string fileName) {
             var session = _workflowProvider.GetOrCreate().RSession;
             return session.EvaluateAsync<bool>(Invariant($"rtvs:::exists_on_path('{fileName}')"), REvaluationKind.Normal);
+        }
+
+        protected Task<bool> CheckExecutableExistsOnPathAsync(string fileNameNoExtension) {
+            var session = _workflowProvider.GetOrCreate().RSession;
+            return session.EvaluateAsync<bool>(Invariant($"rtvs:::executable_exists_on_path('{fileNameNoExtension}')"), REvaluationKind.Normal);
         }
     }
 }

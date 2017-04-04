@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Editor de &Origem]]></Val>
+              <Val><![CDATA[&Editor de Origem]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5680,7 +5680,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Files]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Arquivos]]></Val>
+              <Val><![CDATA[A&rquivos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

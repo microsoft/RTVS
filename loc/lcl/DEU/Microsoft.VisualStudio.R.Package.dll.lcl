@@ -5470,7 +5470,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&R Interactive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&R Interactive]]></Val>
+              <Val><![CDATA[R &Interactive]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5560,7 +5560,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&History]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Verlauf]]></Val>
+              <Val><![CDATA[Ver&lauf]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

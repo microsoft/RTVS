@@ -2918,7 +2918,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove all variables?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[是否确实要删除所有变量?]]></Val>
+            <Val><![CDATA[确定要删除所有变量吗?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3586,7 +3586,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Writing R Extensions...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[正在编写 R 扩展(&W)...]]></Val>
+              <Val><![CDATA[编写 R 扩展(&W)...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3595,7 +3595,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Writing R Extensions]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R 正在编写 R 扩展]]></Val>
+              <Val><![CDATA[R 编写 R 扩展]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4294,7 +4294,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Attach Debugger]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[附加调试程序]]></Val>
+              <Val><![CDATA[附加调试器]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
