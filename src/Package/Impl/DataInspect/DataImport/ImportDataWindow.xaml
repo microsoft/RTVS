@@ -42,7 +42,7 @@
             <TextBox Grid.Column="0" x:Name="FilePathBox" MinHeight="20" VerticalContentAlignment="Center" 
                      Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
                      Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" 
-                     IsReadOnly="True"/>
+                     IsReadOnly="True" AutomationProperties.Name="{x:Static pkg:Resources.Tab_InputFile}"/>
             <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." Click="FileOpenButton_Click" VerticalAlignment="Center"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" MinHeight="22" MinWidth="22" 
                     FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" 
@@ -89,51 +89,54 @@
 
                     <!-- Name -->
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Name}" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" VerticalContentAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" 
+                             VerticalContentAlignment="Center" AutomationProperties.Name="{x:Static pkg:Resources.Label_Name}"/>
 
                     <!-- Encoding -->
                     <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Encoding}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EncodingComboBox" SelectionChanged="ComboBox_SelectionChanged"
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Encodings}"
-                              SelectedIndex="0"/>
+                              SelectedIndex="0" AutomationProperties.Name="{x:Static pkg:Resources.Label_Encoding}" />
 
                     <!-- Row names -->
                     <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_RowNames}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="4" Grid.Column="2" x:Name="RowNamesComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=RowNames}"
-                              SelectedIndex="0"/>
+                              SelectedIndex="0" AutomationProperties.Name="{x:Static pkg:Resources.Label_RowNames}" />
 
                     <!-- Separator -->
                     <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Separator}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="6" Grid.Column="2" x:Name="SeparatorComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Separators}"
-                              SelectedIndex="1" />
+                              SelectedIndex="1" AutomationProperties.Name="{x:Static pkg:Resources.Label_Separator}" />
 
                     <!-- Decimal -->
                     <TextBlock Grid.Row="8" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Decimal}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="8" Grid.Column="2" x:Name="DecimalComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Decimals}"
-                              SelectedIndex="0" />
+                              SelectedIndex="0" AutomationProperties.Name="{x:Static pkg:Resources.Label_Decimal}" />
 
                     <!-- Quote -->
                     <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Quote}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="10" Grid.Column="2" x:Name="QuoteComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Quotes}"
-                              SelectedIndex="0" />
+                              SelectedIndex="0" AutomationProperties.Name="{x:Static pkg:Resources.Label_Quote}" />
 
                     <!-- Comment -->
                     <TextBlock Grid.Row="12" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Comment}" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="12" Grid.Column="2" x:Name="CommentComboBox" SelectionChanged="ComboBox_SelectionChanged" 
                               ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Comments}"
-                              SelectedIndex="0" />
+                              SelectedIndex="0" AutomationProperties.Name="{x:Static pkg:Resources.Label_Comment}" />
 
                     <!-- Name -->
                     <TextBlock Grid.Row="14" Grid.Column="0" FontWeight="Bold" Text="na.strings" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="14" Grid.Column="2" x:Name="NaStringTextBox" VerticalContentAlignment="Center" />
+                    <TextBox Grid.Row="14" Grid.Column="2" x:Name="NaStringTextBox" 
+                             VerticalContentAlignment="Center" AutomationProperties.Name="na.strings"/>
 
                     <!-- NRows -->
                     <TextBlock Grid.Row="16" Grid.Column="0" FontWeight="Bold" Text="NRows" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="16" Grid.Column="2" x:Name="NRowsTextBox" VerticalContentAlignment="Center" />
+                    <TextBox Grid.Row="16" Grid.Column="2" x:Name="NRowsTextBox" 
+                             VerticalContentAlignment="Center" AutomationProperties.Name="NRows" />
 
                     <!-- Header -->
                     <TextBlock Grid.Row="18" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Header}" VerticalAlignment="Center" />
@@ -142,7 +145,8 @@
                 </Grid>
 
                 <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                              Background="{DynamicResource {x:Static wpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" />
+                              Background="{DynamicResource {x:Static wpf:Brushes.SplitterBackgroundKey}}" 
+                              BorderBrush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" />
 
                 <!-- right side -->
                 <Grid Grid.Column="2">
