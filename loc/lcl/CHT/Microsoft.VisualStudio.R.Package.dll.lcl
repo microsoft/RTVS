@@ -4594,7 +4594,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Clear Interactive &Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[清除 Interactive 視窗(&W)]]></Val>
+              <Val><![CDATA[清除互動視窗(&W)]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
