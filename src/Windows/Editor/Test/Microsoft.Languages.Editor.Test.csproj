@@ -100,17 +100,21 @@
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj">
+    <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Test\Microsoft.Languages.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
       <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
       <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.Languages.Editor.csproj">
+    <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
