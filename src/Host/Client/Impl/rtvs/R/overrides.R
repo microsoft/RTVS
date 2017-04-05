@@ -83,11 +83,25 @@ remove.packages <- function(...) {
     invisible(rtvs:::send_notification('!PackagesRemoved'))
 }
 
-suppress_function <- function(function_name, package_name) {
-    package_spec <- paste("package:", package_name, sep='');
+suppress_ui <- function() {
     # The message may only become visible in remote session.
     # TODO: provide localized replacement.
-    replacement <- eval(parse(text = "function(...) { stop('Not supported') }"));
+    not_supported <- function(...) { stop('Not supported') }
+    
+    # Suppress Windows UI 
+    # http://astrostatistics.psu.edu/datasets/R/html/utils/html/winMenus.html
+    replace_function('bringToTop', 'grDevices', not_supported);
+    replace_function('winMenuAdd', 'utils', not_supported);
+    replace_function('winMenuAddItem', 'utils', not_supported);
+    replace_function('winMenuDel', 'utils', not_supported);
+    replace_function('winMenuDelItem', 'utils', not_supported);
+    replace_function('winMenuNames', 'utils', not_supported);
+    replace_function('winMenuItems', 'utils', not_supported);
+}
+
+
+replace_function <- function(function_name, package_name, replacement) {
+    package_spec <- paste("package:", package_name, sep='');
 
     original <- get(function_name, package_spec, mode="function");
     if (!is.null(original)) {

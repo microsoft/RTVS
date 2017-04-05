@@ -413,7 +413,7 @@ namespace Microsoft.R.Host.Client.Session {
                     // we need to set up UI suppression overrides.
                     try {
                         await SuppressUI(evaluator);
-                    } catch (REvaluationException ex) { }
+                    } catch (REvaluationException) { }
                 }
 
                 var callback = _callback;
@@ -499,14 +499,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
         private static Task SuppressUI(IRExpressionEvaluator eval) {
             // # Suppress Windows UI 
             // http://astrostatistics.psu.edu/datasets/R/html/utils/html/winMenus.html
-            return eval.ExecuteAsync(@"
-                rtvs:::suppress_function('bringToTop', 'grDevices');
-                rtvs:::suppress_function('winMenuAdd', 'utils');
-                rtvs:::suppress_function('winMenuAddItem', 'utils');
-                rtvs:::suppress_function('winMenuDel', 'utils');
-                rtvs:::suppress_function('winMenuDelItem', 'utils');
-                rtvs:::suppress_function('winMenuNames', 'utils');
-                rtvs:::suppress_function('winMenuItems', 'utils');");
+            return eval.ExecuteAsync(@"rtvs:::suppress_ui()");
         }
 
         public void FlushLog() {
