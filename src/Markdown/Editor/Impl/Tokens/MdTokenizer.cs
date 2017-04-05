@@ -342,12 +342,11 @@ namespace Microsoft.Markdown.Editor.Tokens {
             while (!_cs.IsEndOfStream()) {
                 if (!_cs.IsDecimal()) {
                     if (_cs.CurrentChar == '.' && char.IsWhiteSpace(_cs.NextChar)) {
-                        return HandleSequenceToEol(MarkdownTokenType.ListItem, start);
+                        _cs.Position = start;
+                        return HandleListItem();
                     }
-
                     break;
                 }
-
                 _cs.MoveToNextChar();
             }
 

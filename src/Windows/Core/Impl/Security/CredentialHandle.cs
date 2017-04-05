@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.OS;
 using Microsoft.Win32.SafeHandles;
+using static Microsoft.Common.Core.NativeMethods;
+using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Security {
     internal sealed class CredentialHandle : CriticalHandleZeroOrMinusOneIsInvalid {
@@ -30,7 +32,7 @@ namespace Microsoft.Common.Core.Security {
             throw new InvalidOperationException(Resources.Error_CredentialHandleInvalid);
         }
 
-        public static CredentialHandle ReadFromCredentialManager(string authority) {
+        internal static CredentialHandle ReadFromCredentialManager(string authority) {
             IntPtr creds;
             if (NativeMethods.CredRead(authority, NativeMethods.CRED_TYPE.GENERIC, 0, out creds)) {
                 return new CredentialHandle(creds);
@@ -38,11 +40,11 @@ namespace Microsoft.Common.Core.Security {
                 var error = Marshal.GetLastWin32Error();
                 // if credentials were not found then continue to prompt user for credentials.
                 // otherwise there was an error while reading credentials. 
-                if (error != NativeMethods.ERROR_NOT_FOUND) {
-                    throw new Win32Exception(error, Resources.Error_CredReadFailed);
+                if (error != ERROR_NOT_FOUND) {
+                    Win32MessageBox.Show(IntPtr.Zero, Invariant($"{Common.Core.Resources.Error_CredReadFailed} {ErrorCodeConverter.MessageFromErrorCode(error)}"), 
+                         Win32MessageBox.Flags.OkOnly | Win32MessageBox.Flags.Topmost | Win32MessageBox.Flags.TaskModal);
                 }
             }
-
             return null;
         }
     }

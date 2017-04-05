@@ -85,7 +85,7 @@
     </Style>
     <!-- Data grid row -->
     <Style x:Uid="Style_4" TargetType="{x:Type DataGridRow}" >
-        <Setter x:Uid="Setter_25" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
+        <Setter x:Uid="Setter_25" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" />
         <!-- Enable full row selection look, even when there isnt a * width column -->
         <Style.Triggers>
             <Trigger x:Uid="Trigger_5" Property="IsSelected" Value="True">
@@ -96,7 +96,7 @@
     </Style>
     <!-- Data grid -->
     <Style x:Uid="Style_5" TargetType="{x:Type local:TreeGrid}">
-        <Setter x:Uid="Setter_28" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
+        <Setter x:Uid="Setter_28" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" />
         <Setter x:Uid="Setter_34" Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundTextBrushKey}}" />
         <!-- Dont show selection column-->
         <Setter x:Uid="Setter_29" Property="HeadersVisibility" Value="Column" />
@@ -112,6 +112,6 @@
     </Style>
     
     <Style TargetType="{x:Type DataGridRowHeader}">
-        <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" />
     </Style>
 </ResourceDictionary>

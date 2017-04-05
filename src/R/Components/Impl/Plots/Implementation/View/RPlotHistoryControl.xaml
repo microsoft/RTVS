@@ -16,11 +16,16 @@
              Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}">
     <UserControl.Resources>
-        <CollectionViewSource x:Key="plotsByDevice" Source="{Binding Entries}">
-            <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="DeviceName" />
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <rwpf:CommonResources />
+            </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Key="plotsByDevice" Source="{Binding Entries}">
+                <CollectionViewSource.GroupDescriptions>
+                    <PropertyGroupDescription PropertyName="DeviceName" />
+                </CollectionViewSource.GroupDescriptions>
+            </CollectionViewSource>
+        </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <TextBlock Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
@@ -55,12 +60,9 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type GroupItem}">
                                         <StackPanel>
-                                            <Expander Header="{Binding Name}"
-                                                      IsExpanded="True"
-                                                      Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
-                                                      Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}">
-                                                <ItemsPresenter Margin="4"/>
-                                            </Expander>
+                                            <ToggleButton x:Name="Expander" IsChecked="True" Content="{Binding Path=Name}" Style="{StaticResource ExpandCollapseToggleStyle}"/>
+                                            <ItemsPresenter Margin="4" 
+                                                            Visibility="{Binding ElementName=Expander, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
                                             <Separator Margin="8 4 8 8"
                                                        Foreground="{DynamicResource {x:Static rwpf:Brushes.BorderBrushKey}}"/>
                                         </StackPanel>
@@ -87,6 +89,7 @@
             </ListView.ItemTemplate>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
+                    <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.PlotHistory_AutomationName}" />
                     <EventSetter Event="MouseDoubleClick" Handler="item_MouseDoubleClick"/>
                     <EventSetter Event="KeyUp" Handler="item_KeyUp"/>
                 </Style>

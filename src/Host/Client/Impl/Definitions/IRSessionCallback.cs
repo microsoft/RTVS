@@ -77,6 +77,11 @@ namespace Microsoft.R.Host.Client {
         Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Edits file or deparsed object
+        /// </summary>
+        Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Saves data to file sent from RHost.
         /// </summary>
         Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken);

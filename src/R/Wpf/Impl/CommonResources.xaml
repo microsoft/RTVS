@@ -30,7 +30,7 @@
                     <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
                     <GeometryDrawing Geometry="F1M6.5,4 L10.5,8 L6.5,12 z">
                         <GeometryDrawing.Pen>
-                            <Pen Brush="{DynamicResource {x:Static wpf:Brushes.ToolWindowTextKey}}" Thickness="1" />
+                            <Pen Brush="{DynamicResource {x:Static wpf:Brushes.ToolWindowTextBrushKey}}" Thickness="1" />
                         </GeometryDrawing.Pen>
                     </GeometryDrawing>
                 </DrawingGroup.Children>
@@ -240,14 +240,36 @@
         </Setter>
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="FocusVisualStyle">
+            <Setter.Value>
+                <Style>
+                    <Setter Property="Control.Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border>
+                                    <Rectangle Stroke="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" StrokeDashArray="1 2" StrokeThickness="1" Margin="2" SnapsToDevicePixels="true"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBrushKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveGlyphBrushKey}}" />
+            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBrushKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveGlyphBrushKey}}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownKey}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderKey}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBrushKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderBrushKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownActiveGlyphBrushKey}}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -283,6 +305,21 @@
                 <DataTemplate>
                     <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding}" FontWeight="SemiBold" />
                 </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="FocusVisualStyle">
+            <Setter.Value>
+                <Style>
+                    <Setter Property="Control.Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border>
+                                    <Rectangle Stroke="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" StrokeDashArray="1 2" StrokeThickness="1" Margin="2,2,2,-2" SnapsToDevicePixels="true"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </Setter.Value>
         </Setter>
     </Style>

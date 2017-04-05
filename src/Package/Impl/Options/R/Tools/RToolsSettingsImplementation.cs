@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _evaluateActiveBindings = true;
         private string _webHelpSearchString = "R site:stackoverflow.com";
         private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
-        private BrowserType _htmlBrowserType = BrowserType.Internal;
+        private BrowserType _htmlBrowserType = BrowserType.External;
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 

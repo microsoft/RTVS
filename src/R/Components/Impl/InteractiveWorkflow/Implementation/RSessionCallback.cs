@@ -14,10 +14,13 @@ using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Task = System.Threading.Tasks.Task;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     internal sealed class RSessionCallback : IRSessionCallback {
@@ -121,6 +124,30 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             } else {
                 await viewer?.ViewFile(fileName, tabName, deleteFile, cancellationToken);
             }
+        }
+
+        public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+            var editor = _coreShell.GetService<IFileEditor>();
+
+            if (!string.IsNullOrEmpty(content)) {
+                return await editor.EditFileAsync(content, null, cancellationToken);
+            }
+
+            if (!string.IsNullOrEmpty(fileName)) {
+                if (_session.IsRemote) {
+                    using (var dts = new DataTransferSession(_session, _fileSystem)) {
+                        // TODO: handle progress for large files
+                        try {
+                            await dts.FetchFileToLocalTempAsync(fileName.ToRPath(), null, cancellationToken);
+                            fileName = _fileSystem.GetDownloadsPath(Path.GetFileName(fileName));
+                            return await editor.EditFileAsync(null, fileName, cancellationToken);
+                        } catch (OperationCanceledException) { }
+                    }
+                }
+                return await editor.EditFileAsync(null, fileName, cancellationToken);
+            }
+            return string.Empty;
         }
 
         public async Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken) {

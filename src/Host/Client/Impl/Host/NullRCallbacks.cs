@@ -34,6 +34,7 @@ namespace Microsoft.R.Host.Client.Host {
         public Task WebBrowser(string url, CancellationToken ct) => Task.CompletedTask;
         public Task ViewLibrary(CancellationToken cancellationToken) => Task.CompletedTask;
         public Task ShowFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
         public void DirectoryChanged() { }
         public Task ViewObject(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
         public void PackagesRemoved() {}

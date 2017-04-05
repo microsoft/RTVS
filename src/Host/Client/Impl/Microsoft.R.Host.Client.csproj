@@ -70,6 +70,7 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\IFileEditor.cs" />
     <Compile Include="Definitions\IRBlobInfo.cs" />
     <Compile Include="Definitions\IConsole.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
