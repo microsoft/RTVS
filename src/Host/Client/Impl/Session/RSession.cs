@@ -408,6 +408,14 @@ namespace Microsoft.R.Host.Client.Session {
                     await evaluator.SetDefaultWorkingDirectoryAsync();
                 }
 
+                if (!startupInfo.IsInteractive || IsRemote) {
+                    // If session is non-interactive (such as intellisense) or it is remote
+                    // we need to set up UI suppression overrides.
+                    try {
+                        await SuppressUI(evaluator);
+                    } catch (REvaluationException) { }
+                }
+
                 var callback = _callback;
                 if (callback != null) {
                     await evaluator.SetVsGraphicsDeviceAsync();
@@ -486,6 +494,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
     warning('This R session was created using an incompatible version of RTVS, and may misbehave or crash when used with this version. Click ""Reset"" to replace it with a new clean session.');
 }}
 "));
+        }
+
+        private static Task SuppressUI(IRExpressionEvaluator eval) {
+            // # Suppress Windows UI 
+            // http://astrostatistics.psu.edu/datasets/R/html/utils/html/winMenus.html
+            return eval.ExecuteAsync(@"rtvs:::suppress_ui()");
         }
 
         public void FlushLog() {

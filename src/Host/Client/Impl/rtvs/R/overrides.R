@@ -82,3 +82,39 @@ remove.packages <- function(...) {
     utils::remove.packages(...)
     invisible(rtvs:::send_notification('!PackagesRemoved'))
 }
+
+suppress_ui <- function() {
+    # The message may only become visible in remote session.
+    # TODO: provide localized replacement.
+    not_supported <- function(...) { stop('Not supported') }
+    
+    # Suppress Windows UI 
+    # http://astrostatistics.psu.edu/datasets/R/html/utils/html/winMenus.html
+    replace_function('bringToTop', 'grDevices', not_supported);
+    replace_function('winMenuAdd', 'utils', not_supported);
+    replace_function('winMenuAddItem', 'utils', not_supported);
+    replace_function('winMenuDel', 'utils', not_supported);
+    replace_function('winMenuDelItem', 'utils', not_supported);
+    replace_function('winMenuNames', 'utils', not_supported);
+    replace_function('winMenuItems', 'utils', not_supported);
+}
+
+
+replace_function <- function(function_name, package_name, replacement) {
+    package_spec <- paste("package:", package_name, sep='');
+
+    original <- get(function_name, package_spec, mode="function");
+    if (!is.null(original)) {
+      env <- as.environment(package_spec);
+      unlockBinding(function_name, env);
+      assign(function_name, replacement, package_spec);
+      lockBinding(function_name, env);
+   }
+
+   if (package_name %in% loadedNamespaces()) {
+        ns <- asNamespace(package_name)
+        unlockBinding(function_name, ns)
+        assign(function_name, replacement, envir = ns)
+        lockBinding(function_name, ns)
+    }
+}

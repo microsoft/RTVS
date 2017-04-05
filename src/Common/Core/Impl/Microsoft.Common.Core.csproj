@@ -110,8 +110,6 @@
     <Compile Include="Disposables\DisposeToken.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
-    <Compile Include="IO\FileVersionInfo.cs" />
-    <Compile Include="IO\IFileVersionInfo.cs" />
     <Compile Include="OS\IProcessServices.cs" />
     <Compile Include="OS\ProcessServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 namespace Microsoft.R.Components.Sql {
     public static class ConnectionStringConverter {
         public const string OdbcSqlDriver = "{SQL Server}";
+        public const string OdbcSql13Driver = "{ODBC Driver 13 for SQL Server}";
 
         public const string OdbcDriverKey = "Driver";
         public const string OdbcServerKey = "Server";
@@ -15,26 +16,43 @@ namespace Microsoft.R.Components.Sql {
         public const string OdbcUidKey = "Uid";
         public const string OdbcPasswordKey = "Pwd";
         public const string OdbcTrustedConnectionKey = "Trusted_Connection";
+        public const string OdbcAuthenticationKey = "Authentication";
+        public const string OdbcTrustServerCertificateKey = "TrustServerCertificate";
 
         /// <summary>
         /// Converts SQL Client (.NET) connection string to the ODBC connection string.
         /// </summary>
         public static string SqlClientToOdbc(this string sqlClientString) {
-            if(string.IsNullOrEmpty(sqlClientString)) {
+            if (string.IsNullOrEmpty(sqlClientString)) {
                 return null;
             }
             try {
                 var sql = new SqlConnectionStringBuilder(sqlClientString);
-                var odbc = new OdbcConnectionStringBuilder();
-                odbc[OdbcDriverKey] = OdbcSqlDriver;
-                odbc[OdbcServerKey] = sql.DataSource;
-                odbc[OdbcDatabaseKey] = sql.InitialCatalog;
+                var sqlDriver = sql.Authentication == SqlAuthenticationMethod.ActiveDirectoryIntegrated ? OdbcSql13Driver : OdbcSqlDriver;
+                var odbc = new OdbcConnectionStringBuilder {
+                    [OdbcDriverKey] = sqlDriver,
+                    [OdbcServerKey] = sql.DataSource,
+                    [OdbcDatabaseKey] = sql.InitialCatalog
+                };
+
+                if (sql.Authentication != SqlAuthenticationMethod.NotSpecified) {
+                    odbc[OdbcAuthenticationKey] = Enum.GetName(typeof(SqlAuthenticationMethod), sql.Authentication);
+                }
+
                 if (sql.IntegratedSecurity) {
-                    odbc[OdbcTrustedConnectionKey]  = "yes";
-                } else {
+                    odbc[OdbcTrustedConnectionKey] = "yes";
+                }
+                if (sql.TrustServerCertificate) {
+                    odbc[OdbcTrustServerCertificateKey] = "yes";
+                }
+
+                if (!string.IsNullOrEmpty(sql.UserID)) {
                     odbc[OdbcUidKey] = sql.UserID;
+                }
+                if (!string.IsNullOrEmpty(sql.Password)) {
                     odbc[OdbcPasswordKey] = sql.Password;
                 }
+
                 return odbc.ConnectionString;
             } catch (ArgumentException) { }
             return null;
@@ -49,25 +67,39 @@ namespace Microsoft.R.Components.Sql {
             }
             try {
                 var odbc = new OdbcConnectionStringBuilder(odbcString);
-                var server= odbc.GetValue(OdbcServerKey);
+                var server = odbc.GetValue(OdbcServerKey);
                 var database = odbc.GetValue(OdbcDatabaseKey);
                 if (!string.IsNullOrWhiteSpace(server) && !string.IsNullOrWhiteSpace(database)) {
-                    var sql = new SqlConnectionStringBuilder();
-                    sql.DataSource = server;
-                    sql.InitialCatalog = database;
+                    var sql = new SqlConnectionStringBuilder {
+                        DataSource = server,
+                        InitialCatalog = database,
+                    };
 
-                    if (odbc.ContainsKey(OdbcUidKey)) {
-                        //Standard Connection
-                        sql.IntegratedSecurity = false;
+                    var userId = odbc.GetValue(OdbcUidKey);
+                    if(!string.IsNullOrEmpty(userId)) {
                         sql.UserID = odbc.GetValue(OdbcUidKey);
-                        sql.Password = odbc.GetValue(OdbcPasswordKey);
-                    } else {
-                        //Trusted Connection
-                        sql.IntegratedSecurity = true;
                     }
+
+                    var password = odbc.GetValue(OdbcPasswordKey);
+                    if (!string.IsNullOrEmpty(password)) {
+                        sql.Password = password;
+                    }
+
+                    // If no password and user name, assume integrated authentication
+                    sql.IntegratedSecurity = string.IsNullOrEmpty(sql.UserID) && string.IsNullOrEmpty(sql.Password);
+                    sql.TrustServerCertificate = string.Compare(odbc.GetValue(OdbcTrustServerCertificateKey), "yes", StringComparison.OrdinalIgnoreCase) == 0;
+
+                    // Translate authentication method
+                    if (odbc.ContainsKey(OdbcAuthenticationKey)) {
+                        SqlAuthenticationMethod authMethod;
+                        if (Enum.TryParse(odbc.GetValue(OdbcAuthenticationKey), out authMethod)) {
+                            sql.Authentication = authMethod;
+                        }
+                    }
+
                     return sql.ConnectionString;
                 }
-            } catch(ArgumentException) { }
+            } catch (ArgumentException) { }
             return null;
         }
 

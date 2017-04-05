@@ -56,10 +56,8 @@ namespace Microsoft.R.Interpreters.Test {
             var fs = Substitute.For<IFileSystem>();
             PretendRFilesAvailable(fs, dir);
 
-            var fvi = Substitute.For<IFileVersionInfo>();
-            fvi.FileMajorPart.Returns(3);
-            fvi.FileMinorPart.Returns(23);
-            fs.GetVersionInfo(dir64 + "R.dll").Returns(fvi);
+            var fvi = new Version(3, 23);
+            fs.GetFileVersion(dir64 + "R.dll").Returns(fvi);
 
             var ri = new RInstallation(tr, fs);
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
@@ -122,8 +120,8 @@ namespace Microsoft.R.Interpreters.Test {
             fsi.FullName.Returns(dir);
             fs.GetDirectoryInfo(@"C:\Program Files\R").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
 
-            var fvi = SimulateFileVersion(3, 13);
-            fs.GetVersionInfo(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
+            var fvi = new Version(3, 13);
+            fs.GetFileVersion(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
 
             PretendRFilesAvailable(fs, dir);
             var ri = new RInstallation(tr, fs);
@@ -178,8 +176,8 @@ namespace Microsoft.R.Interpreters.Test {
             fsi.FullName.Returns(dir);
             fs.GetDirectoryInfo(@"C:\Program Files\R").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
 
-            var fvi = SimulateFileVersion(3, 13);
-            fs.GetVersionInfo(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
+            var fvi = new Version(3, 13);
+            fs.GetFileVersion(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
 
             PretendRFilesAvailable(fs, dir);
             var ri = new RInstallation(tr, fs);
@@ -209,10 +207,10 @@ namespace Microsoft.R.Interpreters.Test {
             var fsi = Substitute.For<IFileSystemInfo>();
             fsi.Attributes.Returns(FileAttributes.Directory);
             fsi.FullName.Returns(dir);
-            fs.GetDirectoryInfo(@"C:\Program Files\Microsoft\R Client\R_SERVER").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
+            fs.GetDirectoryInfo(@"C:\Program Files\Microsoft\R Client\R_SERVER").EnumerateFileSystemInfos().Returns(new [] { fsi });
 
-            var fvi = SimulateFileVersion(3, 22);
-            fs.GetVersionInfo(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
+            var fvi = new Version(3, 22);
+            fs.GetFileVersion(Path.Combine(dir, @"bin\x64", "R.dll")).Returns(fvi);
 
             PretendRFilesAvailable(fs, dir);
             var ri = new RInstallation(tr, fs);
@@ -223,13 +221,6 @@ namespace Microsoft.R.Interpreters.Test {
             var e = engines.First();
             e.Name.Should().Contain("Microsoft R");
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
-        }
-
-        private IFileVersionInfo SimulateFileVersion(int major, int minor) {
-            var fvi = Substitute.For<IFileVersionInfo>();
-            fvi.FileMajorPart.Returns(major);
-            fvi.FileMinorPart.Returns(minor);
-            return fvi;
         }
 
         private RegistryKeyMock[] SimulateRegistry02() {
@@ -250,7 +241,7 @@ namespace Microsoft.R.Interpreters.Test {
             return new[] {
                 new RegistryKeyMock(
                      @"SOFTWARE\R-core\R64", 
-                     new RegistryKeyMock(@"3.2.2.803",
+                     new RegistryKeyMock(@"3.2.2.803 Microsoft R Client",
                          new RegistryKeyMock[0],
                          new[] {"InstallPath"},
                          new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" }),
