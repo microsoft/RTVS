@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 
-namespace Microsoft.Languages.Editor.Tasks {
+namespace Microsoft.Common.Core.Idle {
     /// <summary>
     /// A queue of asynchronous tasks that are processed in the order they were added. As opposed to thread
     /// pool tasks only start on idle and queued task may be canceled if needed.
@@ -62,9 +61,8 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// On next idle time if thread is available it will take task from the head of the queue and execute it. 
         /// There may be one or more tasks running in parallel depending on number of CPUs avaialable.
         /// </summary>
-        public void Enqueue(Func<object> taskAction, Action<object> callbackAction, object tag) {
-            Enqueue(taskAction, callbackAction, null, tag);
-        }
+        public void Enqueue(Func<object> taskAction, Action<object> callbackAction, object tag)
+            => Enqueue(taskAction, callbackAction, null, tag);
 
         /// <summary>
         /// Removes tasks associated with a give callback
@@ -77,8 +75,9 @@ namespace Microsoft.Languages.Editor.Tasks {
                         _taskQueue.RemoveAt(i);
                 }
 
-                if (_taskQueue.Count == 0)
+                if (_taskQueue.Count == 0) {
                     DisconnectFromIdle();
+                }
             }
         }
 
@@ -110,7 +109,6 @@ namespace Microsoft.Languages.Editor.Tasks {
                 for (int i = 0; i < _workerTasks.Length; i++) {
                     _workerTasks[i] = new IdleTimeAsyncTask(_shell);
                 }
-
                 _shell.Idle -= OnIdle;
             }
         }
@@ -127,7 +125,6 @@ namespace Microsoft.Languages.Editor.Tasks {
                     _taskQueue.RemoveAt(i);
 
                     worker.DoTaskOnIdle(taskEntry.TaskAction, taskEntry.CallbackAction, taskEntry.CancelAction, taskEntry.Tag);
-
                     if (_taskQueue.Count == 0)
                         DisconnectFromIdle();
 
@@ -156,9 +153,9 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
 
             bool workerAvailable = worker != null;
-
-            if (thisTagIsRunning)
+            if (thisTagIsRunning) {
                 worker = null; // worker is available but not for this task
+            }
 
             return workerAvailable; // some task is available
         }

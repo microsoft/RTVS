@@ -154,6 +154,7 @@
     <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
     <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
+    <Compile Include="Tree\CancellableTask.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />
     <Compile Include="Tree\Definitions\IEditorTree.cs" />

@@ -5,7 +5,7 @@ using System;
 using System.Text;
 
 namespace Microsoft.Languages.Editor.Utility {
-    public static class StringUtility {
+    public static class StringExtensions {
         /// <summary>
         /// Wraps long string so each line is no longer
         /// that the specified number of characters 

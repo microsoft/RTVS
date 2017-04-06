@@ -3,9 +3,9 @@
 
 using System;
 using System.Threading;
+using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 

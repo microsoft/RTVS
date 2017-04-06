@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 

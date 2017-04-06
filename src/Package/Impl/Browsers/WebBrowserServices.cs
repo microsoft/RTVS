@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Tasks;

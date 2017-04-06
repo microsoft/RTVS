@@ -54,7 +54,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ServiceManagerTest.cs" />
     <Compile Include="Shell\EditorTestCompositionCatalog.cs" />
-    <Compile Include="Text\TextChangesTest.cs" />
     <Compile Include="Text\TextProviderTest.cs" />
     <Compile Include="Text\Typing.cs" />
     <Compile Include="Utility\ClassificationWriter.cs" />

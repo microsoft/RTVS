@@ -107,7 +107,6 @@
     <Compile Include="EditorFactory\Definitions\IEditorFactory.cs" />
     <Compile Include="EditorFactory\Definitions\IEditorInstance.cs" />
     <Compile Include="Extensions\TextBufferHelper.cs" />
-    <Compile Include="Extensions\TextChange.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Selection\ISelectionTracker.cs" />
     <Compile Include="Selection\SelectionTracker.cs" />
@@ -121,10 +120,6 @@
     <Compile Include="TaskList\IEditorTaskListItem.cs" />
     <Compile Include="TaskList\IEditorTaskListItemSource.cs" />
     <Compile Include="TaskList\TaskType.cs" />
-    <Compile Include="Tasks\CancellableTask.cs" />
-    <Compile Include="Tasks\IdleTimeAction.cs" />
-    <Compile Include="Tasks\IdleTimeAsyncTask.cs" />
-    <Compile Include="Tasks\IdleTimeAsyncTaskQueue.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
@@ -143,7 +138,6 @@
     <Compile Include="Undo\TextUndoPrimitiveBase.cs" />
     <Compile Include="Undo\TextUndoTransactionThatRollsBackProperly.cs" />
     <Compile Include="Utility\GuardedOperations.cs" />
-    <Compile Include="Utility\StringUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

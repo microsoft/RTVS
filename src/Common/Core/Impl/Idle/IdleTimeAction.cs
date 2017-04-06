@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Utility;
-using Microsoft.Languages.Editor.Shell;
 
-namespace Microsoft.Languages.Editor.Tasks {
+namespace Microsoft.Common.Core.Idle {
     /// <summary>
     /// Action that should be executed on next idle after certain amount of milliseconds
     /// </summary>
@@ -61,7 +59,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         }
 
         void OnIdle(object sender, EventArgs e) {
-            if (TimeUtility.MillisecondsSinceUtc(_idleConnectTime) > _delay) {
+            if (_idleConnectTime.MillisecondsSinceUtc() > _delay) {
                 DisconnectFromIdle();
                 _action();
 
