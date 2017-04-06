@@ -28,7 +28,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(IExportProvider exportProvider) {
-            REditorSettings.Initialize(new TestSettingsStorage());
             _shell.ServiceManager.AddService(new TestRToolsSettings());
             _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;

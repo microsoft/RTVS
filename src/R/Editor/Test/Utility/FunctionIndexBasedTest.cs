@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public abstract class FunctionIndexBasedTest : IAsyncLifetime {
         protected IExportProvider ExportProvider { get; }
-        protected ICoreShell shell { get; }
+        protected ICoreShell Shell { get; }
         protected IPackageIndex PackageIndex { get; }
         protected IFunctionIndex FunctionIndex { get; }
         protected IRInteractiveWorkflow Workflow { get; }
@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         protected FunctionIndexBasedTest(IExportProvider exportProvider) {
             ExportProvider = exportProvider;
             Workflow = UIThreadHelper.Instance.Invoke(() => ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
-            shell = ExportProvider.GetExportedValue<ICoreShell>();
+            Shell = ExportProvider.GetExportedValue<ICoreShell>();
             FunctionIndex = ExportProvider.GetExportedValue<IFunctionIndex>();
             PackageIndex = ExportProvider.GetExportedValue<IPackageIndex>();
         }

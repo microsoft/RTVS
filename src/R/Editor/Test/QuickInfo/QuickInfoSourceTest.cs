@@ -128,7 +128,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             s.Ast = RParser.Parse(content);
             s.TextBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, shell);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, Shell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(s.TextBuffer, caretPosition);
             s.QuickInfoContent = new List<object>();
 

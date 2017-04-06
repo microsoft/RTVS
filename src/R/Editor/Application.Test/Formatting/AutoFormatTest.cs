@@ -15,7 +15,6 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     public class AutoFormatTest {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly IREditorSettings _settings;
 
         public AutoFormatTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
             _exportProvider = exportProvider;

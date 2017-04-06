@@ -25,7 +25,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly IRInteractiveWorkflow _workflow;
 
         public FunctionInfoTest(IExportProvider exportProvider) {
-            REditorSettings.Initialize(new TestSettingsStorage());
             _exportProvider = exportProvider;
             _workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();

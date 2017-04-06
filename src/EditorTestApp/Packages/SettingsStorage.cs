@@ -17,7 +17,9 @@ namespace Microsoft.Languages.Editor.Application.Packages {
             return _settings.TryGetValue(name, out value) ? (T)value : defaultValue;
         }
         public void LoadFromStorage() { }
+#pragma warning disable 67
         public event EventHandler<EventArgs> SettingsChanged;
+#pragma warning restore 67
         #endregion
 
         #region IWritableEditorSettingsStorage Members

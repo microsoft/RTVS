@@ -390,8 +390,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     isSnippet.Should().BeTrue();
 
                     var glyph = completion.IconSource;
-                    var gs = ExportProvider.GetExportedValue<IImageService>();
-                    var snippetGlyph = gs.GetGlyphThreadSafe(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+                    var gs = ExportProvider.GetExportedValue<IGlyphService>();
+                    var snippetGlyph = gs.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
                     glyph.Should().Be(snippetGlyph);
                 });
             }
