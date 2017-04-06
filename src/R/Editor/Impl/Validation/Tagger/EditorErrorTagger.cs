@@ -80,9 +80,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// Retriever error (squiggly) tagger associated with the text buffer
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
-        public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer) {
-            return ServiceManager.GetService<EditorErrorTagger>(textBuffer);
-        }
+        public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer)
+            => ServiceManager.GetService<EditorErrorTagger>(textBuffer);
 
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
             foreach (IAstNode node in e.Nodes) {
@@ -96,9 +95,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             }
         }
 
-        private void OnCleared(object sender, EventArgs e) {
-            RemoveAllTags();
-        }
+        private void OnCleared(object sender, EventArgs e) => RemoveAllTags();
 
         private void RemoveAllTags() {
             _errorTags.Clear();
@@ -305,12 +302,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 return tasks;
             }
         }
-
-        public ITextBuffer TextBuffer {
-            get {
-                return _textBuffer;
-            }
-        }
+        public object EditorBuffer => _textBuffer;
         #endregion
     }
 }

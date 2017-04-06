@@ -116,10 +116,6 @@
     <Compile Include="Shell\IApplicationEditorSupport.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
     <Compile Include="SuggestedActions\SuggestedActionBase.cs" />
-    <Compile Include="TaskList\IEditorTaskList.cs" />
-    <Compile Include="TaskList\IEditorTaskListItem.cs" />
-    <Compile Include="TaskList\IEditorTaskListItemSource.cs" />
-    <Compile Include="TaskList\TaskType.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
