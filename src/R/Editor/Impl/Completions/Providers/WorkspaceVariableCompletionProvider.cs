@@ -24,6 +24,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly ImageSource _variableGlyph;
 
         public WorkspaceVariableCompletionProvider(IVariablesProvider provider, IImageService imageService) {
+            _variablesProvider = provider;
             _functionGlyph = imageService.GetImage(ImageType.Method) as ImageSource;
             _variableGlyph = imageService.GetImage(ImageType.Variable) as ImageSource;
         }

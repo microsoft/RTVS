@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Snippets;
 
@@ -20,9 +21,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly IImageService _imageService;
 
         [ImportingConstructor]
-        public KeywordCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IImageService imageService) {
+        public KeywordCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, ICoreShell coreShell) {
             _snippetInformationSource = snippetInformationSource;
-            _imageService = imageService;
+            _imageService = coreShell.GetService<IImageService>();
         }
 
         #region IRCompletionListProvider

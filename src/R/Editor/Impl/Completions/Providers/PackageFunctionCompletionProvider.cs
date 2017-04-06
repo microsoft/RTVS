@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Snippets;
@@ -37,12 +38,13 @@ namespace Microsoft.R.Editor.Completions.Providers {
             [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource,
             IPackageIndex packageIndex,
             IFunctionIndex functionIndex,
-            IImageService imageService) {
+            ICoreShell coreShell) {
             _session = session;
             _snippetInformationSource = snippetInformationSource;
             _packageIndex = packageIndex;
             _functionIndex = functionIndex;
 
+            var imageService = coreShell.GetService<IImageService>();
             _functionGlyph = imageService.GetImage(ImageType.Method) as ImageSource;
             _constantGlyph = imageService.GetImage(ImageType.Constant) as ImageSource; ;
         }

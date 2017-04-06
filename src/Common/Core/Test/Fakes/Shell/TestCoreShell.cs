@@ -60,7 +60,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         /// to the supplied export provider for additional services.
         /// </summary>
         /// <param name="exportProvider"></param>
-        public TestCoreShell(IExportProvider exportProvider): this(new TestServiceManager(exportProvider)) {
+        public TestCoreShell(IExportProvider exportProvider) : this(new TestServiceManager(exportProvider)) {
             AddBasicServices();
         }
 
@@ -101,6 +101,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(ps ?? new ProcessServices())
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
+                .AddService(new TestImageService())
                 .AddService(new TestPlatformServices());
         }
 

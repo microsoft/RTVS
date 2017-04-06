@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Snippets;
 
 namespace Microsoft.R.Editor.Completions.Providers {
@@ -17,8 +18,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly ImageSource _snippetGlyph;
 
         [ImportingConstructor]
-        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IImageService imageService) {
+        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, ICoreShell coreShell) {
             _snippetInformationSource = snippetInformationSource;
+            var imageService = coreShell.GetService<IImageService>();
             _snippetGlyph = imageService.GetImage(ImageType.Snippet) as ImageSource;
         }
 

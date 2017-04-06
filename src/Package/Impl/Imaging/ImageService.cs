@@ -154,7 +154,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             }
 
             if (bmp != null) {
-                using (MemoryStream memory = new MemoryStream()) {
+                using (var memory = new MemoryStream()) {
                     bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
                     memory.Position = 0;
                     source = BitmapImageFactory.Load(memory);
