@@ -14,19 +14,13 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public sealed class RProvisionalTextTest : IDisposable {
+    public sealed class RProvisionalTextTest {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly bool _autoFormat;
 
         public RProvisionalTextTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
             _exportProvider = exportProvider;
             _editorHost = editorHost;
-            _autoFormat = REditorSettings.AutoFormat;
-        }
-
-        public void Dispose() {
-            REditorSettings.AutoFormat = _autoFormat;
         }
 
         [Test]
@@ -43,7 +37,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                 actual.Should().Be(expected);
 
-                REditorSettings.AutoFormat = false;
+                _editorHost.Settings.AutoFormat = false;
 
                 script.Type("\"");
                 script.Type("]");
@@ -91,7 +85,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Category.Interactive]
         public async Task R_ProvisionalCurlyBrace01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                REditorSettings.FormatOptions.BracesOnNewLine = false;
+                _editorHost.Settings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(1)");
                 script.DoIdle(300);

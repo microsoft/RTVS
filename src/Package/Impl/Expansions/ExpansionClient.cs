@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.R.Components.Extensions;
@@ -11,13 +10,13 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// <summary>
@@ -177,7 +176,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 // Do not format standalone operators
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
                 if (CanFormat(text)) {
-                    RangeFormatter.FormatRange(TextView, textBuffer, range, REditorSettings.FormatOptions, VsAppShell.Current);
+                    RangeFormatter.FormatRange(TextView, textBuffer, range, VsAppShell.Current.GetService<IREditorSettings>().FormatOptions, VsAppShell.Current);
                 }
             }
             return hr;

@@ -11,7 +11,6 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
@@ -320,7 +319,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         public async Task R_CompletionOnTab() {
             using (var script = await _editorHost.StartScript(ExportProvider, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
-                REditorSettings.ShowCompletionOnTab = true;
+                _editorHost.Settings.ShowCompletionOnTab = true;
                 script.DoIdle(100);
                 script.Type("f1<-lapp");
                 UIThreadHelper.Instance.Invoke(() => script.GetCompletionSession().Dismiss());
@@ -334,7 +333,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 string actual = script.EditorText;
                 actual.Should().Be("f1<-lapply");
 
-                REditorSettings.ShowCompletionOnTab = false;
+                _editorHost.Settings.ShowCompletionOnTab = false;
             }
         }
 
@@ -391,7 +390,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     isSnippet.Should().BeTrue();
 
                     var glyph = completion.IconSource;
-                    var gs = ExportProvider.GetExportedValue<IGlyphService>();
+                    var gs = ExportProvider.GetExportedValue<IImageService>();
                     var snippetGlyph = gs.GetGlyphThreadSafe(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
                     glyph.Should().Be(snippetGlyph);
                 });

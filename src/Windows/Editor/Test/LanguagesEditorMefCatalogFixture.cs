@@ -52,10 +52,11 @@ namespace Microsoft.Languages.Editor.Test {
             public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer) : base(compositionContainer) {
                 var tcs = new TestCoreShell(new TestCompositionCatalog(compositionContainer));
                 tcs.ServiceManager.AddService(new TestEditorSupport());
-                _coreShell = tcs;
 
-                // TODO: HACK - remove after REditorSettings turn into service.
-                REditorSettings.Initialize(new TestSettingsStorage());
+                var settings = new REditorSettings(new TestSettingsStorage());
+                tcs.ServiceManager.AddService(settings);
+
+                _coreShell = tcs;
             }
 
             public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
