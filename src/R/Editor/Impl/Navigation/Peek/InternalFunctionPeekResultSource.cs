@@ -89,7 +89,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             var rSession = workflow.RSession;
             string functionCode = await rSession.GetFunctionCodeAsync(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {
-                var formatter = new RFormatter(REditorSettings.FormatOptions);
+                var formatter = new RFormatter(_shell.GetService<IREditorSettings>().FormatOptions);
                 functionCode = formatter.Format(functionCode);
             }
             return functionCode;

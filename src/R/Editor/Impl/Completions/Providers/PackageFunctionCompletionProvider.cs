@@ -7,14 +7,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Imaging;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Packages;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions.Providers {
@@ -39,14 +37,14 @@ namespace Microsoft.R.Editor.Completions.Providers {
             [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource,
             IPackageIndex packageIndex,
             IFunctionIndex functionIndex,
-            IGlyphService glyphService) {
+            IImageService imageService) {
             _session = session;
             _snippetInformationSource = snippetInformationSource;
             _packageIndex = packageIndex;
             _functionIndex = functionIndex;
 
-            _functionGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
-            _constantGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
+            _functionGlyph = imageService.GetImage(ImageType.Method) as ImageSource;
+            _constantGlyph = imageService.GetImage(ImageType.Constant) as ImageSource; ;
         }
 
         #region IRCompletionListProvider

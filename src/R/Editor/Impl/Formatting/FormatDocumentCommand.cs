@@ -14,7 +14,6 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Selection;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -34,7 +33,7 @@ namespace Microsoft.R.Editor.Formatting {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             string originalText = TargetBuffer.CurrentSnapshot.GetText();
             string formattedText = string.Empty;
-            var formatter = new RFormatter(REditorSettings.FormatOptions);
+            var formatter = new RFormatter(Shell.GetService<IREditorSettings>().FormatOptions);
 
             try {
                 formattedText = formatter.Format(originalText);

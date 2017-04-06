@@ -140,8 +140,6 @@
     <Compile Include="Debugger\DataTips\DataTipTextViewConnectionListener.cs" />
     <Compile Include="Editors\BaseLanguageService.cs" />
     <Compile Include="Editors\LanguageSettingsStorage.cs" />
-    <Compile Include="Editors\LanguageSettingsStorageWithDialog.cs" />
-    <Compile Include="Editors\VsREditorSettingsStorage.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
     <Compile Include="Commands\R\InstallRClientCommand.cs" />

@@ -5,10 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
-using Microsoft.Languages.Editor.Imaging;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Snippets;
-using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
@@ -18,12 +17,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
     [Export(typeof(IRHelpSearchTermProvider))]
     public class KeywordCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
-        private readonly IGlyphService _glyphService;
+        private readonly IImageService _imageService;
 
         [ImportingConstructor]
-        public KeywordCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IGlyphService glyphService) {
+        public KeywordCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IImageService imageService) {
             _snippetInformationSource = snippetInformationSource;
-            _glyphService = glyphService;
+            _imageService = imageService;
         }
 
         #region IRCompletionListProvider
@@ -34,7 +33,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
             if (!context.IsInNameSpace()) {
                 var infoSource = _snippetInformationSource?.InformationSource;
-                ImageSource keyWordGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
+                var keyWordGlyph = _imageService.GetImage(ImageType.Keyword) as ImageSource;
 
                 // Union with constants like TRUE and other common things
                 var keywords = Keywords.KeywordList.Concat(Logicals.LogicalsList).Concat(Constants.ConstantsList);
@@ -45,7 +44,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     }
                 }
 
-                ImageSource buildInGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+                var buildInGlyph = _imageService.GetImage(ImageType.Intrinsic) as ImageSource;
                 foreach (string s in Builtins.BuiltinList) {
                     completions.Add(new RCompletion(s, s, string.Empty, buildInGlyph));
                 }

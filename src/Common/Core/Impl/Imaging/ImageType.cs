@@ -11,6 +11,7 @@ namespace Microsoft.Common.Core.Imaging {
         Library,
         ValueType,
         Snippet,
+        Intrinsic,
         OpenFolder,
         ClosedFolder,
         File,

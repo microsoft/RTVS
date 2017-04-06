@@ -24,11 +24,13 @@ namespace Microsoft.Languages.Editor.Outline {
         protected IdleTimeAsyncTask BackgroundTask { get; set; }
         protected ITextBuffer TextBuffer { get; set; }
         protected virtual bool IsEnabled { get; } = true;
+        protected ICoreShell Shell { get; }
 
         private long _disposed = 0;
         private readonly object _regionsLock = new object();
 
         protected OutlineRegionBuilder(ITextBuffer textBuffer, ICoreShell shell) {
+            Shell = shell;
             CurrentRegions = new OutlineRegionCollection(0);
 
             TextBuffer = textBuffer;

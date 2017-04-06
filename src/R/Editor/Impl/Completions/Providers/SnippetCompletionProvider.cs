@@ -4,9 +4,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using Microsoft.Languages.Editor.Imaging;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.R.Editor.Snippets;
-using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
@@ -18,9 +17,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly ImageSource _snippetGlyph;
 
         [ImportingConstructor]
-        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IGlyphService glyphService) {
+        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IImageService imageService) {
             _snippetInformationSource = snippetInformationSource;
-            _snippetGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+            _snippetGlyph = imageService.GetImage(ImageType.Snippet) as ImageSource;
         }
 
         #region IRCompletionListProvider

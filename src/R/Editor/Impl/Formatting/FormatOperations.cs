@@ -11,7 +11,6 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -66,9 +65,10 @@ namespace Microsoft.R.Editor.Formatting {
 
                 var es = shell.GetService<IApplicationEditorSupport>();
                 using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
+                    var settings = shell.GetService<IREditorSettings>();
                     undoAction.Open(Resources.AutoFormat);
                     // Now format the scope
-                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions, shell);
+                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, settings.FormatOptions, shell);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = REditorDocument.MapCaretPositionFromView(textView);
@@ -76,7 +76,7 @@ namespace Microsoft.R.Editor.Formatting {
                             document.EditorTree.EnsureTreeReady();
                             ast = document.EditorTree.AstRoot;
                             scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
-                            IndentCaretInNewScope(textView, scope, caretPoint.Value, REditorSettings.FormatOptions);
+                            IndentCaretInNewScope(textView, scope, caretPoint.Value, settings.FormatOptions);
                         }
                     }
                     if (changed) {
@@ -107,7 +107,7 @@ namespace Microsoft.R.Editor.Formatting {
             var es = shell.GetService<IApplicationEditorSupport>();
             using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
                 undoAction.Open(Resources.AutoFormat);
-                var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, shell);
+                var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, shell.GetService<IREditorSettings>().FormatOptions, shell);
                 if (result) {
                     undoAction.Commit();
                 }

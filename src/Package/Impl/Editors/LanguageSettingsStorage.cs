@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
@@ -18,107 +17,94 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
     /// application-agnostic editor code. This class also provides tracking of tab/indent settings via VS
     /// text manager (<seealso cref="IVsTextManager"/>) and language preferences (<seealso cref="LANGPREFERENCES"/>).
     /// </summary>
-    public abstract class LanguageSettingsStorage
-        : IVsTextManagerEvents4
-        , IWritableEditorSettingsStorage
-        , IDisposable {
+    public sealed class LanguageSettingsStorage : IVsTextManagerEvents4, IWritableEditorSettingsStorage, IDisposable {
+        private readonly Guid _languageServiceId;
+        private readonly Dictionary<string, bool> _booleanSettings = new Dictionary<string, bool>();
+        private readonly Dictionary<string, int> _integerSettings = new Dictionary<string, int>();
+        private readonly Dictionary<string, string> _stringSettings = new Dictionary<string, string>();
+        private readonly IVsTextManager4 _textManager;
+        private readonly IEnumerable<string> _automationObjectNames;
+        private readonly ICoreShell _shell;
 
-        public event EventHandler<EventArgs> SettingsChanged;
-
-        private LANGPREFERENCES3? _langPrefs;
+        private Guid _packageGuid;
         private ConnectionPointCookie _textManagerEventsCookie;
-        private Guid _languageServiceId;
-        private Dictionary<string, bool> _booleanSettings;
-        private Dictionary<string, int> _integerSettings;
-        private Dictionary<string, string> _stringSettings;
+        private LANGPREFERENCES3? _langPrefs;
         private bool _inBatchChange;
         private bool _changedDuringBatch;
 
-        protected LanguageSettingsStorage(Guid languageServiceId) {
-            _languageServiceId = languageServiceId;
-            _booleanSettings = new Dictionary<string, bool>();
-            _integerSettings = new Dictionary<string, int>();
-            _stringSettings = new Dictionary<string, string>();
 
-            HookTextManagerEvents();
+        public LanguageSettingsStorage(ICoreShell coreShell, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
+            _shell = coreShell;
+            _packageGuid = packageId;
+            _automationObjectNames = automationObjectNames;
+
+            _textManager = _shell.GetService<IVsTextManager4>(typeof(SVsTextManager));
+            _textManagerEventsCookie = new ConnectionPointCookie(_textManager, this, typeof(IVsTextManagerEvents4));
         }
 
-        private void HookTextManagerEvents() {
-            IVsTextManager4 textManager = VsAppShell.Current.GetService<IVsTextManager4>(typeof(SVsTextManager));
-            Debug.Assert(textManager != null);
-
-            if (textManager != null) {
-                // Hook into the "preferences changed" event so that I can update _langPrefs as needed
-                _textManagerEventsCookie = new ConnectionPointCookie(textManager, this, typeof(IVsTextManagerEvents4));
-            }
-        }
+        public event EventHandler<EventArgs> SettingsChanged;
 
         /// <summary>
         /// VS language preferences: tab size, indent size, spaces or tabs.
         /// </summary>
-        protected LANGPREFERENCES3 LangPrefs {
+        private LANGPREFERENCES3 LangPrefs {
             get {
                 if (!_langPrefs.HasValue) {
-                    IVsTextManager4 textManager = VsAppShell.Current.GetService<IVsTextManager4>(typeof(SVsTextManager));
-                    Debug.Assert(textManager != null);
+                    // Get the language preferences, like "is intellisense turned on?"
+                    var langPrefs = new LANGPREFERENCES3[1];
+                    langPrefs[0].guidLang = _languageServiceId;
 
-                    if (textManager != null) {
-                        // Get the language preferences, like "is intellisense turned on?"
-                        LANGPREFERENCES3[] langPrefs = new LANGPREFERENCES3[1];
-                        langPrefs[0].guidLang = _languageServiceId;
-
-                        int hr = textManager.GetUserPreferences4(null, langPrefs, null);
-                        if (hr == VSConstants.S_OK) {
-                            _langPrefs = langPrefs[0];
-                        }
+                    int hr = _textManager.GetUserPreferences4(null, langPrefs, null);
+                    if (hr == VSConstants.S_OK) {
+                        _langPrefs = langPrefs[0];
                     }
 
                     if (!_langPrefs.HasValue) {
                         Debug.Fail("Invalid language service when fetching lang prefs: " + _languageServiceId.ToString());
-                        LANGPREFERENCES3 langPrefs = new LANGPREFERENCES3();
-                        langPrefs.guidLang = _languageServiceId;
-                        _langPrefs = langPrefs;
+                        _langPrefs = new LANGPREFERENCES3 {
+                            guidLang = _languageServiceId
+                        };
                     }
                 }
-
                 return _langPrefs.Value;
             }
         }
 
-        private void SetLangPrefs(LANGPREFERENCES3 newPreferences) {
-            IVsTextManager4 textManager = VsAppShell.Current.GetService<IVsTextManager4>(typeof(SVsTextManager));
-            Debug.Assert(textManager != null);
+        private void SetLangPrefs(LANGPREFERENCES3 newPreferences)
+            => _textManager.SetUserPreferences4(null, new LANGPREFERENCES3[] { newPreferences }, null);
 
-            if (textManager != null) {
-                // Set the language preferences, like "is intellisense turned on?"
-                LANGPREFERENCES3[] langPrefs = { newPreferences };
-
-                textManager.SetUserPreferences4(null, langPrefs, null);
-            }
-        }
-
+        #region IVsTextManagerEvents4
         public int OnUserPreferencesChanged4(
             VIEWPREFERENCES3[] viewPrefs,
             LANGPREFERENCES3[] langPrefs,
             FONTCOLORPREFERENCES2[] colorPrefs) {
             if (langPrefs != null && langPrefs[0].guidLang == _languageServiceId) {
                 _langPrefs = langPrefs[0];
-                FireSettingsChanged();
+                SettingsChanged?.Invoke(this, EventArgs.Empty);
             }
 
             return VSConstants.S_OK;
         }
+        #endregion
 
-        public void OnRegisterMarkerType(int markerType) {
+        /// <summary>
+        /// Loads settings via language (editor) tools options page
+        /// </summary>
+        public void LoadFromStorage() {
+            var vsShell = _shell.GetService<IVsShell>(typeof(SVsShell));
+            if (vsShell != null) {
+                IVsPackage package;
+                vsShell.LoadPackage(ref _packageGuid, out package);
+                Debug.Assert(package != null);
+
+                if (package != null) {
+                    foreach (string curAutomationObjectName in _automationObjectNames) {
+                        object automationObject = null;
+                        package.GetAutomationObject(curAutomationObjectName, out automationObject);
+                    }
+                }
+            }
         }
-
-        public void OnRegisterView(IVsTextView view) {
-        }
-
-        public void OnUnregisterView(IVsTextView view) {
-        }
-
-        public abstract void LoadFromStorage();
 
         /// <summary>
         /// Called when VS resets default settings through "Tools|Import/Export Settings"
@@ -130,97 +116,118 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             _integerSettings.Clear();
             _stringSettings.Clear();
 
-            FireSettingsChanged();
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public virtual string GetString(string name, string defaultValue) {
-            string value;
-            if (_stringSettings.TryGetValue(name, out value))
-                return value;
-
+        #region IEditorSettingsStorage
+        public T Get<T>(string name, T defaultValue) {
+            if (defaultValue is string) {
+                return (T)(object)GetString(name, (string)(object)defaultValue);
+            }
+            if (defaultValue is int) {
+                return (T)(object)GetInteger(name, Convert.ToInt32(defaultValue));
+            }
+            if (defaultValue is bool) {
+                return (T)(object)GetBoolean(name, Convert.ToBoolean(defaultValue));
+            }
+            Debug.Fail("Unknown editor setting type");
             return defaultValue;
         }
 
-        public virtual int GetInteger(string name, int defaultValue) {
+        private string GetString(string name, string defaultValue) {
+            string value;
+            return _stringSettings.TryGetValue(name, out value) ? value : defaultValue;
+        }
+
+        private int GetInteger(string name, int defaultValue) {
             switch (name) {
-                case CommonSettings.IndentStyleKey:
+                case EditorSettings.IndentStyleKey:
                     return (int)LangPrefs.IndentStyle;
 
-                case CommonSettings.FormatterIndentSizeKey:
+                case EditorSettings.FormatterIndentSizeKey:
                     return (int)LangPrefs.uIndentSize;
 
-                case CommonSettings.FormatterIndentTypeKey:
+                case EditorSettings.FormatterIndentTypeKey:
                     if (LangPrefs.fInsertTabs != 0 && LangPrefs.uTabSize != 0 && LangPrefs.uIndentSize % LangPrefs.uTabSize == 0) {
                         return (int)IndentType.Tabs;
                     }
                     return (int)IndentType.Spaces;
 
-                case CommonSettings.FormatterTabSizeKey:
+                case EditorSettings.FormatterTabSizeKey:
                     return (int)LangPrefs.uTabSize;
             }
 
             int value;
-            if (_integerSettings.TryGetValue(name, out value))
-                return value;
-
-            return defaultValue;
+            return _integerSettings.TryGetValue(name, out value) ? value : defaultValue;
         }
 
-        public virtual bool GetBoolean(string name, bool defaultValue) {
+        private bool GetBoolean(string name, bool defaultValue) {
             switch (name) {
-                case CommonSettings.InsertMatchingBracesKey:
+                case EditorSettings.InsertMatchingBracesKey:
                     return LangPrefs.fBraceCompletion != 0;
 
-                case CommonSettings.CompletionEnabledKey:
+                case EditorSettings.CompletionEnabledKey:
                     return LangPrefs.fAutoListMembers != 0;
 
-                case CommonSettings.SignatureHelpEnabledKey:
+                case EditorSettings.SignatureHelpEnabledKey:
                     return LangPrefs.fAutoListParams != 0;
             }
 
             bool value;
-            if (_booleanSettings.TryGetValue(name, out value))
-                return value;
+            return _booleanSettings.TryGetValue(name, out value) ? value : defaultValue;
+        }
+        #endregion
 
-            return defaultValue;
+        #region IWritableEditorSettingsStorage
+        public void Set<T>(string name, T value) {
+            if (value is string) {
+                SetString(name, (string)(object)value);
+            }
+            if (value is int) {
+                SetInteger(name, Convert.ToInt32(value));
+            }
+            if (value is bool) {
+                SetBoolean(name, Convert.ToBoolean(value));
+            }
+            Debug.Fail("Unknown editor setting type");
         }
 
-        public void SetString(string name, string value) {
+        private void SetString(string name, string value) {
             // Not allowed to save null strings
             value = value ?? string.Empty;
 
             if (!_stringSettings.ContainsKey(name) || !value.Equals(_stringSettings[name], StringComparison.Ordinal)) {
                 _stringSettings[name] = value;
-                FireSettingsChanged();
+                SettingsChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        public void SetInteger(string name, int value) {
+        private void SetInteger(string name, int value) {
             LANGPREFERENCES3 langPrefs = LangPrefs;
 
             switch (name) {
-                case CommonSettings.IndentStyleKey:
+                case EditorSettings.IndentStyleKey:
                     if (langPrefs.IndentStyle != (vsIndentStyle)value) {
                         langPrefs.IndentStyle = (vsIndentStyle)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
-                case CommonSettings.FormatterIndentSizeKey:
+                case EditorSettings.FormatterIndentSizeKey:
                     if (langPrefs.uIndentSize != (uint)value) {
                         langPrefs.uIndentSize = (uint)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
-                case CommonSettings.FormatterIndentTypeKey:
+                case EditorSettings.FormatterIndentTypeKey:
                     if (langPrefs.fInsertTabs != (uint)value) {
                         langPrefs.fInsertTabs = (uint)value;
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
-                case CommonSettings.FormatterTabSizeKey:
+                case EditorSettings.FormatterTabSizeKey:
                     if (langPrefs.uTabSize != (uint)value) {
                         langPrefs.uTabSize = (uint)value;
                         SetLangPrefs(langPrefs);
@@ -230,34 +237,31 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 default:
                     if (!_integerSettings.ContainsKey(name) || value != _integerSettings[name]) {
                         _integerSettings[name] = value;
-
-                        // The SetLangPrefs call indirectly calls FireSettingsChanged, so this is the only code path that
-                        //   needs to do this explicitly
-                        FireSettingsChanged();
+                        SettingsChanged?.Invoke(this, EventArgs.Empty);
                     }
                     break;
             }
         }
 
-        public void SetBoolean(string name, bool value) {
-            LANGPREFERENCES3 langPrefs = LangPrefs;
+        private void SetBoolean(string name, bool value) {
+            var langPrefs = LangPrefs;
 
             switch (name) {
-                case CommonSettings.InsertMatchingBracesKey:
+                case EditorSettings.InsertMatchingBracesKey:
                     if (langPrefs.fBraceCompletion != (uint)(value ? 1 : 0)) {
                         langPrefs.fBraceCompletion = (uint)(value ? 1 : 0);
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
-                case CommonSettings.CompletionEnabledKey:
+                case EditorSettings.CompletionEnabledKey:
                     if (langPrefs.fAutoListMembers != (uint)(value ? 1 : 0)) {
                         langPrefs.fAutoListMembers = (uint)(value ? 1 : 0);
                         SetLangPrefs(langPrefs);
                     }
                     break;
 
-                case CommonSettings.SignatureHelpEnabledKey:
+                case EditorSettings.SignatureHelpEnabledKey:
                     if (langPrefs.fAutoListParams != (uint)(value ? 1 : 0)) {
                         langPrefs.fAutoListParams = (uint)(value ? 1 : 0);
                         SetLangPrefs(langPrefs);
@@ -267,50 +271,19 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 default:
                     if (!_booleanSettings.ContainsKey(name) || value != _booleanSettings[name]) {
                         _booleanSettings[name] = value;
-
-                        // The SetLangPrefs call indirectly calls FireSettingsChanged, so this is the only code path that
-                        //   needs to do this explicitly
-                        FireSettingsChanged();
+                        SettingsChanged?.Invoke(this, EventArgs.Empty);
                     }
                     break;
             }
         }
-
-        public void BeginBatchChange() {
-            _inBatchChange = true;
-            _changedDuringBatch = false;
-        }
-
-        public void EndBatchChange() {
-            _inBatchChange = false;
-
-            if (_changedDuringBatch)
-                FireSettingsChanged();
-
-            _changedDuringBatch = false;
-        }
-
-        private void FireSettingsChanged() {
-            if (_inBatchChange) {
-                _changedDuringBatch = true;
-            } else if (SettingsChanged != null) {
-                SettingsChanged(this, EventArgs.Empty);
-            }
-        }
+        #endregion
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing) {
-            if (disposing) {
-                if (_textManagerEventsCookie != null) {
-                    _textManagerEventsCookie.Dispose();
-                    _textManagerEventsCookie = null;
-                }
-            }
-        }
-
         public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (_textManagerEventsCookie != null) {
+                _textManagerEventsCookie.Dispose();
+                _textManagerEventsCookie = null;
+            }
         }
         #endregion
     }

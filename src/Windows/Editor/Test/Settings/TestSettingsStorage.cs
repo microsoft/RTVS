@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Settings;
 
 namespace Microsoft.Language.Editor.Test.Settings {
     [ExcludeFromCodeCoverage]
@@ -13,25 +13,19 @@ namespace Microsoft.Language.Editor.Test.Settings {
     public class TestSettingsStorage : IWritableEditorSettingsStorage {
         private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
 
-        public void BeginBatchChange() { }
+        #region IEditorSettingsStorage
+        public T Get<T>(string name, T defaultValue) {
+            object value;
+            return _settings.TryGetValue(name, out value) ? (T)value : defaultValue;
+        }
+        #endregion 
 
-        public void EndBatchChange() { }
-
-        public bool GetBoolean(string name, bool defaultValue)
-            => _settings.ContainsKey(name) ? (bool)_settings[name] : defaultValue;
-
-        public int GetInteger(string name, int defaultValue)
-            => _settings.ContainsKey(name) ? (int)_settings[name] : defaultValue;
-
-        public string GetString(string name, string defaultValue)
-            => _settings.ContainsKey(name) ? (string)_settings[name] : defaultValue;
+        #region IWritableEditorSettingsStorage
+        public void Set<T>(string name, T value) => _settings[name] = value;
+        #endregion
 
         public void LoadFromStorage() { }
         public void ResetSettings() { }
-
-        public void SetBoolean(string name, bool value) => _settings[name] = value;
-        public void SetInteger(string name, int value) => _settings[name] = value;
-        public void SetString(string name, string value) => _settings[name] = value;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> SettingsChanged;

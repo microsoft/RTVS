@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -15,7 +16,6 @@ using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Support.Help;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions.Engine {
@@ -29,7 +29,8 @@ namespace Microsoft.R.Editor.Completions.Engine {
         /// <returns>List of completion entries for a given location in the AST</returns>
         public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion, ICoreShell shell) {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
-            var glyphService = shell.GetService<IGlyphService>();
+            var imageService = shell.GetService<IImageService>();
+            var settings = shell.GetService<IREditorSettings>();
 
             if (context.AstRoot.Comments.Contains(context.Position)) {
                 // No completion in comments
@@ -89,16 +90,16 @@ namespace Microsoft.R.Editor.Completions.Engine {
             var packageIndex = shell.GetService<IPackageIndex>();
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, glyphService));
+                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, imageService));
                 return providers;
             }
 
             if (IsPackageListCompletion(context.TextBuffer, context.Position)) {
-                providers.Add(new PackagesCompletionProvider(packageIndex, glyphService));
+                providers.Add(new PackagesCompletionProvider(packageIndex, imageService));
             } else {
                 if (IsInFunctionArgumentName<FunctionCall>(context.AstRoot, context.Position)) {
                     var functionIndex = shell.GetService<IFunctionIndex>();
-                    providers.Add(new ParameterNameCompletionProvider(functionIndex, glyphService));
+                    providers.Add(new ParameterNameCompletionProvider(functionIndex, imageService, settings));
                 }
 
                 foreach (var p in GetCompletionProviders(shell)) {
@@ -106,12 +107,12 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 }
 
                 if (!context.IsInNameSpace()) {
-                    providers.Add(new PackagesCompletionProvider(packageIndex, glyphService));
+                    providers.Add(new PackagesCompletionProvider(packageIndex, imageService));
                 }
             }
 
             if (!context.IsInNameSpace()) {
-                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, glyphService));
+                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, imageService));
             }
 
             return providers;

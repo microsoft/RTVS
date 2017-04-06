@@ -65,7 +65,6 @@
     <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="Extensions\TrackingSpanExtensions.cs" />
-    <Compile Include="Imaging\GlyphService.cs" />
     <Compile Include="Outline\OutlineController.cs" />
     <Compile Include="Outline\OutlineRegion.cs" />
     <Compile Include="Outline\OutlineRegionBuilder.cs" />
@@ -114,7 +113,6 @@
     <Compile Include="Services\ServiceManager.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Shell\IApplicationEditorSupport.cs" />
-    <Compile Include="Settings\CommonSettings.cs" />
     <Compile Include="SuggestedActions\SuggestedActionBase.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextBufferListener.cs" />

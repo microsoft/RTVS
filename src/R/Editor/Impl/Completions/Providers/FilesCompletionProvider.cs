@@ -11,11 +11,9 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -32,7 +30,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         private readonly IImageService _imageService;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IGlyphService _glyphService;
+        private readonly ImageSource _folderGlyph;
 
         private readonly string _enteredDirectory;
         private readonly bool _forceR; // for tests
@@ -45,8 +43,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
             Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
             _imageService = services.GetService<IImageService>();
+            _folderGlyph = _imageService.GetImage(ImageType.ClosedFolder) as ImageSource;
+
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _glyphService = services.GetService<IGlyphService>();
             _forceR = forceR;
 
             _enteredDirectory = ExtractDirectory(directoryCandidate);
@@ -114,7 +113,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 var completions = new List<RCompletion>();
 
                 try {
-                    var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                    var folderGlyph = _imageService.GetImage(ImageType.ClosedFolder) as ImageSource;
 
                     var rPath = directory.ToRPath().ToRStringLiteral();
                     var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}))"), REvaluationKind.Normal);
@@ -131,13 +130,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         private IEnumerable<RCompletion> GetLocalDirectoryItems(string directory) {
             if (Directory.Exists(directory)) {
-                var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
 
                 foreach (string dir in Directory.GetDirectories(directory)) {
                     DirectoryInfo di = new DirectoryInfo(dir);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
                         string dirName = Path.GetFileName(dir);
-                        yield return new RCompletion(dirName, dirName + "/", string.Empty, folderGlyph);
+                        yield return new RCompletion(dirName, dirName + "/", string.Empty, _folderGlyph);
                     }
                 }
 

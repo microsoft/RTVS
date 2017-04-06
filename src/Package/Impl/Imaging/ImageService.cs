@@ -49,6 +49,8 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
                     return _glyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
                 case ImageType.ClosedFolder:
                     return _glyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Intrinsic:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
                 case ImageType.File:
                 case ImageType.Document:
                     return GetImage("Document");
