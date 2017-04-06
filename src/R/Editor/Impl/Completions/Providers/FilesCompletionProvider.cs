@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             Other
         }
 
-        private readonly IImagesProvider _imagesProvider;
+        private readonly IImageService _imageService;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IGlyphService _glyphService;
 
@@ -44,7 +44,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         public FilesCompletionProvider(string directoryCandidate, IServiceContainer services, bool forceR = false) {
             Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
-            _imagesProvider = services.GetService<IImagesProvider>();
+            _imageService = services.GetService<IImageService>();
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _glyphService = services.GetService<IGlyphService>();
             _forceR = forceR;
@@ -121,7 +121,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
                     completions.AddRange(dirs.Select(d => new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
-                    completions.AddRange(files.Except(dirs).Select(f => new RCompletion((string)f, (string)f, string.Empty, _imagesProvider?.GetFileIcon((string)f))));
+                    completions.AddRange(files.Except(dirs).Select(f => new RCompletion((string)f, (string)f, string.Empty, _imageService?.GetFileIcon((string)f) as ImageSource)));
 
                 } catch (RException) { } catch (OperationCanceledException) { }
 
@@ -144,7 +144,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 foreach (string file in Directory.GetFiles(directory)) {
                     FileInfo di = new FileInfo(file);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                        ImageSource fileGlyph = _imagesProvider?.GetFileIcon(file);
+                        var fileGlyph = _imageService?.GetFileIcon(file) as ImageSource;
                         string fileName = Path.GetFileName(file);
                         yield return new RCompletion(fileName, fileName, string.Empty, fileGlyph);
                     }

@@ -98,7 +98,6 @@
     <Compile Include="Formatting\FormatOnPasteCommand.cs" />
     <Compile Include="Formatting\Data\IClipboardDataProvider.cs" />
     <Compile Include="Formatting\RangeFormatter.cs" />
-    <Compile Include="Imaging\IImagesProvider.cs" />
     <Compile Include="Navigation\CodeNavigator.cs" />
     <Compile Include="Navigation\Commands\PeekDefinitionCommand.cs" />
     <Compile Include="Navigation\Commands\GoToDefinitionCommand.cs" />

@@ -9,6 +9,8 @@ using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -28,11 +30,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var loggingPermissions = new LoggingPermissions(platformServices, telemetry, new RegistryImpl());
             var settings = new RToolsSettingsImplementation(this, new VsSettingsStorage(), loggingPermissions);
             var compositionCatalog = new CompositionCatalog(componentModel.DefaultCompositionService, componentModel.DefaultExportProvider);
+            var exportProvider = componentModel.DefaultExportProvider;
 
             _services
                 .AddService(componentModel)
                 .AddService(componentModel.DefaultCompositionService)
-                .AddService(componentModel.DefaultExportProvider)
+                .AddService(exportProvider)
                 .AddService(compositionCatalog)
                 .AddService(new VsMainThread())
                 .AddService(new VsTaskService())
@@ -43,6 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new Logger(ApplicationName, Path.GetTempPath(), loggingPermissions))
                 .AddService(platformServices)
                 .AddService(settings)
+                .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
                 .AddService(new VsEditorSupport(this))
                 .AddService(telemetry)
                 .AddService(new FileSystem())

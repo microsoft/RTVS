@@ -3,41 +3,67 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Wpf.Imaging;
-using Microsoft.R.Editor.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Imaging {
-
-    [Export(typeof(IImagesProvider))]
-    internal sealed class ImagesProvider : IImagesProvider {
+    internal sealed class ImageService : IImageService {
+        private readonly IGlyphService _glyphService;
         private readonly Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
         private readonly Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
-        private static ICoreShell _coreShell;
 
-        [ImportingConstructor]
-        public ImagesProvider(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public ImageService(IGlyphService glyphService) {
+            _glyphService = glyphService;
+        }
+
+        public object GetImage(ImageType imageType) {
+            switch (imageType) {
+                case ImageType.Keyword:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Function:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Variable:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Method:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Constant:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Library:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.ValueType:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.Snippet:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.OpenFolder:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.ClosedFolder:
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                case ImageType.File:
+                case ImageType.Document:
+                    return GetImage("Document");
+            }
+            return null;
         }
 
         /// <summary>
         /// Returns image source given name of the image moniker
         /// such as name from http://glyphlist.azurewebsites.net/knownmonikers
         /// </summary>
-        public ImageSource GetImage(string name) {
+        public object GetImage(string name) {
             ImageSource ims = GetImageFromResources(name);
             if (ims == null) {
-                var im = FindKnownMoniker(name);
+                ImageMoniker? im = FindKnownMoniker(name);
                 ims = im.HasValue ? GetIconForImageMoniker(im.Value) : null;
             }
             return ims;
@@ -46,9 +72,9 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// <summary>
         /// Given file name returns icon depending on the file extension
         /// </summary>
-        public ImageSource GetFileIcon(string file) {
-            var ext = Path.GetExtension(file);
-            if(_fileExtensionCache.Value.ContainsKey(ext)) {
+        public object GetFileIcon(string file) {
+            string ext = Path.GetExtension(file);
+            if (_fileExtensionCache.Value.ContainsKey(ext)) {
                 return GetImage(_fileExtensionCache.Value[ext]);
             }
             return GetImage("Document");
@@ -62,9 +88,9 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
             ImageMoniker? moniker = null;
             Type t = typeof(KnownMonikers);
-            var info = t.GetProperty(name, typeof(ImageMoniker));
+            PropertyInfo info = t.GetProperty(name, typeof(ImageMoniker));
             if (info != null) {
-                var mi = info.GetGetMethod(nonPublic: false);
+                MethodInfo mi = info.GetGetMethod(nonPublic: false);
                 moniker = (ImageMoniker)mi.Invoke(null, new object[0]);
                 _monikerCache[name] = moniker.Value;
             }
@@ -73,28 +99,27 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
+            IVsImageService2 imageService = VsAppShell.Current.Services.GetService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 
-            var imageService = _coreShell?.GetService<IVsImageService2>(typeof(SVsImageService));
-            if (imageService != null) {
-                var imageAttributes = new ImageAttributes();
-                imageAttributes.Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags;
-                imageAttributes.ImageType = (uint)_UIImageType.IT_Bitmap;
-                imageAttributes.Format = (uint)_UIDataFormat.DF_WPF;
-                imageAttributes.LogicalHeight = 16;// IconHeight,
-                imageAttributes.LogicalWidth = 16;// IconWidth,
-                imageAttributes.StructSize = Marshal.SizeOf(typeof(ImageAttributes));
+            ImageAttributes imageAttributes = new ImageAttributes();
+            imageAttributes.Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags;
+            imageAttributes.ImageType = (uint)_UIImageType.IT_Bitmap;
+            imageAttributes.Format = (uint)_UIDataFormat.DF_WPF;
+            imageAttributes.LogicalHeight = 16;// IconHeight,
+            imageAttributes.LogicalWidth = 16;// IconWidth,
+            imageAttributes.StructSize = Marshal.SizeOf(typeof(ImageAttributes));
 
-                var result = imageService.GetImage(imageMoniker, imageAttributes);
+            IVsUIObject result = imageService.GetImage(imageMoniker, imageAttributes);
 
-                object data = null;
-                if (result.get_Data(out data) == VSConstants.S_OK) {
-                    glyph = data as ImageSource;
-                    if (glyph != null) {
-                        glyph.Freeze();
-                    }
+            Object data = null;
+            if (result.get_Data(out data) == VSConstants.S_OK) {
+                glyph = data as ImageSource;
+                if (glyph != null) {
+                    glyph.Freeze();
                 }
             }
+
             return glyph;
         }
 
