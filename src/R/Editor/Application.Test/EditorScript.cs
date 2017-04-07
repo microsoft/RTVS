@@ -19,7 +19,6 @@ using Microsoft.VisualStudio.Text.Tagging;
 namespace Microsoft.R.Editor.Application.Test {
     internal class EditorScript : IEditorScript {
         private const int _defaultTypingTimeout = 25;
-        private readonly IExportProvider _exportProvider;
         private readonly CoreEditor _coreEditor;
         private readonly IDisposable _containerDisposable;
         private readonly ICoreShell _shell;
@@ -193,7 +192,7 @@ namespace Microsoft.R.Editor.Application.Test {
         }
         
         public IEnumerable<ClassificationSpan> GetClassificationSpans() {
-            var svc = _exportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+            var svc = _shell.GetService<IViewTagAggregatorFactoryService>();
             var aggregator = svc.CreateTagAggregator<IClassificationTag>(_coreEditor.View);
             var textBuffer = _coreEditor.View.TextBuffer;
             var snapshot = textBuffer.CurrentSnapshot;
@@ -202,31 +201,31 @@ namespace Microsoft.R.Editor.Application.Test {
         }
 
         public ICompletionSession GetCompletionSession() {
-            var broker = _exportProvider.GetExportedValue<ICompletionBroker>();
+            var broker = _shell.GetService<ICompletionBroker>();
             return Retry(() => broker.GetSessions(_coreEditor.View).FirstOrDefault());
         }
 
         public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
-            var aggregatorService = _exportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+            var aggregatorService = _shell.GetService<IViewTagAggregatorFactoryService>();
             var tagAggregator = aggregatorService.CreateTagAggregator<IErrorTag>(_coreEditor.View);
             var textBuffer = _coreEditor.View.TextBuffer;
             return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
         }
 
         public ILightBulbSession GetLightBulbSession() {
-            var broker = _exportProvider.GetExportedValue<ILightBulbBroker>();
+            var broker = _shell.GetService<ILightBulbBroker>();
             return Retry(() => broker.GetSession(_coreEditor.View));
         }
 
         public IList<IMappingTagSpan<IOutliningRegionTag>> GetOutlineTagSpans() {
-            var aggregatorService = _exportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+            var aggregatorService = _shell.GetService<IViewTagAggregatorFactoryService>();
             var tagAggregator = aggregatorService.CreateTagAggregator<IOutliningRegionTag>(_coreEditor.View);
             var textBuffer = _coreEditor.View.TextBuffer;
             return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
         }
 
         public ISignatureHelpSession GetSignatureSession() {
-            var broker = _exportProvider.GetExportedValue<ISignatureHelpBroker>();
+            var broker = _shell.GetService<ISignatureHelpBroker>();
             return Retry(() => broker.GetSessions(_coreEditor.View).FirstOrDefault());
         }
 

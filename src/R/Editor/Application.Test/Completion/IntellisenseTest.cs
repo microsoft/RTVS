@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IWritableREditorSettings _settings;
 
-        public IntellisenseTest(REditorShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) : base(shellProvider.CoreShell) {
+        public IntellisenseTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) : base(shellProvider.CoreShell) {
             _editorHost = editorHost;
             _settings = shellProvider.CoreShell.GetService<IWritableREditorSettings>();
         }

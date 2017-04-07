@@ -7,7 +7,6 @@ using Microsoft.R.Support.Test;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test {
-    // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class REditorShellProviderFixture : RSupportShellProviderFixture {
