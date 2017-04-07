@@ -39,12 +39,12 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public bool CommitOnSpace {
-            get { return Storage.Get(CommitOnSpaceKey, true); }
+            get { return Storage.Get(CommitOnSpaceKey, false); }
             set { WritableStorage?.Set(CommitOnSpaceKey, value); }
         }
 
         public bool CommitOnEnter {
-            get { return Storage.Get(CommitOnEnterKey, true); }
+            get { return Storage.Get(CommitOnEnterKey, false); }
             set { WritableStorage?.Set(CommitOnEnterKey, value); }
         }
 
@@ -54,7 +54,7 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public bool ShowCompletionOnTab {
-            get { return Storage.Get(CompletionOnTabKey, true); }
+            get { return Storage.Get(CompletionOnTabKey, false); }
             set { WritableStorage?.Set(CompletionOnTabKey, value); }
         }
 
@@ -64,12 +64,12 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public bool SyntaxCheckInRepl {
-            get { return Storage.Get(SyntaxCheckInReplKey, true); }
+            get { return Storage.Get(SyntaxCheckInReplKey, false); }
             set { WritableStorage?.Set(SyntaxCheckInReplKey, value); }
         }
 
         public bool PartialArgumentNameMatch {
-            get { return Storage.Get(PartialArgumentNameMatchKey, true); }
+            get { return Storage.Get(PartialArgumentNameMatchKey, false); }
             set { WritableStorage?.Set(PartialArgumentNameMatchKey, value); }
         }
 

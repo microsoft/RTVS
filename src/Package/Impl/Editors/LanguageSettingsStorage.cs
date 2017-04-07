@@ -29,12 +29,11 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private Guid _packageGuid;
         private ConnectionPointCookie _textManagerEventsCookie;
         private LANGPREFERENCES3? _langPrefs;
-        private bool _inBatchChange;
-        private bool _changedDuringBatch;
 
 
         public LanguageSettingsStorage(ICoreShell coreShell, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
             _shell = coreShell;
+            _languageServiceId = languageServiceId;
             _packageGuid = packageId;
             _automationObjectNames = automationObjectNames;
 
