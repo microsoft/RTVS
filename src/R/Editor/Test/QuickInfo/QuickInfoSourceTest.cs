@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
+using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -14,8 +15,6 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Packages;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -33,7 +32,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             public ITextBuffer TextBuffer;
         }
 
-        public FunctionIndexTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public FunctionIndexTest(EditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
 
         [CompositeTest]
         [InlineData(true)]

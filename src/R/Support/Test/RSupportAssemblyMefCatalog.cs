@@ -6,13 +6,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Languages.Editor.Test;
 
-namespace Microsoft.Markdown.Editor.Test {
+namespace Microsoft.R.Support.Test {
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
     [ExcludeFromCodeCoverage]
-    public class MarkdownEditorMefCatalogFixture : LanguagesEditorMefCatalogFixture {
+    public class RSupportAssemblyMefCatalog : EditorAssemblyMefCatalog {
         protected override IEnumerable<string> GetAssemblies() => base.GetAssemblies().Concat(new[] {
-            "Microsoft.Markdown.Editor",
-            "Microsoft.Markdown.Editor.Test"
+            "Microsoft.VisualStudio.InteractiveWindow.dll",
+            "Microsoft.R.Support.dll",
+            "Microsoft.R.Support.Test.dll",
+            "System.Collections.Immutable.dll"
         });
     }
 }

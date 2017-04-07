@@ -10,7 +10,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -20,7 +19,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class SignatureHelpSourceTest : FunctionIndexBasedTest {
-        public SignatureHelpSourceTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public SignatureHelpSourceTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
 
         [Test]
         public async Task SignatureHelpSourceTest01() {

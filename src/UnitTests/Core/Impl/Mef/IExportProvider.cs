@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.UnitTests.Core.Mef {
-    public interface IExportProvider : IMethodFixture {
+    public interface IExportProvider {
         T GetExportedValue<T>() where T : class;
         T GetExportedValue<T>(string metadataKey, params object[] metadataValues) where T : class;
         IEnumerable<Lazy<T>> GetExports<T>() where T : class;

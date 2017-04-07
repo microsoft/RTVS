@@ -149,8 +149,9 @@
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
+    <Compile Include="Fixtures\REditorAssemblyMefCatalog.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
-    <Compile Include="Fixtures\REditorMefCatalogFixture.cs" />
+    <Compile Include="Fixtures\REditorShellProviderFixture.cs" />
     <Compile Include="Navigation\TextStructureTest.cs" />
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />

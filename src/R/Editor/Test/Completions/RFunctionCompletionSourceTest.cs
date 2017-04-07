@@ -9,7 +9,6 @@ using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -19,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class RFunctionCompletionSourceTest : FunctionIndexBasedTest {
-        public RFunctionCompletionSourceTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public RFunctionCompletionSourceTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
 
         [Test]
         public void BaseFunctions01() {

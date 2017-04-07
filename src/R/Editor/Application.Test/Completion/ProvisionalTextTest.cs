@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
@@ -15,18 +16,20 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public sealed class RProvisionalTextTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly EditorHostMethodFixture _editorHost;
+        private readonly IWritableREditorSettings _settings;
 
-        public RProvisionalTextTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
-            _exportProvider = exportProvider;
+        public RProvisionalTextTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) {
+            _coreShell = shellProvider.CoreShell;
             _editorHost = editorHost;
+            _settings = _coreShell.GetService<IWritableREditorSettings>();
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalText01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
                 script.Type("{");
                 script.Type("(");
                 script.Type("[");
@@ -37,7 +40,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                 actual.Should().Be(expected);
 
-                _editorHost.Settings.AutoFormat = false;
+                _settings.AutoFormat = false;
 
                 script.Type("\"");
                 script.Type("]");
@@ -55,7 +58,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalText02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
                 script.Type("c(\"");
 
                 string expected = "c(\"\")";
@@ -84,8 +87,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalCurlyBrace01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                _editorHost.Settings.FormatOptions.BracesOnNewLine = false;
+            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
+                _settings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(1)");
                 script.DoIdle(300);

@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
-        public ComputeCurrentParameterTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public ComputeCurrentParameterTest(EditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {

@@ -44,9 +44,10 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ContainedLanguage\CommandTargetProxyTest.cs" />
+    <Compile Include="EditorAssemblyMefCatalog.cs" />
     <Compile Include="Helpers\HelpersTest.cs" />
     <Compile Include="Idle\IdleTaskQueueTest.cs" />
-    <Compile Include="LanguagesEditorMefCatalogFixture.cs" />
+    <Compile Include="EditorShellProviderFixture.cs" />
     <Compile Include="Settings\TestSettingsStorage.cs" />
     <Compile Include="Shell\AssemblyLocations.cs" />
     <Compile Include="Shell\TestAssemblyResolver.cs" />

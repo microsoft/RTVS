@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -18,7 +17,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class PackageInstallTest : FunctionIndexBasedTest {
-        public PackageInstallTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public PackageInstallTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
 
         [Test]
         public async Task InstallPackageTest() {

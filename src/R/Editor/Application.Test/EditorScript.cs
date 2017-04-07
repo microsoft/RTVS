@@ -8,7 +8,6 @@ using System.Text;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -25,10 +24,9 @@ namespace Microsoft.R.Editor.Application.Test {
         private readonly IDisposable _containerDisposable;
         private readonly ICoreShell _shell;
 
-        public EditorScript(IExportProvider exportProvider, CoreEditor coreEditor, IDisposable containerDisposable) {
-            _exportProvider = exportProvider;
+        public EditorScript(ICoreShell coreShell, CoreEditor coreEditor, IDisposable containerDisposable) {
+            _shell = coreShell;
             _coreEditor = coreEditor;
-            _shell = _exportProvider.GetExportedValue<ICoreShell>();
             _containerDisposable = containerDisposable;
         }
 

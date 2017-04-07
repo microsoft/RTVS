@@ -9,27 +9,21 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.Mef;
-using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
-    public abstract class MefCatalogFixture : IMethodFixtureFactory<IExportProvider>, IDisposable {
+    public abstract class TestMefCatalog : IDisposable {
         private readonly Lazy<ComposablePartCatalog> _catalogLazy;
         private readonly ConcurrentQueue<IDisposable> _exportProviders = new ConcurrentQueue<IDisposable>();
 
-        protected MefCatalogFixture() {
+        protected TestMefCatalog() {
             _catalogLazy = new Lazy<ComposablePartCatalog>(CreateCatalog);
         }
 
         protected abstract ComposablePartCatalog CreateCatalog();
-
-        protected CompositionContainer CreateContainer() => new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
-
-        public IExportProvider Dummy { get; } = new NullExportProvider();
+        public CompositionContainer CreateContainer() => new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
 
         void IDisposable.Dispose() {
             IDisposable exportProvider;
@@ -38,18 +32,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private class NullExportProvider : IExportProvider {
-            public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus)
-                => MethodFixtureBase.DefaultInitializeTask;
-
-            public Task DisposeAsync(RunSummary result, IMessageBus messageBus) => Task.CompletedTask;
-            public T GetExportedValue<T>() where T : class => default(T);
-            public T GetExportedValue<T>(string metadataKey, params object[] metadataValues) where T : class => default(T);
-            public IEnumerable<Lazy<T>> GetExports<T>() where T : class => null;
-            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() where T : class => null;
-        }
-
-        protected class TestExportProvider : IExportProvider {
+        protected class TestExportProvider : IExportProvider, IDisposable {
             private readonly IDisposable _disposable;
             protected CompositionContainer CompositionContainer { get; }
 
@@ -58,15 +41,14 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 _disposable = Disposable.Create(CompositionContainer);
             }
 
-            public virtual Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                return MethodFixtureBase.DefaultInitializeTask;
-            }
-
-            public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
+            #region IDisposable
+            protected virtual void Dispose(bool disposing) {
                 _disposable.Dispose();
-                return Task.CompletedTask;
             }
+            public void Dispose() { }
+            #endregion
 
+            #region IExportProvider
             public T GetExportedValue<T>() where T: class {
                 if(typeof(T) == typeof(ICompositionService)) {
                     // TODO: remove when editor no longer uses SatisfyImportsOnce.
@@ -100,6 +82,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() where T : class {
                 return CompositionContainer.GetExports<T, TMetadataView>();
             }
+            #endregion
         }
     }
 }

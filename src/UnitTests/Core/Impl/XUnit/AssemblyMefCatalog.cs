@@ -10,9 +10,8 @@ using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
-    public abstract class AssemblyMefCatalogFixture : MefCatalogFixture {
+    public abstract class AssemblyMefCatalog : TestMefCatalog {
         protected override ComposablePartCatalog CreateCatalog() => CatalogFactory.CreateAssembliesCatalog(GetAssemblies().AsList());
-
         protected virtual IEnumerable<string> GetAssemblies() => Enumerable.Empty<string>();
     }
 }
