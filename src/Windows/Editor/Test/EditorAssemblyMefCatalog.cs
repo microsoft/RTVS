@@ -17,6 +17,7 @@ namespace Microsoft.Languages.Editor.Test {
                 "Microsoft.VisualStudio.Text.UI.dll",
                 "Microsoft.VisualStudio.Text.UI.Wpf.dll",
                 "Microsoft.Languages.Editor.dll",
+                "Microsoft.Languages.Editor.Windows.dll",
                 "Microsoft.R.Host.Client.dll",
                 "Microsoft.R.Common.Core.dll",
                 "Microsoft.R.Common.Core.Test.dll",

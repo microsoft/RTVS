@@ -35,8 +35,8 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
             using (var script = await _editorHost.StartScript(_coreShell, text, "filename", RContentTypeDefinition.ContentType, null)) {
                 script.DoIdle(500);
 
-                IOutliningManagerService svc = _coreShell.GetService<IOutliningManagerService>();
-                IOutliningManager mgr = svc.GetOutliningManager(script.View);
+                var svc = _coreShell.GetService<IOutliningManagerService>();
+                var mgr = svc.GetOutliningManager(script.View);
                 var snapshot = script.TextBuffer.CurrentSnapshot;
 
                 var viewLines = script.View.TextViewLines;
@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
                 script.Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
                 script.DoIdle(1000);
 
-                IEnumerable<ICollapsed> collapsed = mgr.GetCollapsedRegions(new SnapshotSpan(snapshot, new Span(0, snapshot.Length)));
+                var collapsed = mgr.GetCollapsedRegions(new SnapshotSpan(snapshot, new Span(0, snapshot.Length)));
                 collapsed.Count().Should().Be(20);
 
                 script.Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
