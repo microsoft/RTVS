@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -26,7 +28,7 @@ namespace Microsoft.R.Editor.QuickInfo {
         [Import]
         internal IFunctionIndex FunctionIndex { get; set; }
 
-        private ITextBuffer _subjectBuffer;
+        private readonly ITextBuffer _subjectBuffer;
         private readonly ICompositionCatalog _catalog;
         private int _lastPosition = -1;
         private string _packageName;
@@ -69,45 +71,71 @@ namespace Microsoft.R.Editor.QuickInfo {
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
                                               Action<object, string> retriggerAction, string packageName) {
             int signatureEnd = position;
-            applicableToSpan = null;
+            var snapshot = session.TextView.TextBuffer.CurrentSnapshot;
+            position = Math.Min(signatureEnd, position);
+            int start = Math.Min(position, snapshot.Length);
+            int end = Math.Min(signatureEnd, snapshot.Length);
+            IFunctionInfo functionInfo = null;
 
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
-            if (!string.IsNullOrEmpty(functionName)) {
-                ITextSnapshot snapshot = session.TextView.TextBuffer.CurrentSnapshot;
+            applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
+            packageName = packageName ?? _packageName;
+            _packageName = null;
 
-                position = Math.Min(signatureEnd, position);
-                int start = Math.Min(position, snapshot.Length);
-                int end = Math.Min(signatureEnd, snapshot.Length);
+            // First try name under mouse or caret
+            Span span;
+            var line = session.TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(position);
+            var functionName = TextViewExtensions.GetItemAtPosition(line, position, x => x == RTokenType.Identifier, out span);
+            // Verify this is a function
+            var point = REditorDocument.MapPointFromView(session.TextView, new SnapshotPoint(session.TextView.TextBuffer.CurrentSnapshot, position));
+            if (!point.HasValue) {
+                return false;
+            }
 
-                applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
-                packageName = packageName ?? _packageName;
-                _packageName = null;
+            IAstNode node;
+            ast.GetPositionNode(point.Value, out node);
+            if (node == null) {
+                return false;
+            }
 
-                var functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
+            // In abc(de|f(x)) first find inner function, then outer.
+            ITextRange range;
+            if (node is TokenNode && node.Parent is FunctionCall) {
+                range = node;
+            } else {
+                var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+                range = fc?.RightOperand as TokenNode;
+            }
 
-                if (functionInfo != null && functionInfo.Signatures != null) {
-                    foreach (ISignatureInfo sig in functionInfo.Signatures) {
-                        string signatureString = sig.GetSignatureString(functionName);
-                        int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
-                        string text;
-
-                        if (string.IsNullOrWhiteSpace(functionInfo.Description)) {
-                            text = string.Empty;
-                        } else {
-                            /// VS may end showing very long tooltip so we need to keep 
-                            /// description reasonably short: typically about
-                            /// same length as the function signature.
-                            text = signatureString + "\r\n" + functionInfo.Description.Wrap(wrapLength);
-                        }
-
-                        if (text.Length > 0) {
-                            quickInfoContent.Add(text);
-                            return true;
-                        }
-                    }
+            if (range != null) {
+                functionName = ast.TextProvider.GetText(range);
+                if (!string.IsNullOrEmpty(functionName)) {
+                    functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
                 }
             }
 
+            if (functionInfo == null || functionInfo.Signatures == null) {
+                return false;
+            }
+
+            foreach (var sig in functionInfo.Signatures) {
+                string signatureString = sig.GetSignatureString(functionName);
+                int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
+                string text;
+
+                if (string.IsNullOrWhiteSpace(functionInfo.Description)) {
+                    text = string.Empty;
+                } else {
+                    // VS may end showing very long tooltip so we need to keep 
+                    // description reasonably short: typically about
+                    // same length as the function signature.
+                    text = signatureString + "\r\n" + functionInfo.Description.Wrap(wrapLength);
+                }
+
+                if (text.Length > 0) {
+                    quickInfoContent.Add(text);
+                    return true;
+                }
+            }
             return false;
         }
         #endregion
