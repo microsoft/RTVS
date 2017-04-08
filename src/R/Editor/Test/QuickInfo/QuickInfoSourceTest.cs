@@ -14,7 +14,6 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Packages;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -66,16 +65,26 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 .Which.ToString().Should().StartWith("as.Date.character(x, ...)");
         }
 
+        [CompositeTest]
+        [InlineData(2, "sin(")]
+        [InlineData(5, "cos(")]
+        [InlineData(8, "cos(")]
+        [InlineData(11, "sin(")]
+        public async Task NestedCallTest(int position, string name) {
+            string content = @"sin(cos(x), y)";
+            var session = await TriggerSessionAsync(content, position);
+            session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith(name);
+        }
 
         [Test]
         public async Task NonUniqueNameTest() {
             string content = @"x <- select()";
 
-            using (var hostScript = new RHostScript(Workflow.RSessions)) {
+            using (new RHostScript(Workflow.RSessions)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 12);
-                var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+                SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().BeEmpty();
@@ -104,7 +113,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 3);
-                var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+                SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().BeEmpty();
@@ -124,16 +133,16 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         }
 
         private async Task<Session> TriggerSessionAsync(string content, int caretPosition) {
-            var s = new Session();
-
-            s.Ast = RParser.Parse(content);
-            s.TextBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var s = new Session {
+                Ast = RParser.Parse(content),
+                TextBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType)
+            };
             QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, EditorShell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(s.TextBuffer, caretPosition);
             s.QuickInfoContent = new List<object>();
 
             quickInfoSession.TriggerPoint = new SnapshotPoint(s.TextBuffer.CurrentSnapshot, caretPosition);
-            s.ApplicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(s.Ast, caretPosition, quickInfoSession, s.QuickInfoContent);
+            s.ApplicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(s.Ast, s.TextBuffer, caretPosition, quickInfoSession, s.QuickInfoContent);
 
             return s;
         }

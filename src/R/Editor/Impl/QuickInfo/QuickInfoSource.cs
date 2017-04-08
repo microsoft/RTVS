@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                     if (document != null) {
                         // Document may be null in REPL window as projections are not
                         // getting set immediately or may change as user moves mouse over.
-                        AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
+                        AugmentQuickInfoSession(document.EditorTree.AstRoot, document.TextBuffer, position,
                                                 session, quickInfoContent, out applicableToSpan,
                                                 (object o, string p) => RetriggerQuickInfoSession(o as IQuickInfoSession, p), null);
                     }
@@ -67,11 +67,11 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
         }
 
-        internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
+        internal bool AugmentQuickInfoSession(AstRoot ast, ITextBuffer textBuffer, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
                                               Action<object, string> retriggerAction, string packageName) {
             int signatureEnd = position;
-            var snapshot = session.TextView.TextBuffer.CurrentSnapshot;
+            var snapshot = textBuffer.CurrentSnapshot;
             position = Math.Min(signatureEnd, position);
             int start = Math.Min(position, snapshot.Length);
             int end = Math.Min(signatureEnd, snapshot.Length);
@@ -83,16 +83,12 @@ namespace Microsoft.R.Editor.QuickInfo {
 
             // First try name under mouse or caret
             Span span;
-            var line = session.TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(position);
+            var line = snapshot.GetLineFromPosition(position);
             var functionName = TextViewExtensions.GetItemAtPosition(line, position, x => x == RTokenType.Identifier, out span);
             // Verify this is a function
-            var point = REditorDocument.MapPointFromView(session.TextView, new SnapshotPoint(session.TextView.TextBuffer.CurrentSnapshot, position));
-            if (!point.HasValue) {
-                return false;
-            }
 
             IAstNode node;
-            ast.GetPositionNode(point.Value, out node);
+            ast.GetPositionNode(position, out node);
             if (node == null) {
                 return false;
             }
