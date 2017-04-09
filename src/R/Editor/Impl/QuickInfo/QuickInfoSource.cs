@@ -81,6 +81,10 @@ namespace Microsoft.R.Editor.QuickInfo {
             packageName = packageName ?? _packageName;
             _packageName = null;
 ;
+            // Get function name from the AST. We don't use signature support here since
+            // when caret or mouse is inside function arguments such as in abc(de|f(x)) 
+            // it gives information of the outer function since signature is about help
+            // on the function arguments.
             string functionName = GetFunctionName(ast, position);
             if (!string.IsNullOrEmpty(functionName)) {
                 functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);

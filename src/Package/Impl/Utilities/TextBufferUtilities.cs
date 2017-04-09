@@ -34,13 +34,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static ITextBuffer ToITextBuffer(this IVsTextBuffer vsTextBuffer) {
-            return AdaptersFactoryService.GetDocumentBuffer(vsTextBuffer);
+            return vsTextBuffer != null ? AdaptersFactoryService.GetDocumentBuffer(vsTextBuffer) : null;
         }
 
         public static ITextBuffer ToITextBuffer(this IVsTextLayer vsTextLayer) {
             IVsTextLines vsTextLines;
             vsTextLayer.GetBaseBuffer(out vsTextLines);
-
             return vsTextLines.ToITextBuffer();
         }
 

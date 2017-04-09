@@ -32,6 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
         }
 
+        /// <summary>
+        /// Locates document frameby the file path
+        /// </summary>
         public static IVsWindowFrame FindDocumentFrame(this IVsUIShell4 shell, string filePath) {
             return shell.EnumerateWindows(__WindowFrameTypeFlags.WINDOWFRAMETYPE_Document).Where(f => {
                 object docPath;
@@ -40,12 +43,22 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Attempts to determine project (hierarchy) the file belongs to.
+        /// </summary>
         public static bool TryGetUiHierarchy(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsUIHierarchy uiHier, out uint vsItemId, out OLE.Interop.IServiceProvider sp) {
             int docInProject;
             var hr = shellDoc.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out sp, out docInProject);
             return ErrorHandler.Succeeded(hr) && uiHier != null;
         }
 
+        /// <summary>
+        /// Opens file and returns window frame
+        /// </summary>
+        /// <param name="shellDoc">Shell open document interface</param>
+        /// <param name="filePath">File to open. Can be file in project or miscellaneous file.</param>
+        /// <param name="vsWindowFrame">Window frame of the opened file</param>
+        /// <returns>True if file was opened, false otherwise</returns>
         public static bool OpenFile(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsWindowFrame vsWindowFrame) {
             vsWindowFrame = null;
 

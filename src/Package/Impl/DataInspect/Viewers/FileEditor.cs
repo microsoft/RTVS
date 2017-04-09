@@ -103,17 +103,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             private void Show() {
-                IVsWindowFrame vsWindowFrame = null;
                 var filePath = _fileName.NormalizePath();
 
-                if (!File.Exists(filePath)) {
+                if (!_appShell.Services.FileSystem.FileExists(filePath)) {
                     _tcs.TrySetResult(string.Empty);
                     return;
                 }
 
                 // Check if file is already opened
                 var uiShell = _appShell.GetGlobalService<IVsUIShell4>(typeof(SVsUIShell));
-                vsWindowFrame = uiShell.FindDocumentFrame(filePath);
+                var vsWindowFrame = uiShell.FindDocumentFrame(filePath);
                 if (vsWindowFrame == null) {
                     // If not, open it
                     var shellOp = _appShell.GetGlobalService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
