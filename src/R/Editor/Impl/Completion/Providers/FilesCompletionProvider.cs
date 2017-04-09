@@ -13,7 +13,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
