@@ -80,36 +80,13 @@ namespace Microsoft.R.Editor.QuickInfo {
             applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
             packageName = packageName ?? _packageName;
             _packageName = null;
-
-            // First try name under mouse or caret
-            Span span;
-            var line = snapshot.GetLineFromPosition(position);
-            var functionName = TextViewExtensions.GetItemAtPosition(line, position, x => x == RTokenType.Identifier, out span);
-            // Verify this is a function
-
-            IAstNode node;
-            ast.GetPositionNode(position, out node);
-            if (node == null) {
-                return false;
+;
+            string functionName = GetFunctionName(ast, position);
+            if (!string.IsNullOrEmpty(functionName)) {
+                functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
             }
 
-            // In abc(de|f(x)) first find inner function, then outer.
-            ITextRange range;
-            if (node is TokenNode && node.Parent is FunctionCall) {
-                range = node;
-            } else {
-                var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
-                range = fc?.RightOperand as TokenNode;
-            }
-
-            if (range != null) {
-                functionName = ast.TextProvider.GetText(range);
-                if (!string.IsNullOrEmpty(functionName)) {
-                    functionInfo = FunctionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
-                }
-            }
-
-            if (functionInfo == null || functionInfo.Signatures == null) {
+            if (functionInfo?.Signatures == null) {
                 return false;
             }
 
@@ -135,6 +112,24 @@ namespace Microsoft.R.Editor.QuickInfo {
             return false;
         }
         #endregion
+
+        private string GetFunctionName(AstRoot ast, int position) {
+            IAstNode node;
+            ast.GetPositionNode(position, out node);
+            if (node == null) {
+                return null;
+            }
+
+            // In abc(de|f(x)) first find inner function, then outer.
+            ITextRange range;
+            if (node is TokenNode && node.Parent is FunctionCall) {
+                range = node;
+            } else {
+                var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+                range = fc?.RightOperand as TokenNode;
+            }
+            return range != null ? ast.TextProvider.GetText(range) : null;
+        }
 
         private void RetriggerQuickInfoSession(IQuickInfoSession session, string packageName) {
             if (session != null && !session.IsDismissed) {
