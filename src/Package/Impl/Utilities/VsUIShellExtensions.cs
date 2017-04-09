@@ -64,13 +64,11 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
                 shellDoc.GetStandardEditorFactory(0, ref editorType, filePath, ref logView, out physicalView, out ef);
                 if (ef != null) {
-                    VsShellUtilities.OpenAsMiscellaneousFile(ServiceProvider.GlobalProvider, filePath, caption, editorType,
-                       physicalView, VSConstants.LOGVIEWID.TextView_guid);
-
-                    var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell4;
-                    vsWindowFrame = uiShell?.FindDocumentFrame(filePath);
+                    VsShellUtilities.OpenDocumentWithSpecificEditor(ServiceProvider.GlobalProvider, filePath, editorType,
+                       VSConstants.LOGVIEWID.TextView_guid, out uiHier, out itemid, out vsWindowFrame);
                 }
             }
+            vsWindowFrame?.Show();
             return vsWindowFrame != null;
         }
     }

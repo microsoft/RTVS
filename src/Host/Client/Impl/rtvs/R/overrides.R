@@ -66,7 +66,7 @@ edit_file <- function(name = NULL, file = NULL, title = NULL) {
     }
     if(!is.null(source)) {
         source <- gsub("\r", "", source)
-        result <- try(eval.parent(parse(text = source)), silent = TRUE);
+        result <- try(eval.parent(parse(text = source)));
         return(result);
     }
     edit(name, file, title, editor = defaultEditor);
