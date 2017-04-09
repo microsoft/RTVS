@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
@@ -27,6 +30,48 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     yield return frame;
                 }
             }
+        }
+
+        public static IVsWindowFrame FindDocumentFrame(this IVsUIShell4 shell, string filePath) {
+            return shell.EnumerateWindows(__WindowFrameTypeFlags.WINDOWFRAMETYPE_Document).Where(f => {
+                object docPath;
+                f.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out docPath);
+                return string.Compare(docPath as string, filePath, StringComparison.OrdinalIgnoreCase) == 0;
+            }).FirstOrDefault();
+        }
+
+        public static bool TryGetUiHierarchy(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsUIHierarchy uiHier, out uint vsItemId, out OLE.Interop.IServiceProvider sp) {
+            int docInProject;
+            var hr = shellDoc.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out sp, out docInProject);
+            return ErrorHandler.Succeeded(hr) && uiHier != null;
+        }
+
+        public static bool OpenFile(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsWindowFrame vsWindowFrame) {
+            vsWindowFrame = null;
+
+            var logView = VSConstants.LOGVIEWID.TextView_guid;
+            var caption = Path.GetFileName(filePath);
+            IVsUIHierarchy uiHier;
+            uint itemid;
+            OLE.Interop.IServiceProvider sp;
+
+            if (shellDoc.TryGetUiHierarchy(filePath, out uiHier, out itemid, out sp)) {
+                shellDoc.OpenStandardEditor((uint)__VSOSEFLAGS.OSE_ChooseBestStdEditor, filePath, ref logView, caption, uiHier, itemid, IntPtr.Zero, sp, out vsWindowFrame);
+            } else {
+                IVsEditorFactory ef;
+                Guid editorType = Guid.Empty;
+                string physicalView;
+
+                shellDoc.GetStandardEditorFactory(0, ref editorType, filePath, ref logView, out physicalView, out ef);
+                if (ef != null) {
+                    VsShellUtilities.OpenAsMiscellaneousFile(ServiceProvider.GlobalProvider, filePath, caption, editorType,
+                       physicalView, VSConstants.LOGVIEWID.TextView_guid);
+
+                    var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell4;
+                    vsWindowFrame = uiShell?.FindDocumentFrame(filePath);
+                }
+            }
+            return vsWindowFrame != null;
         }
     }
 }

@@ -6,16 +6,18 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Tasks;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -26,13 +28,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal sealed class FileEditor : IFileEditor {
         private readonly IApplicationShell _appShell;
         private readonly IRToolsSettings _settings;
-        private readonly IVsEditorAdaptersFactoryService _adapterService;
+        private readonly IRInteractiveWorkflow _workflow;
 
         [ImportingConstructor]
-        public FileEditor(IApplicationShell appShell, IRToolsSettings settings, IVsEditorAdaptersFactoryService adapterService) {
+        public FileEditor(IApplicationShell appShell, IRToolsSettings settings, IRInteractiveWorkflowProvider workflowProvider) {
             _appShell = appShell;
             _settings = settings;
-            _adapterService = adapterService;
+            _workflow = workflowProvider.GetOrCreate();
         }
 
         public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -58,13 +60,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
             if (!string.IsNullOrEmpty(fileName)) {
                 try {
-                    if (!Path.IsPathRooted(fileName)) {
+                    if (fileName.StartsWithOrdinal("~\\")) {
+                        var userDirectory = await _workflow.RSession.GetRUserDirectoryAsync(cancellationToken);
+                        fileName = Path.Combine(userDirectory, fileName.Substring(2));
+                    } else if (!Path.IsPathRooted(fileName)) {
                         fileName = Path.Combine(_settings.WorkingDirectory, fileName);
                     }
                 } catch (ArgumentException) {
                     return string.Empty;
                 }
-                return await new FileEditorWindow(_appShell, _adapterService, fileName).ShowAsync(cancellationToken);
+                return await new FileEditorWindow(_appShell, fileName).ShowAsync(cancellationToken);
             }
 
             return string.Empty;
@@ -72,7 +77,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         private class FileEditorWindow : IVsWindowFrameEvents {
             private readonly IApplicationShell _appShell;
-            private readonly IVsEditorAdaptersFactoryService _adapterService;
             private readonly TaskCompletionSource<string> _tcs;
             private readonly string _fileName;
             private volatile IVsWindowFrame _editorFrame;
@@ -80,9 +84,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             private IVsUIShell7 _uiShell;
             private uint _cookie;
 
-            public FileEditorWindow(IApplicationShell appShell, IVsEditorAdaptersFactoryService adapterService, string fileName) {
+            public FileEditorWindow(IApplicationShell appShell, string fileName) {
                 _appShell = appShell;
-                _adapterService = adapterService;
                 _fileName = fileName;
                 _tcs = new TaskCompletionSource<string>();
                 _appShell.Terminating += OnAppTerminating;
@@ -102,36 +105,48 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             private void Show() {
-                IVsTextView view;
-                IVsWindowFrame vsWindowFrame;
+                IVsWindowFrame vsWindowFrame = null;
+                var filePath = _fileName.NormalizePath();
 
-                try {
-                    IVsUIHierarchy hier;
-                    uint itemid;
-                    VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out vsWindowFrame, out view);
-                } catch (Exception ex) {
-                    _appShell.ShowErrorMessage(Resources.Error_ExceptionAccessingPath.FormatInvariant(_fileName, ex.Message));
+                if (!File.Exists(filePath)) {
+                    _tcs.TrySetResult(string.Empty);
+                    return;
+                }
+
+                // Check if file is already opened
+                var uiShell = _appShell.GetGlobalService<IVsUIShell4>(typeof(SVsUIShell));
+                vsWindowFrame = uiShell.FindDocumentFrame(filePath);
+                if (vsWindowFrame == null) {
+                    // If not, open it
+                    var shellOp = _appShell.GetGlobalService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
+                    if (!shellOp.OpenFile(filePath, out vsWindowFrame)) {
+                        // If something failed, just bail. TODO: show error?
+                        _tcs.TrySetResult(string.Empty);
+                        return;
+                    }
+                } else {
+                    // If file is already opened, we can't wait for it to be closed. Just activate and return.
+                    vsWindowFrame.Show();
                     _tcs.TrySetResult(string.Empty);
                     return;
                 }
 
                 _editorFrame = vsWindowFrame;
-                if (view == null || _editorFrame == null) {
-                    _tcs.TrySetResult(string.Empty);
-                    return;
-                }
-
                 if (_tcs.Task.IsCompleted) {
                     Close();
                     return;
                 }
 
-                IVsTextLines vsTextLines;
-                view.GetBuffer(out vsTextLines);
-                _textBuffer = _adapterService.GetDataBuffer(vsTextLines);
-
-                _uiShell = _appShell.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
-                _cookie = _uiShell.AdviseWindowFrameEvents(this);
+                IVsTextLines vsTextLines = null;
+                var view = VsShellUtilities.GetTextView(vsWindowFrame);
+                view?.GetBuffer(out vsTextLines);
+                if (vsTextLines != null) {
+                    _textBuffer = vsTextLines.ToITextBuffer();
+                    _uiShell = _appShell.GetGlobalService<IVsUIShell7>(typeof(SVsUIShell));
+                    _cookie = _uiShell.AdviseWindowFrameEvents(this);
+                } else {
+                    _tcs.TrySetResult(string.Empty);
+                }
             }
 
             private void Close() {
@@ -155,7 +170,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             public void OnFrameDestroyed(IVsWindowFrame frame) {
                 if (frame == _editorFrame) {
                     UnadviseWindowFrameEvents();
-                    _tcs.TrySetResult(_textBuffer.CurrentSnapshot.GetText());
+                    _tcs.TrySetResult(_textBuffer?.CurrentSnapshot.GetText());
                 }
             }
 
