@@ -3,8 +3,9 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -34,9 +35,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Creates image list and image monikers for project icons.
         /// Must be called on UI thread.
         /// </summary>
-        public static void LoadProjectImages() {
+        public static void LoadProjectImages(IServiceContainer services) {
+            services.MainThread().Assert();
+
             if (_monikerImageList == null) {
-                IVsImageService2 imageService = VsAppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+                IVsImageService2 imageService = services.GetService<IVsImageService2>(typeof(SVsImageService));
 
                 _imageList = new ImageList();
                 foreach (var b in _bitmaps) {

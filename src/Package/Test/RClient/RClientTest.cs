@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Registry;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.RClient;
@@ -33,23 +34,21 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
                      .Do(x => telemetryEvents.Add(x.Args()[1] as string));
 
             var coreShell = Substitute.For<ICoreShell>();
-            var services = Substitute.For<ICoreServices>();
-            services.Telemetry.Returns(telemetry);
+            coreShell.Telemetry().Returns(telemetry);
 
             var ps = Substitute.For<IProcessServices>();
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 c.Args()[0].Should().NotBeNull();
             });
-            services.ProcessServices.Returns(ps);
+            coreShell.Process().Returns(ps);
 
-            coreShell.Services.Returns(services);
             coreShell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
 
             var downloader = Substitute.For<IFileDownloader>();
             downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs((string)null);
 
             var inst = new MicrosoftRClientInstaller();
-            inst.LaunchRClientSetup(coreShell, downloader);
+            inst.LaunchRClientSetup(coreShell.Services, downloader);
 
             telemetryEvents.Should().HaveCount(1);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -57,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             downloader.Download(null, null, CancellationToken.None).ReturnsForAnyArgs("Failed");
 
             telemetryEvents.Clear();
-            inst.LaunchRClientSetup(coreShell, downloader);
+            inst.LaunchRClientSetup(coreShell.Services, downloader);
 
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -69,10 +68,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             ps.When(x => x.Start(Arg.Any<string>())).Do(c => {
                 throw new Win32Exception((unchecked((int)0x800704C7)));
             });
-            services.ProcessServices.Returns(ps);
+            coreShell.Process().Returns(ps);
 
             telemetryEvents.Clear();
-            inst.LaunchRClientSetup(coreShell, downloader);
+            inst.LaunchRClientSetup(coreShell.Services, downloader);
 
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
@@ -88,14 +87,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             SqlRClientInstallation.GetRClientPath(tr).Should().Be(rClientRPath);
 
             var shell = Substitute.For<ICoreShell>();
-            shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
-            shell.MainThread.Returns(Thread.CurrentThread);
+            var ui = shell.UI();
+            ui.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell, tr);
-            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+            ui.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
-            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+            ui.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
         }
 
         private RegistryKeyMock[] SimulateRegistryMsRClient(string rClientInstallPath, string rClientRPath) {

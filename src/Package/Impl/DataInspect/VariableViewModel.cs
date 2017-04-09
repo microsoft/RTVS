@@ -4,12 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
@@ -18,7 +19,6 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
-using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
@@ -29,21 +29,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
         private readonly IObjectDetailsViewerAggregator _aggregator;
+
         private IObjectDetailsViewer _detailsViewer;
         private string _title;
         private bool _deleted;
 
-        public VariableViewModel() { Index = -1; }
+        public VariableViewModel(ICoreShell coreShell): base(coreShell?.Services) { Index = -1; }
 
         /// <summary>
         /// Create new instance of <see cref="VariableViewModel"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(IREvaluationResultInfo evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
-            base(evaluation, maxChildrenCount) {
-            _aggregator = aggregator;
-
+        public VariableViewModel(IREvaluationResultInfo evaluation, IServiceContainer services, int index = -1, int? maxChildrenCount = null) :
+            base(evaluation, services, maxChildrenCount) {
+            _aggregator = services.GetService<IObjectDetailsViewerAggregator>();
             Index = index;
             var result = DebugEvaluation as IRValueInfo;
             if (result != null) {
@@ -68,8 +68,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private static Lazy<VariableViewModel> _ellipsis = Lazy.Create(() => {
-            var instance = new VariableViewModel();
+        private static readonly Lazy<VariableViewModel> _ellipsis = Lazy.Create(() => {
+            var instance = new VariableViewModel(null);
             instance.Name = string.Empty;
             instance.Value = Resources.VariableExplorer_Truncated;
             instance.HasChildren = false;
@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public static VariableViewModel Error(string text) {
-            var instance = new VariableViewModel();
+            var instance = new VariableViewModel(null);
             instance.Name = string.Empty;
             instance.Value = text;
             instance.HasChildren = false;
@@ -113,13 +113,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     DimProperty |
                     FlagsProperty |
                     CanCoerceToDataFrameProperty |
-                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
+                    (Services.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
-                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+                var aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], Services, i, GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter
@@ -163,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
-                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 var session = workflow.RSession;
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {
@@ -171,7 +171,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         await e.RespondAsync(rmText);
                     }
                 } catch (RException rex) {
-                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
+                    VsAppShell.Current.ShowErrorMessage(Resources.Error_UnableToDeleteVariable.FormatInvariant(rex.Message));
                 } catch (RHostDisconnectedException) {
                 }
             }

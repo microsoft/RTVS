@@ -12,25 +12,24 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.StatusBar;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using StatusBarControl = System.Windows.Controls.Primitives.StatusBar;
 
 namespace Microsoft.VisualStudio.R.Package.StatusBar {
     [Export(typeof(IStatusBar))]
     internal class VsStatusBar : IStatusBar {
-        private readonly IApplicationShell _shell;
+        private readonly ICoreShell _shell;
         private ItemsControl _itemsControl;
         private Visual _visualRoot;
         private bool _onIdleScheduled;
 
         [ImportingConstructor]
-        public VsStatusBar(IApplicationShell shell) {
+        public VsStatusBar(ICoreShell shell) {
             _shell = shell;
         }
 
         private Visual GetRootVisual() {
-            var shell = _shell.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             IntPtr window;
             shell.GetDialogOwnerHwnd(out window);
 
@@ -47,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             EnsureItemsControlCreated();
 
             _itemsControl.Items.Insert(0, element);
-            return Disposable.Create(() => _shell.DispatchOnUIThread(() => _itemsControl.Items.Remove(element)));
+            return Disposable.Create(() => _shell.MainThread().Post(() => _itemsControl.Items.Remove(element)));
         }
 
         private bool TryAddItemsControlToVisualRoot() {

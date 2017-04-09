@@ -19,7 +19,7 @@ using Microsoft.UnitTests.Core.Mef;
 namespace Microsoft.Languages.Editor.Test.Shell {
     /// <summary>
     /// Composition catalog that is primarily used in interactive tests.
-    /// It is assigned to EditorShell.Current.CompositionService.
+    /// It is assigned to shell.Current.CompositionService.
     /// In interactive tests catalog that also includes host application
     /// objects such as VS components is not suitable as it may be exporting
     /// objects that cannot be instantiated in a limited test environment.
@@ -80,23 +80,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.Platform.VSEditor.Interop.dll"
         };
 
-#if VS14
-        /// <summary>
-        /// VS CPS assemblies
-        /// </summary>
-        private static string[] _cpsAssemblies = {
-            "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
-            "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
-        };
-        /// <summary>
-        /// VS project system assemblies
-        /// </summary>
-        private static string[] _projectAssemblies = {
-            "Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll",
-            "Microsoft.VisualStudio.ProjectSystem.V14Only.dll",
-            "Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll",
-         };
-#else
         /// <summary>
         /// VS project system assemblies
         /// </summary>
@@ -106,7 +89,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
          };
-#endif
+
         /// <summary>
         /// Additional assemblies supplied by the creator class
         /// </summary>
@@ -141,12 +124,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
                 var assemblies = new List<string>();
                 assemblies.AddRange(_coreEditorAssemblies);
-#if VS14
-                assemblies.AddRange(_cpsAssemblies);
                 assemblies.AddRange(_projectAssemblies);
-#else
-                assemblies.AddRange(_projectAssemblies);
-#endif
                 assemblies.AddRange(_privateEditorAssemblies);
                 assemblies.AddRange(_rtvsEditorAssemblies);
                 assemblies.AddRange(_additionalAssemblies);

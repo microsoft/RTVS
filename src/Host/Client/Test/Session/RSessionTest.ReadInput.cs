@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
@@ -24,9 +25,9 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public ReadInput(CoreServicesFixture coreServices, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+            public ReadInput(ServiceManagerFixture services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
-                _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(ReadInput));
+                _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(ReadInput));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 _callback = new RSessionCallbackStub();
             }

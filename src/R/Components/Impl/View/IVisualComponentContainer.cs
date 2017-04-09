@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Design;
 using System.Windows;
+using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.R.Components.View {
     /// <summary>
@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.View {
 
         void Hide();
         void Show(bool focus, bool immediate);
-        void ShowContextMenu(CommandID commandId, Point position);
+        void ShowContextMenu(CommandId commandId, Point position);
         void UpdateCommandStatus(bool immediate);
     }
 }

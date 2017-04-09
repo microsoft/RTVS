@@ -11,8 +11,6 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using NSubstitute;
 using Microsoft.R.Components.Application.Configuration;
-#if VS14
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]

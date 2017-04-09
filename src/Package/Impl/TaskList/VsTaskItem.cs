@@ -2,64 +2,66 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.TaskList;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.TaskList {
-    class VsTaskItem : ErrorTask {
-        private IEditorTaskListItem _item;
-        private IEditorTaskListItemSource _source;
+    internal sealed class VsTaskItem : ErrorTask {
+        private readonly IEditorTaskListItem _item;
+        private readonly IEditorTaskListItemSource _source;
+        private readonly IServiceContainer _services;
 
-        public VsTaskItem(IEditorTaskListItem item, IEditorTaskListItemSource source) {
+        public VsTaskItem(IEditorTaskListItem item, IEditorTaskListItemSource source, IServiceContainer services) {
             _item = item;
             _source = source;
+            _services = services;
 
             Update();
         }
 
         public bool Update() {
-            int oldLine = base.Line;
-            int oldColumn = base.Column;
-            string oldText = base.Text;
-            string oldDocument = base.Document;
-            TaskErrorCategory oldErrorCategory = base.ErrorCategory;
-            IVsHierarchy oldHierarchy = base.HierarchyItem;
+            var oldLine = base.Line;
+            var oldColumn = base.Column;
+            var oldText = base.Text;
+            var oldDocument = base.Document;
+            var oldErrorCategory = base.ErrorCategory;
+            var oldHierarchy = base.HierarchyItem;
 
             // VS wants 0-based line and column, but IWebTaskListItemSource utilize 1-based
             // line and column for WebMatrix compatability. So we need to subtract 1 here.
-            base.Line = _item.Line - 1;
-            base.Column = _item.Column - 1;
-            base.Text = _item.Description;
-            base.Document = _item.FileName;
+            Line = _item.Line - 1;
+            Column = _item.Column - 1;
+            Text = _item.Description;
+            Document = _item.FileName;
 
             switch (_item.TaskType) {
                 case TaskType.Warning:
-                    base.ErrorCategory = TaskErrorCategory.Warning;
+                    ErrorCategory = TaskErrorCategory.Warning;
                     break;
 
                 case TaskType.Informational:
-                    base.ErrorCategory = TaskErrorCategory.Message;
+                    ErrorCategory = TaskErrorCategory.Message;
                     break;
 
                 default:
-                    base.ErrorCategory = TaskErrorCategory.Error;
+                    ErrorCategory = TaskErrorCategory.Error;
                     break;
             }
 
             IVsHierarchy hierarchy = _source.TextBuffer.GetHierarchy();
             base.HierarchyItem = hierarchy;
 
-            return oldLine != base.Line ||
-                   oldColumn != base.Column ||
-                   oldText != base.Text ||
-                   oldDocument != base.Document ||
-                   oldErrorCategory != base.ErrorCategory ||
-                   oldHierarchy != base.HierarchyItem;
+            return oldLine != Line ||
+                   oldColumn != Column ||
+                   oldText != Text ||
+                   oldDocument != Document ||
+                   oldErrorCategory != ErrorCategory ||
+                   oldHierarchy != HierarchyItem;
         }
 
         public int HasHelp(out int pfHasHelp) {
@@ -96,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
 
                         var endLine = snapshot.GetLineFromPosition(end);
 
-                        var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
+                        var textManager = _services.GetService<IVsTextManager>(typeof(SVsTextManager));
                         var textLines = textView.TextBuffer.GetBufferAdapter<IVsTextLines>();
 
                         textManager.NavigateToLineAndColumn(textLines, VSConstants.LOGVIEWID_TextView,

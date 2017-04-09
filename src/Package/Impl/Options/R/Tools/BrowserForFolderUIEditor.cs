@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
@@ -18,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             try {
                 currentDirectory = Path.IsPathRooted(currentDirectory) ? currentDirectory : null;
             } catch(ArgumentException) { }
-            var result = VsAppShell.Current.FileDialog.ShowBrowseDirectoryDialog(currentDirectory);
+            var result = VsAppShell.Current.FileDialog().ShowBrowseDirectoryDialog(currentDirectory);
             return !string.IsNullOrEmpty(result) ? result : currentDirectory;
         }
     }

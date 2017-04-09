@@ -2,29 +2,28 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
-    public sealed class SurveyNewsCommand : MenuCommand {
-        private static ICoreShell _coreShell;
-        public SurveyNewsCommand(ICoreShell coreShell) :
-            base(OnCommand, new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSurveyNews)) {
-            _coreShell = coreShell;
+namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
+    public sealed class SurveyNewsCommand : System.ComponentModel.Design.MenuCommand {
+        private static IServiceContainer _services;
+
+        public SurveyNewsCommand(IServiceContainer services) :
+            base(OnCommand, new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSurveyNews)) {
+            _services = _services ?? services;
         }
 
         public async static void OnCommand(object sender, EventArgs args) {
             try {
-                var service = VsAppShell.Current.ExportProvider.GetExportedValue<ISurveyNewsService>();
+                var service = _services.GetService<ISurveyNewsService>();
                 await service.CheckSurveyNewsAsync(true);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message);
+                _services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNewsCommand exception: " + ex.Message);
             }
         }
     }

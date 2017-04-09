@@ -18,7 +18,7 @@ using Microsoft.R.Host.Protocol;
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
-        private readonly ICoreServices _services;
+        private readonly IServiceContainer _services;
         private readonly object _verificationLock = new object();
         private readonly CancellationToken _cancellationToken;
 
@@ -30,8 +30,8 @@ namespace Microsoft.R.Host.Client.Host {
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
-        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, ICoreServices services, IConsole console, CancellationToken cancellationToken)
-            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services.Security, services.MainThread, console), services.Log, console) {
+        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), services.Log(), console) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;
@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Client.Host {
                 return null;
             }
 
-            return await WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services, _console, cancellationToken);
+            return await WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services.Log(), _console, cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client.Host {
                     Log.Write(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject));
 
                     var message = Resources.CertificateSecurityWarning.FormatInvariant(ConnectionInfo.Uri.Host);
-                    _certificateValidationResult = _services.Security.ValidateX509Certificate(certificate, message);
+                    _certificateValidationResult = _services.Security().ValidateX509Certificate(certificate, message);
                     if (_certificateValidationResult.Value) {
                         _certificateHash = hashString;
                     }

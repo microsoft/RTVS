@@ -6,23 +6,28 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     [Export(typeof(ISurveyNewsOptions))]
     internal class SurveyNewsOptions : ISurveyNewsOptions {
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get { return RToolsSettings.Current.SurveyNewsCheck; }
+        private readonly IRToolsSettings _settings;
+
+        [ImportingConstructor]
+        public SurveyNewsOptions(ICoreShell coreShell) {
+            _settings = coreShell.GetService<IRToolsSettings>();
         }
+
+        public SurveyNewsPolicy SurveyNewsCheck => _settings.SurveyNewsCheck;
 
         public DateTime SurveyNewsLastCheck {
-            get { return RToolsSettings.Current.SurveyNewsLastCheck; }
-            set { RToolsSettings.Current.SurveyNewsLastCheck = value; }
+            get { return _settings.SurveyNewsLastCheck; }
+            set { _settings.SurveyNewsLastCheck = value; }
         }
 
-        public string IndexUrl { get { return RToolsSettings.Current.SurveyNewsIndexUrl; } }
-
-        public string FeedUrl { get { return RToolsSettings.Current.SurveyNewsFeedUrl; } }
+        public string IndexUrl => _settings.SurveyNewsIndexUrl;
+        public string FeedUrl => _settings.SurveyNewsFeedUrl;
 
         public string CannotConnectUrl {
             get {

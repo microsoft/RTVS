@@ -146,24 +146,16 @@ namespace Microsoft.Languages.Editor.Application.Controller {
                     && !_textView.Properties.TryGetProperty("BraceCompletionManager", out _manager)) {
                     _manager = null;
                 }
-
                 return _manager;
             }
         }
 
-        private bool IsCompletionActive {
-            get {
-                return CompletionBroker.IsCompletionActive(_textView);
-            }
-        }
+        private bool IsCompletionActive => CompletionBroker.IsCompletionActive(_textView);
 
         private ICompletionBroker _completionBroker;
         private ICompletionBroker CompletionBroker {
             get {
-                if (_completionBroker == null) {
-                    _completionBroker = _coreShell.ExportProvider.GetExportedValue<ICompletionBroker>();
-                }
-
+                _completionBroker = _completionBroker ?? _coreShell.GetService<ICompletionBroker>();
                 return _completionBroker;
             }
         }

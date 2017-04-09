@@ -7,10 +7,11 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
@@ -33,11 +34,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Collection of top-level variables
         /// </summary>
-        private Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
+        private readonly Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
+        private readonly ICoreShell _coreShell;
         private bool _updating;
 
         [ImportingConstructor]
-        public WorkspaceVariableProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
+        public WorkspaceVariableProvider(ICoreShell coreShell) : base(coreShell.GetService<IRInteractiveWorkflowProvider>()) {
+            _coreShell = coreShell;
+        }
 
         #region IVariablesProvider
         /// <summary>
@@ -161,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             DimProperty |
                             FlagsProperty;
                         var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
-                        var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
+                        var e = new RSessionDataObject(evaluation, _coreShell.Services);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();
 
@@ -192,9 +196,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             public string Description { get; } = string.Empty;
-
             public NamedItemType ItemType { get; }
-
             public string Name { get; }
         }
     }

@@ -87,6 +87,10 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.Windows.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Broker\Impl\Microsoft.R.Host.Broker.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
       <Name>Microsoft.R.Host.Broker</Name>

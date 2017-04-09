@@ -2,12 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Reflection;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Extensions {
     public static class SettingsExtensions {
         public static void LoadPropertyValues(this ISettingsStorage settings, object o) {
-            var properties = o.GetType().GetProperties();
+            var properties = o.GetType().GetTypeInfo().GetProperties();
             foreach (var p in properties) {
                 if (settings.SettingExists(p.Name)) {
                     try {

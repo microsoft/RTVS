@@ -6,16 +6,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
     public class RPlotHistoryViewModel : BindableBase, IRPlotHistoryViewModel {
         private readonly IRPlotManager _plotManager;
-        private readonly ICoreShell _shell;
+        private readonly IMainThread _mainThread;
         private readonly DisposableBag _disposableBag;
         private IRPlotHistoryEntryViewModel _selectedPlot;
         private int _thumbnailSize = DefaultThumbnailSize;
@@ -25,17 +26,12 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         private const int DefaultThumbnailSize = 96;
         private const int ThumbnailSizeIncrement = 48;
 
-        public RPlotHistoryViewModel(IRPlotManager plotManager, ICoreShell shell) {
-            if (plotManager == null) {
-                throw new ArgumentNullException(nameof(plotManager));
-            }
-
-            if (shell == null) {
-                throw new ArgumentNullException(nameof(shell));
-            }
+        public RPlotHistoryViewModel(IRPlotManager plotManager, IMainThread mainThread) {
+            Check.ArgumentNull(nameof(plotManager), plotManager);
+            Check.ArgumentNull(nameof(mainThread), mainThread);
 
             _plotManager = plotManager;
-            _shell = shell;
+            _mainThread = mainThread;
 
             _disposableBag = DisposableBag.Create<RPlotHistoryViewModel>()
                 .Add(() => _plotManager.DeviceAdded -= DeviceAdded)
@@ -47,7 +43,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             foreach (var group in _plotManager.GetAllPlots().GroupBy(p => p.ParentDevice)) {
                 SubscribeDeviceEvents(group.Key);
                 foreach (var plot in group) {
-                    Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _shell, plot, plot.Image));
+                    Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _mainThread, plot, plot.Image));
                 }
             }
         }
@@ -69,7 +65,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void DecreaseThumbnailSize() {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             if (ThumbnailSize > MinThumbnailSize) {
                 ThumbnailSize -= ThumbnailSizeIncrement;
@@ -77,7 +73,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void IncreaseThumbnailSize() {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             if (ThumbnailSize < MaxThumbnailSize) {
                 ThumbnailSize += ThumbnailSizeIncrement;
@@ -85,7 +81,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void SelectEntry(IRPlot plot) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             foreach (var entry in Entries) {
                 if (entry.Plot == plot) {
@@ -100,7 +96,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void AddOrUpdate(IRPlot plot, BitmapImage plotImage) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             // Some error messages coming from the host may not have a plot id
             // associated with them. We never want to add a history entry in that case.
@@ -118,14 +114,14 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                     entry.PlotImage = plotImage;
                 }
             } else {
-                Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _shell, plot, plotImage));
+                Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _mainThread, plot, plotImage));
             }
 
             OnPropertyChanged(nameof(ShowWatermark));
         }
 
         private void Remove(Guid plotId) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             var t = new List<string>();
             var plot = Entries.SingleOrDefault(p => p.Plot.PlotId == plotId);
@@ -137,7 +133,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void RemoveAll(Guid deviceId) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
 
             foreach (var remove in Entries.Where(e => e.Plot.ParentDevice.DeviceId == deviceId).ToArray()) {
                 Entries.Remove(remove);
@@ -147,7 +143,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void DeviceRemoved(object sender, RPlotDeviceEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _mainThread.Post(() => {
                 RemoveAll(e.Device.DeviceId);
             });
             UnsubscribeDeviceEvents(e.Device);
@@ -172,13 +168,13 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void PlotRemoved(object sender, RPlotEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _mainThread.Post(() => {
                 Remove(e.Plot.PlotId);
             });
         }
 
         private void DeviceNumChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _mainThread.Post(() => {
                 var device = (IRPlotDevice)sender;
                 foreach (var entry in Entries.Where(entry => entry.Plot.ParentDevice == device)) {
                     entry.RefreshDeviceName();
@@ -187,7 +183,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void ActivePlotChanged(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _mainThread.Post(() => {
                 var device = (IRPlotDevice)sender;
                 var plot = device.ActivePlot;
                 if (plot != null) {
@@ -197,7 +193,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         private void DeviceCleared(object sender, EventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _mainThread.Post(() => {
                 var device = (IRPlotDevice)sender;
                 RemoveAll(device.DeviceId);
             });

@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         POINTS[] GetShortPositionFromInputArg(IntPtr location) {
             POINTS[] position = null;
 
-            //the coordiantes are passed as variants containing short values. The y coordinate is an offset sizeof(variant)
+            //the coordinates are passed as variants containing short values. The y coordinate is an offset sizeof(variant)
             //from pvaIn (which is 16 bytes)
             object xCoordinateVariant = Marshal.GetObjectForNativeVariant(location);
             object yCoordinateVariant = Marshal.GetObjectForNativeVariant(new IntPtr(location.ToInt32() + 16));

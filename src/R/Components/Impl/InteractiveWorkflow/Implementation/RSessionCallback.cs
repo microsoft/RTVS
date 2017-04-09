@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _coreShell = coreShell;
             _fileSystem = fileSystem;
 
-            var workflowProvider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflowProvider = _coreShell.GetService<IRInteractiveWorkflowProvider>();
             _workflow = workflowProvider.GetOrCreate();
         }
 
@@ -59,7 +60,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (_settings.HelpBrowserType == HelpBrowserType.External) {
                 Process.Start(url);
             } else {
-                var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
+                var container = _coreShell.GetService<IHelpVisualComponentContainerFactory>().GetOrCreate();
                 container.Component.Navigate(url);
             }
         }
@@ -81,7 +82,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
-            _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
+            _coreShell.MainThread().Post(() => _interactiveWindow.Write(prompt));
             return Task.Run(() => {
                 using (var reader = _interactiveWindow.ReadStandardInput()) {
                     return reader != null ? Task.FromResult(reader.ReadToEnd()) : Task.FromResult("\n");
@@ -97,18 +98,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
-            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            var viewer = _coreShell.GetService<IObjectViewer>();
             return viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title, cancellationToken) ?? Task.CompletedTask;
         }
 
         public async Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await _coreShell.SwitchToMainThreadAsync(cancellationToken);
-            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
+            var containerFactory = _coreShell.GetService<IRPackageManagerVisualComponentContainerFactory>();
             _workflow.Packages.GetOrCreateVisualComponent(containerFactory).Container.Show(focus: true, immediate: false);
         }
 
         public async Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) {
-            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            var viewer = _coreShell.GetService<IObjectViewer>();
             var task = Task.CompletedTask;
 
             if (_session.IsRemote) {
@@ -127,7 +128,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            var editor = _coreShell.ExportProvider.GetExportedValue<IFileEditor>();
+            var editor = _coreShell.GetService<IFileEditor>();
 
             if (!string.IsNullOrEmpty(content)) {
                 return await editor.EditFileAsync(content, null, cancellationToken);
@@ -162,7 +163,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             try {
                 var message = Resources.Progress_FetchingFile.FormatInvariant(remoteFileName);
-                _coreShell.ProgressDialog.Show(async (progress, ct) => {
+                _coreShell.ProgressDialog().Show(async (progress, ct) => {
                     using (DataTransferSession dts = new DataTransferSession(_session, _fileSystem)) {
                         await dts.FetchAndDecompressFileAsync(remoteBlobId, localPath, progress, message, cancellationToken);
                     }
@@ -178,12 +179,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Resources.ResourceManager.GetString(id, Resources.Culture);
 
         public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
-            var notifications = _coreShell.ExportProvider.GetExportedValue<IPackageInstallationNotifications>();
+            var notifications = _coreShell.GetService<IPackageInstallationNotifications>();
             return notifications.BeforePackagesInstalledAsync(cancellationToken);
         }
 
         public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
-            var notifications = _coreShell.ExportProvider.GetExportedValue<IPackageInstallationNotifications>();
+            var notifications = _coreShell.GetService<IPackageInstallationNotifications>();
             return notifications.AfterPackagesInstalledAsync(cancellationToken);
         }
     }

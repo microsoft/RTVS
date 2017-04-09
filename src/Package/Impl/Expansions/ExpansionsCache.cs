@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -30,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         public static void Load() {
             IVsExpansionManager expansionManager;
-            var textManager2 = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager2 = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
             textManager2.GetExpansionManager(out expansionManager);
             _instance = new ExpansionsCache(expansionManager);
         }

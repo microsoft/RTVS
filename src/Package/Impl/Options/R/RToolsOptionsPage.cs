@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
@@ -21,11 +22,12 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
+        private readonly IRSettings _settings;
         private readonly SettingsHolder _holder;
 
         public RToolsOptionsPage() {
-            var settings = VsAppShell.Current.ExportProvider.GetExportedValue<IRSettings>();
-            _holder = new SettingsHolder(settings);
+            _settings = VsAppShell.Current.GetService<IRSettings>();
+            _holder = new SettingsHolder(_settings);
         }
 
         [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]

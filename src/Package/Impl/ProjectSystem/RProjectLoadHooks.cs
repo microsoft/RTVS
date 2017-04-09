@@ -7,13 +7,12 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Extensions;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -22,20 +21,12 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
-using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.ProjectSystem.VS;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Common.Core.Logging;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
-#endif
-#if VS15
-using Microsoft.VisualStudio.ProjectSystem.VS;
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
-#endif
 
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -92,19 +83,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriter;
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.FileSystem(), new RMsBuildFileSystemFilter(), coreShell.Log());
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Services.Log);
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Log());
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
-#if VS14
-        [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
-#else
         [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
                          completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration,
                          RequiresUIThread = false)]
-#endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
@@ -135,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // https://github.com/Microsoft/RTVS/issues/2223
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                bool loadDefaultWorkspace = _coreShell.Services.FileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+                bool loadDefaultWorkspace = _coreShell.FileSystem().FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
 
                 if (loadDefaultWorkspace) {
                     await _session.LoadWorkspaceAsync(rdataPath);
@@ -158,13 +145,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await _surveyNews.CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
+                _coreShell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
             }
         }
 
         private void FileWatcherError(object sender, EventArgs args) {
             _fileWatcher.Error -= FileWatcherError;
-            _coreShell.DispatchOnUIThread(() => {
+            _coreShell.MainThread().Post(() => {
                 foreach (var iVsProjectLazy in _cpsIVsProjects) {
                     IVsProject iVsProject;
                     try {
@@ -177,7 +164,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         continue;
                     }
 
-                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+                    var solution = _coreShell.GetService<IVsSolution>(typeof(SVsSolution));
                     solution.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
                     return;
                 }
@@ -206,7 +193,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 
-            if (!_coreShell.Services.FileSystem.DirectoryExists(_projectDirectory)) {
+            if (!_coreShell.FileSystem().DirectoryExists(_projectDirectory)) {
                 return;
             }
 

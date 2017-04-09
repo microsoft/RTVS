@@ -29,6 +29,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
+        private readonly IActionLog _log;
         private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
         private readonly DisposableBag _disposableBag;
@@ -54,10 +55,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _shell = interactiveWorkflow.Shell;
-            _securityService = _shell.Services.Security;
+            _securityService = _shell.GetService<ISecurityService>();
+            _log = _shell.GetService<IActionLog>();
 
-            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell);
-            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell);
+            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell.Services);
+            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
@@ -101,20 +103,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 return VisualComponent;
             }
 
-            var visualComponentContainerFactory = _shell.ExportProvider.GetExportedValue<IConnectionManagerVisualComponentContainerFactory>();
+            var visualComponentContainerFactory = _shell.GetService<IConnectionManagerVisualComponentContainerFactory>();
             VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }
 
         public IConnection AddOrUpdateConnection(IConnectionInfo connectionInfo) {
-            var newConnection = new Connection(connectionInfo);
+            var newConnection = Connection.Create(_securityService, connectionInfo);
             var connection = _connections.AddOrUpdate(newConnection.Name, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
             UpdateRecentConnections();
             return connection;
         }
 
         public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var connection = GetConnection(name) ?? _connections.GetOrAdd(name, new Connection(name, path, rCommandLineArguments, isUserCreated));
+            var connection = GetConnection(name) ?? _connections.GetOrAdd(name, Connection.Create(_securityService, name, path, rCommandLineArguments, isUserCreated));
             UpdateRecentConnections();
             return connection;
         }
@@ -146,7 +148,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
-            var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo ?? BrokerConnectionInfo.Create(connection.Name, connection.Path, connection.RCommandLineArguments);
+            var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo 
+                ?? BrokerConnectionInfo.Create(_securityService, connection.Name, connection.Path, connection.RCommandLineArguments);
             return _sessionProvider.TestBrokerConnectionAsync(connection.Name, brokerConnectionInfo, cancellationToken);
         }
 
@@ -200,7 +203,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo) {
             IConnection connection;
-            return _connections.TryGetValue(connectionInfo.Name, out connection) ? connection : new Connection(connectionInfo);
+            return _connections.TryGetValue(connectionInfo.Name, out connection) ? connection : Connection.Create(_securityService, connectionInfo);
         }
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
@@ -218,7 +221,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             return _settings.Connections
-                .Select(c => (IConnection)new Connection(c))
+                .Select(c => (IConnection)Connection.Create(_securityService, c))
                 .ToDictionary(k => k.Name);
         }
 
@@ -260,7 +263,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             // Add newly installed engines
             foreach (var e in localEngines) {
                 if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {
-                    connections[e.Name] = new Connection(e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                    connections[e.Name] = Connection.Create(_securityService, e.Name, e.InstallPath, string.Empty, isUserCreated: false);
                 }
             }
 
@@ -288,7 +291,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var info = new RInterpreterInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }
@@ -298,7 +301,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 Uri uri;
                 return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _shell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
             return false;
         }
@@ -360,7 +363,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SaveActiveConnectionToSettings() {
-            _shell.DispatchOnUIThread(() => _settings.LastActiveConnection = ActiveConnection == null
+            _shell.MainThread().Post(() => _settings.LastActiveConnection = ActiveConnection == null
                 ? null
                 : new ConnectionInfo(ActiveConnection));
         }

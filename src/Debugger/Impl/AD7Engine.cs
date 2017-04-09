@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.ExecutionTracing;
@@ -32,6 +33,7 @@ namespace Microsoft.R.Debugger {
         private Guid _programId;
         private bool _firstContinue = true;
         private bool? _sentContinue = null;
+        private readonly IRInteractiveWorkflow _workflow;
         private volatile RBrowseEventArgs _currentBrowseEventArgs;
         private readonly object _browseLock = new object();
 
@@ -42,6 +44,7 @@ namespace Microsoft.R.Debugger {
         internal IRSession Session { get; private set; }
         internal IRExecutionTracer Tracer { get; private set; }
         internal AD7Thread MainThread { get; private set; }
+        internal ICoreShell Shell => _workflow.Shell;
 
         [Import]
         private IRInteractiveWorkflowProvider WorkflowProvider { get; set; }
@@ -56,6 +59,7 @@ namespace Microsoft.R.Debugger {
             }
 
             compModel.DefaultCompositionService.SatisfyImportsOnce(this);
+            _workflow = WorkflowProvider.GetOrCreate();
         }
 
         public void Dispose() {
@@ -67,7 +71,7 @@ namespace Microsoft.R.Debugger {
             Session.AfterRequest -= Session_AfterRequest;
             Session.Disconnected -= Session_Disconnected;
 
-            var sessionProvider = WorkflowProvider.GetOrCreate().RSessions;
+            var sessionProvider = _workflow.RSessions;
             sessionProvider.BrokerChanged -= SessionProvider_BrokerChanged;
 
             _events = null;
@@ -172,7 +176,7 @@ namespace Microsoft.R.Debugger {
             AD7ProgramCreateEvent.Send(this);
             Send(new AD7LoadCompleteEvent(), AD7LoadCompleteEvent.IID);
 
-            var sessionProvider = WorkflowProvider.GetOrCreate().RSessions;
+            var sessionProvider = _workflow.RSessions;
             sessionProvider.BrokerChanged += SessionProvider_BrokerChanged;
                 
             // Register event handlers after notifying VS that debug engine has loaded. This order is important because

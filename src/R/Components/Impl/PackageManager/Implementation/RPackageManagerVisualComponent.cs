@@ -3,11 +3,10 @@
 
 using System;
 using System.Windows;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.PackageManager.Implementation.ViewModel;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Search;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using PackageManagerControl = Microsoft.R.Components.PackageManager.Implementation.View.PackageManagerControl;
 
@@ -17,10 +16,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly Guid SearchCategory = new Guid("B3A0CF4D-FC8A-47AB-8604-5D2EEF73872F");
         private readonly ISearchControl _searchControl;
 
-        public RPackageManagerVisualComponent(IRPackageManager packageManager, IVisualComponentContainer<IRPackageManagerVisualComponent> container, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
-            _viewModel = new RPackageManagerViewModel(packageManager, settings, coreShell);
+        public RPackageManagerVisualComponent(IRPackageManager packageManager, IVisualComponentContainer<IRPackageManagerVisualComponent> container, ISearchControlProvider searchControlProvider, IServiceContainer services) {
+            _viewModel = new RPackageManagerViewModel(packageManager, services);
             Container = container;
-            var control = new PackageManagerControl(coreShell) {
+            var control = new PackageManagerControl(services) {
                 DataContext = _viewModel,
             };
             Control = control;

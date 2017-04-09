@@ -53,23 +53,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
-    <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(VSCTDefinitions)</VSCTDefinitions>
     <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(VSCTDefinitions)</VSCTDefinitions>
-    <PreBuildEvent>
+    <!--<PreBuildEvent>
       "$(MSBuildProjectDirectory)\UpdateReferences.cmd" "$(MSBuildProjectDirectory)" $(VisualStudioVersion)
-    </PreBuildEvent>
+    </PreBuildEvent>-->
   </PropertyGroup>
-  <!--
-    <ItemGroup Condition="'$(VisualStudioVersion)'=='14.0'" >
-    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Interop.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.V14Only.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll" />
-  </ItemGroup>
-  -->
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -147,7 +136,6 @@
     <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
-    <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
     <Compile Include="Debugger\DataTips\DataTipTextViewFilter.cs" />
     <Compile Include="Debugger\DataTips\DataTipTextViewConnectionListener.cs" />
     <Compile Include="Editors\BaseLanguageService.cs" />
@@ -234,9 +222,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Shell\ApplicationConstants.cs" />
+    <Compile Include="Shell\CompositionCatalog.cs" />
+    <Compile Include="Shell\VsAppShell.Test.cs" />
+    <Compile Include="Shell\VsAppShell.Core.cs" />
+    <Compile Include="Shell\VsAppShell.Lifetime.cs" />
+    <Compile Include="Shell\VsEditorSupport.cs" />
+    <Compile Include="Shell\VsIdleTimeService.cs" />
+    <Compile Include="Shell\VsMainThread.cs" />
+    <Compile Include="Shell\VsPlatformServices.cs" />
+    <Compile Include="Shell\VsUIServices.cs" />
+    <Compile Include="Shell\VsAppShell.Idle.cs" />
+    <Compile Include="Shell\VsAppShell.Services.cs" />
     <Compile Include="Shell\VsFileDialog.cs" />
     <Compile Include="Shell\VsProgressDialog.cs" />
+    <Compile Include="Shell\VsServiceManager.cs" />
     <Compile Include="Shell\VsTaskService.cs" />
     <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
@@ -374,7 +373,6 @@
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
-    <Compile Include="ProjectSystem\ProjectTreeModifier.cs" />
     <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
@@ -479,7 +477,6 @@
     <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
-    <Compile Include="Shell\IApplicationShell.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
     <Compile Include="Packages\R\RLanguageService.cs" />
     <Compile Include="Editors\TextBufferInitializationTracker.cs" />
@@ -523,7 +520,6 @@
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
-    <Compile Include="Utilities\CompletionUtilities.cs" />
     <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
@@ -560,8 +556,6 @@
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="source.extension.15.0.vsixmanifest" />
-    <None Include="source.extension.14.0.vsixmanifest" />
     <EmbeddedResource Include="Resources\RDocumentationFile.ico" />
     <EmbeddedResource Include="Resources\Procedure.ico" />
     <EmbeddedResource Include="Resources\RApplication.ico" />
@@ -636,8 +630,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="project.14.0.json" />
-    <None Include="project.15.0.json" />
     <None Include="project.json" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1055,12 +1047,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Condition="'$(VisualStudioVersion)'=='14.0'" Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Condition="'$(VisualStudioVersion)'=='14.0'" Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -1090,7 +1080,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -1181,6 +1170,10 @@
       <Name>Microsoft.R.Wpf</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -1484,16 +1477,8 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
-    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
-      <InProject>false</InProject>
-    </SignFilesDependsOn>
   </ItemGroup>
-  <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).dll.lcl</TranslationFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
-    </FilesToLocalize>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
@@ -1572,6 +1557,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebUtilities.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Server.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Win32.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Buffers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Collections.Immutable.dll" />
@@ -1582,17 +1568,21 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Composition.Hosting.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Composition.Runtime.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Composition.TypedParts.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.DiagnosticSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Console.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.DiagnosticSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.FileVersionInfo.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Diagnostics.StackTrace.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.IO.Compression.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.IO.Compression.ZipFile.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.IO.FileSystem.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.IO.FileSystem.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Net.Http.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Net.Http.WinHttpHandler.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Numerics.Vectors.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Reflection.Metadata.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Runtime.InteropServices.RuntimeInformation.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\System.Runtime.Serialization.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Security.Cryptography.Algorithms.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Security.Cryptography.Encoding.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Security.Cryptography.Primitives.dll" />
@@ -1605,7 +1595,6 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XmlDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.XDocument.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.DotNet.InternalAbstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
@@ -1667,13 +1656,5 @@
     </XamlRuleToCode>
   </Target>
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.3.25420\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.3.25420\tools\vssdk\Microsoft.VsSDK.targets')" />
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25929-RC2\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25929-RC2\tools\vssdk\Microsoft.VsSDK.targets')" />
-  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
-    <ItemGroup>
-      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
-        <Authenticode>Microsoft</Authenticode>
-        <StrongName>StrongName</StrongName>
-      </FilesToSign>
-    </ItemGroup>
-  </Target>
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.26201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.26201\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>

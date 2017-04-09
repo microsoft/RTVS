@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
-  <DirectoryRef Id="HelpThemesFolder">
-    <Component Id="HelpThemes" Guid="{A997B1DF-3775-4E67-A962-D19670639DB6}">
-      <File Source="$(var.BinDir)\Help\Themes\Light.css" />
-      <File Source="$(var.BinDir)\Help\Themes\Dark.css" />
-    </Component>
-  </DirectoryRef>
-</Include>

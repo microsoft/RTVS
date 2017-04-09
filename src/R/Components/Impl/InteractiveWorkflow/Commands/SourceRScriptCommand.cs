@@ -4,6 +4,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
@@ -60,7 +62,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 return;
             }
 
-            _interactiveWorkflow.Shell.SaveFileIfDirty(filePath);
+            _interactiveWorkflow.Shell.UI().SaveFileIfDirty(filePath);
             activeWindow.Container.Show(focus: false, immediate: false);
 
             var session = _interactiveWorkflow.RSession;

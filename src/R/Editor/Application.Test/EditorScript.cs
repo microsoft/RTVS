@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
@@ -23,12 +23,12 @@ namespace Microsoft.R.Editor.Application.Test {
         private readonly IExportProvider _exportProvider;
         private readonly CoreEditor _coreEditor;
         private readonly IDisposable _containerDisposable;
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
 
         public EditorScript(IExportProvider exportProvider, CoreEditor coreEditor, IDisposable containerDisposable) {
             _exportProvider = exportProvider;
             _coreEditor = coreEditor;
-            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _shell = _exportProvider.GetExportedValue<ICoreShell>();
             _containerDisposable = containerDisposable;
         }
 
@@ -131,7 +131,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
         public IEditorScript DoIdle(int ms = 100) {
             for (var i = 0; i < ms; i += 20) {
-                _editorShell.DoIdle();
+                ((IIdleTimeSource)_shell).DoIdle();
                 UIThreadHelper.Instance.DoEvents(20);
             }
             return this;

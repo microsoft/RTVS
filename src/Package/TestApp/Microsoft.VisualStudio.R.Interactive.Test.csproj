@@ -16,18 +16,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
-    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
-  </PropertyGroup>
   <Import Project="..\..\R.Settings.targets" />
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -66,12 +55,10 @@
     <AppDesigner Include="Properties\" />
     <None Include="Files\VariableGridSorted01.tree" />
     <None Include="Files\VariableGridSorted02.tree" />
-    <None Include="project.15.0.json" />
-    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+    <None Include="..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
   </ItemGroup>
@@ -84,14 +71,7 @@
         </ProjectReference>
       </ItemGroup>
     </When>
-    <When Condition="'$(VisualStudioVersion)'=='15.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
-          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-          <Name>Microsoft.UnitTests.References.15.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
   </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -153,6 +133,14 @@
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
+      <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>

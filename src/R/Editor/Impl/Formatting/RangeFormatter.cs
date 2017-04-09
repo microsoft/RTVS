@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
@@ -19,12 +19,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options, IEditorShell editorShell) {
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options, ICoreShell shell) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int start = formatRange.Start;
             int end = formatRange.End;
 
-            if(!CanFormatRange(textView, textBuffer, formatRange, editorShell)) {
+            if(!CanFormatRange(textView, textBuffer, formatRange, shell)) {
                 return false;
             }
 
@@ -63,10 +63,10 @@ namespace Microsoft.R.Editor.Formatting {
             int startPosition = FindStartOfExpression(textBuffer, startLine.Start);
 
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
-            return FormatRangeExact(textView, textBuffer, formatRange, options, editorShell);
+            return FormatRangeExact(textView, textBuffer, formatRange, options, shell);
         }
 
-        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options, IEditorShell editorShell) {
+        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options, ICoreShell shell) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             Span spanToFormat = new Span(formatRange.Start, formatRange.Length);
             string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
@@ -94,7 +94,7 @@ namespace Microsoft.R.Editor.Formatting {
                     new TextStream(spanText), new TextStream(formattedText),
                     oldTokens, newTokens,
                     formatRange,
-                    Resources.AutoFormat, selectionTracker, editorShell,
+                    Resources.AutoFormat, selectionTracker, shell,
                     () => {
                         var ast = UpdateAst(textBuffer);
                         // Apply indentation
@@ -181,10 +181,10 @@ namespace Microsoft.R.Editor.Formatting {
             return position;
         }
 
-        private static bool CanFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IEditorShell editorShell) {
+        private static bool CanFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, ICoreShell shell) {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, textBuffer, editorShell);
+            var host = ContainedLanguageHost.GetHost(textView, textBuffer, shell);
             if (host != null) {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
 

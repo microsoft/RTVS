@@ -194,7 +194,7 @@ namespace Microsoft.Languages.Core.Utility {
 
                 lock (this.syncLock) {
                     if (this.properties != null) {
-                        foreach (DictionaryEntry property in this.properties) {
+                        foreach (DictionaryEntry property in properties) {
                             propertyList.Add(new KeyValuePair<object, object>(property.Key, property.Value));
                         }
                     }

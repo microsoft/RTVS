@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 
 namespace Microsoft.Languages.Editor.Tasks {
@@ -26,12 +27,12 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
         }
 
-        private readonly IEditorShell _shell;
+        private readonly ICoreShell _shell;
         private readonly List<TaskQueueEntry> _taskQueue = new List<TaskQueueEntry>();
         private readonly IdleTimeAsyncTask[] _workerTasks;
         private bool _connectedToIdle = false;
 
-        public IdleTimeAsyncTaskQueue(IEditorShell shell) {
+        public IdleTimeAsyncTaskQueue(ICoreShell shell) {
             _shell = shell;
             var logicalCpuCount = Environment.ProcessorCount;
 

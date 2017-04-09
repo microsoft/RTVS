@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Wpf;
@@ -15,46 +16,31 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
     /// Interaction logic for ConnectionManagerControl.xaml
     /// </summary>
     public partial class ConnectionManagerControl : UserControl {
-        private readonly ICoreShell _coreShell;
+        private readonly IThemeUtilities _theme;
         private IConnectionManagerViewModel Model => DataContext as IConnectionManagerViewModel;
 
-        public ConnectionManagerControl(ICoreShell coreShell) {
+        public ConnectionManagerControl(IServiceContainer services) {
             InitializeComponent();
 
-            _coreShell = coreShell;
-            _coreShell.UIThemeChanged += OnUIThemeChanged;
+            _theme = services.GetService<IThemeUtilities>();
+            var ui = services.UI();
+            ui.UIThemeChanged += OnUIThemeChanged;
+
             SetImageBackground();
         }
 
-        private void OnUIThemeChanged(object sender, System.EventArgs e) {
-            SetImageBackground();
-        }
+        private void OnUIThemeChanged(object sender, System.EventArgs e) => SetImageBackground();
 
         private void SetImageBackground() {
-            var theme = _coreShell.ExportProvider.GetExportedValue<IThemeUtilities>();
-            theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
-            theme.SetThemeScrollBars(this);
+            _theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
+            _theme.SetThemeScrollBars(this);
         }
 
-        private void ButtonCancel_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelEdit();
-        }
-
-        private void ButtonSave_Click(object sender, RoutedEventArgs e) {
-            Model?.Save(GetConnection(e));
-        }
-
-        private void ButtonConnect_Click(object sender, RoutedEventArgs e) {
-            HandleConnect(e, true);
-        }
-
-        private void ButtonAdd_Click(object sender, RoutedEventArgs e) {
-            Model?.TryEditNew();
-        }
-
-        private void ButtonPath_Click(object sender, RoutedEventArgs e) {
-            Model?.BrowseLocalPath(GetConnection(e));
-        }
+        private void ButtonCancel_Click(object sender, RoutedEventArgs e) => Model?.CancelEdit();
+        private void ButtonSave_Click(object sender, RoutedEventArgs e) => Model?.Save(GetConnection(e));
+        private void ButtonConnect_Click(object sender, RoutedEventArgs e) => HandleConnect(e, true);
+        private void ButtonAdd_Click(object sender, RoutedEventArgs e) => Model?.TryEditNew();
+        private void ButtonPath_Click(object sender, RoutedEventArgs e) => Model?.BrowseLocalPath(GetConnection(e));
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
             if (Model?.TryEdit(GetConnection(e)) == true) {
@@ -62,17 +48,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             }
         }
 
-        private void ButtonDelete_Click(object sender, RoutedEventArgs e) {
-            Model?.TryDelete(GetConnection(e));
-        }
-
-        private void ButtonTestConnection_Click(object sender, RoutedEventArgs e) {
-            Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
-        }
-
-        private void ButtonCancelTestConnection_Click(object sender, RoutedEventArgs e) {
-            Model?.CancelTestConnection();
-        }
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e) => Model?.TryDelete(GetConnection(e));
+        private void ButtonTestConnection_Click(object sender, RoutedEventArgs e) => Model?.TestConnectionAsync(GetConnection(e)).DoNotWait();
+        private void ButtonCancelTestConnection_Click(object sender, RoutedEventArgs e) => Model?.CancelTestConnection();
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
 
@@ -84,7 +62,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
                 list.SelectedItems.Add(model.EditedConnection);
             }
         }
-        
+
         private void Connection_PreviewKeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Delete && !(e.OriginalSource is TextBox)) {
                 Model?.TryDelete(GetConnection(e));
@@ -112,8 +90,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
             }
         }
 
-        private void HandleConnect(RoutedEventArgs e, bool connectToEdited) {
-            Model?.Connect(GetConnection(e), connectToEdited);
-        }
+        private void HandleConnect(RoutedEventArgs e, bool connectToEdited) => Model?.Connect(GetConnection(e), connectToEdited);
     }
 }

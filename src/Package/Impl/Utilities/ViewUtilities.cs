@@ -3,12 +3,12 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -21,9 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         private static IVsEditorAdaptersFactoryService _adaptersFactoryService;
         public static IVsEditorAdaptersFactoryService AdaptersFactoryService {
             get {
-                if (_adaptersFactoryService == null) {
-                    _adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
-                }
+                _adaptersFactoryService = _adaptersFactoryService ?? VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
                 return _adaptersFactoryService;
             }
             internal set {
@@ -44,26 +42,23 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static T GetService<T>(this ITextView textView, Type type = null) where T : class {
-            IVsTextView vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
-
-            return vsTextView != null ? vsTextView.GetService<T>(type) : null;
+            var vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
+            return vsTextView?.GetService<T>(type);
         }
 
         public static T GetService<T>(this IVsTextView vsTextView, Type type = null) where T : class {
             var ows = vsTextView as IObjectWithSite;
-
-            if (type == null)
-                type = typeof(T);
+            type = type ?? typeof(T);
 
             IntPtr sitePtr;
-            Guid serviceProviderGuid = typeof(OLE.Interop.IServiceProvider).GUID;
+            var serviceProviderGuid = typeof(OLE.Interop.IServiceProvider).GUID;
 
             ows.GetSite(ref serviceProviderGuid, out sitePtr);
 
             var oleSP = Marshal.GetObjectForIUnknown(sitePtr) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
             Marshal.Release(sitePtr);
 
-            ServiceProvider sp = new ServiceProvider(oleSP);
+            var sp = new ServiceProvider(oleSP);
             return sp.GetService(type) as T;
         }
 
@@ -74,10 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public static bool GetIUnknownProperty(this IVsWindowFrame windowFrame, __VSFPROPID propid, out object result) {
             result = null;
-
-            if (windowFrame != null)
-                windowFrame.GetProperty((int)propid, out result);
-
+            windowFrame?.GetProperty((int)propid, out result);
             return result != null;
         }
 
@@ -88,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     var pbm = ProjectionBufferManager.FromTextBuffer(textView.TextBuffer);
                     path = pbm?.DiskBuffer.GetFilePath();
                 }
-                if(string.IsNullOrEmpty(path)) {
+                if (string.IsNullOrEmpty(path)) {
                     path = textView.TextBuffer.GetFilePath();
                 }
             }

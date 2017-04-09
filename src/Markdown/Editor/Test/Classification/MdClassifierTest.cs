@@ -42,24 +42,26 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         }
 
         private void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName) {
-            string testFile = fixture.GetDestinationPath(fileName);
-            string content = fixture.LoadDestinationFile(fileName);
+            var testFile = fixture.GetDestinationPath(fileName);
+            var content = fixture.LoadDestinationFile(fileName);
 
-            TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
+            var textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
             var crs = _exportProvider.GetExportedValue<IClassificationTypeRegistryService>();
             var ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
             var cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _exportProvider.GetExportedValue<ICoreShell>());
-            _exportProvider.GetExportedValue<ICoreShell>().CompositionService.SatisfyImportsOnce(classifierProvider);
+            var classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _exportProvider.GetExportedValue<ICoreShell>());
 
-            IClassifier cls = classifierProvider.GetClassifier(textBuffer);
+            var shell = _exportProvider.GetExportedValue<ICoreShell>();
+            var cs = shell.GetService<ICompositionService>();
+            cs.SatisfyImportsOnce(classifierProvider);
 
-            IList<ClassificationSpan> spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));
-            string actual = ClassificationWriter.WriteClassifications(spans);
+            var cls = classifierProvider.GetClassifier(textBuffer);
 
-            string baselineFile = testFile + ".colors";
+            var spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));
+            var actual = ClassificationWriter.WriteClassifications(spans);
+            var baselineFile = testFile + ".colors";
 
             if (_regenerateBaselineFiles) {
                 baselineFile = Path.Combine(fixture.SourcePath, @"Classification\", Path.GetFileName(testFile)) + ".colors";

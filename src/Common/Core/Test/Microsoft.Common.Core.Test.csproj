@@ -40,6 +40,10 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
@@ -56,23 +60,24 @@
     <Compile Include="Disposables\DisposeTokenTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
+    <Compile Include="Fakes\Shell\TestCompositionCatalog.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
     <Compile Include="Fakes\Shell\TestProgressDialog.cs" />
+    <Compile Include="Fakes\Shell\TestServiceManager.cs" />
+    <Compile Include="Fakes\Shell\TestUIServices.cs" />
+    <Compile Include="Fixtures\ServiceManagerFixture.cs" />
+    <Compile Include="Logging\MaxLoggingPermissions.cs" />
+    <Compile Include="Services\ServiceManagerTests.cs" />
     <Compile Include="Stubs\Shell\SecurityServiceStub.cs" />
     <Compile Include="Fakes\Shell\TestTaskService.cs" />
-    <Compile Include="Fixtures\CoreServicesFixture.cs" />
-    <Compile Include="Logging\PermissionsTest.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />
     <Compile Include="Match\MatchNull.cs" />
     <Compile Include="Match\MatchRange.cs" />
     <Compile Include="Match\MatchAny.cs" />
     <Compile Include="Match\MatchMembers.cs" />
-    <Compile Include="Registry\RegistryBaseKeyMock.cs" />
-    <Compile Include="Registry\RegistryKeyMock.cs" />
-    <Compile Include="Registry\RegistryMocks.cs" />
     <Compile Include="Script\EventsPump.cs" />
-    <Compile Include="Fakes\Shell\TestAppConstants.cs" />
+    <Compile Include="Fakes\Shell\TestPlatformServices.cs" />
     <Compile Include="Fakes\Shell\TestCoreShell.cs" />
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />
@@ -90,7 +95,6 @@
     <Compile Include="Threading\MainThreadAwaitableTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
-    <Compile Include="Fakes\Shell\TestCoreServices.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\VisualTreeWriter.cs" />
@@ -110,7 +114,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Fakes\Tasks\" />
     <Folder Include="IO\SubstituteFactories\" />
   </ItemGroup>
   <ItemGroup>

@@ -4,9 +4,9 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -14,23 +14,22 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export]
     [Export(typeof(IActiveRInteractiveWindowTracker))]
     internal class VsActiveRInteractiveWindowTracker : IActiveRInteractiveWindowTracker, IVsWindowFrameEvents {
+        private readonly ICoreShell _coreShell;
         private IInteractiveWindowVisualComponent _lastActiveWindow;
         private bool _isActive;
+
+        [ImportingConstructor]
+        public VsActiveRInteractiveWindowTracker(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
 
         public IInteractiveWindowVisualComponent LastActiveWindow => _lastActiveWindow;
         public bool IsActive => _isActive;
 
-        public void OnFrameCreated(IVsWindowFrame frame) {
-        }
-
-        public void OnFrameDestroyed(IVsWindowFrame frame) {
-        }
-
-        public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) {
-        }
-
-        public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen) {
-        }
+        public void OnFrameCreated(IVsWindowFrame frame) { }
+        public void OnFrameDestroyed(IVsWindowFrame frame) { }
+        public void OnFrameIsVisibleChanged(IVsWindowFrame frame, bool newIsVisible) { }
+        public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen) { }
 
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
             var interactiveWindow = GetComponent(oldFrame);
@@ -50,9 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (oldInteractiveWindow == newInteractiveWindow) {
                 return;
             }
-
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            shell.UpdateCommandUI(1);
+            _coreShell.UI().UpdateCommandStatus(immediate: true);
         }
 
         private IInteractiveWindowVisualComponent GetComponent(IVsWindowFrame frame) {

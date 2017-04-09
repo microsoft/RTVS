@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {

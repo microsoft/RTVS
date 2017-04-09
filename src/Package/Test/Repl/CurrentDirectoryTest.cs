@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -14,7 +14,6 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Threading;
@@ -33,15 +32,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {
-            var connectionsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IConnectionManagerProvider>();
-            var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
-            var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
-            var plotsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPlotManagerProvider>();
+            var connectionsProvider = VsAppShell.Current.GetService<IConnectionManagerProvider>();
+            var historyProvider = VsAppShell.Current.GetService<IRHistoryProvider>();
+            var packagesProvider = VsAppShell.Current.GetService<IRPackageManagerProvider>();
+            var plotsProvider = VsAppShell.Current.GetService<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
             _interactiveWorkflow = UIThreadHelper.Instance.Invoke(() => new RInteractiveWorkflow(
                 connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker,
-                debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current));
+                debuggerModeTracker, VsAppShell.Current));
 
             _sessionProvider = _interactiveWorkflow.RSessions;
         }

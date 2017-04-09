@@ -4,14 +4,14 @@
 using System;
 using System.Globalization;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Information {
     public sealed class HostLoadIndicatorViewModel : BindableBase, IDisposable {
         private readonly IRSessionProvider _sessionProvider;
-        private readonly ICoreShell _shell;
+        private readonly IMainThread _mainThread;
         private readonly DisposableBag _disposableBag;
 
         private double _cpuLoad;
@@ -39,9 +39,9 @@ namespace Microsoft.R.Components.Information {
             set { SetProperty(ref _tooltip, value); }
         }
 
-        public HostLoadIndicatorViewModel(IRSessionProvider sessionProvider, ICoreShell shell) {
+        public HostLoadIndicatorViewModel(IRSessionProvider sessionProvider, IMainThread mainThread) {
             _sessionProvider = sessionProvider;
-            _shell = shell;
+            _mainThread = mainThread;
             _disposableBag = DisposableBag.Create<HostLoadIndicatorViewModel>()
                 .Add(() => _sessionProvider.HostLoadChanged -= OnHostLoadChanged);
 
@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.Information {
         }
 
         private void OnHostLoadChanged(object sender, HostLoadChangedEventArgs e) {
-            _shell.DispatchOnUIThread(() => {
+            _mainThread.Post(() => {
                 CpuLoad = e.HostLoad.CpuLoad;
                 MemoryLoad = e.HostLoad.MemoryLoad;
                 NetworkLoad = e.HostLoad.NetworkLoad;

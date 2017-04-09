@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;

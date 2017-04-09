@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -24,8 +21,8 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public BlobsTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(coreServices);
+        public BlobsTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

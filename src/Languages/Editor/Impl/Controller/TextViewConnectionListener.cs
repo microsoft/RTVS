@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Languages.Editor.Text;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Composition;
 
 namespace Microsoft.Languages.Editor.Controller {
     /// <summary>
@@ -205,7 +204,8 @@ namespace Microsoft.Languages.Editor.Controller {
         /// needs to access native VS adapters, like IVsTextView.
         /// </summary>
         protected virtual void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
-            var listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(Shell.CompositionService, textBuffer.ContentType);
+            var cs = Shell.GetService<ICompositionService>();
+            var listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(cs, textBuffer.ContentType);
 
             foreach (var listener in listeners) {
                 listener.Value.OnTextViewCreated(textView, textBuffer);

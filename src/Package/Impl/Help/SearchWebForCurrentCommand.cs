@@ -3,12 +3,12 @@
 
 using System;
 using System.Text;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using static System.FormattableString;
 
@@ -23,21 +23,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// with OLECMDTEXTF_NAME requesting changing names.
     /// </remarks>
     internal sealed class SearchWebForCurrentCommand : HelpOnCurrentCommandBase {
-        private readonly IWebBrowserServices _webBrowserServices;
+        private readonly IRToolsSettings _settings;
 
         public SearchWebForCurrentCommand(
             IRInteractiveWorkflow workflow,
             IActiveWpfTextViewTracker textViewTracker,
-            IActiveRInteractiveWindowTracker activeReplTracker,
-            IWebBrowserServices webBrowserServices) :
+            IActiveRInteractiveWindowTracker activeReplTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSearchWebForCurrent,
                 workflow, textViewTracker, activeReplTracker, Resources.SearchWebFor) {
-            _webBrowserServices = webBrowserServices;
+            _settings = workflow.Shell.GetService<IRToolsSettings>();
         }
 
         protected override void Handle(string item) {
             // Bing: search?q=item+site%3Astackoverflow.com
-            var tokens = RToolsSettings.Current.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = _settings.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             var sb = new StringBuilder("https://" + Invariant($"www.bing.com/search?q={Uri.EscapeUriString(item)}"));
             foreach (var t in tokens) {
@@ -45,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 sb.Append(Uri.EscapeUriString(t));
             }
 
-            var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+            var wbs = Workflow.Shell.GetService<IWebBrowserServices>();
             wbs.OpenBrowser(WebBrowserRole.Help, sb.ToString());
         }
     }

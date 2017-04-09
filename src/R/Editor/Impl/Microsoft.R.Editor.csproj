@@ -17,15 +17,6 @@
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -57,35 +48,35 @@
     <Compile Include="Comments\CommentCommand.cs" />
     <Compile Include="Comments\RCommenter.cs" />
     <Compile Include="Comments\UncommentCommand.cs" />
-    <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
-    <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
-    <Compile Include="Completion\Definitions\IRHelpSearchTermProvider.cs" />
-    <Compile Include="Completion\Providers\CompletionUtilities.cs" />
-    <Compile Include="Completion\Providers\UserVariablesCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\SnippetCompletionProvider.cs" />
-    <Compile Include="Completion\RCompletion.cs" />
-    <Compile Include="Completion\RFunctionCompletion.cs" />
+    <Compile Include="Completions\AutoCompletion\BraceCompletionContext.cs" />
+    <Compile Include="Completions\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completions\Definitions\IRHelpSearchTermProvider.cs" />
+    <Compile Include="Completions\Providers\CompletionUtilities.cs" />
+    <Compile Include="Completions\Providers\UserVariablesCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\SnippetCompletionProvider.cs" />
+    <Compile Include="Completions\RCompletion.cs" />
+    <Compile Include="Completions\RFunctionCompletion.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\RSessionChangeWatcher.cs" />
     <Compile Include="Data\RSessionDataObject.cs" />
     <Compile Include="Data\IRSessionDataObject.cs" />
-    <Compile Include="Completion\Definitions\IVariablesProvider.cs" />
-    <Compile Include="Completion\Definitions\RCompletionProviderAttribute.cs" />
-    <Compile Include="Completion\Definitions\IRQuickInfoProvider.cs" />
-    <Compile Include="Completion\Definitions\RCompletionContext.cs" />
-    <Compile Include="Completion\Definitions\IRCompletionListProvider.cs" />
-    <Compile Include="Completion\Engine\RCompletionEngine.cs" />
-    <Compile Include="Completion\Providers\CompletionControllerProvider.cs" />
-    <Compile Include="Completion\Providers\CompletionSourceProvider.cs" />
-    <Compile Include="Completion\Providers\FilesCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\ParameterNameCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\PackageFunctionCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\WorkspaceVariableCompletionProvider.cs" />
-    <Compile Include="Completion\RCompletionSet.cs" />
-    <Compile Include="Completion\RCompletionSource.cs" />
-    <Compile Include="Completion\RCompletionController.cs" />
+    <Compile Include="Completions\Definitions\IVariablesProvider.cs" />
+    <Compile Include="Completions\Definitions\RCompletionProviderAttribute.cs" />
+    <Compile Include="Completions\Definitions\IRQuickInfoProvider.cs" />
+    <Compile Include="Completions\Definitions\RCompletionContext.cs" />
+    <Compile Include="Completions\Definitions\IRCompletionListProvider.cs" />
+    <Compile Include="Completions\Engine\RCompletionEngine.cs" />
+    <Compile Include="Completions\Providers\CompletionControllerProvider.cs" />
+    <Compile Include="Completions\Providers\CompletionSourceProvider.cs" />
+    <Compile Include="Completions\Providers\FilesCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\ParameterNameCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\PackagesCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\PackageFunctionCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\KeywordCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\WorkspaceVariableCompletionProvider.cs" />
+    <Compile Include="Completions\RCompletionSet.cs" />
+    <Compile Include="Completions\RCompletionSource.cs" />
+    <Compile Include="Completions\RCompletionController.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Documentation\InsertRoxygenBlockCommand.cs" />
     <Compile Include="Documentation\RoxygenBlock.cs" />
@@ -199,8 +190,6 @@
     <Compile Include="Validation\TreeValidator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.15.0.json" />
-    <None Include="project.14.0.json" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +216,10 @@
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

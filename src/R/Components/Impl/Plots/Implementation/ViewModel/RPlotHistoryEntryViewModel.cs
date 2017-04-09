@@ -5,34 +5,28 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
     public class RPlotHistoryEntryViewModel : BindableBase, IRPlotHistoryEntryViewModel {
         private readonly IRPlotManager _plotManager;
-        private readonly ICoreShell _shell;
+        private readonly IMainThread _mainThread;
         private readonly IRPlot _plot;
         private BitmapImage _plotImage;
         private string _deviceName;
 
-        public RPlotHistoryEntryViewModel(IRPlotManager plotManager, ICoreShell shell, IRPlot plot, BitmapImage plotImage) {
-            if (plotManager == null) {
-                throw new ArgumentNullException(nameof(plotManager));
-            }
-
-            if (shell == null) {
-                throw new ArgumentNullException(nameof(shell));
-            }
-
-            if (plot == null) {
-                throw new ArgumentNullException(nameof(plot));
-            }
+        public RPlotHistoryEntryViewModel(IRPlotManager plotManager, IMainThread mainThread, IRPlot plot, BitmapImage plotImage) {
+            Check.ArgumentNull(nameof(plotManager), plotManager);
+            Check.ArgumentNull(nameof(mainThread), mainThread);
+            Check.ArgumentNull(nameof(plot), plot);
+            Check.ArgumentNull(nameof(plotImage), plotImage);
 
             _plotManager = plotManager;
-            _shell = shell;
+            _mainThread = mainThread;
             _plot = plot;
             _plotImage = plotImage;
 
@@ -52,7 +46,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public void RefreshDeviceName() {
-            _shell.AssertIsOnMainThread();
+            _mainThread.Assert();
             DeviceName = string.Format(CultureInfo.CurrentCulture, Resources.Plots_DeviceName, _plot.ParentDevice.DeviceNum);
         }
 

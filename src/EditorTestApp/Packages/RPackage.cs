@@ -37,9 +37,10 @@ namespace Microsoft.Languages.Editor.Application.Packages {
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(_shell.CompositionService);
-                IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory(_shell));
+                var cs = _shell.GetService<ICompositionService>();
+                var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
+                var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
+                var editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory(_shell));
             }
         }
     }

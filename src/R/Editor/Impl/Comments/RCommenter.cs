@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -20,29 +19,29 @@ namespace Microsoft.R.Editor.Comments {
         /// Continues adding commentcharacter even if line is already commented.
         /// # -> ## -> ### and so on. Matches C# behavior.
         /// </summary>
-        public static void CommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell) {
-            DoActionOnLines(textView, textBuffer, range, editorShell, CommentLine, Resources.CommentSelection);
+        public static void CommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IServiceContainer services) {
+            DoActionOnLines(textView, textBuffer, range, services, CommentLine, Resources.CommentSelection);
         }
 
         /// <summary>
         /// Uncomments selected lines or current line if range has zero length.
         /// Only removes single comment. ### -> ## -> # and so on. Matches C# behavior.
         /// </summary>
-        public static void UncommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell) {
-            DoActionOnLines(textView, textBuffer, range, editorShell, UncommentLine, Resources.UncommentSelection);
+        public static void UncommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IServiceContainer services) {
+            DoActionOnLines(textView, textBuffer, range, services, UncommentLine, Resources.UncommentSelection);
         }
 
-        public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell, Func<ITextSnapshotLine, bool> action, string actionName) {
+        public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, IServiceContainer services, Func<ITextSnapshotLine, bool> action, string actionName) {
             // When user clicks editor margin to select a line, selection actually
             // ends in the beginning of the next line. In order to prevent commenting
             // of the next line that user did not select, we need to shrink span to
             // format and exclude the trailing line break.
 
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(range.End);
+            var snapshot = textBuffer.CurrentSnapshot;
+            var line = snapshot.GetLineFromPosition(range.End);
 
-            int start = range.Start;
-            int end = range.End;
+            var start = range.Start;
+            var end = range.End;
 
             if (line.Start.Position == range.End && range.Length > 0) {
                 if (line.LineNumber > 0) {
@@ -55,9 +54,10 @@ namespace Microsoft.R.Editor.Comments {
             int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(start);
             int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(end);
 
-            using (var undoAction = editorShell.CreateCompoundAction(textView, textBuffer)) {
+            var es = services.GetService<IApplicationEditorSupport>();
+            using (var undoAction = es.CreateCompoundAction(textView, textBuffer)) {
                 undoAction.Open(actionName);
-                bool changed = false;
+                var changed = false;
                 for (int i = startLineNumber; i <= endLineNumber; i++) {
                     line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
                     changed |= action(line);
@@ -80,7 +80,7 @@ namespace Microsoft.R.Editor.Comments {
         }
 
         internal static bool UncommentLine(ITextSnapshotLine line) {
-            string lineText = line.GetText();
+            var lineText = line.GetText();
             if (!string.IsNullOrWhiteSpace(lineText)) {
                 int leadingWsLength = lineText.Length - lineText.TrimStart().Length;
                 if (leadingWsLength < lineText.Length) {

@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
@@ -26,7 +27,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
 
         public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
             base(textView, _commands, false) {
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(shell.CompositionService);
+            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(shell.GetService<ICompositionService>());
             _braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
             TextBuffer = textBuffer;

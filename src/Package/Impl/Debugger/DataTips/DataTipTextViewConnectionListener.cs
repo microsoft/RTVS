@@ -3,9 +3,9 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -16,11 +16,11 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
     [ContentType(RContentTypeDefinition.ContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class DataTipTextViewConnectionListener : IWpfTextViewConnectionListener {
-        private readonly IVsEditorAdaptersFactoryService _adaptersFactoryService;
+        private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public DataTipTextViewConnectionListener(IVsEditorAdaptersFactoryService adaptersFactoryService) {
-            _adaptersFactoryService = adaptersFactoryService;
+        public DataTipTextViewConnectionListener(ICoreShell coreShell) {
+            _coreShell = coreShell;
         }
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
@@ -28,9 +28,10 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
                 return;
             }
 
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>();
-                DataTipTextViewFilter.GetOrCreate(textView, _adaptersFactoryService, debugger);
+            _coreShell.MainThread().Post(() => {
+                var debugger = _coreShell.GetService<IVsDebugger>();
+                var adaptersFactoryService = _coreShell.GetService<IVsEditorAdaptersFactoryService>();
+                DataTipTextViewFilter.GetOrCreate(textView, adaptersFactoryService, debugger);
             });
         }
 

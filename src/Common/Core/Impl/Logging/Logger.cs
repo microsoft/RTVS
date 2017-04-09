@@ -8,7 +8,7 @@ namespace Microsoft.Common.Core.Logging {
     /// <summary>
     /// Application event logger
     /// </summary>
-    internal sealed class Logger : IActionLog, IDisposable {
+    public sealed class Logger : IActionLog, IDisposable {
         private readonly Lazy<IActionLogWriter[]> _logs;
         private readonly ILoggingPermissions _permissions;
         private readonly string _name;
@@ -24,13 +24,13 @@ namespace Microsoft.Common.Core.Logging {
             }
         }
 
-        internal Logger(IActionLogWriter defaultWriter, ILoggingPermissions permissions) {
+        public Logger(IActionLogWriter defaultWriter, ILoggingPermissions permissions) {
             _writer = defaultWriter;
             _permissions = permissions;
             _logs = Lazy.Create(CreateLogs);
         }
 
-        internal Logger(string name, string folder, ILoggingPermissions permissions) {
+        public Logger(string name, string folder, ILoggingPermissions permissions) {
             _name = name;
             _permissions = permissions;
             _logs = Lazy.Create(CreateLogs);

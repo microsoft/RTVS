@@ -2,26 +2,25 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     [Export(typeof(IRHistoryVisualComponentContainerFactory))]
     internal class VsRHistoryVisualComponentContainerFactory : ToolWindowPaneFactory<HistoryWindowPane>, IRHistoryVisualComponentContainerFactory {
         private readonly IRHistoryProvider _historyProvider;
-        private readonly ITextEditorFactoryService _textEditorFactory;
+        private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsRHistoryVisualComponentContainerFactory(ITextEditorFactoryService textEditorFactory, IRHistoryProvider historyProvider) {
-            _textEditorFactory = textEditorFactory;
+        public VsRHistoryVisualComponentContainerFactory(ICoreShell coreShell, IRHistoryProvider historyProvider) : base(coreShell.Services) {
+            _coreShell = coreShell;
             _historyProvider = historyProvider;
         }
 
-        public IVisualComponentContainer<IRHistoryWindowVisualComponent> GetOrCreate(ITextBuffer historyTextBuffer, int instanceId) {
-            return GetOrCreate(instanceId, i => new HistoryWindowPane(historyTextBuffer, _historyProvider, _textEditorFactory));
-        }
+        public IVisualComponentContainer<IRHistoryWindowVisualComponent> GetOrCreate(ITextBuffer historyTextBuffer, int instanceId) 
+            => GetOrCreate(instanceId, i => new HistoryWindowPane(historyTextBuffer, _historyProvider, _coreShell.Services));
     }
 }

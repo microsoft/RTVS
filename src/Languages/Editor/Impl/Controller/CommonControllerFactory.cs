@@ -27,7 +27,7 @@ namespace Microsoft.Languages.Editor.Controller {
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
             var list = new List<ICommandTarget>();
 
-            list.Add(new OutlineController(textView, _shell.ExportProvider.GetExportedValue<IOutliningManagerService>()));
+            list.Add(new OutlineController(textView, _shell.GetService<IOutliningManagerService>()));
             return list;
         }
     }

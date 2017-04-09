@@ -7,5 +7,6 @@ namespace Microsoft.Common.Core.OS {
     public interface IProcessServices {
         Process Start(ProcessStartInfo psi);
         Process Start(string path);
+        string MessageFromExitCode(int processExitCode);
     }
 }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,8 +18,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public Output(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-                _brokerClient = CreateLocalBrokerClient(coreServices, nameof(RSessionTest) + nameof(Output));
+            public Output(ServiceManagerFixture services, TestMethodFixture testMethod) {
+                _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(Output));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 

@@ -395,6 +395,17 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Check out Microsoft&apos;s enhanced R distribution at https://aka.ms/mrclient.
+        ///
+        ///.
+        /// </summary>
+        internal static string Message_SuggestMRO {
+            get {
+                return ResourceManager.GetString("Message_SuggestMRO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Interactive Window is disconnected from R session..
         /// </summary>
         internal static string RHostDisconnected {

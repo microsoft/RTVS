@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Windows;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
@@ -16,17 +17,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private readonly IRPlotManager _plotManager;
         private readonly IRPlotHistoryViewModel _viewModel;
 
-        public RPlotHistoryVisualComponent(IRPlotManager plotManager, IVisualComponentContainer<IRPlotHistoryVisualComponent> container, ICoreShell coreShell) {
-            if (plotManager == null) {
-                throw new ArgumentNullException(nameof(plotManager));
-            }
-
-            if (container == null) {
-                throw new ArgumentNullException(nameof(container));
-            }
+        public RPlotHistoryVisualComponent(IRPlotManager plotManager, IVisualComponentContainer<IRPlotHistoryVisualComponent> container, IServiceContainer services) {
+            Check.ArgumentNull(nameof(plotManager), plotManager);
+            Check.ArgumentNull(nameof(container), container);
+            Check.ArgumentNull(nameof(services), services);
 
             _plotManager = plotManager;
-            _viewModel = new RPlotHistoryViewModel(plotManager, coreShell);
+            _viewModel = new RPlotHistoryViewModel(plotManager, services.MainThread());
 
             var control = new RPlotHistoryControl {
                 DataContext = _viewModel
@@ -50,12 +47,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public IVisualComponentContainer<IVisualComponent> Container { get; }
 
         public IRPlot SelectedPlot {
-            get {
-                return _viewModel.SelectedPlot?.Plot;
-            }
-            set {
-                _viewModel.SelectEntry(value);
-            }
+            get { return _viewModel.SelectedPlot?.Plot; }
+            set { _viewModel.SelectEntry(value); }
         }
 
         public bool CanDecreaseThumbnailSize => _viewModel.ThumbnailSize > RPlotHistoryViewModel.MinThumbnailSize;

@@ -4,17 +4,23 @@
 using System;
 using System.ComponentModel.Composition;
 using EnvDTE;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     [Export]
     [Export(typeof(IDebuggerModeTracker))]
     internal class VsDebuggerModeTracker : IDebuggerModeTracker, IVsDebuggerEvents {
+        private readonly ICoreShell _coreShell;
+
+        [ImportingConstructor]
+        public VsDebuggerModeTracker(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
+
         public int OnModeChange(DBGMODE dbgmodeNew) {
             if (IsInBreakMode) {
                 LeaveBreakMode?.Invoke(this, EventArgs.Empty);
@@ -30,23 +36,15 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return VSConstants.S_OK;
         }
 
-        public bool IsFocusStolenOnBreak =>
-#if VS14
-            true;
-#else
-            false;
-#endif
-
+        public bool IsFocusStolenOnBreak => false;
         public bool IsInBreakMode { get; private set; }
-
         public bool IsDebugging { get; private set; }
 
         public event EventHandler EnterBreakMode;
-
         public event EventHandler LeaveBreakMode;
 
         public bool IsRDebugger() {
-            DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
+            var dte = _coreShell.GetService<DTE>();
             var process2 = dte?.Debugger?.CurrentProcess as EnvDTE80.Process2;
             var transportId = process2?.Transport?.ID;
             Guid transportGuid;

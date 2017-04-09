@@ -67,7 +67,7 @@
       </Menu>
 
       <!-- REPL window toolbar -->
-      <Menu Condition="Defined(VS15)" guid="guidRToolsCmdSet" id="replWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
+      <Menu guid="guidRToolsCmdSet" id="replWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
         <Parent guid="guidRToolsCmdSet" id="0" />
         <CommandFlag>DefaultDocked</CommandFlag>
         <CommandFlag>NoToolbarClose</CommandFlag>
@@ -453,19 +453,8 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
-      <!-- Dev14 groups -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300" Condition="Defined(VS14)">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310" Condition="Defined(VS14)">
-        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
-      </Group>
-      <!-- End Dev14 groups -->
-
-      <!-- Dev15 groups -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" Condition="Defined(VS15)" />
-      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" Condition="Defined(VS15)" />
-      <!-- End Dev15 groups -->
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" />
+      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" />
 
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup" priority="0x0320">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
@@ -587,28 +576,13 @@
       </Group>
 
       <!-- InteractiveWindow Dev15 -->
-      <Group guid="guidRToolsCmdSet" id="replGroup" priority="0x0100" Condition="Defined(VS15)">
+      <Group guid="guidRToolsCmdSet" id="replGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650" Condition="Defined(VS15)">
+      <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650">
         <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
       </Group>
       <!-- End InteractiveWindow Dev15 -->
-
-      <!-- InteractiveWindow Dev14 -->
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0510" Condition="Defined(VS14)">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0520" Condition="Defined(VS14)">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0530" Condition="Defined(VS14)">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
-      <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650" Condition="Defined(VS14)">
-        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
-      </Group>
-      <!-- End InteractiveWindow Dev14 -->
 
       <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
       <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
@@ -645,7 +619,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdPrevHistoryRepl" priority="0x0120" type="Button" Condition="Defined(VS15)">
+      <Button guid="guidRToolsCmdSet" id="icmdPrevHistoryRepl" priority="0x0120" type="Button">
         <Icon guid="ImageCatalogGuid" id="MoveUp"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -656,7 +630,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdNextHistoryRepl" priority="0x0130" type="Button" Condition="Defined(VS15)">
+      <Button guid="guidRToolsCmdSet" id="icmdNextHistoryRepl" priority="0x0130" type="Button">
         <Icon guid="ImageCatalogGuid" id="MoveDown"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -2422,36 +2396,36 @@
       <Parent guid="guidRToolsCmdSet" id="directorySelectSubMenuGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x0100" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="replGroup"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0110" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0110">
       <Parent guid="guidRToolsCmdSet" id="replGroup"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevHistoryRepl" priority="0x0120" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevHistoryRepl" priority="0x0120">
       <Parent guid="guidRToolsCmdSet" id="replGroup"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNextHistoryRepl" priority="0x0130" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdNextHistoryRepl" priority="0x0130">
       <Parent guid="guidRToolsCmdSet" id="replGroup"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0140" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup" priority="0x0140">
       <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0150" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0150">
       <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0160" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0160">
       <Parent guid="guidRToolsCmdSet" id="replWindowToolBarId"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300" Condition="Defined(VS15)">
+    <CommandPlacement guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
     </CommandPlacement>
 
@@ -2938,9 +2912,6 @@
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
       <!-- https://github.com/dotnet/roslyn/blob/master/src/InteractiveWindow/VisualStudio/InteractiveWindow.vsct -->
-      <!-- VS14 only -->
-      <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
-      <!-- End of VS14 only -->
       <IDSymbol name="menuIdInteractiveContextMenu" value="0x2100" />
       <IDSymbol name="cmdidReset" value="0x0105"/>
       <IDSymbol name="cmdidHistoryNext" value="0x0106"/>

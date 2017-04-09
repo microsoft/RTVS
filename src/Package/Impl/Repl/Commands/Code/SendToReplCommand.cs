@@ -2,17 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
@@ -28,10 +27,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            ITextSelection selection = TextView.Selection;
-            ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
-            int position = selection.Start.Position;
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+            var selection = TextView.Selection;
+            var snapshot = TextView.TextBuffer.CurrentSnapshot;
+            var position = selection.Start.Position;
+            var line = snapshot.GetLineFromPosition(position);
 
             var window = _interactiveWorkflow.ActiveWindow;
             if (window == null) {
@@ -62,8 +61,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             // Take focus back if REPL window has stolen it
             if (!TextView.HasAggregateFocus) {
-                IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
-                IVsTextView tv = adapterService.GetViewAdapter(TextView);
+                var adapterService = _interactiveWorkflow.Shell.GetService<IVsEditorAdaptersFactoryService>();
+                var tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }
             

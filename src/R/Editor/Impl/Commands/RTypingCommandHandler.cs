@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -18,9 +18,9 @@ namespace Microsoft.R.Editor.Commands {
     /// to receive typing as commands
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler {
-        private readonly IEditorShell _shell;
+        private readonly ICoreShell _shell;
 
-        public RTypingCommandHandler(ITextView textView, IEditorShell shell)
+        public RTypingCommandHandler(ITextView textView, ICoreShell shell)
             : base(textView) {
             _shell = shell;
         }

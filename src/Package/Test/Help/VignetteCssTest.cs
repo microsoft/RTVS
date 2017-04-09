@@ -2,17 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.R.Package.Help;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Help {
@@ -22,9 +12,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Help {
     public class VignetteCssTest {
         //[Test]
         //public void CssTest() {
-        //    var ctrs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-        //    var tbfs = EditorShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
-        //    var tef = EditorShell.Current.ExportProvider.GetExportedValue<ITextEditorFactoryService>();
+        //    var ctrs = shell.Current.Services.GetService<IContentTypeRegistryService>();
+        //    var tbfs = shell.Current.Services.GetService<ITextBufferFactoryService>();
+        //    var tef = shell.Current.Services.GetService<ITextEditorFactoryService>();
 
         //    var ct = ctrs.GetContentType(RContentTypeDefinition.ContentType);
         //    var tb = tbfs.CreateTextBuffer();
@@ -39,8 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Help {
         //    var iwfp = Substitute.For<IRInteractiveWorkflowProvider>();
         //    iwfp.GetOrCreate().Returns(iwf);
 
-        //    var cfms = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationFormatMapService>();
-        //    var clstrs = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationTypeRegistryService>();
+        //    var cfms = shell.Current.Services.GetService<IClassificationFormatMapService>();
+        //    var clstrs = shell.Current.Services.GetService<IClassificationTypeRegistryService>();
 
         //    var vcb = new VignetteCodeColorBuilder(iwfp, cfms, clstrs);
         //    var cssText = vcb.GetCodeColorsCss();

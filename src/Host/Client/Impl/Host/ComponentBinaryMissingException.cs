@@ -7,12 +7,6 @@ using Microsoft.Common.Core;
 namespace Microsoft.R.Host.Client {
     public class ComponentBinaryMissingException : Exception {
         public ComponentBinaryMissingException(string name)
-            : base(
-#if VS14
-                  Resources.Error_BinaryMissing14.FormatInvariant(name)
-#else
-                  Resources.Error_BinaryMissing15.FormatInvariant(name)
-#endif
-                  ) { }
+            : base(Resources.Error_BinaryMissing15.FormatInvariant(name)) { }
     }
 }

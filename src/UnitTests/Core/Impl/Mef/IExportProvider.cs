@@ -7,9 +7,9 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.UnitTests.Core.Mef {
     public interface IExportProvider : IMethodFixture {
-        T GetExportedValue<T>();
-        T GetExportedValue<T>(string metadataKey, params object[] metadataValues);
-        IEnumerable<Lazy<T>> GetExports<T>();
-        IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>();
+        T GetExportedValue<T>() where T : class;
+        T GetExportedValue<T>(string metadataKey, params object[] metadataValues) where T : class;
+        IEnumerable<Lazy<T>> GetExports<T>() where T : class;
+        IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() where T : class;
     }
 }

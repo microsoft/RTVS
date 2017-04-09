@@ -240,7 +240,7 @@ namespace Microsoft.Languages.Editor.Completion {
         /// Is there an active signature help session? (is the tooltip showing?)
         /// </summary>
         public static bool HasActiveSignatureSession(ITextView textView, ICoreShell shell) {
-            ISignatureHelpBroker broker = shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+            ISignatureHelpBroker broker = shell.GetService<ISignatureHelpBroker>();
             return broker.IsSignatureHelpActive(textView);
         }
 
@@ -254,7 +254,7 @@ namespace Microsoft.Languages.Editor.Completion {
         }
 
         public void DismissQuickInfoSession(ITextView textView) {
-            IQuickInfoBroker broker = Shell.ExportProvider.GetExportedValue<IQuickInfoBroker>();
+            IQuickInfoBroker broker = Shell.GetService<IQuickInfoBroker>();
             var sessions = broker.GetSessions(textView);
             foreach (var s in sessions) {
                 s.Dismiss();
@@ -457,7 +457,7 @@ namespace Microsoft.Languages.Editor.Completion {
 
         public static void DismissSignatureSession(ITextView textView, ICoreShell shell) {
             if (HasActiveSignatureSession(textView, shell)) {
-                ISignatureHelpBroker broker = shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                ISignatureHelpBroker broker = shell.GetService<ISignatureHelpBroker>();
                 broker.DismissAllSessions(textView);
             }
         }

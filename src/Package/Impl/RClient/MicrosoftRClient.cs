@@ -9,6 +9,7 @@ using Microsoft.R.Interpreters;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Support.Settings;
 using Microsoft.Win32;
+using Microsoft.Common.Core.UI;
 
 namespace Microsoft.VisualStudio.R.Package.RClient {
     internal static class MicrosoftRClient {

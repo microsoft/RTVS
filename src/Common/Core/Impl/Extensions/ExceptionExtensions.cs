@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading;
-using Microsoft.Common.Core.Exceptions;
 
 namespace Microsoft.Common.Core {
     public static class ExceptionExtensions {
@@ -11,18 +10,20 @@ namespace Microsoft.Common.Core {
         /// Returns true if an exception should not be handled by logging code.
         /// </summary>
         public static bool IsCriticalException(this Exception ex) {
-            return ex is StackOverflowException ||
-                ex is OutOfMemoryException ||
-                ex is ThreadAbortException ||
-                ex is AccessViolationException ||
-                ex is CriticalException;
+#if NETSTANDARD1_6
+            return ex is OutOfMemoryException;
+#else
+            return ex is StackOverflowException 
+                || ex is OutOfMemoryException 
+                || ex is ThreadAbortException 
+                || ex is AccessViolationException;
+#endif
         }
 
-        public static bool IsProtocolException(this Exception ex) {
-            return ex is IndexOutOfRangeException ||
+        public static bool IsProtocolException(this Exception ex) =>
+                ex is IndexOutOfRangeException ||
                 ex is ArgumentOutOfRangeException ||
                 ex is InvalidCastException ||
                 ex is FormatException;
-        }
     }
 }

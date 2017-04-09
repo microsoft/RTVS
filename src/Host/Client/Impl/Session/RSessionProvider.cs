@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly AsyncReaderWriterLock _connectArwl = new AsyncReaderWriterLock();
 
         private readonly BrokerClientProxy _brokerProxy;
-        private readonly ICoreServices _services;
+        private readonly IServiceContainer _services;
         private readonly IConsole _console;
 
         private volatile bool _isConnected;
@@ -52,7 +52,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
 
-        public RSessionProvider(ICoreServices services, IConsole callback = null) {
+        public RSessionProvider(IServiceContainer services, IConsole callback = null) {
             _console = callback ?? new NullConsole();
             _brokerProxy = new BrokerClientProxy();
             _services = services;
@@ -75,7 +75,7 @@ namespace Microsoft.R.Host.Client.Session {
             var sessions = GetSessions().ToList();
             var stopHostTasks = sessions.Select(session => session.StopHostAsync(false));
             try {
-                _services.Tasks.Wait(Task.WhenAll(stopHostTasks));
+                _services.Tasks().Wait(Task.WhenAll(stopHostTasks));
             } catch (Exception ex) when (!ex.IsCriticalException()) { }
 
             foreach (var session in sessions) {
@@ -336,7 +336,8 @@ namespace Microsoft.R.Host.Client.Session {
 
         private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken) {
             if (!connectionInfo.IsValid) {
-                connectionInfo = BrokerConnectionInfo.Create(connectionInfo.Name, new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath);
+                var path = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+                connectionInfo = BrokerConnectionInfo.Create(_services.Security(), connectionInfo.Name, path);
             }
 
             if (!connectionInfo.IsValid) {

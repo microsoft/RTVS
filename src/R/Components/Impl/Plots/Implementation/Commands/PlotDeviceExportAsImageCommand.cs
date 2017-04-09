@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -24,7 +25,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task InvokeAsync() {
-            string filePath = InteractiveWorkflow.Shell.FileDialog.ShowSaveFileDialog(Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
+            var fd = InteractiveWorkflow.Shell.FileDialog();
+            string filePath = fd.ShowSaveFileDialog(Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
             if (!string.IsNullOrEmpty(filePath)) {
                 string device = DeviceFromFileExtension(filePath);
                 if (!string.IsNullOrEmpty(device)) {

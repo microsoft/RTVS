@@ -7,7 +7,9 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Data.ConnectionUI;
 using Microsoft.Win32;
 
@@ -66,11 +68,11 @@ namespace Microsoft.R.Components.Sql {
         }
 
         internal bool CheckSqlOdbcDriverVersion() {
-            using (var hklm = _coreShell.Services.Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+            using (var hklm = _coreShell.GetService<IRegistry>().OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 using (var odbcKey = hklm.OpenSubKey(@"SOFTWARE\ODBC\ODBCINST.INI\ODBC Driver 13 for SQL Server")) {
                     var driverPath = odbcKey.GetValue("Driver") as string;
                     if (!string.IsNullOrEmpty(driverPath)) {
-                        var fs = _coreShell.Services.FileSystem;
+                        var fs = _coreShell.FileSystem();
                         if (fs.FileExists(driverPath)) {
                             var version = fs.GetFileVersion(driverPath);
                             if (version >= new Version("2015.131.4413.46")) {
@@ -80,14 +82,14 @@ namespace Microsoft.R.Components.Sql {
                     }
                 }
             }
-            var link = FormatLocalizedLink(_coreShell.AppConstants.LocaleId, "https://www.microsoft.com/{0}/download/details.aspx?id=53339");
+            var link = FormatLocalizedLink(_coreShell.LocaleId, "https://www.microsoft.com/{0}/download/details.aspx?id=53339");
             _coreShell.ShowErrorMessage(Resources.Error_OdbcDriver.FormatInvariant(link));
-            _coreShell.Services.ProcessServices.Start(link);
+            _coreShell.Process().Start(link);
             return false;
         }
 
-        private static string FormatLocalizedLink(uint localeId, string format) {
-            var culture = CultureInfo.GetCultureInfo((int)localeId);
+        private static string FormatLocalizedLink(int localeId, string format) {
+            var culture = CultureInfo.GetCultureInfo(localeId);
             return string.Format(CultureInfo.InvariantCulture, format, culture.Name);
         }
     }

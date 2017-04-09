@@ -31,8 +31,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public GridDataTest(CoreServicesFixture coreServices, TestMethodFixture testMethod) {
-            _sessionProvider = new RSessionProvider(coreServices);
+        public GridDataTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 

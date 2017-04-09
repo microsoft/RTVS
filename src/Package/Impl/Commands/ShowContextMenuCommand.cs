@@ -2,34 +2,35 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.R.Components.Controller;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
+using IMenuCommandService = System.ComponentModel.Design.IMenuCommandService;
+using CommandID = System.ComponentModel.Design.CommandID;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal class ShowContextMenuCommand : ViewCommand {
-        private Guid _cmdSetGuid;
+        private readonly IServiceContainer _services;
+        private readonly Guid _cmdSetGuid;
+        private readonly int _menuId;
         private Guid _packageGuid;
-        private int _menuId;
         private IMenuCommandService _menuService;
         private bool _triedGetMenuService;
 
-        public ShowContextMenuCommand(ITextView textView, Guid packageGuid, Guid cmdSetGuid, int menuId)
+        public ShowContextMenuCommand(ITextView textView, Guid packageGuid, Guid cmdSetGuid, int menuId, IServiceContainer services)
             : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU), false) {
-
+            _services = services;
             _cmdSetGuid = cmdSetGuid;
             _packageGuid = packageGuid;
             _menuId = menuId;
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return MenuCommandService != null ? CommandStatus.SupportedAndEnabled : CommandStatus.NotSupported;
-        }
+        public override CommandStatus Status(Guid group, int id)
+            =>  MenuCommandService != null ? CommandStatus.SupportedAndEnabled : CommandStatus.NotSupported;
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (MenuCommandService != null) {
@@ -39,7 +40,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
                 return CommandResult.Executed;
             }
-
             return CommandResult.NotSupported;
         }
 
@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 if (_menuService == null && !_triedGetMenuService) {
                     _triedGetMenuService = true;
 
-                    IVsShell shell = VsAppShell.Current.GetGlobalService<IVsShell>();
+                    IVsShell shell = _services.GetService<IVsShell>(typeof(SVsShell));
                     IVsPackage package;
                     shell.LoadPackage(ref _packageGuid, out package);
                     if (package != null) {

@@ -50,12 +50,12 @@ namespace Microsoft.Common.Core.Collections {
 
             comparer = comparer ?? Comparer<T>.Default;
 
-            int low = 0;
-            int high = list.Count - 1;
+            var low = 0;
+            var high = list.Count - 1;
 
             while (low <= high) {
-                int mid = low + (high - low) / 2;
-                int comparisonResult = comparer.Compare(list[mid], value);
+                var mid = low + (high - low) / 2;
+                var comparisonResult = comparer.Compare(list[mid], value);
 
                 if (comparisonResult < 0) {
                     low = mid + 1;
@@ -69,8 +69,7 @@ namespace Microsoft.Common.Core.Collections {
             return ~low;
         }
 
-        public static bool Equals<T, TOther>(this IList<T> source, IList<TOther> other, Func<T, TOther, bool> predicate) {
-            return source.Count == other.Count && !source.Where((t, i) => !predicate(t, other[i])).Any();
-        }
+        public static bool Equals<T, TOther>(this IList<T> source, IList<TOther> other, Func<T, TOther, bool> predicate)
+            => source.Count == other.Count && !source.Where((t, i) => !predicate(t, other[i])).Any();
     }
 }

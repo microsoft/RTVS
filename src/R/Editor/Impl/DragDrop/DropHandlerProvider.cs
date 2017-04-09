@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.DragDrop;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text.Editor;
@@ -17,17 +17,17 @@ namespace Microsoft.R.Editor.DragDrop {
     [Name("RDropHandlerProvider")]
     [Order(Before = "DefaultFileDropHandler")]
     internal sealed class DropHandlerProvider : IDropHandlerProvider {
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         [ImportingConstructor]
-        public DropHandlerProvider(IEditorShell editorShell, IRInteractiveWorkflowProvider workflowProvider) {
-            _editorShell = editorShell;
+        public DropHandlerProvider(ICoreShell shell, IRInteractiveWorkflowProvider workflowProvider) {
+            _shell = shell;
             _workflowProvider = workflowProvider;
         }
 
         public IDropHandler GetAssociatedDropHandler(IWpfTextView wpfTextView) {
-            return new DropHandler(wpfTextView, _editorShell, _workflowProvider);
+            return new DropHandler(wpfTextView, _shell, _workflowProvider);
         }
     }
 }

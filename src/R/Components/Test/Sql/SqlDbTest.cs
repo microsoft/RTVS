@@ -40,17 +40,17 @@ namespace Microsoft.R.Components.Test.Sql {
         [InlineData("2015.131.4413.47", 2052, true)]
         [InlineData("2015.132.4413.45", 2052, true)]
         [InlineData("2016.131.4413.45", 2052, true)]
-        public void OdbcDriverCheck(string version, uint lcid, bool expected) {
+        public void OdbcDriverCheck(string version, int lcid, bool expected) {
             var coreShell = Substitute.For<ICoreShell>();
             var driverPath = @"c:\windows\system32\driver.dll";
 
             var fs = Substitute.For<IFileSystem>();
             fs.FileExists(Arg.Any<string>()).Returns(true);
             fs.GetFileVersion(driverPath).Returns(new Version(version));
-            coreShell.Services.FileSystem.Returns(fs);
+            coreShell.FileSystem().Returns(fs);
 
             var registry = Substitute.For<IRegistry>();
-            coreShell.Services.Registry.Returns(registry);
+            coreShell.GetService<IRegistry>().Returns(registry);
 
             var odbc13Key = Substitute.For<IRegistryKey>();
             odbc13Key.GetValue("Driver").Returns(driverPath);
@@ -59,14 +59,14 @@ namespace Microsoft.R.Components.Test.Sql {
             hlkm.OpenSubKey(@"SOFTWARE\ODBC\ODBCINST.INI\ODBC Driver 13 for SQL Server").Returns(odbc13Key);
 
             registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).Returns(hlkm);
-            coreShell.AppConstants.LocaleId.Returns(lcid);
+            coreShell.LocaleId.Returns(lcid);
 
             coreShell.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
                 var arg = x.Args()[0] as string;
                 arg.Should().Contain(CultureInfo.GetCultureInfo((int)lcid).Name);
             });
 
-            coreShell.Services.ProcessServices.When(x => x.Start(Arg.Any<string>())).Do(x => {
+            coreShell.Process().When(x => x.Start(Arg.Any<string>())).Do(x => {
                 var arg = x.Args()[0] as string;
                 arg.Should().Contain(CultureInfo.GetCultureInfo((int)lcid).Name);
             });
@@ -76,7 +76,7 @@ namespace Microsoft.R.Components.Test.Sql {
 
             if(!expected) {
                 coreShell.Received(1).ShowErrorMessage(Arg.Any<string>());
-                coreShell.Services.ProcessServices.Received(1).Start(Arg.Any<string>());
+                coreShell.Process().Received(1).Start(Arg.Any<string>());
             }
         }
     }

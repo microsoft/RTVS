@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
@@ -10,13 +9,13 @@ using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 
@@ -25,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
     [Category.Configuration]
     public class ProjectSettingsControlTest {
         private readonly PackageTestFilesFixture _files;
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
         private readonly IProjectConfigurationSettingsProvider _csp;
         private readonly IFileSystem _fs;
         private readonly IRProjectProperties _properties;
@@ -35,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         public ProjectSettingsControlTest(PackageTestFilesFixture files) {
             _files = files;
-            _appShell = Substitute.For<IApplicationShell>();
+            _shell = Substitute.For<ICoreShell>();
             _fs = Substitute.For<IFileSystem>();
 
             _access = Substitute.For<IProjectConfigurationSettingsAccess>();
@@ -53,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public void Construction() {
-            var control = new SettingsPageControl(_csp, _appShell, _fs);
+            var control = new SettingsPageControl(_csp, _shell, _fs);
 
             control.IsDirty.Should().BeFalse();
             control.CreateControl();
@@ -86,10 +85,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             });
             fontSvc.GetDialogFont(Arg.Any<UIDLGLOGFONT[]>()).Returns(VSConstants.S_OK);
 
-            var appShell = Substitute.For<IApplicationShell>();
-            appShell.GetGlobalService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
+            var shell = Substitute.For<ICoreShell>();
+            shell.GetService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
 
-            var control = new SettingsPageControl(_csp, appShell, _fs);
+            var control = new SettingsPageControl(_csp, shell, _fs);
             control.CreateControl();
             control.Font.Italic.Should().BeTrue();
             control.Font.Name.Should().Be("Arial");
@@ -97,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task DirtyState() {
-            var control = new SettingsPageControl(_csp, _appShell, _fs);
+            var control = new SettingsPageControl(_csp, _shell, _fs);
             int count = 0;
             control.DirtyStateChanged += (s, e) => {
                 count++;
@@ -117,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var up = Substitute.For<UnconfiguredProject>();
             up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
 
-            var control = new SettingsPageControl(_csp, _appShell, fs);
+            var control = new SettingsPageControl(_csp, _shell, fs);
 
             var fileName = "PropertyGridSingle.settings.r";
             var file = Path.Combine(_files.DestinationPath, fileName);
@@ -144,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task AddVariable() {
-            var control = new SettingsPageControl(_csp, _appShell, _fs);
+            var control = new SettingsPageControl(_csp, _shell, _fs);
 
             await control.SetProjectAsync(_unconfiguredProject, _properties);
             control.CreateControl();
@@ -178,7 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task PropertyGridMultiple01() {
-            var shell = Substitute.For<IApplicationShell>();
+            var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
             var up = Substitute.For<UnconfiguredProject>();
             up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
@@ -224,7 +223,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task PropertyGridMultiple02() {
-            var shell = Substitute.For<IApplicationShell>();
+            var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
             var up = Substitute.For<UnconfiguredProject>();
             up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
@@ -260,9 +259,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
             control.IsDirty.Should().BeTrue();
 
-            shell.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel).Returns(MessageButtons.Yes);
+            var uis = shell.UI();
+            uis.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel).Returns(MessageButtons.Yes);
             control.FileListCombo.SelectedIndex = 1;
-            shell.Received().ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);
+            uis.Received().ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);
 
             control.IsDirty.Should().BeTrue(); // Changing between setting files makes page dirty
             control.FileListCombo.SelectedIndex.Should().Be(1);

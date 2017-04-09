@@ -13,9 +13,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {

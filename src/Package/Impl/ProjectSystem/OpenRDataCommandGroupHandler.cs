@@ -3,11 +3,12 @@
 
 using System;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -15,10 +16,6 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class OpenRDataCommandGroupHandler : IAsyncCommandGroupHandler {
@@ -60,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            MessageButtons messageResult = VsAppShell.Current.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rDataNode.FilePath), MessageButtons.YesNo);
+            var messageResult = VsAppShell.Current.ShowMessage(Resources.LoadWorkspaceIntoGlobalEnvironment.FormatCurrent(rDataNode.FilePath), MessageButtons.YesNo);
             if (messageResult == MessageButtons.No) {
                 return true;
             }
@@ -69,8 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             try {
                 await session.LoadWorkspaceAsync(rDataNode.FilePath);
             } catch (RException ex) {
-                var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
-                    rDataNode.FilePath, ex.Message);
+                var message = Resources.LoadWorkspaceFailedMessageFormat.FormatCurrent(rDataNode.FilePath, ex.Message);
                 VsAppShell.Current.ShowErrorMessage(message);
             } catch (OperationCanceledException) {
             }

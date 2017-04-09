@@ -326,7 +326,7 @@ enable_autosave <- function(delete_existing) {
     });
 }
 
-exists_on_path <- function(filename) {
+exists_on_path_windows <- function(filename) {
     folders <- strsplit(Sys.getenv('PATH'), ';')[[1]];
     folders <- gsub("\\", "/", folders, fixed = TRUE);
     folders <- sub("(\\/$)", "", folders);
@@ -337,4 +337,25 @@ exists_on_path <- function(filename) {
         }
     }
     return(FALSE);
+}
+
+exists_on_path_posix <- function(filename) {
+    folders <- strsplit(Sys.getenv('PATH'), ':')[[1]];
+    folders <- paste0(folders, "/", filename);
+    for (f in folders) {
+        if (file.exists(f)) {
+            return(TRUE);
+        }
+    }
+    return(FALSE);
+}
+
+exists_on_path <- if(.Platform$OS.type == "windows") exists_on_path_windows else exists_on_path_posix;
+
+executable_exists_on_path <- function(filename_no_extension) {
+    filename <- filename_no_extension;
+    if(.Platform$OS.type == "windows"){
+        filename <- paste0(filename_no_extension, ".exe");
+    }
+    return(exists_on_path(filename));
 }

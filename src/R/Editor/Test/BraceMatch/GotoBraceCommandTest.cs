@@ -3,10 +3,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -16,10 +16,10 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
     public class GotoBraceCommandTest {
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _shell;
 
         public GotoBraceCommandTest(IExportProvider exportProvider) {
-            _editorShell = exportProvider.GetExportedValue<IEditorShell>();
+            _shell = exportProvider.GetExportedValue<ICoreShell>();
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
             string content = "if(x<1) {x<-2}";
             ITextBuffer textBuffer = new TextBufferMock(content, "R");
             ITextView textView = new TextViewMock(textBuffer);
-            var command = new GotoBraceCommand(textView, textBuffer, _editorShell);
+            var command = new GotoBraceCommand(textView, textBuffer, _shell);
             object o = new object();
 
             var status = command.Status(VSConstants.VSStd2K, (int) VSConstants.VSStd2KCmdID.GOTOBRACE);

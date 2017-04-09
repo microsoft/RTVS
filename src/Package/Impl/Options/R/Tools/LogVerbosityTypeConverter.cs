@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.Linq;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Shell;
 
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         public LogVerbosityTypeConverter(LogVerbosity maxVerbosity) : base(_permittedSettings) {
             _maxLogLevel = (int)maxVerbosity;
         }
-        public LogVerbosityTypeConverter() : this(VsAppShell.Current.Services.LoggingPermissions.MaxVerbosity) { }
+        public LogVerbosityTypeConverter() : this(VsAppShell.Current.GetService<ILoggingPermissions>().MaxVerbosity) { }
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             return new StandardValuesCollection(_permittedSettings.Take(_maxLogLevel + 1).ToList());

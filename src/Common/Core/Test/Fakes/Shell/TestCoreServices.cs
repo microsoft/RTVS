@@ -27,12 +27,11 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 UIThreadHelper.Instance,
                 Substitute.For<IActionLog>(),
                 fs ?? Substitute.For<IFileSystem>(),
-                registry ?? Substitute.For<IRegistry>(),
                 ps ?? Substitute.For<IProcessServices>());
         }
 
         public static ICoreServices CreateReal() {
-            var appConstants = new TestAppConstants();
+            var appConstants = new TestPlatformServices();
             var telemetryService = new TelemetryTestService();
             var registry = new RegistryImpl();
             var loggingPermissions = new LoggingPermissions(appConstants, telemetryService, registry);
@@ -48,7 +47,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 UIThreadHelper.Instance,
                 log,
                 fileSystem,
-                registry,
                 processServices);
         }
 

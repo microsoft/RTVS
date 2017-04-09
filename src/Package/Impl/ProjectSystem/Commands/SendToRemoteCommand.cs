@@ -7,21 +7,16 @@ using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -29,14 +24,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class SendToRemoteCommand : SendFileCommandBase, IAsyncCommandGroupHandler {
         private readonly ConfiguredProject _configuredProject;
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
-        private readonly IApplicationShell _appShell;
+        private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public SendToRemoteCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IApplicationShell appShell) :
-            base(interactiveWorkflowProvider, appShell, new FileSystem()) {
+        public SendToRemoteCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell) :
+            base(interactiveWorkflowProvider, shell.UI(), new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
-            _appShell = appShell;
+            _shell = shell;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -49,26 +44,26 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            _appShell.AssertIsOnMainThread();
+            _shell.AssertIsOnMainThread();
             if (commandId != RPackageCommandId.icmdSendToRemote) {
                 return false;
             }
 
             var properties = _configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
-            string projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
+            var projectDir = Path.GetDirectoryName(_configuredProject.UnconfiguredProject.FullPath);
 
-            string fileFilterString = await properties.GetFileFilterAsync();
-            Matcher matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
+            var fileFilterString = await properties.GetFileFilterAsync();
+            var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
             matcher.AddIncludePatterns(fileFilterString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries));
 
-            List<string> filteredFiles = new List<string>();
+            var filteredFiles = new List<string>();
             filteredFiles.AddRange(matcher.GetMatchedFiles(nodes.GetAllFolderPaths(_configuredProject.UnconfiguredProject)));
 
             // Add any file that user specifically selected. This can contain a file ignored by the filter.
             filteredFiles.AddRange(nodes.Where(n => n.IsFile()).Select(n => n.FilePath));
 
-            string projectName = properties.GetProjectName();
-            string remotePath = await properties.GetRemoteProjectPathAsync();
+            var projectName = properties.GetProjectName();
+            var remotePath = await properties.GetRemoteProjectPathAsync();
 
             if(filteredFiles.Count > 0) {
                 await SendToRemoteAsync(filteredFiles.Distinct(), projectDir, projectName, remotePath);

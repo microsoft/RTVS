@@ -31,8 +31,12 @@ namespace Microsoft.Common.Core {
         public static bool IsOnBackgroundThread() {
             var taskScheduler = TaskScheduler.Current;
             var syncContext = SynchronizationContext.Current;
-            return taskScheduler == TaskScheduler.Default 
+            return taskScheduler == TaskScheduler.Default
+#if NETSTANDARD1_6
+                && (syncContext == null || syncContext.GetType() == typeof(SynchronizationContext));
+#else
                 && (syncContext == null || syncContext.GetType() == typeof(SynchronizationContext) || Thread.CurrentThread.IsThreadPoolThread);
+#endif
         }
 
         /// <summary>

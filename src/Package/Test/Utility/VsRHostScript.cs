@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
                 int time = 0;
                 while (time < ms) {
                     TestScript.DoEvents();
-                    VsAppShell.Current.DoIdle();
+                    ((IIdleTimeSource)VsAppShell.Current).DoIdle();
 
                     Thread.Sleep(20);
                     time += 20;

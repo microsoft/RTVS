@@ -3,7 +3,8 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -11,13 +12,13 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal sealed class HideAllPlotWindowsCommand : PackageCommand {
-        private readonly IApplicationShell _appShell;
-        private readonly IVsUIShell4 _shell;
+        private readonly IUIService _ui;
+        private readonly IVsUIShell4 _vsshell;
 
-        public HideAllPlotWindowsCommand(IApplicationShell appShell) :
+        public HideAllPlotWindowsCommand(ICoreShell shell) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPlotWindowsHideAll) {
-            _appShell = appShell;
-            _shell = appShell.GetGlobalService<IVsUIShell4>(typeof(SVsUIShell));
+            _ui = shell.UI();
+            _vsshell = shell.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 
         protected override void SetStatus() {
@@ -29,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             // Visual components only exist for tool windows that are initialized.
             // Tool windows that have a visible tab but haven't clicked on yet are not initialized.
             try {
-                var frames = _shell.EnumerateWindows(
+                var frames = _vsshell.EnumerateWindows(
                     __WindowFrameTypeFlags.WINDOWFRAMETYPE_Tool |
                     __WindowFrameTypeFlags.WINDOWFRAMETYPE_AllStates,
                     typeof(PlotDeviceWindowPane).GUID);
@@ -40,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _appShell.ShowErrorMessage(ex.Message);
+                _ui.ShowErrorMessage(ex.Message);
             }
         }
     }

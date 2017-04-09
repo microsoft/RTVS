@@ -3,18 +3,22 @@
 
 using System;
 using System.Timers;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
     internal sealed class ToolWindowTracker: IVsDebuggerEvents, IDisposable {
+        private readonly IServiceContainer _services;
         private Timer _timer = new Timer();
         private IVsDebugger _debugger;
         private uint _debuggerEventCookie;
         private uint _reportCount;
 
-        public ToolWindowTracker() {
-            _debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+        public ToolWindowTracker(IServiceContainer services) {
+            _services = services;
+            _debugger = services.GetService<IVsDebugger>();
             if (_debugger != null) {
                 _debugger.AdviseDebuggerEvents(this, out _debuggerEventCookie);
 
@@ -26,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
         }
 
         private void OnElapsed(object sender, ElapsedEventArgs e) {
-            VsAppShell.Current.DispatchOnUIThread(() => {
+            _services.MainThread().Post(() => {
                 ReportWindowLayout();
             });
         }
@@ -41,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
 
         private void ReportWindowLayout() {
             if (_reportCount < 4) {
-                RtvsTelemetry.Current.ReportWindowLayout(VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell)));
+                RtvsTelemetry.Current.ReportWindowLayout(VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell)));
                 _reportCount++;
                 if (_reportCount > 4) {
                     _timer?.Stop();

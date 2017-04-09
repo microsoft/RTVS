@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,11 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Controller.Commands;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -23,7 +26,6 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
@@ -37,20 +39,18 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
 
-        protected IApplicationShell AppShell { get; }
+        protected IServiceContainer Services { get; }
 
-        public PreviewCommand(ITextView textView, int id,
-            IRInteractiveWorkflowProvider workflowProvider,
-            IApplicationShell appShell,
-            IProcessServices pss,
-            IFileSystem fs)
+        protected PreviewCommand(ITextView textView, int id,
+            IRInteractiveWorkflowProvider workflowProvider, IServiceContainer services)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
-            AppShell = appShell;
-            _pss = pss;
-            _fs = fs;
+            Services = services;
+            _fs = services.FileSystem();
+            _pss = services.Process();
 
-            IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = AppShell.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
+            var exp = services.GetService<ExportProvider>();
+            var handlers = exp.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
             }
@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
                 if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
                     // Text buffer operations should be performed in UI thread
-                    await AppShell.SwitchToMainThreadAsync();
+                    await Services.MainThread().SwitchToAsync();
                     if (await CheckPrerequisitesAsync()) {
                         var textBuffer = SaveFile();
                         if (textBuffer != null) {
@@ -97,16 +97,16 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                             try {
                                 _fs.DeleteFile(_outputFilePath);
                             } catch (IOException ex) {
-                                AppShell.ShowErrorMessage(ex.Message);
+                                Services.UI().ShowErrorMessage(ex.Message);
                                 return;
                             }
 
                             var session = workflow.RSession;
-                            await flavorHandler.PublishAsync(session, AppShell, _fs, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
+                            await flavorHandler.PublishAsync(session, Services, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
                         }
                     }
                 } else {
-                    await AppShell.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
+                    await Services.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
                 }
             });
 
@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
             var tb = document.TextBuffer;
             if (!tb.CanBeSavedInCurrentEncoding()) {
-                if (MessageButtons.No == AppShell.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                if (MessageButtons.No == Services.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                     return null;
                 }
                 tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -128,10 +128,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         }
 
         protected virtual async Task<bool> CheckPrerequisitesAsync() {
-            if (!await CheckExistsOnPathAsync("pandoc.exe")) {
+            if (!await CheckExecutableExistsOnPathAsync("pandoc")) {
                 var session = _workflowProvider.GetOrCreate().RSession;
                 var message = session.IsRemote ? Resources.Error_PandocMissingRemote : Resources.Error_PandocMissingLocal;
-                await AppShell.ShowErrorMessageAsync(message);
+                await Services.ShowErrorMessageAsync(message);
                 _pss.Start("https://pandoc.org/installing.html");
                 return false;
             }
@@ -190,6 +190,11 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         protected Task<bool> CheckExistsOnPathAsync(string fileName) {
             var session = _workflowProvider.GetOrCreate().RSession;
             return session.EvaluateAsync<bool>(Invariant($"rtvs:::exists_on_path('{fileName}')"), REvaluationKind.Normal);
+        }
+
+        protected Task<bool> CheckExecutableExistsOnPathAsync(string fileNameNoExtension) {
+            var session = _workflowProvider.GetOrCreate().RSession;
+            return session.EvaluateAsync<bool>(Invariant($"rtvs:::executable_exists_on_path('{fileNameNoExtension}')"), REvaluationKind.Normal);
         }
     }
 }

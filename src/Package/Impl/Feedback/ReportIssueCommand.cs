@@ -18,10 +18,10 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         private readonly ILoggingPermissions _permissions;
         private readonly IProcessServices _pss;
 
-        public ReportIssueCommand(ICoreServices services)
+        public ReportIssueCommand(IServiceContainer services)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdReportIssue) {
-            _permissions = services.LoggingPermissions;
-            _pss = services.ProcessServices;
+            _permissions = services.GetService<ILoggingPermissions>();
+            _pss = services.GetService<IProcessServices>();
         }
 
         protected override void SetStatus() {

@@ -5,19 +5,15 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#else
 using Microsoft.VisualStudio.ProjectSystem;
-#endif
+using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -38,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            MainThread.Assert();
             if (commandId != RPackageCommandId.icmdCopyItemPath) {
                 return false;
             }
@@ -51,5 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
             return true;
         }
+
+        private IMainThread MainThread => _interactiveWorkflowProvider.GetOrCreate().Shell.MainThread();
     }
 }

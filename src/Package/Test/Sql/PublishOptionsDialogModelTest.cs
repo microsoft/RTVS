@@ -8,37 +8,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.ProjectSystem.Properties;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
-#if VS15
-using Microsoft.VisualStudio.ProjectSystem.Properties;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
     public class PublishOptionsDialogModelTest {
-        private readonly ICoreShell _coreShell;
-        private readonly IProjectSystemServices _pss;
-        private readonly IProjectConfigurationSettingsProvider _pcsp;
-        private readonly ISettingsStorage _storage;
-
-        public PublishOptionsDialogModelTest() {
-            _coreShell = Substitute.For<ICoreShell>();
-            _pss = Substitute.For<IProjectSystemServices>();
-            _pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
-            _storage = Substitute.For<ISettingsStorage>();
-        }
+        private readonly ICoreShell _coreShell = TestCoreShell.CreateBasic();
+        private readonly IProjectSystemServices _pss = Substitute.For<IProjectSystemServices>();
+        private readonly IProjectConfigurationSettingsProvider _pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
+        private readonly ISettingsStorage _storage = Substitute.For<ISettingsStorage>();
 
         [Test(ThreadType.UI)]
         public async Task Constructor() {
@@ -234,11 +223,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
                 return VSConstants.S_OK;
             });
             _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
-
-            _coreShell.When(cs => cs.DispatchOnUIThread(Arg.Any<Action>())).Do(c => {
-                var action = (Action)c.Args()[0];
-                action();
-            });
         }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -37,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 if (!_expansionClient.IsEditingExpansion()) {
                     switch ((VSConstants.VSStd2KCmdID)id) {
                         case VSConstants.VSStd2KCmdID.TAB:
-                            return _expansionClient.TextView.IsStatementCompletionWindowActive() ? 
+                            return _expansionClient.TextView.IsStatementCompletionWindowActive(VsAppShell.Current) ? 
                                 CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
 
                         case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
@@ -90,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         break;
 
                     case VSConstants.VSStd2KCmdID.RETURN:
-                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive() && _expansionClient.IsEditingExpansion()) {
+                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive(VsAppShell.Current) && _expansionClient.IsEditingExpansion()) {
                             if (_expansionClient.IsCaretInsideSnippetFields()) {
                                 // End the current expansion session and position the 
                                 // edit caret according to the code snippet template.
@@ -105,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         break;
 
                     case VSConstants.VSStd2KCmdID.CANCEL:
-                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive() && _expansionClient.IsEditingExpansion()) {
+                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive(VsAppShell.Current) && _expansionClient.IsEditingExpansion()) {
                             _expansionClient.EndExpansionSession(true);
                             return CommandResult.Executed;
                         }

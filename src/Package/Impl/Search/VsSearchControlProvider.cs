@@ -6,16 +6,23 @@ using System.ComponentModel.Composition;
 using System.Windows;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Search;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Search {
     [Export(typeof(ISearchControlProvider))]
     internal class VsSearchControlProvider : ISearchControlProvider {
-        private readonly Lazy<IVsWindowSearchHostFactory> _factoryLazy = new Lazy<IVsWindowSearchHostFactory>(() => VsAppShell.Current.GetGlobalService<IVsWindowSearchHostFactory>(typeof(SVsWindowSearchHostFactory)));
+        private readonly ICoreShell _coreShell;
+        private readonly Lazy<IVsWindowSearchHostFactory> _factoryLazy;
+
+        [ImportingConstructor]
+        public VsSearchControlProvider(ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _factoryLazy = new Lazy<IVsWindowSearchHostFactory>(()
+                => _coreShell.GetService<IVsWindowSearchHostFactory>(typeof(SVsWindowSearchHostFactory)));
+        }
 
         public ISearchControl Create(FrameworkElement host, ISearchHandler handler, SearchControlSettings settings) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            _coreShell.AssertIsOnMainThread();
 
             var vsWindowSearchHost = _factoryLazy.Value.CreateWindowSearchHost(host);
             return new VsSearchControl(vsWindowSearchHost, handler, settings);

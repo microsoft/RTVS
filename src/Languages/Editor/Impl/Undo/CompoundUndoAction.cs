@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -19,10 +19,10 @@ namespace Microsoft.Languages.Editor.Undo {
         private bool _addRollbackOnCancel;
         private bool _discardChanges = true;
 
-        public CompoundUndoAction(ITextView textView, IEditorShell editorShell, bool addRollbackOnCancel = true) {
-            if (!editorShell.IsUnitTestEnvironment) {
-                IEditorOperationsFactoryService operationsService = editorShell.ExportProvider.GetExportedValue<IEditorOperationsFactoryService>();
-                ITextBufferUndoManagerProvider undoProvider = editorShell.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
+        public CompoundUndoAction(ITextView textView, ICoreShell shell, bool addRollbackOnCancel = true) {
+            if (!shell.IsUnitTestEnvironment) {
+                IEditorOperationsFactoryService operationsService = shell.GetService<IEditorOperationsFactoryService>();
+                ITextBufferUndoManagerProvider undoProvider = shell.GetService<ITextBufferUndoManagerProvider>();
 
                 _editorOperations = operationsService.GetEditorOperations(textView);
                 _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);

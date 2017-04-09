@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.VisualStudio.R.Package.Shell;
 
@@ -218,7 +219,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             try {
                 var nodes = await model.GetChildrenAsync(CancellationToken.None);
-                VsAppShell.Current.DispatchOnUIThread(
+                VsAppShell.Current.MainThread().Post(
                     () => UpdateChildren(nodes));
             } catch (Exception e) {
                 if (!(e is OperationCanceledException)) {

@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Drawing.Design;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -29,14 +30,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public ConnectionStringEditor() : this(null) { }
         public ConnectionStringEditor(IDbConnectionService dbcs) {
-            _dbcs = dbcs ?? VsAppShell.Current.ExportProvider.GetExportedValue<IDbConnectionService>();
+            _dbcs = dbcs ?? VsAppShell.Current.GetService<IDbConnectionService>();
         }
 
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.Modal;
-
-        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) {
-            return _dbcs.EditConnectionString(value as string);
-        }
+        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) => _dbcs.EditConnectionString(value as string);
 
         /// <summary>
         /// Provides type of the UI editor for database connection strings

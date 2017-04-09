@@ -48,7 +48,7 @@
     <Content Include="Html\Files\xhtml.htm" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+    <None Include="..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="Html\Files\broken_01.htm.log" />
@@ -129,8 +129,6 @@
     <Compile Include="Html\Utility\TreeWriter.cs" />
     <Compile Include="Html\VisitorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Functions\FunctionInfoTest.cs" />
-    <Compile Include="Packages\PackageIndexTest.cs" />
     <Compile Include="RD\BraceMatch\BraceMatchTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
@@ -152,14 +150,7 @@
         </ProjectReference>
       </ItemGroup>
     </When>
-    <When Condition="'$(VisualStudioVersion)'=='15.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
-          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-          <Name>Microsoft.UnitTests.References.15.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
   </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -197,6 +188,14 @@
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
+      <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

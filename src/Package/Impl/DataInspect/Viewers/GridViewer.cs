@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
@@ -10,8 +11,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const long MaxDim = 10000000;
 
         [ImportingConstructor]
-        public GridViewer(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
-            base(aggregator, evaluator) { }
+        public GridViewer(ICoreShell coreShell, IDataObjectEvaluator evaluator) :
+            base(coreShell.Services, evaluator) { }
 
         #region IObjectDetailsViewer
 

@@ -3,13 +3,14 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
-using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
@@ -28,12 +29,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// </summary>
     public class ReplCommandController : ViewController {
         private readonly ExpansionsController _snippetController;
+        private readonly IServiceContainer _services;
 
-        public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
+        public ReplCommandController(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
             : base(textView, textBuffer, VsAppShell.Current) {
-            ServiceManager.AddService(this, textView, VsAppShell.Current);
+            _services = services;
+            Languages.Editor.Services.ServiceManager.AddService(this, textView, VsAppShell.Current);
 
-            var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = _services.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
@@ -41,25 +44,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current);
         }
 
-        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer) {
-            ReplCommandController controller = FromTextView(textView);
-            if (controller == null) {
-                controller = new ReplCommandController(textView, textBuffer);
-            }
-
-            return controller;
+        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer, IServiceContainer serviceContainer) {
+            var controller = FromTextView(textView);
+            return controller ?? new ReplCommandController(textView, textBuffer, serviceContainer);
         }
 
-        public static new ReplCommandController FromTextView(ITextView textView) {
-            return ServiceManager.GetService<ReplCommandController>(textView);
-        }
+        public static new ReplCommandController FromTextView(ITextView textView)
+            => Languages.Editor.Services.ServiceManager.GetService<ReplCommandController>(textView);
 
         public override void BuildCommandSet() {
-            if (VsAppShell.Current.CompositionService != null) {
-                var factory = new ReplCommandFactory();
-                var commands = factory.GetCommands(TextView, TextBuffer);
-                AddCommandSet(commands);
-            }
+            var factory = new ReplCommandFactory();
+            var commands = factory.GetCommands(TextView, TextBuffer);
+            AddCommandSet(commands);
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -69,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             var status = _snippetController.Status(group, id);
-            if(status != CommandStatus.NotSupported) {
+            if (status != CommandStatus.NotSupported) {
                 return status;
             }
 
@@ -101,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var status = _snippetController.Status(group, id);
             if (status != CommandStatus.NotSupported) {
                 var result = _snippetController.Invoke(group, id, inputArg, ref outputArg);
-                if(result.Status != CommandStatus.NotSupported) {
+                if (result.Status != CommandStatus.NotSupported) {
                     return result;
                 }
             }
@@ -135,10 +131,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            ICompletionBroker broker = VsAppShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+            var broker = _services.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
             interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
         }
@@ -156,12 +152,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(TextView)) {
                 Workflow.Operations.CancelAsync().DoNotWait();
                 // Post interrupt command which knows if it can interrupt R or not
-                VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+                Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
             }
         }
 
         private void HandleF1Help(RCompletionController controller) {
-            VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
+            Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
         }
 
         /// <summary>
@@ -177,14 +173,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         /// </summary>
         protected override void Dispose(bool disposing) {
             if (TextView != null) {
-                ServiceManager.RemoveService<ReplCommandController>(TextView);
+                Languages.Editor.Services.ServiceManager.RemoveService<ReplCommandController>(TextView);
             }
             base.Dispose(disposing);
         }
 
         private IRInteractiveWorkflow Workflow {
             get {
-                var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                var interactiveWorkflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
                 return interactiveWorkflowProvider.GetOrCreate();
             }
         }

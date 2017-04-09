@@ -8,6 +8,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Projection;
@@ -84,7 +85,7 @@ namespace Microsoft.R.Editor.Document {
         #region Constructors
         public REditorDocument(ITextBuffer textBuffer, ICoreShell shell) {
             _shell = shell;
-            _textDocumentFactoryService = _shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
+            _textDocumentFactoryService = _shell.GetService<ITextDocumentFactoryService>();
             _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
             TextBuffer = textBuffer;

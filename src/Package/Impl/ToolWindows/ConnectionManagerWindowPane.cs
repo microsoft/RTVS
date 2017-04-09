@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
@@ -17,23 +18,19 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class ConnectionManagerWindowPane : VisualComponentToolWindow<IConnectionManagerVisualComponent>, IOleCommandTarget {
         private readonly IConnectionManager _connectionManager;
-        private readonly IRSettings _settings;
-        private readonly ICoreShell _coreShell;
         public const string WindowGuidString = "75753398-BE0E-442E-900C-E775EAC1FAC2";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
         private IOleCommandTarget _commandTarget;
 
-        public ConnectionManagerWindowPane(IConnectionManager connectionManager, IRSettings settings, ICoreShell coreShell) {
+        public ConnectionManagerWindowPane(IConnectionManager connectionManager, IServiceContainer services): base(services) {
             _connectionManager = connectionManager;
-            _settings = settings;
-            _coreShell = coreShell;
             BitmapImageMoniker = KnownMonikers.ImmediateWindow;
             Caption = Resources.WorkspacesWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new ConnectionManagerVisualComponent(_connectionManager, this, _settings, _coreShell);
+            Component = new ConnectionManagerVisualComponent(_connectionManager, this, Services);
             base.OnCreate();
         }
 

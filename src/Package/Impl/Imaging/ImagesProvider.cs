@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
@@ -10,24 +10,24 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Imaging {
 
     [Export(typeof(IImagesProvider))]
     internal sealed class ImagesProvider : IImagesProvider {
-        private readonly ConcurrentDictionary<string, ImageMoniker> _monikerCache = new ConcurrentDictionary<string, ImageMoniker>();
-        private readonly Lazy<ConcurrentDictionary<string, string>> _fileExtensionCache = Lazy.Create(CreateExtensionCache);
+        private readonly Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
+        private readonly Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
+        private static ICoreShell _coreShell;
 
-        private static IVsImageService2 _imageService;
-
-        public ImagesProvider() {
-            _imageService = _imageService ?? VsAppShell.Current.GetGlobalService<IVsImageService2>(typeof(SVsImageService));
+        [ImportingConstructor]
+        public ImagesProvider(ICoreShell coreShell) {
+            _coreShell = coreShell;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         public ImageSource GetImage(string name) {
             ImageSource ims = GetImageFromResources(name);
             if (ims == null) {
-                ImageMoniker? im = FindKnownMoniker(name);
+                var im = FindKnownMoniker(name);
                 ims = im.HasValue ? GetIconForImageMoniker(im.Value) : null;
             }
             return ims;
@@ -47,8 +47,8 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// Given file name returns icon depending on the file extension
         /// </summary>
         public ImageSource GetFileIcon(string file) {
-            string ext = Path.GetExtension(file);
-            if (_fileExtensionCache.Value.ContainsKey(ext)) {
+            var ext = Path.GetExtension(file);
+            if(_fileExtensionCache.Value.ContainsKey(ext)) {
                 return GetImage(_fileExtensionCache.Value[ext]);
             }
             return GetImage("Document");
@@ -62,9 +62,9 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
 
             ImageMoniker? moniker = null;
             Type t = typeof(KnownMonikers);
-            PropertyInfo info = t.GetProperty(name, typeof(ImageMoniker));
+            var info = t.GetProperty(name, typeof(ImageMoniker));
             if (info != null) {
-                MethodInfo mi = info.GetGetMethod(nonPublic: false);
+                var mi = info.GetGetMethod(nonPublic: false);
                 moniker = (ImageMoniker)mi.Invoke(null, new object[0]);
                 _monikerCache[name] = moniker.Value;
             }
@@ -75,22 +75,26 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
             ImageSource glyph = null;
 
-            ImageAttributes imageAttributes = new ImageAttributes();
-            imageAttributes.Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags;
-            imageAttributes.ImageType = (uint)_UIImageType.IT_Bitmap;
-            imageAttributes.Format = (uint)_UIDataFormat.DF_WPF;
-            imageAttributes.LogicalHeight = 16;// IconHeight,
-            imageAttributes.LogicalWidth = 16;// IconWidth,
-            imageAttributes.StructSize = Marshal.SizeOf(typeof(ImageAttributes));
+            var imageService = _coreShell?.GetService<IVsImageService2>(typeof(SVsImageService));
+            if (imageService != null) {
+                var imageAttributes = new ImageAttributes();
+                imageAttributes.Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags;
+                imageAttributes.ImageType = (uint)_UIImageType.IT_Bitmap;
+                imageAttributes.Format = (uint)_UIDataFormat.DF_WPF;
+                imageAttributes.LogicalHeight = 16;// IconHeight,
+                imageAttributes.LogicalWidth = 16;// IconWidth,
+                imageAttributes.StructSize = Marshal.SizeOf(typeof(ImageAttributes));
 
-            var result = _imageService.GetImage(imageMoniker, imageAttributes);
+                var result = imageService.GetImage(imageMoniker, imageAttributes);
 
-            object data;
-            if (result.get_Data(out data) == VSConstants.S_OK) {
-                glyph = data as ImageSource;
-                glyph?.Freeze();
+                object data = null;
+                if (result.get_Data(out data) == VSConstants.S_OK) {
+                    glyph = data as ImageSource;
+                    if (glyph != null) {
+                        glyph.Freeze();
+                    }
+                }
             }
-
             return glyph;
         }
 
@@ -133,8 +137,8 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             return source;
         }
 
-        private static ConcurrentDictionary<string, string> CreateExtensionCache() {
-            var dict = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, string> CreateExtensionCache() {
+            Dictionary<string, string> dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             dict[".r"] = "RFileNode";
             dict[".rproj"] = "RProjectNode";

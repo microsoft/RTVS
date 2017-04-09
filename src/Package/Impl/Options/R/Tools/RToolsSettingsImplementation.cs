@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,20 +12,17 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
-    [Export(typeof(IRSettings))]
-    [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
         private const int MaxDirectoryEntries = 8;
-        private readonly ISettingsStorage _settings;
+        private readonly ICoreShell _coreShell;
+        private readonly ISettingsStorage _settingStorage;
         private readonly ILoggingPermissions _loggingPermissions;
 
         private string _cranMirror;
@@ -56,10 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
-        [ImportingConstructor]
-        public RToolsSettingsImplementation(ISettingsStorage settings, ICoreShell coreShell) {
-            _settings = settings;
-            _loggingPermissions = coreShell.Services.LoggingPermissions;
+        public RToolsSettingsImplementation(ICoreShell coreShell, ISettingsStorage settingStorage, ILoggingPermissions loggingPermissions) {
+            _coreShell = coreShell;
+            _settingStorage = settingStorage;
+            _loggingPermissions = loggingPermissions;
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -139,12 +135,11 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 SetProperty(ref _workingDirectory, newDirectory);
                 UpdateWorkingDirectoryList(newDirectory);
 
-                if (EditorShell.HasShell) {
-                    VsAppShell.Current.DispatchOnUIThread(() => {
-                        IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                        shell.UpdateCommandUI(1);
-                    });
-                }
+                
+                _coreShell?.MainThread().Post(() => {
+                    var shell = _coreShell.GetService<IVsUIShell>(typeof(SVsUIShell));
+                    shell.UpdateCommandUI(1);
+                });
             }
         }
 
@@ -225,21 +220,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         #region IRPersistentSettings
         public void LoadSettings() {
-            _settings.LoadPropertyValues(this);
+            _settingStorage.LoadPropertyValues(this);
             // Correct setting if stored value exceed currently set maximum
             LogVerbosity = MathExtensions.Min<LogVerbosity>(LogVerbosity, _loggingPermissions.MaxVerbosity);
             _loggingPermissions.CurrentVerbosity = LogVerbosity;
         }
 
         public Task SaveSettingsAsync() {
-            _settings.SavePropertyValues(this);
-            return _settings.PersistAsync();
+            _settingStorage.SavePropertyValues(this);
+            return _settingStorage.PersistAsync();
         }
 
         public void Dispose() {
-            if (_settings != null) {
+            if (_settingStorage != null) {
                 SaveSettingsAsync().Wait(5000);
-                ((IDisposable)_settings).Dispose();
+                ((IDisposable)_settingStorage).Dispose();
             }
         }
         #endregion
