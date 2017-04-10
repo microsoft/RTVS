@@ -52,10 +52,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Name>Microsoft.Markdown.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
@@ -63,10 +59,6 @@
     <ProjectReference Include="..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
-      <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>

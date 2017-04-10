@@ -147,14 +147,6 @@
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
-      <Name>Microsoft.R.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
-      <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
-      <Name>Microsoft.R.Editor.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
@@ -166,10 +158,6 @@
     <ProjectReference Include="..\..\R\Support\Test\Microsoft.R.Support.Test.csproj">
       <Project>{5504f3d6-08d3-401f-8214-409a60735185}</Project>
       <Name>Microsoft.R.Support.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Name>Microsoft.Markdown.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>

@@ -33,10 +33,6 @@ namespace Microsoft.Languages.Editor.Test {
         public override async Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             await base.InitializeAsync(testInput, messageBus);
             ServiceManager.AddService(new TestEditorSupport());
-
-            var settings = new REditorSettings(new TestSettingsStorage());
-            ServiceManager.AddService(settings);
-
             return DefaultInitializeResult;
         }
 

@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D6EEEF87-CE3A-4804-A409-39966B96C850}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.R.Editor</RootNamespace>
+    <AssemblyName>Microsoft.R.Editor.Windows</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\R.Settings.targets" />
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="BraceMatch\RBraceHighlightProvider.cs" />
+    <Compile Include="BraceMatch\RBraceMatcher.cs" />
+    <Compile Include="BraceMatch\RBraceMatcherProvider.cs" />
+    <Compile Include="Classification\ClassificationDefinitions.cs" />
+    <Compile Include="Classification\ClassifierProvider.cs" />
+    <Compile Include="Classification\RClassificationNameProvider.cs" />
+    <Compile Include="Classification\RClassifier.cs" />
+    <Compile Include="Commands\RCompletionCommandHandler.cs" />
+    <Compile Include="Commands\RCommandFactory.cs" />
+    <Compile Include="Commands\REditorCommands.cs" />
+    <Compile Include="Commands\RMainController.cs" />
+    <Compile Include="Commands\RMouseProcessor.cs" />
+    <Compile Include="Commands\RMouseProcessorProvider.cs" />
+    <Compile Include="Commands\RTextViewConnectionListener.cs" />
+    <Compile Include="Commands\RTypingCommandHandler.cs" />
+    <Compile Include="Comments\CommentCommand.cs" />
+    <Compile Include="Comments\RCommenter.cs" />
+    <Compile Include="Comments\UncommentCommand.cs" />
+    <Compile Include="Completions\AutoCompletion\BraceCompletionContext.cs" />
+    <Compile Include="Completions\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completions\Definitions\IRHelpSearchTermProvider.cs" />
+    <Compile Include="Completions\Providers\CompletionUtilities.cs" />
+    <Compile Include="Completions\Providers\UserVariablesCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\SnippetCompletionProvider.cs" />
+    <Compile Include="Completions\RCompletion.cs" />
+    <Compile Include="Completions\RFunctionCompletion.cs" />
+    <Compile Include="ContentType\TextViewExtensions.cs" />
+    <Compile Include="Data\RSessionChangeWatcher.cs" />
+    <Compile Include="Data\RSessionDataObject.cs" />
+    <Compile Include="Data\IRSessionDataObject.cs" />
+    <Compile Include="Completions\Definitions\IVariablesProvider.cs" />
+    <Compile Include="Completions\Definitions\RCompletionProviderAttribute.cs" />
+    <Compile Include="Completions\Definitions\IRQuickInfoProvider.cs" />
+    <Compile Include="Completions\Definitions\RCompletionContext.cs" />
+    <Compile Include="Completions\Definitions\IRCompletionListProvider.cs" />
+    <Compile Include="Completions\Engine\RCompletionEngine.cs" />
+    <Compile Include="Completions\Providers\CompletionControllerProvider.cs" />
+    <Compile Include="Completions\Providers\CompletionSourceProvider.cs" />
+    <Compile Include="Completions\Providers\FilesCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\ParameterNameCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\PackagesCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\PackageFunctionCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\KeywordCompletionProvider.cs" />
+    <Compile Include="Completions\Providers\WorkspaceVariableCompletionProvider.cs" />
+    <Compile Include="Completions\RCompletionSet.cs" />
+    <Compile Include="Completions\RCompletionSource.cs" />
+    <Compile Include="Completions\RCompletionController.cs" />
+    <Compile Include="Data\WorkspaceVariableProvider.cs" />
+    <Compile Include="Documentation\InsertRoxygenBlockCommand.cs" />
+    <Compile Include="Documentation\RoxygenBlock.cs" />
+    <Compile Include="Document\Definitions\IREditorDocument.cs" />
+    <Compile Include="Document\RDocumentFactory.cs" />
+    <Compile Include="DragDrop\DataObject.cs" />
+    <Compile Include="DragDrop\DropHandler.cs" />
+    <Compile Include="DragDrop\DropHandlerProvider.cs" />
+    <Compile Include="EditorFactory\REditorInstance.cs" />
+    <Compile Include="EditorFactory\REditorInstanceFactory.cs" />
+    <Compile Include="Extensions\DocumentExtensions.cs" />
+    <Compile Include="Extensions\AstRootExtensions.cs" />
+    <Compile Include="Extensions\FunctionDefinitionExtensions.cs" />
+    <Compile Include="Formatting\AutoFormat.cs" />
+    <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
+    <Compile Include="Formatting\FormatDocumentCommand.cs" />
+    <Compile Include="Formatting\FormatOperations.cs" />
+    <Compile Include="Formatting\FormatSelectionCommand.cs" />
+    <Compile Include="Formatting\FormatOnPasteCommand.cs" />
+    <Compile Include="Formatting\Data\IClipboardDataProvider.cs" />
+    <Compile Include="Formatting\RangeFormatter.cs" />
+    <Compile Include="Navigation\CodeNavigator.cs" />
+    <Compile Include="Navigation\Commands\PeekDefinitionCommand.cs" />
+    <Compile Include="Navigation\Commands\GoToDefinitionCommand.cs" />
+    <Compile Include="Navigation\Peek\PeekItemBase.cs" />
+    <Compile Include="Navigation\Peek\InternalFunctionPeekItem.cs" />
+    <Compile Include="Navigation\Peek\InternalFunctionPeekResultSource.cs" />
+    <Compile Include="Navigation\Peek\UserDefinedPeekItem.cs" />
+    <Compile Include="Navigation\Peek\PeekableItemSource.cs" />
+    <Compile Include="Navigation\Peek\UserDefinedItemPeekResultSource.cs" />
+    <Compile Include="Navigation\Peek\PeekableItemSourceProvider.cs" />
+    <Compile Include="Navigation\Text\RTextSelector.cs" />
+    <Compile Include="Navigation\Text\TextStructureNavigator.cs" />
+    <Compile Include="Navigation\Text\TextStructureNavigatorProvider.cs" />
+    <Compile Include="Outline\ROutlineTaggerProvider.cs" />
+    <Compile Include="Outline\ROutliningRegionTag.cs" />
+    <Compile Include="Outline\ROutliningTagger.cs" />
+    <Compile Include="Outline\ROutlineRegion.cs" />
+    <Compile Include="Outline\ROutlineRegionBuilder.cs" />
+    <Compile Include="Outline\RSectionsCollection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Document\REditorDocument.cs" />
+    <Compile Include="QuickInfo\QuickInfoController.cs" />
+    <Compile Include="QuickInfo\QuickInfoControllerProvider.cs" />
+    <Compile Include="QuickInfo\QuickInfoSource.cs" />
+    <Compile Include="QuickInfo\QuickInfoSourceProvider.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Selection\RSelectionTracker.cs" />
+    <Compile Include="Selection\SelectWordCommand.cs" />
+    <Compile Include="Settings\IWriteableREditorSettings.cs" />
+    <Compile Include="Settings\IREditorSettings.cs" />
+    <Compile Include="Settings\REditorSettings.cs" />
+    <Compile Include="Signatures\RSignatureHelpContext.cs" />
+    <Compile Include="Signatures\ParametersInfo.cs" />
+    <Compile Include="Signatures\SignatureHelp.cs" />
+    <Compile Include="Signatures\SignatureHelp2.cs" />
+    <Compile Include="Signatures\SignatureHelpContext.cs" />
+    <Compile Include="Signatures\SignatureHelpSourceProvider.cs" />
+    <Compile Include="Signatures\SignatureHelpSource.cs" />
+    <Compile Include="Signatures\SignatureParameter.cs" />
+    <Compile Include="SmartIndent\SmartIndenter.cs" />
+    <Compile Include="SmartIndent\SmartIndentProvider.cs" />
+    <Compile Include="Snippets\ISnippetInformationSourceProvider.cs" />
+    <Compile Include="Snippets\ISnippetInformationSource.cs" />
+    <Compile Include="Snippets\ISnippetInfo.cs" />
+    <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\RSuggestedActionBase.cs" />
+    <Compile Include="SuggestedActions\Definitions\IRSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\Providers\LibraryStatementSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
+    <Compile Include="Tree\ApplyTreeChanges.cs" />
+    <Compile Include="Tree\CancellableTask.cs" />
+    <Compile Include="Tree\ChangeProcessor.cs" />
+    <Compile Include="Tree\Debug.cs" />
+    <Compile Include="Tree\Definitions\IEditorTree.cs" />
+    <Compile Include="Tree\EditorTree.cs" />
+    <Compile Include="Tree\EditorTreeChangeCollection.cs" />
+    <Compile Include="Tree\TreeChangeType.cs" />
+    <Compile Include="Tree\EditorTreeChange.cs" />
+    <Compile Include="Tree\TextChange.cs" />
+    <Compile Include="Tree\TextChangeAnalyzer.cs" />
+    <Compile Include="Tree\TextChangeContext.cs" />
+    <Compile Include="Tree\TextChangeType.cs" />
+    <Compile Include="Tree\TreeChangeEventRecord.cs" />
+    <Compile Include="Tree\TreeEventArgs.cs" />
+    <Compile Include="Tree\EditorTreeEvents.cs" />
+    <Compile Include="Tree\TreeLock.cs" />
+    <Compile Include="Tree\TreeUpdateTask.cs" />
+    <Compile Include="Tree\TreeUpdateType.cs" />
+    <Compile Include="Undo\MassiveChange.cs" />
+    <Compile Include="Validation\Definitions\IValidator.cs" />
+    <Compile Include="Validation\Definitions\IValidatorProvider.cs" />
+    <Compile Include="Validation\Definitions\IValidationError.cs" />
+    <Compile Include="Validation\Errors\ErrorText.cs" />
+    <Compile Include="Validation\ValidatorManager.cs" />
+    <Compile Include="Validation\Errors\ValidationError.cs" />
+    <Compile Include="Validation\Errors\ValidationErrorBase.cs" />
+    <Compile Include="Validation\Errors\ValidationErrorCollection.cs" />
+    <Compile Include="Validation\Errors\ValidationMessage.cs" />
+    <Compile Include="Validation\Errors\ValidationSentinel.cs" />
+    <Compile Include="Validation\Errors\ValidationWarning.cs" />
+    <Compile Include="Validation\Tagger\EditorErrorTag.cs" />
+    <Compile Include="Validation\Tagger\ErrorTagCollection.cs" />
+    <Compile Include="Validation\Tagger\EditorErrorTagger.cs" />
+    <Compile Include="Validation\Tagger\EditorErrorTaggerProvider.cs" />
+    <Compile Include="Validation\TreeValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+      <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
+      <Name>Microsoft.Common.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
+      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
+      <Name>Microsoft.Languages.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
+      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
+      <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
+      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
+      <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
+      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
+      <Name>Microsoft.R.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
+      <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
+      <Name>Microsoft.R.Wpf</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
+      <InProject>false</InProject>
+    </SignFilesDependsOn>
+  </ItemGroup>
+  <ItemGroup>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
+      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).dll.lcl</TranslationFile>
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+    </FilesToLocalize>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
+    <ItemGroup>
+      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
+        <Authenticode>Microsoft</Authenticode>
+        <StrongName>StrongName</StrongName>
+      </FilesToSign>
+    </ItemGroup>
+  </Target>
+</Project>

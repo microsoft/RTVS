@@ -21,7 +21,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\..\R.Settings.targets" />
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -32,7 +32,7 @@
   <Choose>
     <When Condition="'$(VisualStudioVersion)'=='14.0'">
       <ItemGroup>
-        <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
+        <ProjectReference Include="..\..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
           <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
           <Name>Microsoft.UnitTests.References.14.0</Name>
         </ProjectReference>
@@ -41,92 +41,92 @@
     <When Condition="'$(VisualStudioVersion)'=='15.0'" />
   </Choose>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+    <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{E1B1909E-3193-499B-91DB-1E13E6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
+    <ProjectReference Include="..\..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
       <Project>{EE2504A4-4666-460B-8552-5B342718CB02}</Project>
       <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
+    <ProjectReference Include="..\..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+    <ProjectReference Include="..\..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+    <ProjectReference Include="..\..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+    <ProjectReference Include="..\..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+    <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
+    <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Test\Microsoft.R.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\..\R\Core\Test\Microsoft.R.Core.Test.csproj">
       <Project>{58D86BE4-FA8B-4F59-91FE-A9B348C70ED2}</Project>
       <Name>Microsoft.R.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Support\Impl\Microsoft.R.Support.csproj">
+    <ProjectReference Include="..\..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Support\Test\Microsoft.R.Support.Test.csproj">
+    <ProjectReference Include="..\..\..\..\R\Support\Test\Microsoft.R.Support.Test.csproj">
       <Project>{5504F3D6-08D3-401F-8214-409A60735185}</Project>
       <Name>Microsoft.R.Support.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.R.Editor.csproj">
+    <ProjectReference Include="..\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
-      <Name>Microsoft.R.Editor</Name>
+      <Name>Microsoft.R.Editor.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Files\query.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\UnitTests\app.config">
+    <None Include="..\..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="Files\02.r" />
@@ -158,7 +158,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="BraceMatch\BraceMatchTest.cs" />
-    <Compile Include="EditorTestFilesFixture.cs" />
+    <Compile Include="Fixtures\EditorTestFilesFixture.cs" />
     <Compile Include="Comments\CommenterTest.cs" />
     <Compile Include="Completions\RCompletionSourceTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />

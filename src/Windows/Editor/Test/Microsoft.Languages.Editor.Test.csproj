@@ -72,10 +72,6 @@
       <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Name>Microsoft.Markdown.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5FCB86D5-4B25-4039-858C-B5A06EB702E1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
@@ -83,10 +79,6 @@
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{D6EEEF87-CE3A-4804-A409-39966B96C850}</Project>
-      <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
