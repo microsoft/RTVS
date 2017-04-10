@@ -30,19 +30,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRunning = connectionManager.IsRunning;
         }
 
-        public virtual void Dispose(bool disposing) {
-            _disposableBag.TryDispose();
-        }
-
-        public void Dispose() {
-            Dispose(true);
-        }
+        public virtual void Dispose(bool disposing) => _disposableBag.TryDispose();
+        public void Dispose() => Dispose(true);
 
         protected abstract void ConnectionStateChanged();
 
-        private void ConnectionStateChanged(object sender, EventArgs e) {
-            Services.MainThread().Post(ConnectionStateChangedOnMainThread);
-        }
+        private void ConnectionStateChanged(object sender, EventArgs e)
+            => Services.MainThread().Post(ConnectionStateChangedOnMainThread);
 
         private void ConnectionStateChangedOnMainThread() {
             IsConnected = ConnectionManager.IsConnected;

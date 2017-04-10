@@ -373,29 +373,22 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         public async Task R_SnippetsCompletion01() {
             using (var script = await _editorHost.StartScript(Shell, RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);
                 script.Type("whil");
                 script.DoIdle(300);
 
-                UIThreadHelper.Instance.Invoke(() => {
-                    var session = script.GetCompletionSession();
-                    session.Should().NotBeNull();
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
 
-                    var infoSourceProvider = Shell.GetService<ISnippetInformationSourceProvider>();
-                    var infoSource = infoSourceProvider.InformationSource;
-                    var completion = session.SelectedCompletionSet.SelectionStatus.Completion;
+                var infoSourceProvider = Shell.GetService<ISnippetInformationSourceProvider>();
+                var infoSource = infoSourceProvider.InformationSource;
+                var completion = session.SelectedCompletionSet.SelectionStatus.Completion;
 
-                    bool isSnippet = infoSource.IsSnippet(completion.DisplayText);
-                    isSnippet.Should().BeTrue();
-
-                    var glyph = completion.IconSource;
-                    var gs = Shell.GetService<IGlyphService>();
-                    var snippetGlyph = gs.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
-                    glyph.Should().Be(snippetGlyph);
-                });
+                bool isSnippet = infoSource.IsSnippet(completion.DisplayText);
+                isSnippet.Should().BeTrue();
             }
         }
 
