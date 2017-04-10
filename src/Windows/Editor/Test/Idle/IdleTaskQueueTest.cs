@@ -17,12 +17,10 @@ namespace Microsoft.Languages.Editor.Test.Services {
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class IdleTaskQueueTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
 
-        public IdleTaskQueueTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _shell = _exportProvider.GetExportedValue<ICoreShell>();
+        public IdleTaskQueueTest(EditorShellProviderFixture shellProvider) {
+            _shell = shellProvider.CoreShell;
         }
 
         [Test]
