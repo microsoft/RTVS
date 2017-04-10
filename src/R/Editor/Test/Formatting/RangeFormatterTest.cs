@@ -111,9 +111,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             string original =
 @"if(true){
-    if(false){
+  if(false){
 x<-1
-    }
+  }
 }";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
@@ -122,9 +122,9 @@ x<-1
 
             string expected =
 @"if(true){
-    if(false){
-        x <- 1
-    }
+  if(false){
+    x <- 1
+  }
 }";
             actual.Should().Be(expected);
         }
@@ -137,7 +137,7 @@ x<-1
 
             RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf('y'), 0), new RFormatOptions(), _shell);
 
-            string expected = "if (x > 1)\r\n    y <- 2";
+            string expected = "if (x > 1)\r\n  y <- 2";
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             actual.Should().Be(expected);
