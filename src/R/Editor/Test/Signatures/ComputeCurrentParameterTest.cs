@@ -23,7 +23,8 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
-        public ComputeCurrentParameterTest(EditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
+        public ComputeCurrentParameterTest(REditorShellProviderFixture shellProvider) : 
+            base(shellProvider.CoreShell) { }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {

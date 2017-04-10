@@ -7,7 +7,9 @@ using System.Globalization;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Sql;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.Win32;
@@ -44,13 +46,16 @@ namespace Microsoft.R.Components.Test.Sql {
             var coreShell = Substitute.For<ICoreShell>();
             var driverPath = @"c:\windows\system32\driver.dll";
 
+            var sm = new ServiceManager();
+            coreShell.Services.Returns(sm);
+
             var fs = Substitute.For<IFileSystem>();
             fs.FileExists(Arg.Any<string>()).Returns(true);
             fs.GetFileVersion(driverPath).Returns(new Version(version));
-            coreShell.FileSystem().Returns(fs);
+            sm.AddService(fs);
 
             var registry = Substitute.For<IRegistry>();
-            coreShell.GetService<IRegistry>().Returns(registry);
+            sm.AddService(registry);
 
             var odbc13Key = Substitute.For<IRegistryKey>();
             odbc13Key.GetValue("Driver").Returns(driverPath);
@@ -61,22 +66,26 @@ namespace Microsoft.R.Components.Test.Sql {
             registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).Returns(hlkm);
             coreShell.LocaleId.Returns(lcid);
 
-            coreShell.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
+            var ui = Substitute.For<IUIService>();
+            sm.AddService(ui);
+            ui.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
                 var arg = x.Args()[0] as string;
-                arg.Should().Contain(CultureInfo.GetCultureInfo((int)lcid).Name);
+                arg.Should().Contain(CultureInfo.GetCultureInfo(lcid).Name);
             });
 
-            coreShell.Process().When(x => x.Start(Arg.Any<string>())).Do(x => {
+            var process = Substitute.For<IProcessServices>();
+            sm.AddService(process);
+            process.When(x => x.Start(Arg.Any<string>())).Do(x => {
                 var arg = x.Args()[0] as string;
-                arg.Should().Contain(CultureInfo.GetCultureInfo((int)lcid).Name);
+                arg.Should().Contain(CultureInfo.GetCultureInfo(lcid).Name);
             });
 
             var service = new DbConnectionService(coreShell);
             service.CheckSqlOdbcDriverVersion().Should().Be(expected);
 
-            if(!expected) {
-                coreShell.Received(1).ShowErrorMessage(Arg.Any<string>());
-                coreShell.Process().Received(1).Start(Arg.Any<string>());
+            if (!expected) {
+                ui.Received(1).ShowErrorMessage(Arg.Any<string>());
+                process.Received(1).Start(Arg.Any<string>());
             }
         }
     }

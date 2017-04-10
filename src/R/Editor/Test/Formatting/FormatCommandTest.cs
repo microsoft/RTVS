@@ -25,8 +25,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
     public class FormatCommandTest {
         private readonly ICoreShell _shell;
 
-        public FormatCommandTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+        public FormatCommandTest(REditorShellProviderFixture shellProvider) {
+            _shell = shellProvider.CoreShell;
         }
 
         [CompositeTest]

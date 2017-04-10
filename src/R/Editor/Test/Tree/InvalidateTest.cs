@@ -17,12 +17,10 @@ namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
     public class EditorTreeInvalidateTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
 
-        public EditorTreeInvalidateTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
-            _exportProvider = exportProvider;
-            _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+        public EditorTreeInvalidateTest(REditorShellProviderFixture shellProvider, EditorTestFilesFixture testFiles) {
+            _coreShell = shellProvider.CoreShell;
         }
 
         [Test]

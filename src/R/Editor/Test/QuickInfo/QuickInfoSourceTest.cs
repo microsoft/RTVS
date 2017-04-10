@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             public ITextBuffer TextBuffer;
         }
 
-        public FunctionIndexTest(EditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
+        public FunctionIndexTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
 
         [CompositeTest]
         [InlineData(true)]

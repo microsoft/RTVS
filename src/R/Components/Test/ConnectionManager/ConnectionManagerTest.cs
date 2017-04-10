@@ -22,17 +22,17 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
     [Category.Connections]
     public sealed class ConnectionManagerTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
 
-        public ConnectionManagerTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
+        public ConnectionManagerTest(RComponentsShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
         }
 
         [Test]
         public async Task DisconnectAsync() {
-            var connection = _exportProvider.GetExportedValue<IRSettings>().LastActiveConnection;
+            var connection = _coreShell.GetService<IRSettings>().LastActiveConnection;
 
-            var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var connectionManager = workflow.Connections;
             await connectionManager.ConnectAsync(connection).Should().BeCompletedAsync();
             await connectionManager.DisconnectAsync().Should().BeCompletedAsync();
@@ -43,9 +43,9 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public async Task DisconnectAsync_Canceled() {
-            var connection = _exportProvider.GetExportedValue<IRSettings>().LastActiveConnection;
+            var connection = _coreShell.GetService<IRSettings>().LastActiveConnection;
 
-            var connectionManager = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            var connectionManager = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             await connectionManager.ConnectAsync(connection).Should().BeCompletedAsync();
 
             var cts = new CancellationTokenSource();
@@ -56,7 +56,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void RecentConnections() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            var settings = _coreShell.GetService<IRSettings>();
             var dateTime = DateTime.Now;
             settings.Connections = new[] {
                 new ConnectionInfo("A", "http://127.0.0.1", null, true) { LastUsed = dateTime.AddHours(1) },
@@ -65,13 +65,13 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
                 new ConnectionInfo("D", "http://127.0.0.4", null, true) { LastUsed = dateTime }
             };
 
-            var cm = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            var cm = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             cm.RecentConnections.Should().StartWith(new [] { "C", "A", "D", "B" }, (ci, s) => ci.Name == s);
         }
 
         [Test]
         public async Task RecentConnections_AfterSwitch() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            var settings = _coreShell.GetService<IRSettings>();
             var dateTime = DateTime.Now;
             settings.Connections = new[] {
                 new ConnectionInfo("A", "http://127.0.0.1", null, true) { LastUsed = dateTime.AddHours(-4) },
@@ -80,7 +80,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
                 new ConnectionInfo("D", "http://127.0.0.4", null, true) { LastUsed = dateTime.AddHours(-1) }
             };
 
-            var cm = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            var cm = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             var connection = cm.RecentConnections.First(c => !c.IsRemote);
             await cm.ConnectAsync(connection).Should().BeCompletedAsync();
 
@@ -90,7 +90,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public async Task RecentConnections_AfterSwitch_AddNewConnection() {
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            var settings = _coreShell.GetService<IRSettings>();
             var dateTime = DateTime.Now;
             settings.Connections = new[] {
                 new ConnectionInfo("A", "http://127.0.0.1", null, true) { LastUsed = dateTime.AddHours(-4) },
@@ -98,7 +98,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
                 new ConnectionInfo("C", "http://127.0.0.3", null, true) { LastUsed = dateTime.AddHours(-2) }
             };
 
-            var cm = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            var cm = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             var connection = cm.RecentConnections.First(c => !c.IsRemote);
             await cm.ConnectAsync(connection).Should().BeCompletedAsync();
             cm.GetOrAddConnection("D", "http://127.0.0.4", null, false);
@@ -109,20 +109,20 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public async Task TryConnectToPreviouslyUsedAsync() {
-            var connectionManager = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
+            var connectionManager = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().Connections;
             await connectionManager.TryConnectToPreviouslyUsedAsync().Should().HaveResultAsync(true);
         }
 
         [Test]
         public async Task TryConnectToPreviouslyUsedAsync_AfterConnectAsyncFailed() {
             var unreachableConnection = new ConnectionInfo("A", "http://127.0.0.1", null, true);
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            var settings = _coreShell.GetService<IRSettings>();
             settings.Connections = new[] {
                 unreachableConnection,
                 settings.LastActiveConnection
             };
 
-            using (var workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()) {
+            using (var workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()) {
                 var security = (SecurityServiceStub)workflow.Shell.Security();
                 security.GetUserCredentialsHandler = delegate { throw new RHostDisconnectedException(); };
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -23,12 +24,14 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
     [Category.Connections]
     public sealed class ConnectionManagerViewModelTest : IDisposable {
+        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IConnectionManagerVisualComponent _cmvc;
         private readonly ConnectionManagerViewModel _cmvm;
 
-        public ConnectionManagerViewModelTest(IExportProvider exportProvider) {
-            _workflow = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+        public ConnectionManagerViewModelTest(RComponentsShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
+            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _cmvc = UIThreadHelper.Instance.Invoke(() => _workflow.Connections.GetOrCreateVisualComponent());
             _cmvm = UIThreadHelper.Instance.Invoke(() => (ConnectionManagerViewModel)_cmvc.Control.DataContext);
         }

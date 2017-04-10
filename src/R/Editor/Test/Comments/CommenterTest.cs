@@ -21,8 +21,8 @@ namespace Microsoft.R.Editor.Test.Comments {
     public class CommenterTest {
         private readonly ICoreShell _shell;
 
-        public CommenterTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+        public CommenterTest(REditorShellProviderFixture shellProvider) {
+            _shell = shellProvider.CoreShell;
         }
 
         [Test]
