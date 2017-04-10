@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -204,8 +203,7 @@ namespace Microsoft.Languages.Editor.Classification {
             string classificationName = _classificationNameProvider.GetClassificationName(token);
 
             if (!string.IsNullOrEmpty(classificationName)) {
-                IClassificationType ct = ClassificationRegistryService.GetClassificationType(classificationName);
-
+                var ct = ClassificationRegistryService.GetClassificationType(classificationName);
                 if (ct != null) {
                     Span tokenSpan = new Span(token.Start, token.Length);
                     ClassificationSpan cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);
@@ -220,7 +218,7 @@ namespace Microsoft.Languages.Editor.Classification {
             IClassificationNameProvider compositeNameProvider;
 
             if (!_compositeClassificationNameProviders.TryGetValue(contentTypeName, out compositeNameProvider)) {
-                IContentType contentType = ContentTypeRegistryService.GetContentType(contentTypeName);
+                var contentType = ContentTypeRegistryService.GetContentType(contentTypeName);
                 var providers = ComponentLocatorForContentType<IClassificationNameProvider, IComponentContentTypes>.
                                           FilterByContentTypeExact(contentType, ClassificationNameProviders);
 
@@ -239,8 +237,7 @@ namespace Microsoft.Languages.Editor.Classification {
                 string classificationName = compositeNameProvider.GetClassificationName(token, out range);
 
                 if (!string.IsNullOrEmpty(classificationName)) {
-                    IClassificationType ct = ClassificationRegistryService.GetClassificationType(classificationName);
-
+                    var ct = ClassificationRegistryService.GetClassificationType(classificationName);
                     if (ct != null) {
                         Span tokenSpan = new Span(range.Start, range.Length);
                         ClassificationSpan cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);

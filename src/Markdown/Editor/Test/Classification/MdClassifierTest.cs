@@ -30,7 +30,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public MarkdownClassifierTest(REditorShellProviderFixture shellProvider, MarkdownTestFilesFixture files) {
+        public MarkdownClassifierTest(MarkdownEditorShellProviderFixture shellProvider, MarkdownTestFilesFixture files) {
             _coreShell = shellProvider.CoreShell;
             _files = files;
         }
@@ -50,16 +50,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             var crs = _coreShell.GetService<IClassificationTypeRegistryService>();
             var ctrs = _coreShell.GetService<IContentTypeRegistryService>();
-
-            var ep = _coreShell.GetService<IExportProvider>();
-             var cnp = ep.GetExports<IClassificationNameProvider, IComponentContentTypes>();
-
-            var classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _coreShell.GetService<ICoreShell>());
-
-            var shell = _coreShell.GetService<ICoreShell>();
-            var cs = shell.GetService<ICompositionService>();
-            cs.SatisfyImportsOnce(classifierProvider);
-
+            var classifierProvider = new MdClassifierProvider(crs, ctrs, _coreShell);
             var cls = classifierProvider.GetClassifier(textBuffer);
 
             var spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));

@@ -18,13 +18,17 @@ namespace Microsoft.R.Components.Test.Information {
     [Category.Information]
     public sealed class HostLoadIndicatorViewModelTest {
         private readonly IRSessionProvider _sessionProvider = Substitute.For<IRSessionProvider>();
-        private readonly ICoreShell _coreShell = TestCoreShell.CreateBasic();
+        private readonly ICoreShell _coreShell;
 
         private readonly HostLoad _hostLoad = new HostLoad() {
             CpuLoad = 30,
             MemoryLoad = 40,
             NetworkLoad = 50
         };
+
+        public HostLoadIndicatorViewModelTest(RComponentsShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
+        }
 
         [Test]
         public void Update() {

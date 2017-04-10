@@ -1,20 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Classification;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Test;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Editor.Test;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -28,14 +23,11 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         private readonly ITextBufferFactoryService _tbfs;
         private readonly IClassificationTypeRegistryService _crs;
         private readonly IContentTypeRegistryService _ctrs;
-        private readonly IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> _cnp;
 
-        public MarkdownCodeTest(REditorShellProviderFixture shellProvider) {
+        public MarkdownCodeTest(MarkdownEditorShellProviderFixture shellProvider) {
             _coreShell = shellProvider.CoreShell;
             _crs = _coreShell.GetService<IClassificationTypeRegistryService>();
             _ctrs = _coreShell.GetService<IContentTypeRegistryService>();
-            var ep = _coreShell.GetService<IExportProvider>();
-            _cnp = ep.GetExports<IClassificationNameProvider, IComponentContentTypes>();
             _tbfs = _coreShell.GetService<ITextBufferFactoryService>();
         }
 
@@ -82,7 +74,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             textBuffer = _tbfs.CreateTextBuffer(new ContentTypeMock(MdContentTypeDefinition.ContentType));
             textBuffer.Insert(0, content);
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _cnp, _coreShell);
+            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _coreShell);
            return classifierProvider.GetClassifier(textBuffer);
         }
 
