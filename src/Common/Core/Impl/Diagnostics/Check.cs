@@ -30,5 +30,11 @@ namespace Microsoft.Common.Core.Diagnostics {
                 throw new InvalidOperationException(message ?? string.Empty);
             }
         }
+
+        public static void Argument(string argumentName, Func<bool> predicate) {
+            if (!predicate()) {
+                throw new ArgumentException();
+            }
+        }
     }
 }

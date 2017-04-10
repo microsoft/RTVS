@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.VisualStudio.Text;
@@ -13,19 +15,19 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor {
-    public class TextChangeExtent {
-        public TextChangeExtent(int start, int oldEnd, int newEnd) {
-            Start = start;
-            OldEnd = oldEnd;
-            NewEnd = newEnd;
+    public static class TextBufferExtensions {
+        public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer) {
+            IEditorBuffer buffer = null;
+            textBuffer.Properties.TryGetProperty(typeof(IEditorBuffer), out buffer);
+            return buffer;
         }
 
-        public int Start { get; }
-        public int OldEnd { get; }
-        public int NewEnd { get; }
-    }
+        public static IServiceManager Services(this ITextBuffer textBuffer) {
+            var editorBuffer = textBuffer.ToEditorBuffer();
+            Check.InvalidOperation(() => editorBuffer != null);
+            return editorBuffer.Services;
+        }
 
-    public static class TextBufferExtensions {
         public static ITextView CurrentTextView(this ITextBuffer viewBuffer) {
             ITextView textView = null;
             if (viewBuffer != null) {
@@ -51,9 +53,6 @@ namespace Microsoft.Languages.Editor {
 
             return allBuffers;
         }
-
-        public static bool IsContributingBuffer(this ITextBuffer buffer, ITextBuffer contributingBuffer) 
-            => buffer.GetContributingBuffers().FirstOrDefault<ITextBuffer>((t) => t == contributingBuffer) != null;
 
         public static string GetFileName(this ITextBuffer textBuffer) {
             string path = string.Empty;

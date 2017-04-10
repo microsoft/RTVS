@@ -105,7 +105,7 @@
     <Compile Include="EditorFactory\Definitions\IEditorDocumentFactory.cs" />
     <Compile Include="EditorFactory\Definitions\IEditorFactory.cs" />
     <Compile Include="EditorFactory\Definitions\IEditorInstance.cs" />
-    <Compile Include="Extensions\TextBufferHelper.cs" />
+    <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Selection\ISelectionTracker.cs" />
     <Compile Include="Selection\SelectionTracker.cs" />
@@ -114,6 +114,13 @@
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Shell\IApplicationEditorSupport.cs" />
     <Compile Include="SuggestedActions\SuggestedActionBase.cs" />
+    <Compile Include="Text\CaretPosition.cs" />
+    <Compile Include="Text\EditorBuffer.cs" />
+    <Compile Include="Text\EditorBufferSnapshot.cs" />
+    <Compile Include="Text\EditorLine.cs" />
+    <Compile Include="Text\EditorSelection.cs" />
+    <Compile Include="Text\EditorSnapshotPoint.cs" />
+    <Compile Include="Text\EditorView.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
@@ -126,6 +133,7 @@
     <Compile Include="Text\TextUtility.cs" />
     <Compile Include="Text\TextViewListenerEventArgs.cs" />
     <Compile Include="Text\TextViewListenerEvents.cs" />
+    <Compile Include="Text\ViewCaret.cs" />
     <Compile Include="Undo\CompoundUndoAction.cs" />
     <Compile Include="Undo\ICompoundUndoAction.cs" />
     <Compile Include="Undo\MergeUndoActionPolicy.cs" />
