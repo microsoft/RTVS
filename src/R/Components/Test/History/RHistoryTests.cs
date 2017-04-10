@@ -3,11 +3,11 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Xunit;
@@ -18,9 +18,9 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly ITextBuffer _textBuffer;
 
-        public RHistoryTests(IExportProvider exportProvider) {
+        public RHistoryTests(RComponentsShellProviderFixture shellProvider) {
             _interactiveWorkflow = InteractiveWorkflowStubFactory.CreateDefault();
-            _textBuffer = exportProvider.GetExportedValue<ITextBufferFactoryService>().CreateTextBuffer();
+            _textBuffer = shellProvider.CoreShell.GetService<ITextBufferFactoryService>().CreateTextBuffer();
         }
 
         [CompositeTest]

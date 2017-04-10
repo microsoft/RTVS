@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.UnitTests.Core.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 

@@ -12,7 +12,6 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Formatting.Data;
 using Microsoft.R.Editor.Test.Mocks;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;

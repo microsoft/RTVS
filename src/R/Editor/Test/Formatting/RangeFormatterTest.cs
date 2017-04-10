@@ -10,7 +10,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 using Xunit;
@@ -19,13 +18,11 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class RangeFormatterTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
 
-        public RangeFormatterTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _shell = _exportProvider.GetExportedValue<ICoreShell>();
-        }
+        public RangeFormatterTest(REditorShellProviderFixture shellProvider) {
+            _shell = shellProvider.CoreShell;
+         }
 
         [Test]
         public void EmptyFileTest() {

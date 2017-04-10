@@ -5,10 +5,10 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.UnitTests.Core.FluentAssertions;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
@@ -20,11 +20,11 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public RInteractiveEvaluatorTest(IExportProvider exportProvider) {
-            var settings = exportProvider.GetExportedValue<IRSettings>();
+        public RInteractiveEvaluatorTest(RComponentsShellProviderFixture shellProvider) {
+            var settings = shellProvider.CoreShell.GetService<IRSettings>();
             settings.RCodePage = 1252;
 
-            _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            _workflowProvider = shellProvider.CoreShell.GetService<IRInteractiveWorkflowProvider>();
             _workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
         }
 

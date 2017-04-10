@@ -1,25 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.R.Editor.Tree;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
     public class ProcessChangesTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
 
-        public ProcessChangesTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
-            _exportProvider = exportProvider;
-            _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+        public ProcessChangesTest(REditorShellProviderFixture shellProvider, EditorTestFilesFixture testFiles) {
+            _coreShell = shellProvider.CoreShell;
         }
 
         [Test]

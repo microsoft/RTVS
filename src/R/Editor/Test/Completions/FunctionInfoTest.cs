@@ -6,12 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -25,8 +22,8 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly IFunctionIndex _functionIndex;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public FunctionInfoTest(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public FunctionInfoTest(REditorShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
             _workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
             _packageIndex = _coreShell.GetService<IPackageIndex>();
             _functionIndex = _coreShell.GetService<IFunctionIndex>();

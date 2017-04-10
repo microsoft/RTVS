@@ -10,7 +10,6 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

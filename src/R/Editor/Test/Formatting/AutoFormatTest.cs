@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
@@ -17,7 +16,6 @@ using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

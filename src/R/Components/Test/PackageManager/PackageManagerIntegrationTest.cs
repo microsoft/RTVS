@@ -10,13 +10,13 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
     [ExcludeFromCodeCoverage]
     [Category.PackageManager]
     public class PackageManagerIntegrationTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly MethodInfo _testMethod;
         private readonly string _repoPath;
@@ -34,9 +34,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private readonly string _lib2Path;
         private IRInteractiveWorkflow _workflow;
 
-        public PackageManagerIntegrationTest(IExportProvider exportProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _exportProvider = exportProvider;
-            _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
+        public PackageManagerIntegrationTest(RComponentsShellProviderFixture shellProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _coreShell = shellProvider.CoreShell;
+            _workflowProvider = _coreShell.GetService<TestRInteractiveWorkflowProvider>();
             _testMethod = testMethod.MethodInfo;
             _repoPath = TestRepositories.GetRepoPath(testFiles);
             _libPath = Path.Combine(testFiles.LibraryDestinationPath, _testMethod.Name);
@@ -273,7 +273,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         private async Task<IRInteractiveWorkflow> CreateWorkflowAsync() {
             var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
-            var settings = _exportProvider.GetExportedValue<IRSettings>();
+            var settings = _coreShell.GetService<IRSettings>();
             await workflow.RSessions.TrySwitchBrokerAsync(nameof(PackageManagerIntegrationTest));
             await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo (settings.CranMirror, codePage: settings.RCodePage), new RHostClientTestApp(), 50000);
             return workflow;

@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Script;
-using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;

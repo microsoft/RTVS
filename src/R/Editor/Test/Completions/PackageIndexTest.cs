@@ -4,16 +4,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -27,9 +25,9 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRSessionProvider _sessionProvider;
 
-        public PackageIndexTest(IExportProvider exportProvider) {
+        public PackageIndexTest(REditorShellProviderFixture shellProvider) {
             _shell.ServiceManager.AddService(new TestRToolsSettings());
-            _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            _workflowProvider = shellProvider.CoreShell.GetService<IRInteractiveWorkflowProvider>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;
         }
         

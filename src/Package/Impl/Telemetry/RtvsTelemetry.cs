@@ -10,7 +10,6 @@ using System.Reflection;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Editor;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;

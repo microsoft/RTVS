@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;

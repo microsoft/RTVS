@@ -8,10 +8,12 @@ using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Test;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.R.Editor.Test;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -22,18 +24,19 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     public class MarkdownCodeTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly ITextBufferFactoryService _tbfs;
         private readonly IClassificationTypeRegistryService _crs;
         private readonly IContentTypeRegistryService _ctrs;
         private readonly IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> _cnp;
 
-        public MarkdownCodeTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _crs = _exportProvider.GetExportedValue<IClassificationTypeRegistryService>();
-            _ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
-            _cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
-            _tbfs = _exportProvider.GetExportedValue<ITextBufferFactoryService>();
+        public MarkdownCodeTest(REditorShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
+            _crs = _coreShell.GetService<IClassificationTypeRegistryService>();
+            _ctrs = _coreShell.GetService<IContentTypeRegistryService>();
+            var ep = _coreShell.GetService<IExportProvider>();
+            _cnp = ep.GetExports<IClassificationNameProvider, IComponentContentTypes>();
+            _tbfs = _coreShell.GetService<ITextBufferFactoryService>();
         }
 
         [Test]
@@ -79,7 +82,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             textBuffer = _tbfs.CreateTextBuffer(new ContentTypeMock(MdContentTypeDefinition.ContentType));
             textBuffer.Insert(0, content);
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _cnp, _exportProvider.GetExportedValue<ICoreShell>());
+            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _cnp, _coreShell);
            return classifierProvider.GetClassifier(textBuffer);
         }
 
