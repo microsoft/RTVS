@@ -14,6 +14,8 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
+using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -63,6 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new TestTaskService())
                 .AddService(new TestPlatformServices())
                 .AddService(new TestRToolsSettings())
+                .AddService(new REditorSettings(new TestSettingsStorage()))
                 // OLE and VS specifics
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))
