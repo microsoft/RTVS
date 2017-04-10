@@ -104,7 +104,7 @@ namespace Microsoft.Common.Core {
                     Directory.GetFiles(path);
                     return true;
                 }
-            } catch(IOException) { } catch(UnauthorizedAccessException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
             return false;
         }
 
@@ -134,6 +134,16 @@ namespace Microsoft.Common.Core {
                 }
             }
             return allowWrite && !denyWrite;
+        }
+
+        public static string NormalizePath(this string path) {
+            var name = Path.GetFileName(path);
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir)) {
+                dir = new DirectoryInfo(dir).FullName;
+                return !string.IsNullOrEmpty(name) ? Path.Combine(dir, name) : dir;
+            }
+            return path;
         }
     }
 }

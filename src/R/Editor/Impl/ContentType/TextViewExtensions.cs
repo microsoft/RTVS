@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
