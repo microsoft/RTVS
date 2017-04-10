@@ -19,8 +19,24 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
     <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj" />
+    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

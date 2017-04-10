@@ -3,6 +3,7 @@
 
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.R.Editor.Completions {
     /// <summary>

@@ -130,8 +130,6 @@
     </Compile>
     <Compile Include="Selection\RSelectionTracker.cs" />
     <Compile Include="Selection\SelectWordCommand.cs" />
-    <Compile Include="Settings\IWriteableREditorSettings.cs" />
-    <Compile Include="Settings\IREditorSettings.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\RSignatureHelpContext.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />

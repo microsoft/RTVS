@@ -1153,10 +1153,6 @@
       <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
       <Name>Microsoft.VisualStudio.R.Sql</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{F951311C-D665-4987-95A4-72A2DE37E263}</Project>
       <Name>Microsoft.R.Wpf</Name>
