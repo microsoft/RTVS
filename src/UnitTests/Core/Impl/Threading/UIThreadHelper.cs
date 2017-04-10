@@ -56,11 +56,17 @@ namespace Microsoft.UnitTests.Core.Threading {
         private ControlledTaskScheduler _taskScheduler;
         private AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
 
-        private UIThreadHelper() {}
+        private UIThreadHelper() { }
 
         public Thread Thread => _thread;
         public SynchronizationContext SyncContext => _syncContext;
         public ControlledTaskScheduler TaskScheduler => _taskScheduler;
+
+        #region IMainThread
+        int IMainThread.ThreadId => Thread.ManagedThreadId;
+        void IMainThread.Post(Action action, CancellationToken cancellationToken)
+            => InvokeAsync(action, cancellationToken).DoNotWait();
+        #endregion
 
         public void Invoke(Action action) {
             ExceptionDispatchInfo exception = _thread == Thread.CurrentThread
@@ -77,7 +83,6 @@ namespace Microsoft.UnitTests.Core.Threading {
             } else {
                 exception = await _application.Dispatcher.InvokeAsync(() => CallSafe(action), DispatcherPriority.Normal, cancellationToken);
             }
-
             exception?.Throw();
         }
 
@@ -94,7 +99,6 @@ namespace Microsoft.UnitTests.Core.Threading {
                : _application.Dispatcher.Invoke(() => CallSafe(action));
 
             result.Exception?.Throw();
-
             return result.Value;
         }
 
@@ -107,11 +111,10 @@ namespace Microsoft.UnitTests.Core.Threading {
             }
 
             result.Exception?.Throw();
-
             return result.Value;
         }
 
-        public async Task<Exception> WaitForNextExceptionAsync(CancellationToken cancellationToken = default (CancellationToken)) {
+        public async Task<Exception> WaitForNextExceptionAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var args = await EventTaskSources.Dispatcher.UnhandledException.Create(_application.Dispatcher, e => e.Handled = true, cancellationToken);
             return args.Exception;
         }
@@ -157,13 +160,11 @@ namespace Microsoft.UnitTests.Core.Threading {
                 : Task.Run(DoEventsAsync);
         }
 
-        public void BlockUntilCompleted(Func<Task> func) {
-            BlockUntilCompletedImpl(func);
-        }
+        public void BlockUntilCompleted(Func<Task> func)=> BlockUntilCompletedImpl(func);
 
         public TResult BlockUntilCompleted<TResult>(Func<Task<TResult>> func) {
             var task = BlockUntilCompletedImpl(func);
-            return ((Task<TResult>) task).Result;
+            return ((Task<TResult>)task).Result;
         }
 
         private Task BlockUntilCompletedImpl(Func<Task> func) {
@@ -258,13 +259,13 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         private static CallSafeResult<T> CallSafe<T>(Func<T> func) {
             try {
-                return new CallSafeResult<T> {Value = func()};
+                return new CallSafeResult<T> { Value = func() };
             } catch (ThreadAbortException tae) {
                 // Thread should be terminated anyway
                 Thread.ResetAbort();
-                return new CallSafeResult<T> {Exception = ExceptionDispatchInfo.Capture(tae)};
+                return new CallSafeResult<T> { Exception = ExceptionDispatchInfo.Capture(tae) };
             } catch (Exception e) {
-                return new CallSafeResult<T> {Exception = ExceptionDispatchInfo.Capture(e)};
+                return new CallSafeResult<T> { Exception = ExceptionDispatchInfo.Capture(e) };
             }
         }
 
@@ -272,18 +273,6 @@ namespace Microsoft.UnitTests.Core.Threading {
             public T Value { get; set; }
             public ExceptionDispatchInfo Exception { get; set; }
         }
-
-        #region IMainThread
-        int IMainThread.ThreadId => Thread.ManagedThreadId;
-        void IMainThread.Post(Action action, CancellationToken cancellationToken) {
-            var bl = _blockingLoop.Value;
-            if (bl != null) {
-                bl.Post(action);
-            } else {
-                InvokeAsync(action, cancellationToken).DoNotWait();
-            }
-        }
-        #endregion
 
         private class BlockingLoop {
             private readonly Func<Task> _func;
@@ -314,9 +303,7 @@ namespace Microsoft.UnitTests.Core.Threading {
                 }
             }
 
-            private void Complete(Task task) {
-                _are.Set();
-            }
+            private void Complete(Task task)=> _are.Set();
 
             // TODO: Add support for cancellation token
             public void Post(Action action) {
@@ -328,13 +315,11 @@ namespace Microsoft.UnitTests.Core.Threading {
         private class BlockingLoopSynchronizationContext : SynchronizationContext {
             private readonly UIThreadHelper _threadHelper;
 
-            public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper) {
-                _threadHelper = threadHelper;
-            }
+            public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper)
+                => _threadHelper = threadHelper;
 
-            public override void Send(SendOrPostCallback d, object state) {
-                _threadHelper._application.Dispatcher.Invoke(DispatcherPriority.Send, d, state);
-            }
+            public override void Send(SendOrPostCallback d, object state)
+                => _threadHelper._application.Dispatcher.Invoke(DispatcherPriority.Send, d, state);
 
             public override void Post(SendOrPostCallback d, object state) {
                 var bl = _threadHelper._blockingLoop.Value;
