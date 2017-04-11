@@ -76,9 +76,9 @@
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+    <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
-      <Name>Microsoft.R.Host.Client</Name>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
