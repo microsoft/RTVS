@@ -46,11 +46,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Proj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{EE50720D-A0E5-45EE-B2EC-E065B569DB27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client", "Host\Client\Impl\Microsoft.R.Host.Client.csproj", "{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client", "Windows\Host\Client\Impl\Microsoft.R.Host.Client.csproj", "{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Protocol", "Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj", "{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Test", "Host\Client\Test\Microsoft.R.Host.Client.Test.csproj", "{E1B1909E-3193-499B-91DB-1E13E6836929}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Test", "Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj", "{E1B1909E-3193-499B-91DB-1E13E6836929}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Markdown.Editor", "Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj", "{98E0B8AC-1193-4BFD-BF5C-6712C93ABD03}"
 EndProject
@@ -680,5 +680,7 @@ Global
 		{DE1EC50A-C588-45A9-B22C-981419CD7CD4} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 		{D73325D8-2406-47FF-9E7A-E295A847268B} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{2CC10E50-392E-4B5D-98E4-D38F0061D363} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
+		{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
+		{E1B1909E-3193-499B-91DB-1E13E6836929} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 	EndGlobalSection
 EndGlobal

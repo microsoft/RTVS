@@ -99,14 +99,6 @@
       <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
-      <Name>Microsoft.R.Host.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
-      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
-      <Name>Microsoft.R.Host.Client.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -186,6 +178,14 @@
     <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
