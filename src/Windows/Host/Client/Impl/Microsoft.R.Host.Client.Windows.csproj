@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.R.Host.Client</RootNamespace>
-    <AssemblyName>Microsoft.R.Host.Client</AssemblyName>
+    <AssemblyName>Microsoft.R.Host.Client.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

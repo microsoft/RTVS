@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
+    <AssemblyName>Microsoft.R.Host.Client</AssemblyName>
+  </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.targets" />
+  <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.Composition" Version="1.0.31" />
+    <PackageReference Include="System.Diagnostics.FileVersionInfo" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Watcher" Version="4.3.0" />
+    <PackageReference Include="System.IO.Pipes" Version="4.3.0" />
+    <PackageReference Include="System.Net.Ping" Version="4.3.0" />
+    <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
+    <PackageReference Include="System.Security.SecureString" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+    <PackageReference Include="System.Threading.ThreadPool" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+</Project>

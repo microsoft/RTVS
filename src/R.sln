@@ -100,6 +100,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Broker.Win
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Host.Broker", "Host\Broker\Impl\Microsoft.R.Host.Broker.csproj", "{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client", "Host\Client\Impl\Microsoft.R.Host.Client.csproj", "{B81D01EB-AD08-4929-BE99-6623AF523A23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -650,6 +652,18 @@ Global
 		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x64.Build.0 = Release|Any CPU
 		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x86.Build.0 = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x64.Build.0 = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x86.Build.0 = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x64.ActiveCfg = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x64.Build.0 = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x86.ActiveCfg = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
