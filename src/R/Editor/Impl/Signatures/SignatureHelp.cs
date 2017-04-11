@@ -5,13 +5,9 @@ using System;
 using System.Collections.ObjectModel;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Functions;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
     // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.language.intellisense.isignature.aspx

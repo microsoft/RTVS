@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {
-    [ExcludeFromCodeCoverage]
     internal class DebugTree
     {
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "editorTree")]

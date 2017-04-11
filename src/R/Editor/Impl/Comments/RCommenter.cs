@@ -17,18 +17,18 @@ namespace Microsoft.R.Editor.Comments {
         /// Continues adding commentcharacter even if line is already commented.
         /// # -> ## -> ### and so on. Matches C# behavior.
         /// </summary>
-        public static void CommentBlock(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, ICoreShell coreShell)
-            => DoActionOnLines(editorView, editorBuffer, range, coreShell, CommentLine, Resources.CommentSelection);
+        public static void CommentBlock(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorSupport es)
+            => DoActionOnLines(editorView, editorBuffer, range, es, CommentLine, Resources.CommentSelection);
 
         /// <summary>
         /// Uncomments selected lines or current line if range has zero length.
         /// Only removes single comment. ### -> ## -> # and so on. Matches C# behavior.
         /// </summary>
-        public static void UncommentBlock(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, ICoreShell coreShell) {
-            DoActionOnLines(editorView, editorBuffer, range, editorShell, UncommentLine, Resources.UncommentSelection);
+        public static void UncommentBlock(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorSupport es) {
+            DoActionOnLines(editorView, editorBuffer, range, es, UncommentLine, Resources.UncommentSelection);
         }
 
-        public static void DoActionOnLines(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorApplication editorShell, Func<IEditorLine, bool> action, string actionName) {
+        public static void DoActionOnLines(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorSupport es, Func<IEditorLine, bool> action, string actionName) {
             // When user clicks editor margin to select a line, selection actually
             // ends in the beginning of the next line. In order to prevent commenting
             // of the next line that user did not select, we need to shrink span to

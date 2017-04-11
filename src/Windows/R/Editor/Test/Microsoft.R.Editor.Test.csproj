@@ -73,6 +73,10 @@
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
@@ -109,10 +113,6 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Support\Test\Microsoft.R.Support.Test.csproj">
-      <Project>{5504F3D6-08D3-401F-8214-409A60735185}</Project>
-      <Name>Microsoft.R.Support.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor.Windows</Name>
@@ -120,6 +120,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Files\query.sql" />
+    <None Include="RData%27\Files\Help\01.rd" />
+    <None Include="RData%27\Files\Help\02.rd" />
+    <None Include="RData%27\Files\Tokenization\01.rd" />
+    <None Include="RData%27\Files\Tokenization\01.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\02.rd" />
+    <None Include="RData%27\Files\Tokenization\02.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\03.rd" />
+    <None Include="RData%27\Files\Tokenization\03.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\04.rd" />
+    <None Include="RData%27\Files\Tokenization\04.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\05.rd" />
+    <None Include="RData%27\Files\Tokenization\05.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\06.rd" />
+    <None Include="RData%27\Files\Tokenization\06.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\07.rd" />
+    <None Include="RData%27\Files\Tokenization\07.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\08.rd" />
+    <None Include="RData%27\Files\Tokenization\08.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\09.rd" />
+    <None Include="RData%27\Files\Tokenization\09.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\10.rd" />
+    <None Include="RData%27\Files\Tokenization\10.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\11.rd" />
+    <None Include="RData%27\Files\Tokenization\11.rd.tokens" />
+    <None Include="RData%27\Files\Tokenization\12.rd" />
+    <None Include="RData%27\Files\Tokenization\12.rd.tokens" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\UnitTests\app.config">
@@ -165,6 +191,12 @@
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
+    <Compile Include="RData%27\BraceMatch\BraceMatchTest.cs" />
+    <Compile Include="RData%27\Classification\RdClassifierTest.cs" />
+    <Compile Include="RData%27\Help\GetFunctionInfoTest.cs" />
+    <Compile Include="RData%27\Tokens\TokenizeSampleFilesTest.cs" />
+    <Compile Include="RData%27\Tokens\TokenizeTest.cs" />
+    <Compile Include="RData%27\Tokens\VerifySortedTables.cs" />
     <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />

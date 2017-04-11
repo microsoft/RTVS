@@ -60,6 +60,10 @@
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
@@ -67,6 +71,14 @@
     <ProjectReference Include="..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Windows\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

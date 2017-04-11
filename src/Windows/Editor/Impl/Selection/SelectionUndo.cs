@@ -2,9 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Selection {
@@ -31,9 +29,7 @@ namespace Microsoft.Languages.Editor.Selection {
 
         public void Dispose() {
             _selectionTracker.EndTracking();
-
             _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
-
             _transaction.Complete();
             _transaction.Dispose();
         }
@@ -43,31 +39,27 @@ namespace Microsoft.Languages.Editor.Selection {
     /// 'Forward' ('do') action selection undo
     /// </summary>
     internal class StartSelectionTrackingUndoUnit : TextUndoPrimitiveBase {
-        private ISelectionTracker _selectionTracker;
+        private readonly ISelectionTracker _selectionTracker;
 
         public StartSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
             : base(selectionTracker.TextView.TextBuffer) {
             _selectionTracker = selectionTracker;
         }
 
-        public override void Undo() {
-            _selectionTracker.MoveToBeforeChanges();
-        }
+        public override void Undo() => _selectionTracker.MoveToBeforeChanges();
     }
 
     /// <summary>
     /// Reverse ('undo') selection unit.
     /// </summary>
     internal class EndSelectionTrackingUndoUnit : TextUndoPrimitiveBase {
-        private ISelectionTracker _selectionTracker;
+        private readonly ISelectionTracker _selectionTracker;
 
         public EndSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
             : base(selectionTracker.TextView.TextBuffer) {
             _selectionTracker = selectionTracker;
         }
 
-        public override void Do() {
-            _selectionTracker.MoveToAfterChanges();
-        }
+        public override void Do() => _selectionTracker.MoveToAfterChanges();
     }
 }

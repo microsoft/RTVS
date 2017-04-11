@@ -18,14 +18,14 @@ namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
         private readonly DisposeToken _disposeToken;
         private readonly ITextBuffer _textBuffer;
-        private readonly IUIApplication _shell;
+        private readonly ICoreShell _shell;
         private string _packageName;
 
-        public SignatureHelpSource(ITextBuffer textBuffer, IUIApplication shell) {
+        public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
             _disposeToken = DisposeToken.Create<SignatureHelpSource>();
             _textBuffer = textBuffer;
             _shell = shell;
-            ServiceManager.AddService<SignatureHelpSource>(this, textBuffer, shell);
+            textBuffer.AddService(this);
         }
 
         #region ISignatureHelpSource

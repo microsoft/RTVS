@@ -2,16 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree {
-    internal class TextChange : ICloneable
-    {
+    internal class TextChange : ICloneable {
         /// <summary>
         /// Text snapshot version
         /// </summary>
@@ -47,32 +43,27 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         public ITextProvider NewTextProvider;
 
-        public TextChange()
-        {
+        public TextChange() {
             Clear();
         }
 
         public TextChange(TextChange change, ITextProvider newTextProvider)
-            : this()
-        {
+            : this() {
             this.Combine(change);
 
             ITextSnapshotProvider newSnapshotProvider = newTextProvider as ITextSnapshotProvider;
             ITextSnapshotProvider changeNewSnapshotProvider = change.NewTextProvider as ITextSnapshotProvider;
 
-            if ((newSnapshotProvider != null) && (changeNewSnapshotProvider != null))
-            {
+            if ((newSnapshotProvider != null) && (changeNewSnapshotProvider != null)) {
                 ITextSnapshot changeNewSnapshot = changeNewSnapshotProvider.Snapshot;
                 ITextSnapshot newSnapshot = newSnapshotProvider.Snapshot;
 
-                if (changeNewSnapshot.Version.ReiteratedVersionNumber != newSnapshot.Version.ReiteratedVersionNumber)
-                {
+                if (changeNewSnapshot.Version.ReiteratedVersionNumber != newSnapshot.Version.ReiteratedVersionNumber) {
                     SnapshotSpan changeNewSpan = change.NewRange.ToSnapshotSpan(changeNewSnapshot);
                     Span? oldChangedSpan;
                     Span? newChangedSpan;
 
-                    if (changeNewSnapshot.Version.GetChangedExtent(newSnapshot.Version, out oldChangedSpan, out newChangedSpan))
-                    {
+                    if (changeNewSnapshot.Version.GetChangedExtent(newSnapshot.Version, out oldChangedSpan, out newChangedSpan)) {
                         int start = Math.Min(oldChangedSpan.Value.Start, change.NewRange.Start);
                         int end = Math.Max(oldChangedSpan.Value.End, change.NewRange.End);
 
@@ -89,8 +80,7 @@ namespace Microsoft.R.Editor.Tree {
             Version = NewTextProvider.Version;
         }
 
-        public void Clear()
-        {
+        public void Clear() {
             TextChangeType = TextChangeType.Trivial;
             OldRange = TextRange.EmptyRange;
             NewRange = TextRange.EmptyRange;
@@ -103,50 +93,42 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// True if no changes are pending.
         /// </summary>
-        public bool IsEmpty
-        {
+        public bool IsEmpty {
             get { return !FullParseRequired && (OldRange.Length == 0 && NewRange.Length == 0); }
         }
 
         /// <summary>
         /// Combines one text change with another
         /// </summary>
-        public void Combine(TextChange other)
-        {
+        public void Combine(TextChange other) {
             if (other.IsEmpty)
                 return;
 
             FullParseRequired |= other.FullParseRequired;
             TextChangeType |= other.TextChangeType;
 
-            if (OldRange == TextRange.EmptyRange || NewRange == TextRange.EmptyRange)
-            {
+            if (OldRange == TextRange.EmptyRange || NewRange == TextRange.EmptyRange) {
                 OldRange = other.OldRange;
                 NewRange = other.NewRange;
                 OldTextProvider = other.OldTextProvider;
                 NewTextProvider = other.NewTextProvider;
-            }
-            else
-            {
+            } else {
                 ITextSnapshotProvider oldSnapshotProvider = OldTextProvider as ITextSnapshotProvider;
                 ITextSnapshotProvider newSnapshotProvider = NewTextProvider as ITextSnapshotProvider;
                 ITextSnapshotProvider otherOldSnapshotProvider = other.OldTextProvider as ITextSnapshotProvider;
                 ITextSnapshotProvider otherNewSnapshotProvider = other.NewTextProvider as ITextSnapshotProvider;
                 bool changesAreFromNextSnapshot = false;
 
-                if ((oldSnapshotProvider != null) && (newSnapshotProvider != null) && 
-                    (otherOldSnapshotProvider != null) && (otherNewSnapshotProvider != null))
-                {
+                if ((oldSnapshotProvider != null) && (newSnapshotProvider != null) &&
+                    (otherOldSnapshotProvider != null) && (otherNewSnapshotProvider != null)) {
                     ITextSnapshot newSnapshot = newSnapshotProvider.Snapshot;
                     ITextSnapshot otherOldSnapshot = otherOldSnapshotProvider.Snapshot;
-                    if (newSnapshot.Version.ReiteratedVersionNumber == otherOldSnapshot.Version.ReiteratedVersionNumber)
-                    {
+                    if (newSnapshot.Version.ReiteratedVersionNumber == otherOldSnapshot.Version.ReiteratedVersionNumber) {
                         changesAreFromNextSnapshot = true;
                     }
                 }
 
-                if (!changesAreFromNextSnapshot)
-                {
+                if (!changesAreFromNextSnapshot) {
                     // Assume these changes are from the same snapshot
                     int oldStart = Math.Min(other.OldRange.Start, this.OldRange.Start);
                     int oldEnd = Math.Max(other.OldRange.End, this.OldRange.End);
@@ -156,9 +138,7 @@ namespace Microsoft.R.Editor.Tree {
 
                     OldRange = TextRange.FromBounds(oldStart, oldEnd);
                     NewRange = TextRange.FromBounds(newStart, newEnd);
-                }
-                else
-                {
+                } else {
                     // the "other" change is from the subsequent snapshot. Merge the changes.
                     ITextSnapshot oldSnapshot = oldSnapshotProvider.Snapshot;
                     ITextSnapshot newSnapshot = newSnapshotProvider.Snapshot;
@@ -183,17 +163,10 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// True if pending change does not require background parsing
         /// </summary>
-        public bool IsSimpleChange
-        {
-            get
-            {
-                return !FullParseRequired && TextChangeType != TextChangeType.Structure;
-            }
-        }
+        public bool IsSimpleChange => !FullParseRequired && TextChangeType != TextChangeType.Structure;
 
         #region ICloneable Members
-        public object Clone()
-        {
+        public object Clone() {
             TextChange clone = this.MemberwiseClone() as TextChange;
 
             clone.OldRange = this.OldRange.Clone() as TextRange;
@@ -203,12 +176,9 @@ namespace Microsoft.R.Editor.Tree {
         }
         #endregion
 
-        [ExcludeFromCodeCoverage]
         public override string ToString()
-        {
-            return string.Format(CultureInfo.InvariantCulture, 
-                "Version:{0}, TextChangeType:{1}, OldRange:{2}, NewRange:{3}, FullParseRequired:{4}", 
+            => string.Format(CultureInfo.InvariantCulture,
+                "Version:{0}, TextChangeType:{1}, OldRange:{2}, NewRange:{3}, FullParseRequired:{4}",
                 Version, TextChangeType, OldRange, NewRange, FullParseRequired);
-        }
     }
 }

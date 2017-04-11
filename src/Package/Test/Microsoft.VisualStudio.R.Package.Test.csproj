@@ -151,10 +151,6 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Support\Test\Microsoft.R.Support.Test.csproj">
-      <Project>{5504f3d6-08d3-401f-8214-409a60735185}</Project>
-      <Name>Microsoft.R.Support.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>

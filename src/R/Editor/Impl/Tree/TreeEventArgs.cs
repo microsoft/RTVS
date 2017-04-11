@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {
-    [ExcludeFromCodeCoverage]
     public class TreeUpdatePendingEventArgs : EventArgs {
         public TextChangeEventArgs Change { get; private set; }
 
@@ -17,7 +15,6 @@ namespace Microsoft.R.Editor.Tree {
         }
     }
 
-    [ExcludeFromCodeCoverage]
     public class TreeUpdatedEventArgs : EventArgs {
         public TreeUpdateType UpdateType { get; private set; }
 
@@ -26,7 +23,6 @@ namespace Microsoft.R.Editor.Tree {
         }
     }
 
-    [ExcludeFromCodeCoverage]
     public class TreeNodesRemovedEventArgs : EventArgs {
         public IReadOnlyCollection<IAstNode> Nodes { get; private set; }
 
@@ -35,20 +31,5 @@ namespace Microsoft.R.Editor.Tree {
         }
     }
 
-    //[ExcludeFromCodeCoverage]
-    //public class TreeScopeChangedEventArgs : EventArgs
-    //{
-    //    public IAstNode ScopeNode { get; private set; }
-
-    //    public TreeScopeChangedEventArgs(IAstNode scopeNode)
-    //    {
-    //        ScopeNode = scopeNode;
-    //    }
-    //}
-
-    [ExcludeFromCodeCoverage]
-    public class TreePositionsOnlyChangedEventArgs : EventArgs {
-        public TreePositionsOnlyChangedEventArgs() {
-        }
-    }
+    public class TreePositionsOnlyChangedEventArgs : EventArgs { }
 }

@@ -37,38 +37,9 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Html\Files\broken_01.htm" />
-    <Content Include="Html\Files\broken_02.htm" />
-    <Content Include="Html\Files\broken_03.htm" />
-    <Content Include="Html\Files\cnn.htm" />
-    <Content Include="Html\Files\doctype.htm" />
-    <Content Include="Html\Files\implicit.htm" />
-    <Content Include="Html\Files\meta-charset.htm" />
-    <Content Include="Html\Files\namespaces.htm" />
-    <Content Include="Html\Files\xhtml.htm" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
-    <None Include="Html\Files\broken_01.htm.log" />
-    <None Include="Html\Files\broken_01.htm.tree" />
-    <None Include="Html\Files\broken_02.htm.log" />
-    <None Include="Html\Files\broken_02.htm.tree" />
-    <None Include="Html\Files\broken_03.htm.log" />
-    <None Include="Html\Files\broken_03.htm.tree" />
-    <None Include="Html\Files\cnn.htm.log" />
-    <None Include="Html\Files\cnn.htm.tree" />
-    <None Include="Html\Files\doctype.htm.log" />
-    <None Include="Html\Files\doctype.htm.tree" />
-    <None Include="Html\Files\implicit.htm.log" />
-    <None Include="Html\Files\implicit.htm.tree" />
-    <None Include="Html\Files\meta-charset.htm.log" />
-    <None Include="Html\Files\meta-charset.htm.tree" />
-    <None Include="Html\Files\namespaces.htm.log" />
-    <None Include="Html\Files\namespaces.htm.tree" />
-    <None Include="Html\Files\xhtml.htm.log" />
-    <None Include="Html\Files\xhtml.htm.tree" />
     <None Include="project.json" />
     <None Include="RD\Files\Help\02.rd" />
     <None Include="RD\Files\Help\01.rd" />
@@ -99,35 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertionExtensions.cs" />
-    <Compile Include="Html\AttributeParseTest.cs" />
-    <Compile Include="Html\CharStreamTest.cs" />
-    <Compile Include="Html\CommentParseTest.cs" />
-    <Compile Include="Html\Utility\CommonParserRoutines.cs" />
-    <Compile Include="Html\DefaultHtmlInfoProviderTest.cs" />
-    <Compile Include="Html\DocTypeTest.cs" />
-    <Compile Include="Html\ElementNodeTest.cs" />
-    <Compile Include="Html\EndTagParseTest.cs" />
-    <Compile Include="Html\EntityParseTest.cs" />
-    <Compile Include="Html\EntityTableTest.cs" />
-    <Compile Include="Html\HtmlCharStreamTest.cs" />
-    <Compile Include="Html\HtmlFilesTests.cs" />
-    <Compile Include="Html\HtmlParserTest.cs" />
-    <Compile Include="Html\HtmlStringClosureTests.cs" />
-    <Compile Include="Html\HtmlTokenizerTest.cs" />
-    <Compile Include="Html\HtmlTokenTest.cs" />
-    <Compile Include="Html\ItemNameTokenTest.cs" />
-    <Compile Include="Html\ParserAccessor.cs" />
-    <Compile Include="Html\PositionTypeTest.cs" />
-    <Compile Include="Html\ScriptParseTest.cs" />
-    <Compile Include="Html\ScriptTypeResolutionServiceMock.cs" />
-    <Compile Include="Html\SensitiveFragmentCollectionTest.cs" />
-    <Compile Include="Html\StartTagParseTest.cs" />
-    <Compile Include="Html\StyleParseTest.cs" />
-    <Compile Include="Html\Utility\BaselineCompare.cs" />
-    <Compile Include="Html\Utility\EventLogger.cs" />
-    <Compile Include="Html\Utility\HtmlTestFilesFixture.cs" />
-    <Compile Include="Html\Utility\TreeWriter.cs" />
-    <Compile Include="Html\VisitorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RD\BraceMatch\BraceMatchTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />

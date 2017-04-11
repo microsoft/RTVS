@@ -22,13 +22,13 @@ namespace Microsoft.R.Editor.Functions {
     /// for function descriptions and signatures.
     /// </summary>
     public sealed class IntelliSenseRSession : IIntellisenseRSession {
-        private readonly IUIApplication _coreShell;
+        private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
         private IEnumerable<string> _loadedPackages = null;
 
-        public IntelliSenseRSession(IUIApplication coreShell, IRInteractiveWorkflowProvider workflowProvider) {
+        public IntelliSenseRSession(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider) {
             _coreShell = coreShell;
             _workflow = workflowProvider.GetOrCreate();
             _sessionProvider = _workflow.RSessions;
@@ -91,7 +91,8 @@ namespace Microsoft.R.Editor.Functions {
 
                 if (!Session.IsHostRunning) {
                     int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
-                    await Session.EnsureHostStartedAsync(new RHostStartupInfo(RToolsSettings.Current.CranMirror, codePage: RToolsSettings.Current.RCodePage), null, timeout);
+                    var settings = _coreShell.GetService<IRSettings>();
+                    await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout);
                 }
             } finally {
                 token.Set();

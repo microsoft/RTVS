@@ -3,9 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Commands;
-using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completion {
@@ -36,7 +34,6 @@ namespace Microsoft.Languages.Editor.Completion {
                         return CommandStatus.SupportedAndEnabled;
                 }
             }
-
             return CommandStatus.NotSupported;
         }
 
@@ -64,7 +61,6 @@ namespace Microsoft.Languages.Editor.Completion {
                         return CommandResult.Executed;
                 }
             }
-
             return CommandResult.NotSupported;
         }
         #endregion

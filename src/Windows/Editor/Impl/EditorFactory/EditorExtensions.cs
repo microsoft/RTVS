@@ -2,8 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Linq;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.Languages.Editor.Controllers;
+using Microsoft.Languages.Editor.Controllers.Views;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

@@ -16,6 +16,9 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
     <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Undo\" />
+  </ItemGroup>
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />

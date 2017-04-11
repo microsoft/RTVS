@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.SmartIndent {
     /// <summary>

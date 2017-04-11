@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -22,28 +23,27 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// </summary>
     internal sealed class FilesCompletionProvider : IRCompletionListProvider {
         private readonly IImageService _imageService;
-        private readonly IRInteractiveSessionProvider _sessionProvider;
-        private readonly IGlyphService _glyphService;
+        private readonly IRInteractiveWorkflow _workflow;
+        private readonly IRSettings _settings;
 
         private Task<string> _userDirectoryFetchingTask;
         private string _directory;
         private string _cachedUserDirectory;
         private bool _forceR; // for tests
 
-        public FilesCompletionProvider(string directoryCandidate, IServiceContainer serviceContainer, bool forceR = false) {
-            if (directoryCandidate == null) {
-                throw new ArgumentNullException(nameof(directoryCandidate));
-            }
+        public FilesCompletionProvider(string directoryCandidate, ICoreShell coreShell, bool forceR = false) {
+            Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
-            _sessionProvider = serviceContainer.GetService<IRInteractiveSessionProvider>();
-            _imageService = serviceContainer.GetService<IImageService>();
+            _workflow = coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _imageService = coreShell.GetService<IImageService>();
+            _settings = coreShell.GetService<IRSettings>();
             _forceR = forceR;
 
             _directory = ExtractDirectory(directoryCandidate);
 
             if (_directory.Length == 0 || _directory.StartsWithOrdinal("~\\")) {
                 _directory = _directory.Length > 1 ? _directory.Substring(2) : _directory;
-                _userDirectoryFetchingTask = _sessionProvider.RSession.GetRUserDirectoryAsync();
+                _userDirectoryFetchingTask = _workflow.RSession.GetRUserDirectoryAsync();
             }
         }
 
@@ -87,7 +87,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         private Task<List<ICompletionEntry>> GetRemoteDirectoryItemsAsync(string directory) {
             return Task.Run(async () => {
-                var session = _sessionProvider.RSession;
+                var session = _workflow.RSession;
                 var completions = new List<ICompletionEntry>();
 
                 try {
@@ -116,7 +116,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 _cachedUserDirectory = userDirectory;
                 directory = Path.Combine(userDirectory, _directory);
             } else {
-                directory = Path.Combine(RToolsSettings.Current.WorkingDirectory, _directory);
+                directory = Path.Combine(_settings.WorkingDirectory, _directory);
             }
 
             if (Directory.Exists(directory)) {

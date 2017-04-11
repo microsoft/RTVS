@@ -2,32 +2,28 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.EditorFactory {
     public abstract class ProjectionEditorInstance : IEditorInstance {
-        IEditorDocument _document;
+        public ProjectionEditorInstance(ITextBuffer diskBuffer, ITextDocumentFactoryService textDocumentFactoryService, ICoreShell coreShell) {
+            Check.ArgumentNull(nameof(diskBuffer), diskBuffer);
+            Check.ArgumentNull(nameof(textDocumentFactoryService), textDocumentFactoryService);
 
-        public ProjectionEditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell) {
-            if (diskBuffer == null) {
-                throw new ArgumentNullException(nameof(diskBuffer));
-            }
-            if (documentFactory == null) {
-                throw new ArgumentNullException(nameof(documentFactory));
-            }
+            DiskBuffer = new EditorBuffer(diskBuffer, textDocumentFactoryService);
 
-            DiskBuffer = diskBuffer;
-            _document = documentFactory.CreateDocument(this);
- 
             var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(diskBuffer);
-            ViewBuffer = projectionBufferManager.ViewBuffer;
+            ViewBuffer = new EditorBuffer(projectionBufferManager.ViewBuffer, textDocumentFactoryService);
 
-            ServiceManager.AddService<IEditorInstance>(this, DiskBuffer, coreShell);
+            DiskBuffer.Services.AddService(this);
+            ViewBuffer.Services.AddService(this);
         }
 
         #region IEditorInstance
@@ -36,20 +32,18 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// In languages that support projected language scenarios this is the top level
         /// projection buffer. In regular scenarios the same as the disk buffer.
         /// </summary>
-        public ITextBuffer ViewBuffer { get; }
+        public IEditorBuffer ViewBuffer { get; }
 
         /// <summary>
         /// Buffer that contains original content as it was retrieved from disk
         /// or generated in memory. 
         /// </summary>
-        public ITextBuffer DiskBuffer { get; }
+        public IEditorBuffer DiskBuffer { get; }
 
         /// <summary>
         /// Retrieves editor instance command target for a particular view
         /// </summary>
-        public abstract ICommandTarget GetCommandTarget(ITextView textView);
-
-        public bool IsProjected => false;
+        public abstract ICommandTarget GetCommandTarget(IEditorView editorView);
         #endregion
 
         #region IDisposable

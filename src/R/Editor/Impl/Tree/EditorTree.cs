@@ -417,7 +417,6 @@ namespace Microsoft.R.Editor.Tree {
         #endregion
 
         #region Dispose
-        [ExcludeFromCodeCoverage]
         protected virtual void Dispose(bool disposing) {
             if (disposing) {
                 if (EditorBuffer != null) {
@@ -441,9 +440,7 @@ namespace Microsoft.R.Editor.Tree {
         }
         #endregion
 
-        [ExcludeFromCodeCoverage]
-        public override string ToString() {
-            return String.Format(CultureInfo.CurrentCulture, "IsDirty: {0} {1} Changes: {2}", IsDirty, TreeLock.ToString(), TreeUpdateTask.ChangesPending);
-        }
+        public override string ToString()
+            => string.Format(CultureInfo.CurrentCulture, "IsDirty: {0} {1} Changes: {2}", IsDirty, TreeLock.ToString(), TreeUpdateTask.ChangesPending);
     }
 }
