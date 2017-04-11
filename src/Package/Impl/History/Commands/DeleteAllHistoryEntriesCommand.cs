@@ -16,10 +16,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class DeleteAllHistoryEntriesCommand : ViewCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public DeleteAllHistoryEntriesCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public DeleteAllHistoryEntriesCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdDeleteAllHistoryEntries, false) {
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);

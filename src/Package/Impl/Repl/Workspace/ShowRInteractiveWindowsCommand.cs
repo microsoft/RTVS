@@ -8,9 +8,9 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class ShowRInteractiveWindowsCommand : PackageCommand {
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _interactiveWorkflowProvider;
 
-        public ShowRInteractiveWindowsCommand(IRInteractiveWorkflowProvider interactiveWorkflowProvider) :
+        public ShowRInteractiveWindowsCommand(IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowReplWindow) {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
         }

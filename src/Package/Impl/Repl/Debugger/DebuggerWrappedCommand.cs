@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         private Guid _shellGroup;
         private uint _shellCmdId;
 
-        protected DebuggerWrappedCommand(IRInteractiveWorkflow interactiveWorkflow, int cmdId, Guid shellGroup, int shellCmdId, DebuggerCommandVisibility visibility)
+        protected DebuggerWrappedCommand(IRInteractiveWorkflowVisual interactiveWorkflow, int cmdId, Guid shellGroup, int shellCmdId, DebuggerCommandVisibility visibility)
             : base(interactiveWorkflow, cmdId, visibility) {
             _shellGroup = shellGroup;
             _shellCmdId = (uint)shellCmdId;

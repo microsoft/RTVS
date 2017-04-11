@@ -68,7 +68,7 @@
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
@@ -78,6 +78,10 @@
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

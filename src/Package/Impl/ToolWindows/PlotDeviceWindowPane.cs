@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PlotDeviceWindowPane : VisualComponentToolWindow<IRPlotDeviceVisualComponent>, IOleCommandTarget {
-        private readonly IRPlotManager _plotManager;
+        private readonly IRPlotManagerVisual _plotManager;
         private readonly int _instanceId;
         private IOleCommandTarget _commandTarget;
 
@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotDeviceWindowPane(IRPlotManager plotManager, IRSession session, int instanceId, IServiceContainer services): base(services) {
+        public PlotDeviceWindowPane(IRPlotManagerVisual plotManager, IRSession session, int instanceId, IServiceContainer services): base(services) {
             _plotManager = plotManager;
             _instanceId = instanceId;
 

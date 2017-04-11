@@ -88,8 +88,12 @@
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+    <ProjectReference Include="..\..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">

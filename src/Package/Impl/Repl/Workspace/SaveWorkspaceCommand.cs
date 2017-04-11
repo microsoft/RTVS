@@ -17,11 +17,11 @@ using Microsoft.VisualStudio.R.Packages.R;
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class SaveWorkspaceCommand : PackageCommand {
         private readonly ICoreShell _shell;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public SaveWorkspaceCommand(ICoreShell shell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public SaveWorkspaceCommand(ICoreShell shell, IRInteractiveWorkflowVisual interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveWorkspace) {
             _shell = shell;
             _rSession = interactiveWorkflow.RSession;

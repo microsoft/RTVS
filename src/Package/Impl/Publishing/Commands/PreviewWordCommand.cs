@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
     internal sealed class PreviewWordCommand : PreviewCommand {
         public PreviewWordCommand(
             ITextView textView,
-            IRInteractiveWorkflowProvider workflowProvider,
+            IRInteractiveWorkflowVisualProvider workflowProvider,
             IServiceContainer services) :
             base(textView, (int)MdPackageCommandId.icmdPreviewWord, workflowProvider, services) { }
 

@@ -9,7 +9,6 @@ using Microsoft.R.Components.Test.Stubs.VisualComponents;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Mocks;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Mocks {

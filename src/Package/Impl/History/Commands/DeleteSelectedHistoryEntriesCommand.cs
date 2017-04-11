@@ -17,9 +17,9 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal sealed class DeleteSelectedHistoryEntriesCommand : ViewCommand {
         private readonly IUIService _ui;
         private readonly IRHistory _history;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
 
-        public DeleteSelectedHistoryEntriesCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public DeleteSelectedHistoryEntriesCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdDeleteSelectedHistoryEntries, false) {
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);

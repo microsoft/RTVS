@@ -2,10 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.ViewModel {
     public interface IRPlotDeviceViewModel {
@@ -26,7 +23,7 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// <summary>
         /// Bitmap for the active plot.
         /// </summary>
-        BitmapImage PlotImage { get; }
+        object PlotImage { get; }
 
         /// <summary>
         /// Locator mode is active, ie. we are waiting on the user

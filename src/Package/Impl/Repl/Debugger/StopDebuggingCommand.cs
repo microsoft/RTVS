@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal sealed class StopDebuggingCommand : DebuggerWrappedCommand {
-        public StopDebuggingCommand(IRInteractiveWorkflow interactiveWorkflow)
+        public StopDebuggingCommand(IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(interactiveWorkflow, RPackageCommandId.icmdStopDebugging,
                    VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Stop, 
                    DebuggerCommandVisibility.DebugMode) {

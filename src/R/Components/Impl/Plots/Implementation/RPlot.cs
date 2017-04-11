@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Windows.Media.Imaging;
 
 namespace Microsoft.R.Components.Plots.Implementation {
-    internal class RPlot : IRPlot {
-        public RPlot(IRPlotDevice parentDevice, Guid plotId, BitmapImage image) {
+    public sealed class RPlot : IRPlot {
+        public RPlot(IRPlotDevice parentDevice, Guid plotId, object image) {
             ParentDevice = parentDevice;
             PlotId = plotId;
             Image = image;
@@ -16,6 +15,6 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public Guid PlotId { get; }
 
-        public BitmapImage Image { get; set; }
+        public object Image { get; set; }
     }
 }

@@ -17,11 +17,11 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal class SendFileCommandBase {
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _interactiveWorkflowProvider;
         private readonly IFileSystem _fs;
         private readonly IUIService _ui;
 
-        protected SendFileCommandBase(IRInteractiveWorkflowProvider interactiveWorkflowProvider, IUIService ui, IFileSystem fs) {
+        protected SendFileCommandBase(IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider, IUIService ui, IFileSystem fs) {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _ui = ui;
             _fs = fs;

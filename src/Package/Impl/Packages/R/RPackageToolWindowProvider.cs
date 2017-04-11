@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [Export]
     internal class RPackageToolWindowProvider {
         [Import]
-        private Lazy<IRInteractiveWorkflowProvider> WorkflowProvider { get; set; }
+        private Lazy<IRInteractiveWorkflowVisualProvider> WorkflowProvider { get; set; }
         [Import]
         private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
         [Import]

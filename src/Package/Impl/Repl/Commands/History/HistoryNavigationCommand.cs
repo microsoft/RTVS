@@ -19,9 +19,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly ICompletionBroker _completionBroker;
         private readonly IEditorOperationsFactoryService _editorFactory;
         private readonly IRHistory _history;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
 
-        public HistoryNavigationCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow, ICompletionBroker completionBroker, IEditorOperationsFactoryService editorFactory) :
+        public HistoryNavigationCommand(ITextView textView, IRInteractiveWorkflowVisual interactiveWorkflow, ICompletionBroker completionBroker, IEditorOperationsFactoryService editorFactory) :
             base(textView, new[] {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UP),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.DOWN),

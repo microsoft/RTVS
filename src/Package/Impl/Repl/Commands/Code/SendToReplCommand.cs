@@ -15,9 +15,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
 
-        public SendToReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+        public SendToReplCommand(ITextView textView, IRInteractiveWorkflowVisual interactiveWorkflow) :
             base(textView, new CommandId(RGuidList.RCmdSetGuid, (int)RPackageCommandId.icmdSendToRepl), false) { 
             _interactiveWorkflow = interactiveWorkflow;
         }

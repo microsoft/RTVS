@@ -12,17 +12,16 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class LoadWorkspaceCommand : PackageCommand {
         private readonly ICoreShell _shell;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public LoadWorkspaceCommand(ICoreShell shell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public LoadWorkspaceCommand(ICoreShell shell, IRInteractiveWorkflowVisual interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadWorkspace) {
             _shell = shell;
             _interactiveWorkflow = interactiveWorkflow;

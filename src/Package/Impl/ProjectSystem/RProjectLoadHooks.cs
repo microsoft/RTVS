@@ -44,11 +44,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IProjectLockService _projectLockService;
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IProjectItemDependencyProvider _dependencyProvider;
         private readonly ICoreShell _coreShell;
 
-        private IRInteractiveWorkflow _workflow;
+        private IRInteractiveWorkflowVisual _workflow;
         private IRSession _session;
         private IRHistory _history;
         private ISurveyNewsService _surveyNews;
@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public RProjectLoadHooks(UnconfiguredProject unconfiguredProject
             , [ImportMany("Microsoft.VisualStudio.ProjectSystem.Microsoft.VisualStudio.Shell.Interop.IVsProject")] IEnumerable<Lazy<IVsProject>> cpsIVsProjects
             , IProjectLockService projectLockService
-            , IRInteractiveWorkflowProvider workflowProvider
+            , IRInteractiveWorkflowVisualProvider workflowProvider
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
             , IRToolsSettings toolsSettings
             , IThreadHandling threadHandling
