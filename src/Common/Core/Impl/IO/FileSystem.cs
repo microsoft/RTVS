@@ -145,6 +145,8 @@ namespace Microsoft.Common.Core.IO {
             }
         }
 
+        public string GetFullPath(string path) => Path.GetFullPath(path);
+
         private string GetKnownFolderPath(string knownFolder) {
             IntPtr knownFolderPath;
             uint flags = (uint)NativeMethods.KnownFolderflags.KF_FLAG_DEFAULT_PATH;

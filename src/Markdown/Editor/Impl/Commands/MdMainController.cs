@@ -80,8 +80,11 @@ namespace Microsoft.Markdown.Editor.Commands {
         /// caret position to detemine if it is in a secondary language block.
         /// </summary>
         public ICommandTarget GetContainedCommandTarget() {
-            var containedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(TextBuffer);
-            return containedLanguageHandler?.GetCommandTargetOfLocation(TextView, TextView.Caret.Position.BufferPosition);
+            if (TextBuffer != null) {
+                var containedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(TextBuffer);
+                return containedLanguageHandler?.GetCommandTargetOfLocation(TextView, TextView.Caret.Position.BufferPosition);
+            }
+            return null;
         }
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         /// </remarks>
         sealed class BraceCompletionWorkaround223902 : IDisposable {
             private readonly ITextView _textView;
-            private bool _optionValue;
+            private readonly bool _optionValue;
 
             public BraceCompletionWorkaround223902(ITextView textView) {
                 _textView = textView;
