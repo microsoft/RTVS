@@ -5,7 +5,7 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor;

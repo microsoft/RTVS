@@ -3,7 +3,7 @@
 
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor {
+namespace Microsoft.Languages.Editor.Text {
     public static class TrackingSpanExtensions {
         public static int GetCurrentPosition(this ITrackingPoint trackingPoint) {
             ITextSnapshot snapshot = trackingPoint.TextBuffer.CurrentSnapshot;

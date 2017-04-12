@@ -4,13 +4,12 @@
 using System.Linq;
 using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.Controllers.Views;
-using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.Languages.Editor.Extensions {
+namespace Microsoft.Languages.Editor.Document {
     public static class EditorExtensions {
         /// <summary>
         /// Given text view buffer and the content type, locates document 
@@ -53,10 +52,6 @@ namespace Microsoft.Languages.Editor.Extensions {
                 }
             }
             return document;
-        }
-
-        public static ITextView GetFirstView(this IEditorDocument document) {
-            return document.TextBuffer.GetFirstView();
         }
 
         public static ITextView GetFirstView(this ITextBuffer textBuffer) {

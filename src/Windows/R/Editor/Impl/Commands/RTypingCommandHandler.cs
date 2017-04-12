@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Completions;

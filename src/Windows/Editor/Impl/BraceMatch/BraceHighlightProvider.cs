@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
@@ -19,7 +20,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer) where T : ITag {
             BraceHighlighter highlighter = ServiceManager.GetService<BraceHighlighter>(textView);
             if (highlighter == null) {
-                var document = ServiceManager.GetService<IEditorDocument>(textBuffer);
+                var document = textBuffer.GetService<IEditorDocument>();
                 if (document != null) {
                     highlighter = new BraceHighlighter(textView, textBuffer, _shell);
                 }

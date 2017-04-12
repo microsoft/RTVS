@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Editor.Tree {
     /// <summary>

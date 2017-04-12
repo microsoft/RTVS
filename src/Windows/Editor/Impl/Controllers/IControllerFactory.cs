@@ -6,7 +6,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Controller {
+namespace Microsoft.Languages.Editor.Controllers {
     /// <summary>
     /// Controller factory is exported via MEF for a given content
     /// type and allows adding controllers chained below the main controller

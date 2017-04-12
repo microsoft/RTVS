@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.Languages.Editor {
+namespace Microsoft.Languages.Editor.Text {
     public static class TextViewExtensions {
         public static IEditorView ToEditorView(this ITextView textView) {
             IEditorView view = null;

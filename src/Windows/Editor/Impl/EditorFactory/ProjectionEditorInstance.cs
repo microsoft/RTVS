@@ -48,11 +48,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
 
         #region IDisposable
         protected virtual void Dispose(bool disposing) {
-            if (_document != null) {
-                ServiceManager.RemoveService<IEditorInstance>(ViewBuffer);
-                _document.Dispose();
-                _document = null;
-            }
+            ViewBuffer.RemoveService<IEditorInstance>();
         }
 
         public void Dispose() {

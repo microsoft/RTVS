@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Commands;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Utility;

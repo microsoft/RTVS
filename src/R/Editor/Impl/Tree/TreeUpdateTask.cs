@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Text;
@@ -33,7 +34,7 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         private EditorTree _editorTree;
 
-        private readonly IApplication _appTask;
+        private readonly ICoreShell _coreShell;
 
         /// <summary>
         /// Text buffer
@@ -70,13 +71,12 @@ namespace Microsoft.R.Editor.Tree {
         #endregion
 
         #region Constructors
-        public TreeUpdateTask(EditorTree editorTree, IApplication appTask) {
+        public TreeUpdateTask(EditorTree editorTree, ICoreShell coreShell) {
             _editorTree = editorTree;
-            _appTask = appTask;
-            if (_appTask != null) {
-                _appTask.Idle += OnIdle;
+            _coreShell = coreShell;
+            if (coreShell != null) {
+                coreShell.Idle += OnIdle;
             }
-
         }
         #endregion
 
@@ -140,7 +140,7 @@ namespace Microsoft.R.Editor.Tree {
                         } catch (Exception e) {
                             Debug.Assert(false, "Guarded invoke caught exception", e.Message);
                         }
-                    }, 10, this.GetType(), _appTask);
+                    }, 10, this.GetType(), _coreShell);
                 }
             }
         }
@@ -442,7 +442,7 @@ namespace Microsoft.R.Editor.Tree {
                     if (async) {
                         // Post request to apply tree changes to the main thread.
                         // This must NOT block or else task will never enter 'RanToCompletion' state.
-                        _appTask.DispatchOnUIThread(ApplyBackgroundProcessingResults);
+                        _coreShell.MainThread().Post(ApplyBackgroundProcessingResults);
                     } else {
                         // When processing is synchronous, apply changes and fire events right away.
                         ApplyBackgroundProcessingResults();

@@ -4,7 +4,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;

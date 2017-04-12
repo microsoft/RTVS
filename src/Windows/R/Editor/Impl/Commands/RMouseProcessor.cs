@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;

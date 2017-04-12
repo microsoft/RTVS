@@ -6,7 +6,7 @@ using System.Windows;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Formatting;

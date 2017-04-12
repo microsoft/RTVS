@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text;

@@ -59,7 +59,7 @@
     <Compile Include="DragDrop\DataObjectExtensions.cs" />
     <Compile Include="DragDrop\DropFileType.cs" />
     <Compile Include="DragDrop\ProjectDataObjectReader.cs" />
-    <Compile Include="EditorFactory\EditorExtensions.cs" />
+    <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="Extensions\TrackingSpanExtensions.cs" />

@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Languages.Editor.Controller {
+namespace Microsoft.Languages.Editor.Controllers {
     [Export(typeof(IControllerFactory))]
     [ContentType("text")]
     [Name("Default")]

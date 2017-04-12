@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.BraceCompletion;

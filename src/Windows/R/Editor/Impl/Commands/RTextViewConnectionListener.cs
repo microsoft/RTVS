@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Document;

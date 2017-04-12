@@ -148,7 +148,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
             if (_editorIntance != null) {
                 CommandTarget = _editorIntance.GetCommandTarget(textView);
-                var controller = CommandTarget as Microsoft.Languages.Editor.Controller.Controller;
+                var controller = CommandTarget as Microsoft.Languages.Editor.Controllers.Controller;
                 controller.ChainedController = baseController;
             } else {
                 CommandTarget = baseController;

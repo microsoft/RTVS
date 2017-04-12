@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Formatting;

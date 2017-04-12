@@ -7,14 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.StubBuilders;
-using Microsoft.Language.Editor.Test.Settings;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Undo;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Settings;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Xunit.Sdk;
 
 namespace Microsoft.Languages.Editor.Test {
@@ -40,13 +35,13 @@ namespace Microsoft.Languages.Editor.Test {
             batch.AddValue(FileSystemStubFactory.CreateDefault());
         }
 
-        class TestEditorSupport : IApplicationEditorSupport {
-            public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) => commandTarget as ICommandTarget;
-            public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) => commandTarget;
-            public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) => new TestCompoundAction();
+        class TestEditorSupport : IEditorSupport {
+            public ICommandTarget TranslateCommandTarget(IEditorView textView, object commandTarget) => commandTarget as ICommandTarget;
+            public object TranslateToHostCommandTarget(IEditorView textView, object commandTarget) => commandTarget;
+            public IEditorUndoAction CreateUndoAction(IEditorView textView, IEditorBuffer textBuffer) => new TestCompoundAction();
         }
 
-        class TestCompoundAction : ICompoundUndoAction {
+        class TestCompoundAction : IEditorUndoAction {
             public void Dispose() { }
             public void Open(string name) { }
             public void Commit() { }

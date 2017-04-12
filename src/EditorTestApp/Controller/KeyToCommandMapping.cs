@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Windows.Input;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Controllers.Constants;
 
 namespace Microsoft.Languages.Editor.Application.Controller
 {

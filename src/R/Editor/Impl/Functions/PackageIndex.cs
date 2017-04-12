@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Functions {
     public sealed class PackageIndex : IPackageIndex {
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
-        private readonly IUIApplication _shell;
+        private readonly ICoreShell _shell;
         private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
@@ -36,12 +36,12 @@ namespace Microsoft.R.Editor.Functions {
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
-        public PackageIndex(
-            IRInteractiveWorkflowProvider interactiveWorkflowProvider, IUIApplication shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
+        public PackageIndex(ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _shell = shell;
             _host = host;
             _functionIndex = functionIndex;
 
+            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
             _workflow = interactiveWorkflowProvider.GetOrCreate();
 
             _interactiveSession = _workflow.RSession;

@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.VisualStudio.Text;
+using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
@@ -13,6 +14,6 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// <summary>
         /// Creates an instance of an editor over the text buffer.
         /// </summary>
-        IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory);
+        IEditorInstance CreateEditorInstance(IEditorBuffer textBuffer, IEditorDocumentFactory documentFactory);
     }
 }

@@ -30,7 +30,6 @@ namespace Microsoft.R.Editor.Completions {
                 }
                 return base.Description;
             }
-            set { base.Description = value; }
         }
 
         private void TryFetchDescription() {

@@ -7,7 +7,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;

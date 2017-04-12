@@ -9,13 +9,12 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.Controllers.Views;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.Languages.Editor {
+namespace Microsoft.Languages.Editor.Text {
     public static class TextBufferExtensions {
         public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer) {
             IEditorBuffer buffer = null;
@@ -28,6 +27,9 @@ namespace Microsoft.Languages.Editor {
             Check.InvalidOperation(() => editorBuffer != null);
             return editorBuffer.Services;
         }
+
+        public static T GetService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().GetService<T>();
+        public static void RemoveService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().RemoveService<T>();
 
         public static ITextView CurrentTextView(this ITextBuffer viewBuffer) {
             ITextView textView = null;
@@ -67,16 +69,15 @@ namespace Microsoft.Languages.Editor {
         }
 
         public static ITextDocument GetTextDocument(this ITextBuffer textBuffer) {
-            ITextDocument document = null;
             var searchBuffers = textBuffer.GetContributingBuffers();
-
-            foreach (ITextBuffer buffer in searchBuffers) {
-                if (buffer.Properties.TryGetProperty(typeof(ITextDocument), out document)) {
-                    break;
-                }
-            }
-
-            return document;
+            return searchBuffers
+                .Select(buffer => {
+                    ITextDocument document = null;
+                    buffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
+                    return document;
+                })
+                .Where(d => d != null)
+                .FirstOrDefault();
         }
 
         /// <summary>
@@ -92,11 +93,9 @@ namespace Microsoft.Languages.Editor {
                 if (textLine != null) {
                     line = textLine.LineNumber;
                     column = position - textLine.Start.Position;
-
                     return true;
                 }
             } catch (Exception) { }
-
             return false;
         }
 
@@ -122,7 +121,7 @@ namespace Microsoft.Languages.Editor {
             return null;
         }
 
-        public static bool IsSignatureHelpBuffer(this ITextBuffer textBuffer) 
+        public static bool IsSignatureHelpBuffer(this ITextBuffer textBuffer)
             => textBuffer.ContentType.TypeName.EndsWithIgnoreCase(" Signature Help");
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
@@ -162,8 +161,8 @@ namespace Microsoft.Languages.Editor {
             while (oldVersion != newVersion) {
                 var changes = oldVersion.Changes;
                 if (changes.Count > 0) {
-                    ITextChange firstChange = changes[0];
-                    ITextChange lastChange = changes[changes.Count - 1];
+                    var firstChange = changes[0];
+                    var lastChange = changes[changes.Count - 1];
                     int changeDeltaLen = lastChange.NewEnd - lastChange.OldEnd;
 
                     deltaLen += changeDeltaLen;
@@ -176,7 +175,6 @@ namespace Microsoft.Languages.Editor {
                         newEnd += changeDeltaLen;
                     }
                 }
-
                 oldVersion = oldVersion.Next;
             }
 
