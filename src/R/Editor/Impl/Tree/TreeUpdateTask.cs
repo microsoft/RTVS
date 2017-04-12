@@ -590,7 +590,7 @@ namespace Microsoft.R.Editor.Tree {
                 if (EditorBuffer != null) {
                     _editorTree.BufferSnapshot = EditorBuffer.CurrentSnapshot;
                 }
-                return _editorTree.ApplyChangesFromQueue(changesToApply.ChangeQueue);
+                return _editorTree.ApplyChanges(changesToApply.Changes);
             }
 
             return new List<TreeChangeEventRecord>();

@@ -33,17 +33,11 @@ namespace Microsoft.R.Editor.SmartIndent {
             var settings = _view.GetService<IREditorSettings>();
             int? res = GetDesiredIndentation(line, settings.IndentStyle);
             if (res != null && line.Snapshot.EditorBuffer != _view.EditorBuffer) {
-                var target = _view.BufferGraph.MapUpToBuffer(
-                    line.Start,
-                    PointTrackingMode.Positive,
-                    PositionAffinity.Successor,
-                    _view.EditorBuffer
-                );
-
+                var target = _view.MapToView(new EditorSnapshotPoint(line.Snapshot, line.Start));
                 if (target != null) {
                     // The indentation level is relative to the line in the text view when
                     // we were created, not to the line we were provided with on this call.
-                    var diff = target.Value.Position - target.Value.GetContainingLine().Start.Position;
+                    var diff = target.Position - target.GetContainingLine().Start;
                     return diff + res;
                 }
             }
@@ -101,7 +95,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 return 0;
             }
 
-            ast = ast ?? editorBuffer.Services.GetService<IREditorDocument>()?.EditorTree?.AstRoot;
+            ast = ast ?? editorBuffer.GetService<IREditorDocument>()?.EditorTree?.AstRoot;
             if (ast == null) {
                 return 0;
             }
@@ -268,7 +262,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             return 0;
         }
 
-        private static int GetFirstArgumentIndent(IBufferSnapshot snapshot, IFunction fc) {
+        private static int GetFirstArgumentIndent(IEditorBufferSnapshot snapshot, IFunction fc) {
             var line = snapshot.GetLineFromPosition(fc.OpenBrace.End);
             return fc.OpenBrace.End - line.Start;
         }

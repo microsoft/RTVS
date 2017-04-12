@@ -14,6 +14,5 @@ namespace Microsoft.Languages.Editor.Text {
         IEditorLine GetLineFromPosition(int position);
         IEditorLine GetLineFromLineNumber(int lineNumber);
         int GetLineNumberFromPosition(int position);
-        int Version { get; }
     }
 }

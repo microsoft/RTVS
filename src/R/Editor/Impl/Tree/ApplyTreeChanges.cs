@@ -3,19 +3,20 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
-using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.R.Editor.Tree {
     public partial class EditorTree {
-        internal List<TreeChangeEventRecord> ApplyChangesFromQueue(Queue<EditorTreeChange> queue) {
+        internal List<TreeChangeEventRecord> ApplyChanges(IEnumerable<EditorTreeChange> changes) {
             if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             var changesToFire = new List<TreeChangeEventRecord>();
 
-            if (queue == null || queue.Count == 0)
+            if (changes == null || !changes.Any()) {
                 return changesToFire;
+            }
 
             // Since we have write lock we cannot fire events. If we fire an event,
             // listener may try and access the tree while a) tree not ready and
@@ -28,9 +29,7 @@ namespace Microsoft.R.Editor.Tree {
             try {
                 AcquireWriteLock();
 
-                while (queue.Count > 0) {
-                    var change = queue.Dequeue();
-
+                foreach (var change in changes) {
                     switch (change.ChangeType) {
                         case TreeChangeType.NewTree: {
                                 var c = change as EditorTreeChange_NewTree;
@@ -50,8 +49,8 @@ namespace Microsoft.R.Editor.Tree {
             return changesToFire;
         }
 
-        internal void FirePostUpdateEvents(TreeChangeEventRecord changes, bool fullParse) {
-            FireOnUpdatesPending(changes);
+        internal void FirePostUpdateEvents(IEnumerable<TreeChangeEventRecord> changes, bool fullParse) {
+            FireOnUpdatesPending(changes.Select(c => c.);
             FireOnUpdateBegin();
 
             foreach (var a in _actionsToInvokeOnReady.Values) {

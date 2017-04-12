@@ -11,6 +11,7 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Services;
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.Controllers.Commands;
 
 namespace Microsoft.Languages.Editor.Controllers {
     public abstract class ViewController : Controller {

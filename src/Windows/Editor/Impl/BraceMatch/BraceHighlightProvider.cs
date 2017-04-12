@@ -3,8 +3,8 @@
 
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Document;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;

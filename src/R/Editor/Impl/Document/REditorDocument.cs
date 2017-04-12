@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Document {
             EditorBuffer.Services.AddService(this);
             EditorBuffer.Closing += OnBufferClosing;
 
-            var tree = new EditorTree(EditorBuffer, app, termFilter);
+            var tree = new EditorTree(EditorBuffer, coreShell, termFilter);
             tree.Build();
             EditorTree = tree;
         }

@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Editor.Text {
         public ViewCaret(ITextCaret caret) {
             InVirtualSpace = caret.InVirtualSpace;
             var p = caret.Position.BufferPosition;
-            Position = new CaretPosition(new EditorSnapshotPoint(p, p.Snapshot.TextBuffer.ToEditorBuffer()), caret.Position.VirtualSpaces);
+            Position = new CaretPosition(new EditorSnapshotPoint(p.Snapshot.TextBuffer.ToEditorBuffer().CurrentSnapshot, p), caret.Position.VirtualSpaces);
         }
         public bool InVirtualSpace { get; }
         public IViewCaretPosition Position { get; }

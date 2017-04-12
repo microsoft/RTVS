@@ -102,7 +102,7 @@ namespace Microsoft.R.Editor.Tree {
             }
 
             AstRoot newTree = RParser.Parse(newSnapshot, _editorTree.ExpressionTermFilter);
-            treeChanges.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
+            treeChanges.Append(new EditorTreeChange_NewTree(newTree));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         public void FullParse(EditorTreeChangeCollection changes, ITextProvider newSnapshot) {
             var newTree = RParser.Parse(newSnapshot, _editorTree.ExpressionTermFilter);
-            changes.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
+            changes.Append(new EditorTreeChange_NewTree(newTree));
         }
     }
 }

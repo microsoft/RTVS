@@ -4,9 +4,13 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Text {
+    /// <summary>
+    /// Implementation of <see cref="IEditorView"/> over Visual Studio text editor
+    /// </summary>
     public sealed class EditorView : IEditorView {
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
         private readonly Lazy<ServiceManager> _services = Lazy.Create(() => new ServiceManager());
@@ -27,7 +31,15 @@ namespace Microsoft.Languages.Editor.Text {
 
         public ISnapshotPoint GetCaretPosition(IEditorBuffer editorBuffer) {
             var point = _textView.GetCaretPosition(editorBuffer);
-            return point.HasValue ? new EditorSnapshotPoint(point.Value, editorBuffer) : null;
+            return point.HasValue ? new EditorSnapshotPoint(editorBuffer.CurrentSnapshot, point.Value) : null;
+        }
+
+        public ISnapshotPoint MapToView(ISnapshotPoint point) {
+            var target = _textView.BufferGraph
+                .MapUpToBuffer(
+                    new SnapshotPoint(point.Snapshot.ToTextSnapshot<ITextSnapshot>(), point.Position), 
+                    PointTrackingMode.Positive, PositionAffinity.Successor, _textView.TextBuffer);
+            return target.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.ToEditorBuffer(), target.Value) : null;
         }
     }
 }

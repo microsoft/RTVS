@@ -10,5 +10,7 @@ namespace Microsoft.Languages.Editor {
         /// </summary>
         public static T GetService<T>(this IEditorView editorView) where T : class
             => editorView.Services.GetService<T>();
+        public static void RemoveService<T>(this IEditorView editorView) where T : class
+            => editorView.Services.RemoveService<T>();
     }
 }

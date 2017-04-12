@@ -38,6 +38,8 @@ namespace Microsoft.Languages.Editor.Text {
         /// </summary>
         IEditorSelection Selection { get; }
 
+        ISnapshotPoint MapToView(ISnapshotPoint point);
+
         T As<T>() where T : class;
     }
 }

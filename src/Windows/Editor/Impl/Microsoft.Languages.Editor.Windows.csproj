@@ -108,7 +108,6 @@
     <Compile Include="Text\EditorBufferSnapshot.cs" />
     <Compile Include="Text\EditorLine.cs" />
     <Compile Include="Text\EditorSelection.cs" />
-    <Compile Include="Text\EditorSnapshotPoint.cs" />
     <Compile Include="Text\EditorView.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextBufferListener.cs" />

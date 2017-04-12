@@ -10,10 +10,12 @@ namespace Microsoft.R.Editor.Tree {
     /// in the main thread in order to avoid unnecessary locks.
     /// </summary>
     internal sealed class EditorTreeChangeCollection {
+        private readonly List<EditorTreeChange> _changes = new List<EditorTreeChange>();
+
         /// <summary>
         /// Changes to apply to the tree
         /// </summary>
-        public Queue<EditorTreeChange> ChangeQueue { get; }
+        public IEnumerable<EditorTreeChange> Changes { get; }
 
         /// <summary>
         /// Version of the text snaphot the changes were generated agaist.
@@ -29,10 +31,14 @@ namespace Microsoft.R.Editor.Tree {
             : this(new Queue<EditorTreeChange>(), _snapshotVersion, fullParseRequired) {
         }
 
-        public EditorTreeChangeCollection(Queue<EditorTreeChange> changes, int _snapshotVersion, bool fullParseRequired) {
-            ChangeQueue = changes;
+        public EditorTreeChangeCollection(IEnumerable<EditorTreeChange> changes, int _snapshotVersion, bool fullParseRequired) {
+            _changes.AddRange(changes);
             SnapshotVersion = _snapshotVersion;
             FullParseRequired = fullParseRequired;
+        }
+
+        public void Append(EditorTreeChange change) {
+            _changes.Add(change);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor {
             bool inComment = false;
             inComment = ast.Comments.GetItemsContainingInclusiveEnd(position).Count > 0;
             if (!inComment) {
-                var snapshot = ast.TextProvider as IBufferSnapshot;
+                var snapshot = (ast.TextProvider as IEditorBufferSnapshotProvider)?.Snapshot;
                 if (snapshot != null) {
                     var line = snapshot.GetLineFromPosition(position);
                     position -= line.Start;
