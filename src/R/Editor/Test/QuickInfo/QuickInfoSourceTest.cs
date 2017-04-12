@@ -66,12 +66,17 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         }
 
         [CompositeTest]
-        [InlineData(2, "sin(")]
-        [InlineData(5, "cos(")]
-        [InlineData(8, "cos(")]
-        [InlineData(11, "sin(")]
-        public async Task NestedCallTest(int position, string name) {
-            string content = @"sin(cos(x), y)";
+        [InlineData("sin(cos(x), y)", 2, "sin(")]
+        [InlineData("sin(cos(x), y)", 5, "cos(")]
+        [InlineData("sin(cos(x), y)", 8, "cos(")]
+        [InlineData("sin(cos(x), y)", 11, "sin(")]
+        [InlineData("sin(cos(tan(x)), y)", 9, "tan(")]
+        [InlineData("cos(de, tan(x, hi(y)), y)", 5, "cos(")]
+        [InlineData("cos(de, tan(x, sin(y)), y)", 9, "tan(")]
+        [InlineData("cos(de, tan(x, sin(y)), y)", 15, "sin(")]
+        [InlineData("cos(de, tan(x, sin(y), yy), zz)", 22, "tan(")]
+        [InlineData("cos(de, tan(x, sin(y), yy), zz)", 27, "cos(")]
+        public async Task NestedCallTest(string content, int position, string name) {
             var session = await TriggerSessionAsync(content, position);
             session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith(name);
         }

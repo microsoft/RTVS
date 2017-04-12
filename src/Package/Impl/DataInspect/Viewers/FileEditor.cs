@@ -103,9 +103,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             private void Show() {
-                var filePath = _fileName.NormalizePath();
+                var fs = _appShell.Services.FileSystem;
 
-                if (!_appShell.Services.FileSystem.FileExists(filePath)) {
+                var filePath = fs.GetFullPath(_fileName);
+                if (!fs.FileExists(filePath)) {
                     _tcs.TrySetResult(string.Empty);
                     return;
                 }

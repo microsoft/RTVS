@@ -44,5 +44,10 @@ namespace Microsoft.Common.Core.IO {
         string CompressFiles(IEnumerable<string> paths, string relativeToDir, IProgress<string> progress, CancellationToken ct);
         string CompressDirectory(string path);
         string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct);
+
+        /// <summary>
+        /// Similar to <see cref="System.IO.Path.GetFullPath(string)"/>
+        /// </summary>
+        string GetFullPath(string path);
     }
 }
