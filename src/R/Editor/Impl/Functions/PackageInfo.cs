@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
@@ -25,6 +27,7 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         private readonly ConcurrentBag<INamedItemInfo> _functions;
         private readonly IIntellisenseRSession _host;
+        private readonly IFileSystem _fs;
         private readonly string _version;
         private bool _saved;
 
@@ -34,6 +37,7 @@ namespace Microsoft.R.Editor.Functions {
         public PackageInfo(IIntellisenseRSession host, string name, string description, string version, IEnumerable<string> functionNames) :
             base(name, description, NamedItemType.Package) {
             _host = host;
+            _fs = _host.Shell.FileSystem();
             _version = version;
             _functions = new ConcurrentBag<INamedItemInfo>(functionNames.Select(fn => new FunctionInfo(fn)));
         }
@@ -49,17 +53,19 @@ namespace Microsoft.R.Editor.Functions {
                 var filePath = CacheFilePath;
                 try {
                     var dir = Path.GetDirectoryName(filePath);
-                    if (!Directory.Exists(dir)) {
-                        Directory.CreateDirectory(dir);
+                    if (!_fs.DirectoryExists(dir)) {
+                        _fs.CreateDirectory(dir);
                     }
-                    using (var sw = new StreamWriter(filePath)) {
-                        foreach (var f in _functions) {
-                            sw.WriteLine(f.Name);
+                    using (var file = new FileStream(filePath, FileMode.Truncate, FileAccess.Write)) {
+                        using (var sw = new StreamWriter(file)) {
+                            foreach (var f in _functions) {
+                                sw.WriteLine(f.Name);
+                            }
                         }
                     }
                     _saved = true;
                 } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                    EditorApplication.Current.Log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                    _host.Shell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
                 }
             }
         }
@@ -92,17 +98,18 @@ namespace Microsoft.R.Editor.Functions {
         private IEnumerable<string> TryRestoreFromCache() {
             var filePath = this.CacheFilePath;
             try {
-                if (File.Exists(filePath)) {
+                if (_fs.FileExists(filePath)) {
                     var list = new List<string>();
-                    using (var sr = new StreamReader(filePath)) {
-                        while (!sr.EndOfStream) {
-                            list.Add(sr.ReadLine().Trim());
+                    using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read)) {
+                        using (var sr = new StreamReader(file)) {
+                            while (!sr.EndOfStream) {
+                                list.Add(sr.ReadLine().Trim());
+                            }
                         }
                     }
                     return list;
                 }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
-
             return null;
         }
 

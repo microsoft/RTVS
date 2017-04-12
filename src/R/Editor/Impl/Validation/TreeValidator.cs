@@ -10,7 +10,6 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Errors;
 
@@ -207,17 +206,16 @@ namespace Microsoft.R.Editor.Validation {
         }
 
         private void OnTreeClose(object sender, EventArgs e) {
-            _editorTree.EditorBuffer.Services.RemoveService<TreeValidator>();
+            _editorTree.EditorBuffer.RemoveService<TreeValidator>();
 
             StopValidation();
 
             _editorTree.NodesRemoved -= OnNodesRemoved;
             _editorTree.UpdateCompleted -= OnTreeUpdateCompleted;
             _editorTree.Closing -= OnTreeClose;
-
             _editorTree = null;
 
-            REditorSettings.Changed -= OnSettingsChanged;
+            _settings.SettingsChanged -= OnSettingsChanged;
         }
         #endregion
 

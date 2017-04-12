@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
     /// <summary>
@@ -75,7 +75,6 @@ namespace Microsoft.R.Editor.Tree {
                 Debug.Fail("Wrong thread tries to enter editor tree write lock");
                 return false;
             }
-
             _treeLock.EnterWriteLock();
             return true;
         }
@@ -85,7 +84,6 @@ namespace Microsoft.R.Editor.Tree {
                 Debug.Fail("Wrong thread tries to exit editor tree write lock");
                 return false;
             }
-
             _treeLock.ExitWriteLock();
             return true;
         }
@@ -101,6 +99,6 @@ namespace Microsoft.R.Editor.Tree {
         }
 
         public override string ToString()
-            => string.Format(CultureInfo.CurrentCulture, "RL:{0}, WL:{1}", _treeLock.CurrentReadCount, _treeLock.IsWriteLockHeld);
+            => Invariant($"RL:{ _treeLock.CurrentReadCount}, WL:{_treeLock.IsWriteLockHeld}");
     }
 }

@@ -114,7 +114,6 @@
     <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
     <Compile Include="Text\ITextViewListener.cs" />
-    <Compile Include="Text\StringDifference.cs" />
     <Compile Include="Text\TextBufferListenerEventArgs.cs" />
     <Compile Include="Text\TextBufferListenerEvents.cs" />
     <Compile Include="Text\TextProvider.cs" />

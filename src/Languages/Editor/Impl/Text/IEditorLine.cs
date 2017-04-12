@@ -11,6 +11,6 @@ namespace Microsoft.Languages.Editor.Text {
         int LineNumber { get; }
         string GetText();
         string LineBreak { get; }
-        IBufferSnapshot Snapshot { get; }
+        IEditorBufferSnapshot Snapshot { get; }
     }
 }

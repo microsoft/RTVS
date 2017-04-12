@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Completions {
             return false;
         }
 
-        public static bool IsPositionInNamespace(this IBufferSnapshot snapshot, int position) {
+        public static bool IsPositionInNamespace(this IEditorBufferSnapshot snapshot, int position) {
             if (position > 0) {
                 var line = snapshot.GetLineFromPosition(position);
                 if (line.Length > 2 && position - line.Start > 2) {

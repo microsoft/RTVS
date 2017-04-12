@@ -12,6 +12,9 @@ namespace Microsoft.Languages.Editor {
         public static T GetService<T>(this IEditorBuffer editorBuffer) where T : class
             => editorBuffer.Services.GetService<T>();
 
+        public static void RemoveService<T>(this IEditorBuffer editorBuffer) where T : class
+            => editorBuffer.Services.RemoveService<T>();
+
         /// <summary>
         /// Tries to locate document by a text buffer. 
         /// In trivial case document is attached to the buffer as a service.

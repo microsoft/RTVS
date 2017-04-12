@@ -4,10 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Functions {
     public interface IIntellisenseRSession : IDisposable {
+        ICoreShell Shell { get; }
+
         /// <summary>
         /// Intellisense R session. The session is different from the interactive
         /// session and is used to build indexes and to retrieve RD data for

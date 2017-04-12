@@ -64,7 +64,7 @@ namespace Microsoft.R.Editor.Comments {
             return false;
         }
 
-        private static ITextRange GetRoxygenBlockPosition(IBufferSnapshot snapshot, int definitionStart) {
+        private static ITextRange GetRoxygenBlockPosition(IEditorBufferSnapshot snapshot, int definitionStart) {
             var line = snapshot.GetLineFromPosition(definitionStart);
             for (int i = line.LineNumber - 1; i >= 0; i--) {
                 var currentLine = snapshot.GetLineFromLineNumber(i);
@@ -110,7 +110,7 @@ namespace Microsoft.R.Editor.Comments {
             return sb.ToString();
         }
 
-        private static IEditorLine FindFirstNonEmptyLine(IBufferSnapshot snapshot, int lineNumber) {
+        private static IEditorLine FindFirstNonEmptyLine(IEditorBufferSnapshot snapshot, int lineNumber) {
             for (int i = lineNumber; i < snapshot.LineCount; i++) {
                 var line = snapshot.GetLineFromLineNumber(i);
                 if (!string.IsNullOrWhiteSpace(line.GetText())) {

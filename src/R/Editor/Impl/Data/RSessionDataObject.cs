@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;

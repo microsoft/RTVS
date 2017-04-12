@@ -60,7 +60,7 @@ namespace Microsoft.Languages.Editor.Text {
             Closing?.Invoke(this, EventArgs.Empty);
         }
 
-        public IBufferSnapshot CurrentSnapshot => new EditorBufferSnapshot(this, _textBuffer.CurrentSnapshot);
+        public IEditorBufferSnapshot CurrentSnapshot => new EditorBufferSnapshot(this, _textBuffer.CurrentSnapshot);
         public PropertyDictionary Properties => _properties.Value;
         public IServiceManager Services => _services.Value;
 

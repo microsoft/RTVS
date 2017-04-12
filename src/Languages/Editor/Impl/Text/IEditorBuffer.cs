@@ -17,7 +17,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Current buffer snapshot
         /// </summary>
-        IBufferSnapshot CurrentSnapshot { get; }
+        IEditorBufferSnapshot CurrentSnapshot { get; }
 
         /// <summary>
         /// Fires when text buffer content changed but before 

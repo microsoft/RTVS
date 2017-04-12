@@ -7,12 +7,13 @@ namespace Microsoft.Languages.Editor.Text {
     /// <summary>
     /// Represents immutable snapshot of the editor buffer
     /// </summary>
-    public interface IBufferSnapshot : ITextProvider {
+    public interface IEditorBufferSnapshot : ITextProvider {
         T ToTextSnapshot<T>() where T : class;
         IEditorBuffer EditorBuffer { get; }
         int LineCount { get; }
         IEditorLine GetLineFromPosition(int position);
         IEditorLine GetLineFromLineNumber(int lineNumber);
         int GetLineNumberFromPosition(int position);
+        int Version { get; }
     }
 }

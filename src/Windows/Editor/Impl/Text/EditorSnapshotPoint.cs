@@ -16,7 +16,7 @@ namespace Microsoft.Languages.Editor.Text {
         }
 
         public int Position => _point.Position;
-        public IBufferSnapshot Snapshot => new EditorBufferSnapshot(_editorBuffer, _point.Snapshot);
+        public IEditorBufferSnapshot Snapshot => new EditorBufferSnapshot(_editorBuffer, _point.Snapshot);
         public IEditorLine GetContainingLine() => new EditorLine(_editorBuffer, _point.GetContainingLine());
     }
 }

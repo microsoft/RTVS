@@ -50,17 +50,14 @@ namespace Microsoft.R.Editor.Tree {
             return changesToFire;
         }
 
-        internal void FirePostUpdateEvents(List<TreeChangeEventRecord> changes, bool fullParse) {
-            List<TextChangeEventArgs> textChanges = new List<TextChangeEventArgs>();
-
-            FireOnUpdatesPending(textChanges);
+        internal void FirePostUpdateEvents(TreeChangeEventRecord changes, bool fullParse) {
+            FireOnUpdatesPending(changes);
             FireOnUpdateBegin();
 
             foreach (var a in _actionsToInvokeOnReady.Values) {
                 a.Action(a.Parameter);
             }
             _actionsToInvokeOnReady.Clear();
-
             FireOnUpdateCompleted(TreeUpdateType.NewTree);
         }
     }

@@ -10,7 +10,7 @@ namespace Microsoft.Languages.Editor.Text {
             VirtualSpaces = virtualSpaces;
         }
         public int Position => _point.Position;
-        public IBufferSnapshot Snapshot => _point.Snapshot;
+        public IEditorBufferSnapshot Snapshot => _point.Snapshot;
         public int VirtualSpaces { get; }
         public IEditorLine GetContainingLine() => _point.GetContainingLine();
     }

@@ -30,14 +30,14 @@ namespace Microsoft.R.Editor.SmartIndent {
 
         #region ISmartIndenter
         public int? GetDesiredIndentation(IEditorLine line) {
-            var settings = _view.GetService<IEditorSettings>();
+            var settings = _view.GetService<IREditorSettings>();
             int? res = GetDesiredIndentation(line, settings.IndentStyle);
             if (res != null && line.Snapshot.EditorBuffer != _view.EditorBuffer) {
                 var target = _view.BufferGraph.MapUpToBuffer(
                     line.Start,
                     PointTrackingMode.Positive,
                     PositionAffinity.Successor,
-                    _view.TextBuffer
+                    _view.EditorBuffer
                 );
 
                 if (target != null) {

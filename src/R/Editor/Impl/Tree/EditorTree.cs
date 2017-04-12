@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
@@ -14,6 +13,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
     /// <summary>
@@ -51,13 +51,12 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         public bool IsReady {
             get {
-                if (IsDirty)
+                if (IsDirty) {
                     return false;
-
+                }
                 if (EditorBuffer != null && BufferSnapshot != null) {
                     return EditorBuffer.CurrentSnapshot.Version == BufferSnapshot.Version;
                 }
-
                 return true;
             }
         }
@@ -65,7 +64,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Last text snapshot associated with this tree
         /// </summary>
-        public IBufferSnapshot BufferSnapshot {
+        public IEditorBufferSnapshot BufferSnapshot {
             get { return _textSnapShot; }
             internal set {
                 _textSnapShot = value;
@@ -120,10 +119,9 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// True if tree is out of date and no longer matches current text buffer state
         /// </summary>
-        public bool IsDirty=> TreeUpdateTask.ChangesPending;
+        public bool IsDirty => TreeUpdateTask.ChangesPending;
 
         #region Internal members
-
         /// <summary>
         /// Makes current thread owner of the tree.
         /// Normally only one thread can access the tree.
@@ -134,9 +132,7 @@ namespace Microsoft.R.Editor.Tree {
             TreeLock.TakeThreadOwnership();
         }
 
-        internal AstRoot GetAstRootUnsafe() {
-            return _astRoot;
-        }
+        internal AstRoot GetAstRootUnsafe() => _astRoot;
 
         /// <summary>
         /// Async tree update task
@@ -158,7 +154,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Current text buffer snapshot
         /// </summary>
-        private IBufferSnapshot _textSnapShot;
+        private IEditorBufferSnapshot _textSnapShot;
 
         /// <summary>
         /// Parse tree
@@ -170,7 +166,7 @@ namespace Microsoft.R.Editor.Tree {
             public object Parameter;
         }
 
-        private Dictionary<Type, TreeReadyAction> _actionsToInvokeOnReady = new Dictionary<Type, TreeReadyAction>();
+        private readonly Dictionary<Type, TreeReadyAction> _actionsToInvokeOnReady = new Dictionary<Type, TreeReadyAction>();
         #endregion
 
         #region Constructors
@@ -186,7 +182,7 @@ namespace Microsoft.R.Editor.Tree {
             EditorBuffer = editorBuffer;
             EditorBuffer.ChangedHighPriority += OnTextBufferChanged;
 
-            TreeUpdateTask = new TreeUpdateTask(this, app);
+            TreeUpdateTask = new TreeUpdateTask(this, coreShell);
             TreeLock = new EditorTreeLock();
         }
         #endregion
@@ -228,32 +224,15 @@ namespace Microsoft.R.Editor.Tree {
         }
         #endregion
 
-        private void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
-            if (e.Changes.Count > 0) {
-                // In case of tabbing multiple lines update comes as multiple changes
-                // each is an insertion of whitespace in the beginning of the line.
-                // We don't want to combine them since then change will technically
-                // damage existing elements while actually it is just a whitespace change.
-                // All changes are relative to the current snapshot hence we have to transform 
-                // them first and make them relative to each other so we can apply changes
-                // sequentially as after every change element positions will shift and hence
-                // next change must be relative to the new position and not to the current
-                // text buffer snapshot. Changes are sorted by position.
-                TreeUpdateTask.OnTextChanges(e);
-            }
-        }
+        private void OnTextBufferChanged(object sender, TextChangeEventArgs e) => TreeUpdateTask.OnTextChanges(e);
 
         internal void NotifyTextChange(int start, int oldLength, int newLength) {
-            TextChangeEventArgs change = new TextChangeEventArgs(start, start, oldLength, newLength);
-            List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>(1);
-            changes.Add(change);
-
+            var change = new TextChangeEventArgs(start, start, oldLength, newLength);
+            var changes = new List<TextChangeEventArgs>() { change };
             _astRoot.ReflectTextChanges(changes, EditorBuffer.CurrentSnapshot);
         }
 
-        internal TextChange PendingChanges {
-            get { return TreeUpdateTask.Changes; }
-        }
+        internal TextChange PendingChanges => TreeUpdateTask.Changes;
 
         /// <summary>
         /// Removes nodes from the tree collection if node range is partially or entirely 
@@ -337,10 +316,8 @@ namespace Microsoft.R.Editor.Tree {
                 if (TreeLock.AcquireReadLock(treeUserId)) {
                     return _astRoot;
                 }
-
-                Debug.Fail(String.Format(CultureInfo.CurrentCulture, "Unable to acquire read lock for user {0}", treeUserId));
+                Debug.Fail(Invariant($"Unable to acquire read lock for user {treeUserId}"));
             }
-
             return null;
         }
 
@@ -441,6 +418,6 @@ namespace Microsoft.R.Editor.Tree {
         #endregion
 
         public override string ToString()
-            => string.Format(CultureInfo.CurrentCulture, "IsDirty: {0} {1} Changes: {2}", IsDirty, TreeLock.ToString(), TreeUpdateTask.ChangesPending);
+            => Invariant($"IsDirty: {IsDirty} {TreeLock.ToString()} Changes: {TreeUpdateTask.ChangesPending}");
     }
 }

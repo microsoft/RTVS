@@ -8,27 +8,18 @@ using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {
     public class TreeUpdatePendingEventArgs : EventArgs {
-        public TextChangeEventArgs Change { get; private set; }
-
-        public TreeUpdatePendingEventArgs(TextChangeEventArgs change) {
-            Change = change;
-        }
+        public TextChangeEventArgs Change { get; }
+        public TreeUpdatePendingEventArgs(TextChangeEventArgs change) => Change = change;
     }
 
     public class TreeUpdatedEventArgs : EventArgs {
-        public TreeUpdateType UpdateType { get; private set; }
-
-        public TreeUpdatedEventArgs(TreeUpdateType updateType) {
-            UpdateType = updateType;
-        }
+        public TreeUpdateType UpdateType { get; }
+        public TreeUpdatedEventArgs(TreeUpdateType updateType) => UpdateType = updateType;
     }
 
     public class TreeNodesRemovedEventArgs : EventArgs {
-        public IReadOnlyCollection<IAstNode> Nodes { get; private set; }
-
-        public TreeNodesRemovedEventArgs(IReadOnlyCollection<IAstNode> nodes) {
-            Nodes = nodes;
-        }
+        public IReadOnlyCollection<IAstNode> Nodes { get; }
+        public TreeNodesRemovedEventArgs(IReadOnlyCollection<IAstNode> nodes) => Nodes = nodes;
     }
 
     public class TreePositionsOnlyChangedEventArgs : EventArgs { }

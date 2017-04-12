@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.IO;
+using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Microsoft.Common.Core.Imaging;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
@@ -11,16 +10,11 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         private readonly ImageSource _image;
 
         public TestImageService() {
-            using (var memory = new MemoryStream()) {
-                Resources.BlueSquare.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-                memory.Position = 0;
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.StreamSource = memory;
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.EndInit();
-                _image = image;
-            }
+            _image = new DrawingImage(new GeometryDrawing(
+                Brushes.Blue,
+                new Pen(Brushes.Transparent, 0),
+                new RectangleGeometry(new Rect(0, 0, 16, 16))
+            ));
         }
 
         public object GetFileIcon(string file) => _image;

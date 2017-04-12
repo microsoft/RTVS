@@ -16,17 +16,17 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Editor tree
         /// </summary>
-        private EditorTree _editorTree;
+        private readonly EditorTree _editorTree;
 
         /// <summary>
         /// Tree root node
         /// </summary>
-        private AstRoot _astRoot;
+        private readonly AstRoot _astRoot;
 
         /// <summary>
         /// A callback that provides a way to check if processing should be canceled.
         /// </summary>
-        private Func<bool> _cancelCallback;
+        private readonly Func<bool> _cancelCallback;
 
         public TextChangeProcessor(EditorTree editorTree, AstRoot astRoot, Func<bool> cancelCallback = null) {
             _editorTree = editorTree;
@@ -34,9 +34,7 @@ namespace Microsoft.R.Editor.Tree {
             _cancelCallback = cancelCallback;
         }
 
-        private bool IsCancellationRequested() {
-            return _cancelCallback != null ? _cancelCallback() : false;
-        }
+        private bool IsCancellationRequested() => _cancelCallback != null ? _cancelCallback() : false;
 
         /// <summary>
         /// Processes a single text change incrementally. Enqueues resulting 
@@ -53,17 +51,17 @@ namespace Microsoft.R.Editor.Tree {
         /// from the main thread</param>
         public void ProcessChange(TextChange textChange, EditorTreeChangeCollection treeChanges) {
             IAstNode startNode = null, endNode = null;
-            PositionType startPositionType = PositionType.Undefined;
-            PositionType endPositionType = PositionType.Undefined;
+            var startPositionType = PositionType.Undefined;
+            var endPositionType = PositionType.Undefined;
             IAstNode commonParent = null;
 
-            int start = textChange.OldRange.Start;
-            int oldLength = textChange.OldRange.Length;
-            int newLength = textChange.NewRange.Length;
-            int offset = newLength - oldLength;
+            var start = textChange.OldRange.Start;
+            var oldLength = textChange.OldRange.Length;
+            var newLength = textChange.NewRange.Length;
+            var offset = newLength - oldLength;
 
-            ITextProvider oldSnapshot = textChange.OldTextProvider;
-            ITextProvider newSnapshot = textChange.NewTextProvider;
+            var oldSnapshot = textChange.OldTextProvider;
+            var newSnapshot = textChange.NewTextProvider;
 
             // Find position type and the enclosing element node. Note that element 
             // positions have been adjusted already (it happens immediately in OnTextChange) 
@@ -99,7 +97,7 @@ namespace Microsoft.R.Editor.Tree {
 
             if (!(commonParent is AstRoot)) {
                 Debug.Assert(commonParent is IScope);
-                AstRoot subTree = RParser.Parse(newSnapshot, commonParent, _editorTree.ExpressionTermFilter);
+                var subTree = RParser.Parse(newSnapshot, commonParent, _editorTree.ExpressionTermFilter);
                 return;
             }
 
@@ -114,7 +112,6 @@ namespace Microsoft.R.Editor.Tree {
         private IAstNode OnTokenNodeChange(TokenNode node, int start, int oldLength, int newLength) {
             Debug.Assert(node != null);
             node.Token.Expand(0, newLength - oldLength);
-
             return node;
         }
 
@@ -122,7 +119,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Invokes full parse pass. Called from a background tree updating task.
         /// </summary>
         public void FullParse(EditorTreeChangeCollection changes, ITextProvider newSnapshot) {
-            AstRoot newTree = RParser.Parse(newSnapshot, _editorTree.ExpressionTermFilter);
+            var newTree = RParser.Parse(newSnapshot, _editorTree.ExpressionTermFilter);
             changes.ChangeQueue.Enqueue(new EditorTreeChange_NewTree(newTree));
         }
     }

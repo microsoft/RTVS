@@ -607,8 +607,8 @@ namespace Microsoft.R.Editor.Tree {
                     Cancel();
 
                     _disposed = true;
-                    if (_appTask != null) {
-                        _appTask.Idle -= OnIdle;
+                    if (_coreShell != null) {
+                        _coreShell.Idle -= OnIdle;
                     }
                 }
                 base.Dispose(disposing);

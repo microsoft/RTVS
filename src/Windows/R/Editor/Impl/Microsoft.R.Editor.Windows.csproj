@@ -132,7 +132,6 @@
     <Compile Include="Selection\SelectWordCommand.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\RSignatureHelpContext.cs" />
-    <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
     <Compile Include="Signatures\SignatureHelp2.cs" />
     <Compile Include="Signatures\SignatureHelpContext.cs" />

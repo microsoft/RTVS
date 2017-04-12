@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Completions;
@@ -18,12 +18,12 @@ using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Completions.Engine {
     public sealed class RCompletionEngine : IRCompletionEngine {
-        private readonly IServiceContainer _serviceContainer;
+        private readonly ICoreShell _coreShell;
         private readonly IImageService _imageService;
 
-        public RCompletionEngine(IServiceContainer serviceContainer) {
-            _serviceContainer = serviceContainer;
-            _imageService = serviceContainer.GetService<IImageService>();
+        public RCompletionEngine(ICoreShell coreShell) {
+            _coreShell = coreShell;
+            _imageService = _coreShell.GetService<IImageService>();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
             string directory;
             if (CanShowFileCompletion(ast, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    providers.Add(new FilesCompletionProvider(directory, _serviceContainer));
+                    providers.Add(new FilesCompletionProvider(directory, _coreShell));
                 }
                 return providers;
             }
@@ -91,8 +91,8 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 return providers;
             }
 
-            var variablesProvider = _serviceContainer.GetService<IVariablesProvider>();
-            var packageIndex = _serviceContainer.GetService<IPackageIndex>();
+            var variablesProvider = _coreShell.GetService<IVariablesProvider>();
+            var packageIndex = _coreShell.GetService<IPackageIndex>();
 
             if (ast.TextProvider.IsInObjectMemberName(context.Position)) {
                 providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, _imageService));
@@ -103,14 +103,14 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 providers.Add(new PackagesCompletionProvider(packageIndex, _imageService));
             } else {
                 if (ast.IsInFunctionArgumentName<FunctionCall>(context.Position)) {
-                    var functionIndex = _serviceContainer.GetService<IFunctionIndex>();
+                    var functionIndex = _coreShell.GetService<IFunctionIndex>();
                     providers.Add(new ParameterNameCompletionProvider(functionIndex, _imageService));
                 }
 
-                providers.Add(new KeywordCompletionProvider(_serviceContainer));
-                providers.Add(new PackageFunctionCompletionProvider(_serviceContainer));
+                providers.Add(new KeywordCompletionProvider(_coreShell.Services));
+                providers.Add(new PackageFunctionCompletionProvider(_coreShell.Services));
                 providers.Add(new UserVariablesCompletionProvider(_imageService));
-                providers.Add(new KeywordCompletionProvider(_serviceContainer));
+                providers.Add(new KeywordCompletionProvider(_coreShell.Services));
 
                 if (!context.IsCaretInNameSpace()) {
                     providers.Add(new PackagesCompletionProvider(packageIndex, _imageService));

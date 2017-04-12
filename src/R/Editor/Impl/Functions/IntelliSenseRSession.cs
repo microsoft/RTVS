@@ -22,14 +22,13 @@ namespace Microsoft.R.Editor.Functions {
     /// for function descriptions and signatures.
     /// </summary>
     public sealed class IntelliSenseRSession : IIntellisenseRSession {
-        private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
         private IEnumerable<string> _loadedPackages = null;
 
         public IntelliSenseRSession(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider) {
-            _coreShell = coreShell;
+            Shell = coreShell;
             _workflow = workflowProvider.GetOrCreate();
             _sessionProvider = _workflow.RSessions;
         }
@@ -39,6 +38,8 @@ namespace Microsoft.R.Editor.Functions {
         /// different value in tests or code coverage runs.
         /// </summary>
         public static int HostStartTimeout { get; set; } = 3000;
+
+        public ICoreShell Shell { get; }
 
         public IRSession Session { get; private set; }
 
@@ -90,8 +91,8 @@ namespace Microsoft.R.Editor.Functions {
                 }
 
                 if (!Session.IsHostRunning) {
-                    int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
-                    var settings = _coreShell.GetService<IRSettings>();
+                    int timeout = Shell.IsUnitTestEnvironment ? 10000 : 3000;
+                    var settings = Shell.GetService<IRSettings>();
                     await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout);
                 }
             } finally {
@@ -133,7 +134,7 @@ namespace Microsoft.R.Editor.Functions {
             // Normal case is to use the interacive session.
             if (_workflow.RSession.IsHostRunning) {
                 session = _workflow.RSession;
-            } else if (_coreShell.IsUnitTestEnvironment) {
+            } else if (Shell.IsUnitTestEnvironment) {
                 // For tests that only employ standard packages we can reuse the same session.
                 // This improves test performance and makes test code simpler.
                 session = Session;

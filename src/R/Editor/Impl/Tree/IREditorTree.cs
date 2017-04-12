@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Last text snapshot associated with this tree
         /// </summary>
-        IBufferSnapshot BufferSnapshot { get; }
+        IEditorBufferSnapshot BufferSnapshot { get; }
 
         /// <summary>
         /// True if tree matches current text buffer snapshot.

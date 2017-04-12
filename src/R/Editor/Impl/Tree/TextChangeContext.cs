@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
 
@@ -12,43 +11,42 @@ namespace Microsoft.R.Editor.Tree {
     /// including text ranges, affected editor tree
     /// and changed AST node.
     /// </summary>
-    internal class TextChangeContext
-    {
-        public EditorTree EditorTree { get; private set; }
+    internal class TextChangeContext {
+        public IREditorTree EditorTree { get; }
 
         /// <summary>
         /// Most recent change start in the previous snapshot
         /// </summary>
-        public int OldStart { get; private set; }
+        public int OldStart { get; }
         /// <summary>
         /// Most recent change length in the previous snapshot
         /// </summary>
-        public int OldLength { get; private set; }
+        public int OldLength { get; }
 
         /// <summary>
         /// Most recent change start in the new snapshot
         /// </summary>
-        public int NewStart { get; private set; }
+        public int NewStart { get; }
 
         /// <summary>
         /// Most recent change length in the new snapshot
         /// </summary>
-        public int NewLength { get; private set; }
+        public int NewLength { get; }
 
         /// <summary>
         /// Previous snapshot text
         /// </summary>
-        public ITextProvider OldTextProvider { get; private set; }
-        
+        public ITextProvider OldTextProvider { get; }
+
         /// <summary>
         /// New snapshot text
         /// </summary>
-        public ITextProvider NewTextProvider { get; private set; }
+        public ITextProvider NewTextProvider { get; }
 
         /// <summary>
         /// Changes accumulated since last tree update
         /// </summary>
-        public TextChange PendingChanges { get; private set; }
+        public TextChange PendingChanges { get; }
 
         /// <summary>
         /// Most recently changed node (if change was AST node change)
@@ -65,28 +63,24 @@ namespace Microsoft.R.Editor.Tree {
         private string _oldText;
         private string _newText;
 
-        public TextChangeContext(EditorTree editorTree, TextChangeEventArgs change, TextChange pendingChanges)
-        {
+        public TextChangeContext(EditorTree editorTree, TextChangeEventArgs change, TextChange pendingChanges) {
             EditorTree = editorTree;
             NewStart = change.Start;
             OldStart = change.OldStart;
             OldLength = change.OldLength;
             NewLength = change.NewLength;
 
-            OldTextProvider = change.OldText != null ? change.OldText : editorTree.AstRoot.TextProvider;
-            NewTextProvider = change.NewText != null ? change.NewText : new TextProvider(editorTree.TextBuffer.CurrentSnapshot, partial: true);
-
+            OldTextProvider = change.OldText ?? editorTree.AstRoot.TextProvider;
+            NewTextProvider = change.NewText ?? editorTree.AstRoot.TextProvider;
             PendingChanges = pendingChanges;
 
-            TextChange textChange = new TextChange();
-
-            textChange.OldRange = this.OldRange;
-            textChange.OldTextProvider = this.OldTextProvider;
-
-            textChange.NewRange = this.NewRange;
-            textChange.NewTextProvider = this.NewTextProvider;
-
-            textChange.Version = this.NewTextProvider.Version;
+            var textChange = new TextChange {
+                OldRange = this.OldRange,
+                OldTextProvider = this.OldTextProvider,
+                NewRange = this.NewRange,
+                NewTextProvider = this.NewTextProvider,
+                Version = this.NewTextProvider.Version
+            };
 
             PendingChanges.Combine(textChange);
         }
@@ -94,13 +88,9 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Range of changes in the previous snapshot
         /// </summary>
-        public TextRange OldRange
-        {
-            get
-            {
-                if (_oldRange == null)
-                    _oldRange = new TextRange(OldStart, OldLength);
-
+        public TextRange OldRange {
+            get {
+                _oldRange = _oldRange ?? new TextRange(OldStart, OldLength);
                 return _oldRange;
             }
         }
@@ -108,13 +98,9 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Range of changes in the new snapshot
         /// </summary>
-        public TextRange NewRange
-        {
-            get
-            {
-                if (_newRange == null)
-                    _newRange = new TextRange(NewStart, NewLength);
-
+        public TextRange NewRange {
+            get {
+                _newRange = _newRange ?? new TextRange(NewStart, NewLength);
                 return _newRange;
             }
         }
@@ -122,13 +108,9 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Changed text in the previous snapshot
         /// </summary>
-        public string OldText
-        {
-            get
-            {
-                if (_oldText == null)
-                    _oldText = OldTextProvider.GetText(OldRange);
-
+        public string OldText {
+            get {
+                _oldText = _oldText ?? OldTextProvider.GetText(OldRange);
                 return _oldText;
             }
         }
@@ -136,13 +118,9 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Changed text in the new snapshot
         /// </summary>
-        public string NewText
-        {
-            get
-            {
-                if (_newText == null)
-                    _newText = NewTextProvider.GetText(NewRange);
-
+        public string NewText {
+            get {
+                _newText = _newText ?? NewTextProvider.GetText(NewRange);
                 return _newText;
             }
         }

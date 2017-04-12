@@ -6,7 +6,6 @@ using Microsoft.R.Core.AST;
 namespace Microsoft.R.Editor.Tree {
     internal class EditorTreeChange {
         public TreeChangeType ChangeType { get; }
-
         public EditorTreeChange(TreeChangeType changeType) {
             ChangeType = changeType;
         }
@@ -14,7 +13,6 @@ namespace Microsoft.R.Editor.Tree {
 
     internal class EditorTreeChange_NewTree : EditorTreeChange {
         public AstRoot NewTree { get; }
-
         public EditorTreeChange_NewTree(AstRoot newTree)
             : base(TreeChangeType.NewTree) {
             NewTree = newTree;
