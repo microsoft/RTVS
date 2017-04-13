@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker {
-    internal sealed class ApiErrorResult : ObjectResult {
+    public sealed class ApiErrorResult : ObjectResult {
         private BrokerApiError _brokerApiError;
         private readonly string _message;
 

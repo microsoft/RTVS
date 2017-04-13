@@ -30,8 +30,7 @@ namespace Microsoft.R.Editor.Application.Test {
             StartScript(exportProvider, text, "filename", contentType, null);
 
         public async Task<IEditorScript> StartScript(IExportProvider exportProvider, string text, string filename, string contentType, IRSessionProvider sessionProvider) {
-            var shell = new TestCoreShell(exportProvider);
-
+            var shell = exportProvider.GetExportedValue<ICoreShell>(); 
             var coreEditor = await InUI(() => new CoreEditor(shell, text, filename, contentType));
             var containerDisposable = await AddToHost(coreEditor.Control);
 

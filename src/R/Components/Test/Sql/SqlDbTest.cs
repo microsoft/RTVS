@@ -7,7 +7,10 @@ using System.Globalization;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Sql;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.Win32;
@@ -43,14 +46,13 @@ namespace Microsoft.R.Components.Test.Sql {
         public void OdbcDriverCheck(string version, int lcid, bool expected) {
             var coreShell = Substitute.For<ICoreShell>();
             var driverPath = @"c:\windows\system32\driver.dll";
+            var fs = coreShell.FileSystem();
+            var registry = coreShell.GetService<IRegistry>();
+            var process = coreShell.Process();
+            var ui = coreShell.UI();
 
-            var fs = Substitute.For<IFileSystem>();
             fs.FileExists(Arg.Any<string>()).Returns(true);
             fs.GetFileVersion(driverPath).Returns(new Version(version));
-            coreShell.FileSystem().Returns(fs);
-
-            var registry = Substitute.For<IRegistry>();
-            coreShell.GetService<IRegistry>().Returns(registry);
 
             var odbc13Key = Substitute.For<IRegistryKey>();
             odbc13Key.GetValue("Driver").Returns(driverPath);
@@ -61,12 +63,12 @@ namespace Microsoft.R.Components.Test.Sql {
             registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).Returns(hlkm);
             coreShell.LocaleId.Returns(lcid);
 
-            coreShell.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
+            ui.When(x => x.ShowErrorMessage(Arg.Any<string>())).Do(x => {
                 var arg = x.Args()[0] as string;
                 arg.Should().Contain(CultureInfo.GetCultureInfo((int)lcid).Name);
             });
 
-            coreShell.Process().When(x => x.Start(Arg.Any<string>())).Do(x => {
+            process.When(x => x.Start(Arg.Any<string>())).Do(x => {
                 var arg = x.Args()[0] as string;
                 arg.Should().Contain(CultureInfo.GetCultureInfo((int)lcid).Name);
             });
@@ -75,8 +77,8 @@ namespace Microsoft.R.Components.Test.Sql {
             service.CheckSqlOdbcDriverVersion().Should().Be(expected);
 
             if(!expected) {
-                coreShell.Received(1).ShowErrorMessage(Arg.Any<string>());
-                coreShell.Process().Received(1).Start(Arg.Any<string>());
+                ui.ShowErrorMessage(Arg.Any<string>());
+                process.Received(1).Start(Arg.Any<string>());
             }
         }
     }

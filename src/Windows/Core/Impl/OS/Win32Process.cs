@@ -11,40 +11,46 @@ using System.Threading;
 using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Common.Core.OS {
-    public class Win32Process {
-        private Win32Process(NativeMethods.PROCESS_INFORMATION pi) {
-            _hasExited = false;
-            _exitCodeLock = new object();
-            ProcessId = pi.dwProcessId;
-            MainThreadId = pi.dwThreadId;
-            _processHandle = new SafeProcessHandle(pi.hProcess, true);
-            _threadHandle = new SafeThreadHandle(pi.hThread);
-            _wait = new ProcessWaitHandle(_processHandle);
-            _registeredWait = ThreadPool.RegisterWaitForSingleObject(_wait, (o, t) => {
-                _registeredWait.Unregister(_wait);
-                SetExitState();
-                Exited?.Invoke(this, new Win32ProcessExitEventArgs(_exitCode));
-                _processHandle.Close();
-                _threadHandle.Close();
-                _wait.Close();
-            }, null, -1, true);
-        }
+    public class Win32Process : IProcess {
+        private static readonly object _createProcessLock = new object();
 
-        private SafeProcessHandle _processHandle;
-        private SafeThreadHandle _threadHandle;
-        private ProcessWaitHandle _wait;
-        private RegisteredWaitHandle _registeredWait;
+        private readonly SafeProcessHandle _processHandle;
+        private readonly RegisteredWaitHandle _registeredWait;
+        private readonly object _exitCodeLock;
         private bool _hasExited;
         private uint _exitCode;
-        private object _exitCodeLock;
-        public readonly int ProcessId;
-        public readonly int MainThreadId;
 
+        public int Id { get; }
+        public int MainThreadId { get; }
+        public Stream StandardInput { get; }
+        public Stream StandardOutput { get; }
+        public Stream StandardError { get; }
         public bool HasExited => _hasExited;
+        public int ExitCode => (int)_exitCode;
 
-        public event EventHandler<Win32ProcessExitEventArgs> Exited;
+        public event EventHandler Exited;
 
-        public int ExitCode =>  (int)_exitCode;
+        private Win32Process(NativeMethods.PROCESS_INFORMATION pi, Stream stdin, Stream stdout, Stream stderror) {
+            StandardInput = stdin;
+            StandardOutput = stdout;
+            StandardError = stderror;
+            _hasExited = false;
+            _exitCodeLock = new object();
+            Id = pi.dwProcessId;
+            MainThreadId = pi.dwThreadId;
+            _processHandle = new SafeProcessHandle(pi.hProcess, true);
+
+            var threadHandle = new SafeThreadHandle(pi.hThread);
+            var wait = new ProcessWaitHandle(_processHandle);
+            _registeredWait = ThreadPool.RegisterWaitForSingleObject(wait, (o, t) => {
+                _registeredWait.Unregister(wait);
+                SetExitState();
+                Exited?.Invoke(this, EventArgs.Empty);
+                _processHandle.Close();
+                threadHandle.Close();
+                wait.Close();
+            }, null, -1, true);
+        }
 
         public void WaitForExit(int milliseconds) {
             using (ProcessWaitHandle processWaitHandle = new ProcessWaitHandle(_processHandle)) {
@@ -74,10 +80,9 @@ namespace Microsoft.Common.Core.OS {
             }
         }
 
-        private static object _createProcessLock = new object();
-        public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment, out Stream stdin, out Stream stdout, out Stream stderror) {
+        public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment) {
 
-            NativeMethods.STARTUPINFO si = new NativeMethods.STARTUPINFO();
+            var si = new NativeMethods.STARTUPINFO();
             si.cb = Marshal.SizeOf(typeof(NativeMethods.STARTUPINFO));
 
             /* 
@@ -154,9 +159,11 @@ namespace Microsoft.Common.Core.OS {
                         }
                     }
 
-                    stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
-                    stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
-                    stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
+                    var stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
+                    var stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
+                    var stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
+
+                    return new Win32Process(pi, stdin, stdout, stderror);
                 } finally {
                     NativeMethods.SetErrorMode(oldErrorMode);
 
@@ -168,8 +175,6 @@ namespace Microsoft.Common.Core.OS {
                         Marshal.FreeHGlobal(threadAttr.lpSecurityDescriptor);
                     }
                 }
-
-                return new Win32Process(pi);
             }
         }
 
