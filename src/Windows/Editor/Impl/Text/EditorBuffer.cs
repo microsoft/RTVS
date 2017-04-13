@@ -2,11 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Controllers;
+using Microsoft.Languages.Editor.Controllers.Views;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     /// <summary>
@@ -31,35 +36,7 @@ namespace Microsoft.Languages.Editor.Text {
             _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
         }
 
-        private void OnTextBufferChangedHighPriority(object sender, TextContentChangedEventArgs e) {
-            var changes = e.ConvertToRelative();
-            foreach (var ch in changes) {
-                ChangedHighPriority?.Invoke(this, ch);
-            }
-        }
-
-        private void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e) {
-            if(e.TextDocument.TextBuffer == _textBuffer) {
-                Dispose();
-            }
-        }
-
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            var changes = e.ConvertToRelative();
-            foreach (var ch in changes) {
-                Changed?.Invoke(this, ch);
-            }
-        }
-
-        public void Dispose() {
-            _textBuffer.ChangedHighPriority -= OnTextBufferChangedHighPriority;
-            _textBuffer.Changed -= OnTextBufferChanged;
-            _textBuffer.Properties.RemoveProperty(typeof(IEditorBuffer));
-
-            _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
-            Closing?.Invoke(this, EventArgs.Empty);
-        }
-
+        #region IEditorBuffer
         public IEditorBufferSnapshot CurrentSnapshot => new EditorBufferSnapshot(this, _textBuffer.CurrentSnapshot);
         public PropertyDictionary Properties => _properties.Value;
         public IServiceManager Services => _services.Value;
@@ -73,7 +50,29 @@ namespace Microsoft.Languages.Editor.Text {
         /// Returns underlying platform object such as ITextBuffer in Visual Studio.
         /// May return null if there is no underlying implementation.
         /// </summary>
-        public T As<T>() where T: class => _textBuffer as T;
+        public T As<T>() where T : class => _textBuffer as T;
+
+        /// <summary>
+        /// Attempts to locate associated editor document.
+        /// Implementation depends on the platform.
+        /// </summary>
+        /// <typeparam name="T">Type of the document to locate</typeparam>
+        public T GetEditorDocument<T>() where T : class, IEditorDocument {
+            var document = Services.GetService<T>();
+            if (document == null) {
+                document = FindInProjectedBuffers<T>(_textBuffer);
+                if (document == null) {
+                    var viewData = TextViewConnectionListener.GetTextViewDataForBuffer(_textBuffer);
+                    if (viewData != null && viewData.LastActiveView != null) {
+                        var controller = ViewController.FromTextView(viewData.LastActiveView);
+                        if (controller != null && controller.TextBuffer != null) {
+                            document = controller.TextBuffer.GetService<T>();
+                        }
+                    }
+                }
+            }
+            return document;
+        }
 
         public void Insert(int position, string text) => _textBuffer.Insert(position, text);
         public void Replace(ITextRange range, string text) => _textBuffer.Replace(range.ToSpan(), text);
@@ -82,5 +81,42 @@ namespace Microsoft.Languages.Editor.Text {
         public event EventHandler<TextChangeEventArgs> ChangedHighPriority;
         public event EventHandler<TextChangeEventArgs> Changed;
         public event EventHandler Closing;
+        #endregion
+
+        #region IDisposable
+        public void Dispose() {
+            _textBuffer.ChangedHighPriority -= OnTextBufferChangedHighPriority;
+            _textBuffer.Changed -= OnTextBufferChanged;
+            _textBuffer.Properties.RemoveProperty(typeof(IEditorBuffer));
+
+            _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
+            Closing?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+
+        private T FindInProjectedBuffers<T>(ITextBuffer textBuffer) where T : class, IEditorDocument {
+            var pb = textBuffer as IProjectionBuffer;
+            return pb?.SourceBuffers.Select((tb) => tb.GetService<T>()).FirstOrDefault(x => x != null);
+        }
+
+        private void OnTextBufferChangedHighPriority(object sender, TextContentChangedEventArgs e) {
+            var changes = e.ConvertToRelative();
+            foreach (var ch in changes) {
+                ChangedHighPriority?.Invoke(this, ch);
+            }
+        }
+
+        private void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e) {
+            if (e.TextDocument.TextBuffer == _textBuffer) {
+                Dispose();
+            }
+        }
+
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            var changes = e.ConvertToRelative();
+            foreach (var ch in changes) {
+                Changed?.Invoke(this, ch);
+            }
+        }
     }
 }

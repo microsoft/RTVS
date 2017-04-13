@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completions.Documentation;
+using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Signatures;
@@ -27,21 +29,15 @@ namespace Microsoft.R.Editor.Completions {
         private ITextBuffer _textBuffer;
         private char _commitChar = '\0';
 
-        private RCompletionController(
-            ITextView textView,
-            IList<ITextBuffer> subjectBuffers,
-            ICompletionBroker completionBroker,
-            IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker,
-            ICoreShell shell)
-            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell) {
+        private RCompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell)
+            : base(textView, subjectBuffers, shell) {
             _textBuffer = subjectBuffers[0];
             _settings = shell.GetService<IREditorSettings>();
-            ServiceManager.AddService(this, TextView, shell);
+            TextView.AddService(this);
         }
 
         public override void Detach(ITextView textView) {
-            ServiceManager.RemoveService<RCompletionController>(TextView);
+            TextView.RemoveService<RCompletionController>();
             base.Detach(textView);
         }
 
@@ -50,9 +46,7 @@ namespace Microsoft.R.Editor.Completions {
         /// The buffer may not be a top-level buffer in the graph and
         /// may be projected into view.
         /// </summary>
-        public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
-            _textBuffer = subjectBuffer;
-        }
+        public override void ConnectSubjectBuffer(ITextBuffer subjectBuffer) => _textBuffer = subjectBuffer;
 
         /// <summary>
         /// Called when text buffer becomes invisible in the text view.
@@ -62,25 +56,15 @@ namespace Microsoft.R.Editor.Completions {
         /// </summary>
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
-        public static RCompletionController Create(
-            ITextView textView,
-            IList<ITextBuffer> subjectBuffers,
-            ICompletionBroker completionBroker,
-            IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker,
-            ICoreShell shell) {
+        public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell) {
             RCompletionController completionController;
-
-            completionController = ServiceManager.GetService<RCompletionController>(textView);
-            if (completionController == null) {
-                completionController = new RCompletionController(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell);
-            }
-
+            completionController = textView.GetService<RCompletionController>();
+            completionController = completionController ?? new RCompletionController(textView, subjectBuffers, shell);
             return completionController;
         }
 
         public static RCompletionController FromTextView(ITextView textView)
-            => ServiceManager.GetService<RCompletionController>(textView);
+            => textView.GetService<RCompletionController>();
 
         protected override bool AutoCompletionEnabled => _settings.CompletionEnabled;
         protected override bool AutoSignatureHelpEnabled => _settings.SignatureHelpEnabled;
@@ -400,32 +384,18 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         private bool TryInsertRoxygenBlock() {
-            SnapshotPoint? point = REditorDocument.MapCaretPositionFromView(TextView);
+            SnapshotPoint? point = TextView.GetCaretPosition(_textBuffer);
             if (point.HasValue) {
                 var snapshot = _textBuffer.CurrentSnapshot;
                 var line = snapshot.GetLineFromPosition(point.Value);
-
                 if (line.LineNumber < snapshot.LineCount - 1 && point.Value == line.End && line.GetText().EqualsOrdinal("##")) {
                     var nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
-                    var document = REditorDocument.FromTextBuffer(_textBuffer);
+                    var document = _textBuffer.GetService<IREditorDocument>();
                     document.EditorTree.EnsureTreeReady();
-                    return RoxygenBlock.TryInsertBlock(_textBuffer, document.EditorTree.AstRoot, nextLine.Start);
+                    return RoxygenBlock.TryInsertBlock(_textBuffer.ToEditorBuffer(), document.EditorTree.AstRoot, nextLine.Start);
                 }
             }
             return false;
         }
-
-        //private async Task InsertFunctionBraces(SnapshotPoint position, string name) {
-        //    bool function = await IsFunction(name);
-        //    if (function) {
-        //        shell.MainThread().Post(() => {
-        //            if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
-        //                TextView.TextBuffer.Insert(position.Position, "()");
-        //                TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
-        //                shell.MainThread().Post(() => TriggerSignatureHelp());
-        //            }
-        //        });
-        //    }
-        //}
     }
 }

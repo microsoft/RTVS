@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -15,27 +14,18 @@ namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion controller provider for Visual Studio core editor
     /// </summary>
-    [ExcludeFromCodeCoverage]
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Completion Controller")]
     [Order(Before = "Default Completion Controller")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     internal class RCompletionControllerProvider : IIntellisenseControllerProvider {
-        [Import]
-        public ICompletionBroker CompletionBroker { get; set; }
+        private readonly ICoreShell _shell;
 
-        [Import]
-        public IQuickInfoBroker QuickInfoBroker { get; set; }
+        [ImportingConstructor]
+        public RCompletionControllerProvider(ICoreShell shell) => _shell = shell;
 
-        [Import]
-        public ISignatureHelpBroker SignatureHelpBroker { get; set; }
-
-        [Import]
-        public ICoreShell Shell { get; set; }
-
-        public IIntellisenseController TryCreateIntellisenseController(ITextView view, IList<ITextBuffer> subjectBuffers) {
-            return RCompletionController.Create(view, subjectBuffers, CompletionBroker, QuickInfoBroker, SignatureHelpBroker, Shell);
-        }
+        public IIntellisenseController TryCreateIntellisenseController(ITextView view, IList<ITextBuffer> subjectBuffers)
+            => RCompletionController.Create(view, subjectBuffers, _shell);
     }
 }

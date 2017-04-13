@@ -3,8 +3,8 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Utilities;
 

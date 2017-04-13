@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Document;
 
 namespace Microsoft.Languages.Editor.Text {
     /// <summary>
@@ -45,6 +46,13 @@ namespace Microsoft.Languages.Editor.Text {
         /// May return null if there is no underlying implementation.
         /// </summary>
         T As<T>() where T: class;
+
+        /// <summary>
+        /// Attempts to locate associated editor document.
+        /// Implementation depends on the platform.
+        /// </summary>
+        /// <typeparam name="T">Type of the document to locate</typeparam>
+        T GetEditorDocument<T>() where T : class, IEditorDocument;
 
         void Insert(int position, string text);
         void Replace(ITextRange range, string text);

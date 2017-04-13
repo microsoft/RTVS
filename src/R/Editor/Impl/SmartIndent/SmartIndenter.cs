@@ -19,13 +19,15 @@ namespace Microsoft.R.Editor.SmartIndent {
     /// Provides block and smart indentation in R code
     /// </summary>
     public sealed class SmartIndenter : ISmartIndenter {
-        private IEditorView _view;
+        private readonly IREditorSettings _settings;
+        private readonly IEditorView _view;
 
-        public static ISmartIndenter FromView(IEditorView view)
-            => view.GetService<SmartIndenter>() ?? new SmartIndenter(view);
+        public static ISmartIndenter FromView(IEditorView view, IREditorSettings settings)
+            => view.GetService<SmartIndenter>() ?? new SmartIndenter(view, settings);
 
-        private SmartIndenter(IEditorView view) {
+        private SmartIndenter(IEditorView view, IREditorSettings settings) {
             _view = view;
+            _view.AddService(this);
         }
 
         #region ISmartIndenter

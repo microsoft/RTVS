@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Completions;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -12,6 +12,6 @@ namespace Microsoft.R.Editor.Commands {
     /// </summary>
     internal sealed class RCompletionCommandHandler : CompletionCommandHandler {
         public RCompletionCommandHandler(ITextView textView) : base(textView) { }
-        public override CompletionController CompletionController => ServiceManager.GetService<RCompletionController>(TextView);
+        public override CompletionController CompletionController => TextView.GetService<RCompletionController>();
     }
 }

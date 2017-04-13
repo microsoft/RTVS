@@ -63,7 +63,6 @@
     <Compile Include="Completions\RCompletionController.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Comments\InsertRoxygenBlockCommand.cs" />
-    <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\RDocumentFactory.cs" />
     <Compile Include="DragDrop\DataObject.cs" />
     <Compile Include="DragDrop\DropHandler.cs" />
@@ -100,7 +99,6 @@
     <Compile Include="Outline\ROutlineRegionBuilder.cs" />
     <Compile Include="Outline\RSectionsCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Document\REditorDocument.cs" />
     <Compile Include="QuickInfo\QuickInfoController.cs" />
     <Compile Include="QuickInfo\QuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\QuickInfoSource.cs" />
@@ -120,7 +118,7 @@
     <Compile Include="Signatures\SignatureHelpSourceProvider.cs" />
     <Compile Include="Signatures\SignatureHelpSource.cs" />
     <Compile Include="Signatures\SignatureParameter.cs" />
-    <Compile Include="SmartIndent\SmartIndenter.cs" />
+    <Compile Include="SmartIndent\SmartIndent.cs" />
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
     <Compile Include="Snippets\ISnippetInformationSourceProvider.cs" />
     <Compile Include="Snippets\ISnippetInformationSource.cs" />

@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -20,7 +21,7 @@ namespace Microsoft.R.Editor.SmartIndent {
         }
 
         public ISmartIndent CreateSmartIndent(ITextView textView) {
-            return SmartIndenter.Attach(textView, _settings);
+            return SmartIndent.FromView(textView, _settings);
         }
     }
 }

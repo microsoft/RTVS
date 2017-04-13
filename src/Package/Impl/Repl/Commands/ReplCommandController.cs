@@ -3,10 +3,10 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Commands;
@@ -28,14 +28,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// </summary>
     public class ReplCommandController : ViewController {
         private readonly ExpansionsController _snippetController;
-        private readonly IServiceContainer _services;
+        private readonly ICoreShell _coreShell;
 
-        public ReplCommandController(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
-            : base(textView, textBuffer, VsAppShell.Current) {
-            _services = services;
-            Languages.Editor.Services.ServiceManager.AddService(this, textView, VsAppShell.Current);
+        public ReplCommandController(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) : base(textView, textBuffer, coreShell) {
+            _coreShell = coreShell;
+            textView.AddService(this);
 
-            var textManager = _services.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = coreShell.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
@@ -43,13 +42,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current);
         }
 
-        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer, IServiceContainer serviceContainer) {
+        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
             var controller = FromTextView(textView);
-            return controller ?? new ReplCommandController(textView, textBuffer, serviceContainer);
+            return controller ?? new ReplCommandController(textView, textBuffer, coreShell);
         }
 
-        public static new ReplCommandController FromTextView(ITextView textView)
-            => Languages.Editor.Services.ServiceManager.GetService<ReplCommandController>(textView);
+        public static new ReplCommandController FromTextView(ITextView textView) => textView.GetService<ReplCommandController>();
 
         public override void BuildCommandSet() {
             var factory = new ReplCommandFactory();
@@ -130,16 +128,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            var broker = _services.GetService<ICompletionBroker>();
+            var broker = _coreShell.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = _coreShell.GetService<IRInteractiveWorkflowProvider>();
             interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
         }
 
         private static void FormatReplDocument(ITextView textView, ITextBuffer textBuffer, int position) {
-            var document = REditorDocument.TryFromTextBuffer(textBuffer);
+            var document = textBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
@@ -171,15 +169,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         /// Disposes main controller and removes it from service manager.
         /// </summary>
         protected override void Dispose(bool disposing) {
-            if (TextView != null) {
-                Languages.Editor.Services.ServiceManager.RemoveService<ReplCommandController>(TextView);
-            }
+            TextView?.RemoveService<ReplCommandController>();
             base.Dispose(disposing);
         }
 
         private IRInteractiveWorkflow Workflow {
             get {
-                var interactiveWorkflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
+                var interactiveWorkflowProvider = _coreShell.GetService<IRInteractiveWorkflowProvider>();
                 return interactiveWorkflowProvider.GetOrCreate();
             }
         }

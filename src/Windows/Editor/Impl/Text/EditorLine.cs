@@ -6,11 +6,9 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Text {
     public sealed class EditorLine : TextRange, IEditorLine {
-        private readonly IEditorBuffer _editorBuffer;
         private ITextSnapshotLine _line;
 
-        public EditorLine(IEditorBuffer editorBuffer, ITextSnapshotLine line) : base(line.Start, line.Length) {
-            _editorBuffer = editorBuffer;
+        public EditorLine(ITextSnapshotLine line) : base(line.Start, line.Length) {
             _line = line;
         }
 
@@ -18,6 +16,6 @@ namespace Microsoft.Languages.Editor.Text {
         public int LineNumber => _line.LineNumber;
         public string GetText() => _line.GetText();
         public override void Shift(int offset) { }
-        public IEditorBufferSnapshot Snapshot => new EditorBufferSnapshot(_editorBuffer, _line.Snapshot);
+        public IEditorBufferSnapshot Snapshot => new EditorBufferSnapshot(_line.Snapshot.TextBuffer.ToEditorBuffer(), _line.Snapshot);
     }
 }

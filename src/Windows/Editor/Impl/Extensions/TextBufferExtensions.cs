@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controllers.Views;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -100,6 +101,8 @@ namespace Microsoft.Languages.Editor.Text {
                 .Where(d => d != null)
                 .FirstOrDefault();
         }
+
+        public static T GetEditorDocument<T>(ITextBuffer textBuffer) where T : class, IEditorDocument => textBuffer.ToEditorBuffer().GetEditorDocument<T>();
 
         /// <summary>
         /// Converts stream buffer position to line and column.

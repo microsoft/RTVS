@@ -13,9 +13,6 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions {
-    using Core.Tokens;
-    using Languages.Editor.Services;
-
     /// <summary>
     /// Provides actual content for the intellisense dropdown
     /// </summary>
@@ -48,7 +45,7 @@ namespace Microsoft.R.Editor.Completions {
             if (!doc.EditorTree.IsReady) {
                 var textView = session.TextView;
                 doc.EditorTree.InvokeWhenReady((o) => {
-                    RCompletionController controller = ServiceManager.GetService<RCompletionController>(textView);
+                    var controller = textView.GetService<RCompletionController>();
                     if (controller != null) {
                         controller.ShowCompletion(autoShownCompletion: true);
                         controller.FilterCompletionSession();
