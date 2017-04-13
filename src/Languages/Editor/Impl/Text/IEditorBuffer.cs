@@ -11,8 +11,14 @@ namespace Microsoft.Languages.Editor.Text {
     /// Represents editor code (text) buffer
     /// </summary>
     public interface IEditorBuffer {
+        /// <summary>
+        /// Set of services attached to the text buffer
+        /// </summary>
         IServiceManager Services { get; }
 
+        /// <summary>
+        /// Set of properties (user data) attached to the text buffer
+        /// </summary>
         PropertyDictionary Properties { get; }
 
         /// <summary>

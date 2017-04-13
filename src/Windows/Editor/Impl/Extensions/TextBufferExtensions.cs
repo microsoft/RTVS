@@ -36,16 +36,22 @@ namespace Microsoft.Languages.Editor.Text {
         /// Retrieves service from the service container attached to the text buffer
         /// </summary>
         public static T GetService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().GetService<T>();
-        
+
         /// <summary>
         /// Adds service to the service container attached to the text buffer
         /// </summary>
         public static void AddService<T>(this ITextBuffer textBuffer, T service) where T : class => textBuffer.Services().AddService(service);
-        
+
         /// <summary>
         /// Removes service from the service container attached to the text buffer
         /// </summary>
         public static void RemoveService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().RemoveService<T>();
+
+        /// <summary>
+        /// Attempts to locate associated editor document. Implementation depends on the platform.
+        /// </summary>
+        /// <typeparam name="T">Type of the document to locate</typeparam>
+        public static T GetEditorDocument<T>(this ITextBuffer textBuffer) where T : class, IEditorDocument => textBuffer.ToEditorBuffer()?.GetEditorDocument<T>();
 
         /// <summary>
         /// Retrieves last active view, if any, for the text buffer instance.

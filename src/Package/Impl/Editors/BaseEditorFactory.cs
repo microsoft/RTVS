@@ -3,26 +3,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IVsServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
-    using Microsoft.Common.Core.Shell;
-    using Shell;
-    using Text.Editor;
-    using Utilities;
-    using Package = Microsoft.VisualStudio.Shell.Package;
+    using Package = VisualStudio.Shell.Package;
 
     /// <summary>
     /// Base editor factory for all Web editors
     /// </summary>
     public class BaseEditorFactory : IVsEditorFactory, IDisposable {
+        private readonly ICoreShell _coreShell;
         private readonly IVsEditorAdaptersFactoryService _adaptersFactory;
         private readonly Guid _editorFactoryId;
         private bool _encoding;
@@ -32,8 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         protected List<TextBufferInitializationTracker> InitializationTrackers { get; }
         protected Guid LanguageServiceId { get; }
 
-        public BaseEditorFactory(Package package, Guid editorFactoryId, Guid languageServiceId, bool encoding = false) {
-            _adaptersFactory = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
+        public BaseEditorFactory(Package package, ICoreShell coreShell, Guid editorFactoryId, Guid languageServiceId, bool encoding = false) {
+            _coreShell = coreShell;
+            _adaptersFactory = coreShell.GetService<IVsEditorAdaptersFactoryService>();
             Package = package;
             InitializationTrackers = new List<TextBufferInitializationTracker>();
             _editorFactoryId = editorFactoryId;
@@ -43,9 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
         internal IObjectInstanceFactory InstanceFactory { get; set; }
 
-        public void SetEncoding(bool value) {
-            _encoding = value;
-        }
+        public void SetEncoding(bool value) => _encoding = value;
 
         public virtual int CreateEditorInstance(
            uint createEditorFlags,
@@ -160,8 +158,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
             if (docDataExisting == IntPtr.Zero) {
                 // Create a new IVsTextLines buffer.
-                Type textLinesType = typeof(IVsTextLines);
-                Guid clsid = typeof(VsTextBufferClass).GUID;
+                var textLinesType = typeof(IVsTextLines);
+                var clsid = typeof(VsTextBufferClass).GUID;
                 textLines = CreateInstance<IVsTextLines>(ref clsid);
 
                 // set the buffer's site
@@ -169,16 +167,13 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 textLines.SetLanguageServiceID(ref languageServiceId);
             } else {
                 // Use the existing text buffer
-                object dataObject = Marshal.GetObjectForIUnknown(docDataExisting);
+                var dataObject = Marshal.GetObjectForIUnknown(docDataExisting);
                 textLines = dataObject as IVsTextLines;
 
                 if (textLines == null) {
                     // Try get the text buffer from textbuffer provider
-                    IVsTextBufferProvider textBufferProvider = dataObject as IVsTextBufferProvider;
-
-                    if (textBufferProvider != null) {
-                        textBufferProvider.GetTextBuffer(out textLines);
-                    }
+                    var textBufferProvider = dataObject as IVsTextBufferProvider;
+                    textBufferProvider?.GetTextBuffer(out textLines);
                 }
             }
 
@@ -217,7 +212,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             // We couldn't create the view
             // Return special error code so VS can try another editor factory.
             ErrorHandler.ThrowOnFailure((int)VSConstants.VS_E_UNSUPPORTEDFORMAT);
-
             return IntPtr.Zero;
         }
 
@@ -236,7 +230,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             ErrorHandler.ThrowOnFailure(window.GetEditorCaption(READONLYSTATUS.ROSTATUS_Unknown, out editorCaption));
 
             CreateTextBufferInitializationTracker(textLines, documentName, hierarchy, itemid, docDataExisting, languageServiceId);
-
             return Marshal.GetIUnknownForObject(window);
         }
 
@@ -252,7 +245,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             // view filters we need to create a proxy class which will get called when document 
             // is fully loaded and text buffer is finally populated with content.
 
-            TextBufferInitializationTracker tracker = new TextBufferInitializationTracker(
+            TextBufferInitializationTracker tracker = new TextBufferInitializationTracker(_coreShell,
                 documentName, hierarchy, itemid, textLines, languageServiceId, InitializationTrackers);
 
             if (docDataExisting != IntPtr.Zero) {
@@ -269,7 +262,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public virtual int Close() {
             VsServiceProvider = null;
             Package = null;
-
             return VSConstants.S_OK;
         }
 
@@ -293,12 +285,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         }
 
         protected T CreateInstance<T>(ref Guid clsid) where T : class {
-            Guid riid = typeof(T).GUID;
-
+            var riid = typeof(T).GUID;
             if (InstanceFactory != null) {
                 return InstanceFactory.CreateInstance(ref clsid, ref riid, typeof(T)) as T;
             }
-
             return Package.CreateInstance(ref clsid, ref riid, typeof(T)) as T;
         }
 
@@ -314,12 +304,11 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public static void InitKeyBindings(ITextView textView) {
             var vsTextView = textView.GetViewAdapter<IVsTextView>();
             var os = vsTextView as IObjectWithSite;
-
-            IntPtr unkSite = IntPtr.Zero;
-            IntPtr unkFrame = IntPtr.Zero;
+            var unkSite = IntPtr.Zero;
+            var unkFrame = IntPtr.Zero;
 
             try {
-                os.GetSite(typeof(OLE.Interop.IServiceProvider).GUID, out unkSite);
+                os.GetSite(typeof(IVsServiceProvider).GUID, out unkSite);
                 var sp = Marshal.GetObjectForIUnknown(unkSite) as OLE.Interop.IServiceProvider;
 
                 sp.QueryService(typeof(SVsWindowFrame).GUID, typeof(IVsWindowFrame).GUID, out unkFrame);

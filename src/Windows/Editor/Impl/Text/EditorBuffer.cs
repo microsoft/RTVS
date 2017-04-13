@@ -53,8 +53,7 @@ namespace Microsoft.Languages.Editor.Text {
         public T As<T>() where T : class => _textBuffer as T;
 
         /// <summary>
-        /// Attempts to locate associated editor document.
-        /// Implementation depends on the platform.
+        /// Attempts to locate associated editor document. Implementation depends on the platform.
         /// </summary>
         /// <typeparam name="T">Type of the document to locate</typeparam>
         public T GetEditorDocument<T>() where T : class, IEditorDocument {

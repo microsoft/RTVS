@@ -7,9 +7,9 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.VisualStudio.Composition;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document;
@@ -20,26 +20,23 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
     public sealed class TextBufferInitializationTracker : IVsTextBufferDataEvents {
+        private readonly ICoreShell _coreShell;
+        private readonly List<TextBufferInitializationTracker> _trackers;
+        private readonly VSConstants.VSITEMID _itemid;
+        private readonly string _documentName;
+
+        private Guid _languageServiceGuid;
         private IVsTextLines _textLines;
         private uint cookie = 0;
         private IConnectionPoint cp = null;
-        private List<TextBufferInitializationTracker> _trackers;
-        private string _documentName;
         private IVsHierarchy _hierarchy;
-        private VSConstants.VSITEMID _itemid;
-        private Guid _languageServiceGuid;
 
         #region Constructors
         public TextBufferInitializationTracker(
-            string documentName,
-            IVsHierarchy hierarchy,
-            VSConstants.VSITEMID itemid,
-            IVsTextLines textLines,
-            Guid languageServiceId,
-            List<TextBufferInitializationTracker> trackers) {
-            var cs = VsAppShell.Current.GetService<ICompositionService>();
-            cs.SatisfyImportsOnce(this);
+            ICoreShell coreShell, string documentName, IVsHierarchy hierarchy, VSConstants.VSITEMID itemid,
+            IVsTextLines textLines, Guid languageServiceId, List<TextBufferInitializationTracker> trackers) {
 
+            _coreShell = coreShell;
             _documentName = documentName;
             _hierarchy = hierarchy;
             _itemid = itemid;
@@ -47,8 +44,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             _languageServiceGuid = languageServiceId;
             _trackers = trackers;
 
-            IConnectionPointContainer cpc = textLines as IConnectionPointContainer;
-            Guid g = typeof(IVsTextBufferDataEvents).GUID;
+            var cpc = textLines as IConnectionPointContainer;
+            var g = typeof(IVsTextBufferDataEvents).GUID;
             cpc.FindConnectionPoint(g, out cp);
             cp.Advise(this, out cookie);
 
@@ -70,9 +67,9 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(diskBuffer != null);
 
             try {
-                var editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
+                var editorInstance = diskBuffer.GetService<IEditorInstance>();
                 if (editorInstance == null) {
-                    var cs = VsAppShell.Current.GetService<ICompositionService>();
+                    var cs = _coreShell.GetService<ICompositionService>();
                     var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
                     var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(instancefactory != null);
@@ -81,20 +78,18 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                     var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
                     Debug.Assert(documentFactory != null);
 
-                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer, documentFactory);
+                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer.ToEditorBuffer(), documentFactory);
                 }
 
                 Debug.Assert(editorInstance != null);
-                adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer);
+                adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer.As<ITextBuffer>());
             } finally {
                 cp.Unadvise(cookie);
                 cookie = 0;
 
                 _textLines = null;
                 _hierarchy = null;
-
                 _trackers.Remove(this);
-                _trackers = null;
             }
 
             return VSConstants.S_OK;

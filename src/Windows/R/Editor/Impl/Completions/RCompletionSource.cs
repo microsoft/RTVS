@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
@@ -35,13 +36,12 @@ namespace Microsoft.R.Editor.Completions {
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             _shell.AssertIsOnMainThread();
 
-            var doc = REditorDocument.TryFromTextBuffer(_textBuffer);
+            var doc = _textBuffer.GetEditorDocument<IREditorDocument>();
             if (doc == null) {
                 return;
             }
 
-            int position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
-
+            var position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
             if (!doc.EditorTree.IsReady) {
                 var textView = session.TextView;
                 doc.EditorTree.InvokeWhenReady((o) => {
@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Completions {
                         controller.ShowCompletion(autoShownCompletion: true);
                         controller.FilterCompletionSession();
                     }
-                }, null, this.GetType(), processNow: true);
+                }, null, GetType(), processNow: true);
             } else {
                 PopulateCompletionList(position, session, completionSets, doc.EditorTree.AstRoot);
             }
