@@ -240,7 +240,6 @@
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Shell\VsAppShellTestSetup.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />
-    <Compile Include="Shell\VsTestServiceManager.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
     <Compile Include="Sql\SProcPublisherTest.cs" />

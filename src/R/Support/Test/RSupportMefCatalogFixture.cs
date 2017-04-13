@@ -7,6 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
@@ -26,17 +28,17 @@ namespace Microsoft.R.Support.Test {
             "System.Collections.Immutable.dll"
         });
 
-        public override IExportProvider Create()
-            => new RSupportTestExportProvider(CreateContainer());
+        public override IExportProvider Create(ServiceManagerFixture services) => new RSupportTestExportProvider(CreateContainer(), services);
 
         protected class RSupportTestExportProvider : LanguagesEditorTestExportProvider {
-            public RSupportTestExportProvider(CompositionContainer compositionContainer) 
-                : base(compositionContainer) {}
+            public RSupportTestExportProvider(CompositionContainer compositionContainer, IServiceManager services)
+                : base(compositionContainer, services) {
+                services.AddService<IRInstallationService>(new RInstallation());
+            }
 
             public override async Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
                 var result = await base.InitializeAsync(testInput, messageBus);
                 var batch = new CompositionBatch()
-                    .AddValue<IRInstallationService>(new RInstallation())
                     .AddValue<IRSettings>(new TestRToolsSettings(testInput.FileSytemSafeName));
                 CompositionContainer.Compose(batch);
                 return result;

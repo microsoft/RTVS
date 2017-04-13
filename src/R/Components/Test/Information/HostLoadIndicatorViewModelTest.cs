@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Test.Information {
             NetworkLoad = 50
         };
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void Update() {
             var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell.MainThread());
             var eventArgs = new HostLoadChangedEventArgs(_hostLoad);
