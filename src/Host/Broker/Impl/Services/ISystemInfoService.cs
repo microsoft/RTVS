@@ -4,6 +4,7 @@
 namespace Microsoft.R.Host.Broker.Services {
     public interface ISystemInfoService {
         double GetCpuLoad();
+        double GetNetworkLoad();
         (long TotalVirtualMemory, long FreeVirtualMemory, long TotalPhysicalMemory, long FreePhysicalMemory) GetMemoryInformation();
         (string VideoCardName, long VideoRAM, string VideoProcessor) GetVideoControllerInformation();
     }
