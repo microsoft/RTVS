@@ -1340,7 +1340,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Журнал построений R]]></Val>
+            <Val><![CDATA[Журнал графиков R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1349,7 +1349,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Построение R]]></Val>
+            <Val><![CDATA[График R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1358,7 +1358,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - Device {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Построение R — устройство {0}]]></Val>
+            <Val><![CDATA[График R — устройство {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1367,7 +1367,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - Device {0} - Active]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Построение R — устройство {0} — активно]]></Val>
+            <Val><![CDATA[График R — устройство {0} — активно]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1376,7 +1376,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Построение R]]></Val>
+            <Val><![CDATA[График R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3280,7 +3280,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot History Context]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Контекст журнала построений]]></Val>
+              <Val><![CDATA[Контекст журнала графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3292,7 +3292,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Device Context]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Контекст устройства построения]]></Val>
+              <Val><![CDATA[Контекст устройства построения графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4717,7 +4717,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Remove Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Удалить построение]]></Val>
+              <Val><![CDATA[Удалить график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4726,7 +4726,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Remove Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Удалить построение]]></Val>
+              <Val><![CDATA[&Удалить график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4738,7 +4738,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Next Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Следующее построение]]></Val>
+              <Val><![CDATA[Следующий график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4747,7 +4747,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Ne&xt Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[С&ледующее построение]]></Val>
+              <Val><![CDATA[С&ледующий график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4759,7 +4759,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Previous Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Предыдущее построение]]></Val>
+              <Val><![CDATA[Предыдущий график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4768,7 +4768,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Pre&vious Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Предыдущее п&остроение]]></Val>
+              <Val><![CDATA[Предыдущий &график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4780,7 +4780,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Clear All Plots]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Очистить все построения]]></Val>
+              <Val><![CDATA[Очистить все графики]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4789,7 +4789,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Clear &All Plots]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Очистить &все построения]]></Val>
+              <Val><![CDATA[Очистить &все графики]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4906,7 +4906,7 @@
           <Str Cat="Button">
             <Val><![CDATA[New Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Создать окно построений]]></Val>
+              <Val><![CDATA[Создать окно графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4915,7 +4915,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&New Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Создать окно построений]]></Val>
+              <Val><![CDATA[&Создать окно графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4927,7 +4927,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Activate Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Активировать окно построений]]></Val>
+              <Val><![CDATA[Активировать окно графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4936,7 +4936,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Activate Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Активировать окно построений]]></Val>
+              <Val><![CDATA[&Активировать окно графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4948,7 +4948,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Plot History Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Окно журнала построений]]></Val>
+              <Val><![CDATA[Окно журнала графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4957,7 +4957,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Plot &History Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Окно &журнала построений]]></Val>
+              <Val><![CDATA[Окно &журнала графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5032,7 +5032,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Показать построение]]></Val>
+              <Val><![CDATA[Показать график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5041,7 +5041,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Show &Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[По&казать построение]]></Val>
+              <Val><![CDATA[По&казать график]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5053,7 +5053,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Hide All Plot Windows]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Скрыть все окна построения]]></Val>
+              <Val><![CDATA[Скрыть все окна графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5062,7 +5062,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Hide All Plot Windows]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Скры&ть все окна построения]]></Val>
+              <Val><![CDATA[Скры&ть все окна графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5074,7 +5074,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Plot - Device X]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Построение R — устройство X]]></Val>
+              <Val><![CDATA[График R — устройство X]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5263,7 +5263,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Окно построений]]></Val>
+              <Val><![CDATA[Окно графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5275,7 +5275,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot History Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Окно журнала построений]]></Val>
+              <Val><![CDATA[Окно журнала графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5323,7 +5323,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Plots]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Построения]]></Val>
+              <Val><![CDATA[&Графики]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5335,7 +5335,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Plot &Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[О&кна построений]]></Val>
+              <Val><![CDATA[О&кна графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5482,7 +5482,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Plots]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Построения]]></Val>
+              <Val><![CDATA[Графики]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5491,7 +5491,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Plot Windows]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Показать окна построения]]></Val>
+              <Val><![CDATA[Показать окна графиков]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5500,7 +5500,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Plots]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Построения]]></Val>
+              <Val><![CDATA[&Графики]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -6086,7 +6086,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provides project system, R Interactive window, plotting, and more for the R programming language.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Предоставляет систему проектов, интерактивное окно R, построения и многое другое для языка программирования R.]]></Val>
+            <Val><![CDATA[Предоставляет систему проектов, интерактивное окно R, построение графиков и многое другое для языка программирования R.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
