@@ -7,13 +7,11 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Settings;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -29,7 +27,7 @@ namespace Microsoft.R.Editor.Signatures {
             _disposeToken = DisposeToken.Create<SignatureHelpSource>();
             _textBuffer = textBuffer;
             _shell = shell;
-            ServiceManager.AddService<SignatureHelpSource>(this, textBuffer, shell);
+            textBuffer.AddService(this);
         }
 
         #region ISignatureHelpSource
@@ -167,7 +165,7 @@ namespace Microsoft.R.Editor.Signatures {
         #region IDisposable
         public void Dispose() {
             if (_disposeToken.TryMarkDisposed()) {
-                ServiceManager.RemoveService<SignatureHelpSource>(_textBuffer);
+                _textBuffer?.RemoveService(this);
             }
         }
         #endregion

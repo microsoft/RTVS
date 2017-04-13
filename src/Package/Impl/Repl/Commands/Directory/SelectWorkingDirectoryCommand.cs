@@ -4,9 +4,9 @@
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudioTools;
@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void Handle() {
             var ps = _workflow.Shell.GetService<IPlatformServices>();
-            var settings = _workflow.Shell.GetService<IRToolsSettings>();
+            var settings = _workflow.Shell.GetService<IRSettings>();
             var currentDirectory = settings.WorkingDirectory;
             var newDirectory = Dialogs.BrowseForDirectory(ps.ApplicationWindowHandle, currentDirectory, Resources.ChooseDirectory);
             if (!string.IsNullOrEmpty(newDirectory)) {

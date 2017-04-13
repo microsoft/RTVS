@@ -3,13 +3,12 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controllers;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Document;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -38,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 // nextOleTarget is typically a core editor wrapped into OLE layer.
                 // Create a wrapper that will present OLE target as ICommandTarget to
                 // HTML main controller so controller can operate in platform-agnostic way.
-                var es = services.GetService<IApplicationEditorSupport>();
+                var es = services.GetService<IEditorSupport>();
                 var nextCommandTarget = es.TranslateCommandTarget(textView, nextOleTarget);
                 controller.ChainedController = nextCommandTarget;
             }
@@ -51,15 +50,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         public static void InitEditorInstance(ITextBuffer textBuffer, IServiceContainer services) {
-            if (Languages.Editor.Services.ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
+            if (textBuffer.GetService<IEditorViewModel>() == null) {
                 var cs = services.GetService<ICompositionService>();
-                var importComposer1 = new ContentTypeImportComposer<IEditorFactory>(cs);
-                var editorInstanceFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
+                var importComposer1 = new ContentTypeImportComposer<IEditorViewModelFactory>(cs);
+                var viewModelFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
 
-                var importComposer2 = new ContentTypeImportComposer<IVsEditorDocumentFactory>(cs);
-                var documentFactory = importComposer2.GetImport(textBuffer.ContentType.TypeName);
-
-                var editorInstance = editorInstanceFactory.CreateEditorInstance(textBuffer, documentFactory);
+                var viewModel = viewModelFactory.CreateEditorViewModel(textBuffer);
             }
         }
     }

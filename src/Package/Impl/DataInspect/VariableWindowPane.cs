@@ -3,9 +3,7 @@
 
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;

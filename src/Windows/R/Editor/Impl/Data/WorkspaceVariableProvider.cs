@@ -15,7 +15,6 @@ using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
-using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Utilities;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;

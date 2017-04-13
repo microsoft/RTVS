@@ -3,9 +3,9 @@
 
 using System;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.Controllers;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Controllers.Views;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -55,11 +55,12 @@ namespace Microsoft.R.Editor.Commands {
         }
 
         protected override void OnTextBufferDisposing(ITextBuffer textBuffer) {
-            IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(textBuffer);
-            if (editorInstance != null) {
-                editorInstance.Dispose();
+            var viewModel = textBuffer.GetService<IEditorViewModel>();
+            if (viewModel != null) {
+                viewModel.Dispose();
             } else {
-                REditorDocument.TryFromTextBuffer(textBuffer)?.Dispose();
+                var document = textBuffer.GetService<IREditorDocument>();
+                document?.Dispose();
             }
             base.OnTextBufferDisposing(textBuffer);
         }

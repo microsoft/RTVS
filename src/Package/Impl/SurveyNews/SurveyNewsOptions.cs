@@ -7,16 +7,16 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     [Export(typeof(ISurveyNewsOptions))]
     internal class SurveyNewsOptions : ISurveyNewsOptions {
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
 
         [ImportingConstructor]
         public SurveyNewsOptions(ICoreShell coreShell) {
-            _settings = coreShell.GetService<IRToolsSettings>();
+            _settings = coreShell.GetService<IRSettings>();
         }
 
         public SurveyNewsPolicy SurveyNewsCheck => _settings.SurveyNewsCheck;

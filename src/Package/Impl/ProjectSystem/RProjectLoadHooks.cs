@@ -15,9 +15,9 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
-        private readonly IRToolsSettings _toolsSettings;
+        private readonly IRSettings _settings;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IProjectLockService projectLockService
             , IRInteractiveWorkflowProvider workflowProvider
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
-            , IRToolsSettings toolsSettings
+            , IRSettings settings
             , IThreadHandling threadHandling
             , ISurveyNewsService surveyNews
             , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider
@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _projectLockService = projectLockService;
             _workflowProvider = workflowProvider;
 
-            _toolsSettings = toolsSettings;
+            _settings = settings;
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
             _dependencyProvider = dependencyProvider;

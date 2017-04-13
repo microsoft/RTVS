@@ -4,11 +4,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.R.Support.Test;
+using Microsoft.Languages.Editor.Test;
 
 namespace Microsoft.R.Editor.Test {
     [ExcludeFromCodeCoverage]
-    public class REditorAssemblyMefCatalog : RSupportAssemblyMefCatalog {
+    public class REditorAssemblyMefCatalog : EditorAssemblyMefCatalog {
         protected override IEnumerable<string> GetAssemblies() => base.GetAssemblies().Concat(new[] {
             "Microsoft.R.Editor",
             "Microsoft.R.Editor.Test"

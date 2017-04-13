@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var telemetry = new VsTelemetryService();
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             var loggingPermissions = new LoggingPermissions(platformServices, telemetry, new RegistryImpl());
-            var settings = new RToolsSettingsImplementation(this, new VsSettingsStorage(), loggingPermissions);
+            var settings = new RSettingsImplementation(this, new VsSettingsStorage(), loggingPermissions);
             var compositionCatalog = new CompositionCatalog(componentModel.DefaultCompositionService, componentModel.DefaultExportProvider);
             var exportProvider = componentModel.DefaultExportProvider;
 

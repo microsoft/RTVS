@@ -4,11 +4,11 @@
 using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -19,14 +19,14 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {
         private readonly IUIService _ui;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private readonly IRHistory _history;
 
         public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
             _ui = interactiveWorkflow.Shell.UI();
             _interactiveWorkflow = interactiveWorkflow;
-            _settings = _interactiveWorkflow.Shell.GetService<IRToolsSettings>();
+            _settings = _interactiveWorkflow.Shell.GetService<IRSettings>();
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
@@ -42,7 +42,6 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             if (file != null) {
                 _history.TrySaveToFile(file);
             }
-
             return CommandResult.Executed;
         }
     }

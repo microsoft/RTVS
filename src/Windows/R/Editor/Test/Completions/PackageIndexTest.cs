@@ -7,11 +7,8 @@ using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.Help.Packages;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -26,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(REditorShellProviderFixture shellProvider) {
-            _shell.ServiceManager.AddService(new TestRToolsSettings());
+            _shell.ServiceManager.AddService(new RSettingsStub());
             _workflowProvider = shellProvider.CoreShell.GetService<IRInteractiveWorkflowProvider>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;
         }

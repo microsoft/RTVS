@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 

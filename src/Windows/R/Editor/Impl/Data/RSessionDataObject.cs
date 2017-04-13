@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Editor.Data {
@@ -126,7 +126,7 @@ namespace Microsoft.R.Editor.Data {
                         AttributeCountProperty |
                         DimProperty |
                         FlagsProperty |
-                        (Services.GetService<IRToolsSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
+                        (Services.GetService<IRSettings>().EvaluateActiveBindings ? ComputedValueProperty : 0);
                     var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                     return EvaluateChildren(children);
                 }

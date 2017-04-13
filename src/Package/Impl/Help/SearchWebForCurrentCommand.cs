@@ -5,7 +5,7 @@ using System;
 using System.Text;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// with OLECMDTEXTF_NAME requesting changing names.
     /// </remarks>
     internal sealed class SearchWebForCurrentCommand : HelpOnCurrentCommandBase {
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
 
         public SearchWebForCurrentCommand(
             IRInteractiveWorkflow workflow,
@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             IActiveRInteractiveWindowTracker activeReplTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSearchWebForCurrent,
                 workflow, textViewTracker, activeReplTracker, Resources.SearchWebFor) {
-            _settings = workflow.Shell.GetService<IRToolsSettings>();
+            _settings = workflow.Shell.GetService<IRSettings>();
         }
 
         protected override void Handle(string item) {

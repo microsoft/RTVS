@@ -14,12 +14,11 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
-    internal sealed class RToolsSettingsImplementation : BindableBase, IRToolsSettings {
+    internal sealed class RSettingsImplementation : BindableBase, IRSettings {
         private const int MaxDirectoryEntries = 8;
         private readonly ICoreShell _coreShell;
         private readonly ISettingsStorage _settingStorage;
@@ -52,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
-        public RToolsSettingsImplementation(ICoreShell coreShell, ISettingsStorage settingStorage, ILoggingPermissions loggingPermissions) {
+        public RSettingsImplementation(ICoreShell coreShell, ISettingsStorage settingStorage, ILoggingPermissions loggingPermissions) {
             _coreShell = coreShell;
             _settingStorage = settingStorage;
             _loggingPermissions = loggingPermissions;

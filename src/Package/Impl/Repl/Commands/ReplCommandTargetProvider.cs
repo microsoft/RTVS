@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
@@ -31,15 +32,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
-            var target = ServiceManager.GetService<IOleCommandTarget>(textView);
+            var target = textView.GetService<IOleCommandTarget>();
             if (target == null) {
-                var controller = ReplCommandController.Attach(textView, textView.TextBuffer, _shell.Services);
-                var es = _shell.GetService<IApplicationEditorSupport>();
+                var controller = ReplCommandController.Attach(textView, textView.TextBuffer, _shell);
+                var es = _shell.GetService<IEditorSupport>();
                 // Wrap controller into OLE command target
                 target = es.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
                 Debug.Assert(target != null);
 
-                ServiceManager.AddService(target, textView, _shell);
+                textView.AddService(target);
 
                 // Wrap next OLE target in the chain into ICommandTarget so we can have 
                 // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target

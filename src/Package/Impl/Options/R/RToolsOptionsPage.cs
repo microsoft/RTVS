@@ -246,7 +246,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);
 
             public void SetValue(object value, [CallerMemberName] string name = null) {
-                Debug.Assert(_dict.ContainsKey(name), Invariant($"Unknown setting {name}. RToolsOptionsPage property name does not match IRToolsSettings"));
+                Debug.Assert(_dict.ContainsKey(name), Invariant($"Unknown setting {name}. RToolsOptionsPage property name does not match IRSettings"));
                 _dict[name] = value;
             }
 

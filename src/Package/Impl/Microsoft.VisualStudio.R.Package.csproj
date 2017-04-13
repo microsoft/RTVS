@@ -421,7 +421,7 @@
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
+    <Compile Include="Options\R\Tools\RSettingsImplementation.cs" />
     <Compile Include="Packages\Attributes\ProvideDebugEngineAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideDebugExceptionAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideDebugLanguageAttribute.cs" />

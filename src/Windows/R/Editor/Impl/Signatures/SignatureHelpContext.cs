@@ -3,8 +3,9 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Support.Help;
+using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -22,11 +23,11 @@ namespace Microsoft.R.Editor.Signatures {
             Debug.Assert(sessions.Count < 2);
             if (sessions.Count == 1) {
                 IFunctionInfo sessionFunctionInfo = null;
-                sessions[0].Properties.TryGetProperty<IFunctionInfo>("functionInfo", out sessionFunctionInfo);
+                sessions[0].Properties.TryGetProperty("functionInfo", out sessionFunctionInfo);
 
                 if (sessionFunctionInfo != null) {
                     try {
-                        IREditorDocument document = REditorDocument.FromTextBuffer(textView.TextBuffer);
+                        var document = textView.TextBuffer.GetEditorDocument<IREditorDocument>();
                         document.EditorTree.EnsureTreeReady();
 
                         ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(

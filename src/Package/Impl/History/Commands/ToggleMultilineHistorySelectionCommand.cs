@@ -5,10 +5,9 @@ using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
@@ -16,13 +15,13 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class ToggleMultilineHistorySelectionCommand : ViewCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private readonly IRHistory _history;
 
         public ToggleMultilineHistorySelectionCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdToggleMultilineSelection, false) {
             _history = historyProvider.GetAssociatedRHistory(textView);
-            _settings = interactiveWorkflow.Shell.GetService<IRToolsSettings>();
+            _settings = interactiveWorkflow.Shell.GetService<IRSettings>();
             _interactiveWorkflow = interactiveWorkflow;
         }
 

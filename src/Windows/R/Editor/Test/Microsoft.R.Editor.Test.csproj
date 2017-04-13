@@ -73,6 +73,10 @@
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Components\Test\Microsoft.R.Components.Test.csproj">
+      <Project>{2AA8762F-3A84-4CD5-9AA0-77829A766769}</Project>
+      <Name>Microsoft.R.Components.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>
       <Name>Microsoft.R.Editor</Name>

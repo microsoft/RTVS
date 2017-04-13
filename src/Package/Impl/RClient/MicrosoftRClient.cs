@@ -6,8 +6,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Components.Extensions;
-using Microsoft.R.Support.Settings;
 using Microsoft.Win32;
 using Microsoft.Common.Core.UI;
 

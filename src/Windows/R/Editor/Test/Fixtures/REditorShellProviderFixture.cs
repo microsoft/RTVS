@@ -5,14 +5,15 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.Languages.Editor.Test;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Support.Test;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit.Sdk;
 
 namespace Microsoft.R.Editor.Test {
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
-    public class REditorShellProviderFixture : RSupportShellProviderFixture {
+    public class REditorShellProviderFixture : EditorShellProviderFixture {
         protected override CompositionContainer CreateCompositionContainer() {
             var catalog = new REditorAssemblyMefCatalog();
             return catalog.CreateContainer();

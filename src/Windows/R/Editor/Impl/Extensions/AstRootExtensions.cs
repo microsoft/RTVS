@@ -5,7 +5,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Support.Help;
+using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor {
     public static class AstRootExtensions {

@@ -16,13 +16,12 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Common.Wpf.Extensions;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.StackTracing;
-using Microsoft.R.Support.Settings;
 using Microsoft.R.Wpf.Themes;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -36,7 +35,7 @@ using Brushes = Microsoft.R.Wpf.Brushes;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, ICommandTarget, IDisposable {
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private readonly IServiceContainer _services;
         private readonly IUIService _ui;
         private readonly IRSession _session;
@@ -49,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableView() : this(VsAppShell.Current.Services) { }
 
         public VariableView(IServiceContainer services) {
-            _settings = services.GetService<IRToolsSettings>();
+            _settings = services.GetService<IRSettings>();
             _services = services;
             _ui = _services.UI();
             _ui.UIThemeChanged += OnUIThemeChanged;

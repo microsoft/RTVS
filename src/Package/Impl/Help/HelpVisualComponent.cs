@@ -19,7 +19,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -76,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            var settings = _services.GetService<IRToolsSettings>();
+            var settings = _services.GetService<IRSettings>();
             if (settings.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);

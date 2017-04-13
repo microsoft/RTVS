@@ -5,12 +5,11 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Settings;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Commands;
-using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -36,11 +35,12 @@ namespace Microsoft.Languages.Editor.Application.Packages {
         }
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
-            if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
+            if (textBuffer.GetService<IEditorViewModel>() == null) {
                 var cs = _shell.GetService<ICompositionService>();
-                var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
+                var tdfs = _shell.GetService<ITextDocumentFactoryService>();
+                var importComposer = new ContentTypeImportComposer<IEditorViewModelFactory>(cs);
                 var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-                var editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory(_shell));
+                var viewMode = factory.CreateEditorViewModel(new EditorBuffer(textBuffer, tdfs));
             }
         }
     }

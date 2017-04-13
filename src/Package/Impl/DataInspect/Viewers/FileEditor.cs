@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -23,14 +23,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IFileEditor))]
     internal sealed class FileEditor : IFileEditor {
         private readonly ICoreShell _coreShell;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
 
         [ImportingConstructor]
-        public FileEditor(ICoreShell coreShell, IRToolsSettings settings, IVsEditorAdaptersFactoryService adapterService) {
+        public FileEditor(ICoreShell coreShell) {
             _coreShell = coreShell;
-            _settings = settings;
-            _adapterService = adapterService;
+            _settings = coreShell.GetService< IRSettings>();
+            _adapterService = coreShell.GetService<IVsEditorAdaptersFactoryService>();
         }
 
         public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {

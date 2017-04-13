@@ -3,15 +3,15 @@
 
 using System.Diagnostics;
 using EnvDTE80;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.CommandBars;
 
 namespace Microsoft.VisualStudio.R.Package.Packages {
     internal sealed class RToolbar {
         private readonly DTE2 _dte2;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
 
-        public RToolbar(DTE2 dte2, IRToolsSettings settings) {
+        public RToolbar(DTE2 dte2, IRSettings settings) {
             _dte2 = dte2;
             _settings = settings;
         }
