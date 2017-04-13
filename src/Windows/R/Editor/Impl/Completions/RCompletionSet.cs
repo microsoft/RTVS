@@ -4,21 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions {
-    using Common.Core;
-    using Completion = VisualStudio.Language.Intellisense.Completion;
-    using CompletionList = Microsoft.Languages.Editor.Completion.CompletionList;
-
     internal sealed class RCompletionSet : CompletionSet {
         private ITextBuffer _textBuffer;
         private CompletionList _completions;
         private FilteredObservableCollection<Completion> _filteredCompletions;
 
-        public RCompletionSet(ITextBuffer textBuffer, ITrackingSpan trackingSpan, List<RCompletion> completions) :
+        public RCompletionSet(ITextBuffer textBuffer, ITrackingSpan trackingSpan, List<ICompletionEntry> completions) :
             base("R Completion", "R Completion", trackingSpan, Enumerable.Empty<RCompletion>(), Enumerable.Empty<RCompletion>()) {
             _textBuffer = textBuffer;
             _completions = OrderList(completions);

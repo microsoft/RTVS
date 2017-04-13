@@ -6,7 +6,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Completion {
+namespace Microsoft.Languages.Editor.Completions {
     public abstract class CompletionCommandHandler : ViewCommand {
         private static CommandId[] _commandIds = {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SHOWMEMBERLIST),

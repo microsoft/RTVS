@@ -4,13 +4,12 @@
 using System;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Completion.Documentation {
+namespace Microsoft.R.Editor.Comments {
     public sealed class InsertRoxygenBlockCommand : ViewCommand {
         private readonly ITextBuffer _textBuffer;
 

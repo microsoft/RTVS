@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.Languages.Editor.Completion;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
@@ -20,12 +20,14 @@ namespace Microsoft.R.Editor.Completions {
     /// Provides actual content for the intellisense dropdown
     /// </summary>
     public sealed class RCompletionSource : ICompletionSource {
-        private ITextBuffer _textBuffer;
+        private readonly RCompletionEngine _completionEngine;
         private readonly ICoreShell _shell;
+        private readonly ITextBuffer _textBuffer;
 
         public RCompletionSource(ITextBuffer textBuffer, ICoreShell shell) {
             _textBuffer = textBuffer;
             _shell = shell;
+            _completionEngine = new RCompletionEngine(_shell);
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace Microsoft.R.Editor.Completions {
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             _shell.AssertIsOnMainThread();
 
-            IREditorDocument doc = REditorDocument.TryFromTextBuffer(_textBuffer);
+            var doc = REditorDocument.TryFromTextBuffer(_textBuffer);
             if (doc == null) {
                 return;
             }
@@ -65,24 +67,25 @@ namespace Microsoft.R.Editor.Completions {
         /// <param name="completionSets">Completion sets to add to</param>
         /// <param name="ast">Document abstract syntax tree</param>
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
-            RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
+            var context = new RCompletionContext(session, _textBuffer, ast, position);
 
             bool autoShownCompletion = true;
-            if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion))
+            if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion)) {
                 autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
+            }
 
-            IReadOnlyCollection<IRCompletionListProvider> providers =
-                RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion, _shell);
+            IReadOnlyCollection<IRCompletionListProvider> providers = _completionEngine.GetCompletionForLocation(context);
 
             // Position is in R as is the applicable spa, so no need to map down
             Span? applicableSpan = GetApplicableSpan(position, session);
             if (applicableSpan.HasValue) {
-                ITrackingSpan trackingSpan = context.TextBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan.Value, SpanTrackingMode.EdgeInclusive);
-                List<RCompletion> completions = new List<RCompletion>();
+                var snapshot = context.EditorBuffer.CurrentSnapshot.As<ITextSnapshot>();
+                var trackingSpan = snapshot.CreateTrackingSpan(applicableSpan.Value, SpanTrackingMode.EdgeInclusive);
+                var completions = new List<ICompletionEntry>();
                 bool sort = true;
 
                 foreach (IRCompletionListProvider provider in providers) {
-                    IReadOnlyCollection<RCompletion> entries = provider.GetEntries(context);
+                    var entries = provider.GetEntries(context);
                     Debug.Assert(entries != null);
 
                     if (entries.Count > 0) {

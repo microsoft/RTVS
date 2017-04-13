@@ -9,20 +9,16 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Completion {
+namespace Microsoft.Languages.Editor.Completions {
     public class CompletionCommittedEventArgs : EventArgs {
         public ICompletionSession Session { get; }
-
-        public CompletionCommittedEventArgs(ICompletionSession session) {
-            Session = session;
-        }
+        public CompletionCommittedEventArgs(ICompletionSession session) => Session = session;
     }
 
     /// <summary>
     /// Base completion controller. Not language specific.
     /// </summary>
     public abstract class CompletionController : IIntellisenseController {
-
         public const string AutoShownCompletion = "AutoShownCompletion";
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
@@ -35,20 +31,14 @@ namespace Microsoft.Languages.Editor.Completion {
         protected ICoreShell Shell { get; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        protected CompletionController(
-            ITextView textView,
-            IList<ITextBuffer> subjectBuffers,
-            ICompletionBroker completionBroker,
-            IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker,
-            ICoreShell shell) {
+        protected CompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell) {
             Shell = shell;
             TextView = textView;
 
             SubjectBuffers = subjectBuffers;
-            CompletionBroker = completionBroker;
-            QuickInfoBroker = quickInfoBroker;
-            SignatureBroker = signatureBroker;
+            CompletionBroker = Shell.GetService<ICompletionBroker>();
+            QuickInfoBroker = Shell.GetService<IQuickInfoBroker>();
+            SignatureBroker = Shell.GetService<ISignatureHelpBroker>();
         }
 
         public abstract void ConnectSubjectBuffer(ITextBuffer subjectBuffer);
@@ -68,16 +58,11 @@ namespace Microsoft.Languages.Editor.Completion {
         /// <summary>
         /// Should this key press commit a completion session?
         /// </summary>
-        public virtual bool IsCommitChar(char typedCharacter) {
-            return false;
-        }
-
+        public virtual bool IsCommitChar(char typedCharacter) => false;
         /// <summary>
         /// Should this key press start a completion session?
         /// </summary>
-        public virtual bool IsTriggerChar(char typedCharacter) {
-            return false;
-        }
+        public virtual bool IsTriggerChar(char typedCharacter) => false;
 
         /// <summary>
         /// In some languages completion needs to know if a character is a 'closing' character. 
@@ -86,28 +71,19 @@ namespace Microsoft.Languages.Editor.Completion {
         /// Upon closing character language may choose to autoformat code, dismiss intellisense
         /// or change intellisense presenter.
         /// </summary>
-        public virtual bool IsClosingChar(char typedCharacter) {
-            return false;
-        }
+        public virtual bool IsClosingChar(char typedCharacter) => false;
 
         /// <summary>
         /// Invoked if user typed a closing character. <seealso cref="IsClosingChar"/>
         /// </summary>
-        protected virtual void OnPostTypeClosingChar(char typedCharacter) {
-        }
-
-        protected virtual void OnPreTypeCompletionChar(char typedCharacter) {
-        }
-
-        protected virtual void OnPostTypeCompletionChar(char typedCharacter) {
-        }
+        protected virtual void OnPostTypeClosingChar(char typedCharacter) { }
+        protected virtual void OnPreTypeCompletionChar(char typedCharacter) { }
+        protected virtual void OnPostTypeCompletionChar(char typedCharacter) { }
 
         /// <summary>
         /// If completion is already showing, should this keypress start a new session?
         /// </summary>
-        protected virtual bool IsRetriggerChar(ICompletionSession session, char typedCharacter) {
-            return false;
-        }
+        protected virtual bool IsRetriggerChar(ICompletionSession session, char typedCharacter) => false;
 
         /// <summary>
         /// True if character should be 'eaten' when session completes rather
@@ -115,23 +91,17 @@ namespace Microsoft.Languages.Editor.Completion {
         /// is ignored in HTML completion since on = HTML editor inserts =""
         /// which already contains equals.
         /// </summary>
-        public virtual bool IsMuteCharacter(char typedCharacter) {
-            return typedCharacter == '\t' || typedCharacter == '\n';
-        }
+        public virtual bool IsMuteCharacter(char typedCharacter) => typedCharacter == '\t' || typedCharacter == '\n';
 
         /// <summary>
         /// Enabled by default, derived classes can override it and check the app setting
         /// </summary>
-        protected virtual bool AutoCompletionEnabled {
-            get { return true; }
-        }
+        protected virtual bool AutoCompletionEnabled => true;
 
         /// <summary>
         /// Enabled by default, derived classes can override it and check the app setting
         /// </summary>
-        protected virtual bool AutoSignatureHelpEnabled {
-            get { return true; }
-        }
+        protected virtual bool AutoSignatureHelpEnabled => true;
 
         /// <summary>
         /// Called when the user executes a command that should show the completion list
@@ -139,7 +109,6 @@ namespace Microsoft.Languages.Editor.Completion {
         public void OnShowMemberList(bool filterList) {
             DismissCompletionSession();
             ShowSignatureAndCompletion(autoShownSignature: true, autoShownCompletion: false);
-
             if (filterList) {
                 FilterCompletionSession();
             }
@@ -192,13 +161,10 @@ namespace Microsoft.Languages.Editor.Completion {
                     DismissSignatureSession(TextView, Shell);
                 }
             }
-
             return handled;
         }
 
-        protected virtual bool CanDismissSignatureOnCommit() {
-            return true;
-        }
+        protected virtual bool CanDismissSignatureOnCommit() => true;
 
         /// <summary>
         /// Called when the user types a character, after it shows up in the text view
@@ -233,7 +199,6 @@ namespace Microsoft.Languages.Editor.Completion {
         /// Is there an active completion session? (is the dropdown showing?)
         /// </summary>
         public bool HasActiveCompletionSession => CompletionSession != null && !CompletionSession.IsDismissed;
-
         public bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, Shell);
 
         /// <summary>
@@ -325,23 +290,18 @@ namespace Microsoft.Languages.Editor.Completion {
         ///  Close the completion dropdown, commit the selected item to the text view.
         /// </summary>
         /// <returns>true if text was committed</returns>
-        public virtual bool CommitCompletionSession() {
-            return CommitCompletionSession('\0');
-        }
+        public virtual bool CommitCompletionSession() => CommitCompletionSession('\0');
 
         /// <summary>
         /// Gives derived controllers a chance to update 
         /// CompletionSession.SelectedCompletionSet.SelectionStatus.Completion.InsertionText
         /// </summary>
-        protected virtual void UpdateInsertionText() {
-        }
+        protected virtual void UpdateInsertionText() { }
 
         /// <summary>
         /// Allows custom completion presenters to intercept commands
         /// </summary>
-        public virtual bool HandleCommand(Guid group, int id, object inputArg) {
-            return false;
-        }
+        public virtual bool HandleCommand(Guid group, int id, object inputArg) => false;
 
         /// <summary>
         /// Restricts the set of completions to those that match the applicability
@@ -360,8 +320,7 @@ namespace Microsoft.Languages.Editor.Completion {
         /// </summary>
         protected void CommitUniqueCompletionSession() {
             if (HasActiveCompletionSession) {
-                CompletionSelectionStatus status = CompletionSession.SelectedCompletionSet.SelectionStatus;
-
+                var status = CompletionSession.SelectedCompletionSet.SelectionStatus;
                 if (status.IsSelected && status.IsUnique) {
                     CommitCompletionSession();
                 }
@@ -396,28 +355,13 @@ namespace Microsoft.Languages.Editor.Completion {
             return CompletionSession;
         }
 
-        public virtual ICompletionSession TriggerCompletion() {
-            return CompletionBroker.TriggerCompletion(TextView);
-        }
+        public virtual ICompletionSession TriggerCompletion() => CompletionBroker.TriggerCompletion(TextView);
 
         /// <summary>
         /// Returns a topic name for showing help to the user, if there is a currently active completion session.
         /// Returns null or string.Empty when there is no known topic name.
         /// </summary>
-        public string HelpTopicName {
-            get {
-                if (HasActiveCompletionSession) {
-                    //ICustomCompletionPresenter customPresenter = CompletionSession.Presenter as ICustomCompletionPresenter;
-
-                    //if (customPresenter != null)
-                    //{
-                    //    return customPresenter.HelpTopicName;
-                    //}
-                }
-
-                return string.Empty;
-            }
-        }
+        public string HelpTopicName => string.Empty;
 
         /// <summary>
         /// Shows the signature help tooltip if it isn't showing already

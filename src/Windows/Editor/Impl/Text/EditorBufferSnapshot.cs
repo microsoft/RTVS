@@ -11,7 +11,7 @@ namespace Microsoft.Languages.Editor.Text {
             _snapshot = snapshot;
         }
 
-        public T ToTextSnapshot<T>() where T:class => _snapshot as T;
+        public T As<T>() where T:class => _snapshot as T;
         public IEditorBuffer EditorBuffer { get; }
         public int LineCount => _snapshot.LineCount;
         public IEditorLine GetLineFromLineNumber(int lineNumber) => new EditorLine(EditorBuffer, _snapshot.GetLineFromLineNumber(lineNumber));

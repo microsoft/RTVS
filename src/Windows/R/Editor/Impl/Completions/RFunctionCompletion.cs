@@ -3,10 +3,9 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Microsoft.R.Support.Help;
+using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using static System.FormattableString;
 

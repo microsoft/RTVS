@@ -18,6 +18,7 @@ namespace Microsoft.R.Editor.Data {
         private static readonly char[] NameTrimChars = new char[] { '$' };
         private static readonly string HiddenVariablePrefix = ".";
 
+        private readonly bool _evaluateActiveBindings;
         private readonly object syncObj = new object();
         private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask = null;
 
@@ -32,10 +33,10 @@ namespace Microsoft.R.Editor.Data {
         /// Create new instance of <see cref="DataEvaluation"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
-        public RSessionDataObject(IREvaluationResultInfo evaluation, int? maxChildrenCount = null) : this() {
+        public RSessionDataObject(IREvaluationResultInfo evaluation, bool evaluateActiveBindings, int? maxChildrenCount = null) : this() {
             DebugEvaluation = evaluation;
-
             Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);
+            _evaluateActiveBindings = evaluateActiveBindings;
 
             if (DebugEvaluation is IRValueInfo) {
                 var valueEvaluation = (IRValueInfo)DebugEvaluation;
@@ -121,7 +122,7 @@ namespace Microsoft.R.Editor.Data {
                         AttributeCountProperty |
                         DimProperty |
                         FlagsProperty |
-                        (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
+                        (_evaluateActiveBindings ? ComputedValueProperty : 0);
                     var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                     return EvaluateChildren(children);
                 }
@@ -133,7 +134,7 @@ namespace Microsoft.R.Editor.Data {
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
-                result.Add(new RSessionDataObject(children[i], GetMaxChildrenCount(children[i])));
+                result.Add(new RSessionDataObject(children[i], _evaluateActiveBindings, GetMaxChildrenCount(children[i])));
             }
             return result;
         }

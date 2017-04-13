@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             foreach (var v in variables) {
                 ICompletionEntry completion;
                 RFunction f = v.Value as RFunction;
-                completion = new EditorCompletionEntry(v.Name, v.Name.WrapInBacktics(), string.Empty, f != null ? _functionGlyph : _variableGlyph);
+                completion = new EditorCompletionEntry(v.Name, v.Name.BacktickName(), string.Empty, f != null ? _functionGlyph : _variableGlyph);
                 completions.Add(completion);
             }
 

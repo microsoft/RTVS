@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -22,7 +21,7 @@ namespace Microsoft.Languages.Editor.Test.ContainedLanguage {
             object o = new object();
 
             proxy.Should().NotBeNull();
-            ServiceManager.GetService<CommandTargetProxy>(tv).Should().Be(proxy);
+            tv.GetService<CommandTargetProxy>().Should().Be(proxy);
 
             proxy.Status(Guid.Empty, 0).Should().Be(CommandStatus.NotSupported);
             proxy.Invoke(Guid.Empty, 0, null, ref o).Should().Be(CommandResult.NotSupported);
@@ -31,7 +30,7 @@ namespace Microsoft.Languages.Editor.Test.ContainedLanguage {
             ct.Status(Guid.Empty, 0).Returns(CommandStatus.Supported);
 
             CommandTargetProxy.SetCommandTarget(tv, ct);
-            ServiceManager.GetService<CommandTargetProxy>(tv).Should().BeNull();
+            tv.GetService<CommandTargetProxy>().Should().BeNull();
 
             proxy.Status(Guid.Empty, 0).Should().Be(CommandStatus.Supported);
         }

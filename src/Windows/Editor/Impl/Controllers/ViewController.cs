@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.Languages.Editor.Services;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controllers.Commands;
 
@@ -36,9 +35,7 @@ namespace Microsoft.Languages.Editor.Controllers {
             TextViewListenerEvents.TextViewDisconnected += OnTextViewDisconnected;
         }
 
-        public static ViewController FromTextView(ITextView textView) {
-            return ServiceManager.GetService<ViewController>(textView);
-        }
+        public static ViewController FromTextView(ITextView textView) => textView.GetService<ViewController>();
 
         private void OnTextViewDisconnected(object sender, TextViewListenerEventArgs e) {
             if ((e.TextView == TextView) && (e.TextBuffer == TextBuffer)) {

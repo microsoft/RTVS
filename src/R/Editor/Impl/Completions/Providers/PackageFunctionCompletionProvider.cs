@@ -65,7 +65,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                         }
                         if (!isSnippet) {
                             var glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
-                            var completion = new RFunctionCompletionEntry(function.Name, function.Name.WrapInBacktics(), function.Description, glyph, _functionIndex, context.Session);
+                            var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, _functionIndex, context.Session);
                             completions.Add(completion);
                         }
                     }

@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Functions;
@@ -154,7 +156,8 @@ namespace Microsoft.R.Editor.Data {
                             DimProperty |
                             FlagsProperty;
                         var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
-                        var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
+                        var settings = Workflow.Shell.GetService<IRSettings>();
+                        var e = new RSessionDataObject(evaluation, settings.EvaluateActiveBindings);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();
 

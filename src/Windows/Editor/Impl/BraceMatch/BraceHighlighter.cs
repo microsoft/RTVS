@@ -8,7 +8,7 @@ using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -29,8 +29,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             _textBuffer = textBuffer;
             _textView = view;
             _shell = shell;
-
-            ServiceManager.AddService(this, _textView, shell);
+            _textView.AddService(this);
         }
 
         private IBraceMatcher BraceMatcher {
@@ -153,8 +152,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             if (_textView != null) {
                 _textView.LayoutChanged -= OnViewLayoutChanged;
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;
-
-                ServiceManager.RemoveService<BraceHighlighter>(_textView);
+                _textView.RemoveService<BraceHighlighter>();
                 _textView = null;
             }
             _textBuffer = null;

@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Fires when user made changes to the text buffer and before initial
         /// tree nodes position updates.
         /// </summary>
-        event EventHandler<TreeUpdatePendingEventArgs> UpdatesPending;
+        event EventHandler<EventArgs> UpdatesPending;
 
         /// <summary>
         /// Signals that editor tree is about to be updated with the results

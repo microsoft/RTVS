@@ -6,11 +6,18 @@ using Microsoft.Languages.Editor.Text;
 namespace Microsoft.Languages.Editor {
     public static class EditorViewExtensions {
         /// <summary>
-        /// Retrieves service from the service container attached to the buffer
+        /// Retrieves service from the service container attached to the view
         /// </summary>
-        public static T GetService<T>(this IEditorView editorView) where T : class
-            => editorView.Services.GetService<T>();
-        public static void RemoveService<T>(this IEditorView editorView) where T : class
-            => editorView.Services.RemoveService<T>();
+        public static T GetService<T>(this IEditorView editorView) where T : class => editorView.Services.GetService<T>();
+        
+        /// <summary>
+        /// Adds service to this instance of the view
+        /// </summary>
+        public static void AddService<T>(this IEditorView editorView, T service) where T : class => editorView.Services.AddService<T>(service);
+        
+        /// <summary>
+        /// Removes service from the instance of the view
+        /// </summary>
+        public static void RemoveService<T>(this IEditorView editorView) where T : class => editorView.Services.RemoveService<T>();
     }
 }

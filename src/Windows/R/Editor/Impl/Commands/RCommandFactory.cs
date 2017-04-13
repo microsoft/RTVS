@@ -9,7 +9,7 @@ using Microsoft.Languages.Editor.Controllers;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Comments;
-using Microsoft.R.Editor.Completion.Documentation;
+using Microsoft.R.Editor.Completions.Documentation;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Selection;

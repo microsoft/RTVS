@@ -20,11 +20,29 @@ namespace Microsoft.Languages.Editor.Text {
             return view;
         }
 
+        /// <summary>
+        /// Retrieves service manager attached to the text view
+        /// </summary>
         public static IServiceManager Services(this ITextView textView) {
             var view = textView.ToEditorView();
             Check.InvalidOperation(() => view != null);
             return view.Services;
         }
+
+        /// <summary>
+        /// Retrieves service from the service container attached to the view
+        /// </summary>
+        public static T GetService<T>(this ITextView textView) where T : class => textView.Services().GetService<T>();
+
+        /// <summary>
+        /// Adds service to this instance of the view
+        /// </summary>
+        public static void AddService<T>(this ITextView textView, T service) where T : class => textView.Services().AddService(service);
+
+        /// <summary>
+        /// Removes service from this instance of the view
+        /// </summary>
+        public static void RemoveService<T>(this ITextView textView) where T : class => textView.Services().RemoveService<T>();
 
         /// <summary>
         /// Determines caret position in the provided text buffer of a certain content type.

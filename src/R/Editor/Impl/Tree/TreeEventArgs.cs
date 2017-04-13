@@ -7,11 +7,6 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {
-    public class TreeUpdatePendingEventArgs : EventArgs {
-        public TextChangeEventArgs Change { get; }
-        public TreeUpdatePendingEventArgs(TextChangeEventArgs change) => Change = change;
-    }
-
     public class TreeUpdatedEventArgs : EventArgs {
         public TreeUpdateType UpdateType { get; }
         public TreeUpdatedEventArgs(TreeUpdateType updateType) => UpdateType = updateType;

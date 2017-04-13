@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Completions.Providers {
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion source for Visual Studio core editor
     /// </summary>

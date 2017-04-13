@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Completions.Providers {
+namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion controller provider for Visual Studio core editor
     /// </summary>
@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
     [Name("R Completion Controller")]
     [Order(Before = "Default Completion Controller")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
-    internal class CompletionControllerProvider : IIntellisenseControllerProvider {
+    internal class RCompletionControllerProvider : IIntellisenseControllerProvider {
         [Import]
         public ICompletionBroker CompletionBroker { get; set; }
 

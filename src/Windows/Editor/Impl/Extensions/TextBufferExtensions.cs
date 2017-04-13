@@ -22,19 +22,38 @@ namespace Microsoft.Languages.Editor.Text {
             return buffer;
         }
 
+        /// <summary>
+        /// Retrieves service manager attached to the text buffer
+        /// </summary>
         public static IServiceManager Services(this ITextBuffer textBuffer) {
             var editorBuffer = textBuffer.ToEditorBuffer();
             Check.InvalidOperation(() => editorBuffer != null);
             return editorBuffer.Services;
         }
 
+        /// <summary>
+        /// Retrieves service from the service container attached to the text buffer
+        /// </summary>
         public static T GetService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().GetService<T>();
+        
+        /// <summary>
+        /// Adds service to the service container attached to the text buffer
+        /// </summary>
+        public static void AddService<T>(this ITextBuffer textBuffer, T service) where T : class => textBuffer.Services().AddService(service);
+        
+        /// <summary>
+        /// Removes service from the service container attached to the text buffer
+        /// </summary>
         public static void RemoveService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().RemoveService<T>();
 
-        public static ITextView CurrentTextView(this ITextBuffer viewBuffer) {
+        /// <summary>
+        /// Retrieves last active view, if any, for the text buffer instance.
+        /// Text buffer is not guaranteed to have a view.
+        /// </summary>
+        public static ITextView CurrentTextView(this ITextBuffer textBuffer) {
             ITextView textView = null;
-            if (viewBuffer != null) {
-                var textViewData = TextViewConnectionListener.GetTextViewDataForBuffer(viewBuffer);
+            if (textBuffer != null) {
+                var textViewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
                 textView = textViewData?.LastActiveView;
             }
             return textView;
@@ -57,14 +76,16 @@ namespace Microsoft.Languages.Editor.Text {
             return allBuffers;
         }
 
+        /// <summary>
+        /// Retrieves full path to the file opened in the text buffer.
+        /// Not all text buffers have files associated with them,
+        /// </summary>
         public static string GetFileName(this ITextBuffer textBuffer) {
             string path = string.Empty;
-
             ITextDocument document = textBuffer.GetTextDocument();
             if (document != null && document.FilePath != null) {
                 path = document.FilePath;
             }
-
             return path;
         }
 

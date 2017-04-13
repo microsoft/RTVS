@@ -4,9 +4,9 @@
 using Microsoft.R.Core.Tokens;
 using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Completions {
-    internal static class CompletionUtilities {
-        public static string WrapInBacktics(this string name) {
+namespace Microsoft.R.Editor {
+    public static class StringExtensions {
+        public static string BacktickName(this string name) {
             if (!string.IsNullOrEmpty(name)) {
                 var t = new RTokenizer();
                 var tokens = t.Tokenize(name);

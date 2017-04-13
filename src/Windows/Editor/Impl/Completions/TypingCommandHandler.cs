@@ -4,10 +4,10 @@
 using System;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Completion {
+namespace Microsoft.Languages.Editor.Completions {
     public abstract class TypingCommandHandler : ViewAndBufferCommand {
         private static CommandId[] _commands = {
             new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.F1Help),
@@ -28,8 +28,7 @@ namespace Microsoft.Languages.Editor.Completion {
         };
 
         protected TypingCommandHandler(ITextView textView)
-            : base(textView, _commands, needCheckout: false) {
-        }
+            : base(textView, _commands, needCheckout: false) { }
 
         public static char GetTypedChar(Guid group, int commandId, object variantIn) {
             char typedChar = '\0';
@@ -97,7 +96,6 @@ namespace Microsoft.Languages.Editor.Completion {
                         break;
                 }
             }
-
             return CommandStatus.NotSupported;
         }
 
@@ -137,21 +135,20 @@ namespace Microsoft.Languages.Editor.Completion {
         private string GetHelpTopic() {
             // TODO: handle multiple controllers
 
-            var cc = ServiceManager.GetService<CompletionController>(TextView);
+            var cc = TextView.GetService<CompletionController>();
             // CompletionController might be null in weird "Open With <different editor>" or diff view scenarios.
             return cc != null ? cc.HelpTopicName : String.Empty;
         }
 
         private void DismissAllSessions() {
-            var completionControllers = ServiceManager.GetAllServices<CompletionController>(TextView);
-
+            var completionControllers = TextView.Services().GetServices<CompletionController>();
             foreach (var cc in completionControllers) {
                 cc.DismissAllSessions();
             }
         }
 
         private CommandResult HandleCompletion(Guid group, int id, object inputArg) {
-            var completionControllers = ServiceManager.GetAllServices<CompletionController>(TextView);
+            var completionControllers = TextView.Services().GetServices<CompletionController>();
             char typedChar = GetTypedChar(group, id, inputArg);
             bool handled = false;
 

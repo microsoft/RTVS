@@ -47,17 +47,26 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Adds on-demand created service
         /// </summary>
-        /// <param name="factory">Optional creator function. If not provided, reflection with default constructor will be used.</param>
+        /// <param name="factory">Service factory</param>
         public virtual IServiceManager AddService<T>(Func<T> factory) where T: class {
             _disposeToken.ThrowIfDisposed();
 
-            var type = typeof(T);
-            var lazy = factory != null 
-                ? new Lazy<object>(() => factory()) 
-                : new Lazy<object>(() => Activator.CreateInstance(type));
-
-            Check.InvalidOperation(() => _s.TryAdd(type, lazy), "Service already exists");
+            var lazy = new Lazy<object>(() => factory());
+            Check.InvalidOperation(() => _s.TryAdd(typeof(T), lazy), "Service already exists");
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
+            return this;
+        }
+
+        /// <summary>
+        /// Adds on-demand created service
+        /// </summary>
+        /// <param name="type">Type to instantiate with reflection.</param>
+        public virtual IServiceManager AddService(Type type) {
+            _disposeToken.ThrowIfDisposed();
+
+            var lazy = new Lazy<object>(() => Activator.CreateInstance(type));
+            Check.InvalidOperation(() => _s.TryAdd(type, lazy), "Service already exists");
+            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
             return this;
         }
 

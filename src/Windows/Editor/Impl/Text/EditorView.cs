@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -37,9 +38,9 @@ namespace Microsoft.Languages.Editor.Text {
         public ISnapshotPoint MapToView(ISnapshotPoint point) {
             var target = _textView.BufferGraph
                 .MapUpToBuffer(
-                    new SnapshotPoint(point.Snapshot.ToTextSnapshot<ITextSnapshot>(), point.Position), 
+                    new SnapshotPoint(point.Snapshot.As<ITextSnapshot>(), point.Position), 
                     PointTrackingMode.Positive, PositionAffinity.Successor, _textView.TextBuffer);
-            return target.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.ToEditorBuffer(), target.Value) : null;
+            return target.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.ToEditorBuffer().CurrentSnapshot, target.Value) : null;
         }
     }
 }

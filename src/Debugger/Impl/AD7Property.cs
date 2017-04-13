@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
@@ -35,7 +36,7 @@ namespace Microsoft.R.Debugger {
 
         private Lazy<IReadOnlyList<IREvaluationResultInfo>> _children;
         private Lazy<string> _reprToString;
-        private IRToolsSettings _settings;
+        private IRSettings _settings;
 
         public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
@@ -56,7 +57,7 @@ namespace Microsoft.R.Debugger {
 
             _children = Lazy.Create(CreateChildren);
             _reprToString = Lazy.Create(GetReprToString);
-            _settings = stackFrame.Engine.Shell.GetService<IRToolsSettings>();
+            _settings = stackFrame.Engine.Shell.GetService<IRSettings>();
         }
 
         private IReadOnlyList<IREvaluationResultInfo> CreateChildren() =>

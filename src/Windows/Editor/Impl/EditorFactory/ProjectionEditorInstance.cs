@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 

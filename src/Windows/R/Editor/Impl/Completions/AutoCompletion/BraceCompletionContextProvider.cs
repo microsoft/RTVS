@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text.BraceCompletion;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Completion.AutoCompletion {
+namespace Microsoft.R.Editor.Completions.AutoCompletion {
 
     [Export(typeof(IBraceCompletionContextProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]

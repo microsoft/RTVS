@@ -48,7 +48,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     Debug.Assert(v != null);
                     if (v.Name.Length > 0 && v.Name[0] != '[') {
                         var glyph = v.ItemType == NamedItemType.Variable ? _variableGlyph : _functionGlyph;
-                        var completion = new EditorCompletionEntry(v.Name, v.Name.WrapInBacktics(), v.Description, glyph);
+                        var completion = new EditorCompletionEntry(v.Name, v.Name.BacktickName(), v.Description, glyph);
                         completions.Add(completion);
                     }
                 }

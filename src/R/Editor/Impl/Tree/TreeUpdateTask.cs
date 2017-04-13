@@ -6,7 +6,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
@@ -20,7 +22,7 @@ namespace Microsoft.R.Editor.Tree {
     /// </summary>
     internal sealed class TreeUpdateTask : CancellableTask {
         #region Private members
-
+        private const string _threadCheckMessage = "Method should only be called on the main thread";
         private static readonly Guid _treeUserId = new Guid("BE78E649-B9D4-4BC0-A332-F38A2B16CD10");
         private static int _parserDelay = 200;
 
@@ -101,9 +103,7 @@ namespace Microsoft.R.Editor.Tree {
         internal void TakeThreadOwnership() => _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
 
         internal void ClearChanges() {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
-                throw new ThreadStateException("Method should only be called on the main thread");
-
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
             _pendingChanges.Clear();
         }
 
@@ -161,11 +161,9 @@ namespace Microsoft.R.Editor.Tree {
         /// handler that receives text buffer change events. 
         /// </summary>
         internal void OnTextChanges(TextChangeEventArgs change) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
-            _editorTree.FireOnUpdatesPending(change);
+            _editorTree.FireOnUpdatesPending();
             if (UpdatesSuspended) {
                 this.TextBufferChangedSinceSuspend = true;
                 _pendingChanges.FullParseRequired = true;
@@ -287,9 +285,7 @@ namespace Microsoft.R.Editor.Tree {
 
         // internal for unit tests
         internal bool DeleteAndShiftElements(TextChangeContext context) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
             TextChange textChange = context.PendingChanges;
             var changeType = textChange.TextChangeType;
@@ -327,12 +323,10 @@ namespace Microsoft.R.Editor.Tree {
         /// Idle time event handler. Kicks background parsing if there are pending changes
         /// </summary>
         private void OnIdle(object sender, EventArgs e) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
-
-            if (EditorBuffer == null || EditorBuffer.EditInProgress)
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
+            if (EditorBuffer == null) {
                 return;
+            }
 
             if (_lastChangeTime != DateTime.MinValue && TimeUtility.MillisecondsSinceUtc(_lastChangeTime) > _parserDelay) {
                 // Kick background parsing when idle slot comes so parser does not hit on every keystroke
@@ -357,9 +351,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="async">True if processing is to be done asynchronously.
         /// Non-async processing is typically used in unit tests only.</param>
         internal void ProcessPendingTextBufferChanges(ITextProvider newTextProvider, bool async) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
             if (ChangesPending) {
                 if (async && (IsTaskRunning() || _backgroundParsingResults.Count > 0)) {
@@ -384,9 +376,9 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         void ProcessTextChanges(TextChange changeToProcess, bool async, Func<bool> isCancelledCallback) {
             lock (_disposeLock) {
-                if (_editorTree == null || _disposed || isCancelledCallback())
+                if (_editorTree == null || _disposed || isCancelledCallback()) {
                     return;
-
+                }
                 EditorTreeChangeCollection treeChanges = null;
                 // Cache id since it can change if task is canceled
                 long taskId = TaskId;
@@ -403,7 +395,7 @@ namespace Microsoft.R.Editor.Tree {
                     }
 
                     treeChanges = new EditorTreeChangeCollection(changeToProcess.Version, changeToProcess.FullParseRequired);
-                    TextChangeProcessor changeProcessor = new TextChangeProcessor(_editorTree, rootNode, isCancelledCallback);
+                    var changeProcessor = new TextChangeProcessor(_editorTree, rootNode, isCancelledCallback);
 
                     bool fullParseRequired = changeToProcess.FullParseRequired;
                     if (fullParseRequired) {
@@ -412,8 +404,9 @@ namespace Microsoft.R.Editor.Tree {
                         changeProcessor.ProcessChange(changeToProcess, treeChanges);
                     }
                 } finally {
-                    if (async && _editorTree != null)
+                    if (async && _editorTree != null) {
                         _editorTree.ReleaseReadLock(_treeUserId);
+                    }
                 }
 
                 // Lock should be released at this point since actual application
@@ -455,8 +448,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Makes sure all pending changes are processed and applied to the tree
         /// </summary>
         internal void EnsureProcessingComplete() {
-            if (_ownerThreadId != Thread.CurrentThread.ManagedThreadId)
-                throw new ThreadStateException("Method should only be called on the main thread");
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
             // We want to make sure changes that are in a background processing are applied to the tree
             // before returning. We can't wait on events since call comes on a main thread and wait 
@@ -517,15 +509,12 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         /// <param name="o"></param>
         internal void ApplyBackgroundProcessingResults() {
-            if (_ownerThreadId != Thread.CurrentThread.ManagedThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
             if (_disposed) {
                 return;
             }
 
             EditorTreeChangeCollection treeChanges;
-            var eventsToFire = new List<TreeChangeEventRecord>();
             bool changed = false;
             bool fullParse = false;
             bool staleChanges = false;
@@ -546,7 +535,7 @@ namespace Microsoft.R.Editor.Tree {
                         // try to acquire read lock and hang since ApplyTreeChanges
                         // hols write lock.
 
-                        eventsToFire = ApplyTreeChanges(treeChanges);
+                        ApplyTreeChanges(treeChanges.Changes);
                         fullParse = _pendingChanges.FullParseRequired;
 
                         // Queue must be empty by now since only most recent changes are not stale
@@ -571,7 +560,7 @@ namespace Microsoft.R.Editor.Tree {
                 // Now that tree is fully updated, fire events
                 if (_editorTree != null) {
                     if (changed) {
-                        _editorTree.FirePostUpdateEvents(eventsToFire, fullParse);
+                        _editorTree.FirePostUpdateEvents();
                         DebugTree.VerifyTree(_editorTree);
                     }
 
@@ -582,25 +571,20 @@ namespace Microsoft.R.Editor.Tree {
             }
         }
 
-        List<TreeChangeEventRecord> ApplyTreeChanges(EditorTreeChangeCollection changesToApply) {
+        private void ApplyTreeChanges(IEnumerable<EditorTreeChange> changesToApply) {
             // Check editor tree reference since document could have been 
             // closed before parsing was completed
-
             if (!_disposed && _editorTree != null) {
                 if (EditorBuffer != null) {
                     _editorTree.BufferSnapshot = EditorBuffer.CurrentSnapshot;
                 }
-                return _editorTree.ApplyChanges(changesToApply.Changes);
+                _editorTree.ApplyChanges(changesToApply);
             }
-
-            return new List<TreeChangeEventRecord>();
         }
 
         #region Dispose
         protected override void Dispose(bool disposing) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
             lock (_disposeLock) {
                 if (disposing) {

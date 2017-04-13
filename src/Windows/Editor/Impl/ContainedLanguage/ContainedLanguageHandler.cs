@@ -4,7 +4,7 @@
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -17,8 +17,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         private ITextRange _cachedLanguageBlock;
 
         protected ContainedLanguageHandler(ITextBuffer textBuffer, ICoreShell coreShell) {
-            ServiceManager.AddService<IContainedLanguageHandler>(this, textBuffer, coreShell);
-
+            textBuffer.AddService<IContainedLanguageHandler>(this);
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
         }

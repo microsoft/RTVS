@@ -5,17 +5,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.R.Editor.Tree {
     public partial class EditorTree {
-        internal List<TreeChangeEventRecord> ApplyChanges(IEnumerable<EditorTreeChange> changes) {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-                throw new ThreadStateException("Method should only be called on the main thread");
-
-            var changesToFire = new List<TreeChangeEventRecord>();
-
+        internal void ApplyChanges(IEnumerable<EditorTreeChange> changes) {
+            Check.InvalidOperation(() => _ownerThread == Thread.CurrentThread.ManagedThreadId, _threadCheckMessage);
             if (changes == null || !changes.Any()) {
-                return changesToFire;
+                return;
             }
 
             // Since we have write lock we cannot fire events. If we fire an event,
@@ -28,13 +25,11 @@ namespace Microsoft.R.Editor.Tree {
 
             try {
                 AcquireWriteLock();
-
                 foreach (var change in changes) {
                     switch (change.ChangeType) {
                         case TreeChangeType.NewTree: {
                                 var c = change as EditorTreeChange_NewTree;
                                 _astRoot = c.NewTree;
-                                changesToFire.Add(new TreeChangeEventRecord(change.ChangeType));
                             }
                             break;
 
@@ -46,11 +41,10 @@ namespace Microsoft.R.Editor.Tree {
             } finally {
                 ReleaseWriteLock();
             }
-            return changesToFire;
         }
 
-        internal void FirePostUpdateEvents(IEnumerable<TreeChangeEventRecord> changes, bool fullParse) {
-            FireOnUpdatesPending(changes.Select(c => c.);
+        internal void FirePostUpdateEvents() {
+            FireOnUpdatesPending();
             FireOnUpdateBegin();
 
             foreach (var a in _actionsToInvokeOnReady.Values) {

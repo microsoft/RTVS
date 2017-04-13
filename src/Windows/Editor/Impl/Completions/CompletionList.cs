@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 
-namespace Microsoft.Languages.Editor.Completion {
+namespace Microsoft.Languages.Editor.Completions {
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
     public sealed class CompletionList : List<Completion>, INotifyCollectionChanged {
         // Once this list starts being used by completion, it never changes, so don't fire the event
@@ -17,9 +17,6 @@ namespace Microsoft.Languages.Editor.Completion {
             Debug.Assert(CollectionChanged == null);
         }
 
-        public void FireCollectionChanged() {
-            if (CollectionChanged != null)
-                CollectionChanged(this, null);
-        }
+        public void FireCollectionChanged() => CollectionChanged?.Invoke(this, null);
     }
 }

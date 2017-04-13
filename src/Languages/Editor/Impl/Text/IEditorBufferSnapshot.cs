@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Editor.Text {
     /// Represents immutable snapshot of the editor buffer
     /// </summary>
     public interface IEditorBufferSnapshot : ITextProvider {
-        T ToTextSnapshot<T>() where T : class;
+        T As<T>() where T : class;
         IEditorBuffer EditorBuffer { get; }
         int LineCount { get; }
         IEditorLine GetLineFromPosition(int position);

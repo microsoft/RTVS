@@ -72,7 +72,8 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         #region IServiceManager
         public void Dispose() { }
         public IServiceManager AddService<T>(T service, Type type = null) where T : class => _serviceManager.AddService(service, type);
-        public IServiceManager AddService<T>(Func<T> factory = null) where T : class => _serviceManager.AddService(factory);
+        public IServiceManager AddService<T>(Func<T> factory) where T : class => _serviceManager.AddService(factory);
+        public IServiceManager AddService(Type type) => _serviceManager.AddService(type);
         public void RemoveService<T>() where T : class => _serviceManager.RemoveService<T>();
         #endregion
 
