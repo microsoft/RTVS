@@ -411,11 +411,6 @@
     <Compile Include="DataInspect\VariableView.xaml.cs">
       <DependentUpon>VariableView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Document\IVsEditorDocumentFactory.cs" />
-    <Compile Include="Document\Markdown\VsMdEditorDocument.cs" />
-    <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
-    <Compile Include="Document\R\VsREditorDocument.cs" />
-    <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />

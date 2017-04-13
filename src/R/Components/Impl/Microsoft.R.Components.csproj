@@ -276,6 +276,8 @@
     <Compile Include="Settings\IRSettings.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorList.cs" />
+    <Compile Include="Settings\SurveyNewsPolicy.cs" />
+    <Compile Include="Settings\WebHelpSearchBrowserType.cs" />
     <Compile Include="Sql\DbConnectionService.cs" />
     <Compile Include="Sql\IDbConnectionService.cs" />
     <Compile Include="Sql\ConnectionStringConverter.cs" />

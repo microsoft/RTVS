@@ -3,26 +3,29 @@
 
 using System;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Document;
-using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor.EditorFactory {
-    public abstract class ProjectionEditorInstance : IEditorInstance {
-        public ProjectionEditorInstance(ITextBuffer diskBuffer, ITextDocumentFactoryService textDocumentFactoryService, ICoreShell coreShell) {
-            Check.ArgumentNull(nameof(diskBuffer), diskBuffer);
+namespace Microsoft.Languages.Editor.ViewModel {
+    /// <summary>
+    /// Represents instance of the editor to the host application
+    /// </summary>
+    public abstract class EditorViewModel : IEditorViewModel {
+        private IEditorDocument _document;
+
+        public EditorViewModel(IEditorDocument document, ITextDocumentFactoryService textDocumentFactoryService) {
+            Check.ArgumentNull(nameof(document), document);
             Check.ArgumentNull(nameof(textDocumentFactoryService), textDocumentFactoryService);
 
-            DiskBuffer = new EditorBuffer(diskBuffer, textDocumentFactoryService);
+            DiskBuffer = document.EditorBuffer;
+            DiskBuffer.AddService(this);
 
-            var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(diskBuffer);
-            ViewBuffer = new EditorBuffer(projectionBufferManager.ViewBuffer, textDocumentFactoryService);
+            ViewBuffer = CreateViewBuffer(textDocumentFactoryService);
+            ViewBuffer.AddService(this);
 
-            DiskBuffer.Services.AddService(this);
-            ViewBuffer.Services.AddService(this);
+            _document = document;
         }
 
         #region IEditorInstance
@@ -40,14 +43,22 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         public IEditorBuffer DiskBuffer { get; }
 
         /// <summary>
-        /// Retrieves editor instance command target for a particular view
+        /// Retreives editor document
+        /// </summary>
+        public T GetDocument<T>() where T : class, IEditorDocument => _document as T;
+
+        /// <summary>
+        /// Retrieves editor command target (controller) for a particular view
         /// </summary>
         public abstract ICommandTarget GetCommandTarget(IEditorView editorView);
         #endregion
 
         #region IDisposable
         protected virtual void Dispose(bool disposing) {
-            ViewBuffer.RemoveService<IEditorInstance>();
+            ViewBuffer?.Services?.RemoveService(this);
+            DiskBuffer?.Services?.RemoveService(this);
+            _document?.Dispose();
+            _document = null;
         }
 
         public void Dispose() {
@@ -55,5 +66,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
             GC.SuppressFinalize(this);
         }
         #endregion
+
+        protected virtual IEditorBuffer CreateViewBuffer(ITextDocumentFactoryService textDocumentFactoryService) => DiskBuffer;
     }
 }

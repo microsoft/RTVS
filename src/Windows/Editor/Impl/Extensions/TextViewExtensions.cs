@@ -42,7 +42,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Removes service from this instance of the view
         /// </summary>
-        public static void RemoveService<T>(this ITextView textView) where T : class => textView.Services().RemoveService<T>();
+        public static void RemoveService(this ITextView textView, object service) => textView.Services().RemoveService(service);
 
         /// <summary>
         /// Determines caret position in the provided text buffer of a certain content type.

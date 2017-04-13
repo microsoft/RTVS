@@ -152,7 +152,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             if (_textView != null) {
                 _textView.LayoutChanged -= OnViewLayoutChanged;
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;
-                _textView.RemoveService<BraceHighlighter>();
+                _textView.RemoveService(this);
                 _textView = null;
             }
             _textBuffer = null;

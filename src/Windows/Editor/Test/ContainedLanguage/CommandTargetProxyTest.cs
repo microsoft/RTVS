@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;

@@ -38,7 +38,7 @@ namespace Microsoft.Common.Core.Test.Services {
         public void ServiceOfTypeLazyObject() {
             _serviceManager
                 .AddService(new Lazy<object>())
-                .AddService<object>();
+                .AddService(typeof(object));
 
             _serviceManager.GetService<Lazy<object>>().Should().NotBeNull();
             _serviceManager.GetService<object>().Should().NotBeNull();
@@ -54,7 +54,8 @@ namespace Microsoft.Common.Core.Test.Services {
 
         [Test]
         public void Disposed() {
-            _serviceManager.AddService<I1>(new C1());
+            var instance = new C1();
+            _serviceManager.AddService(instance);
             _serviceManager.Dispose();
 
             Action a = () => _serviceManager.AddService<I1>(new C1());
@@ -78,10 +79,7 @@ namespace Microsoft.Common.Core.Test.Services {
             a = () => { var l = _serviceManager.GetServices<I2>().ToList(); };
             a.ShouldThrow<ObjectDisposedException>();
 
-            a = () => _serviceManager.RemoveService<I1>();
-            a.ShouldThrow<ObjectDisposedException>();
-
-            a = () => _serviceManager.RemoveService<I2>();
+            a = () => _serviceManager.RemoveService(instance);
             a.ShouldThrow<ObjectDisposedException>();
         }
 

@@ -63,12 +63,11 @@
     <Compile Include="Completions\RCompletionController.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Comments\InsertRoxygenBlockCommand.cs" />
-    <Compile Include="Document\RDocumentFactory.cs" />
     <Compile Include="DragDrop\DataObject.cs" />
     <Compile Include="DragDrop\DropHandler.cs" />
     <Compile Include="DragDrop\DropHandlerProvider.cs" />
-    <Compile Include="EditorFactory\REditorInstance.cs" />
-    <Compile Include="EditorFactory\REditorInstanceFactory.cs" />
+    <Compile Include="EditorFactory\REditorViewModel.cs" />
+    <Compile Include="EditorFactory\REditorViewModelFactory.cs" />
     <Compile Include="Extensions\DocumentExtensions.cs" />
     <Compile Include="Extensions\AstRootExtensions.cs" />
     <Compile Include="Formatting\AutoFormat.cs" />

@@ -108,7 +108,7 @@ namespace Microsoft.Languages.Editor.Text {
             for (int i = range.Start; i <= end; i++) {
                 var found = true;
                 var k = i;
-                var j;
+                int j;
 
                 for (j = 0; j < text.Length; j++, k++) {
                     var ch1 = text[j];

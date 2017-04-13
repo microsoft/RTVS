@@ -45,7 +45,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Removes service from the service container attached to the text buffer
         /// </summary>
-        public static void RemoveService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().RemoveService<T>();
+        public static void RemoveService(this ITextBuffer textBuffer, object service) => textBuffer.Services().RemoveService(service);
 
         /// <summary>
         /// Attempts to locate associated editor document. Implementation depends on the platform.
@@ -107,8 +107,6 @@ namespace Microsoft.Languages.Editor.Text {
                 .Where(d => d != null)
                 .FirstOrDefault();
         }
-
-        public static T GetEditorDocument<T>(ITextBuffer textBuffer) where T : class, IEditorDocument => textBuffer.ToEditorBuffer().GetEditorDocument<T>();
 
         /// <summary>
         /// Converts stream buffer position to line and column.

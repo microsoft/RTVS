@@ -61,6 +61,8 @@ namespace Microsoft.R.Components.Settings {
         /// </summary>
         bool EvaluateActiveBindings { get; set; }
 
+        bool ShowDotPrefixedVariables { get; set; }
+
         LogVerbosity LogVerbosity { get; set; }
 
         void LoadSettings();

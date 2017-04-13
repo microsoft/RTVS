@@ -25,6 +25,6 @@ namespace Microsoft.Languages.Editor.Controllers {
         }
 
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer)
-            => new List<ICommandTarget>() { new OutlineController(textView, _oms) };
+            => new ICommandTarget[] { new OutlineController(textView, _oms) };
     }
 }

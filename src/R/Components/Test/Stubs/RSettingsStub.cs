@@ -25,6 +25,7 @@ namespace Microsoft.R.Components.Test.Stubs {
         public HelpBrowserType HelpBrowserType { get; set; }
         public int RCodePage { get; set; }
         public bool EvaluateActiveBindings { get; set; }
+        public bool ShowDotPrefixedVariables { get; set; }
         public LogVerbosity LogVerbosity { get; set; }
 
         public void LoadSettings() { }

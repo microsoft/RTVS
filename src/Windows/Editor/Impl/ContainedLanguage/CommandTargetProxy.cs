@@ -44,7 +44,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             var proxy = textView.GetService<CommandTargetProxy>();
             if (proxy != null) {
                 proxy._commandTarget = target;
-                textView.RemoveService<CommandTargetProxy>();
+                textView.RemoveService(proxy);
             }
         }
     }

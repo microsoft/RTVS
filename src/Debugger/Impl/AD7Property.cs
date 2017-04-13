@@ -158,9 +158,7 @@ namespace Microsoft.R.Debugger {
             return VSConstants.E_NOTIMPL;
         }
 
-        int IDebugProperty2.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout) {
-            return VSConstants.E_NOTIMPL;
-        }
+        int IDebugProperty2.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout) => VSConstants.E_NOTIMPL;
 
         int IDebugProperty2.SetValueAsString(string pszValue, uint dwRadix, uint dwTimeout) {
             string errorString;
@@ -171,17 +169,11 @@ namespace Microsoft.R.Debugger {
             return IDebugProperty2.SetValueAsString(pszValue, dwRadix, dwTimeout);
         }
 
-        int IDebugProperty3.CreateObjectID() {
-            return VSConstants.E_NOTIMPL;
-        }
+        int IDebugProperty3.CreateObjectID() => VSConstants.E_NOTIMPL;
+        int IDebugProperty3.DestroyObjectID() => VSConstants.E_NOTIMPL;
 
-        int IDebugProperty3.DestroyObjectID() {
-            return VSConstants.E_NOTIMPL;
-        }
-
-        int IDebugProperty3.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            return IDebugProperty2.EnumChildren(dwFields, dwRadix, guidFilter, dwAttribFilter, pszNameFilter, dwTimeout, out ppEnum);
-        }
+        int IDebugProperty3.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum)
+            => IDebugProperty2.EnumChildren(dwFields, dwRadix, guidFilter, dwAttribFilter, pszNameFilter, dwTimeout, out ppEnum);
 
         int IDebugProperty3.GetCustomViewerCount(out uint pcelt) {
             pcelt = StackFrame.Engine.GridViewProvider?.CanShowDataGrid(EvaluationResult) == true ? 1u : 0u;
@@ -204,33 +196,14 @@ namespace Microsoft.R.Debugger {
             return VSConstants.S_OK;
         }
 
-        int IDebugProperty3.GetDerivedMostProperty(out IDebugProperty2 ppDerivedMost) {
-            return IDebugProperty2.GetDerivedMostProperty(out ppDerivedMost);
-        }
-
-        int IDebugProperty3.GetExtendedInfo(ref Guid guidExtendedInfo, out object pExtendedInfo) {
-            return IDebugProperty2.GetExtendedInfo(guidExtendedInfo, out pExtendedInfo);
-        }
-
-        int IDebugProperty3.GetMemoryBytes(out IDebugMemoryBytes2 ppMemoryBytes) {
-            return IDebugProperty2.GetMemoryBytes(out ppMemoryBytes);
-        }
-
-        int IDebugProperty3.GetMemoryContext(out IDebugMemoryContext2 ppMemory) {
-            return IDebugProperty2.GetMemoryContext(out ppMemory);
-        }
-
-        int IDebugProperty3.GetParent(out IDebugProperty2 ppParent) {
-            return IDebugProperty2.GetParent(out ppParent);
-        }
-
-        int IDebugProperty3.GetPropertyInfo(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, uint dwTimeout, IDebugReference2[] rgpArgs, uint dwArgCount, DEBUG_PROPERTY_INFO[] pPropertyInfo) {
-            return IDebugProperty2.GetPropertyInfo(dwFields, dwRadix, dwTimeout, rgpArgs, dwArgCount, pPropertyInfo);
-        }
-
-        int IDebugProperty3.GetSize(out uint pdwSize) {
-            return IDebugProperty2.GetSize(out pdwSize);
-        }
+        int IDebugProperty3.GetDerivedMostProperty(out IDebugProperty2 ppDerivedMost)=> IDebugProperty2.GetDerivedMostProperty(out ppDerivedMost);
+        int IDebugProperty3.GetExtendedInfo(ref Guid guidExtendedInfo, out object pExtendedInfo) => IDebugProperty2.GetExtendedInfo(guidExtendedInfo, out pExtendedInfo);
+        int IDebugProperty3.GetMemoryBytes(out IDebugMemoryBytes2 ppMemoryBytes) => IDebugProperty2.GetMemoryBytes(out ppMemoryBytes);
+        int IDebugProperty3.GetMemoryContext(out IDebugMemoryContext2 ppMemory) => IDebugProperty2.GetMemoryContext(out ppMemory);
+        int IDebugProperty3.GetParent(out IDebugProperty2 ppParent) => IDebugProperty2.GetParent(out ppParent);
+        int IDebugProperty3.GetPropertyInfo(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, uint dwTimeout, IDebugReference2[] rgpArgs, uint dwArgCount, DEBUG_PROPERTY_INFO[] pPropertyInfo)
+            => IDebugProperty2.GetPropertyInfo(dwFields, dwRadix, dwTimeout, rgpArgs, dwArgCount, pPropertyInfo);
+        int IDebugProperty3.GetSize(out uint pdwSize) => IDebugProperty2.GetSize(out pdwSize);
 
         int IDebugProperty3.GetStringCharLength(out uint pLen) {
             pLen = 0;
@@ -256,13 +229,9 @@ namespace Microsoft.R.Debugger {
             return VSConstants.S_OK;
         }
 
-        int IDebugProperty3.GetReference(out IDebugReference2 ppReference) {
-            return IDebugProperty2.GetReference(out ppReference);
-        }
-
-        int IDebugProperty3.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout) {
-            return IDebugProperty2.SetValueAsReference(rgpArgs, dwArgCount, pValue, dwTimeout);
-        }
+        int IDebugProperty3.GetReference(out IDebugReference2 ppReference) => IDebugProperty2.GetReference(out ppReference);
+        int IDebugProperty3.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout)
+            => IDebugProperty2.SetValueAsReference(rgpArgs, dwArgCount, pValue, dwTimeout);
 
         int IDebugProperty3.SetValueAsStringWithError(string pszValue, uint dwRadix, uint dwTimeout, out string errorString) {
             errorString = null;

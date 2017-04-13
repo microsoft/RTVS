@@ -12,7 +12,6 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;

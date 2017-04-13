@@ -85,7 +85,7 @@ namespace Microsoft.R.Editor.Document {
                 }
             }
 
-            EditorBuffer?.Services?.RemoveService<REditorDocument>();
+            EditorBuffer?.Services?.RemoveService(this);
             EditorBuffer = null;
         }
 

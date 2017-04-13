@@ -18,6 +18,6 @@ namespace Microsoft.Languages.Editor {
         /// <summary>
         /// Removes service from the instance of the view
         /// </summary>
-        public static void RemoveService<T>(this IEditorView editorView) where T : class => editorView.Services.RemoveService<T>();
+        public static void RemoveService(this IEditorView editorView, object service) => editorView.Services.RemoveService(service);
     }
 }

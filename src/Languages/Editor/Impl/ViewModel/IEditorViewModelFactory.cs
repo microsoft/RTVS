@@ -4,16 +4,16 @@
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 
-namespace Microsoft.Languages.Editor.EditorFactory {
+namespace Microsoft.Languages.Editor.ViewModel {
     /// <summary>
-    /// Editor instance factory. Typically imported via MEF
+    /// Editor view model factory. Typically imported via MEF
     /// in the host application editor factory such as in
     /// IVsEditorFactory.CreateEditorInstance.
     /// </summary>
-    public interface IEditorFactory {
+    public interface IEditorViewModelFactory {
         /// <summary>
         /// Creates an instance of an editor over the text buffer.
         /// </summary>
-        IEditorInstance CreateEditorInstance(IEditorBuffer textBuffer, IEditorDocumentFactory documentFactory);
+        IEditorViewModel CreateEditorViewModel(IEditorBuffer editorBuffer);
     }
 }

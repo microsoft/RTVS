@@ -21,15 +21,11 @@ namespace Microsoft.Languages.Editor.Projection {
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private int? _savedCaretPosition;
 
-        public ProjectionBufferManager(ITextBuffer diskBuffer,
-                                       IProjectionBufferFactoryService projectionBufferFactoryService,
-                                       IContentTypeRegistryService contentTypeRegistryService,
-                                       ICoreShell coreShell,
-                                       string topLevelContentTypeName,
-                                       string secondaryContentTypeName) {
+        public ProjectionBufferManager(ITextBuffer diskBuffer, ICoreShell coreShell, string topLevelContentTypeName, string secondaryContentTypeName) {
             DiskBuffer = diskBuffer;
 
-            _contentTypeRegistryService = contentTypeRegistryService;
+            var projectionBufferFactoryService = coreShell.GetService<IProjectionBufferFactoryService>();
+            _contentTypeRegistryService = coreShell.GetService<IContentTypeRegistryService>();
 
             var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
             ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
@@ -91,8 +87,8 @@ namespace Microsoft.Languages.Editor.Projection {
         }
 
         public void Dispose() {
-            DiskBuffer?.RemoveService<IProjectionBufferManager>();
-            ViewBuffer?.RemoveService<IProjectionBufferManager>();
+            DiskBuffer?.RemoveService(this);
+            ViewBuffer?.RemoveService(this);
         }
         #endregion
 

@@ -4,13 +4,12 @@
 using System.Linq;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

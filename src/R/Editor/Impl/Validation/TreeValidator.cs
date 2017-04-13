@@ -206,7 +206,7 @@ namespace Microsoft.R.Editor.Validation {
         }
 
         private void OnTreeClose(object sender, EventArgs e) {
-            _editorTree.EditorBuffer.RemoveService<TreeValidator>();
+            _editorTree.EditorBuffer.RemoveService(this);
 
             StopValidation();
 

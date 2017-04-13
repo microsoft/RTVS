@@ -3,9 +3,10 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.VisualStudio.Text.Projection;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Document {
@@ -15,19 +16,15 @@ namespace Microsoft.Markdown.Editor.Document {
     [Export(typeof(IEditorDocumentFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     public class MdEditorDocumentFactory : IEditorDocumentFactory {
-        private readonly IProjectionBufferFactoryService _projectionBufferFactoryService;
-        private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public MdEditorDocumentFactory(IProjectionBufferFactoryService projectionBufferFactoryService, IContentTypeRegistryService contentTypeRegistryService, ICoreShell shell) {
-            _projectionBufferFactoryService = projectionBufferFactoryService;
-            _contentTypeRegistryService = contentTypeRegistryService;
+        public MdEditorDocumentFactory(ICoreShell shell) {
             _shell = shell;
         }
 
         public IEditorDocument CreateDocument(IEditorInstance editorInstance) {
-            return new MdEditorDocument(editorInstance.DiskBuffer, _projectionBufferFactoryService, _contentTypeRegistryService, _shell);
+            return new MdEditorDocument(editorInstance.DiskBuffer.As<ITextBuffer>(), _shell);
         }
     }
 }

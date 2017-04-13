@@ -18,6 +18,6 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Removes service from this instance of the text buffer
         /// </summary>
-        public static void RemoveService<T>(this IEditorBuffer editorBuffer) where T : class => editorBuffer.Services.RemoveService<T>();
+        public static void RemoveService(this IEditorBuffer editorBuffer, object service) => editorBuffer.Services.RemoveService(service);
     }
 }

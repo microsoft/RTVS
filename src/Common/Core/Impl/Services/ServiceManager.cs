@@ -48,7 +48,7 @@ namespace Microsoft.Common.Core.Services {
         /// Adds on-demand created service
         /// </summary>
         /// <param name="factory">Service factory</param>
-        public virtual IServiceManager AddService<T>(Func<T> factory) where T: class {
+        public virtual IServiceManager AddService<T>(Func<T> factory) where T : class {
             _disposeToken.ThrowIfDisposed();
 
             var lazy = new Lazy<object>(() => factory());
@@ -86,11 +86,14 @@ namespace Microsoft.Common.Core.Services {
             return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);
         }
 
-        public virtual void RemoveService<T>() where T : class {
+        public virtual void RemoveService(object service) {
             _disposeToken.ThrowIfDisposed();
-
-            if (_s.TryRemove(typeof(T), out object dummy)) {
-                ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
+            var key = AllServices.FirstOrDefault(x => {
+                object value;
+                return _s.TryGetValue(x, out value);
+            });
+            if (_s.TryRemove(key, out object dummy)) {
+                ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(key));
             }
         }
 

@@ -55,8 +55,8 @@
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocumentFactory.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
-    <Compile Include="EditorFactory\MdEditorInstance.cs" />
-    <Compile Include="EditorFactory\MdEditorInstanceFactory.cs" />
+    <Compile Include="ViewModel\MdEditorViewModel.cs" />
+    <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -45,7 +45,6 @@
     <Compile Include="DebuggerGuids.cs" />
     <Compile Include="DTEDebuggerExtensions.cs" />
     <Compile Include="IDebugGridViewProvider.cs" />
-    <Compile Include="IRToolsSettings.cs" />
     <Compile Include="PortSupplier\RDebugPortPicker.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
     <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />

@@ -4,14 +4,13 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Extensions;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -37,15 +36,15 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             _coreShell = coreShell;
 
             _document = document;
-            _document.DocumentClosing += OnDocumentClosing;
+            _document.Closing += OnDocumentClosing;
 
-            ServiceManager.AddService<IContainedLanguageHost>(this, textBuffer, coreShell);
+            textBuffer.AddService(this);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
             if (_document != null) {
                 Closing?.Invoke(this, EventArgs.Empty);
-                _document.DocumentClosing -= OnDocumentClosing;
+                _document.Closing -= OnDocumentClosing;
             }
         }
 

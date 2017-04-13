@@ -4,7 +4,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -31,9 +31,9 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         /// <param name="textBuffer">Contained language text buffer</param>
         /// <returns>Contained language host, <seealso cref="IContainedLanguageHost"/></returns>
         public IContainedLanguageHost GetContainedLanguageHost(ITextView textView, ITextBuffer textBuffer) {
-            var containedLanguageHost = ServiceManager.GetService<IContainedLanguageHost>(textBuffer);
+            var containedLanguageHost = textBuffer.GetService<IContainedLanguageHost>();
             if (containedLanguageHost == null) {
-                var document = MdEditorDocument.FromTextBuffer(textView.TextDataModel.DocumentBuffer);
+                var document = textView.TextDataModel.DocumentBuffer.GetEditorDocument<MdEditorDocument>();
                 containedLanguageHost = new MdContainedLanguageHost(document, textBuffer, _coreShell);
             }
             return containedLanguageHost;

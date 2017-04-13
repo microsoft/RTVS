@@ -3,13 +3,14 @@
 
 using System;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 
-namespace Microsoft.Languages.Editor.Document {
+namespace Microsoft.Languages.Editor.ViewModel {
     /// <summary>
-    /// An active editor instance
+    /// An active editor instance. Connects document, text buffer and the controller.
     /// </summary>
-    public interface IEditorInstance : IDisposable {
+    public interface IEditorViewModel : IDisposable {
         /// <summary>
         /// Text buffer containing document data that is to be attached to the text view. 
         /// In languages that support projected language scenarios this is the top level
@@ -24,7 +25,12 @@ namespace Microsoft.Languages.Editor.Document {
         IEditorBuffer DiskBuffer { get; }
 
         /// <summary>
-        /// Retrieves editor instance command target for a particular view
+        /// Retreives editor document
+        /// </summary>
+        T GetDocument<T>() where T : class, IEditorDocument;
+
+        /// <summary>
+        /// Retrieves editor command target (controller) for a particular view
         /// </summary>
         ICommandTarget GetCommandTarget(IEditorView textView);
     }

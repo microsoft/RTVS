@@ -30,8 +30,8 @@ namespace Microsoft.Common.Core.Services {
         IServiceManager AddService(Type type);
 
         /// <summary>
-        /// Removes service from container
+        /// Removes service from container by instance
         /// </summary>
-        void RemoveService<T>() where T : class;
+        void RemoveService(object service);
     }
 }
