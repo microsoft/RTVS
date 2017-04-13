@@ -6,16 +6,19 @@ using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.R.Host.Broker.Services;
 
 namespace Microsoft.R.Host.Broker.Lifetime {
     public class LifetimeManager {
         private readonly LifetimeOptions _options;
+        private readonly IExitService _exitService;
         private readonly ILogger _logger;
 
         private CancellationTokenSource _cts;
 
-        public LifetimeManager(IOptions<LifetimeOptions> options, ILogger<LifetimeManager> logger) {
+        public LifetimeManager(IExitService exitService, IOptions<LifetimeOptions> options, ILogger<LifetimeManager> logger) {
             _options = options.Value;
+            _exitService = exitService;
             _logger = logger;
         }
 
@@ -28,14 +31,14 @@ namespace Microsoft.R.Host.Broker.Lifetime {
                     process.EnableRaisingEvents = true;
                 } catch (ArgumentException) {
                     _logger.LogCritical(Resources.Critical_ParentProcessNotFound, pid);
-                    //CommonStartup.Exit();
+                    _exitService.Exit();
                     return;
                 }
 
                 _logger.LogInformation(Resources.Info_MonitoringParentProcess, pid);
                 process.Exited += delegate {
                     _logger.LogInformation(Resources.Info_ParentProcessExited, pid);
-                    //CommonStartup.Exit();
+                    _exitService.Exit();
                 };
             }
 
@@ -57,7 +60,7 @@ namespace Microsoft.R.Host.Broker.Lifetime {
             var cts = (CancellationTokenSource) state;
             if (_cts == cts) {
                 _logger.LogCritical(Resources.Critical_PingTimeOut);
-                //CommonStartup.Exit();
+                _exitService.Exit();
             }
         }
     }

@@ -62,6 +62,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TLS certificate not found: {0}.
+        /// </summary>
+        internal static string Critical_NoTlsCertificate {
+            get {
+                return ResourceManager.GetString("Critical_NoTlsCertificate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Designated parent process {0} not found.
         /// </summary>
         internal static string Critical_ParentProcessNotFound {

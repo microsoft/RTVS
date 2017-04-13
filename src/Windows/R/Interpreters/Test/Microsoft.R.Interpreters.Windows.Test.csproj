@@ -70,7 +70,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RInstallationTest.cs" />
+    <Compile Include="Install\RInstallationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

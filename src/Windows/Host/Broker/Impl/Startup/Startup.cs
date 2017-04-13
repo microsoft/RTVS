@@ -1,29 +1,41 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.R.Host.Broker.About;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Lifetime;
 using Microsoft.R.Host.Broker.Logging;
-using Microsoft.R.Host.Broker.RemoteUri;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Services;
-using Microsoft.R.Host.Broker.Sessions;
-using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Interpreters;
-using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Startup {
-    public class Startup {
-        public Startup(IHostingEnvironment env) {}
+    public sealed class ServiceStartup {
+        public ServiceStartup(IHostingEnvironment env) { }
+
+        public void ConfigureServices(IServiceCollection services) { }
+
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, LifetimeManager lifetimeManager, InterpreterManager interpreterManager, SecurityManager securityManager) { }
+    }
+
+    public sealed class StandaloneStartup {
+        public StandaloneStartup(IHostingEnvironment env) { }
 
         public void ConfigureServices(IServiceCollection services) {
+            Startup.ConfigureServices(services);
+            WindowsStartup.ConfigureServices(services);
+        }
+
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, LifetimeManager lifetimeManager, InterpreterManager interpreterManager, SecurityManager securityManager) {
+            Startup.Configure(app, env, lifetimeManager, interpreterManager, securityManager);
+        }
+    }
+
+    public static class WindowsStartup {
+        public static void ConfigureServices(IServiceCollection services) {
             services.AddOptions()
                 .Configure<LoggingOptions>(CommonStartup.Configuration.GetSection("logging"))
                 .Configure<LifetimeOptions>(CommonStartup.Configuration.GetSection("lifetime"))
@@ -31,54 +43,11 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .Configure<ROptions>(CommonStartup.Configuration.GetSection("R"));
 
             services.AddSingleton<IFileSystem>(new FileSystem())
-                    .AddSingleton<LifetimeManager>()
-                    .AddSingleton<SecurityManager>()
-                    .AddSingleton<InterpreterManager>()
-                    .AddSingleton<SessionManager>()
-                    .AddSingleton<UserProfileManager>()
                     .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
                     .AddSingleton<IRHostProcessService, WindowsRHostProcessService>()
                     .AddSingleton<IRInstallationService, RInstallation>()
-                    .AddSingleton<ISystemInfoService, WindowsSystemInfoService> ();
-
-            services.AddAuthorization(options => options.AddPolicy(
-                Policies.RUser,
-                policy => policy.RequireClaim(Claims.RUser)));
-
-            services.AddRouting();
-
-            services
-                .AddMvc()
-                .AddApplicationPart(typeof(InterpreterManager).Assembly);
-        }
-
-        public void Configure(
-            IApplicationBuilder app,
-            IHostingEnvironment env,
-            LifetimeManager lifetimeManager,
-            InterpreterManager interpreterManager,
-            SecurityManager securityManager
-        ) {
-            lifetimeManager.Initialize();
-            interpreterManager.Initialize();
-
-            app.UseWebSockets(new WebSocketOptions {
-                ReplaceFeature = true,
-                KeepAliveInterval = TimeSpan.FromMilliseconds(1000000000),
-                ReceiveBufferSize = 0x10000
-            });
-
-            var routeBuilder = new RouteBuilder(app, new RouteHandler(RemoteUriHelper.HandlerAsync));
-            routeBuilder.MapRoute("help_and_shiny", "remoteuri");
-            app.UseRouter(routeBuilder.Build());
-
-            app.UseBasicAuthentication(options => options.Events = new BasicEvents { OnSignIn = securityManager.SignInAsync });
-
-            app.Use((context, next) => context.User.Identity.IsAuthenticated 
-                ? next() 
-                : context.Authentication.ChallengeAsync());
-
-            app.UseMvc();
+                    .AddSingleton<ISystemInfoService, WindowsSystemInfoService>()
+                    .AddSingleton<IExitService, ExitService>();
         }
     }
 }

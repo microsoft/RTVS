@@ -19,6 +19,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Broker.Sessions {
     public class Session {
         private readonly IRHostProcessService _processService;
+        private readonly IExitService _exitService;
         private readonly bool _isInteractive;
         private readonly ILogger _sessionLogger;
         private readonly MessagePipe _pipe;
@@ -61,15 +62,24 @@ namespace Microsoft.R.Host.Broker.Sessions {
             State = State,
         };
 
-        internal Session(SessionManager manager, IRHostProcessService processService, IIdentity user, string id,
-            Interpreter interpreter, string commandLineArguments, bool isInteractive, ILogger sessionLogger,
-            ILogger messageLogger) {
+        internal Session(SessionManager manager
+            , IRHostProcessService processService
+            , IExitService exitService
+            , IIdentity user
+            , string id
+            , Interpreter interpreter
+            , string commandLineArguments
+            , bool isInteractive
+            , ILogger sessionLogger
+            , ILogger messageLogger) {
+
             Manager = manager;
             Interpreter = interpreter;
             User = user;
             Id = id;
             CommandLineArguments = commandLineArguments;
             _processService = processService;
+            _exitService = exitService;
             _isInteractive = isInteractive;
             _sessionLogger = sessionLogger;
 
@@ -156,7 +166,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 while (true) {
                     byte[] message;
                     try {
-                        message = await pipe.ReadAsync(CancellationToken.None/*CommonStartup.CancellationToken*/);
+                        message = await pipe.ReadAsync(_exitService.CancellationToken);
                     } catch (PipeDisconnectedException) {
                         break;
                     }

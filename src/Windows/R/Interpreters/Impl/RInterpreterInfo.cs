@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 
 namespace Microsoft.R.Interpreters {
