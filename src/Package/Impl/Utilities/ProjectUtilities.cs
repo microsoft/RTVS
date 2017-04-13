@@ -22,16 +22,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public static bool TryGetHierarchy(string filePath, out IVsHierarchy vsHierarchy, out uint vsItemId) {
             bool result = true;
-
             vsHierarchy = null;
             vsItemId = (uint)VSConstants.VSITEMID.Nil;
-
-            IVsUIShellOpenDocument vsUIShellOpenDocument = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+            var vsUIShellOpenDocument = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
             IOleServiceProvider serviceProviderUnused = null;
             int docInProject = 0;
             IVsUIHierarchy uiHier = null;
-
 
             int hr = vsUIShellOpenDocument.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out serviceProviderUnused, out docInProject);
             if (ErrorHandler.Succeeded(hr) && uiHier != null) {
@@ -60,5 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             TryGetHierarchy(filePath, out vsHierarchy, out vsItemID);
             return vsHierarchy?.GetConfiguredProject();
         }
+
+
     }
 }

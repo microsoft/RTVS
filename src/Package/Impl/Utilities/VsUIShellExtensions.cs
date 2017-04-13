@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
@@ -27,6 +30,59 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     yield return frame;
                 }
             }
+        }
+
+        /// <summary>
+        /// Locates document frameby the file path
+        /// </summary>
+        public static IVsWindowFrame FindDocumentFrame(this IVsUIShell4 shell, string filePath) {
+            return shell.EnumerateWindows(__WindowFrameTypeFlags.WINDOWFRAMETYPE_Document).Where(f => {
+                object docPath;
+                f.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out docPath);
+                return string.Compare(docPath as string, filePath, StringComparison.OrdinalIgnoreCase) == 0;
+            }).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Attempts to determine project (hierarchy) the file belongs to.
+        /// </summary>
+        public static bool TryGetUiHierarchy(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsUIHierarchy uiHier, out uint vsItemId, out OLE.Interop.IServiceProvider sp) {
+            int docInProject;
+            var hr = shellDoc.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out sp, out docInProject);
+            return ErrorHandler.Succeeded(hr) && uiHier != null;
+        }
+
+        /// <summary>
+        /// Opens file and returns window frame
+        /// </summary>
+        /// <param name="shellDoc">Shell open document interface</param>
+        /// <param name="filePath">File to open. Can be file in project or miscellaneous file.</param>
+        /// <param name="vsWindowFrame">Window frame of the opened file</param>
+        /// <returns>True if file was opened, false otherwise</returns>
+        public static bool OpenFile(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsWindowFrame vsWindowFrame) {
+            vsWindowFrame = null;
+
+            var logView = VSConstants.LOGVIEWID.TextView_guid;
+            var caption = Path.GetFileName(filePath);
+            IVsUIHierarchy uiHier;
+            uint itemid;
+            OLE.Interop.IServiceProvider sp;
+
+            if (shellDoc.TryGetUiHierarchy(filePath, out uiHier, out itemid, out sp)) {
+                shellDoc.OpenStandardEditor((uint)__VSOSEFLAGS.OSE_ChooseBestStdEditor, filePath, ref logView, caption, uiHier, itemid, IntPtr.Zero, sp, out vsWindowFrame);
+            } else {
+                IVsEditorFactory ef;
+                Guid editorType = Guid.Empty;
+                string physicalView;
+
+                shellDoc.GetStandardEditorFactory(0, ref editorType, filePath, ref logView, out physicalView, out ef);
+                if (ef != null) {
+                    VsShellUtilities.OpenDocumentWithSpecificEditor(ServiceProvider.GlobalProvider, filePath, editorType,
+                       VSConstants.LOGVIEWID.TextView_guid, out uiHier, out itemid, out vsWindowFrame);
+                }
+            }
+            vsWindowFrame?.Show();
+            return vsWindowFrame != null;
         }
     }
 }

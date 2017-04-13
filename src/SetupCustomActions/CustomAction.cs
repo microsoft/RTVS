@@ -15,7 +15,7 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
             session.Log("Start ShowMicrosoftROfferings action");
-            Process.Start("https://microsoft.github.io/RTVS-docs/installer.html");
+            Process.Start("https://aka.ms/rtvs-welcome");
             session.Log("End ShowMicrosoftROfferings action");
             return ActionResult.Success;
         }

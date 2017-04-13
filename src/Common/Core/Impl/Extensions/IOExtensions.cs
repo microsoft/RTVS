@@ -104,7 +104,7 @@ namespace Microsoft.Common.Core {
                     Directory.GetFiles(path);
                     return true;
                 }
-            } catch(IOException) { } catch(UnauthorizedAccessException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
             return false;
         }
 
