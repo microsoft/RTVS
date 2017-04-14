@@ -40,8 +40,8 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             m.IsConnected.Should().BeTrue();
         }
 
-        [Test]
-        public async Task StateChanges() {
+        [Test(ThreadType.UI)]
+        public void StateChanges() {
             var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
 
             _cm.IsConnected.Returns(true);

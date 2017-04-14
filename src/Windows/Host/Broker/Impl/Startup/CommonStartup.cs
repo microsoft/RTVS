@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.ServiceProcess;
@@ -97,16 +98,24 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             _logger = GetLogger(_loggerFactory, _startupOptions.Name);
 
-            var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
-            var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
-
             Uri uri = GetServerUri(Configuration);
             try {
-                CreateWebHost(httpsOptions).Run(CancellationToken);
+                CreateWebHost().Run(CancellationToken);
             } catch (AggregateException ex) when (ex.IsPortInUseException()) {
                 _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
                 Exit((int)BrokerExitCodes.PortInUse, null);
             }
+        }
+
+        private static bool IsLocalConnection(IConfigurationRoot configuration) {
+            try {
+                Uri uri;
+                var url = configuration.GetValue<string>("server.urls", null);
+                if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.IsLoopback) {
+                    return true;
+                }
+            } catch (Exception) { }
+            return false;
         }
 
         private static Uri GetServerUri(IConfigurationRoot configuration) {
@@ -125,7 +134,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             // Uncomment line below to debug service
             // Debugger.Launch();
 #endif
-            ServiceBase.Run(new ServiceBase[] { new BrokerService(configuration) });
+            ServiceBase.Run(new BrokerService(configuration));
         }
 
         internal static void CreateAndRunWebHostForService(IConfigurationRoot configuration) {
@@ -140,31 +149,40 @@ namespace Microsoft.R.Host.Broker.Startup {
             _loggerFactory.AddProvider(new EventLogLoggerProvider(LogLevel.Warning, Resources.Text_ServiceName));
             _logger = GetLogger(_loggerFactory, _startupOptions.Name);
 
-            var tlsConfig = new TlsConfiguration(_logger, _securityOptions);
-            var httpsOptions = tlsConfig.GetHttpsOptions(Configuration);
-
             Uri uri = GetServerUri(Configuration);
             try {
-                CreateWebHost(httpsOptions).Run(CancellationToken);
+                CreateWebHost().Run(CancellationToken);
             } catch (AggregateException ex) when (ex.IsPortInUseException()) {
                 _logger.LogError(0, ex.InnerException, Resources.Error_ConfiguredPortNotAvailable, uri?.Port);
                 Exit((int)BrokerExitCodes.PortInUse, null);
             }
         }
 
-        internal static IWebHost CreateWebHost(HttpsConnectionFilterOptions httpsOptions) {
-
+        internal static IWebHost CreateWebHost() {
             var webHostBuilder = new WebHostBuilder()
                 .UseLoggerFactory(_loggerFactory)
                 .UseConfiguration(Configuration)
-                .UseKestrel(options => {
-                    if (httpsOptions != null) {
-                        options.UseHttps(httpsOptions);
-                    }
+                .UseContentRoot(Directory.GetCurrentDirectory());
+
+            if (IsLocalConnection(Configuration)) {
+                webHostBuilder.UseKestrel();
+            } else {
+                var httpsOptions = new TlsConfiguration(_logger, _securityOptions).GetHttpsOptions();
+                if (httpsOptions == null) {
+                    Exit((int)BrokerExitCodes.NoCertificate, Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
+                }
+
+                webHostBuilder.UseKestrel(options => {
+                    options.UseHttps(httpsOptions);
                     //options.UseConnectionLogging();
-                })
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>();
+                });
+            }
+
+            if (IsService) {
+                webHostBuilder.UseStartup<ServiceStartup>();
+            } else {
+                webHostBuilder.UseStartup<StandaloneStartup>();
+            }
 
             var webHost = webHostBuilder.Build();
             var serverAddresses = webHost.ServerFeatures.Get<IServerAddressesFeature>();

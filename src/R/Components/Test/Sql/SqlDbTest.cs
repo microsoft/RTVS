@@ -45,6 +45,10 @@ namespace Microsoft.R.Components.Test.Sql {
         public void OdbcDriverCheck(string version, int lcid, bool expected) {
             var coreShell = Substitute.For<ICoreShell>();
             var driverPath = @"c:\windows\system32\driver.dll";
+            var fs = coreShell.FileSystem();
+            var registry = coreShell.GetService<IRegistry>();
+            var process = coreShell.Process();
+            var ui = coreShell.UI();
 
             var sm = new ServiceManager();
             coreShell.Services.Returns(sm);

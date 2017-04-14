@@ -183,6 +183,10 @@
       <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
@@ -240,7 +244,6 @@
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Shell\VsAppShellTestSetup.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />
-    <Compile Include="Shell\VsTestServiceManager.cs" />
     <Compile Include="Sql\ExtensionsTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogModelTest.cs" />
     <Compile Include="Sql\SProcPublisherTest.cs" />

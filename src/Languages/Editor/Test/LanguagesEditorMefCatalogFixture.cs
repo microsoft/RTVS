@@ -7,8 +7,10 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.StubBuilders;
 using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.Languages.Editor.Shell;
@@ -45,14 +47,14 @@ namespace Microsoft.Languages.Editor.Test {
             };
         }
 
-        public virtual IExportProvider Create() => new LanguagesEditorTestExportProvider(CreateContainer());
+        public virtual IExportProvider Create(ServiceManagerFixture services) => new LanguagesEditorTestExportProvider(CreateContainer(), services);
 
         protected class LanguagesEditorTestExportProvider : TestExportProvider {
             private readonly ICoreShell _coreShell;
-            public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer) : base(compositionContainer) {
-                var tcs = new TestCoreShell(new TestCompositionCatalog(compositionContainer));
-                tcs.ServiceManager.AddService(new TestEditorSupport());
-                _coreShell = tcs;
+
+            public LanguagesEditorTestExportProvider(CompositionContainer compositionContainer, IServiceManager services) : base(compositionContainer) {
+                services.AddService(new TestEditorSupport());
+                _coreShell = TestCoreShell.CreateFromCompositionContainer(compositionContainer, services);
 
                 // TODO: HACK - remove after REditorSettings turn into service.
                 REditorSettings.Initialize(new TestSettingsStorage());
