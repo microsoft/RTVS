@@ -1101,9 +1101,9 @@
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
+    <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Name>Microsoft.R.Host.Broker</Name>
+      <Name>Microsoft.R.Host.Broker.Windows</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">

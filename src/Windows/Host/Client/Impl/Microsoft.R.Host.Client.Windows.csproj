@@ -114,7 +114,7 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
       <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
