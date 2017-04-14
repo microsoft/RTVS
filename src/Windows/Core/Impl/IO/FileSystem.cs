@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
@@ -24,15 +25,15 @@ namespace Microsoft.Common.Core.IO {
         }
 
         public string ReadAllText(string path) => File.ReadAllText(path);
-        
+
         public void WriteAllText(string path, string content) => File.WriteAllText(path, content);
-        
+
         public IEnumerable<string> FileReadAllLines(string path) => File.ReadLines(path);
-        
+
         public void FileWriteAllLines(string path, IEnumerable<string> contents) => File.WriteAllLines(path, contents);
 
         public byte[] FileReadAllBytes(string path) => File.ReadAllBytes(path);
-        
+
         public void FileWriteAllBytes(string path, byte[] bytes) => File.WriteAllBytes(path, bytes);
 
         public Stream CreateFile(string path) => File.Create(path);
@@ -41,22 +42,22 @@ namespace Microsoft.Common.Core.IO {
         public bool DirectoryExists(string path) => Directory.Exists(path);
 
         public FileAttributes GetFileAttributes(string path) => File.GetAttributes(path);
-        
+
         public string ToLongPath(string path) {
             var sb = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetLongPathName(path, sb, sb.Capacity);
             return sb.ToString();
         }
-         
+
         public string ToShortPath(string path) {
             var sb = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(path, sb, sb.Capacity);
             return sb.ToString();
         }
 
-        public IFileVersionInfo GetVersionInfo(string path) {
-            var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
-            return new FileVersionInfo(fvi.FileMajorPart, fvi.FileMinorPart);
+        public Version GetFileVersion(string path) {
+            var fvi = FileVersionInfo.GetVersionInfo(path);
+            return new Version(fvi.FileMajorPart, fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart);
         }
 
         public void DeleteFile(string path) => File.Delete(path);
@@ -64,7 +65,7 @@ namespace Microsoft.Common.Core.IO {
         public void DeleteDirectory(string path, bool recursive) => Directory.Delete(path, recursive);
 
         public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) => Directory.GetFileSystemEntries(path, searchPattern, options);
-        
+
         public void CreateDirectory(string path) => Directory.CreateDirectory(path);
 
         public string CompressFile(string path, string relativeTodir) {
@@ -84,7 +85,7 @@ namespace Microsoft.Common.Core.IO {
             string zipFilePath = Path.GetTempFileName();
             using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create))
             using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
-                foreach(string path in paths) {
+                foreach (string path in paths) {
                     if (ct.IsCancellationRequested) {
                         break;
                     }
@@ -110,14 +111,14 @@ namespace Microsoft.Common.Core.IO {
 
         public string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct) {
             string zipFilePath = Path.GetTempFileName();
-            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create)) 
+            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create))
             using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
                 Queue<string> dirs = new Queue<string>();
                 dirs.Enqueue(path);
                 while (dirs.Count > 0) {
                     var dir = dirs.Dequeue();
                     var subdirs = Directory.GetDirectories(dir);
-                    foreach(var subdir in subdirs) {
+                    foreach (var subdir in subdirs) {
                         dirs.Enqueue(subdir);
                     }
 
@@ -183,8 +184,8 @@ namespace Microsoft.Common.Core.IO {
                                                        int nBufferLength);
 
             [DllImport("Shell32.dll")]
-            public static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid, 
-                                                          uint dwFlags, 
+            public static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
+                                                          uint dwFlags,
                                                           IntPtr hToken,
                                                           out IntPtr ppszPath);
         }

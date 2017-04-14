@@ -30,17 +30,12 @@ namespace Microsoft.R.Host.Protocol {
 
         public string[] Interpreters { get; set; }
 
-        public static AboutHost Empty {
-            get {
-                var a = new AboutHost() {
-                    Interpreters = new string[0],
-                    Version = new Version(0, 0),
-                    OSDescription = RuntimeInformation.OSDescription,
-                    Is64BitOperatingSystem = true,
-                    Is64BitProcess = true,
-                };
-                return a;
-            }
-        }
+        public static AboutHost Empty => new AboutHost {
+            Interpreters = new string[0],
+            Version = new Version(0, 0),
+            OSDescription = RuntimeInformation.OSDescription,
+            Is64BitOperatingSystem = true,
+            Is64BitProcess = true,
+        };
     }
 }

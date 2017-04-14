@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Broker.UserProfile {
         public async Task<IActionResult> DeleteAsync() {
             RUserProfileServiceResponse result = null;
 
-            using (IDisposable blocker = _sessionManager.BlockSessionsCreationForUser(User.Identity, true)) {
+            using (_sessionManager.BlockSessionsCreationForUser(User.Identity, true)) {
                 var username = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
                 var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
                 uint error = NativeMethods.CredUIParseUserName(User.Identity.Name, username, username.Capacity, domain, domain.Capacity);

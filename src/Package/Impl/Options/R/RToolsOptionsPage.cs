@@ -23,7 +23,7 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
         private readonly IRSettings _settings;
-        private SettingsHolder _holder;
+        private readonly SettingsHolder _holder;
 
         public RToolsOptionsPage() {
             _settings = VsAppShell.Current.GetService<IRSettings>();
@@ -178,9 +178,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName(nameof(Resources.Settings_HtmlBrowserType))]
         [LocDescription(nameof(Resources.Settings_HtmlBrowserType_Description))]
         [TypeConverter(typeof(BrowserTypeConverter))]
-        [DefaultValue(BrowserType.Internal)]
+        [DefaultValue(BrowserType.External)]
         public BrowserType HtmlBrowserType {
-            get { return _holder.GetValue(BrowserType.Internal); }
+            get { return _holder.GetValue(BrowserType.External); }
             set { _holder.SetValue(value); }
         }
 

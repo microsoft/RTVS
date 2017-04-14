@@ -1824,54 +1824,54 @@
       </Item>
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+          <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ワークスペースをイメージ "%s" に自動保存しています...]]></Val>
+            <Val><![CDATA[ワークスペースをイメージ '{0}' に自動保存しています...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+          <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動保存したワークスペース イメージ "%s" を削除しますか?]]></Val>
+            <Val><![CDATA[自動保存したワークスペース イメージ '{0}' を削除しますか?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+          <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動保存したワークスペース イメージ "%s" を削除しています。]]></Val>
+            <Val><![CDATA[自動保存したワークスペース イメージ '{0}' を削除しています。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+          <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動保存されたイメージ "%s" からワークスペースを読み込めませんでした。]]></Val>
+            <Val><![CDATA[自動保存されたイメージ '{0}' からワークスペースを読み込めませんでした。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+          <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動保存されたイメージ "%s" からワークスペースが読み込まれました。]]></Val>
+            <Val><![CDATA[自動保存されたイメージ '{0}' からワークスペースが読み込まれました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[前の R セッションが終了し、グローバル ワークスペースがイメージ "%s" に保存されています。このワークスペースを再度読み込みますか?]]></Val>
+            <Val><![CDATA[前の R セッションが終了し、グローバル ワークスペースがイメージ '{0}' に保存されています。このワークスペースを再度読み込みますか?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

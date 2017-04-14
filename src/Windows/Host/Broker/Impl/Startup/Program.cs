@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
-        static Program() { }
-
         public static void Main(string[] args) {
             var configBuilder = new ConfigurationBuilder().AddCommandLine(args);
             var configuration = configBuilder.Build();

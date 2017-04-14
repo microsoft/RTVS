@@ -5,11 +5,13 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.BrokerServices;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
@@ -42,9 +44,11 @@ namespace Microsoft.R.Host.Client.Host {
             try {
                 var credentials = _credentials ?? _services.Security().GetUserCredentials(_authority, _workspaceName);
                 _credentials = credentials;
-            } catch (Exception) {
+            } catch (Exception ex) when (!ex.IsCriticalException() && !(ex is OperationCanceledException)) {
+                // TODO: provide better error message
+                //_services.GetService<IConsole>().WriteErrorLine(Invariant($"{Microsoft.Common.Core.Resources.Error_CredReadFailed} {ex.Message}"));
                 token.Dispose();
-                throw;
+                return Disposable.Empty;
             }
 
             return Disposable.Create(() => {
@@ -54,7 +58,12 @@ namespace Microsoft.R.Host.Client.Host {
 
         public void InvalidateCredentials() {
             _credentials = null;
-            _services.Security().DeleteCredentials(_authority);
+            try {
+                _services.Security().DeleteCredentials(_authority);
+            } catch(Exception ex) when (!ex.IsCriticalException()) {
+                // TODO: provide better error message
+                //_console.WriteErrorLine(Invariant($"{Common.Core.Resources.Error_CredWriteFailed} {ex.Message}"));
+            }
         }
     }
 }

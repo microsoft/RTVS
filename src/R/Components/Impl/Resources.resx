@@ -651,6 +651,9 @@ This prompt can be suppressed in R Tools | Options.
   <data name="PlotHistory_EmptyWatermark" xml:space="preserve">
     <value>Plot history is empty</value>
   </data>
+  <data name="PlotHistory_AutomationName" xml:space="preserve">
+    <value>Plot</value>
+  </data>
   <data name="Plot_EmptyWatermark" xml:space="preserve">
     <value>Run plotting command in R Interactive Window</value>
   </data>
@@ -689,5 +692,11 @@ This prompt can be suppressed in R Tools | Options.
   </data>
   <data name="Package_AccessibleState_NotLoaded" xml:space="preserve">
     <value>Not loaded</value>
+  </data>
+  <data name="Error_CannotEditExpression" xml:space="preserve">
+    <value>Expression does not evaluate to function.</value>
+  </data>
+  <data name="Error_OdbcDriver" xml:space="preserve">
+    <value>Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}.</value>
   </data>
 </root>

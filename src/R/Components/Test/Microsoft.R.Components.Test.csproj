@@ -190,6 +190,10 @@
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>

@@ -518,8 +518,20 @@
   <data name="OpenCsvAppCommandTooltip" xml:space="preserve">
     <value>Open in Microsoft Excel or another app registered for CSV files</value>
   </data>
+  <data name="OpenCsvAppCommandAutomationName" xml:space="preserve">
+    <value>Export {0} variable into CSV</value>
+  </data>
+  <data name="OpenCsvAppCommandAutomationHelpText" xml:space="preserve">
+    <value>Open {0} variable in Microsoft Excel or another app registered for CSV files</value>
+  </data>
   <data name="ShowDetailCommandTooltip" xml:space="preserve">
     <value>Show item details</value>
+  </data>
+  <data name="ShowDetailCommandAutomationName" xml:space="preserve">
+    <value>Show {0} variable details</value>
+  </data>
+  <data name="ShowDetailCommandAutomationHelpText" xml:space="preserve">
+    <value>Open {0} variable details in separate window</value>
   </data>
   <data name="Settings_TriggerOnTab" xml:space="preserve">
     <value>Completion list on Tab key</value>
@@ -952,9 +964,6 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
   </data>
   <data name="Info_TransferringFilesDone" xml:space="preserve">
     <value>Transferring files to remote machine... completed.</value>
-  </data>
-  <data name="Error_CannotAccess" xml:space="preserve">
-    <value />
   </data>
   <data name="Error_CannotTransferFile" xml:space="preserve">
     <value>Unable to transfer file. Exception: {0}.</value>

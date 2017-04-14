@@ -598,6 +598,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expression does not evaluate to function..
+        /// </summary>
+        public static string Error_CannotEditExpression {
+            get {
+                return ResourceManager.GetString("Error_CannotEditExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The connection string appears to be in incorrect format. Would you like to re-create it?.
         /// </summary>
         public static string Error_ConnectionStringFormat {
@@ -621,6 +630,15 @@ namespace Microsoft.R.Components {
         public static string Error_InstallTimeout_Format {
             get {
                 return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}..
+        /// </summary>
+        public static string Error_OdbcDriver {
+            get {
+                return ResourceManager.GetString("Error_OdbcDriver", resourceCulture);
             }
         }
         
@@ -1287,6 +1305,15 @@ namespace Microsoft.R.Components {
         public static string Plot_EmptyWatermark {
             get {
                 return ResourceManager.GetString("Plot_EmptyWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plot.
+        /// </summary>
+        public static string PlotHistory_AutomationName {
+            get {
+                return ResourceManager.GetString("PlotHistory_AutomationName", resourceCulture);
             }
         }
         

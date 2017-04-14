@@ -119,9 +119,9 @@
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="true">
                                         <Setter Property="BorderBrush"
-                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
+                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBorderBrushKey}}" />
                                         <Setter Property="Background"
-                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
+                                Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowButtonHoverActiveBrushKey}}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -135,12 +135,16 @@
                         <Button 
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}"
+                            AutomationProperties.Name="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.ShowDetailCommandAutomationName}}"
+                            AutomationProperties.HelpText="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.ShowDetailCommandAutomationHelpText}}"
                             VerticalAlignment="Center">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
                         </Button>
                         <Button
                             Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}"
+                            AutomationProperties.Name="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.OpenCsvAppCommandAutomationName}}"
+                            AutomationProperties.HelpText="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.OpenCsvAppCommandAutomationHelpText}}"
                             VerticalAlignment="Center">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
                         </Button>
@@ -204,7 +208,8 @@
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}"
                                         Width="2*" 
                                         CanUserSort="True" SortMemberPath="DummyValue" />
-                <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
+                <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}"
+                                        Width="3*" CanUserSort="False" />
             </DataGrid.Columns>
         </local:TreeGrid>
     </Grid>

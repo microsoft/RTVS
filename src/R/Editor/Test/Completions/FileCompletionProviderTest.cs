@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly string _testFolder;
 
         public FileCompletionProviderTest(IExportProvider exportProvider) {
-            _coreShell = new TestCoreShell(exportProvider);
+            _coreShell = exportProvider.GetExportedValue<ICoreShell>();
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _testFolder = Path.Combine(myDocs, _testFolderName);

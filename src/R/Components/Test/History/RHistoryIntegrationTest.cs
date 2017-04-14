@@ -113,7 +113,7 @@ namespace Microsoft.R.Components.Test.History {
                 history.NextEntry();
                 interactiveWindowTextBuffer.CurrentSnapshot.GetText().Should().Be("x <- c(1:20)");
 
-                history.SelectHistoryEntries(new[] { 0, 1 });
+                history.SelectHistoryEntriesRangeTo(0);
                 history.GetSelectedText().Should().Be("x <- c(1:10)\r\nx <- c(1:20)");
                 eventCount.Should().Be(6);
 

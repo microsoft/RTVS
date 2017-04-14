@@ -116,6 +116,9 @@
     <Compile Include="History\Implementation\HistoryTextViewMouseProcessorProvider.cs" />
     <Compile Include="History\Implementation\MultilineRHistoryEntries.cs" />
     <Compile Include="History\Implementation\RHistory.cs" />
+    <Compile Include="History\Implementation\RHistory.ISelector.cs" />
+    <Compile Include="History\Implementation\RHistory.NextPreviousEntrySelector.cs" />
+    <Compile Include="History\Implementation\RHistory.ToggleSelectionEndSelector.cs" />
     <Compile Include="History\Implementation\RHistoryEntries.cs" />
     <Compile Include="History\Implementation\RHistoryFiltering.cs" />
     <Compile Include="History\Implementation\RHistoryProvider.cs" />
@@ -310,6 +313,10 @@
     <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>

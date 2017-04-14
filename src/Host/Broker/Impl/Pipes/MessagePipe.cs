@@ -85,13 +85,12 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
                 ulong requestId = MessageParser.GetRequestId(message);
 
-                byte[] request;
                 if (requestId == 0) {
                     if (MessageParser.IsNamed(message, _cancelAllMessageName)) {
                         _pipe._sentPendingRequests.Clear();
                     }
                 } else {
-                    _pipe._sentPendingRequests.TryRemove(requestId, out request);
+                    _pipe._sentPendingRequests.TryRemove(requestId, out byte[] request);
                 }
 
                 _pipe._clientMessages.Post(message);

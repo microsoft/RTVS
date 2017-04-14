@@ -141,7 +141,7 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public BrowserType HtmlBrowserType {
-            get { return BrowserType.Internal; }
+            get { return BrowserType.External; }
             set { }
         }
 

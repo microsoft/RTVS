@@ -37,6 +37,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task ViewLibraryAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken) => Task.FromResult(string.Empty);
 
         public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
             =>  LocatorHandler != null ? Task.FromResult(LocatorHandler()) : throw new NotImplementedException();

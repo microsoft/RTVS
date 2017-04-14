@@ -70,6 +70,7 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\IFileEditor.cs" />
     <Compile Include="Definitions\IRBlobInfo.cs" />
     <Compile Include="Definitions\IConsole.cs" />
     <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
@@ -244,6 +245,10 @@
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>

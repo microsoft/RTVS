@@ -9,14 +9,18 @@ namespace Microsoft.R.Components.History {
     internal interface IRHistoryEntries {
         IReadOnlyList<IRHistoryEntry> GetEntries();
         IReadOnlyList<IRHistoryEntry> GetSelectedEntries();
-        IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate);
+        IRHistoryEntry FindEntryContainingSpan(SnapshotSpan span, ITextSnapshot snapshot);
+        IRHistoryEntry FindEntryContainingPoint(SnapshotPoint point, ITextSnapshot snapshot);
+        int FindEntryIndexContainingSpan(SnapshotSpan span, ITextSnapshot snapshot);
         IRHistoryEntry First();
         IRHistoryEntry Last();
+        IRHistoryEntry LastSelected();
+        int LastSelectedIndex();
+        int Count { get; }
         bool IsMultiline { get; }
-        bool HasEntries { get; }
         bool HasSelectedEntries { get; }
         void Add(ITrackingSpan entrySpan);
-        void Remove(IRHistoryEntry historyEntry);
+        void SelectRangeTo(int rangeEndIndex);
         void SelectAll();
         void UnselectAll();
         void RemoveSelected();

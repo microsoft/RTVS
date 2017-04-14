@@ -18,7 +18,7 @@ namespace Microsoft.R.Interpreters {
     /// specified in settings. If nothing is specified
     /// settings try and find highest version.
     /// </summary>
-    public sealed class RInstallation {
+    public sealed class RInstallation : IRInstallationService {
         private const string _rCoreRegKey = @"SOFTWARE\R-core\R";
         private const string _rServer = "R_SERVER";
         private static readonly string[] rFolders = new string[] { "MRO", "RRO", "R" };
@@ -34,16 +34,14 @@ namespace Microsoft.R.Interpreters {
             _fileSystem = fileSystem;
         }
 
-        /// <summary>
-        /// Retrieves path to the latest (highest version) R installation
-        /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
-        /// Selects highest from compatible versions, not just the highest.
-        /// </summary>
+        public IRInterpreterInfo CreateInfo(string name, string path) => new RInterpreterInfo(name, path, _fileSystem);
+
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
             var list = new List<IRInterpreterInfo>();
 
             var engines = GetCompatibleEnginesFromRegistry(svl);
-            engines = engines.Where(e => e.VerifyInstallation(svl, _fileSystem)).OrderBy(e => e.Version);
+            engines = engines.Where(e => e.VerifyInstallation(svl))
+                             .OrderBy(e => e.Version);
 
             list.AddRange(engines);
             if (list.Count == 0) {
@@ -157,7 +155,7 @@ namespace Microsoft.R.Interpreters {
                 Version highest = versions[versions.Count - 1];
                 var name = string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build);
                 var path = Path.Combine(baseRFolder, name);
-                var ri = new RInterpreterInfo(name, path);
+                var ri = CreateInfo(name, path);
                 if (ri.VerifyInstallation(supportedVersions)) {
                     return ri;
                 }

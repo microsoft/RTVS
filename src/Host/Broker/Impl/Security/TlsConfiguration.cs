@@ -8,9 +8,11 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Protocol;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Security {
-    internal sealed class TlsConfiguration {
+    public sealed class TlsConfiguration {
         private readonly ILogger _logger;
         private readonly SecurityOptions _securityOptions;
 
@@ -19,10 +21,10 @@ namespace Microsoft.R.Host.Broker.Security {
             _securityOptions = options;
         }
 
-        public HttpsConnectionFilterOptions GetHttpsOptions(IConfigurationRoot configuration) {
-            var cert = GetCertificate(configuration);
+        public HttpsConnectionFilterOptions GetHttpsOptions() {            
+            var cert = GetCertificate();
             if (cert != null) {
-                return new HttpsConnectionFilterOptions() {
+                return new HttpsConnectionFilterOptions {
                     ServerCertificate = cert,
                     ClientCertificateValidation = ClientCertificateValidationCallback,
                     ClientCertificateMode = ClientCertificateMode.NoCertificate,
@@ -32,35 +34,16 @@ namespace Microsoft.R.Host.Broker.Security {
             return null;
         }
 
-        private X509Certificate2 GetCertificate(IConfigurationRoot configuration) {
-            if (IsLocalConnection(configuration)) {
-                return null; // localhost, no TLS
-            }
-
+        private X509Certificate2 GetCertificate() {
             X509Certificate2 certificate = Certificates.GetCertificateForEncryption(_securityOptions);
             if (certificate == null) {
-#if DEBUG
                 return null;
-#else
-                CommonStartup.Exit((int)BrokerExitCodes.NoCertificate, Resources.Critical_NoTlsCertificate, certName);
-#endif
             }
 
             _logger.LogInformation(Resources.Trace_CertificateIssuer, certificate.Issuer);
             _logger.LogInformation(Resources.Trace_CertificateSubject, certificate.Subject);
 
             return certificate;
-        }
-
-        private bool IsLocalConnection(IConfigurationRoot configuration) {
-            try {
-                Uri uri;
-                var url = configuration.GetValue<string>("server.urls", null);
-                if (Uri.TryCreate(url, UriKind.Absolute, out uri) && uri.IsLoopback) {
-                    return true;
-                }
-            } catch (Exception) { }
-            return false;
         }
 
         private static bool ClientCertificateValidationCallback(X509Certificate2 certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {

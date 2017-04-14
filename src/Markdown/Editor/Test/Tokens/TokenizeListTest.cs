@@ -29,6 +29,9 @@ namespace Microsoft.Markdown.Editor.Test.Tokens {
         [InlineData(@"-item")]
         [InlineData(@"*item")]
         [InlineData(@"1.item")]
+        [InlineData(@"a - item")]
+        [InlineData(@"b * item")]
+        [InlineData(@"z 1. 12. item")]
         [Category.Md.Tokenizer]
         public void TokenizeMd_EmptyList(string text) {
             var tokens = Tokenize(text, new MdTokenizer());

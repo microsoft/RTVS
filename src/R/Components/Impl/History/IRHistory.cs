@@ -42,7 +42,11 @@ namespace Microsoft.R.Components.History {
         SnapshotSpan ToggleHistoryEntrySelection(int lineNumber);
         void SelectNextHistoryEntry();
         void SelectPreviousHistoryEntry();
-        void SelectHistoryEntries(IEnumerable<int> lineNumbers);
+        void ToggleHistoryEntriesRangeSelectionUp();
+        void ToggleHistoryEntriesRangeSelectionDown();
+        void ToggleTextSelectionLeft();
+        void ToggleTextSelectionRight();
+        void SelectHistoryEntriesRangeTo(int lineNumber);
         void SelectAllEntries();
         void ClearHistoryEntrySelection();
 
