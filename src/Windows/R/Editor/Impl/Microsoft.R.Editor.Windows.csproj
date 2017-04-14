@@ -53,15 +53,11 @@
     <Compile Include="Completions\RCompletion.cs" />
     <Compile Include="Completions\RFunctionCompletion.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
-    <Compile Include="Data\RSessionChangeWatcher.cs" />
-    <Compile Include="Data\RSessionDataObject.cs" />
-    <Compile Include="Data\IRSessionDataObject.cs" />
     <Compile Include="Completions\RCompletionControllerProvider.cs" />
     <Compile Include="Completions\RCompletionSourceProvider.cs" />
     <Compile Include="Completions\RCompletionSet.cs" />
     <Compile Include="Completions\RCompletionSource.cs" />
     <Compile Include="Completions\RCompletionController.cs" />
-    <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Comments\InsertRoxygenBlockCommand.cs" />
     <Compile Include="DragDrop\DataObject.cs" />
     <Compile Include="DragDrop\DropHandler.cs" />

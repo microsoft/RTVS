@@ -2,15 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.R.Core.Test.Tokens;
+using Microsoft.R.Editor.RData.Tokens;
+using Microsoft.R.Editor.Test;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.RData.Test.Tokens {
     [ExcludeFromCodeCoverage]
     public class TokenizeSampleRdFilesTest {
-        private readonly SupportTestFilesSetup _files;
+        private readonly EditorTestFilesFixture _files;
 
-        public TokenizeSampleRdFilesTest(SupportTestFilesSetup files) {
+        public TokenizeSampleRdFilesTest(EditorTestFilesFixture files) {
             _files = files;
         }
 
