@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
@@ -21,13 +22,10 @@ using NSubstitute;
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
-        private readonly Thread _creatorThread;
-
         public IServiceManager ServiceManager { get; }
 
         private TestCoreShell(IServiceManager serviceManager) {
-            _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = serviceManager;
+             ServiceManager = serviceManager;
         }
 
         /// <summary>
@@ -102,7 +100,8 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
                 .AddService(new TestImageService())
-                .AddService(new TestPlatformServices());
+                .AddService(new TestPlatformServices())
+                .AddService(new RInstallation());
         }
 
         public string ApplicationName => "RTVS_Test";
