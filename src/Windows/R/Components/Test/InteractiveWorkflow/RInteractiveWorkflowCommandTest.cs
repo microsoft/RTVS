@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
@@ -27,14 +28,14 @@ using Xunit;
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
     public class RInteractiveWorkflowCommandTest {
-        private readonly IExportProvider _exportProvider;
-        private readonly IRInteractiveWorkflowVisual _workflow;
+        private readonly ICoreShell _coreShell;
+        private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSettings _settings;
 
-        public RInteractiveWorkflowCommandTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowVisualProvider>().GetOrCreate();
-            _settings = _exportProvider.GetExportedValue<IRSettings>();
+        public RInteractiveWorkflowCommandTest(RComponentsShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
+            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _settings = _coreShell.GetService<IRSettings>();
         }
 
         [CompositeTest(ThreadType.UI)]
@@ -92,7 +93,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Test]
         [Category.Repl]
         public async Task InterruptRStatusTest() {
-            var debuggerModeTracker = _exportProvider.GetExportedValue<TestDebuggerModeTracker>();
+            var debuggerModeTracker = _coreShell.GetService<TestDebuggerModeTracker>();
             var command = new InterruptRCommand(_workflow, debuggerModeTracker);
             command.Should().BeInvisibleAndDisabled();
 

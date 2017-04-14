@@ -37,6 +37,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
         private readonly ConcurrentDictionary<string, IConnection> _connections;
         private readonly ISecurityService _securityService;
+        private readonly IRInstallationService _installationService;
         private readonly object _syncObj = new object();
         private volatile bool _isFirstConnectionAttempt = true;
 
@@ -57,6 +58,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _shell = interactiveWorkflow.Shell;
             _securityService = _shell.GetService<ISecurityService>();
             _log = _shell.GetService<IActionLog>();
+            _installationService = _shell.GetService<IRInstallationService>();
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell.Services);
             _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
@@ -242,7 +244,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private Dictionary<string, IConnection> CreateConnectionList() {
             var connections = GetConnectionsFromSettings();
-            var localEngines = new RInstallation().GetCompatibleEngines().ToList();
+            var localEngines = _installationService.GetCompatibleEngines().ToList();
 
             // Remove missing engines and add engines missing from saved connections
             // Set 'is used created' to false if path points to locally found interpreter
@@ -288,7 +290,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private bool IsValidLocalConnection(string name, string path) {
             try {
-                var info = new RInterpreterInfo(name, path);
+                var info = _installationService.CreateInfo(name, path);
                 return info.VerifyInstallation();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);

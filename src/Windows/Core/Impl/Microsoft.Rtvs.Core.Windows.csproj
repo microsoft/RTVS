@@ -37,6 +37,7 @@
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Logging\EventLogLogger.cs" />
     <Compile Include="Logging\EventLogLoggerProvider.cs" />
+    <Compile Include="OS\DotNetProcess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Diagnostics\RestartManager.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
@@ -55,7 +56,6 @@
     <Compile Include="OS\Win32MessageBox.cs" />
     <Compile Include="OS\Win32NativeEnvironmentBlock.cs" />
     <Compile Include="OS\Win32Process.cs" />
-    <Compile Include="OS\Win32ProcessExitEventArgs.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

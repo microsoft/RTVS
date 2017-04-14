@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
         private readonly IUIService _ui;
         private readonly IRSettings _settings;
+        private readonly IRInstallationService _installationService;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private IConnectionViewModel _editedConnection;
@@ -33,6 +34,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             base(connectionManager, services) {
             _ui = services.UI();
             _settings = services.GetService<IRSettings>();
+            _installationService = services.GetService<IRInstallationService>();
 
             _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
             RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
@@ -48,13 +50,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; }
 
         public IConnectionViewModel EditedConnection {
-            get { return _editedConnection; }
-            private set { SetProperty(ref _editedConnection, value); }
+            get => _editedConnection;
+            private set => SetProperty(ref _editedConnection, value);
         }
 
         public bool IsEditingNew {
-            get { return _isEditingNew; }
-            private set { SetProperty(ref _isEditingNew, value); }
+            get => _isEditingNew;
+            private set => SetProperty(ref _isEditingNew, value);
         }
 
         public bool HasLocalConnections {
@@ -120,7 +122,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 latestLocalPath = Environment.SystemDirectory;
 
                 try {
-                    latestLocalPath = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+                    latestLocalPath = _installationService.GetCompatibleEngines().FirstOrDefault()?.InstallPath;
                     if (string.IsNullOrEmpty(latestLocalPath) || !Directory.Exists(latestLocalPath)) {
                         // Force 64-bit PF
                         latestLocalPath = Environment.GetEnvironmentVariable("ProgramW6432");
@@ -131,8 +133,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             var path = _ui.FileDialog.ShowBrowseDirectoryDialog(latestLocalPath);
             if (path != null) {
                 // Verify path
-                var ri = new RInterpreterInfo(string.Empty, path);
-                if (ri.VerifyInstallation(null, null, _ui)) {
+                var ri = _installationService.CreateInfo(string.Empty, path);
+                if (ri.VerifyInstallation(null, Services)) {
                     connection.Path = path;
                 }
             }

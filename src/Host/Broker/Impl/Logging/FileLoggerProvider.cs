@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Logging {
-    internal sealed class FileLoggerProvider : ILoggerProvider {
+    public sealed class FileLoggerProvider : ILoggerProvider {
         private readonly StreamWriter _writer;
         private readonly List<FileLogger> _loggers = new List<FileLogger>();
 

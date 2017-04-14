@@ -8,6 +8,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Editors;
@@ -55,7 +56,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new FileSystem())
                 .AddService(new ProcessServices())
                 .AddService(new RegistryImpl())
-                .AddService(typeof(MicrosoftRClientInstaller));
+                .AddService<IMicrosoftRClientInstaller>(new MicrosoftRClientInstaller())
+                .AddService<IRInstallationService>(new RInstallation());
             // TODO: add more
 
             settings.LoadSettings();

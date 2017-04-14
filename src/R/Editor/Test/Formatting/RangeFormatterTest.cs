@@ -197,7 +197,7 @@ foo(cache=TRUE)
         [InlineData("{}", 0, 1, "{ }")]
         [InlineData("{\n}", 0, 1, "{\n}")]
         [InlineData("{\n if(TRUE) {\n}}", 14, 16, "{\n if(TRUE) {\n }\n}")]
-        [InlineData("{\n    {\n  } }", 6, 13, "{\n    {\n    }\n}")]
+        [InlineData("{\n    {\n  } }", 6, 13, "{\n  {\n  }\n}")]
         public void FormatScope(string content, int start, int end, string expected) {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(content, out ast);

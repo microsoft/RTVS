@@ -46,7 +46,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _plotHistoryVisualComponentContainerFactory = coreShell.GetService<IRPlotHistoryVisualComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
-            _ui = CoreShell.UI() as TestUIServices;
+            _ui = _workflow.Shell.UI() as TestUIServices;
         }
 
         public async Task InitializeAsync() {
@@ -62,7 +62,6 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestCoreShell CoreShell => _workflow.Shell as TestCoreShell;
         private TestFileDialog FileDialog => _workflow.Shell.FileDialog() as TestFileDialog;
 
         [Test(ThreadType.UI)]

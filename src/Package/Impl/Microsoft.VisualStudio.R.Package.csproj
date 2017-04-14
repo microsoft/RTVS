@@ -299,7 +299,6 @@
     <Compile Include="ProjectSystem\PropertyPages\PropertyPageProvider.cs" />
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="ProjectSystem\WorkspaceServices.cs" />
-    <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToProjectCommand.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToSourceCommand.cs" />
@@ -1099,11 +1098,6 @@
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
-      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Name>Microsoft.R.Host.Broker</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -1176,6 +1170,15 @@
     <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
+      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
+      <Name>Microsoft.R.Host.Broker.Windows</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
@@ -1563,6 +1566,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.WebUtilities.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Net.Http.Server.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Broker.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Win32.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Buffers.dll" />
@@ -1598,6 +1602,7 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Threading.Tasks.Dataflow.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Threading.Tasks.Extensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Threading.Thread.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.ValueTuple.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XmlDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.XDocument.dll" />

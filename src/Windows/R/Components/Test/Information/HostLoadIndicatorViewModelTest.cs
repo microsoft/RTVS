@@ -29,8 +29,7 @@ namespace Microsoft.R.Components.Test.Information {
         public HostLoadIndicatorViewModelTest(RComponentsShellProviderFixture shellProvider) {
             _coreShell = shellProvider.CoreShell;
         }
-
-        [Test]
+        [Test(ThreadType.UI)]
         public async Task Update() {
             var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell.MainThread());
             var eventArgs = new HostLoadChangedEventArgs(_hostLoad);

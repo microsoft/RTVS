@@ -2,7 +2,6 @@
   "dependencies": {
     "FluentAssertions": "4.16.0",
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.Tpl.Dataflow": "4.5.24",
     "Microsoft.VisualStudio.ProjectSystem": "15.0.743",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "15.0.4",
     "Microsoft.VisualStudio.Shell.15.0": "15.0.26201",
