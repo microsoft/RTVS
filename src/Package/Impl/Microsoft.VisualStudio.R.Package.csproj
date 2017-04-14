@@ -299,7 +299,6 @@
     <Compile Include="ProjectSystem\PropertyPages\PropertyPageProvider.cs" />
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="ProjectSystem\WorkspaceServices.cs" />
-    <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToProjectCommand.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToSourceCommand.cs" />

@@ -227,7 +227,6 @@
     <Compile Include="Project\ProjectSystem\PropertyPages\RunPageViewModelTest.cs" />
     <Compile Include="Project\CommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RClient\RClientTest.cs" />
     <Compile Include="Repl\SetDirectoryCommandTest.cs" />
     <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />

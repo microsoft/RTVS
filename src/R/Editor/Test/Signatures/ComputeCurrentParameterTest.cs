@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;
@@ -22,8 +23,12 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
+        private readonly IWritableREditorSettings _settings;
+
         public ComputeCurrentParameterTest(REditorShellProviderFixture shellProvider) : 
-            base(shellProvider.CoreShell) { }
+            base(shellProvider.CoreShell) {
+            _settings = Shell.GetService<IWritableREditorSettings>();
+        }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {
@@ -82,7 +87,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter02() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
-            //REditorSettings.PartialArgumentNameMatch = true;
+            _settings.PartialArgumentNameMatch = true;
 
             var textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
             var source = new SignatureHelpSource(textBuffer, Shell);
@@ -146,7 +151,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter04() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
-            //REditorSettings.PartialArgumentNameMatch = true;
+            _settings.PartialArgumentNameMatch = true;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             SignatureHelpSource source = new SignatureHelpSource(textBuffer, Shell);

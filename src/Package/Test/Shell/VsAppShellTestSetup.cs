@@ -67,7 +67,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new TestPlatformServices())
                 .AddService(new TestRToolsSettings())
                 .AddService(new REditorSettings(new TestSettingsStorage()))
-                .AddService<IRInstallationService>(new RInstallation())
+                .AddService(new RInstallation())
+                .AddService(new TestImageService())
                 // OLE and VS specifics
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))
