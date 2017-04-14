@@ -14,7 +14,6 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
-using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
@@ -100,8 +99,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
                 .AddService(new TestImageService())
-                .AddService(new TestPlatformServices())
-                .AddService(new RInstallation());
+                .AddService(new TestPlatformServices());
         }
 
         public string ApplicationName => "RTVS_Test";
