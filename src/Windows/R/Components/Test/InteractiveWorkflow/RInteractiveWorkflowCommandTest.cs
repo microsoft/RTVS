@@ -29,12 +29,12 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
     public class RInteractiveWorkflowCommandTest {
         private readonly ICoreShell _coreShell;
-        private readonly IRInteractiveWorkflow _workflow;
+        private readonly IRInteractiveWorkflowVisual _workflow;
         private readonly IRSettings _settings;
 
         public RInteractiveWorkflowCommandTest(RComponentsShellProviderFixture shellProvider) {
             _coreShell = shellProvider.CoreShell;
-            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _workflow = _coreShell.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate();
             _settings = _coreShell.GetService<IRSettings>();
         }
 
