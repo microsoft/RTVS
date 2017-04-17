@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
-    internal class NullConsole : IConsole {
+    public class NullConsole : IConsole {
         public void WriteError(string text) {}
         public void WriteErrorLine(string text) { }
         public void Write(string text) { }
