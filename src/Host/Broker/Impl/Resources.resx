@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Critical_InvalidPipeHandle" xml:space="preserve">
-    <value>Requested to write urls to pipe '{0}', but it is not a valid pipe handle</value>
+    <value>Requested to write 'urls' to pipe '{0}', but it is not a valid pipe handle</value>
   </data>
   <data name="Critical_NoTlsCertificate" xml:space="preserve">
     <value>TLS certificate not found: {0}</value>
@@ -130,7 +130,7 @@
     <value>Ping timed out, terminating</value>
   </data>
   <data name="Critical_PipeConnectTimeOut" xml:space="preserve">
-    <value>Requested to write urls to pipe '{0}', but timed out while trying to connect to pipe</value>
+    <value>Requested to write 'urls' to pipe '{0}', but timed out while trying to connect to pipe</value>
   </data>
   <data name="Critical_TimeOutShutdown" xml:space="preserve">
     <value>Timed out waiting for graceful shutdown</value>
@@ -151,7 +151,7 @@
     <value>Server port {0} is already in use.</value>
   </data>
   <data name="Error_ExitRHost" xml:space="preserve">
-    <value>R Host Exited with Win32 error : {0}</value>
+    <value>R Host exited with error : {0}</value>
   </data>
   <data name="Error_FailedRInstallationData" xml:space="preserve">
     <value>Failed to retrieve R installation data for interpreter \"{0}\" at \"{1}\"</value>
@@ -202,9 +202,9 @@
     <value>|{0}|: {1}</value>
   </data>
   <data name="Trace_ServerUrlsToPipeBegin" xml:space="preserve">
-    <value>Writing urls to pipe '{0}':{1}{2}</value>
+    <value>Writing 'urls' to pipe '{0}':{1}{2}</value>
   </data>
   <data name="Trace_ServerUrlsToPipeDone" xml:space="preserve">
-    <value>Wrote urls to pipe '{0}'</value>
+    <value>Wrote 'urls' to pipe '{0}'</value>
   </data>
 </root>

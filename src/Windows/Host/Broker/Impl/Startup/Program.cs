@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
-using Microsoft.R.Host.Broker.Extensions;
 using Microsoft.R.Host.Broker.Logging;
 
 namespace Microsoft.R.Host.Broker.Startup {

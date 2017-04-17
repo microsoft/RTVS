@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
 
-namespace Microsoft.R.Host.Broker.Extensions {
+namespace Microsoft.R.Host.Broker {
     public static class ExceptionExtensions {
         public static void HandleWebHostStartExceptions(this Exception ex, IServiceProvider services, bool isService) {
             var configuration = services.GetRequiredService<IConfigurationRoot>();

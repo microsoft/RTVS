@@ -5,7 +5,6 @@ using System;
 using System.ServiceProcess;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.R.Host.Broker.Extensions;
 
 namespace Microsoft.R.Host.Broker {
     partial class BrokerService : ServiceBase {

@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Requested to write urls to pipe &apos;{0}&apos;, but it is not a valid pipe handle.
+        ///   Looks up a localized string similar to Requested to write &apos;urls&apos; to pipe &apos;{0}&apos;, but it is not a valid pipe handle.
         /// </summary>
         internal static string Critical_InvalidPipeHandle {
             get {
@@ -98,7 +98,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Requested to write urls to pipe &apos;{0}&apos;, but timed out while trying to connect to pipe.
+        ///   Looks up a localized string similar to Requested to write &apos;urls&apos; to pipe &apos;{0}&apos;, but timed out while trying to connect to pipe.
         /// </summary>
         internal static string Critical_PipeConnectTimeOut {
             get {
@@ -161,7 +161,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Host Exited with Win32 error : {0}.
+        ///   Looks up a localized string similar to R Host exited with error : {0}.
         /// </summary>
         internal static string Error_ExitRHost {
             get {
@@ -314,7 +314,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Writing urls to pipe &apos;{0}&apos;:{1}{2}.
+        ///   Looks up a localized string similar to Writing &apos;urls&apos; to pipe &apos;{0}&apos;:{1}{2}.
         /// </summary>
         internal static string Trace_ServerUrlsToPipeBegin {
             get {
@@ -323,7 +323,7 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wrote urls to pipe &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Wrote &apos;urls&apos; to pipe &apos;{0}&apos;.
         /// </summary>
         internal static string Trace_ServerUrlsToPipeDone {
             get {
