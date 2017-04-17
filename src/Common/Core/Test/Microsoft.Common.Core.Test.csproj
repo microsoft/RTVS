@@ -69,6 +69,10 @@
     <Compile Include="Fixtures\CoreShellProviderFixture.cs" />
     <Compile Include="Fixtures\ServiceManagerFixture.cs" />
     <Compile Include="Logging\MaxLoggingPermissions.cs" />
+    <Compile Include="Windows\Logging\PermissionsTest.cs" />
+    <Compile Include="Windows\Registry\RegistryBaseKeyMock.cs" />
+    <Compile Include="Windows\Registry\RegistryKeyMock.cs" />
+    <Compile Include="Windows\Registry\RegistryMocks.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
