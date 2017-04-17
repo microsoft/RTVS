@@ -19,6 +19,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
@@ -60,6 +61,7 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile bool _delayedMutatedOnReadConsole;
         private volatile IRSessionCallback _callback;
         private volatile RHostStartupInfo _startupInfo;
+        private readonly IServiceContainer _services;
 
         public int Id { get; }
         public string Name { get; }
@@ -83,7 +85,7 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
+        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose, IServiceContainer services) {
             Id = id;
             Name = name;
             BrokerClient = brokerClient;
@@ -103,6 +105,7 @@ namespace Microsoft.R.Host.Client.Session {
             _stopHostLock = new BinaryAsyncLock(true);
             _hostStartedTcs = new TaskCompletionSourceEx<object>();
             _startupInfo = new RHostStartupInfo();
+            _services = services;
         }
 
         private string GetDefaultPrompt(string requestedPrompt = null) {
@@ -392,9 +395,10 @@ namespace Microsoft.R.Host.Client.Session {
         private async Task AfterHostStarted(RHostStartupInfo startupInfo) {
             var evaluator = new BeforeInitializedRExpressionEvaluator(this);
             try {
+                var rHostAssembly = _services.GetService<ILocalClientServices>().GetAssemblyByType(typeof(RHost));
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
-                var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                var libPath = IsRemote ? "." : Path.GetDirectoryName(rHostAssembly.GetAssemblyPath());
 
                 await LoadRtvsPackage(evaluator, libPath);
 
@@ -843,7 +847,6 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
         // A custom exception type for the sole purpose of distinguishing cancellation of ReadConsole
         // due to CancelAllAsync from all other cases, and special handling of the former.
-        [Serializable]
         private class CancelAllException : OperationCanceledException {
             public CancelAllException() { }
 
@@ -857,7 +860,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             public CancelAllException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) { }
 
-            protected CancelAllException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+            //protected CancelAllException(SerializationInfo info, StreamingContext context) : base(info, context) { }
         }
     }
 }

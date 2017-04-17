@@ -2,18 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client {
     public static class AboutHostExtensions {
-        private static readonly Version _localVersion;
+        private static Version _localVersion;
 
-        static AboutHostExtensions() {
-            _localVersion = typeof(AboutHost).Assembly.GetName().Version;
-        }
 
-        public static string IsHostVersionCompatible(this AboutHost aboutHost) {
+        public static string IsHostVersionCompatible(this AboutHost aboutHost, Assembly aboutHostAssembly) {
+            
+            _localVersion = _localVersion ?? aboutHostAssembly.GetName().Version;
+
             if (_localVersion.Major != 0 || _localVersion.Minor != 0) { // Filter out debug builds
                 var serverVersion = new Version(aboutHost.Version.Major, aboutHost.Version.Minor);
                 var clientVersion = new Version(_localVersion.Major, _localVersion.Minor);

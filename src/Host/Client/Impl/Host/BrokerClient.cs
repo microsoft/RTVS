@@ -12,18 +12,18 @@ using System.Net.Security;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebSockets.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal abstract class BrokerClient : IBrokerClient {
+    public abstract class BrokerClient : IBrokerClient {
         private static readonly TimeSpan HeartbeatTimeout =
 #if DEBUG
             // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
@@ -41,6 +41,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly string _rCommandLineArguments;
         private readonly ICredentialsDecorator _credentials;
         private readonly IConsole _console;
+        private readonly IServiceContainer _services;
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
@@ -52,7 +53,7 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => ConnectionInfo.IsRemote;
         public bool IsVerified { get; protected set; }
 
-        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IActionLog log, IConsole console) {
+        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IActionLog log, IConsole console, IServiceContainer services) {
             Name = name;
             Log = log;
 
@@ -61,6 +62,7 @@ namespace Microsoft.R.Host.Client.Host {
             _credentials = credentials;
             _console = console;
             ConnectionInfo = connectionInfo;
+            _services = services;
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
@@ -171,13 +173,12 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             using (Log.Measure(LogVerbosity.Normal, Invariant($"Connect to broker session \"{name}\""))) {
-                var wsClient = new WebSocketClient {
-                    KeepAliveInterval = HeartbeatTimeout,
-                    SubProtocols = { "Microsoft.R.Host" },
-                    InspectResponse = response => {
-                        if (response.StatusCode == HttpStatusCode.Forbidden) {
-                            throw new UnauthorizedAccessException();
-                        }
+                var wsClientFactory = _services.GetService<IWebSocketClientService>();
+                var wsClient = wsClientFactory.Create(new List<string> { "Microsoft.R.Host" });
+                wsClient.KeepAliveInterval = HeartbeatTimeout;
+                wsClient.InspectResponse = response => {
+                    if (response.StatusCode == HttpStatusCode.Forbidden) {
+                        throw new UnauthorizedAccessException();
                     }
                 };
 
@@ -187,12 +188,10 @@ namespace Microsoft.R.Host.Client.Host {
                 }.Uri;
 
                 while (true) {
-                    var request = wsClient.CreateRequest(pipeUri);
+                    var request = wsClient.CreateRequest(pipeUri, HttpClientHandler.ServerCredentials);
 
                     using (await _credentials.LockCredentialsAsync(cancellationToken)) {
                         try {
-                            request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
-                            request.Credentials = HttpClientHandler.ServerCredentials;
                             return await wsClient.ConnectAsync(request, cancellationToken);
                         } catch (UnauthorizedAccessException) {
                             _credentials.InvalidateCredentials();

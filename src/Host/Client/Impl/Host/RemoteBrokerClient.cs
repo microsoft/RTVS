@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -14,6 +15,7 @@ using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
+
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
@@ -26,12 +28,14 @@ namespace Microsoft.R.Host.Client.Host {
         private bool? _certificateValidationResult;
 
         static RemoteBrokerClient() {
+#if !NETSTANDARD1_6
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+#endif
         }
 
         public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
-            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), services.Log(), console) {
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), services.Log(), console, services) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;
@@ -44,7 +48,8 @@ namespace Microsoft.R.Host.Client.Host {
             var host = await base.ConnectAsync(connectionInfo, cancellationToken);
 
             var aboutHost = await GetHostInformationAsync<AboutHost>(cancellationToken);
-            var brokerIncompatibleMessage = aboutHost?.IsHostVersionCompatible();
+            var aboutHostAssembly = _services.GetService<ILocalClientServices>()?.GetAssemblyByType(typeof(AboutHost));
+            var brokerIncompatibleMessage = aboutHost?.IsHostVersionCompatible(aboutHostAssembly);
             if (brokerIncompatibleMessage != null) {
                 throw new RHostDisconnectedException(brokerIncompatibleMessage);
             }
@@ -57,8 +62,8 @@ namespace Microsoft.R.Host.Client.Host {
                 _console.WriteError(string.Format(Resources.Error_RemoteUriNotSupported, url));
                 return null;
             }
-
-            return await WebServer.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services.Log(), _console, cancellationToken);
+            var remotingService = _services.GetService<IRemotingWebServer>();
+            return await remotingService.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services.Log(), _console, cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
@@ -90,7 +95,7 @@ namespace Microsoft.R.Host.Client.Host {
                     return _certificateValidationResult.Value;
                 }
 
-                var hashString = certificate.GetCertHashString();
+                var hashString = GetCertHashString(certificate.GetCertHash());
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
                     Log.Write(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject));
 
@@ -102,6 +107,14 @@ namespace Microsoft.R.Host.Client.Host {
                 }
                 return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
             }
+        }
+
+        private string GetCertHashString(byte[] hash) {
+            StringBuilder sb = new StringBuilder(); 
+            for (int i = 0; i < hash.Length; i++) {
+                sb.Append(hash[i].ToString("x2"));
+            }
+            return sb.ToString();
         }
     }
 }
