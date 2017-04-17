@@ -22,7 +22,7 @@ using static System.FormattableString;
 using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.Host.Client.Session {
-    internal sealed class RSession : IRSession, IRCallbacks {
+    public sealed class RSession : IRSession, IRCallbacks {
         private static readonly string RemotePromptPrefix = "\u26b9";
         private static readonly string DefaultPrompt = "> ";
 
@@ -61,7 +61,6 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile bool _delayedMutatedOnReadConsole;
         private volatile IRSessionCallback _callback;
         private volatile RHostStartupInfo _startupInfo;
-        private readonly IServiceContainer _services;
 
         public int Id { get; }
         public string Name { get; }
@@ -79,13 +78,13 @@ namespace Microsoft.R.Host.Client.Session {
         /// For testing purpose only
         /// Do not expose this property to the IRSession interface
         /// </summary> 
-        internal RHost RHost => _host;
+        public RHost RHost => _host;
 
         static RSession() {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose, IServiceContainer services) {
+        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
             Id = id;
             Name = name;
             BrokerClient = brokerClient;
@@ -105,7 +104,6 @@ namespace Microsoft.R.Host.Client.Session {
             _stopHostLock = new BinaryAsyncLock(true);
             _hostStartedTcs = new TaskCompletionSourceEx<object>();
             _startupInfo = new RHostStartupInfo();
-            _services = services;
         }
 
         private string GetDefaultPrompt(string requestedPrompt = null) {
@@ -395,10 +393,9 @@ namespace Microsoft.R.Host.Client.Session {
         private async Task AfterHostStarted(RHostStartupInfo startupInfo) {
             var evaluator = new BeforeInitializedRExpressionEvaluator(this);
             try {
-                var rHostAssembly = _services.GetService<ILocalClientServices>().GetAssemblyByType(typeof(RHost));
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
-                var libPath = IsRemote ? "." : Path.GetDirectoryName(rHostAssembly.GetAssemblyPath());
+                var libPath = IsRemote ? "." : Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
 
                 await LoadRtvsPackage(evaluator, libPath);
 

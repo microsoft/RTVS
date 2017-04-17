@@ -1,11 +1,10 @@
-﻿using Microsoft.Common.Core.Logging;
-using Microsoft.R.Host.Client.BrokerServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Logging;
+using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client {
     public class RemotingWebServer : IRemotingWebServer {

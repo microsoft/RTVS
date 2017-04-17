@@ -10,11 +10,11 @@ namespace Microsoft.R.Host.Client {
     public static class AboutHostExtensions {
         private static Version _localVersion;
 
+        static AboutHostExtensions() {
+            _localVersion = typeof(AboutHost).GetTypeInfo().Assembly.GetName().Version;
+        }
 
-        public static string IsHostVersionCompatible(this AboutHost aboutHost, Assembly aboutHostAssembly) {
-            
-            _localVersion = _localVersion ?? aboutHostAssembly.GetName().Version;
-
+        public static string IsHostVersionCompatible(this AboutHost aboutHost) {
             if (_localVersion.Major != 0 || _localVersion.Minor != 0) { // Filter out debug builds
                 var serverVersion = new Version(aboutHost.Version.Major, aboutHost.Version.Minor);
                 var clientVersion = new Version(_localVersion.Major, _localVersion.Minor);

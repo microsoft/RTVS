@@ -35,7 +35,7 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
-            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), services.Log(), console, services) {
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), console, services) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;
@@ -48,8 +48,7 @@ namespace Microsoft.R.Host.Client.Host {
             var host = await base.ConnectAsync(connectionInfo, cancellationToken);
 
             var aboutHost = await GetHostInformationAsync<AboutHost>(cancellationToken);
-            var aboutHostAssembly = _services.GetService<ILocalClientServices>()?.GetAssemblyByType(typeof(AboutHost));
-            var brokerIncompatibleMessage = aboutHost?.IsHostVersionCompatible(aboutHostAssembly);
+            var brokerIncompatibleMessage = aboutHost?.IsHostVersionCompatible();
             if (brokerIncompatibleMessage != null) {
                 throw new RHostDisconnectedException(brokerIncompatibleMessage);
             }

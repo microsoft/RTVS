@@ -1,11 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using System.Text;
 using System.Threading;
 
 namespace Microsoft.R.Host.Client {

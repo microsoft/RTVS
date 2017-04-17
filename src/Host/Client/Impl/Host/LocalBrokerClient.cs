@@ -45,12 +45,10 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, string rhostDirectory = null)
-            : base(name, connectionInfo, _credentials, services.Log(), console, services) {
+            : base(name, connectionInfo, _credentials, console, services) {
             _rHome = connectionInfo.Uri.LocalPath;
             _services = services;
-
-            var rHostAssembly = _services.GetService<ILocalClientServices>().GetAssemblyByType(typeof(RHost));
-            _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(rHostAssembly.GetAssemblyPath());
+            _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
 
             IsVerified = true;
         }

@@ -53,7 +53,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<IMicrosoftRClientInstaller>(new MicrosoftRClientInstaller())
                 .AddService<IRInstallationService>(new RInstallation())
                 .AddService<IRemotingWebServer>(new RemotingWebServer())
-                .AddService<ILocalClientServices>(new LocalClientServices())
                 .AddService<IWebSocketClientService>(new WebSocketClientService());
             // TODO: add more
 

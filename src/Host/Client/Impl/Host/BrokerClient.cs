@@ -53,9 +53,9 @@ namespace Microsoft.R.Host.Client.Host {
         public bool IsRemote => ConnectionInfo.IsRemote;
         public bool IsVerified { get; protected set; }
 
-        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IActionLog log, IConsole console, IServiceContainer services) {
+        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IConsole console, IServiceContainer services) {
             Name = name;
-            Log = log;
+            Log = services.Log();
 
             _rCommandLineArguments = connectionInfo.RCommandLineArguments;
             _interpreterId = connectionInfo.InterpreterId;
