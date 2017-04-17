@@ -60,10 +60,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
-      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
-      <Name>Microsoft.Languages.Editor.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
       <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
       <Name>Microsoft.Markdown.Editor</Name>
@@ -83,6 +79,14 @@
     <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
       <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
+      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
+      <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
@@ -129,6 +133,7 @@
     <Compile Include="Fixtures\EditorAppTestFilesFixture.cs" />
     <Compile Include="Fixtures\EditorHostMethodFixture.cs" />
     <Compile Include="EditorScript.cs" />
+    <Compile Include="Fixtures\REditorApplicationShellProviderFixture.cs" />
     <Compile Include="Formatting\FormatDocumentTest.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
@@ -137,7 +142,7 @@
     <Compile Include="Markdown\RmdClassificationTest.cs" />
     <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
-    <Compile Include="Fixtures\REditorMefCatalogFixture.cs" />
+    <Compile Include="Fixtures\REditorApplicationMefCatalog.cs" />
     <Compile Include="Selection\SelectionTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="SuggestedActions\SmartTagsTest.cs" />

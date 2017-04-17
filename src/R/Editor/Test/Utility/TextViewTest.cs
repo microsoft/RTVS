@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -19,9 +19,9 @@ namespace Microsoft.R.Editor.Test.Utility {
             return MakeTextView(content, 0, out ast);
         }
 
-        public static ITextView MakeTextViewRealTextBuffer(string content, IExportProvider exportProvider) {
-            ITextBufferFactoryService svc = exportProvider.GetExportedValue<ITextBufferFactoryService>();
-            IContentTypeRegistryService rg = exportProvider.GetExportedValue<IContentTypeRegistryService>();
+        public static ITextView MakeTextViewRealTextBuffer(string content, ICoreShell coreShell) {
+            ITextBufferFactoryService svc = coreShell.GetService<ITextBufferFactoryService>();
+            IContentTypeRegistryService rg = coreShell.GetService<IContentTypeRegistryService>();
             ITextBuffer textBuffer = svc.CreateTextBuffer(content, rg.GetContentType(RContentTypeDefinition.ContentType));
             return new TextViewMock(textBuffer, 0);
         }

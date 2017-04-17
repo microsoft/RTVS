@@ -5,12 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -19,17 +17,16 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class FunctionInfoTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public FunctionInfoTest(IExportProvider exportProvider) {
-            REditorSettings.Initialize(new TestSettingsStorage());
-            _exportProvider = exportProvider;
-            _workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
-            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
-            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
+        public FunctionInfoTest(REditorShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
+            _workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
+            _packageIndex = _coreShell.GetService<IPackageIndex>();
+            _functionIndex = _coreShell.GetService<IFunctionIndex>();
         }
 
         public async Task InitializeAsync() {
@@ -37,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             await _packageIndex.BuildIndexAsync();
         }
 
-        public Task DisposeAsync() => _packageIndex.DisposeAsync(_exportProvider);
+        public Task DisposeAsync() => _packageIndex.DisposeAsync(_coreShell);
 
         [CompositeTest]
         [InlineData("abs")]

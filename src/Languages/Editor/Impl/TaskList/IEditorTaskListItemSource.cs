@@ -3,20 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.TaskList {
-    [ExcludeFromCodeCoverage]
-    public class TasksListItemsChangedEventArgs : EventArgs {
-        public ReadOnlyCollection<IEditorTaskListItem> Tasks { get; private set; }
-
-        public TasksListItemsChangedEventArgs(IList<IEditorTaskListItem> tasks) {
-            Tasks = new ReadOnlyCollection<IEditorTaskListItem>(tasks);
-        }
-    }
-
     /// <summary>
     /// Implemented by a language validation engine. 
     /// </summary>
@@ -60,6 +48,6 @@ namespace Microsoft.Languages.Editor.TaskList {
         /// Text buffer associated with the source. Typically a top level text buffer.
         /// Can be null if source is not a text based document.
         /// </summary>
-        ITextBuffer TextBuffer { get; }
+        object EditorBuffer { get; }
     }
 }

@@ -155,6 +155,10 @@
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>

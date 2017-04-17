@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -18,8 +17,8 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
     public class GotoBraceCommandTest {
         private readonly ICoreShell _shell;
 
-        public GotoBraceCommandTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+        public GotoBraceCommandTest(REditorShellProviderFixture shellProvider) {
+            _shell = shellProvider.CoreShell;
         }
 
         [Test]

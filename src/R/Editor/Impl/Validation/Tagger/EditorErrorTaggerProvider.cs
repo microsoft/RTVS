@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             EditorErrorTagger tagger = null;
 
-            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer)) {
+            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer, _shell.GetService<IREditorSettings>())) {
                 tagger = ServiceManager.GetService<EditorErrorTagger>(textBuffer);
                 if (tagger == null) {
                     tagger = new EditorErrorTagger(textBuffer, _taskList, _shell);

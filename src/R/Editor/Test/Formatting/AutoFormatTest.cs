@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -14,7 +16,6 @@ using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -24,10 +25,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class AutoFormatTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
 
-        public AutoFormatTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
+        public AutoFormatTest(REditorShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
         }
 
         [CompositeTest]
@@ -48,8 +49,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             var textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
-
-                var provider = _exportProvider.GetExportedValue<ISmartIndentProvider>("ContentTypes", RContentTypeDefinition.ContentType);
+                var cs = _coreShell.GetService<ICompositionService>();
+                var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
+                var provider = composer.GetImport(RContentTypeDefinition.ContentType);
                 var indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
 
                 int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
@@ -69,7 +71,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _exportProvider.GetExportedValue<ICoreShell>());
+                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _coreShell);
                     }
                 } else {
                     var line = e.After.GetLineFromPosition(position);

@@ -8,6 +8,7 @@ using Microsoft.Languages.Editor.TaskList;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.TaskList {
@@ -53,8 +54,8 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
                     break;
             }
 
-            IVsHierarchy hierarchy = _source.TextBuffer.GetHierarchy();
-            base.HierarchyItem = hierarchy;
+            var textBuffer = _source.EditorBuffer as ITextBuffer;
+            HierarchyItem = textBuffer.GetHierarchy();
 
             return oldLine != Line ||
                    oldColumn != Column ||
@@ -88,8 +89,8 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
         }
 
         protected override void OnNavigate(EventArgs e) {
-            if (_source.TextBuffer != null && _item.Line > 0 && _item.Column > 0) {
-                var textView = TextViewConnectionListener.GetFirstViewForBuffer(_source.TextBuffer);
+            if (_source.EditorBuffer != null && _item.Line > 0 && _item.Column > 0) {
+                var textView = TextViewConnectionListener.GetFirstViewForBuffer(_source.EditorBuffer as ITextBuffer);
                 if (textView != null) {
                     var snapshot = textView.TextBuffer.CurrentSnapshot;
                     try {

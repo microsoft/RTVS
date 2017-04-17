@@ -4,7 +4,6 @@
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 
@@ -17,9 +16,11 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
     /// </summary>
     internal sealed class BraceCompletionContext : IBraceCompletionContext {
         private readonly ICoreShell _shell;
+        private readonly IREditorSettings _settings;
 
         public BraceCompletionContext(ICoreShell shell) {
             _shell = shell;
+            _settings = shell.GetService<IREditorSettings>();
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         public void Start(IBraceCompletionSession session) {
-            if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
+            if (session.OpeningBrace == '{' && _settings.AutoFormat) {
                 EnsureTreeReady(session.SubjectBuffer);
                 FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer, _shell);
             }
@@ -55,7 +56,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         public void OnReturn(IBraceCompletionSession session) {
-            if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
+            if (session.OpeningBrace == '{' && _settings.AutoFormat) {
                 EnsureTreeReady(session.SubjectBuffer);
                 FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, _shell, indentCaret: true);
             }

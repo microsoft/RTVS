@@ -64,7 +64,6 @@
     <Compile Include="Security\CredentialHandle.cs" />
     <Compile Include="Security\SecurityService.cs" />
     <Compile Include="Security\SecurityUtilities.cs" />
-    <Compile Include="Shell\CoreShellExtensions.cs" />
     <Compile Include="Shell\ICompositionCatalog.cs" />
     <Compile Include="Shell\IPlatformServices.cs" />
   </ItemGroup>

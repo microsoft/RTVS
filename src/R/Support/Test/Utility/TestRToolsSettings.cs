@@ -17,12 +17,9 @@ using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IRSettings))]
-    [Export(typeof(IRToolsSettings))]
     public sealed class TestRToolsSettings : IRToolsSettings {
         private readonly ConnectionInfo[] _connections;
 
-        [ImportingConstructor]
         public TestRToolsSettings() : this("Test") {}
 
         public TestRToolsSettings(string connectionName) {

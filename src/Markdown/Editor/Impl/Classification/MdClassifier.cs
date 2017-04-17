@@ -20,11 +20,9 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
     internal sealed class MdClassifier : TokenBasedClassifier<MarkdownTokenType, MarkdownToken> {
         public MdClassifier(ITextBuffer textBuffer,
                             IClassificationTypeRegistryService classificationRegistryService,
-                            IContentTypeRegistryService contentTypeRegistryService,
-                            IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> classificationNameProviders) :
+                            IContentTypeRegistryService contentTypeRegistryService) :
             base(textBuffer, new MdTokenizer(), new MarkdownClassificationNameProvider()) {
             ContentTypeRegistryService = contentTypeRegistryService;
-            ClassificationNameProviders = classificationNameProviders;
             ClassificationRegistryService = classificationRegistryService;
         }
 

@@ -2,18 +2,17 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.FluentAssertions;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Newtonsoft.Json.Linq;
@@ -23,12 +22,14 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [ExcludeFromCodeCoverage]
     [Category.Connections]
     public sealed class ConnectionManagerViewModelTest : IDisposable {
+        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IConnectionManagerVisualComponent _cmvc;
         private readonly ConnectionManagerViewModel _cmvm;
 
-        public ConnectionManagerViewModelTest(IExportProvider exportProvider) {
-            _workflow = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+        public ConnectionManagerViewModelTest(RComponentsShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
+            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _cmvc = UIThreadHelper.Instance.Invoke(() => _workflow.Connections.GetOrCreateVisualComponent());
             _cmvm = UIThreadHelper.Instance.Invoke(() => (ConnectionManagerViewModel)_cmvc.Control.DataContext);
         }

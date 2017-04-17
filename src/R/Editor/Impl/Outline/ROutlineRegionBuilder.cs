@@ -49,7 +49,7 @@ namespace Microsoft.R.Editor.Outline {
             EditorTree.Closing += OnEditorTreeClosing;
         }
 
-        protected override bool IsEnabled => REditorSettings.EnableOutlining;
+        protected override bool IsEnabled => Shell.GetService<IREditorSettings>().EnableOutlining;
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             if (IsEnabled && e.Before.LineCount != e.After.LineCount) {

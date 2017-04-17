@@ -9,7 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor;
 using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
@@ -27,7 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
         private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker(VsAppShell.Current.Services);
         private readonly IPackageIndex _packageIndex;
-        private static IRToolsSettings _settings;
+        private IRToolsSettings _settings;
+        private IREditorSettings _editorSettings;
 
         public static IRtvsTelemetry Current { get; set; }
 
@@ -55,15 +56,16 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize(IPackageIndex packageIndex, IRToolsSettings settings, ITelemetryService service = null) {
+        public static void Initialize(IPackageIndex packageIndex, IRToolsSettings settings, IREditorSettings editorSettings, ITelemetryService service = null) {
             if (Current == null) {
-                Current = new RtvsTelemetry(packageIndex, settings, service);
+                Current = new RtvsTelemetry(packageIndex, settings, editorSettings, service);
             }
         }
 
-        public RtvsTelemetry(IPackageIndex packageIndex, IRToolsSettings settings, ITelemetryService service = null) {
+        public RtvsTelemetry(IPackageIndex packageIndex, IRToolsSettings settings, IREditorSettings editorSettings, ITelemetryService service = null) {
             _packageIndex = packageIndex;
             _settings = settings;
+            _editorSettings = editorSettings;
             TelemetryService = service ?? VsAppShell.Current.GetService<ITelemetryService>();
         }
 
@@ -145,16 +147,16 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 SaveRData = _settings.SaveRDataOnProjectUnload,
                                 MultilineHistorySelection = _settings.MultilineHistorySelection,
                                 AlwaysSaveHistory = _settings.AlwaysSaveHistory,
-                                AutoFormat = REditorSettings.AutoFormat,
-                                CommitOnEnter = REditorSettings.CommitOnEnter,
-                                CommitOnSpace = REditorSettings.CommitOnSpace,
-                                FormatOnPaste = REditorSettings.FormatOnPaste,
-                                SendToReplOnCtrlEnter = REditorSettings.SendToReplOnCtrlEnter,
-                                ShowCompletionOnFirstChar = REditorSettings.ShowCompletionOnFirstChar,
-                                SignatureHelpEnabled = REditorSettings.SignatureHelpEnabled,
-                                CompletionEnabled = REditorSettings.CompletionEnabled,
-                                SyntaxCheckInRepl = REditorSettings.SyntaxCheckInRepl,
-                                PartialArgumentNameMatch = REditorSettings.PartialArgumentNameMatch,
+                                AutoFormat = _editorSettings.AutoFormat,
+                                CommitOnEnter = _editorSettings.CommitOnEnter,
+                                CommitOnSpace = _editorSettings.CommitOnSpace,
+                                FormatOnPaste = _editorSettings.FormatOnPaste,
+                                SendToReplOnCtrlEnter = _editorSettings.SendToReplOnCtrlEnter,
+                                ShowCompletionOnFirstChar = _editorSettings.ShowCompletionOnFirstChar,
+                                SignatureHelpEnabled = _editorSettings.SignatureHelpEnabled,
+                                CompletionEnabled = _editorSettings.CompletionEnabled,
+                                SyntaxCheckInRepl = _editorSettings.SyntaxCheckInRepl,
+                                PartialArgumentNameMatch = _editorSettings.PartialArgumentNameMatch,
                                 RCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments
                             });
                 } catch (Exception ex) {

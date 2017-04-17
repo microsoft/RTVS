@@ -119,10 +119,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
-      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
-      <Name>Microsoft.Languages.Editor.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
@@ -191,6 +187,14 @@
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
       <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
+      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
+      <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
       <Name>Microsoft.VisualStudio.R.Package</Name>
@@ -223,7 +227,6 @@
     <Compile Include="Project\ProjectSystem\PropertyPages\RunPageViewModelTest.cs" />
     <Compile Include="Project\CommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RClient\RClientTest.cs" />
     <Compile Include="Repl\SetDirectoryCommandTest.cs" />
     <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />

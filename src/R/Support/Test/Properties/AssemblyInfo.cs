@@ -6,5 +6,5 @@ using Microsoft.UnitTests.Core.XUnit;
 
 [assembly: TestFrameworkOverride]
 [assembly: VsAssemblyLoader]
-[assembly: AssemblyFixtureImport(typeof(RSupportMefCatalogFixture))]
+[assembly: AssemblyFixtureImport(typeof(RSupportShellProviderFixture))]
 

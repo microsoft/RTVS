@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         #region ISignatureHelpSource
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
-            if (!REditorSettings.SignatureHelpEnabled || session.IsDismissed) {
+            if (!_shell.GetService<IREditorSettings>().SignatureHelpEnabled || session.IsDismissed) {
                 return;
             }
 

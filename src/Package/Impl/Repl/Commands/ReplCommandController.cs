@@ -4,16 +4,15 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Editor;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Expansions;
@@ -121,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     if (spanText != set.SelectionStatus.Completion.InsertionText) {
                         // If selection is does not match typed text,
                         // control completion depending on the editor setting.
-                        if (set.SelectionStatus.IsSelected && REditorSettings.CommitOnEnter) {
+                        if (set.SelectionStatus.IsSelected && _services.GetService<IREditorSettings>().CommitOnEnter) {
                             controller.CommitCompletionSession();
                             controller.DismissAllSessions();
                             return CommandResult.Executed;

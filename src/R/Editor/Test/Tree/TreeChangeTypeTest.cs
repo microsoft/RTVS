@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
@@ -11,7 +10,6 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -19,12 +17,10 @@ namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
     public class TreeChangeTypeTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
 
-        public TreeChangeTypeTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
-            _exportProvider = exportProvider;
-            _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+        public TreeChangeTypeTest(REditorShellProviderFixture shellProvider, EditorTestFilesFixture testFiles) {
+            _coreShell = shellProvider.CoreShell;
         }
 
         [CompositeTest]

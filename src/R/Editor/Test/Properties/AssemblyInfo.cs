@@ -6,4 +6,4 @@ using Microsoft.UnitTests.Core.XUnit;
 
 [assembly: TestFrameworkOverride]
 [assembly: VsAssemblyLoader]
-[assembly: AssemblyFixtureImport(typeof(REditorMefCatalogFixture))]
+[assembly: AssemblyFixtureImport(typeof(REditorShellProviderFixture))]

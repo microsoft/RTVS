@@ -10,9 +10,13 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.R.Package.Editors;
+using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
+using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -29,11 +33,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             var loggingPermissions = new LoggingPermissions(platformServices, telemetry, new RegistryImpl());
             var settings = new RToolsSettingsImplementation(this, new VsSettingsStorage(), loggingPermissions);
             var compositionCatalog = new CompositionCatalog(componentModel.DefaultCompositionService, componentModel.DefaultExportProvider);
+            var exportProvider = componentModel.DefaultExportProvider;
 
             _services
                 .AddService(componentModel)
                 .AddService(componentModel.DefaultCompositionService)
-                .AddService(componentModel.DefaultExportProvider)
+                .AddService(exportProvider)
                 .AddService(compositionCatalog)
                 .AddService(new VsMainThread())
                 .AddService(new VsTaskService())
@@ -44,6 +49,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new Logger(ApplicationName, Path.GetTempPath(), loggingPermissions))
                 .AddService(platformServices)
                 .AddService(settings)
+                .AddService(new REditorSettings(new LanguageSettingsStorage(this, RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, new string[] { RPackage.ProductName })))
+                .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
                 .AddService(new VsEditorSupport(this))
                 .AddService(telemetry)
                 .AddService(new FileSystem())
@@ -54,9 +61,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             // TODO: add more
 
             settings.LoadSettings();
-
-            // TODO: get rid of static
-            REditorSettings.Initialize(compositionCatalog);
         }
     }
 }

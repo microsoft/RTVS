@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Formatting {
             foreach (var spanToFormat in rSpans) {
                 RangeFormatter.FormatRange(TextView, spanToFormat.Snapshot.TextBuffer,
                                            new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
-                                           REditorSettings.FormatOptions, Shell);
+                                           Shell.GetService<IREditorSettings>().FormatOptions, Shell);
             }
 
             return new CommandResult(CommandStatus.Supported, 0);
