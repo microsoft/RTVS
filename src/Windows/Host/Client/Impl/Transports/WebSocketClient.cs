@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +37,7 @@ namespace Microsoft.AspNetCore.WebSockets.Client {
 
         public HttpWebRequest CreateRequest(Uri uri) {
             var request = (HttpWebRequest)WebRequest.Create(uri);
-            
+
             request.Headers[Constants.Headers.SecWebSocketVersion] = Constants.Headers.SupportedVersion;
             if (SubProtocols.Count > 0) {
                 request.Headers[Constants.Headers.SecWebSocketProtocol] = string.Join(", ", SubProtocols);

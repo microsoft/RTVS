@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -44,11 +44,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Proj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{EE50720D-A0E5-45EE-B2EC-E065B569DB27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client", "Host\Client\Impl\Microsoft.R.Host.Client.csproj", "{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Windows", "Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj", "{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Protocol", "Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj", "{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Test", "Host\Client\Test\Microsoft.R.Host.Client.Test.csproj", "{E1B1909E-3193-499B-91DB-1E13E6836929}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Test", "Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj", "{E1B1909E-3193-499B-91DB-1E13E6836929}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Markdown.Editor", "Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj", "{98E0B8AC-1193-4BFD-BF5C-6712C93ABD03}"
 EndProject
@@ -92,13 +92,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.Test", "Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj", "{5340191E-31E5-43A0-A485-B6678D391B10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Interpreters.Windows", "Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj", "{DE1EC50A-C588-45A9-B22C-981419CD7CD4}"
+Project("{4648015F-1E59-4B3D-865F-7EDAC7993EE0}") = "Microsoft.R.Interpreters.Windows", "Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj", "{DE1EC50A-C588-45A9-B22C-981419CD7CD4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Broker.Windows", "Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj", "{2CC10E50-392E-4B5D-98E4-D38F0061D363}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Host.Broker", "Host\Broker\Impl\Microsoft.R.Host.Broker.csproj", "{29E4FC48-39FB-45A1-B641-3E98E7D6CEEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Common.Core.Windows", "Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj", "{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client", "Host\Client\Impl\Microsoft.R.Host.Client.csproj", "{B81D01EB-AD08-4929-BE99-6623AF523A23}"
+EndProject
+Project("{CB548900-DB59-457C-8955-D9ABE7CF8F0C}") = "Microsoft.R.Common.Core.Windows", "Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj", "{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -650,6 +652,30 @@ Global
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}.Release|x64.Build.0 = Release|Any CPU
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}.Release|x86.ActiveCfg = Release|Any CPU
 		{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}.Release|x86.Build.0 = Release|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Debug|x64.Build.0 = Debug|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Debug|x86.Build.0 = Debug|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x64.ActiveCfg = Release|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x64.Build.0 = Release|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x86.ActiveCfg = Release|Any CPU
+		{EB1AADF1-ED85-4CEC-A7FF-82602270DA10}.Release|x86.Build.0 = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x64.Build.0 = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Debug|x86.Build.0 = Debug|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x64.ActiveCfg = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x64.Build.0 = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x86.ActiveCfg = Release|Any CPU
+		{B81D01EB-AD08-4929-BE99-6623AF523A23}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -664,6 +690,7 @@ Global
 		{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{95C6EA83-00BC-4E1E-8A80-67A69E542F21} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{8B9B73CB-C7B4-4613-8ADA-5D8C1CF583E2} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+		{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 		{E1B1909E-3193-499B-91DB-1E13E6836929} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{56534417-6C60-48A5-B355-12225C70431E} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{9174C912-E757-4ECD-9D6E-9604BEF74900} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}

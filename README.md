@@ -28,7 +28,7 @@ or questions.
 
 When filing a bug, you can also use the **R Tools | Send Feedback | Send Frown** feature to send us the product
 logs to help us diagnose the problem better. This command will launch your email client with a prepopulated message,
-and will gather the logs and highlight them in Windows Explorer, so tha they can be conveniently attached to the
+and will gather the logs and highlight them in Windows Explorer, so that they can be conveniently attached to the
 email. Please *do not* attach these logs to your GitHub issues, since attachments on issues are visible by everyone,
 and the logs may contain private information.
 
@@ -50,7 +50,7 @@ milestone. If you have a key bug or feature that should be attended to, please t
 If you would like to build RTVS yourself, and maybe even make a pull request (highly appreciated!), please take
 a look at the [contributing guidelines](CONTRIBUTING.md) first.
 
-### Miscelaneous
+### Miscellaneous
 
 If you use Python, also check out [Python Tools for Visual Studio](https://github.com/Microsoft/PTVS).
 

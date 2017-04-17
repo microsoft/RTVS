@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" 
                  xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" 
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
@@ -34,7 +34,7 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.Dialog.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.Windows.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.dll" />
