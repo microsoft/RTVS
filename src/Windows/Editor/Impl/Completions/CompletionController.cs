@@ -5,16 +5,12 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completions {
-    public class CompletionCommittedEventArgs : EventArgs {
-        public ICompletionSession Session { get; }
-        public CompletionCommittedEventArgs(ICompletionSession session) => Session = session;
-    }
-
     /// <summary>
     /// Base completion controller. Not language specific.
     /// </summary>
@@ -30,6 +26,8 @@ namespace Microsoft.Languages.Editor.Completions {
         protected ICompletionBroker CompletionBroker { get; set; }
         protected ICoreShell Shell { get; }
 
+        private readonly ViewCompletionBroker _viewCompletionBroker;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected CompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell) {
             Shell = shell;
@@ -39,6 +37,8 @@ namespace Microsoft.Languages.Editor.Completions {
             CompletionBroker = Shell.GetService<ICompletionBroker>();
             QuickInfoBroker = Shell.GetService<IQuickInfoBroker>();
             SignatureBroker = Shell.GetService<ISignatureHelpBroker>();
+
+            _viewCompletionBroker = new ViewCompletionBroker(shell, textView);
         }
 
         public abstract void ConnectSubjectBuffer(ITextBuffer subjectBuffer);

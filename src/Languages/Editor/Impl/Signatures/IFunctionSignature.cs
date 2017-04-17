@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Editor.Signatures {
@@ -30,7 +30,7 @@ namespace Microsoft.Languages.Editor.Signatures {
         /// <summary>
         /// List of parameters that this signature knows about.
         /// </summary>
-        IReadOnlyCollection<ISignatureParameter> Parameters { get; }
+        ReadOnlyCollection<ISignatureParameter> Parameters { get; }
 
         /// <summary>
         /// Content of the signature, pretty-printed into a form suitable for display

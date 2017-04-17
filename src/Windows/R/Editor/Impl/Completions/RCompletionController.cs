@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         public override void Detach(ITextView textView) {
-            TextView.RemoveService<RCompletionController>();
+            TextView.RemoveService(this);
             base.Detach(textView);
         }
 

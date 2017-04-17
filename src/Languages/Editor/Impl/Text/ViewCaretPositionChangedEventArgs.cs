@@ -4,10 +4,10 @@
 using System;
 
 namespace Microsoft.Languages.Editor.Text {
-    public interface IViewCaret {
-        bool InVirtualSpace { get; }
-        IViewCaretPosition Position { get; }
-
-        event EventHandler<ViewCaretPositionChangedEventArgs> PositionChanged;
+    public sealed class ViewCaretPositionChangedEventArgs : EventArgs {
+        public IEditorView View { get; }
+        public ViewCaretPositionChangedEventArgs(IEditorView view) {
+            View = view;
+        }
     }
 }
