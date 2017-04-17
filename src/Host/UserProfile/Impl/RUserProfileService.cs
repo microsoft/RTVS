@@ -7,9 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.EventLog;
+using EventLogLoggerProvider = Microsoft.Common.Core.Logging.EventLogLoggerProvider;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {
@@ -33,7 +34,10 @@ namespace Microsoft.R.Host.UserProfile {
             _loggerFactory = new LoggerFactory();
             _loggerFactory
                 .AddDebug()
-                .AddProvider(new EventLogLoggerProvider(LogLevel.Trace, Resources.Text_ServiceName));
+                .AddEventLog(new EventLogSettings {
+                    Filter = (_, logLevel) => logLevel >= LogLevel.Trace,
+                    SourceName = Resources.Text_ServiceName
+                });
             _logger = _loggerFactory.CreateLogger<RUserProfileService>();
 
             _cts = new CancellationTokenSource();

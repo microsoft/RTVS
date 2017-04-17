@@ -62,6 +62,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested to write urls to pipe &apos;{0}&apos;, but it is not a valid pipe handle.
+        /// </summary>
+        internal static string Critical_InvalidPipeHandle {
+            get {
+                return ResourceManager.GetString("Critical_InvalidPipeHandle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TLS certificate not found: {0}.
         /// </summary>
         internal static string Critical_NoTlsCertificate {
@@ -89,6 +98,24 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested to write urls to pipe &apos;{0}&apos;, but timed out while trying to connect to pipe.
+        /// </summary>
+        internal static string Critical_PipeConnectTimeOut {
+            get {
+                return ResourceManager.GetString("Critical_PipeConnectTimeOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timed out waiting for graceful shutdown.
+        /// </summary>
+        internal static string Critical_TimeOutShutdown {
+            get {
+                return ResourceManager.GetString("Critical_TimeOutShutdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default.
         /// </summary>
         internal static string Default {
@@ -103,6 +130,33 @@ namespace Microsoft.R.Host.Broker {
         internal static string Error_BlockedByProfileDeletion {
             get {
                 return ResourceManager.GetString("Error_BlockedByProfileDeletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Config file load failed: {0}.
+        /// </summary>
+        internal static string Error_ConfigLoadFailed {
+            get {
+                return ResourceManager.GetString("Error_ConfigLoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Config file parse failed: {0}.
+        /// </summary>
+        internal static string Error_ConfigParseFailed {
+            get {
+                return ResourceManager.GetString("Error_ConfigParseFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server port {0} is already in use..
+        /// </summary>
+        internal static string Error_ConfiguredPortNotAvailable {
+            get {
+                return ResourceManager.GetString("Error_ConfiguredPortNotAvailable", resourceCulture);
             }
         }
         
@@ -256,6 +310,24 @@ namespace Microsoft.R.Host.Broker {
         internal static string Trace_ErrorDataReceived {
             get {
                 return ResourceManager.GetString("Trace_ErrorDataReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Writing urls to pipe &apos;{0}&apos;:{1}{2}.
+        /// </summary>
+        internal static string Trace_ServerUrlsToPipeBegin {
+            get {
+                return ResourceManager.GetString("Trace_ServerUrlsToPipeBegin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrote urls to pipe &apos;{0}&apos;.
+        /// </summary>
+        internal static string Trace_ServerUrlsToPipeDone {
+            get {
+                return ResourceManager.GetString("Trace_ServerUrlsToPipeDone", resourceCulture);
             }
         }
     }

@@ -100,7 +100,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --logging:logFolder \"{Log.Folder.TrimTrailingSlash()}\"" +
                             $" --logging:logHostOutput {Log.LogVerbosity >= LogVerbosity.Normal}" +
                             $" --logging:logPackets {Log.LogVerbosity == LogVerbosity.Traffic}" +
-                            $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
+                            $" --urls http://127.0.0.1:0" + // :0 means first available ephemeral port
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
