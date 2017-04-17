@@ -3,14 +3,14 @@
 
 using System;
 using System.Collections.ObjectModel;
-using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.Signatures {
     public interface IFunctionSignature {
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
-        ITextRange ApplicableToSpan { get; }
+        ITrackingTextRange ApplicableToSpan { get; }
 
         /// <summary>
         /// Content of the signature, including all the characters to be displayed.

@@ -3,10 +3,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Signatures;
 
 namespace Microsoft.R.Editor.Signatures {
     public interface IFunctionSignatureSource {
-        Task<IList<IFunctionSignature>> GetSignaturesAsync(REditorSignatureSessionContext context);
+        Task<IEnumerable<IFunctionSignature>> GetSignaturesAsync(IRCompletionContext context);
     }
 }

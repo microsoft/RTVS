@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Signatures {
                 return;
             }
 
-            var document = REditorDocument.TryFromTextBuffer(_textBuffer);
+            var document = _textBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 if (!document.EditorTree.IsReady) {
                     document.EditorTree.InvokeWhenReady((p) => {
@@ -51,9 +51,13 @@ namespace Microsoft.R.Editor.Signatures {
         }
 
         public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object, string> triggerSession, string packageName) {
-            ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
-            int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
+            var snapshot = _textBuffer.CurrentSnapshot;
+            var position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
+            var source = new RSignatureSource(_shell);
+            var context = new RSignatureHelpContext(session, _textBuffer, ast, position);
+            source.GetSignaturesAsync(context).ContinueWith(t => {
 
+            }).DoNotWait();
             // Retrieve parameter positions from the current text buffer snapshot
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
             if (parametersInfo != null) {

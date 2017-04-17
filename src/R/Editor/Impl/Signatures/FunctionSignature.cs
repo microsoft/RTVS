@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
@@ -10,6 +11,7 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Variables;
@@ -25,7 +27,7 @@ namespace Microsoft.R.Editor.Signatures {
         private IEditorBuffer _editorBuffer;
 
         private ISignatureParameter _currentParameter;
-        private ITextRange _applicableToSpan;
+        private ITrackingTextRange _applicableToRange;
         private int _initialPosition;
         private readonly ISignatureInfo _signatureInfo;
         private readonly ICoreShell _shell;
@@ -33,7 +35,46 @@ namespace Microsoft.R.Editor.Signatures {
 
         public string FunctionName { get; private set; }
 
-        public FunctionSignature(IEditorSignatureSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo, ICoreShell shell) {
+        public static IFunctionSignature Create(IRCompletionContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo) {
+            var sig = new FunctionSignature(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo, _sh);
+            var paramList = new List<ISignatureParameter>();
+
+            // Locus points in the pretty printed signature (the one displayed in the tooltip)
+            var locusPoints = new List<int>();
+            string signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
+            sig.Content = signatureString;
+            sig.ApplicableToSpan = span;
+
+            sig.Documentation = functionInfo.Description?.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
+
+            Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
+            for (var i = 0; i < signatureInfo.Arguments.Count; i++) {
+                var p = signatureInfo.Arguments[i];
+                if (p != null) {
+                    var locusStart = locusPoints[i];
+                    var locusLength = locusPoints[i + 1] - locusStart;
+
+                    Debug.Assert(locusLength >= 0);
+                    var locus = new TextRange(locusStart, locusLength);
+
+                    /// VS may end showing very long tooltip so we need to keep 
+                    /// description reasonably short: typically about
+                    /// same length as the function signature.
+                    paramList.Add(
+                        new FunctionParameter(
+                            p.Description.Wrap(
+                                Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length)),
+                                locus, locus, p.Name, sig));
+                }
+            }
+
+            sig.Parameters = new ReadOnlyCollection<ISignatureParameter>(paramList);
+            sig.ComputeCurrentParameter(ast, position);
+
+            return sig;
+        }
+
+        private FunctionSignature(IEditorCompletionSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo, ICoreShell shell) {
             FunctionName = functionName;
             _signatureInfo = signatureInfo;
             _shell = shell;
@@ -55,7 +96,7 @@ namespace Microsoft.R.Editor.Signatures {
         }
 
         internal int ComputeCurrentParameter(IEditorBufferSnapshot snapshot, AstRoot ast, int position) {
-            var parameterInfo = GetParametersInfoFromBuffer(ast, snapshot, position);
+            var parameterInfo = FunctionParameter.FromEditorBuffer(ast, snapshot, position);
             int index = 0;
 
             if (parameterInfo != null) {
@@ -94,13 +135,13 @@ namespace Microsoft.R.Editor.Signatures {
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
-        public ITextRange ApplicableToSpan {
-            get { return _applicableToSpan; }
+        public ITrackingTextRange ApplicableToSpan {
+            get { return _applicableToRange; }
             set {
                 if (_editorBuffer != null) {
-                    _initialPosition = value.GetStartPoint(SubjectBuffer.CurrentSnapshot);
+                    _initialPosition = value.GetStartPoint(_editorBuffer.CurrentSnapshot);
                 }
-                _applicableToSpan = value;
+                _applicableToRange = value;
             }
         }
 
@@ -134,12 +175,10 @@ namespace Microsoft.R.Editor.Signatures {
         }
         #endregion
 
+        #region Event handlers
         protected virtual void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
-            if (_session != null && e.Changes.Count > 0) {
-                int start, oldLength, newLength;
-                TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
-
-                int position = start + newLength;
+            if (_session != null) {
+                int position = e.Start + e.NewLength;
                 if (position < _initialPosition) {
                     _completionBroker.DismissSignatureSession();
                 } else {
@@ -161,6 +200,7 @@ namespace Microsoft.R.Editor.Signatures {
                 e.View.Caret.PositionChanged -= OnCaretPositionChanged;
             }
         }
+        #endregion
 
         private void UpdateCurrentParameter() {
             if (_editorBuffer != null && _view != null) {
@@ -234,95 +274,12 @@ namespace Microsoft.R.Editor.Signatures {
                         var document = _editorBuffer.GetEditorDocument<IREditorDocument>();
                         document.EditorTree.EnsureTreeReady();
 
-                        var parametersInfo = GetParametersInfoFromBuffer(
+                        var parametersInfo = FunctionParameter.FromEditorBuffer(
                             document.EditorTree.AstRoot, _editorBuffer.CurrentSnapshot, _view.Caret.Position.Position);
 
                         return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
                     } catch (Exception) { }
                 }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Given position in a text buffer finds method name, 
-        /// parameter index as well as where method signature ends.
-        /// </summary>
-        public static ParameterInfo GetParametersInfoFromBuffer(AstRoot astRoot, IEditorBufferSnapshot snapshot, int position) {
-            FunctionCall functionCall;
-            Variable functionVariable;
-            int parameterIndex = -1;
-            string parameterName;
-            bool namedParameter = false;
-            string packageName = null;
-
-            if (!GetFunction(astRoot, ref position, out functionCall, out functionVariable)) {
-                return null;
-            }
-
-            parameterIndex = functionCall.GetParameterIndex(position);
-            parameterName = functionCall.GetParameterName(parameterIndex, out namedParameter);
-
-            var op = functionVariable.Parent as Operator;
-            if (op != null && op.OperatorType == OperatorType.Namespace) {
-                var id = (op.LeftOperand as Variable)?.Identifier;
-                packageName = id != null ? astRoot.TextProvider.GetText(id) : null;
-            }
-
-            if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0) {
-                return new ParameterInfo(packageName, functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
-            }
-
-            return null;
-        }
-
-        private static bool GetFunction(AstRoot astRoot, ref int position, out FunctionCall functionCall, out Variable functionVariable) {
-            // Note that we do not want just the deepest call since in abc(def()) 
-            // when position is over 'def' we actually want signature help for 'abc' 
-            // while simple depth search will find 'def'.            
-            functionVariable = null;
-            int p = position;
-            functionCall = astRoot.GetSpecificNodeFromPosition<FunctionCall>(p, (x) => {
-                var fc = x as FunctionCall;
-                if (fc != null && fc.OpenBrace.End <= p) {
-                    if (fc.CloseBrace != null) {
-                        return p <= fc.CloseBrace.Start; // between ( and )
-                    } else {
-                        // Take into account incomplete argument lists line in 'func(a|'
-                        return fc.Arguments.End == p;
-                    }
-                }
-                return false;
-            });
-
-            if (functionCall == null && position > 0) {
-                // Retry in case caret is at the very end of function signature
-                // that does not have final close brace yet.
-                functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position - 1, includeEnd: true);
-                if (functionCall != null) {
-                    // But if signature does have closing brace and caret
-                    // is beyond it, we are really outside of the signature.
-                    if (functionCall.CloseBrace != null && position >= functionCall.CloseBrace.End) {
-                        return false;
-                    }
-
-                    if (position > functionCall.SignatureEnd) {
-                        position = functionCall.SignatureEnd;
-                    }
-                }
-            }
-
-            if (functionCall != null && functionCall.Children.Count > 0) {
-                functionVariable = functionCall.Children[0] as Variable;
-                if (functionVariable == null) {
-                    // Might be in a namespace
-                    var op = functionCall.Children[0] as IOperator;
-                    if (op != null && op.OperatorType == OperatorType.Namespace) {
-                        functionVariable = op.RightOperand as Variable;
-                    }
-                }
-                return functionVariable != null;
             }
 
             return false;
