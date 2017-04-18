@@ -1,291 +1,96 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.R.Host.Client</RootNamespace>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.R.Host.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>$(SourceDirectory)DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets.Protocol" Version="0.1.0" />
+    <PackageReference Include="System.Net.Http.WinHttpHandler" Version="4.3.0" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
+    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.5.24" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="BrokerServices\BrokerApiErrorException.cs" />
-    <Compile Include="Blobs\RBlobStream.cs" />
-    <Compile Include="BrokerServices\IProfileWebService.cs" />
-    <Compile Include="BrokerServices\IRemoteUriWebService.cs" />
-    <Compile Include="BrokerServices\ICredentialsDecorator.cs" />
-    <Compile Include="BrokerServices\ISessionsWebService.cs" />
-    <Compile Include="BrokerServices\ProfileWebService.cs" />
-    <Compile Include="BrokerServices\RemoteUriWebService.cs" />
-    <Compile Include="BrokerServices\WebServer.cs" />
-    <Compile Include="BrokerServices\WebService.cs" />
-    <Compile Include="BrokerServices\SessionsWebService.cs" />
-    <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
-    <Compile Include="DataInspection\IRErrorInfo.cs" />
-    <Compile Include="DataInspection\IREvaluationResultInfo.cs" />
-    <Compile Include="DataInspection\IRPromiseInfo.cs" />
-    <Compile Include="DataInspection\IRValueInfo.cs" />
-    <Compile Include="DataInspection\RActiveBindingInfo.cs" />
-    <Compile Include="DataInspection\RChildAccessorKind.cs" />
-    <Compile Include="DataInspection\RErrorInfo.cs" />
-    <Compile Include="DataInspection\REvaluationResultInfo.cs" />
-    <Compile Include="DataInspection\REvaluationResultProperties.cs" />
-    <Compile Include="DataInspection\RPromiseInfo.cs" />
-    <Compile Include="DataInspection\RSessionExtensions.cs" />
-    <Compile Include="Definitions\IFileEditor.cs" />
-    <Compile Include="Definitions\IRBlobInfo.cs" />
-    <Compile Include="Definitions\IConsole.cs" />
-    <Compile Include="Definitions\IRSessionSwitchBrokerTransaction.cs" />
-    <Compile Include="Extensions\AboutHostExtensions.cs" />
-    <Compile Include="Host\BrokerConnectionInfo.cs" />
-    <Compile Include="Host\HostConnectionInfo.cs" />
-    <Compile Include="Host\LocalCredentialsDecorator.cs" />
-    <Compile Include="Host\RemoteCredentialsDecorator.cs" />
-    <Compile Include="Host\RHost.BlobWriteRequest.cs" />
-    <Compile Include="Host\RHost.BlobReadRequest.cs" />
-    <Compile Include="Host\BrokerClientProxy.cs" />
-    <Compile Include="Host\RHost.GetBlobSizeRequest.cs" />
-    <Compile Include="Host\NullRCallbacks.cs" />
-    <Compile Include="Host\NullBrokerClient.cs" />
-    <Compile Include="Host\RemoteBrokerClient.cs" />
-    <Compile Include="Host\BrokerClient.cs" />
-    <Compile Include="Definitions\PlotDeviceProperties.cs" />
-    <Compile Include="Host\RHost.CreateBlobRequest.cs" />
-    <Compile Include="Host\RHost.Request.cs" />
-    <Compile Include="Definitions\REvaluationResult.FieldNames.cs" />
-    <Compile Include="Blobs\DataTransferSession.cs" />
-    <Compile Include="Blobs\RBlobInfo.cs" />
-    <Compile Include="Host\IBrokerClient.cs" />
-    <Compile Include="Blobs\IRBlobService.cs" />
-    <Compile Include="Definitions\PlotMessage.cs" />
-    <Compile Include="Definitions\REnvironments.cs" />
-    <Compile Include="DataInspection\RValueFlags.cs" />
-    <Compile Include="DataInspection\RValueInfo.cs" />
-    <Compile Include="DataInspection\RValueRepresentations.cs" />
-    <Compile Include="Definitions\IObjectViewer.cs" />
-    <Compile Include="Definitions\LocatorResult.cs" />
-    <Compile Include="Definitions\REvaluationKind.cs" />
-    <Compile Include="Definitions\REvaluationResult.cs" />
-    <Compile Include="Definitions\IRSessionContext.cs" />
-    <Compile Include="Definitions\REvaluationException.cs" />
-    <Compile Include="Encodings\REncodingsMap.cs" />
-    <Compile Include="ExecutionTracing\IRBreakpoint.cs" />
-    <Compile Include="ExecutionTracing\IRExecutionTracer.cs" />
-    <Compile Include="ExecutionTracing\RBreakpoint.cs" />
-    <Compile Include="ExecutionTracing\RBrowseEventArgs.cs" />
-    <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
-    <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
-    <Compile Include="ExecutionTracing\RSourceLocation.cs" />
-    <Compile Include="Host\LocalBrokerClient.cs" />
-    <Compile Include="Extensions\DirectoryExtensions.cs" />
-    <Compile Include="Host\ComponentBinaryMissingException.cs" />
-    <Compile Include="Host\RHostBrokerBinaryMissingException.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Definitions\IRSessionCallback.cs" />
-    <Compile Include="Definitions\RHostStartupInfo.cs" />
-    <Compile Include="Extensions\RStringExtensions.cs" />
-    <Compile Include="Host\RHost.EvaluationRequest.cs" />
-    <Compile Include="Definitions\MessageTransportException.cs" />
-    <Compile Include="Definitions\IMessageTransport.cs" />
-    <Compile Include="Definitions\IRContext.cs" />
-    <Compile Include="Definitions\IRCallbacks.cs" />
-    <Compile Include="Definitions\IRExpressionEvaluator.cs" />
-    <Compile Include="Definitions\IRSession.cs" />
-    <Compile Include="Definitions\IRSessionProvider.cs" />
-    <Compile Include="Definitions\IRSessionInteraction.cs" />
-    <Compile Include="Host\RHostBinaryMissingException.cs" />
-    <Compile Include="Definitions\OutputType.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Host\RHostLoggingExtensions.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj" />
+    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Session\BrokerStateChangedEventArgs.cs" />
-    <Compile Include="Session\HostLoadChangedEventArgs.cs" />
-    <Compile Include="Session\NullConsole.cs" />
-    <Compile Include="Session\RAfterRequestEventArgs.cs" />
-    <Compile Include="Session\RBeforeRequestEventArgs.cs" />
-    <Compile Include="Context\RContext.cs" />
-    <Compile Include="Context\RContextType.cs" />
-    <Compile Include="Definitions\RException.cs" />
-    <Compile Include="Host\RHost.cs" />
-    <Compile Include="Host\RHostDisconnectedException.cs" />
-    <Compile Include="Session\RConnectedEventArgs.cs" />
-    <Compile Include="Session\ROutputEventArgs.cs" />
-    <Compile Include="Session\RSession.cs" />
-    <Compile Include="Session\RSessionEvaluationCommands.cs" />
-    <Compile Include="Session\RSessionExtensions.cs" />
-    <Compile Include="Session\RSessionInteraction.cs" />
-    <Compile Include="Session\RSessionInteractionCommands.cs" />
-    <Compile Include="Session\RSessionProvider.cs" />
-    <Compile Include="Session\RSessionRequestSource.cs" />
-    <Compile Include="StackTracing\IRStackFrame.cs" />
-    <Compile Include="StackTracing\RSessionExtensions.cs" />
-    <Compile Include="StackTracing\RStackFrame.cs" />
-    <Compile Include="Telemetry\MrcTelemetryEvents.cs" />
-    <Compile Include="Transports\WebSocketClient.cs" />
-    <Compile Include="Transports\WebSocketMessageTransport.cs" />
-    <Compile Include="Definitions\YesNoCancel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />
-    <None Include="rtvs\DESCRIPTION">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\man\fetch_file.Rd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="rtvs\NAMESPACE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\help.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="rtvs\R\breakpoints.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\completions.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\eval.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\graphics.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\grid.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\mirror.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\overrides.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\packages.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\repr.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\rtvs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\traceback.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\R\util.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
-      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
-      <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Interpreters.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
-      <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
-      <Name>Microsoft.R.Host.Protocol</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
-      <InProject>false</InProject>
-    </SignFilesDependsOn>
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
-    </FilesToLocalize>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
+    <EmbeddedResource Update="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Update="rtvs\DESCRIPTION">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\man\fetch_file.Rd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\NAMESPACE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\breakpoints.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\completions.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\eval.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\graphics.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\grid.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\help.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\mirror.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\overrides.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\packages.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\repr.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\rtvs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\traceback.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="rtvs\R\util.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
-    <ItemGroup>
-      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
-        <Authenticode>Microsoft</Authenticode>
-        <StrongName>StrongName</StrongName>
-      </FilesToSign>
-    </ItemGroup>
-  </Target>
+  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
 </Project>

@@ -5,13 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
+using System.Net.Security;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.AspNetCore.WebSockets.Client {
-    public class WebSocketClient {
+    public class WebSocketClient : IWebSocketClient {
         static WebSocketClient() {
             try {
                 // Only call once
@@ -21,10 +25,10 @@ namespace Microsoft.AspNetCore.WebSockets.Client {
             }
         }
 
-        public WebSocketClient() {
+        public WebSocketClient(IList<string> subProtocols) {
             ReceiveBufferSize = 1024 * 16;
             KeepAliveInterval = TimeSpan.FromMinutes(2);
-            SubProtocols = new List<string>();
+            SubProtocols = subProtocols;
         }
 
         public IList<string> SubProtocols { get; }
@@ -33,14 +37,17 @@ namespace Microsoft.AspNetCore.WebSockets.Client {
         public bool UseZeroMask { get; set; }
         public Action<HttpWebResponse> InspectResponse { get; set; }
 
-        public HttpWebRequest CreateRequest(Uri uri) {
+        public HttpWebRequest CreateRequest(Uri uri, ICredentials serverCredentails = null) {
             var request = (HttpWebRequest)WebRequest.Create(uri);
-            
+
             request.Headers[Constants.Headers.SecWebSocketVersion] = Constants.Headers.SupportedVersion;
             if (SubProtocols.Count > 0) {
                 request.Headers[Constants.Headers.SecWebSocketProtocol] = string.Join(", ", SubProtocols);
             }
-
+            request.AuthenticationLevel = AuthenticationLevel.MutualAuthRequested;
+            if (serverCredentails != null) {
+                request.Credentials = serverCredentails;
+            }
             return request;
         }
 

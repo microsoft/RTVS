@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public NetworkCredential GetCredential(Uri uri, string authType) {
             var credentials = _credentials;
-            return credentials != null ? new NetworkCredential(credentials.UserName, credentials.Password) : new NetworkCredential();
+            return credentials != null ? new NetworkCredential(credentials.UserName, credentials.Password.ToUnsecureString()) : new NetworkCredential();
         }
 
         public async Task<IDisposable> LockCredentialsAsync(CancellationToken cancellationToken = default(CancellationToken)) {

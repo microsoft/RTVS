@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
@@ -58,7 +58,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Test.dll",
             "Microsoft.R.Common.Core.dll",
-            "Microsoft.R.Host.Client.dll",
+            "Microsoft.R.Host.Client.Windows.dll",
             "Microsoft.R.Debugger.dll",
         };
 
