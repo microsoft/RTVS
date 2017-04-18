@@ -336,7 +336,8 @@ namespace Microsoft.R.Host.Client.Session {
 
         private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken) {
             if (!connectionInfo.IsValid) {
-                var path = new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath;
+                var installSvc = _services.GetService<IRInstallationService>();
+                var path = installSvc.GetCompatibleEngines().FirstOrDefault()?.InstallPath;
                 connectionInfo = BrokerConnectionInfo.Create(_services.Security(), connectionInfo.Name, path);
             }
 

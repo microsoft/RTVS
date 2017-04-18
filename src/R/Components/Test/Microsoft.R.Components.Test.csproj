@@ -162,6 +162,10 @@
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}</Project>
       <Name>Microsoft.R.Host.Protocol</Name>
