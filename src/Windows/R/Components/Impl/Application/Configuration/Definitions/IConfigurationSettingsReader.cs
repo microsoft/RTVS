@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Microsoft.R.Components.Application.Configuration {
     public interface IConfigurationSettingsReader: IDisposable {

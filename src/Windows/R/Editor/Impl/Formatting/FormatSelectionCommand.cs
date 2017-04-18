@@ -6,10 +6,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

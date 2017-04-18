@@ -3,12 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Navigation.Text;
-using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;

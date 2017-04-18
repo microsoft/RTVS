@@ -6,7 +6,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Packages.R;

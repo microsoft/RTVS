@@ -3,7 +3,6 @@
 
 using System.IO;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 

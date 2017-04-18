@@ -3,7 +3,6 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;

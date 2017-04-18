@@ -14,8 +14,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;

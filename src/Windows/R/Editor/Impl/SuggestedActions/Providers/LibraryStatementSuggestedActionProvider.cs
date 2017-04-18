@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.SuggestedActions.Actions;
 using Microsoft.R.Editor.SuggestedActions.Definitions;

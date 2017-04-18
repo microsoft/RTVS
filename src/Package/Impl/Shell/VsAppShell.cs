@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core.Shell;

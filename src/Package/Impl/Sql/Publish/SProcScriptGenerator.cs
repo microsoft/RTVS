@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;

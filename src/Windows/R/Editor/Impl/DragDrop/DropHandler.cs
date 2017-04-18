@@ -8,7 +8,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
@@ -52,7 +51,7 @@ namespace Microsoft.R.Editor.DragDrop {
         private void HandleDrop(DragDropInfo dragDropInfo, string userFolder) {
             var dataObject = dragDropInfo.Data;
 
-            var document = REditorDocument.FindInProjectedBuffers(_wpfTextView.TextBuffer);
+            var document = _wpfTextView.TextBuffer.GetEditorDocument<IREditorDocument>();
             Debug.Assert(document != null, "Text view does not have associated R document.");
 
             var text = dataObject.GetPlainText(userFolder, dragDropInfo.KeyStates);
@@ -76,13 +75,14 @@ namespace Microsoft.R.Editor.DragDrop {
                 text = text.TrimStart();
             }
 
-            var es = _shell.GetService<IApplicationEditorSupport>();
-            using (var undoAction = es.CreateCompoundAction(_wpfTextView, textBuffer)) {
+            var es = _shell.GetService<IEditorSupport>();
+            using (var undoAction = es.CreateUndoAction(_wpfTextView.ToEditorView(), textBuffer.ToEditorBuffer())) {
                 undoAction.Open(Resources.DragDropOperation);
                 textBuffer.Replace(new Span(dropPosition, 0), text);
 
                 if (_settings.FormatOnPaste) {
-                    RangeFormatter.FormatRange(_wpfTextView, document.TextBuffer, new TextRange(dropPosition, text.Length), _shell.GetService<IREditorSettings>().FormatOptions, _shell);
+                    RangeFormatter.FormatRange(_wpfTextView, document.EditorBuffer.As<ITextBuffer>(), 
+                        new TextRange(dropPosition, text.Length), _shell.GetService<IREditorSettings>().FormatOptions, _shell);
                 }
 
                 if (_wpfTextView.Selection != null) {

@@ -62,6 +62,7 @@
     <Compile Include="DragDrop\DropFileType.cs" />
     <Compile Include="DragDrop\ProjectDataObjectReader.cs" />
     <Compile Include="Extensions\EditorExtensions.cs" />
+    <Compile Include="Text\TrackingTextRange.cs" />
     <Compile Include="ViewModel\ProjectionEditorViewModel.cs" />
     <Compile Include="ViewModel\EditorViewModel.cs" />
     <Compile Include="Extensions\TrackingSpanExtensions.cs" />

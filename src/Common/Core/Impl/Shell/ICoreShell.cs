@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>

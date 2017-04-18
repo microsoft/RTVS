@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Core.Tokens;
 
 namespace Microsoft.Languages.Core.Tokens {
     public abstract class BaseTokenizer<T> : ITokenizer<T> where T : ITextRange {

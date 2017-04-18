@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.DataTips;

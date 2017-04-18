@@ -3,9 +3,7 @@
 
 using System;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.TaskList;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;

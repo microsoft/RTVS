@@ -113,7 +113,7 @@ namespace Microsoft.R.Editor {
         /// Given position in a text buffer finds method name, 
         /// parameter index as well as where method signature ends.
         /// </summary>
-        public static ParameterInfo GetParametersInfoFromBuffer(this AstRoot astRoot, IEditorBufferSnapshot snapshot, int position) {
+        public static FunctionParameter GetParametersInfoFromBuffer(this AstRoot astRoot, IEditorBufferSnapshot snapshot, int position) {
             FunctionCall functionCall;
             Variable functionVariable;
             int parameterIndex = -1;
@@ -135,7 +135,7 @@ namespace Microsoft.R.Editor {
             }
 
             if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0) {
-                return new ParameterInfo(packageName, functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
+                return new FunctionParameter(packageName, functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
             }
 
             return null;

@@ -3,7 +3,6 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;

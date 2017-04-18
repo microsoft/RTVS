@@ -19,7 +19,6 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     // ExportDebugger must match rule name in ..\Rules\Debugger.xaml.

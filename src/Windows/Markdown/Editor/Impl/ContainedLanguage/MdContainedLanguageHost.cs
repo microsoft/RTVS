@@ -6,12 +6,10 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
-using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

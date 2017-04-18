@@ -6,7 +6,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 

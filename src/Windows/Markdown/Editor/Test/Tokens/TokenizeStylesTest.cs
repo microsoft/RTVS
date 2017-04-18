@@ -7,7 +7,6 @@ using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]

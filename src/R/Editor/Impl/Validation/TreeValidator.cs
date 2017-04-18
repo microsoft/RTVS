@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;

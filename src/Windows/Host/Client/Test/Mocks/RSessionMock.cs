@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {

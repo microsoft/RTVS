@@ -4,7 +4,6 @@
 using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Outline;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text.Tagging;
 

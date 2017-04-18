@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.R.ExecutionTracing;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;

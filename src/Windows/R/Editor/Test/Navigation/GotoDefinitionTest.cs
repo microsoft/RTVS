@@ -4,10 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client;

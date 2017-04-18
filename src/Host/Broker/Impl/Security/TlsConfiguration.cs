@@ -8,10 +8,8 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
 

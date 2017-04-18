@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Expansions;

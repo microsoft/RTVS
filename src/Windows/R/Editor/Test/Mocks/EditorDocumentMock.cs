@@ -3,8 +3,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;

@@ -5,7 +5,6 @@ using System;
 using System.Windows.Input;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {

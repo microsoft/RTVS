@@ -10,7 +10,6 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.QuickInfo;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;

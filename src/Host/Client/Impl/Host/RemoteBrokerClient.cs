@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -13,7 +12,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 
 

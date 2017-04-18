@@ -4,8 +4,6 @@
 using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;

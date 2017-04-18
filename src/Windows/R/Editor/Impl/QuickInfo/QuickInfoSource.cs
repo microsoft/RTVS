@@ -9,7 +9,6 @@ using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Functions;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;

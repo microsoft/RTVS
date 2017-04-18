@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Application.Host {

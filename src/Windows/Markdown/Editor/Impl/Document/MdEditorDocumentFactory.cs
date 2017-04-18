@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Document;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;

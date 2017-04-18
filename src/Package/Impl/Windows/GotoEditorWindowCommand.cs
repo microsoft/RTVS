@@ -3,7 +3,6 @@
 
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;

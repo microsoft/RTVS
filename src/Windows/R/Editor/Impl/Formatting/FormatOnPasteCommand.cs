@@ -7,9 +7,8 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting.Data;
@@ -41,10 +40,8 @@ namespace Microsoft.R.Editor.Formatting {
                 return CommandResult.NotSupported;
             }
 
-            string text = ClipboardDataProvider.GetData(DataFormats.UnicodeText) as string;
-            if (text == null) {
-                text = ClipboardDataProvider.GetData(DataFormats.Text) as string;
-            }
+            string text = ClipboardDataProvider.GetData(DataFormats.UnicodeText) as string ?? 
+                          ClipboardDataProvider.GetData(DataFormats.Text) as string;
 
             if (text != null) {
                 var rSpans = TextView.BufferGraph.MapDownToFirstMatch(
@@ -55,15 +52,15 @@ namespace Microsoft.R.Editor.Formatting {
                 if (rSpans.Count > 0) {
                     var targetSpan = rSpans[rSpans.Count - 1];
 
-                    IREditorDocument document = REditorDocument.TryFromTextBuffer(targetSpan.Snapshot.TextBuffer);
+                    var document = targetSpan.Snapshot.TextBuffer.GetEditorDocument<IREditorDocument>();
                     if (document != null) {
                         int insertionPoint = targetSpan.Start;
-                        document.TextBuffer.Replace(targetSpan, text);
+                        document.EditorBuffer.Replace(targetSpan.ToTextRange(), text);
                         document.EditorTree.EnsureTreeReady();
 
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
-                            RangeFormatter.FormatRange(TextView, document.TextBuffer,
+                            RangeFormatter.FormatRange(TextView, document.EditorBuffer.As<ITextBuffer>(),
                                 new TextRange(insertionPoint, text.Length), _settings.FormatOptions, Shell);
                         }
                     }

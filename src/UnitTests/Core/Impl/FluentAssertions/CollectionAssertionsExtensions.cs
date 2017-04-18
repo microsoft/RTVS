@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Collections;
-using FluentAssertions.Equivalency;
 using FluentAssertions.Execution;
 
 namespace Microsoft.UnitTests.Core.FluentAssertions {

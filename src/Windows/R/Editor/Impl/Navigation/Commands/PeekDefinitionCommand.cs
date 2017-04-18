@@ -4,9 +4,6 @@
 using System;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

@@ -6,13 +6,12 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Comments {
-    internal class UncommentCommand : EditingCommand {
+    internal sealed class UncommentCommand : EditingCommand {
         internal UncommentCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
             : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK)) {
         }
@@ -21,8 +20,8 @@ namespace Microsoft.R.Editor.Comments {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
-            RCommenter.UncommentBlock(TextView, TextView.TextBuffer,
-                new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell.Services);
+            RCommenter.UncommentBlock(TextView.ToEditorView(), TextView.TextBuffer.ToEditorBuffer(),
+                new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell.GetService<IEditorSupport>());
 
             return CommandResult.Executed;
         }

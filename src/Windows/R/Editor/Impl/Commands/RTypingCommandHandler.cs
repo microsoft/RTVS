@@ -3,10 +3,9 @@
 
 using System;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text.Editor;
@@ -29,7 +28,7 @@ namespace Microsoft.R.Editor.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
-                char typedChar = GetTypedChar(group, id, inputArg);
+                var typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
                     AutoFormat.HandleAutoformat(TextView, _shell, typedChar);
                 }
@@ -39,7 +38,7 @@ namespace Microsoft.R.Editor.Commands {
 
         public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
-                char typedChar = GetTypedChar(group, id, inputArg);
+                var typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
                     AutoFormat.HandleAutoformat(TextView, _shell, typedChar);
                 }
@@ -49,6 +48,6 @@ namespace Microsoft.R.Editor.Commands {
         }
         #endregion
 
-        protected override CompletionController CompletionController => ServiceManager.GetService<RCompletionController>(TextView);
+        protected override CompletionController CompletionController => TextView.GetService<RCompletionController>();
     }
 }

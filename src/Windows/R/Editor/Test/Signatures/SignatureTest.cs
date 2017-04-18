@@ -3,10 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 

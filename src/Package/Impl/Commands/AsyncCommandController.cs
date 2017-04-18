@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.R.Components.Controller;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {

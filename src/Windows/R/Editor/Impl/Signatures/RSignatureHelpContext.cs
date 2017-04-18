@@ -10,7 +10,7 @@ namespace Microsoft.R.Editor.Signatures {
     /// R completion context. Provides information about current document, 
     /// caret position and other necessary data for the completion engine.
     /// </summary>
-    public sealed class RSignatureHelpContext: I {
+    public sealed class RSignatureHelpContext {
         public int Position { get; set; }
         public ISignatureHelpSession Session { get; private set; }
         public ITextBuffer TextBuffer { get; private set; }

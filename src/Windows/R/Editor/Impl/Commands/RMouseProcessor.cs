@@ -2,16 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.R.Editor.Commands {
@@ -46,28 +43,26 @@ namespace Microsoft.R.Editor.Commands {
         }
 
         private string GetHotUrl(ITextView textView, MouseButtonEventArgs e) {
-            Point pt = e.GetPosition(_wpfTextView.VisualElement);
-            ITextViewLine viewLine = _wpfTextView.TextViewLines.GetTextViewLineContainingYCoordinate(pt.Y + _wpfTextView.ViewportTop);
-            if (viewLine != null) {
-                SnapshotPoint? bufferPosition = viewLine.GetBufferPositionFromXCoordinate(pt.X);
-                if (bufferPosition.HasValue) {
-                    var snapshot = textView.TextBuffer.CurrentSnapshot;
-                    ITextSnapshotLine line = snapshot.GetLineFromPosition(bufferPosition.Value);
+            var pt = e.GetPosition(_wpfTextView.VisualElement);
+            var viewLine = _wpfTextView.TextViewLines.GetTextViewLineContainingYCoordinate(pt.Y + _wpfTextView.ViewportTop);
+            var bufferPosition = viewLine?.GetBufferPositionFromXCoordinate(pt.X);
+            if (bufferPosition.HasValue) {
+                var snapshot = textView.TextBuffer.CurrentSnapshot;
+                var line = snapshot.GetLineFromPosition(bufferPosition.Value);
 
-                    var tagAggregator = _shell.GetService<IViewTagAggregatorFactoryService>();
-                    using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
+                var tagAggregator = _shell.GetService<IViewTagAggregatorFactoryService>();
+                using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
 
-                        var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));
-                        return tags.Select(t => {
-                            SnapshotPoint? start = t.Span.Start.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
-                            SnapshotPoint? end = t.Span.End.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
+                    var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));
+                    return tags.Select(t => {
+                        var start = t.Span.Start.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
+                        var end = t.Span.End.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
 
-                            if (start.HasValue && end.HasValue && start.Value <= bufferPosition.Value && bufferPosition.Value < end.Value) {
-                                return textView.TextBuffer.CurrentSnapshot.GetText(Span.FromBounds(start.Value.Position, end.Value.Position));
-                            }
-                            return null;
-                        }).FirstOrDefault(x => x != null);
-                    }
+                        if (start.HasValue && end.HasValue && start.Value <= bufferPosition.Value && bufferPosition.Value < end.Value) {
+                            return textView.TextBuffer.CurrentSnapshot.GetText(Span.FromBounds(start.Value.Position, end.Value.Position));
+                        }
+                        return null;
+                    }).FirstOrDefault(x => x != null);
                 }
             }
             return null;

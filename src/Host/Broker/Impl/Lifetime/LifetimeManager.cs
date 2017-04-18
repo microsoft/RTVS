@@ -7,7 +7,6 @@ using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.R.Host.Broker.Services;
 
 namespace Microsoft.R.Host.Broker.Lifetime {
     public class LifetimeManager {

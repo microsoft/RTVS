@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;

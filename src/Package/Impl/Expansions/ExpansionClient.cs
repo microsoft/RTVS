@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor;

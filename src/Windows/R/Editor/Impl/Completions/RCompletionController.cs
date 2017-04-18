@@ -13,7 +13,6 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

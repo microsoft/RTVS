@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
-using Microsoft.R.Editor.Signatures;
 
 namespace Microsoft.R.Editor.Test.Assertions {
     [ExcludeFromCodeCoverage]

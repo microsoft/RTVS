@@ -11,7 +11,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Editor.Functions;
-using Microsoft.R.Editor.Signatures;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>

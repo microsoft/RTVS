@@ -6,7 +6,6 @@ using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controllers;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

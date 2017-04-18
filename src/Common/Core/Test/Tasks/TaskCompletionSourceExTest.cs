@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.UnitTests.Core.Threading;

@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 

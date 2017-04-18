@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;

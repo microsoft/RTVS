@@ -4,12 +4,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
-using Microsoft.Languages.Editor.Controllers;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Comments;
-using Microsoft.R.Editor.Completions.Documentation;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Selection;

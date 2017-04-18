@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {

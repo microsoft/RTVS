@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Formatting {
     public sealed class IndentBuilder {

@@ -2,20 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Core.Classification;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.R.Editor.Test;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;

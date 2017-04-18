@@ -6,9 +6,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controllers;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.ContainedLanguage;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

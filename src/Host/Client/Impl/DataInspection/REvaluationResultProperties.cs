@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.R.DataInspection;
-using Microsoft.R.StackTracing;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 using static Microsoft.R.Host.Client.REvaluationResult;

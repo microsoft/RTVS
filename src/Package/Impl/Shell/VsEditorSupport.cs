@@ -3,9 +3,7 @@
 
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.Text;

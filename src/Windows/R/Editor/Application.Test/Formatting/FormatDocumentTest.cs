@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;

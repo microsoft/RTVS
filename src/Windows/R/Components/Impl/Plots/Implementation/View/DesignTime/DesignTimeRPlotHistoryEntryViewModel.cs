@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.View.DesignTime {

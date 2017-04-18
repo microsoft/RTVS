@@ -6,8 +6,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.Text.Operations;

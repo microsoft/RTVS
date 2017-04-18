@@ -5,7 +5,7 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements;
@@ -31,13 +31,14 @@ namespace Microsoft.R.Editor.Formatting {
                 return;
             }
 
-            var document = REditorDocument.FromTextBuffer(textView.TextBuffer);
+            var document = textView.TextBuffer.GetEditorDocument<IREditorDocument>();
             var ast = document.EditorTree.AstRoot;
 
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer, shell);
-            if(host != null && !host.CanFormatLine(textView, document.TextBuffer, document.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
+            var textBuffer = document.EditorBuffer.As<ITextBuffer>();
+            var host = ContainedLanguageHost.GetHost(textView, textBuffer, shell);
+            if (host != null && !host.CanFormatLine(textView, textBuffer, textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
 
@@ -58,7 +59,7 @@ namespace Microsoft.R.Editor.Formatting {
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
                         FormatOperations.FormatNode(textView, subjectBuffer, shell, scopeStatement);
-                    } else if(CanFormatLine(textView, subjectBuffer, -1)){
+                    } else if (CanFormatLine(textView, subjectBuffer, -1)) {
                         FormatOperations.FormatViewLine(textView, subjectBuffer, -1, shell);
                     }
                 }
@@ -80,13 +81,13 @@ namespace Microsoft.R.Editor.Formatting {
             // Do not format inside strings. At this point AST may be empty due to the nature 
             // of [destructive] changes made to the document. We have to resort to tokenizer. 
             // In order to keep performance good during typing we'll use token stream from the classifier.
-            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
+            var caretPoint = textView.GetCaretPosition(textBuffer);
             if (caretPoint.HasValue) {
                 var snapshot = textBuffer.CurrentSnapshot;
                 int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
                 var line = snapshot.GetLineFromLineNumber(lineNumber + lineOffset);
 
-                var classifier = ServiceManager.GetService<RClassifier>(textBuffer);
+                var classifier = textBuffer.GetService<RClassifier>();
                 var tokenIndex = classifier.Tokens.GetItemContaining(line.Start);
 
                 return tokenIndex < 0 || classifier.Tokens[tokenIndex].TokenType != RTokenType.String;
@@ -101,15 +102,15 @@ namespace Microsoft.R.Editor.Formatting {
                 return false;
             }
 
-            ITextSnapshotLine prevLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum - 1);
+            var prevLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum - 1);
 
-            string leftSide = prevLine.GetText().TrimEnd();
+            var leftSide = prevLine.GetText().TrimEnd();
             if (!leftSide.EndsWith("}", StringComparison.Ordinal)) {
                 return false;
             }
 
-            ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum);
-            string rightSide = currentLine.GetText().TrimStart();
+            var currentLine = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum);
+            var rightSide = currentLine.GetText().TrimStart();
             if (!rightSide.StartsWith("else", StringComparison.Ordinal)) {
                 return false;
             }
@@ -127,14 +128,14 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         private static IKeywordScopeStatement GetFormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast) {
-            SnapshotPoint? caret = REditorDocument.MapCaretPositionFromView(textView);
+            var caret = textView.GetCaretPosition(textBuffer);
             if (caret.HasValue) {
                 try {
-                    int lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
-                    ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-                    string lineText = line.GetText();
+                    var lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
+                    var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+                    var lineText = line.GetText();
                     if (lineText.TrimEnd().EndsWith("}", StringComparison.Ordinal)) {
-                        IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
+                        var scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
                         return scopeStatement;
                     }
                 } catch (Exception) { }

@@ -3,7 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.UnitTests.Core.XUnit;

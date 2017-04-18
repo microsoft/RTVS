@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.Search;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {

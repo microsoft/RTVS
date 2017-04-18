@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Tree;

@@ -3,7 +3,6 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.TaskList;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;

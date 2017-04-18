@@ -7,9 +7,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
@@ -20,14 +18,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {
-        ITextBuffer _textBuffer;
-
         internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
             : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
-            _textBuffer = textBuffer;
+            TargetBuffer = textBuffer;
         }
 
-        public virtual ITextBuffer TargetBuffer => _textBuffer;
+        public virtual ITextBuffer TargetBuffer { get; }
 
         #region ICommand
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

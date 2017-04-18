@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.View;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 

@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -18,16 +19,14 @@ namespace Microsoft.R.Editor.Comments {
             _textBuffer = textBuffer;
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
-        }
+        public override CommandStatus Status(Guid group, int id) => CommandStatus.SupportedAndEnabled;
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            SnapshotPoint? point = REditorDocument.MapCaretPositionFromView(TextView);
+            var point = TextView.GetCaretPosition(_textBuffer);
             if (point.HasValue) {
-                var document = REditorDocument.FromTextBuffer(_textBuffer);
+                var document = _textBuffer.GetEditorDocument<IREditorDocument>();
                 document.EditorTree.EnsureTreeReady();
-                if (RoxygenBlock.TryInsertBlock(_textBuffer, document.EditorTree.AstRoot, point.Value)) {
+                if (RoxygenBlock.TryInsertBlock(document.EditorBuffer, document.EditorTree.AstRoot, point.Value)) {
                     return CommandResult.Executed;
                 }
             }

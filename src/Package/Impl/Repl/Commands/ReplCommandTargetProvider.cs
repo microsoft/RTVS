@@ -6,8 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;

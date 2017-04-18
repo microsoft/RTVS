@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Signatures;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Signatures {

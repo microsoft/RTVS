@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;

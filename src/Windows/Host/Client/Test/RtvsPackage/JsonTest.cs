@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;

@@ -7,16 +7,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
 using Microsoft.AspNetCore.WebSockets.Protocol;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.RemoteUri {
     public class RemoteUriHelper {

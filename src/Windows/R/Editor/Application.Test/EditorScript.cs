@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
-using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;

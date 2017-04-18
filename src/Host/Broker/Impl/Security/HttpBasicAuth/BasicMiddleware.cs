@@ -1,10 +1,8 @@
 ﻿// From https://github.com/Kukkimonsuta/Odachi/tree/master/src/Odachi.AspNetCore.Authentication.Basic
 
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.WebEncoders;
 using System.Text.Encodings.Web;
 
 namespace Odachi.AspNetCore.Authentication.Basic

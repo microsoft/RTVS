@@ -9,7 +9,6 @@ using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.R.Editor.Test;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;

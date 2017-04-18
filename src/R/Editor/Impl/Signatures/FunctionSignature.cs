@@ -13,8 +13,6 @@ using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Functions;
 
@@ -22,7 +20,7 @@ namespace Microsoft.R.Editor.Signatures {
     public partial class FunctionSignature : IFunctionSignature {
         // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.language.intellisense.isignature.aspx
 
-        private IEditorSignatureSession _session;
+        private IEditorCompletionSession _session;
         private IEditorView _view;
         private IEditorBuffer _editorBuffer;
 
@@ -35,7 +33,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         public string FunctionName { get; private set; }
 
-        public static IFunctionSignature Create(IRCompletionContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo) {
+        public static IFunctionSignature Create(IRCompletionContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo, ITrackingTextRange applicableSpan) {
             var sig = new FunctionSignature(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo, _sh);
             var paramList = new List<ISignatureParameter>();
 
@@ -43,7 +41,7 @@ namespace Microsoft.R.Editor.Signatures {
             var locusPoints = new List<int>();
             string signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
             sig.Content = signatureString;
-            sig.ApplicableToSpan = span;
+            sig.ApplicableToSpan = applicableSpan;
 
             sig.Documentation = functionInfo.Description?.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
 
@@ -69,7 +67,7 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             sig.Parameters = new ReadOnlyCollection<ISignatureParameter>(paramList);
-            sig.ComputeCurrentParameter(ast, position);
+            sig.ComputeCurrentParameter(context.AstRoot, context.Position);
 
             return sig;
         }

@@ -5,8 +5,6 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Controllers.Constants;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

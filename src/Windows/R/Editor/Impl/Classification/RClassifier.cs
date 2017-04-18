@@ -3,7 +3,7 @@
 
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Classification;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -16,6 +16,7 @@ namespace Microsoft.R.Editor.Classification {
         public RClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
             base(textBuffer, new RTokenizer(), new RClassificationNameProvider()) {
             ClassificationRegistryService = classificationRegistryService;
+            textBuffer.AddService(this);
         }
 
         protected override void RemoveSensitiveTokens(int position, TextRangeCollection<RToken> tokens) {
