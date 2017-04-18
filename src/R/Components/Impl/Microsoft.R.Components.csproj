@@ -20,10 +20,6 @@
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
-      <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
-      <Name>Microsoft.Common.Wpf</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -36,18 +32,6 @@
       <Project>{25CD8690-6208-4740-B123-6DBCE6B9444A}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
-      <Name>Microsoft.R.Host.Client.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Interpreters.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -56,68 +40,7 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Wpf\Impl\Microsoft.R.Wpf.csproj">
-      <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
-      <Name>Microsoft.R.Wpf</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.resx">
-      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Information\HostLoadIndicator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageDetails.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageManagerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plots\Implementation\View\RPlotDeviceControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plots\Implementation\View\RPlotHistoryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\StatusOK_32x.png" />
-    <Resource Include="Resources\StatusStop_32x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\packageicon.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SourceDirectory)Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />

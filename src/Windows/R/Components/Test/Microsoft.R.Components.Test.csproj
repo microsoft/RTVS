@@ -152,13 +152,9 @@
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+    <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
-      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
-      <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}</Project>
@@ -176,15 +172,15 @@
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
       <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>

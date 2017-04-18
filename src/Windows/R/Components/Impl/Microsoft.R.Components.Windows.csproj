@@ -283,7 +283,7 @@
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>

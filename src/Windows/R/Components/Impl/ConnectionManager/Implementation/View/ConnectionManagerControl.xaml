@@ -6,7 +6,7 @@
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime"
-             xmlns:viewModel="clr-namespace:Microsoft.R.Components.ConnectionManager.ViewModel"
+             xmlns:viewModel="clr-namespace:Microsoft.R.Components.ConnectionManager.ViewModel;assembly=Microsoft.R.Components"
              xmlns:controls="clr-namespace:Microsoft.R.Wpf.Controls;assembly=Microsoft.R.Wpf"
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"

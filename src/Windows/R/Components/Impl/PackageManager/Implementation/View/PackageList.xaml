@@ -8,7 +8,7 @@
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
-             xmlns:viewModel="clr-namespace:Microsoft.R.Components.PackageManager.ViewModel"
+             xmlns:viewModel="clr-namespace:Microsoft.R.Components.PackageManager.ViewModel;assembly=Microsoft.R.Components"
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              mc:Ignorable="d" x:Name="Self"

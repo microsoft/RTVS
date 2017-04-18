@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.StubBuilders;
-using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -33,10 +31,6 @@ namespace Microsoft.Languages.Editor.Test {
         public override async Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             await base.InitializeAsync(testInput, messageBus);
             ServiceManager.AddService(new TestEditorSupport());
-
-            var settings = new REditorSettings(new TestSettingsStorage());
-            ServiceManager.AddService(settings);
-
             return DefaultInitializeResult;
         }
 

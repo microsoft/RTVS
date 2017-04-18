@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:package="clr-namespace:Microsoft.VisualStudio.R.Package"
-             xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
+             xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components.Windows"
              xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
