@@ -190,7 +190,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     _errorMessages.Add(Resources.PackageManager_CantUnloadPackageNoRSession.FormatCurrent(package.Name), ErrorMessageType.PackageOperations);
                 } catch (RPackageManagerException ex) {
                     _errorMessages.Add(ex.Message, ErrorMessageType.PackageOperations);
-                }
+                } catch(REvaluationException) { }
                 await ReloadLoadedPackagesAsync(cancellationToken);
             }
 
