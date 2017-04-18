@@ -140,7 +140,7 @@
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
@@ -151,13 +151,13 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

@@ -16,12 +16,12 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <BaseIntermediateOutputPath>..\..\..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\..\..\bin\</BaseOutputPath>
+    <BaseOutputPath>..\..\..\..\..\bin\</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
@@ -66,45 +66,49 @@
     <Compile Include="XamlGraphicsDeviceTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+    <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+    <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+    <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
+    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
       <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
       <Name>Microsoft.Rtvs.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
       <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.R.Host.Client.csproj">
+    <ProjectReference Include="..\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
-      <Name>Microsoft.R.Host.Client</Name>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\UnitTests\app.config">
+    <None Include="..\..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="Files\ExportToPdfExpectedResult.pdf" />

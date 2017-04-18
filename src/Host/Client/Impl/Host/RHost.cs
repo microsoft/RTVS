@@ -721,6 +721,6 @@ namespace Microsoft.R.Host.Client {
             Interlocked.Exchange(ref _callbacks, new NullRCallbacks());
         }
 
-        internal Task GetRHostRunTask() => _runTask;
+        public Task GetRHostRunTask() => _runTask;
     }
 }

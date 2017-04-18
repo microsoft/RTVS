@@ -212,7 +212,8 @@ grDevices::deviceIsInteractive('ide')
 
         public static Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
             if (codePage == 0) {
-                codePage = NativeMethods.GetOEMCP();
+                // TODO: update this to get the codepage via platform agnostic service
+                codePage = 437;
             }
             var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
             return evaluation.ExecuteAsync(script, cancellationToken);
