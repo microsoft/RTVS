@@ -211,8 +211,8 @@
                 <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Repository}">
                     <TextBlock.Visibility>
                         <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
-                            <Binding Path="RepositoryUri" Converter="{x:Static wpf:Converters.NullIsTrue}" />
-                            <Binding Path="RepositoryText" Converter="{x:Static wpf:Converters.NullIsTrue}" />
+                            <Binding Path="RepositoryUri" Converter="{x:Static wpf:Converters.NullIsFalse}" />
+                            <Binding Path="RepositoryText" Converter="{x:Static wpf:Converters.NullIsFalse}" />
                         </MultiBinding>
                     </TextBlock.Visibility>
                 </TextBlock>
