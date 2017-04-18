@@ -82,7 +82,6 @@
     <Compile Include="RBrokerServiceInstaller.Designer.cs">
       <DependentUpon>RBrokerServiceInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Services\ExitService.cs" />
     <Compile Include="Services\WindowsRHostProcessService.cs" />
     <Compile Include="Services\WindowsAuthenticationService.cs" />
     <Compile Include="Services\WindowsSystemInfoService.cs" />
@@ -93,14 +92,13 @@
       <DependentUpon>BrokerService.cs</DependentUpon>
     </Compile>
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="Startup\CommonStartup.cs" />
     <Compile Include="Startup\Program.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Startup\Startup.cs" />
+    <Compile Include="Startup\WindowsStartup.cs" />
     <Compile Include="UserProfile\ProfileController.cs" />
   </ItemGroup>
   <ItemGroup>
