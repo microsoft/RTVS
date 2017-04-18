@@ -4,7 +4,6 @@
 using System;
 
 namespace Microsoft.R.Host.Client {
-    [Serializable]
     public sealed class RHostBinaryMissingException : ComponentBinaryMissingException {
         public RHostBinaryMissingException()
             : base("Microsoft.R.Host.exe") { }

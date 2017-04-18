@@ -19,9 +19,10 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.Host.Client.Session {
-    internal sealed class RSession : IRSession, IRCallbacks {
+    public sealed class RSession : IRSession, IRCallbacks {
         private static readonly string RemotePromptPrefix = "\u26b9";
         private static readonly string DefaultPrompt = "> ";
 
@@ -77,7 +78,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// For testing purpose only
         /// Do not expose this property to the IRSession interface
         /// </summary> 
-        internal RHost RHost => _host;
+        public RHost RHost => _host;
 
         static RSession() {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
@@ -394,7 +395,7 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
-                var libPath = IsRemote ? "." : Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                var libPath = IsRemote ? "." : Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
 
                 await LoadRtvsPackage(evaluator, libPath);
 
@@ -843,7 +844,6 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
         // A custom exception type for the sole purpose of distinguishing cancellation of ReadConsole
         // due to CancelAllAsync from all other cases, and special handling of the former.
-        [Serializable]
         private class CancelAllException : OperationCanceledException {
             public CancelAllException() { }
 
@@ -857,7 +857,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             public CancelAllException(string message, Exception innerException, CancellationToken token) : base(message, innerException, token) { }
 
-            protected CancelAllException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+            //protected CancelAllException(SerializationInfo info, StreamingContext context) : base(info, context) { }
         }
     }
 }

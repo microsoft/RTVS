@@ -18,7 +18,7 @@ using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
-    public class RemoteUriWebService : IRemoteUriWebService {
+    internal class RemoteUriWebService : IRemoteUriWebService {
         private readonly IActionLog _log;
         private readonly IConsole _console;
 
