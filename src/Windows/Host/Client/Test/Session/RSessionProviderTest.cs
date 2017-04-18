@@ -90,7 +90,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 var session = sessionProvider.GetOrCreate(nameof(ConnectWhenSwitching_SwitchFailed));
                 var startHostTask = session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 1000);
 
-                await ParallelTools.WhenAll(switchTask, startHostTask);
+                await ParallelTools.WhenAll(30000, switchTask, startHostTask);
 
                 startHostTask.Should().BeRanToCompletion();
                 switchTask.Should().BeRanToCompletion();

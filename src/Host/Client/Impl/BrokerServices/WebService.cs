@@ -81,17 +81,12 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
         }
 
-        public Task<TResponse> HttpGetAsync<TResponse>(UriTemplate uriTemplate, CancellationToken cancellationToken = default(CancellationToken), params object[] args) =>
-           HttpGetAsync<TResponse>(MakeUri(uriTemplate, args), cancellationToken);
-
         public async Task HttpPutAsync<TRequest>(Uri uri, TRequest request, CancellationToken cancellationToken) {
             var requestBody = JsonConvert.SerializeObject(request);
 
             await RepeatUntilAuthenticatedAsync(async ct => (await GetHttpPutResponseAsync(uri, requestBody, ct)).Dispose(), cancellationToken);
         }
 
-        public Task HttpPutAsync<TRequest>(UriTemplate uriTemplate, TRequest request, CancellationToken cancellationToken, params object[] args) =>
-            HttpPutAsync(MakeUri(uriTemplate, args), request, cancellationToken);
 
         public async Task<TResponse> HttpPutAsync<TRequest, TResponse>(Uri uri, TRequest request, CancellationToken cancellationToken = default(CancellationToken)) {
             var requestBody = JsonConvert.SerializeObject(request);
@@ -111,9 +106,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             return EnsureSuccessStatusCode(await PutAsync(uri, cancellationToken, content));
         }
 
-        public Task<TResponse> HttpPutAsync<TRequest, TResponse>(UriTemplate uriTemplate, TRequest request, CancellationToken cancellationToken = default(CancellationToken), params object[] args) =>
-            HttpPutAsync<TRequest, TResponse>(MakeUri(uriTemplate, args), request, cancellationToken);
-
         public async Task<Stream> HttpPostAsync(Uri uri, Stream request, CancellationToken cancellationToken) {
             var content = new StreamContent(request);
 
@@ -124,13 +116,6 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         public Task HttpDeleteAsync(Uri uri, CancellationToken cancellationToken = default(CancellationToken)) =>
             RepeatUntilAuthenticatedAsync(async ct => EnsureSuccessStatusCode(await DeleteAsync(uri, ct)).Dispose(), cancellationToken);
-
-        public Task HttpDeleteAsync(UriTemplate uriTemplate, CancellationToken cancellationToken = default(CancellationToken), params object[] args) =>
-            HttpDeleteAsync(MakeUri(uriTemplate, args), cancellationToken);
-
-        private Uri MakeUri(UriTemplate uriTemplate, params object[] args) =>
-            uriTemplate.BindByPosition(HttpClient.BaseAddress, args.Select(x => x.ToString()).ToArray());
-
 
         private async Task<HttpResponseMessage> GetAsync(Uri uri, CancellationToken ct) {
             using (_log.Measure(LogVerbosity.Traffic, Invariant($"GetAsync({uri})"))) {

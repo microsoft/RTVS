@@ -54,18 +54,24 @@ namespace Microsoft.UnitTests.Core.Threading {
         private Application _application;
         private SynchronizationContext _syncContext;
         private ControlledTaskScheduler _taskScheduler;
-        private AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
+        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
 
         private UIThreadHelper() { }
 
         public Thread Thread => _thread;
         public SynchronizationContext SyncContext => _syncContext;
-        public ControlledTaskScheduler TaskScheduler => _taskScheduler;
+        public ControlledTaskScheduler TaskScheduler { get; }
 
         #region IMainThread
         int IMainThread.ThreadId => Thread.ManagedThreadId;
-        void IMainThread.Post(Action action, CancellationToken cancellationToken)
-            => InvokeAsync(action, cancellationToken).DoNotWait();
+        void IMainThread.Post(Action action, CancellationToken cancellationToken) {
+            var bl = _blockingLoop.Value;
+            if (bl != null) {
+                bl.Post(action);
+            } else {
+                InvokeAsync(action, cancellationToken).DoNotWait();
+            }
+        }
         #endregion
 
         public void Invoke(Action action) {

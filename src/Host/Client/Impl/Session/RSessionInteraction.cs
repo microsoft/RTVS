@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
-    internal sealed class RSessionInteraction : IRSessionInteraction {
+    public sealed class RSessionInteraction : IRSessionInteraction {
         private readonly TaskCompletionSource<string> _requestTcs;
         private readonly Task _responseTask;
 

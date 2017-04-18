@@ -13,7 +13,6 @@ using Xunit.Sdk;
 
 namespace Microsoft.R.Support.Test {
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
-    [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class RSupportShellProviderFixture : EditorShellProviderFixture {
         private ITestInput _testInput;

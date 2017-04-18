@@ -34,7 +34,11 @@ namespace Microsoft.R.Host.Client.Host {
         private static BrokerConnectionInfo CreateRemote(string name, Uri uri, ISecurityService securityService, string rCommandLineArguments) {
             var fragment = uri.Fragment;
             var interpreterId = string.IsNullOrEmpty(fragment) ? string.Empty : fragment.Substring(1);
-            uri = new Uri(uri.GetLeftPart(UriPartial.Query));
+            UriBuilder ub = new UriBuilder(uri);
+            ub.Fragment = null;
+            ub.UserName = null;
+            ub.Password = null;
+            uri = ub.Uri;
             string username = securityService.GetUserName(GetCredentialAuthority(name));
             return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username);
         }

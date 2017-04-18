@@ -6,6 +6,7 @@ using System.IO;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -19,7 +20,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Broker.Sessions {
     public class Session {
         private readonly IRHostProcessService _processService;
-        private readonly IExitService _exitService;
+        private readonly IApplicationLifetime _applicationLifetime;
         private readonly bool _isInteractive;
         private readonly ILogger _sessionLogger;
         private readonly MessagePipe _pipe;
@@ -64,14 +65,14 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         internal Session(SessionManager manager
             , IRHostProcessService processService
-            , IExitService exitService
-            , IIdentity user
-            , string id
-            , Interpreter interpreter
-            , string commandLineArguments
-            , bool isInteractive
+            , IApplicationLifetime applicationLifetime
             , ILogger sessionLogger
-            , ILogger messageLogger) {
+            , ILogger messageLogger
+            , IIdentity user
+            , Interpreter interpreter
+            , string id
+            , string commandLineArguments
+            , bool isInteractive) {
 
             Manager = manager;
             Interpreter = interpreter;
@@ -79,7 +80,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             Id = id;
             CommandLineArguments = commandLineArguments;
             _processService = processService;
-            _exitService = exitService;
+            _applicationLifetime = applicationLifetime;
             _isInteractive = isInteractive;
             _sessionLogger = sessionLogger;
 
@@ -131,8 +132,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 _sessionLogger.LogError(0, ex, "Failed to kill host process for session '{0}'.", Id);
                 throw;
             }
-
-            _process = null;
         }
 
         public IMessagePipeEnd ConnectClient() {
@@ -166,7 +165,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 while (true) {
                     byte[] message;
                     try {
-                        message = await pipe.ReadAsync(_exitService.CancellationToken);
+                        message = await pipe.ReadAsync(_applicationLifetime.ApplicationStopping);
                     } catch (PipeDisconnectedException) {
                         break;
                     }

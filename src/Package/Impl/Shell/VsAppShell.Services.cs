@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public partial class VsAppShell {
@@ -56,8 +57,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new FileSystem())
                 .AddService(new ProcessServices())
                 .AddService(new RegistryImpl())
-                .AddService<IMicrosoftRClientInstaller>(new MicrosoftRClientInstaller())
-                .AddService<IRInstallationService>(new RInstallation());
+                .AddService(new MicrosoftRClientInstaller())
+                .AddService(new RInstallation())
+                .AddService(new RemotingWebServer())
+                .AddService(new WebSocketClientService());
             // TODO: add more
 
             settings.LoadSettings();

@@ -4,8 +4,7 @@
 using System;
 
 namespace Microsoft.R.Host.Client {
-    [Serializable]
-    internal class MessageTransportException : Exception {
+     internal class MessageTransportException : Exception {
         public MessageTransportException() {
         }
 

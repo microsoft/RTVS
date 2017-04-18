@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Common.Core</RootNamespace>
-    <AssemblyName>Microsoft.Rtvs.Core.Windows</AssemblyName>
+    <AssemblyName>Microsoft.R.Common.Core.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
