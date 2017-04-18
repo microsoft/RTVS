@@ -1510,6 +1510,9 @@
       <Item ItemId=";Plots_ExportAsImageFilter" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PNG(*.png)|*.png|JPEG(*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP(*.bmp)|*.bmp|TIFF(*.tif;*.tiff)|*.tif;*.tiff|모든 파일(*.*)|*.*]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1525,6 +1528,9 @@
       <Item ItemId=";Plots_ExportAsPdfFilter" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PDF (*.pdf)|*.pdf|All Files (*.*)|*.*]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PDF(*.pdf)|*.pdf|모든 파일(*.*)|*.*]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1829,7 +1835,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 저장된 작업 영역 이미지 '{0}'을(를) 삭제하시겠습니까?]]></Val>
+            <Val><![CDATA[자동 저장된 작업 영역 이미지 '{0}' 을(를) 삭제하시겠습니까?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1838,7 +1844,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 저장된 작업 영역 이미지 '{0}'을(를) 삭제하는 중입니다.]]></Val>
+            <Val><![CDATA[자동 저장된 작업 영역 이미지 '{0}' 을(를) 삭제하는 중입니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1847,7 +1853,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 저장된 이미지 '{0}'에서 작업 영역을 로드하지 못했습니다.]]></Val>
+            <Val><![CDATA[자동 저장된 이미지 '{0}' 에서 작업 영역을 로드하지 못했습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1856,7 +1862,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 저장된 이미지 '{0}'에서 작업 영역을 로드했습니다.]]></Val>
+            <Val><![CDATA[자동 저장된 이미지 '{0}' 에서 작업 영역을 로드했습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
