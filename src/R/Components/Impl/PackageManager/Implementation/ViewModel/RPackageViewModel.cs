@@ -22,7 +22,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private string _installedVersion;
         private string _latestVersion;
         private ICollection<string> _urls;
-        private string _libraryPath;
+        private string _libraryPath; 
+        private Uri _repositoryUri;
+        private string _repositoryText;
         private string _built;
         private bool _isUpdateAvailable;
         private bool _canBeUninstalled;
@@ -126,8 +128,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             private set { SetProperty(ref _libraryPath, value); }
         }
 
-        public string RepositoryText { get; private set; }
-        public Uri RepositoryUri { get; private set; }
+        public string RepositoryText {
+            get { return _repositoryText; }
+            private set { SetProperty(ref _repositoryText, value); }
+        }
+
+        public Uri RepositoryUri {
+            get { return _repositoryUri; }
+            private set { SetProperty(ref _repositoryUri, value); }
+        }
 
         public string Built {
             get { return _built; }
