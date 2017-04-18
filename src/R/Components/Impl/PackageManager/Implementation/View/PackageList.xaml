@@ -133,7 +133,8 @@
                             </TextBlock>
 
                             <!-- update button -->
-                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUpdate_Click">
+                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUpdate_Click"
+                                    Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
@@ -144,13 +145,6 @@
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </Button.ToolTip>
-                                <Button.Visibility>
-                                    <MultiBinding Converter="{x:Static rwpf:Converters.AllIsNotHidden}">
-                                        <Binding Path="IsUpdateAvailable" />
-                                        <Binding Path="IsInstalled" />
-                                        <Binding Path="CanBeUninstalled" />
-                                    </MultiBinding>
-                                </Button.Visibility>
                                 <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Upload}" />
                             </Button>
                         </Grid>
