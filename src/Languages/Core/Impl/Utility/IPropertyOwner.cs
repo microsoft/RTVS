@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.Services;
 
-// blatantly copied from Microsoft.VisualStudio.Utilities
 namespace Microsoft.Languages.Core.Utility {
     /// <summary>
     /// Provides ownership of an arbitrary set of properties.

@@ -3,8 +3,9 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Core.Utility;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST {
@@ -25,9 +26,7 @@ namespace Microsoft.R.Core.AST {
         /// <summary>
         /// AST root node
         /// </summary>
-        public virtual AstRoot Root {
-            get { return Parent != null ? Parent.Root : null; }
-        }
+        public virtual AstRoot Root => Parent != null ? Parent.Root : null;
 
         /// <summary>
         /// This node's parent
@@ -38,7 +37,6 @@ namespace Microsoft.R.Core.AST {
                 if (_parent != null && _parent != value && value != null) {
                     throw new InvalidOperationException("Node already has parent");
                 }
-
                 _parent = value;
                 if (_parent != null) {
                     _parent.AppendChild(this);
@@ -46,9 +44,7 @@ namespace Microsoft.R.Core.AST {
             }
         }
 
-        public virtual IReadOnlyTextRangeCollection<IAstNode> Children {
-            get { return _children; }
-        }
+        public virtual IReadOnlyTextRangeCollection<IAstNode> Children => _children;
 
         public void AppendChild(IAstNode child) {
             if (child.Parent == null) {
@@ -67,31 +63,27 @@ namespace Microsoft.R.Core.AST {
         }
 
         public void RemoveChildren(int start, int count) {
-            if (count == 0)
+            if (count == 0) {
                 return;
+            }
 
-            if (start < 0 || start >= Children.Count)
-                throw new ArgumentOutOfRangeException(nameof(start));
-
-            if (count < 0 || count > Children.Count || start + count > Children.Count)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            Check.ArgumentOutOfRange(nameof(start), () => start < 0 || start >= Children.Count);
+            Check.ArgumentOutOfRange(nameof(count), () => count < 0 || count > Children.Count || start + count > Children.Count);
 
             if (Children.Count == count) {
                 _children = new TextRangeCollection<IAstNode>();
             } else {
                 var newChildren = new IAstNode[Children.Count - count];
-
                 int j = 0;
-
-                for (int i = 0; i < start; i++, j++)
+                for (int i = 0; i < start; i++, j++) {
                     newChildren[j] = Children[i];
-
-                for (int i = start; i < start + count; i++)
+                }
+                for (int i = start; i < start + count; i++) {
                     Children[i].Parent = null;
-
-                for (int i = start + count; i < Children.Count; i++, j++)
+                }
+                for (int i = start + count; i < Children.Count; i++, j++) {
                     newChildren[j] = Children[i];
-
+                }
                 _children = new TextRangeCollection<IAstNode>(newChildren);
             }
         }
@@ -213,9 +205,7 @@ namespace Microsoft.R.Core.AST {
         #endregion
 
         #region IPropertyOwner
-        public PropertyDictionary Properties {
-            get { return _properties.Value; }
-        }
+        public PropertyDictionary Properties => _properties.Value;
         #endregion
 
         #region IParseItem
@@ -226,31 +216,15 @@ namespace Microsoft.R.Core.AST {
         #endregion
 
         #region ITextRange
-        public virtual int Start {
-            get { return Children.Count > 0 ? Children[0].Start : 0; }
-        }
-
-        public virtual int End {
-            get { return Children.Count > 0 ? Children[Children.Count - 1].End : 0; }
-        }
-
-        public int Length {
-            get { return End - Start; }
-        }
-
-        public virtual bool Contains(int position) {
-            return TextRange.Contains(this, position);
-        }
-
-        public virtual void Shift(int offset) {
-            Children.Shift(offset);
-        }
+        public virtual int Start => Children.Count > 0 ? Children[0].Start : 0;
+        public virtual int End => Children.Count > 0 ? Children[Children.Count - 1].End : 0;
+        public int Length => End - Start;
+        public virtual bool Contains(int position) => TextRange.Contains(this, position);
+        public virtual void Shift(int offset) => Children.Shift(offset);
         #endregion
 
         #region ICompositeTextRange
-        public virtual void ShiftStartingFrom(int position, int offset) {
-            Children.ShiftStartingFrom(position, offset);
-        }
+        public virtual void ShiftStartingFrom(int position, int offset) => Children.ShiftStartingFrom(position, offset);
         #endregion
 
         #region IAstVisitorPattern
