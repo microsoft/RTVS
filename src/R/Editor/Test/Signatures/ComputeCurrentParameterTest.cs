@@ -121,8 +121,6 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter03() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
-            //REditorSettings.PartialArgumentNameMatch = false;
-
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             SignatureHelpSource source = new SignatureHelpSource(textBuffer, Shell);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);

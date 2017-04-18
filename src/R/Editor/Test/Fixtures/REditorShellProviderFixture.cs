@@ -4,10 +4,8 @@
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Support.Test;
-using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test {
-    [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class REditorShellProviderFixture : RSupportShellProviderFixture {
         protected override CompositionContainer CreateCompositionContainer() {
