@@ -135,7 +135,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <!--Depends -->
+                <!--Title -->
                 <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Title}"
                            Visibility="{Binding Path=Title, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Title}" Margin="8,8,0,0" 
@@ -197,7 +197,7 @@
                 <TextBlock Grid.Row="9" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_LibraryPath}"
                             Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
                 <StackPanel Grid.Row="9" Grid.Column="1" Margin="8,8,0,0"
-                            Visibility="{Binding Path=RepositoryUri, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
+                            Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
                     <TextBlock Visibility="{Binding Path=IsRemoteSession, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}" 
                                    Text="{Binding Mode=OneTime, Path=LibraryPath}" />
                     <TextBlock Visibility="{Binding Path=IsRemoteSession, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
@@ -208,12 +208,17 @@
                 </StackPanel>
 
                 <!--Repository -->
-                <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Repository}"
-                            Visibility="{Binding Path=Repository, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Repository}">
+                    <TextBlock.Visibility>
+                        <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
+                            <Binding Path="RepositoryUri" Converter="{x:Static wpf:Converters.NullIsTrue}" />
+                            <Binding Path="RepositoryText" Converter="{x:Static wpf:Converters.NullIsTrue}" />
+                        </MultiBinding>
+                    </TextBlock.Visibility>
+                </TextBlock>
                 <StackPanel Grid.Row="10" Grid.Column="1">
-                    <TextBlock Margin="8,8,0,0" Text="{Binding Path=RepositoryText}"
-                            Visibility="{Binding Path=RepositoryText, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Margin="8,8,0,0"  Visibility="{Binding Path=RepositoryUri, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
+                    <TextBlock Margin="8,8,0,0" Text="{Binding Path=RepositoryText}" Visibility="{Binding Path=RepositoryText, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                    <TextBlock Margin="8,8,0,0" Visibility="{Binding Path=RepositoryUri, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
                         <Hyperlink NavigateUri="{Binding Path=RepositoryUri}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="RepositoryUri_RequestNavigate">
                             <Run Text="{Binding Mode=OneTime, Path=RepositoryUri}" />
                         </Hyperlink>
