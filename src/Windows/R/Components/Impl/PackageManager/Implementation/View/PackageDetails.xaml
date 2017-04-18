@@ -212,7 +212,7 @@
                     <TextBlock.Visibility>
                         <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
                             <Binding Path="RepositoryUri" Converter="{x:Static wpf:Converters.NullIsFalse}" />
-                            <Binding Path="RepositoryText" Converter="{x:Static wpf:Converters.NullIsFalse}" />
+                            <Binding Path="RepositoryText" Converter="{x:Static wpf:Converters.NullOrEmptyIsFalse}" />
                         </MultiBinding>
                     </TextBlock.Visibility>
                 </TextBlock>
