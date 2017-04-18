@@ -69,25 +69,5 @@ namespace Microsoft.Languages.Editor.Test.Helpers {
             tb = new TextBufferMock(string.Empty, "R Signature Help");
             tb.IsSignatureHelpBuffer().Should().BeTrue();
         }
-
-        [Test]
-        public void IsContentEqualsOrdinalTest() {
-            var tb = new TextBufferMock("abc abc", "R");
-
-            tb.IsContentEqualsOrdinal(
-                new TrackingSpanMock(tb, new Span(0, 3), SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward),
-                new TrackingSpanMock(tb, new Span(4, 3), SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward)
-                ).Should().BeTrue();
-
-            tb.IsContentEqualsOrdinal(
-                new TrackingSpanMock(tb, new Span(0, 4), SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward),
-                new TrackingSpanMock(tb, new Span(4, 3), SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward)
-                ).Should().BeFalse();
-
-            tb.IsContentEqualsOrdinal(
-                new TrackingSpanMock(tb, new Span(0, 4), SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward),
-                new TrackingSpanMock(tb, new Span(1, 4), SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward)
-                ).Should().BeFalse();
-        }
     }
 }

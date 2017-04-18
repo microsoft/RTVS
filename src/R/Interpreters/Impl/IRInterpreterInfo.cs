@@ -2,8 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.Interpreters {
     public interface IRInterpreterInfo {
@@ -31,8 +30,6 @@ namespace Microsoft.R.Interpreters {
         /// <summary>
         /// Verifies actual installation on disk
         /// </summary>
-        /// <param name="fs"></param>
-        /// <returns></returns>
-        bool VerifyInstallation(ISupportedRVersionRange svl = null, IFileSystem fs = null, IUIService ui = null);
+        bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null);
     }
 }

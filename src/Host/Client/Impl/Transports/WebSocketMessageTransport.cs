@@ -45,7 +45,9 @@ namespace Microsoft.R.Host.Client {
                 await _receiveLock.WaitAsync(cancellationToken);
                 WebSocketReceiveResult wsrr;
                 try {
-                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer.GetBuffer(), index, blockSize), cancellationToken);
+                    ArraySegment<byte> arrSegment;
+                    buffer.TryGetBuffer(out arrSegment);
+                    wsrr = await _socket.ReceiveAsync(new ArraySegment<byte>(arrSegment.Array, index, blockSize), cancellationToken);
                 } catch (Exception ex) when(IsTransportException(ex)) {
                     throw new MessageTransportException(ex);
                 } finally {

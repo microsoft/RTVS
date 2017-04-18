@@ -8,18 +8,6 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     internal static class RHostLoggingExtensions {
-        public static void RHostProcessStarted(this IActionLog log, ProcessStartInfo psi) {
-            var sb = new StringBuilder();
-            sb.AppendLine(Invariant($"R Host process started: {psi.FileName}"));
-            if (psi.EnvironmentVariables.Count > 0) {
-                sb.AppendLine("Environment variables:");
-                foreach (var variable in psi.Environment) {
-                    sb.Append(' ', 4).AppendLine(Invariant($"{variable.Key}={variable.Value}"));
-                }
-            }
-            log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, sb.ToString());
-        }
-
         public static void RHostProcessExited(this IActionLog log) {
             log.WriteLine(LogVerbosity.Minimal, MessageCategory.General, "R Host process exited");
         }

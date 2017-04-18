@@ -131,8 +131,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var broker = _coreShell.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = _coreShell.GetService<IRInteractiveWorkflowProvider>();
-            interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
+            var interactiveWorkflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
+            var ops = interactiveWorkflowProvider.GetOrCreate().Operations as IRInteractiveWorkflowOperationsEx;
+            ops.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
         }
 

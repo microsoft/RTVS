@@ -15,10 +15,10 @@ using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class LoadHistoryCommand : ViewCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public LoadHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public LoadHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadHistory, false) {
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);

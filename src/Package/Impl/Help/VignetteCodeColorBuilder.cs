@@ -49,13 +49,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             new CssCodeProperty("paren", PredefinedClassificationTypeNames.Operator),
         };
 
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IClassificationFormatMapService _formatMapService;
         private readonly IClassificationTypeRegistryService _classificationRegistryService;
 
         [ImportingConstructor]
         public VignetteCodeColorBuilder(
-            IRInteractiveWorkflowProvider workflowProvider,
+            IRInteractiveWorkflowVisualProvider workflowProvider,
             IClassificationFormatMapService cfms, 
             IClassificationTypeRegistryService ctrs) {
             _workflowProvider = workflowProvider;

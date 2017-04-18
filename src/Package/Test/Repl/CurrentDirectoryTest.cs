@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class CurrentDirectoryTest : IAsyncLifetime {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSessionProvider _sessionProvider;
 
         public CurrentDirectoryTest() {

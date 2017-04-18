@@ -4,7 +4,6 @@
 using System;
 
 namespace Microsoft.R.Components.Plots {
-    [Serializable]
     public sealed class RPlotManagerException : Exception {
         public RPlotManagerException(string message, Exception innerException = null)
             : base(message, innerException) {

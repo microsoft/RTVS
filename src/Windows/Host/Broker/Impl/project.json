@@ -1,0 +1,29 @@
+﻿{
+  "dependencies": {
+    "Libuv": "1.9.1",
+    "MicroBuild.Core": "0.2.0",
+    "Microsoft.AspNetCore.Authentication": "1.1.1",
+    "Microsoft.AspNetCore.Mvc": "1.1.2",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.1",
+    "Microsoft.AspNetCore.Server.Kestrel.Https": "1.1.1",
+    "Microsoft.AspNetCore.Server.WebListener": "1.1.1",
+    "Microsoft.AspNetCore.WebSockets.Server": "0.1.0",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.1.1",
+    "Microsoft.Extensions.Configuration.Json": "1.1.1",
+    "Microsoft.Extensions.Logging.Console": "1.1.1",
+    "Microsoft.Extensions.Logging.Debug": "1.1.1",
+    "Microsoft.Extensions.Logging.EventLog": "1.1.1",
+    "Microsoft.Extensions.Logging.TraceSource": "1.1.1",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
+    "Newtonsoft.Json": "9.0.1",
+    "System.Threading.Tasks.Dataflow": "4.5.24",
+    "System.ValueTuple": "4.3.0"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {},
+    "win-x64": {}
+  }
+}

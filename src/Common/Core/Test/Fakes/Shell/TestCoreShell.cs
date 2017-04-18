@@ -21,13 +21,10 @@ using NSubstitute;
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
-        private readonly Thread _creatorThread;
-
         public IServiceManager ServiceManager { get; }
 
         private TestCoreShell(IServiceManager serviceManager) {
-            _creatorThread = UIThreadHelper.Instance.Thread;
-            ServiceManager = serviceManager;
+             ServiceManager = serviceManager;
         }
 
         /// <summary>

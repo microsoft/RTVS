@@ -12,9 +12,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class ClearReplCommand : ViewCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
 
-        public ClearReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+        public ClearReplCommand(ITextView textView, IRInteractiveWorkflowVisual interactiveWorkflow) :
             base(textView, new CommandId(RGuidList.RCmdSetGuid, (int)RPackageCommandId.icmdClearRepl), false) {
             _interactiveWorkflow = interactiveWorkflow;
         }

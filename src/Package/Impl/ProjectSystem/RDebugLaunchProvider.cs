@@ -27,11 +27,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IProjectSystemServices _pss;
 
         [ImportingConstructor]
-        public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IProjectSystemServices pss)
+        public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider, IProjectSystemServices pss)
             : base(configuredProject) {
             _properties = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
             _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();

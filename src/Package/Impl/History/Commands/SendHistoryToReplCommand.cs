@@ -13,10 +13,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SendHistoryToReplCommand : ViewCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public SendHistoryToReplCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public SendHistoryToReplCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, new [] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendHistoryToRepl),
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive)

@@ -1,307 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{506141BE-1418-4D75-8E24-54A9280B0A66}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <RootNamespace>Microsoft.R.Components</RootNamespace>
-    <AssemblyName>Microsoft.R.Components</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <ItemGroup>
-    <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
-      <Private>True</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Design" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="UIAutomationClient" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="WindowsBase" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Settings\Mirrors\CranMirrors.csv" />
-    <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Application\Configuration\ConfigurationSettingAttributeNames.cs" />
-    <Compile Include="Application\Configuration\ConfigurationSettingCollectionExtensions.cs" />
-    <Compile Include="Application\Configuration\ObservableNameValue.cs" />
-    <Compile Include="Application\Configuration\ConfigurationSettingCollection.cs" />
-    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingCollection.cs" />
-    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingUIEditorProvider.cs" />
-    <Compile Include="Application\Configuration\IO\ConfigurationSettingsWriter.cs" />
-    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsWriter.cs" />
-    <Compile Include="Application\Configuration\Parser\ConfigurationError.cs" />
-    <Compile Include="Application\Configuration\Parser\ConfigurationParser.cs" />
-    <Compile Include="Application\Configuration\ConfigurationSetting.cs" />
-    <Compile Include="Application\Configuration\IO\ConfigurationSettingsReader.cs" />
-    <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
-    <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
-    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
-    <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
-    <Compile Include="ConnectionManager\IConnectionInfo.cs" />
-    <Compile Include="ConnectionManager\IConnection.cs" />
-    <Compile Include="ConnectionManager\IConnectionManager.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerProvider.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerVisualComponent.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerVisualComponentContainerFactory.cs" />
-    <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
-    <Compile Include="ConnectionManager\Implementation\ConnectionManager.cs" />
-    <Compile Include="ConnectionManager\Connection.cs" />
-    <Compile Include="ConnectionManager\Implementation\ConnectionManagerProvider.cs" />
-    <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisualComponent.cs" />
-    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
-    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
-    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBaseViewModel.cs" />
-    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionViewModel.cs" />
-    <Compile Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml.cs">
-      <DependentUpon>ConnectionManagerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml.cs">
-      <DependentUpon>ConnectionStatusBar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionManagerViewModel.cs" />
-    <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionStatusBarViewModel.cs" />
-    <Compile Include="ConnectionManager\ConnectionManagerCommandIds.cs" />
-    <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionViewModel.cs" />
-    <Compile Include="ConnectionManager\ViewModel\IConnectionManagerViewModel.cs" />
-    <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
-    <Compile Include="ConnectionManager\ViewModel\IConnectionViewModel.cs" />
-    <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
-    <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
-    <Compile Include="Documentation\LocalDocumentationPaths.cs" />
-    <Compile Include="Documentation\OnlineDocumentationUrls.cs" />
-    <Compile Include="Extensions\TextBufferExtensions.cs" />
-    <Compile Include="Extensions\TextViewExtensions.cs" />
-    <Compile Include="Help\Commands\HelpHomeCommand.cs" />
-    <Compile Include="Help\Commands\HelpNextCommand.cs" />
-    <Compile Include="Help\Commands\HelpPreviousCommand.cs" />
-    <Compile Include="Help\Commands\HelpRefreshCommand.cs" />
-    <Compile Include="Help\IHelpVisualComponent.cs" />
-    <Compile Include="Help\IHelpVisualComponentContainerFactory.cs" />
-    <Compile Include="History\Implementation\HistorySelectionTextAdornment.cs" />
-    <Compile Include="History\Implementation\HistorySelectionTextAdornmentFactory.cs" />
-    <Compile Include="History\Implementation\HistoryTextViewMouseProcessor.cs" />
-    <Compile Include="History\Implementation\HistoryTextViewMouseProcessorProvider.cs" />
-    <Compile Include="History\Implementation\MultilineRHistoryEntries.cs" />
-    <Compile Include="History\Implementation\RHistory.cs" />
-    <Compile Include="History\Implementation\RHistory.ISelector.cs" />
-    <Compile Include="History\Implementation\RHistory.NextPreviousEntrySelector.cs" />
-    <Compile Include="History\Implementation\RHistory.ToggleSelectionEndSelector.cs" />
-    <Compile Include="History\Implementation\RHistoryEntries.cs" />
-    <Compile Include="History\Implementation\RHistoryFiltering.cs" />
-    <Compile Include="History\Implementation\RHistoryProvider.cs" />
-    <Compile Include="History\Implementation\RHistoryWindowVisualComponent.cs" />
-    <Compile Include="History\Implementation\SinglelineRHistoryEntries.cs" />
-    <Compile Include="History\IRHistory.cs" />
-    <Compile Include="History\IRHistoryEntries.cs" />
-    <Compile Include="History\IRHistoryEntry.cs" />
-    <Compile Include="History\IRHistoryFiltering.cs" />
-    <Compile Include="History\IRHistoryProvider.cs" />
-    <Compile Include="History\IRHistoryVisualComponent .cs" />
-    <Compile Include="History\IRHistoryVisualComponentContainerFactory.cs" />
-    <Compile Include="History\RHistoryCommandIds.cs" />
-    <Compile Include="ContentTypes\RHistoryContentTypeDefinition.cs" />
-    <Compile Include="Information\Converters.cs" />
-    <Compile Include="Information\HostLoadIndicator.xaml.cs">
-      <DependentUpon>HostLoadIndicator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Information\HostLoadIndicatorViewModel.cs" />
-    <Compile Include="InteractiveWorkflow\ActiveWindowChangedEventArgs.cs" />
-    <Compile Include="InteractiveWorkflow\Commands\DeleteProfileCommand.cs" />
-    <Compile Include="InteractiveWorkflow\Commands\SessionInformationCommand.cs" />
-    <Compile Include="InteractiveWorkflow\Commands\TerminateRCommand.cs" />
-    <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
-    <Compile Include="InteractiveWorkflow\SessionNames.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\CarriageReturnProcessor.cs" />
-    <Compile Include="PackageManager\IPackageInstallationNotifications.cs" />
-    <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
-    <Compile Include="Plots\Implementation\RPlot.cs" />
-    <Compile Include="Plots\Implementation\RPlotDevice.cs" />
-    <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryEntryViewModel.cs" />
-    <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryViewModel.cs" />
-    <Compile Include="Plots\Implementation\View\DragSurface.cs" />
-    <Compile Include="Plots\Implementation\View\PointEventArgs.cs" />
-    <Compile Include="Plots\IRPlot.cs" />
-    <Compile Include="Plots\IRPlotDevice.cs" />
-    <Compile Include="Plots\RPlotEventArgs.cs" />
-    <Compile Include="Plots\RPlotDeviceEventArgs.cs" />
-    <Compile Include="Plots\RPlotHistoryCommands.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDevicePasteCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceCutCopyCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceEndLocatorCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceCopyAsMetafileCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceCopyAsBitmapCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceExportAsPdfCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceExportAsImageCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceActivateCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryActivateCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\InteractiveWorkflowAsyncCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryRemoveCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryCutCopyCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryAutoHideCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryZoomOutCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotHistoryZoomInCommand.cs" />
-    <Compile Include="Plots\Commands\PlotDeviceNewCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveAllCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceMoveNextCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceMovePreviousCommand.cs" />
-    <Compile Include="Plots\Implementation\Commands\PlotDeviceRemoveCurrentCommand.cs" />
-    <Compile Include="Plots\RPlotDeviceCommands.cs" />
-    <Compile Include="Plots\Implementation\PlotClipboardData.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\InteractiveWindowConsole.cs" />
-    <Compile Include="Plots\Implementation\PlotMessageExtensions.cs" />
-    <Compile Include="Plots\Implementation\RPlotHistoryVisualComponent.cs" />
-    <Compile Include="Plots\Implementation\View\RPlotHistoryControl.xaml.cs">
-      <DependentUpon>RPlotHistoryControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plots\IRPlotHistoryVisualComponent.cs" />
-    <Compile Include="Plots\IRPlotHistoryVisualComponentContainerFactory.cs" />
-    <Compile Include="Plots\RPlotCommandIds.cs" />
-    <Compile Include="Plots\Implementation\ViewModel\RPlotHistoryViewModel.cs" />
-    <Compile Include="Plots\Implementation\ViewModel\RPlotHistoryEntryViewModel.cs" />
-    <Compile Include="InteractiveWorkflow\IActiveWpfTextViewTracker.cs" />
-    <Compile Include="InteractiveWorkflow\IDebuggerModeTracker.cs" />
-    <Compile Include="InteractiveWorkflow\IInteractiveWindowComponentContainerFactory.cs" />
-    <Compile Include="InteractiveWorkflow\IInteractiveWindowVisualComponent.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\ActiveTextViewChangedEventArgs.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\RInteractiveEvaluator.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\RInteractiveWindowVisualComponent.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\RInteractiveWorkflow.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\RInteractiveWorkflowOperations.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\RSessionCallback.cs" />
-    <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
-    <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
-    <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
-    <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\ViewModel\RPackageViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.Designer.cs">
-      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Model\PackageLockState.cs" />
-    <Compile Include="PackageManager\Model\RPackage.cs" />
-    <Compile Include="PackageManager\RPackageManagerException.cs" />
-    <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
-    <Compile Include="PackageManager\Implementation\RPackageManagerProvider.cs" />
-    <Compile Include="PackageManager\Implementation\RPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\PackageList.xaml.cs">
-      <DependentUpon>PackageList.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\View\PackageDetails.xaml.cs">
-      <DependentUpon>PackageDetails.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\View\PackageManagerControl.xaml.cs">
-      <DependentUpon>PackageManagerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\View\PackageManagerResources.xaml.cs">
-      <DependentUpon>PackageManagerResources.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\ViewModel\RPackageManagerViewModel.cs" />
-    <Compile Include="PackageManager\IRPackageManager.cs" />
-    <Compile Include="PackageManager\IRPackageManagerProvider.cs" />
-    <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
-    <Compile Include="PackageManager\ViewModel\IRPackageManagerViewModel.cs" />
-    <Compile Include="PackageManager\Model\RPackageVersion.cs" />
-    <Compile Include="Plots\Implementation\NonScaledImage.cs" />
-    <Compile Include="Plots\Implementation\RPlotManager.cs" />
-    <Compile Include="Plots\Implementation\RPlotManagerProvider.cs" />
-    <Compile Include="Plots\Implementation\RPlotDeviceVisualComponent.cs" />
-    <Compile Include="Plots\Implementation\ViewModel\RPlotDeviceViewModel.cs" />
-    <Compile Include="Plots\Implementation\View\RPlotDeviceControl.xaml.cs">
-      <DependentUpon>RPlotDeviceControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plots\Implementation\WpfUnitsConversion.cs" />
-    <Compile Include="Plots\IRPlotManager.cs" />
-    <Compile Include="Plots\IRPlotManagerProvider.cs" />
-    <Compile Include="Plots\IRPlotDeviceVisualComponent.cs" />
-    <Compile Include="Plots\IRPlotDeviceVisualComponentContainerFactory.cs" />
-    <Compile Include="Plots\RPlotManagerException.cs" />
-    <Compile Include="Plots\ViewModel\IRPlotHistoryViewModel.cs" />
-    <Compile Include="Plots\ViewModel\IRPlotHistoryEntryViewModel.cs" />
-    <Compile Include="Plots\ViewModel\IRPlotDeviceViewModel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Images.cs" />
-    <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
-    <Compile Include="Search\ISearchControl.cs" />
-    <Compile Include="Search\ISearchControlProvider.cs" />
-    <Compile Include="Search\ISearchHandler.cs" />
-    <Compile Include="Search\SearchControlSettings.cs" />
-    <Compile Include="ConnectionManager\ConnectionInfo.cs" />
-    <Compile Include="Settings\HelpBrowserType.cs" />
-    <Compile Include="Settings\IRSettings.cs" />
-    <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
-    <Compile Include="Settings\Mirrors\CranMirrorList.cs" />
-    <Compile Include="Settings\SurveyNewsPolicy.cs" />
-    <Compile Include="Settings\WebHelpSearchBrowserType.cs" />
-    <Compile Include="Sql\DbConnectionService.cs" />
-    <Compile Include="Sql\IDbConnectionService.cs" />
-    <Compile Include="Sql\ConnectionStringConverter.cs" />
-    <Compile Include="Sql\Publish\IDacPacBuilder.cs" />
-    <Compile Include="Sql\Publish\IDacPackage.cs" />
-    <Compile Include="Sql\Publish\IDacPackageServices.cs" />
-    <Compile Include="Sql\Publish\IDacPackageServicesProvider.cs" />
-    <Compile Include="StatusBar\IStatusBar.cs" />
-    <Compile Include="View\IVisualComponent.cs" />
-    <Compile Include="View\IVisualComponentContainer.cs" />
-    <Compile Include="View\IVisualComponentContainerFactory.cs" />
-    <Compile Include="Workspace\IWorkspaceServices.cs" />
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
-      <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
-      <Name>Microsoft.Common.Wpf</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
@@ -312,10 +32,6 @@
       <Project>{25CD8690-6208-4740-B123-6DBCE6B9444A}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -324,68 +40,12 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Wpf\Impl\Microsoft.R.Wpf.csproj">
-      <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
-      <Name>Microsoft.R.Wpf</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.resx">
-      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="ConnectionManager\Implementation\View\ConnectionManagerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Information\HostLoadIndicator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageDetails.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageManagerControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plots\Implementation\View\RPlotDeviceControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plots\Implementation\View\RPlotHistoryControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\StatusOK_32x.png" />
-    <Resource Include="Resources\StatusStop_32x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\packageicon.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SourceDirectory)Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
 </Project>

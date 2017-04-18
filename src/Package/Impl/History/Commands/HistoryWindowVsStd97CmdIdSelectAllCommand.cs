@@ -16,10 +16,10 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SELECTALL)
         };
 
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public HistoryWindowVsStd97CmdIdSelectAllCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public HistoryWindowVsStd97CmdIdSelectAllCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, SelectAllCommandIds, false) {
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);

@@ -17,13 +17,13 @@ using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSettings _settings;
         private IRSession _session;
 
         public Task InitializationTask { get; }
 
-        public WorkingDirectoryCommand(IRInteractiveWorkflow interactiveWorkflow) :
+        public WorkingDirectoryCommand(IRInteractiveWorkflowVisual interactiveWorkflow) :
             base(new[] {
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)

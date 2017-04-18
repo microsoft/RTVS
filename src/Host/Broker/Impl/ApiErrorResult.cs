@@ -4,10 +4,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker {
-    internal sealed class ApiErrorResult : ObjectResult {
+    public sealed class ApiErrorResult : ObjectResult {
         private BrokerApiError _brokerApiError;
         private readonly string _message;
 
@@ -25,7 +26,7 @@ namespace Microsoft.R.Host.Broker {
 
         public override Task ExecuteResultAsync(ActionContext context) {
             var headers = context.HttpContext.Response.Headers;
-            headers.Add(CustomHttpHeaders.RTVSApiError, new Extensions.Primitives.StringValues(_brokerApiError.ToString()));
+            headers.Add(CustomHttpHeaders.RTVSApiError, new StringValues(_brokerApiError.ToString()));
             if (!string.IsNullOrEmpty(_message)) {
                 headers.Add(CustomHttpHeaders.RTVSBrokerException, _message);
             }

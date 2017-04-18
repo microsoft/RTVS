@@ -13,10 +13,6 @@ namespace Microsoft.R.Components.PackageManager {
         event EventHandler InstalledPackagesInvalidated;
         event EventHandler AvailablePackagesInvalidated;
 
-        IRPackageManagerVisualComponent VisualComponent { get; }
-
-        IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0);
-
         /// <summary>
         /// Get the list of packages installed in the library folders set for
         /// this session ie. in .libPaths().

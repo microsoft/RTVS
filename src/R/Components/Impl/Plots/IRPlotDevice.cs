@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Windows.Media.Imaging;
 
 namespace Microsoft.R.Components.Plots {
     public interface IRPlotDevice {
@@ -30,7 +29,7 @@ namespace Microsoft.R.Components.Plots {
 
         IRPlot GetPlotAt(int index);
         IRPlot Find(Guid plotId);
-        void AddOrUpdate(Guid plotId, BitmapImage image);
+        void AddOrUpdate(Guid plotId, object image);
         void Remove(IRPlot plot);
         void Clear();
     }

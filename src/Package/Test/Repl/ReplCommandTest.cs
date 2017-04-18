@@ -29,8 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [Collection(CollectionNames.NonParallel)]
     public class ReplCommandTest : IDisposable {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
-        private readonly IRInteractiveWorkflow _workflow;
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflowVisual _workflow;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly TestCoreShell _coreShell = TestCoreShell.CreateBasic();
 
         public ReplCommandTest() {

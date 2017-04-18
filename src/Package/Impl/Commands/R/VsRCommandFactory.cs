@@ -17,10 +17,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class VsRCommandFactory : ICommandFactory {
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
 
         [ImportingConstructor]
-        public VsRCommandFactory(IRInteractiveWorkflowProvider workflowProvider) {
+        public VsRCommandFactory(IRInteractiveWorkflowVisualProvider workflowProvider) {
             _workflowProvider = workflowProvider;
         }
 

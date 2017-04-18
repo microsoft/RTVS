@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal sealed class StepIntoCommand : DebuggerWrappedCommand {
-        public StepIntoCommand(IRInteractiveWorkflow interactiveWorkflow)
+        public StepIntoCommand(IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(interactiveWorkflow, RPackageCommandId.icmdStepInto, 
                    VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.StepInto,
                    DebuggerCommandVisibility.Stopped) {

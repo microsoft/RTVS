@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     class ExecuteCurrentCodeCommand : RExecuteCommand {
 
-        public ExecuteCurrentCodeCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+        public ExecuteCurrentCodeCommand(ITextView textView, IRInteractiveWorkflowVisual interactiveWorkflow) :
             base(textView, interactiveWorkflow, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRexecuteReplCmd)) {
         }
 

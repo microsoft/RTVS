@@ -22,13 +22,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class VsMdCommandFactory : ICommandFactory {
         private readonly ICoreShell _coreShell;
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IWebBrowserServices _wbs;
 
         [ImportingConstructor]
         public VsMdCommandFactory(ICoreShell coreShell) {
             _coreShell = coreShell;
-            _workflowProvider = coreShell.GetService<IRInteractiveWorkflowProvider>();
+            _workflowProvider = coreShell.GetService<IRInteractiveWorkflowVisualProvider>();
             _wbs = coreShell.GetService<IWebBrowserServices>();
         }
 

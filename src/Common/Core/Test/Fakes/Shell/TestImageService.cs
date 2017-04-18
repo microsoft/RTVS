@@ -6,7 +6,7 @@ using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
-    internal sealed class TestImageService : IImageService {
+    public sealed class TestImageService : IImageService {
         private readonly ImageSource _image;
 
         public TestImageService() {

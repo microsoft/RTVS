@@ -17,12 +17,12 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SendHistoryToSourceCommand : ViewCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
         private readonly List<IContentType> _contentTypes = new List<IContentType>();
         private readonly IRHistory _history;
 
-        public SendHistoryToSourceCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow, IContentTypeRegistryService contentTypeRegistry, IActiveWpfTextViewTracker textViewTracker)
+        public SendHistoryToSourceCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow, IContentTypeRegistryService contentTypeRegistry, IActiveWpfTextViewTracker textViewTracker)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendHistoryToSource, false) {
 
             _textViewTracker = textViewTracker;

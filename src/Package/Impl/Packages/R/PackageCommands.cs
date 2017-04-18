@@ -36,7 +36,7 @@ using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuComm
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
         public static IEnumerable<MenuCommand> GetCommands(ICoreShell shell) {
-            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowVisualProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = shell.GetService<IProjectServiceAccessor>();
             var textViewTracker = shell.GetService<IActiveWpfTextViewTracker>();

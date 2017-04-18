@@ -2,7 +2,6 @@
   "dependencies": {
     "FluentAssertions": "4.16.0",
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.Tpl.Dataflow": "4.5.24",
     "Microsoft.VisualStudio.Shell.14.0": "14.3.25407",
     "NSubstitute": "1.10.0",
     "xunit": "2.2.0-beta1-build3239",

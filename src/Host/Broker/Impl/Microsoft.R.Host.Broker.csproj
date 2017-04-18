@@ -1,217 +1,59 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2CC10E50-392E-4B5D-98E4-D38F0061D363}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
-    <AssemblyName>Microsoft.R.Host.Broker</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <StartArguments>--server.urls http://localhost:5000</StartArguments>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
-    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DefineConstants>;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>RFile.ico</ApplicationIcon>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
-  <PropertyGroup>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>$(SourceDirectory)DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.WebListener" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets.Server" Version="0.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
+    <PackageReference Include="System.Net.NetworkInformation" Version="4.3.0" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.ServiceProcess" />
-    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.5.24" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="About\LoadController.cs" />
-    <Compile Include="About\AboutController.cs" />
-    <Compile Include="ApiErrorResult.cs" />
-    <Compile Include="RBrokerServiceInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="RBrokerServiceInstaller.Designer.cs">
-      <DependentUpon>RBrokerServiceInstaller.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Startup\BrokerService.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Startup\BrokerService.Designer.cs">
-      <DependentUpon>BrokerService.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Extensions\BasicSignInContextExtensions.cs" />
-    <Compile Include="Extensions\ExceptionExtensions.cs" />
-    <Compile Include="Interpreters\Interpreter.cs" />
-    <Compile Include="Interpreters\InterpreterManager.cs" />
-    <Compile Include="Lifetime\LifetimeOptions.cs" />
-    <Compile Include="Lifetime\LifetimeManager.cs" />
-    <Compile Include="Lifetime\PingController.cs" />
-    <Compile Include="Logging\FileLogger.cs" />
-    <Compile Include="Logging\FileLoggerProvider.cs" />
-    <Compile Include="Logging\LoggingOptions.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Pipes\PipeDisconnectedException.cs" />
-    <Compile Include="Pipes\MessageParser.cs" />
-    <Compile Include="Pipes\WebSocketPipeAction.cs" />
-    <Compile Include="RemoteUri\RemoteUriHelper.cs" />
-    <Compile Include="Security\Certificates.cs" />
-    <Compile Include="Security\Claims.cs" />
-    <Compile Include="Security\HttpBasicAuth\BaseBasicContext.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicAppBuilderExtensions.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicCredential.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicDefaults.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicEvents.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicExceptionContext.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicHandler.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicMiddleware.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicOptions.cs" />
-    <Compile Include="Security\HttpBasicAuth\BasicSignInContext.cs" />
-    <Compile Include="Security\HttpBasicAuth\IBasicEvents.cs" />
-    <Compile Include="Security\SecurityManager.cs" />
-    <Compile Include="Security\Policies.cs" />
-    <Compile Include="Security\TlsConfiguration.cs" />
-    <Compile Include="Sessions\SessionStateChangedEventArgs.cs" />
-    <Compile Include="Startup\CommonStartup.cs" />
-    <Compile Include="Startup\StartupOptions.cs" />
-    <Compile Include="Startup\Program.cs" />
-    <Compile Include="Sessions\Session.cs" />
-    <Compile Include="Sessions\SessionManager.cs" />
-    <Compile Include="Sessions\SessionsController.cs" />
-    <Compile Include="Pipes\IMessagePipeEnd.cs" />
-    <Compile Include="Pipes\MessagePipe.cs" />
-    <Compile Include="Interpreters\InterpreterOptions.cs" />
-    <Compile Include="Security\RUserAuthorizationRequirement.cs" />
-    <Compile Include="Security\SecurityOptions.cs" />
-    <Compile Include="Interpreters\ROptions.cs" />
-    <Compile Include="Startup\Startup.cs" />
-    <Compile Include="Interpreters\InterpretersController.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj" />
+    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="UserProfile\ProfileController.cs" />
-    <Compile Include="UserProfile\UserProfileManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
-      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
-      <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
-      <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
-      <Name>Microsoft.R.Host.Protocol</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).exe">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
-      <InProject>false</InProject>
-    </SignFilesDependsOn>
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).exe">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).exe.lcl</TranslationFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
-    </FilesToLocalize>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="RBrokerServiceInstaller.resx">
-      <DependentUpon>RBrokerServiceInstaller.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+    <EmbeddedResource Update="Resources.resx">
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="project.json" />
-  </ItemGroup>
-  <!-- libuv.dll is not properly copied to output directory by NuGet -->
-  <ItemGroup>
-    <Content Include="$(NuGetPackageRoot)\Libuv\1.9.1\runtimes\win7-x64\native\*" Condition="'$(Platform)' == 'x64'">
-      <Link>%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>True</Visible>
-    </Content>
-    <Content Include="RFile.ico" />
-    <None Include="Microsoft.R.Host.Broker.Config.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
     <ItemGroup>
       <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">

@@ -18,11 +18,11 @@ using CommandStatus = Microsoft.Common.Core.UI.Commands.CommandStatus;
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SaveHistoryCommand : ViewCommand {
         private readonly IUIService _ui;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly IRHistory _history;
 
-        public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
             _ui = interactiveWorkflow.Shell.UI();
             _interactiveWorkflow = interactiveWorkflow;
