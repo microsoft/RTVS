@@ -12,10 +12,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
         private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
 
         #region IEditorSettingsStorage Members
-        public T Get<T>(string name, T defaultValue = default(T)) {
-            object value;
-            return _settings.TryGetValue(name, out value) ? (T)value : defaultValue;
-        }
+        public T Get<T>(string name, T defaultValue = default(T)) => _settings.TryGetValue(name, out object value) ? (T)value : defaultValue;
         public void LoadFromStorage() { }
 #pragma warning disable 67
         public event EventHandler<EventArgs> SettingsChanged;
