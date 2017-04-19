@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
@@ -89,7 +89,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             var rSession = workflow.RSession;
             string functionCode = await rSession.GetFunctionCodeAsync(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {
-                var formatter = new RFormatter(REditorSettings.FormatOptions);
+                var formatter = new RFormatter(_shell.GetService<IREditorSettings>().FormatOptions);
                 functionCode = formatter.Format(functionCode);
             }
             return functionCode;

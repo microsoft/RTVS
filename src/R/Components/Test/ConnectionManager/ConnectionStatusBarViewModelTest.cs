@@ -3,12 +3,13 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 
@@ -40,30 +41,34 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
         }
 
         [Test(ThreadType.UI)]
-        public void StateChanges() {
+        public async Task StateChanges() {
             var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
 
             _cm.IsConnected.Returns(true);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);
 
+            await UIThreadHelper.Instance.DoEventsAsync(); // Event is dispatched to main thread
             m.IsConnected.Should().BeTrue();
             m.IsRunning.Should().BeFalse();
 
             _cm.IsRunning.Returns(true);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);
 
+            await UIThreadHelper.Instance.DoEventsAsync(); // Event is dispatched to main thread
             m.IsConnected.Should().BeTrue();
             m.IsRunning.Should().BeTrue();
 
             _cm.IsRunning.Returns(false);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);
 
+            await UIThreadHelper.Instance.DoEventsAsync(); // Event is dispatched to main thread
             m.IsConnected.Should().BeTrue();
             m.IsRunning.Should().BeFalse();
 
             _cm.IsConnected.Returns(false);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);
 
+            await UIThreadHelper.Instance.DoEventsAsync(); // Event is dispatched to main thread
             m.IsConnected.Should().BeFalse();
             m.IsRunning.Should().BeFalse();
         }

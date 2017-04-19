@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,17 +23,22 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
-        public ComputeCurrentParameterTest(IExportProvider exportProvider) : base(exportProvider) { }
+        private readonly IWritableREditorSettings _settings;
+
+        public ComputeCurrentParameterTest(REditorShellProviderFixture shellProvider) : 
+            base(shellProvider.CoreShell) {
+            _settings = Shell.GetService<IWritableREditorSettings>();
+        }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {
             ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer, shell);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, Shell);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(textBuffer, shell)) {
+            using (var tree = new EditorTree(textBuffer, Shell)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
 
@@ -83,15 +87,15 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter02() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
-            REditorSettings.PartialArgumentNameMatch = true;
+            _settings.PartialArgumentNameMatch = true;
 
-            ITextBuffer textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer, shell);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
+            var textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
+            var source = new SignatureHelpSource(textBuffer, Shell);
+            var session = new SignatureHelpSessionMock(textBuffer, 0);
+            var textView = session.TextView as TextViewMock;
+            var signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(textBuffer, shell)) {
+            using (var tree = new EditorTree(textBuffer, Shell)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
@@ -117,15 +121,13 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter03() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
-            REditorSettings.PartialArgumentNameMatch = false;
-
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer, shell);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, Shell);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(textBuffer, shell)) {
+            using (var tree = new EditorTree(textBuffer, Shell)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
@@ -147,15 +149,15 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter04() {
             await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
 
-            REditorSettings.PartialArgumentNameMatch = true;
+            _settings.PartialArgumentNameMatch = true;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer, shell);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, Shell);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(textBuffer, shell)) {
+            using (var tree = new EditorTree(textBuffer, Shell)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);

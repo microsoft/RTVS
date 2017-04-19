@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.IO;
@@ -25,11 +24,8 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public IServiceManager ServiceManager { get; }
 
         private TestCoreShell(IServiceManager serviceManager) {
-            ServiceManager = serviceManager;
+             ServiceManager = serviceManager;
         }
-
-        public static ICoreShell CreateFromCompositionContainer(CompositionContainer compositionContainer, IServiceManager services) 
-            => new TestCoreShell(new TestServiceManager(compositionContainer, services));
 
         /// <summary>
         /// Creates an empty shell. Caller can add services as needed.
@@ -54,6 +50,23 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             var shell = new TestCoreShell(new ServiceManager());
             shell.AddSubstiteServices();
             return shell;
+        }
+
+        /// <summary>
+        /// Creates test core shell with basic services and delegation
+        /// to the supplied export provider for additional services.
+        /// </summary>
+        /// <param name="exportProvider"></param>
+        public TestCoreShell(IExportProvider exportProvider) : this(new TestServiceManager(exportProvider)) {
+            AddBasicServices();
+        }
+
+        public TestCoreShell(ICompositionCatalog catalog) : this(new TestServiceManager(catalog.ExportProvider)) {
+            AddBasicServices();
+            ServiceManager
+                .AddService(catalog)
+                .AddService(catalog.ExportProvider)
+                .AddService(catalog.CompositionService);
         }
 
         private void AddSubstiteServices() {
@@ -85,6 +98,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(ps ?? new ProcessServices())
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
+                .AddService(new TestImageService())
                 .AddService(new TestPlatformServices());
         }
 

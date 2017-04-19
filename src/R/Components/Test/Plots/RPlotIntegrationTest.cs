@@ -19,7 +19,6 @@ using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.FluentAssertions;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -38,11 +37,12 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly TestUIServices _ui;
         private IInteractiveWindowVisualComponent _replVisualComponent;
 
-        public RPlotIntegrationTest(IExportProvider exportProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _workflowProvider = exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
+        public RPlotIntegrationTest(RComponentsShellProviderFixture shellProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            var coreShell = shellProvider.CoreShell;
+            _workflowProvider = coreShell.GetService<TestRInteractiveWorkflowProvider>();
             _workflow = _workflowProvider.GetOrCreate();
-            _plotDeviceVisualComponentContainerFactory = exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
-            _plotHistoryVisualComponentContainerFactory = exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
+            _plotDeviceVisualComponentContainerFactory = coreShell.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
+            _plotHistoryVisualComponentContainerFactory = coreShell.GetService<IRPlotHistoryVisualComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
             _ui = _workflow.Shell.UI() as TestUIServices;

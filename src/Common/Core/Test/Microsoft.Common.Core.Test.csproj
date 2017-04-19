@@ -40,9 +40,9 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
@@ -62,11 +62,22 @@
     <Compile Include="Extensions\IOExtensionsTest.cs" />
     <Compile Include="Fakes\Shell\TestCompositionCatalog.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
+    <Compile Include="Fakes\Shell\TestImageService.cs" />
     <Compile Include="Fakes\Shell\TestProgressDialog.cs" />
     <Compile Include="Fakes\Shell\TestServiceManager.cs" />
     <Compile Include="Fakes\Shell\TestUIServices.cs" />
+    <Compile Include="Fixtures\CoreShellProviderFixture.cs" />
     <Compile Include="Fixtures\ServiceManagerFixture.cs" />
     <Compile Include="Logging\MaxLoggingPermissions.cs" />
+    <Compile Include="Windows\Logging\PermissionsTest.cs" />
+    <Compile Include="Windows\Registry\RegistryBaseKeyMock.cs" />
+    <Compile Include="Windows\Registry\RegistryKeyMock.cs" />
+    <Compile Include="Windows\Registry\RegistryMocks.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\ServiceManagerTests.cs" />
     <Compile Include="Stubs\Shell\SecurityServiceStub.cs" />
     <Compile Include="Fakes\Shell\TestTaskService.cs" />
@@ -121,6 +132,15 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BlueSquare.png" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
@@ -28,7 +29,6 @@ namespace Microsoft.R.Components.Test.Plots {
     [Collection(CollectionNames.NonParallel)]
     public class RPlotIntegrationUITest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
-        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
@@ -37,16 +37,16 @@ namespace Microsoft.R.Components.Test.Plots {
         private IInteractiveWindowVisualComponent _interactiveWindow;
         private const int PlotWindowInstanceId = 1;
 
-        public RPlotIntegrationUITest(IExportProvider exportProvider, ContainerHostMethodFixture containerHost) {
+        public RPlotIntegrationUITest(RComponentsShellProviderFixture shellProvider, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            _exportProvider = exportProvider;
-            _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
-            _plotDeviceVisualComponentContainerFactory = _exportProvider.GetExportedValue<TestRPlotDeviceVisualComponentContainerFactory>();
+            var coreShell = shellProvider.CoreShell;
+            coreShell.GetService<IRInteractiveWorkflowProvider>();
+            _plotDeviceVisualComponentContainerFactory = coreShell.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
 
             // Don't override the standard behavior of using the control size
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
-            _plotHistoryVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRPlotHistoryVisualComponentContainerFactory>();
-            _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _plotHistoryVisualComponentContainerFactory = coreShell.GetService<IRPlotHistoryVisualComponentContainerFactory>();
+            _workflow = coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _plotVisualComponent = UIThreadHelper.Instance.Invoke(() => _workflow.Plots.GetOrCreateVisualComponent(_plotDeviceVisualComponentContainerFactory, PlotWindowInstanceId));
             UIThreadHelper.Instance.Invoke(() => _workflow.Plots.RegisterVisualComponent(_plotVisualComponent));
         }

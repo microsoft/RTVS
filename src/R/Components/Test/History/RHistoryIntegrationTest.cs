@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
@@ -25,12 +24,13 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly IRHistoryVisualComponentContainerFactory _historyVisualComponentContainerFactory;
 
-        public RHistoryIntegrationTest(IExportProvider exportProvider) {
-            _textBufferFactory = exportProvider.GetExportedValue<ITextBufferFactoryService>();
-            _textEditorFactory = exportProvider.GetExportedValue<ITextEditorFactoryService>();
-            _workflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            _contentTypeRegistryService = exportProvider.GetExportedValue<IContentTypeRegistryService>();
-            _historyVisualComponentContainerFactory = exportProvider.GetExportedValue<IRHistoryVisualComponentContainerFactory>();
+        public RHistoryIntegrationTest(RComponentsShellProviderFixture shellProvider) {
+            var shell = shellProvider.CoreShell;
+            _textBufferFactory = shell.GetService<ITextBufferFactoryService>();
+            _textEditorFactory = shell.GetService<ITextEditorFactoryService>();
+            _workflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
+            _contentTypeRegistryService = shell.GetService<IContentTypeRegistryService>();
+            _historyVisualComponentContainerFactory = shell.GetService<IRHistoryVisualComponentContainerFactory>();
         }
 
         [Test]

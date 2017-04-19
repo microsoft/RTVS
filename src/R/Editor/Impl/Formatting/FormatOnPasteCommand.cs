@@ -13,21 +13,23 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting.Data;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     public class FormatOnPasteCommand : EditingCommand {
+        private readonly IREditorSettings _settings;
+
         internal IClipboardDataProvider ClipboardDataProvider { get; set; }
 
         public FormatOnPasteCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
             base(textView, shell, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste)) {
             ClipboardDataProvider = new ClipboardDataProvider();
+            _settings = shell.GetService<IREditorSettings>();
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if (REditorSettings.FormatOnPaste &&
+            if (_settings.FormatOnPaste &&
                 (ClipboardDataProvider.ContainsData(DataFormats.Text) || ClipboardDataProvider.ContainsData(DataFormats.UnicodeText))) {
                 return CommandStatus.SupportedAndEnabled;
             }
@@ -35,7 +37,7 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (!REditorSettings.FormatOnPaste || TextView.Selection.Mode != TextSelectionMode.Stream) {
+            if (!_settings.FormatOnPaste || TextView.Selection.Mode != TextSelectionMode.Stream) {
                 return CommandResult.NotSupported;
             }
 
@@ -62,7 +64,7 @@ namespace Microsoft.R.Editor.Formatting {
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
                             RangeFormatter.FormatRange(TextView, document.TextBuffer,
-                                new TextRange(insertionPoint, text.Length), REditorSettings.FormatOptions, Shell);
+                                new TextRange(insertionPoint, text.Length), _settings.FormatOptions, Shell);
                         }
                     }
                 }

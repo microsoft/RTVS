@@ -140,8 +140,6 @@
     <Compile Include="Debugger\DataTips\DataTipTextViewConnectionListener.cs" />
     <Compile Include="Editors\BaseLanguageService.cs" />
     <Compile Include="Editors\LanguageSettingsStorage.cs" />
-    <Compile Include="Editors\LanguageSettingsStorageWithDialog.cs" />
-    <Compile Include="Editors\VsREditorSettingsStorage.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
     <Compile Include="Commands\R\InstallRClientCommand.cs" />
@@ -194,6 +192,7 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
+    <Compile Include="Imaging\ImageService.cs" />
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoTypeConverter.cs" />
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
@@ -300,7 +299,6 @@
     <Compile Include="ProjectSystem\PropertyPages\PropertyPageProvider.cs" />
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="ProjectSystem\WorkspaceServices.cs" />
-    <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToProjectCommand.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToSourceCommand.cs" />
@@ -343,7 +341,6 @@
     <Compile Include="Utilities\VsUIShellExtensions.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
-    <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
     <Compile Include="Logging\DiagnosticLogs.cs" />
@@ -1171,9 +1168,13 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.R.Common.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>

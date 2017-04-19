@@ -11,7 +11,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             } catch (RException) { } catch (OperationCanceledException) { }
 
             if (!string.IsNullOrEmpty(functionCode)) {
-                var formatter = new RFormatter(REditorSettings.FormatOptions);
+                var formatter = new RFormatter(_workflow.Shell.GetService<IREditorSettings>().FormatOptions);
                 functionCode = formatter.Format(functionCode);
             }
             return functionCode;

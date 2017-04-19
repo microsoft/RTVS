@@ -65,10 +65,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
-      <Project>{5340191E-31E5-43A0-A485-B6678D391B10}</Project>
-      <Name>Microsoft.Languages.Editor.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
@@ -77,13 +73,13 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    <ProjectReference Include="..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
-      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
-      <Name>Microsoft.Windows.Core.Test</Name>
+    <ProjectReference Include="..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
+      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
+      <Name>Microsoft.Languages.Editor.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
@@ -153,8 +149,9 @@
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
+    <Compile Include="Fixtures\REditorAssemblyMefCatalog.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
-    <Compile Include="Fixtures\REditorMefCatalogFixture.cs" />
+    <Compile Include="Fixtures\REditorShellProviderFixture.cs" />
     <Compile Include="Navigation\TextStructureTest.cs" />
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />

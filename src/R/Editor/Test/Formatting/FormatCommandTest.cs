@@ -12,7 +12,6 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Formatting.Data;
 using Microsoft.R.Editor.Test.Mocks;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -25,8 +24,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
     public class FormatCommandTest {
         private readonly ICoreShell _shell;
 
-        public FormatCommandTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+        public FormatCommandTest(REditorShellProviderFixture shellProvider) {
+            _shell = shellProvider.CoreShell;
         }
 
         [CompositeTest]

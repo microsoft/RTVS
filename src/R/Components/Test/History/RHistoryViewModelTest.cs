@@ -5,10 +5,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -24,11 +23,11 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IRHistoryWindowVisualComponent _historyVisualComponent;
         private IDisposable _containerDisposable;
 
-        public RHistoryViewModelTest(IExportProvider exportProvider, ContainerHostMethodFixture containerHost) {
+        public RHistoryViewModelTest(RComponentsShellProviderFixture shellProvider, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            _history = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().History;
+            _history = shellProvider.CoreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().History;
 
-            var containerFactory = exportProvider.GetExportedValue<IRHistoryVisualComponentContainerFactory>();
+            var containerFactory = shellProvider.CoreShell.GetService<IRHistoryVisualComponentContainerFactory>();
             _historyVisualComponent = UIThreadHelper.Instance.Invoke(() => _history.GetOrCreateVisualComponent(containerFactory));
         }
         

@@ -13,7 +13,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -26,12 +25,14 @@ namespace Microsoft.R.Editor.DragDrop {
     internal sealed class DropHandler : IDropHandler {
         private readonly IWpfTextView _wpfTextView;
         private readonly ICoreShell _shell;
+        private readonly IREditorSettings _settings;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         public DropHandler(IWpfTextView wpfTextView, ICoreShell shell, IRInteractiveWorkflowProvider workflowProvider) {
             _wpfTextView = wpfTextView;
             _shell = shell;
             _workflowProvider = workflowProvider;
+            _settings = _shell.GetService<IREditorSettings>();
         }
 
         #region IDropHandler
@@ -67,7 +68,7 @@ namespace Microsoft.R.Editor.DragDrop {
             var textBuffer = _wpfTextView.TextBuffer;
             var dropPosition = bufferPosition.Value;
 
-            if (REditorSettings.FormatOnPaste) {
+            if (_settings.FormatOnPaste) {
                 _wpfTextView.Caret.MoveTo(dropPosition);
             }
 
@@ -80,8 +81,8 @@ namespace Microsoft.R.Editor.DragDrop {
                 undoAction.Open(Resources.DragDropOperation);
                 textBuffer.Replace(new Span(dropPosition, 0), text);
 
-                if (REditorSettings.FormatOnPaste) {
-                    RangeFormatter.FormatRange(_wpfTextView, document.TextBuffer, new TextRange(dropPosition, text.Length), REditorSettings.FormatOptions, _shell);
+                if (_settings.FormatOnPaste) {
+                    RangeFormatter.FormatRange(_wpfTextView, document.TextBuffer, new TextRange(dropPosition, text.Length), _shell.GetService<IREditorSettings>().FormatOptions, _shell);
                 }
 
                 if (_wpfTextView.Selection != null) {

@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -30,9 +28,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
             Other
         }
 
-        private readonly IImagesProvider _imagesProvider;
+        private readonly IImageService _imageService;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IGlyphService _glyphService;
+        private readonly ImageSource _folderGlyph;
 
         private readonly string _enteredDirectory;
         private readonly bool _forceR; // for tests
@@ -44,9 +42,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
         public FilesCompletionProvider(string directoryCandidate, IServiceContainer services, bool forceR = false) {
             Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
-            _imagesProvider = services.GetService<IImagesProvider>();
+            _imageService = services.GetService<IImageService>();
+            _folderGlyph = _imageService.GetImage(ImageType.ClosedFolder) as ImageSource;
+
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _glyphService = services.GetService<IGlyphService>();
             _forceR = forceR;
 
             _enteredDirectory = ExtractDirectory(directoryCandidate);
@@ -114,14 +113,14 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 var completions = new List<RCompletion>();
 
                 try {
-                    var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                    var folderGlyph = _imageService.GetImage(ImageType.ClosedFolder) as ImageSource;
 
                     var rPath = directory.ToRPath().ToRStringLiteral();
                     var files = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.files(path = {rPath}))"), REvaluationKind.Normal);
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
                     completions.AddRange(dirs.Select(d => new RCompletion((string)d, (string)d + "/", string.Empty, folderGlyph)));
-                    completions.AddRange(files.Except(dirs).Select(f => new RCompletion((string)f, (string)f, string.Empty, _imagesProvider?.GetFileIcon((string)f))));
+                    completions.AddRange(files.Except(dirs).Select(f => new RCompletion((string)f, (string)f, string.Empty, _imageService?.GetFileIcon((string)f) as ImageSource)));
 
                 } catch (RException) { } catch (OperationCanceledException) { }
 
@@ -131,20 +130,19 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         private IEnumerable<RCompletion> GetLocalDirectoryItems(string directory) {
             if (Directory.Exists(directory)) {
-                var folderGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
 
                 foreach (string dir in Directory.GetDirectories(directory)) {
                     DirectoryInfo di = new DirectoryInfo(dir);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
                         string dirName = Path.GetFileName(dir);
-                        yield return new RCompletion(dirName, dirName + "/", string.Empty, folderGlyph);
+                        yield return new RCompletion(dirName, dirName + "/", string.Empty, _folderGlyph);
                     }
                 }
 
                 foreach (string file in Directory.GetFiles(directory)) {
                     FileInfo di = new FileInfo(file);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                        ImageSource fileGlyph = _imagesProvider?.GetFileIcon(file);
+                        var fileGlyph = _imageService?.GetFileIcon(file) as ImageSource;
                         string fileName = Path.GetFileName(file);
                         yield return new RCompletion(fileName, fileName, string.Empty, fileGlyph);
                     }

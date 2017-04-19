@@ -1,16 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.SuggestedActions.Actions;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -19,25 +17,25 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class SmartTagsTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public SmartTagsTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
-            _exportProvider = exportProvider;
+        public SmartTagsTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) {
+            _coreShell = shellProvider.CoreShell;
             _editorHost = editorHost;
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_LibrarySuggestedActions() {
-            using (var script = await _editorHost.StartScript(_exportProvider, " library(base)", RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_coreShell, " library(base)", RContentTypeDefinition.ContentType)) {
                 IEnumerable<SuggestedActionSet> sets = null;
                 ILightBulbSession session = null;
 
-                var svc = _exportProvider.GetExportedValue<ISuggestedActionCategoryRegistryService>();
+                var svc = _coreShell.GetService<ISuggestedActionCategoryRegistryService>();
 
                 script.Invoke(() => {
-                    var broker = _exportProvider.GetExportedValue<ILightBulbBroker>();
+                    var broker = _coreShell.GetService<ILightBulbBroker>();
                     broker.CreateSession(svc.AllCodeFixes, script.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();
@@ -55,7 +53,7 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
 
                 sets = null;
                 script.Invoke(() => {
-                    var broker = _exportProvider.GetExportedValue<ILightBulbBroker>();
+                    var broker = _coreShell.GetService<ILightBulbBroker>();
                     broker.DismissSession(script.View);
                     broker.CreateSession(svc.Any, script.View);
                     session = script.GetLightBulbSession();

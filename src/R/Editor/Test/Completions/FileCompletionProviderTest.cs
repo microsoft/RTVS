@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Host.Client;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -26,8 +24,8 @@ namespace Microsoft.R.Editor.Test.Completions {
         private readonly ICoreShell _coreShell;
         private readonly string _testFolder;
 
-        public FileCompletionProviderTest(IExportProvider exportProvider) {
-            _coreShell = exportProvider.GetExportedValue<ICoreShell>();
+        public FileCompletionProviderTest(REditorShellProviderFixture shellProvider) {
+            _coreShell = shellProvider.CoreShell;
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _testFolder = Path.Combine(myDocs, _testFolderName);
