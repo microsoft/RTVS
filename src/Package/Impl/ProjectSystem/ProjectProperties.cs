@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.Application.Configuration;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Properties;

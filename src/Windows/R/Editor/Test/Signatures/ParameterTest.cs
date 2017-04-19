@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;

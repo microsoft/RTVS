@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client;

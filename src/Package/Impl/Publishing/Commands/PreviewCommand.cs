@@ -16,6 +16,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;

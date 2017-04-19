@@ -5,6 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Test.StubBuilders;
 using Microsoft.Common.Core.UI.Commands;

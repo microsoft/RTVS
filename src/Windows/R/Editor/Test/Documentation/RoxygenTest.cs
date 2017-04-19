@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
+using Microsoft.R.Editor.Comments;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 

@@ -4,6 +4,8 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Editor.RData.BraceMatch;
+using Microsoft.R.Editor.RData.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks.Helpers;
 using Microsoft.VisualStudio.Text;

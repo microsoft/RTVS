@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 
 namespace Microsoft.Common.Core {
     public static class ExceptionExtensions {

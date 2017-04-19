@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;

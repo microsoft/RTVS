@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;

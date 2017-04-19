@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Browsers;

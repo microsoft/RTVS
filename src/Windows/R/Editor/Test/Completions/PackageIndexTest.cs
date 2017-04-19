@@ -3,10 +3,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Test.Stubs;
+using Microsoft.R.Editor.Functions;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;

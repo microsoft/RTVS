@@ -3,6 +3,7 @@
 
 using System.Globalization;
 using System.Text;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Language.Intellisense;

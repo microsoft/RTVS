@@ -3,6 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
@@ -16,18 +19,18 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public EditorDocumentMock(string content, string filePath = null) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             EditorTree = new EditorTreeMock(tb, RParser.Parse(content));
-            ServiceManager.AddService<IREditorDocument>(this, tb, null);
+            tb.AddService(this);
             if (!string.IsNullOrEmpty(filePath)) {
                 tb.Properties.AddProperty(typeof(ITextDocument), new TextDocumentMock(tb, filePath));
             }
         }
 
-        public EditorDocumentMock(IEditorTree tree) {
+        public EditorDocumentMock(IREditorTree tree) {
             EditorTree = tree;
-            ServiceManager.AddService<IREditorDocument>(this, tree.TextBuffer, null);
+            tree.TextBuffer.AddService(this);
         }
 
-        public IEditorTree EditorTree { get; private set; }
+        public IREditorTree EditorTree { get; private set; }
 
         public void Close() { }
 

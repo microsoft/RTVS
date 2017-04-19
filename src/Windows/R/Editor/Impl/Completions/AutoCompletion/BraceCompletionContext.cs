@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text;
@@ -74,15 +75,11 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
         /// </remarks>
         /// <param name="session">Default brace completion session</param>
         /// <returns>Returns true if the context is a valid overtype scenario.</returns>
-        public bool AllowOverType(IBraceCompletionSession session) {
-            return true;
-        }
+        public bool AllowOverType(IBraceCompletionSession session) => true;
 
         private void EnsureTreeReady(ITextBuffer subjectBuffer) {
-            var document = REditorDocument.TryFromTextBuffer(subjectBuffer);
-            if (document != null) {
-                document.EditorTree.EnsureTreeReady();
-            }
+            var document = subjectBuffer.GetService<IREditorDocument>();
+            document?.EditorTree?.EnsureTreeReady();
         }
     }
 }

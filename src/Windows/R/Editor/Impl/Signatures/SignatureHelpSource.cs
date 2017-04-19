@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reflection;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;

@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.Settings;

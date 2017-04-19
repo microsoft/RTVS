@@ -43,18 +43,13 @@ namespace Microsoft.R.Editor.Formatting {
 
                 try {
                     using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Shell, Resources.FormatDocument)) {
-                        IREditorDocument document = REditorDocument.TryFromTextBuffer(TargetBuffer);
-                        if (document != null) {
-                            document.EditorTree.Invalidate();
-                        }
+                        var document = TargetBuffer.GetService<IREditorDocument>();
+                        document?.EditorTree?.Invalidate();
 
-                        var caretPosition = TextView.Caret.Position.BufferPosition;
-                        var viewPortLeft = TextView.ViewportLeft;
-
-                        RTokenizer tokenizer = new RTokenizer();
-                        string oldText = TargetBuffer.CurrentSnapshot.GetText();
-                        IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(oldText);
-                        IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
+                        var tokenizer = new RTokenizer();
+                        var oldText = TargetBuffer.CurrentSnapshot.GetText();
+                        var oldTokens = tokenizer.Tokenize(oldText);
+                        var newTokens = tokenizer.Tokenize(formattedText);
 
 #if DEBUG
                         //if (oldTokens.Count != newTokens.Count) {
@@ -84,9 +79,7 @@ namespace Microsoft.R.Editor.Formatting {
             return CommandResult.NotSupported;
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return CommandStatus.SupportedAndEnabled;
-        }
+        public override CommandStatus Status(Guid group, int id) => CommandStatus.SupportedAndEnabled;
         #endregion
     }
 }

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Utility;
+using Microsoft.R.Editor.RData.Classification;
+using Microsoft.R.Editor.RData.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;

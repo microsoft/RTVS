@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Windows.Controls;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;

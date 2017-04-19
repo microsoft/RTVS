@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Language.Intellisense;

@@ -33,6 +33,10 @@
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
@@ -89,21 +93,13 @@
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\EditorTestApp\Microsoft.Languages.Editor.Application.csproj">
       <Project>{9174c912-e757-4ecd-9d6e-9604bef74900}</Project>
       <Name>Microsoft.Languages.Editor.Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Support\Test\Microsoft.R.Support.Test.csproj">
-      <Project>{5504f3d6-08d3-401f-8214-409a60735185}</Project>
-      <Name>Microsoft.R.Support.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
-      <Name>Microsoft.R.Editor</Name>
+      <Name>Microsoft.R.Editor.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\Test\Microsoft.R.Editor.Test.csproj">
       <Project>{9066522e-780e-4409-b410-2525e6a621fc}</Project>

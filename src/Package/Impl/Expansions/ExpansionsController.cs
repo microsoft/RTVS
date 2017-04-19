@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

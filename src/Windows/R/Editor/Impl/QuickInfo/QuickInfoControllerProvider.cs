@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;

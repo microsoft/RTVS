@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -46,7 +47,7 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
         /// was a valid point in the buffer to start a <see cref="IBraceCompletionSession"/>.
         /// </returns>
         public bool TryCreateContext(ITextView textView, SnapshotPoint openingPoint, char openingBrace, char closingBrace, out IBraceCompletionContext context) {
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(openingPoint.Snapshot.TextBuffer);
+            var document = openingPoint.Snapshot.TextBuffer.GetService<IREditorDocument>();
             if (document != null) {
                 var ast = document.EditorTree.AstRoot;
 

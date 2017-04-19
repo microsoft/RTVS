@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completions;
@@ -56,8 +57,7 @@ namespace Microsoft.R.Editor.Completions {
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
         public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell) {
-            RCompletionController completionController;
-            completionController = textView.GetService<RCompletionController>();
+            var completionController = textView.GetService<RCompletionController>();
             completionController = completionController ?? new RCompletionController(textView, subjectBuffers, shell);
             return completionController;
         }
@@ -150,7 +150,7 @@ namespace Microsoft.R.Editor.Completions {
                     return false;
                 }
 
-                if (CharExtensions.IsLineBreak(typedChar)) {
+                if (typedChar.IsLineBreak()) {
                     // Complete on Enter but only if selection does not exactly match
                     // applicable span. for example, if span is X and selection is X123
                     // then we do complete. However, if selection is X then text is already
@@ -185,16 +185,15 @@ namespace Microsoft.R.Editor.Completions {
             //  c) There is no selection
             if (typedCharacter == '\t' && !HasActiveCompletionSession && TextView.Selection.StreamSelectionSpan.Length == 0) {
                 // if previous character is identifier character, bring completion list
-                SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
+                var position = TextView.GetCaretPosition(_textBuffer);
                 if (position.HasValue) {
                     int pos = position.Value;
-                    var doc = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
-                    if (!doc.IsPositionInComment(pos)) {
+                    var document = position.Value.Snapshot.TextBuffer.GetService<IREditorDocument>();
+                    if (!document.IsPositionInComment(pos)) {
                         if (pos > 0 && pos <= position.Value.Snapshot.Length) {
                             bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
                             bool showCompletion = endOfIdentifier && _settings.ShowCompletionOnTab;
                             if (!showCompletion) {
-                                var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
                                 string directory;
                                 showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
                             }
@@ -226,14 +225,14 @@ namespace Microsoft.R.Editor.Completions {
                         return true;
 
                     case ':':
-                        return RCompletionContext.IsCaretInNamespace(TextView);
+                        return TextView.ToEditorView().IsCaretInNamespace(_textBuffer.ToEditorBuffer());
 
                     case '(':
-                        return RCompletionContext.IsCaretInLibraryStatement(TextView);
+                        return TextView.ToEditorView().IsCaretInLibraryStatement(_textBuffer.ToEditorBuffer());
 
                     default:
                         if (_settings.ShowCompletionOnFirstChar) {
-                            SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
+                            var position = TextView.GetCaretPosition(_textBuffer);
                             if (position.HasValue) {
                                 int pos = position.Value;
                                 var snapshot = position.Value.Snapshot;

@@ -3,11 +3,14 @@
 
 using System;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Controllers.Views;
 using Microsoft.Languages.Editor.TaskList;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
+using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Tagging;

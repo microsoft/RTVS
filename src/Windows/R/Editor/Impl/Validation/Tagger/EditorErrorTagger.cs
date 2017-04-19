@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.TaskList;
@@ -13,6 +14,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
+using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 

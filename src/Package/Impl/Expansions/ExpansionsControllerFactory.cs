@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
-            return new List<ICommandTarget>() {
+            return new List<ICommandTarget> {
                 new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current)
             };
         }

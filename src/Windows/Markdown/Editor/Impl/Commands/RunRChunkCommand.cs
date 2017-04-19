@@ -9,6 +9,7 @@ using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Utility;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

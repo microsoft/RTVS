@@ -63,8 +63,6 @@
     <Compile Include="DragDrop\DropHandlerProvider.cs" />
     <Compile Include="EditorFactory\REditorViewModel.cs" />
     <Compile Include="EditorFactory\REditorViewModelFactory.cs" />
-    <Compile Include="Extensions\DocumentExtensions.cs" />
-    <Compile Include="Extensions\AstRootExtensions.cs" />
     <Compile Include="Formatting\AutoFormat.cs" />
     <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
@@ -97,6 +95,15 @@
     <Compile Include="QuickInfo\QuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\QuickInfoSource.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceProvider.cs" />
+    <Compile Include="RData\BraceMatch\RdBraceHighlightProvider.cs" />
+    <Compile Include="RData\BraceMatch\RdBraceMatcher.cs" />
+    <Compile Include="RData\BraceMatch\RdBraceMatcherProvider.cs" />
+    <Compile Include="RData\Classification\RdClassificationDefinitions.cs" />
+    <Compile Include="RData\Classification\RdClassificationNameProvider.cs" />
+    <Compile Include="RData\Classification\RdClassificationTypes.cs" />
+    <Compile Include="RData\Classification\RdClassifier.cs" />
+    <Compile Include="RData\Classification\RdClassifierProvider.cs" />
+    <Compile Include="RData\ContentType\RdContentTypeDefinition.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -111,9 +118,6 @@
     <Compile Include="Signatures\SignatureParameter.cs" />
     <Compile Include="SmartIndent\SmartIndent.cs" />
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
-    <Compile Include="Snippets\ISnippetInformationSourceProvider.cs" />
-    <Compile Include="Snippets\ISnippetInformationSource.cs" />
-    <Compile Include="Snippets\ISnippetInfo.cs" />
     <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
@@ -122,25 +126,6 @@
     <Compile Include="SuggestedActions\Providers\LibraryStatementSuggestedActionProvider.cs" />
     <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
     <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
-    <Compile Include="Tree\ApplyTreeChanges.cs" />
-    <Compile Include="Tree\CancellableTask.cs" />
-    <Compile Include="Tree\ChangeProcessor.cs" />
-    <Compile Include="Tree\Debug.cs" />
-    <Compile Include="Tree\Definitions\IEditorTree.cs" />
-    <Compile Include="Tree\EditorTree.cs" />
-    <Compile Include="Tree\EditorTreeChangeCollection.cs" />
-    <Compile Include="Tree\TreeChangeType.cs" />
-    <Compile Include="Tree\EditorTreeChange.cs" />
-    <Compile Include="Tree\TextChange.cs" />
-    <Compile Include="Tree\TextChangeAnalyzer.cs" />
-    <Compile Include="Tree\TextChangeContext.cs" />
-    <Compile Include="Tree\TextChangeType.cs" />
-    <Compile Include="Tree\TreeChangeEventRecord.cs" />
-    <Compile Include="Tree\TreeEventArgs.cs" />
-    <Compile Include="Tree\EditorTreeEvents.cs" />
-    <Compile Include="Tree\TreeLock.cs" />
-    <Compile Include="Tree\TreeUpdateTask.cs" />
-    <Compile Include="Tree\TreeUpdateType.cs" />
     <Compile Include="Undo\MassiveChange.cs" />
     <Compile Include="Validation\Tagger\EditorErrorTag.cs" />
     <Compile Include="Validation\Tagger\ErrorTagCollection.cs" />
