@@ -45,7 +45,7 @@ namespace Microsoft.R.Support.RD.Parser {
             while (!context.Tokens.IsEndOfStream() &&
                    (functionDescription == null || argumentDescriptions == null ||
                     signatureInfos == null || returnValue == null)) {
-                RdToken token = context.Tokens.CurrentToken;
+                var token = context.Tokens.CurrentToken;
 
                 if (context.IsAtKeywordWithParameters()) {
                     if (string.IsNullOrEmpty(functionDescription) && context.IsAtKeyword(@"\description")) {
@@ -73,7 +73,10 @@ namespace Microsoft.R.Support.RD.Parser {
                     } else {
                         context.Tokens.Advance(2);
                     }
-                } else {
+                }
+
+                if (token == context.Tokens.CurrentToken) {
+                    // If token is not recognized, move on
                     context.Tokens.MoveToNextToken();
                 }
             }
