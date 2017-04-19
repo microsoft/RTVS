@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith(name);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3428")]
         public async Task NonUniqueNameTest() {
             string content = @"x <- select()";
 
@@ -110,7 +110,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             }
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3428")]
         public async Task LoadUnloadPackageTest() {
             string content = @"do()";
 

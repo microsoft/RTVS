@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.RD.Parser;
 using static System.FormattableString;
 
@@ -92,18 +93,21 @@ namespace Microsoft.R.Support.Help.Functions {
         /// </summary>
         public IFunctionInfo GetFunctionInfo(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
             var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
-            if (functionInfo != null) {
-                return functionInfo;
+            if (functionInfo == null) {
+                GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter).DoNotWait();
             }
-            GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter).DoNotWait();
-            return null;
+            return functionInfo;
         }
 
         public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName, string packageName = null) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
-            if (functionInfo != null) {
-                return functionInfo;
+            if (!string.IsNullOrEmpty(packageName)) {
+                // Specific package
+                var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
+                if (functionInfo != null) {
+                    return functionInfo;
+                }
             }
+
             packageName = await GetFunctionInfoFromEngineAsync(functionName, packageName);
             return await TryGetCachedFunctionInfoAsync(functionName, packageName);
         }
@@ -115,7 +119,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// </summary>
         private IFunctionInfo TryGetCachedFunctionInfo(string functionName, ref string packageName) {
             IFunctionInfo functionInfo = null;
-           if (string.IsNullOrEmpty(packageName)) {
+            if (string.IsNullOrEmpty(packageName)) {
                 // Find packages that the function may belong to. There may be more than one.
                 List<string> packages;
                 if (!_functionToPackageMap.TryGetValue(functionName, out packages) || packages.Count == 0) {
@@ -151,9 +155,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// or the package name is known.
         /// </summary>
         private async Task<IFunctionInfo> TryGetCachedFunctionInfoAsync(string functionName, string packageName) {
-            if (packageName == null) {
-                packageName = await GetFunctionLoadedPackage(functionName);
-            }
+            packageName = packageName ?? await GetFunctionLoadedPackage(functionName);
             return TryGetCachedFunctionInfo(functionName, ref packageName);
         }
 
@@ -169,10 +171,14 @@ namespace Microsoft.R.Support.Help.Functions {
         /// fetch function information from the index.
         /// </summary>
         private async Task<string> GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
-            packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+            // TODO: use R Parser when support merges with R Editor
+            var validName = IsIdentifier(functionName);
+            if (validName) {
+                packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+            }
 
-            if (string.IsNullOrEmpty(packageName)) {
-                // Even if nothing is found, still notify the callback
+            // Even if nothing is found, still notify the callback
+            if (!validName || string.IsNullOrEmpty(packageName)) {
                 if (infoReadyCallback != null) {
                     _coreShell.DispatchOnUIThread(() => {
                         infoReadyCallback(null, null);
@@ -241,6 +247,10 @@ namespace Microsoft.R.Support.Help.Functions {
                 Debug.WriteLine("Exception in parsing R engine RD response: {0}", ex.Message);
             }
             return infos;
+        }
+
+        private bool IsIdentifier(string s) {
+            return !s.Any(ch => !CharacterStream.IsLetter(ch) && !CharacterStream.IsDecimal(ch) && ch != '.' && ch != '_');
         }
     }
 }

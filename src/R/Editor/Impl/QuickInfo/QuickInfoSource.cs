@@ -125,14 +125,14 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
 
             // In abc(de|f(x)) first find inner function, then outer.
-            ITextRange range;
+            FunctionCall fc;
             if (node is TokenNode && node.Parent is FunctionCall) {
-                range = node;
+                fc = (FunctionCall)node.Parent;
             } else {
-                var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
-                range = fc?.RightOperand as TokenNode;
+                fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
             }
-            return range != null ? ast.TextProvider.GetText(range) : null;
+            var nameRange = fc?.RightOperand as TokenNode;
+            return nameRange != null ? ast.TextProvider.GetText(nameRange) : null;
         }
 
         private void RetriggerQuickInfoSession(IQuickInfoSession session, string packageName) {
