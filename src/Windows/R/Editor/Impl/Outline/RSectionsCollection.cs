@@ -15,17 +15,17 @@ namespace Microsoft.R.Editor.Outline {
             public int OriginalLength;
         }
         private readonly List<SpanContent> _spans = new List<SpanContent>();
-        private readonly IEditorTree _tree;
+        private readonly IREditorTree _tree;
         private bool _changed;
 
-        public RSectionsCollection(IEditorTree tree, IReadOnlyList<ITextRange> sections) {
+        public RSectionsCollection(IREditorTree tree, IReadOnlyList<ITextRange> sections) {
             _tree = tree;
-            _tree.TextBuffer.Changed += OnTextBufferChanged;
+            _tree.EditorBuffer.Changed += OnTextBufferChanged;
 
             foreach (var s in sections) {
                 var span = s.ToSpan();
                 _spans.Add(new SpanContent() {
-                    TrackingSpan = _tree.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgePositive),
+                    TrackingSpan = _tree.BufferSnapshot.CreateTrackingRange(span, SpanTrackingMode.EdgePositive),
                     OriginalLength = s.Length
                 });
             }

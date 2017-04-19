@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -27,7 +26,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
 
         public EditorDocumentMock(IREditorTree tree) {
             EditorTree = tree;
-            tree.TextBuffer.AddService(this);
+            tree.EditorBuffer.AddService(this);
         }
 
         public IREditorTree EditorTree { get; private set; }
@@ -41,7 +40,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public bool IsMassiveChangeInProgress => false;
         public bool IsProjected { get; set; }
 
-        public ITextBuffer TextBuffer => EditorTree.TextBuffer;
+        public IEditorBuffer EditorBuffer => EditorTree.EditorBuffer;
 
         public string FilePath { get; set; }
 
@@ -51,16 +50,16 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public event EventHandler<EventArgs> Activated;
         public event EventHandler<EventArgs> Deactivated;
 
-        public EventHandler<EventArgs> DocumentClosing { get; private set; }
-        event EventHandler<EventArgs> IEditorDocument.DocumentClosing {
+        public EventHandler<EventArgs> Closing { get; private set; }
+        event EventHandler<EventArgs> IEditorDocument.Closing {
             add {
                 lock (_syncObj) {
-                    DocumentClosing = (EventHandler<EventArgs>)Delegate.Combine(DocumentClosing, value);
+                    Closing = (EventHandler<EventArgs>)Delegate.Combine(Closing, value);
                 }
             }
             remove {
                 lock (_syncObj) {
-                    DocumentClosing = (EventHandler<EventArgs>)Delegate.Remove(DocumentClosing, value);
+                    Closing = (EventHandler<EventArgs>)Delegate.Remove(Closing, value);
                 }
             }
         }
@@ -69,9 +68,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public event EventHandler<EventArgs> MassiveChangeEnded;
 
         public void BeginMassiveChange() { }
-
         public void Dispose() { }
-
         public bool EndMassiveChange() => true;
     }
 }

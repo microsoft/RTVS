@@ -36,12 +36,12 @@ namespace Microsoft.R.Editor.Outline {
         private bool _forceRegionsChange = false;
 
         internal IREditorDocument EditorDocument { get; }
-        internal IEditorTree EditorTree { get; }
+        internal IREditorTree EditorTree { get; }
 
         public ROutlineRegionBuilder(IREditorDocument document, ICoreShell shell)
-            : base(document.EditorTree.TextBuffer, shell) {
+            : base(document.EditorTree.EditorBuffer, shell) {
             EditorDocument = document;
-            EditorDocument.DocumentClosing += OnDocumentClosing;
+            EditorDocument.Closing += OnDocumentClosing;
 
             EditorTree = document.EditorTree;
             EditorTree.UpdateCompleted += OnTreeUpdateCompleted;

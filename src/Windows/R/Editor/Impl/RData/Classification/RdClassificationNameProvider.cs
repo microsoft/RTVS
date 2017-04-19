@@ -3,7 +3,6 @@
 
 using Microsoft.Languages.Core.Classification;
 using Microsoft.R.Editor.RData.Tokens;
-using Microsoft.R.Support.RD.Classification;
 using Microsoft.VisualStudio.Language.StandardClassification;
 
 namespace Microsoft.R.Editor.RData.Classification {

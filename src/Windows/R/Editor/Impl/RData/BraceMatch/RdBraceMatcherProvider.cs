@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.R.Editor.RData.ContentTypes;
-using Microsoft.R.Support.RD.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;

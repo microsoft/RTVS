@@ -5,11 +5,11 @@ using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Views;
 using Microsoft.Languages.Editor.TaskList;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;
@@ -20,14 +20,14 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     /// This represents an underlined syntax error in the editor
     /// </summary>
     internal class EditorErrorTag : ErrorTag, ITagSpan<IErrorTag>, IExpandableTextRange, IEditorTaskListItem {
-        private ITextBuffer _textBuffer;
-        private ITextRange _range;
+        private readonly ITextBuffer _textBuffer;
+        private readonly ITextRange _range;
 
-        public EditorErrorTag(IEditorTree editorTree, IValidationError error)
+        public EditorErrorTag(IREditorTree editorTree, IValidationError error)
             : base(GetErrorType(error), error.Message) {
-            _textBuffer = editorTree.TextBuffer;
+            _textBuffer = editorTree.EditorBuffer.As<ITextBuffer>();
 
-            var document = REditorDocument.FromTextBuffer(editorTree.TextBuffer);
+            var document = _textBuffer.GetService<IREditorDocument>();
             FileName = document?.FilePath;
 
             Description = error.Message;

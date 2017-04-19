@@ -5,7 +5,6 @@ using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.R.Editor.RData.ContentTypes;
-using Microsoft.R.Support.RD.ContentTypes;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
