@@ -207,11 +207,8 @@ export_to_pdf <- function(device_id, plot_id, width, height) {
 rmarkdown_publish <- function(work_folder, blob_id, output_format, encoding) {
     # Create temp file to store the rmarkdown file
     work_folder <- normalizePath(work_folder);
-    rmdpath <- tempfile('rmd_', tmpdir = work_folder, fileext = '.rmd');
-    message(paste0('Input: ', rmdpath));
-
-    on.exit(file.remove(rmdpath));
-    writeBin(get_blob(blob_id), rmdpath);
+    input_path <- tempfile('rmd_', tmpdir = work_folder, fileext = '.rmd');
+    writeBin(get_blob(blob_id), input_path);
 
     # Get file extension from format
     fileext <- if (identical(output_format, 'html_document')) {
@@ -226,11 +223,14 @@ rmarkdown_publish <- function(work_folder, blob_id, output_format, encoding) {
 
     # Create temp file to store the markdown render output
     output_filepath <- tempfile('rmd_', tmpdir = work_folder, fileext = fileext);
-    message(paste0('Output: ', output_filepath));
-    on.exit(file.remove(output_filepath));
 
-    rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath, output_dir = work_folder, encoding = encoding);
-    create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
+    rmarkdown::render(input_path, output_format = output_format, output_file = output_filepath, output_dir = work_folder, encoding = encoding);
+    blob_id <- create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
+
+    file.remove(input_path);
+    file.remove(output_filepath);
+
+    return(blob_id);
 }
 
 as.lock_state <- function(x) {
