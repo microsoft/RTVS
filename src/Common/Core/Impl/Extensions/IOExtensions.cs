@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 
 namespace Microsoft.Common.Core {
@@ -20,6 +21,20 @@ namespace Microsoft.Common.Core {
                 return string.Empty;
             }
             return path.StartsWithIgnoreCase(bp) ? path.Substring(bp.Length) : path;
+        }
+
+        // TODO: merge with above
+        public static string MakeCompleteRelativePath(this string path, string basePath) {
+            Check.Argument(nameof(path), () => !Path.IsPathRooted(path), "Path must be rooted");
+            Check.Argument(nameof(basePath), () => !Path.IsPathRooted(basePath), "Path must be rooted");
+
+            var baseUri = new Uri(basePath.EnsureTrailingSlash());
+            var destinationUri = new Uri(path.EnsureTrailingSlash());
+            var relativeFolderPath = Uri.UnescapeDataString(baseUri.MakeRelativeUri(destinationUri).ToString());
+            if (string.IsNullOrEmpty(relativeFolderPath)) {
+                return @".";
+            }
+            return relativeFolderPath.Replace('/', '\\').TrimEnd('\\');
         }
 
         public static bool ExistsOnPath(string fileName) {
