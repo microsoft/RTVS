@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.R.Interpreters;
+
+namespace Microsoft.R.Host.Client.Test.Fixtures {
+    public class HostClientServicesFixture : ServiceManagerFixture {
+        protected override void AddServices(IServiceManager serviceManager) {
+            base.AddServices(serviceManager);
+            serviceManager
+                .AddWindowsHostClientServices()
+                .AddWindowsRInterpretersServices();
+        }
+    }
+}

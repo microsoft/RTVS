@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -21,7 +22,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public BlobsTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public BlobsTest(IServiceContainer services, TestMethodFixture testMethod) {
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

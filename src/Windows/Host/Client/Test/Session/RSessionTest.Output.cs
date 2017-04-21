@@ -4,6 +4,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
@@ -18,7 +19,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public Output(ServiceManagerFixture services, TestMethodFixture testMethod) {
+            public Output(IServiceContainer services, TestMethodFixture testMethod) {
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(Output));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }

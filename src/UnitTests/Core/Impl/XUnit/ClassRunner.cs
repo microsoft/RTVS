@@ -29,34 +29,28 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return new TestMethodRunner(testMethod, Class, method, testCases, DiagnosticMessageSink, MessageBus, new ExceptionAggregator(Aggregator), CancellationTokenSource, constructorArguments, _assemblyFixtureMappings).RunAsync();
         }
 
-        protected override bool TryGetConstructorArgument(ConstructorInfo constructor, int index, ParameterInfo parameter, out object argumentValue) {
-            if (typeof(IMethodFixture).IsAssignableFrom(parameter.ParameterType)) {
-                argumentValue = GetArgumentDummy(parameter);
+        protected override bool TryGetConstructorArgument(ConstructorInfo constructor, int index, ParameterInfo parameter, out object argumentValue) 
+            => TryGetArgumentDummy(parameter, out argumentValue)
+               || base.TryGetConstructorArgument(constructor, index, parameter, out argumentValue) 
+               || _assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out argumentValue);
+
+        private bool TryGetArgumentDummy(ParameterInfo parameter, out object argumentValue) {
+            if (Dummies.TryGetValue(parameter.ParameterType, out argumentValue)) {
                 return true;
             }
 
-            return base.TryGetConstructorArgument(constructor, index, parameter, out argumentValue) 
-                || _assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out argumentValue);
-        }
-
-        private object GetArgumentDummy(ParameterInfo parameter) {
-            object argumentValue;
-            if (Dummies.TryGetValue(parameter.ParameterType, out argumentValue)) {
-                return argumentValue;
-            }
-
-            object assemblyFixture;
-            IMethodFixtureFactory<IMethodFixture> methodFixtureFactory;
-            if (_assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out assemblyFixture) &&
-                (assemblyFixture is IMethodFixtureFactory<IMethodFixture>)) {
-                methodFixtureFactory = (IMethodFixtureFactory<IMethodFixture>)assemblyFixture;
+            IMethodFixtureFactory<object> methodFixtureFactory;
+            if (_assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out object assemblyFixture) &&
+                (methodFixtureFactory = (IMethodFixtureFactory<object>) assemblyFixture) != null) {
                 argumentValue = methodFixtureFactory.Dummy;
-            } else {
+            } else if (typeof(IMethodFixture).IsAssignableFrom(parameter.ParameterType)) {
                 argumentValue = Activator.CreateInstance(parameter.ParameterType);
+            } else {
+                return false;
             }
 
             Dummies[parameter.ParameterType] = argumentValue;
-            return argumentValue;
+            return true;
         }
     }
 }
