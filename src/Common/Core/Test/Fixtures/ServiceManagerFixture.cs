@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -20,10 +21,13 @@ using Xunit.Sdk;
 
 namespace Microsoft.Common.Core.Test.Fixtures {
     public class ServiceManagerFixture : IMethodFixtureFactory<IServiceContainer> {
-        public IServiceContainer Dummy { get; } = new TestServiceManager();
+        public IServiceContainer Dummy { get; } = new TestServiceManager(null);
 
-        public IMethodFixture Create() {
-            var serviceManager = new TestServiceManager();
+        public IMethodFixture Create() => CreateFixture();
+
+        protected virtual TestServiceManager CreateFixture() => new TestServiceManager(AddServices).AddLog();
+
+        protected virtual void AddServices(IServiceManager serviceManager, ITestInput testInput) {
             serviceManager
                 .AddService(UIThreadHelper.Instance)
                 .AddService(new SecurityServiceStub())
@@ -34,18 +38,20 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new ProcessServices())
                 .AddService(new TestUIServices())
                 .AddService(new TestPlatformServices());
-            AddServices(serviceManager);
-            return serviceManager;
         }
 
-        protected virtual void AddServices(IServiceManager serviceManager) {}
-
-        private sealed class TestServiceManager : ServiceManager, IMethodFixture {
+        protected class TestServiceManager : ServiceManager, IMethodFixture {
+            private readonly Action<IServiceManager, ITestInput> _addServices;
             private readonly LogProxy _log;
 
-            public TestServiceManager() {
+            public TestServiceManager(Action<IServiceManager, ITestInput> addServices) {
+                _addServices = addServices;
                 _log = new LogProxy();
+            }
+
+            public TestServiceManager AddLog() {
                 AddService(_log);
+                return this;
             }
 
             public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
@@ -53,6 +59,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                     var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
                     Directory.CreateDirectory(logsFolder);
                     _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
+                    _addServices(this, testInput);
                 } catch (Exception) {
                     return Task.FromResult(Task.FromResult(new RunSummary {Failed = 1}));
                 }

@@ -23,7 +23,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
         public IServiceManager ServiceManager { get; }
 
-        private TestCoreShell(IServiceManager serviceManager) {
+        public TestCoreShell(IServiceManager serviceManager) {
              ServiceManager = serviceManager;
         }
 

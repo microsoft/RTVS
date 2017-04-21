@@ -4,11 +4,12 @@
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Interpreters;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
     public class HostClientServicesFixture : ServiceManagerFixture {
-        protected override void AddServices(IServiceManager serviceManager) {
-            base.AddServices(serviceManager);
+        protected override void AddServices(IServiceManager serviceManager, ITestInput testInput) {
+            base.AddServices(serviceManager, testInput);
             serviceManager
                 .AddWindowsHostClientServices()
                 .AddWindowsRInterpretersServices();

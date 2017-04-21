@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Wpf.Imaging;
@@ -37,12 +38,11 @@ namespace Microsoft.R.Components.Test.Plots {
         private readonly TestUIServices _ui;
         private IInteractiveWindowVisualComponent _replVisualComponent;
 
-        public RPlotIntegrationTest(RComponentsShellProviderFixture shellProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            var coreShell = shellProvider.CoreShell;
-            _workflowProvider = coreShell.GetService<TestRInteractiveWorkflowProvider>();
+        public RPlotIntegrationTest(IServiceContainer services, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _workflowProvider = services.GetService<TestRInteractiveWorkflowProvider>();
             _workflow = _workflowProvider.GetOrCreate();
-            _plotDeviceVisualComponentContainerFactory = coreShell.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
-            _plotHistoryVisualComponentContainerFactory = coreShell.GetService<IRPlotHistoryVisualComponentContainerFactory>();
+            _plotDeviceVisualComponentContainerFactory = services.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
+            _plotHistoryVisualComponentContainerFactory = services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
             _ui = _workflow.Shell.UI() as TestUIServices;

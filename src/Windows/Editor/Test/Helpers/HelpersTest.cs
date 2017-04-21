@@ -12,9 +12,9 @@ using NSubstitute;
 
 namespace Microsoft.Languages.Editor.Test.Helpers {
     [ExcludeFromCodeCoverage]
+    [Category.Languages.Core]
     public class HelpersTest {
         [Test]
-        [Category.Languages.Core]
         public void TextChangeExtentTest() {
             var actual = new TextChangeExtent(1, 2, 3);
             actual.Start.Should().Be(1);
@@ -23,7 +23,6 @@ namespace Microsoft.Languages.Editor.Test.Helpers {
         }
 
         [Test]
-        [Category.Languages.Core]
         public void GetTextDocumentTest() {
             var tb = new TextBufferMock(string.Empty, "R");
 
@@ -37,7 +36,6 @@ namespace Microsoft.Languages.Editor.Test.Helpers {
         }
 
         [Test]
-        [Category.Languages.Core]
         public void GetLineColumnFromPositionTest() {
             var tb = new TextBufferMock("a\r\nb", "R");
 
@@ -56,7 +54,6 @@ namespace Microsoft.Languages.Editor.Test.Helpers {
         }
 
         [Test]
-        [Category.Languages.Core]
         public void GetPositionFromLineColumnTest() {
             var tb = new TextBufferMock("a\r\nb", "R");
 
@@ -82,7 +79,6 @@ namespace Microsoft.Languages.Editor.Test.Helpers {
         }
 
         [Test]
-        [Category.Languages.Core]
         public void IsContentEqualsOrdinalTest() {
             var tb = new TextBufferMock("abc abc", "R");
 

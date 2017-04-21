@@ -58,9 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new ProcessServices())
                 .AddService(new RegistryImpl())
                 .AddService(new MicrosoftRClientInstaller())
-                .AddService(new RInstallation())
-                .AddService(new RemotingWebServer())
-                .AddService(new WebSocketClientService());
+                .AddWindowsRInterpretersServices()
+                .AddWindowsHostClientServices();
             // TODO: add more
 
             settings.LoadSettings();

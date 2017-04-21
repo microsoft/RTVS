@@ -16,6 +16,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
     /// Summary description for UnitTest1
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [Category.Languages.Core]
     public class IdleTaskQueueTest {
         private readonly ICoreShell _shell;
 
@@ -24,7 +25,6 @@ namespace Microsoft.Languages.Editor.Test.Services {
         }
 
         [Test]
-        [Category.Languages.Core]
         public void OperationsTest() {
             var results = new List<Result>();
             var queue = new IdleTimeAsyncTaskQueue(_shell);

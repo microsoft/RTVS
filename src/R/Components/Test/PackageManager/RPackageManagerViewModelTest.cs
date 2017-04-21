@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
@@ -20,23 +21,23 @@ namespace Microsoft.R.Components.Test.PackageManager {
     [ExcludeFromCodeCoverage]
     [Category.PackageManager]
     public class RPackageManagerViewModelTest : IAsyncLifetime {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly TestFilesFixture _testFiles;
         private readonly MethodInfo _testMethod;
         private readonly IRInteractiveWorkflow _workflow;
         private IRPackageManagerVisualComponent _packageManagerComponent;
         private IRPackageManagerViewModel _packageManagerViewModel;
 
-        public RPackageManagerViewModelTest(RComponentsShellProviderFixture shellProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _coreShell = shellProvider.CoreShell;
-            var workflowProvider = _coreShell.GetService<IRInteractiveWorkflowProvider>();
+        public RPackageManagerViewModelTest(IServiceContainer services, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _services = services;
+            var workflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = UIThreadHelper.Instance.Invoke(() => workflowProvider.GetOrCreate());
             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
         }
 
         public async Task InitializeAsync() {
-            var settings = _coreShell.GetService<IRSettings>();
+            var settings = _services.GetService<IRSettings>();
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManagerViewModelTest));
 
             await _workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, 50000);
@@ -44,7 +45,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _testFiles);
             await TestLibraries.SetLocalLibraryAsync(_workflow.RSession, _testMethod, _testFiles);
 
-            var componentContainerFactory = _coreShell.GetService<IRPackageManagerVisualComponentContainerFactory>();
+            var componentContainerFactory = _services.GetService<IRPackageManagerVisualComponentContainerFactory>();
             _packageManagerComponent = await InUI(() => _workflow.Packages.GetOrCreateVisualComponent(componentContainerFactory));
             _packageManagerViewModel = await InUI(() => _packageManagerComponent.Control.DataContext) as IRPackageManagerViewModel;
         }

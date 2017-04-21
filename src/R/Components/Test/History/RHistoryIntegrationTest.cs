@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
@@ -24,13 +25,12 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly IRHistoryVisualComponentContainerFactory _historyVisualComponentContainerFactory;
 
-        public RHistoryIntegrationTest(RComponentsShellProviderFixture shellProvider) {
-            var shell = shellProvider.CoreShell;
-            _textBufferFactory = shell.GetService<ITextBufferFactoryService>();
-            _textEditorFactory = shell.GetService<ITextEditorFactoryService>();
-            _workflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
-            _contentTypeRegistryService = shell.GetService<IContentTypeRegistryService>();
-            _historyVisualComponentContainerFactory = shell.GetService<IRHistoryVisualComponentContainerFactory>();
+        public RHistoryIntegrationTest(IServiceContainer services) {
+            _textBufferFactory = services.GetService<ITextBufferFactoryService>();
+            _textEditorFactory = services.GetService<ITextEditorFactoryService>();
+            _workflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
+            _contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
+            _historyVisualComponentContainerFactory = services.GetService<IRHistoryVisualComponentContainerFactory>();
         }
 
         [Test]

@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -28,14 +29,14 @@ using Xunit;
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
     public class RInteractiveWorkflowCommandTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSettings _settings;
 
-        public RInteractiveWorkflowCommandTest(RComponentsShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
-            _workflow = _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _settings = _coreShell.GetService<IRSettings>();
+        public RInteractiveWorkflowCommandTest(IServiceContainer services) {
+            _services = services;
+            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _settings = services.GetService<IRSettings>();
         }
 
         [CompositeTest(ThreadType.UI)]
@@ -93,7 +94,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Test]
         [Category.Repl]
         public async Task InterruptRStatusTest() {
-            var debuggerModeTracker = _coreShell.GetService<TestDebuggerModeTracker>();
+            var debuggerModeTracker = _services.GetService<TestDebuggerModeTracker>();
             var command = new InterruptRCommand(_workflow, debuggerModeTracker);
             command.Should().BeInvisibleAndDisabled();
 

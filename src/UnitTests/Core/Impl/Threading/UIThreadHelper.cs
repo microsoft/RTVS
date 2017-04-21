@@ -61,7 +61,7 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         public Thread Thread => _thread;
         public SynchronizationContext SyncContext => _syncContext;
-        public ControlledTaskScheduler TaskScheduler { get; }
+        public ControlledTaskScheduler TaskScheduler => _taskScheduler;
 
         #region IMainThread
         int IMainThread.ThreadId => Thread.ManagedThreadId;
@@ -327,7 +327,6 @@ namespace Microsoft.UnitTests.Core.Threading {
         private class BlockingLoopSynchronizationContext : SynchronizationContext {
             private readonly UIThreadHelper _threadHelper;
             private readonly SynchronizationContext _innerSynchronizationContext;
-            private readonly DispatcherSynchronizationContext _dispatcherSynchronizationContext;
 
             public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper, SynchronizationContext innerSynchronizationContext) {
                 _threadHelper = threadHelper;
@@ -347,7 +346,7 @@ namespace Microsoft.UnitTests.Core.Threading {
             }
 
             public override SynchronizationContext CreateCopy()
-                => new BlockingLoopSynchronizationContext(_threadHelper, _dispatcherSynchronizationContext);
+                => new BlockingLoopSynchronizationContext(_threadHelper, _innerSynchronizationContext);
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Microsoft.Languages.Editor.Test {
     /// Provides <see cref="ICoreShell"/> with test services and MEF container
     /// </summary>
     // Fixture doesn't import itself. Use AssemblyFixtureImportAttribute
-    [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class EditorShellProviderFixture : CoreShellProviderFixture {
         protected override CompositionContainer CreateCompositionContainer() {
