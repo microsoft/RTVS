@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
@@ -17,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class PackageInstallTest : FunctionIndexBasedTest {
-        public PackageInstallTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
+        public PackageInstallTest(IServiceContainer services) : base(services) { }
 
         [Test]
         public async Task InstallPackageTest() {

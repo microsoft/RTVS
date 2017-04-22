@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
@@ -16,50 +17,50 @@ namespace Microsoft.R.Components.Test {
     /// These tests are basic markers that all required services are available.
     /// </summary>
     public class MefCompositionTests {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
-        public MefCompositionTests(RComponentsShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public MefCompositionTests(IServiceContainer service) {
+            _services = service;
         }
 
         [Test]
         public void SearchControlProvider() {
-            _coreShell.GetService<ISearchControlProvider>().Should().NotBeNull();
+            _services.GetService<ISearchControlProvider>().Should().NotBeNull();
         }
 
         [Test]
         public void RHistoryProvider() {
-            _coreShell.GetService<IRHistoryProvider>().Should().NotBeNull();
+            _services.GetService<IRHistoryProvider>().Should().NotBeNull();
         }
 
         [Test]
         public void RInteractiveWorkflowProvider() {
-            _coreShell.GetService<IRInteractiveWorkflowProvider>().Should().NotBeNull();
+            _services.GetService<IRInteractiveWorkflowProvider>().Should().NotBeNull();
         }
 
         [Test]
         public void RHistoryVisualComponentContainerFactory() {
-            _coreShell.GetService<IRHistoryVisualComponentContainerFactory>().Should().NotBeNull();
+            _services.GetService<IRHistoryVisualComponentContainerFactory>().Should().NotBeNull();
         }
 
         [Test]
         public void InteractiveWindowComponentContainerFactory() {
-            _coreShell.GetService<IInteractiveWindowComponentContainerFactory>().Should().NotBeNull();
+            _services.GetService<IInteractiveWindowComponentContainerFactory>().Should().NotBeNull();
         }
 
         [Test]
         public void RPackageManagerVisualComponentContainerFactory() {
-            _coreShell.GetService<IRPackageManagerVisualComponentContainerFactory>().Should().NotBeNull();
+            _services.GetService<IRPackageManagerVisualComponentContainerFactory>().Should().NotBeNull();
         }
 
         [Test]
         public void ConnectionManagerVisualComponentContainerFactory() {
-            _coreShell.GetService<IConnectionManagerVisualComponentContainerFactory>().Should().NotBeNull();
+            _services.GetService<IConnectionManagerVisualComponentContainerFactory>().Should().NotBeNull();
         }
 
         [Test]
         public void InteractiveWindowFactoryService() {
-            _coreShell.GetService<IInteractiveWindowFactoryService>().Should().NotBeNull();
+            _services.GetService<IInteractiveWindowFactoryService>().Should().NotBeNull();
         }
     }
 }

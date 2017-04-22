@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controller.Constants;
@@ -24,8 +25,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
     public class FormatCommandTest {
         private readonly ICoreShell _shell;
 
-        public FormatCommandTest(REditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
+        public FormatCommandTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [CompositeTest]

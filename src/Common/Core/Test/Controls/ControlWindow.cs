@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Common.Core.Services;
 using Microsoft.UnitTests.Core.Threading;
 using Screen = System.Windows.Forms.Screen;
 
@@ -20,9 +21,11 @@ namespace Microsoft.Common.Core.Test.Controls {
         [ExcludeFromCodeCoverage]
         class ControlTestRequest {
             public Type ControlType { get; }
+            public IServiceContainer Services { get; }
 
-            public ControlTestRequest(Type controlType) {
+            public ControlTestRequest(Type controlType, IServiceContainer services) {
                 ControlType = controlType;
+                Services = services;
             }
         }
 
@@ -45,9 +48,9 @@ namespace Microsoft.Common.Core.Test.Controls {
         /// <summary>
         /// Creates WPF window and control instance then hosts control in the window.
         /// </summary>
-        public static void Create(Type controlType) {
+        public static void Create(Type controlType, IServiceContainer services) {
             var evt = new ManualResetEventSlim(false);
-            Task.Run(() => UIThreadHelper.Instance.Invoke(() => CreateWindowInstance(new ControlTestRequest(controlType), evt)));
+            Task.Run(() => UIThreadHelper.Instance.Invoke(() => CreateWindowInstance(new ControlTestRequest(controlType, services), evt)));
             evt.Wait();
         }
 
@@ -67,7 +70,9 @@ namespace Microsoft.Common.Core.Test.Controls {
                 Window.Width = 800;
                 Window.Height = 600;
 
-                Component = Activator.CreateInstance(request.ControlType);
+                Component = request.Services != null 
+                    ? Activator.CreateInstance(request.ControlType, request.Services) 
+                    : Activator.CreateInstance(request.ControlType);
                 if (Component is Control) {
                     Control = Component as Control;
                 } else {

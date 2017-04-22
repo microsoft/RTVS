@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
@@ -37,16 +38,15 @@ namespace Microsoft.R.Components.Test.Plots {
         private IInteractiveWindowVisualComponent _interactiveWindow;
         private const int PlotWindowInstanceId = 1;
 
-        public RPlotIntegrationUITest(RComponentsShellProviderFixture shellProvider, ContainerHostMethodFixture containerHost) {
+        public RPlotIntegrationUITest(IServiceContainer services, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            var coreShell = shellProvider.CoreShell;
-            coreShell.GetService<IRInteractiveWorkflowProvider>();
-            _plotDeviceVisualComponentContainerFactory = coreShell.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
+            services.GetService<IRInteractiveWorkflowProvider>();
+            _plotDeviceVisualComponentContainerFactory = services.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
 
             // Don't override the standard behavior of using the control size
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
-            _plotHistoryVisualComponentContainerFactory = coreShell.GetService<IRPlotHistoryVisualComponentContainerFactory>();
-            _workflow = coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _plotHistoryVisualComponentContainerFactory = services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
+            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _plotVisualComponent = UIThreadHelper.Instance.Invoke(() => _workflow.Plots.GetOrCreateVisualComponent(_plotDeviceVisualComponentContainerFactory, PlotWindowInstanceId));
             UIThreadHelper.Instance.Invoke(() => _workflow.Plots.RegisterVisualComponent(_plotVisualComponent));
         }

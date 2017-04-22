@@ -58,6 +58,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ServicesExtensions.cs" />
     <Compile Include="Transports\WebSocketClient.cs" />
     <Compile Include="Transports\WebSocketClientService.cs" />
   </ItemGroup>

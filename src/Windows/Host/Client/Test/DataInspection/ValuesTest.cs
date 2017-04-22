@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -28,7 +29,7 @@ namespace Microsoft.R.DataInspection.Test {
        private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public ValuesTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public ValuesTest(IServiceContainer services, TestMethodFixture testMethod) {
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

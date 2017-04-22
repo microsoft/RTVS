@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Test.StubFactories;
@@ -18,9 +18,9 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly ITextBuffer _textBuffer;
 
-        public RHistoryTests(RComponentsShellProviderFixture shellProvider) {
+        public RHistoryTests(IServiceContainer services) {
             _interactiveWorkflow = InteractiveWorkflowStubFactory.CreateDefault();
-            _textBuffer = shellProvider.CoreShell.GetService<ITextBufferFactoryService>().CreateTextBuffer();
+            _textBuffer = services.GetService<ITextBufferFactoryService>().CreateTextBuffer();
         }
 
         [CompositeTest]
