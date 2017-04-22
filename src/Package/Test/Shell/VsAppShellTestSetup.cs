@@ -17,6 +17,7 @@ using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Interpreters;
 using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -67,8 +68,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new TestPlatformServices())
                 .AddService(new TestRToolsSettings())
                 .AddService(new REditorSettings(new TestSettingsStorage()))
-                .AddService(new RInstallation())
                 .AddService(new TestImageService())
+                .AddWindowsRInterpretersServices()
+                .AddWindowsHostClientServices()
                 // OLE and VS specifics
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))

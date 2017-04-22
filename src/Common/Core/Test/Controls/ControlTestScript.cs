@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
@@ -11,8 +12,8 @@ using Microsoft.UnitTests.Core.Threading;
 namespace Microsoft.Common.Core.Test.Controls {
     [ExcludeFromCodeCoverage]
     public sealed class ControlTestScript : TestScript, IDisposable {
-        public ControlTestScript(Type type) {
-            ControlWindow.Create(type);
+        public ControlTestScript(Type type, IServiceContainer services = null) {
+            ControlWindow.Create(type, services);
         }
         /// <summary>
         /// Invokes a particular action in the control window thread

@@ -4,28 +4,16 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.Text.Projection;
-using Microsoft.VisualStudio.Utilities;
 using NSubstitute;
 using Xunit;
 
 namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
     [ExcludeFromCodeCoverage]
     public class RLanguageHandlerTest {
-        private readonly ICoreShell _coreShell;
-
-        public RLanguageHandlerTest(MarkdownEditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
-            _coreShell.GetService<IProjectionBufferFactoryService>();
-            _coreShell.GetService<IContentTypeRegistryService>();
-        }
-
         [CompositeTest]
         [Category.Md.RCode]
         [InlineData("```{r}\n\n```")]
@@ -45,7 +33,6 @@ namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
             });
 
             var expectedSecondaryBuffer = markdown.Replace("```", string.Empty) + Environment.NewLine;
-            var handler = new RLanguageHandler(tb, pbm, _coreShell);
             secondaryBuffer.Should().Be(expectedSecondaryBuffer);
 
             mappings.Should().HaveCount(1);

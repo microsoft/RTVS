@@ -41,7 +41,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             IMethodFixtureFactory<object> methodFixtureFactory;
             if (_assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out object assemblyFixture) &&
-                (methodFixtureFactory = (IMethodFixtureFactory<object>) assemblyFixture) != null) {
+                (methodFixtureFactory = assemblyFixture as IMethodFixtureFactory<object>) != null) {
                 argumentValue = methodFixtureFactory.Dummy;
             } else if (typeof(IMethodFixture).IsAssignableFrom(parameter.ParameterType)) {
                 argumentValue = Activator.CreateInstance(parameter.ParameterType);

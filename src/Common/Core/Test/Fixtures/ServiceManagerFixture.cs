@@ -2,10 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -25,9 +23,9 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         public IMethodFixture Create() => CreateFixture();
 
-        protected virtual TestServiceManager CreateFixture() => new TestServiceManager(AddServices).AddLog();
+        protected virtual TestServiceManager CreateFixture() => new TestServiceManager(SetupServices).AddLog();
 
-        protected virtual void AddServices(IServiceManager serviceManager, ITestInput testInput) {
+        protected virtual void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             serviceManager
                 .AddService(UIThreadHelper.Instance)
                 .AddService(new SecurityServiceStub())
@@ -67,10 +65,11 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 return MethodFixtureBase.DefaultInitializeTask;
             }
 
-            public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
+            public virtual Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
                 if (result.Failed > 0) {
                     _log.Flush();
                 }
+                Dispose();
                 return Task.CompletedTask;
             }
         }

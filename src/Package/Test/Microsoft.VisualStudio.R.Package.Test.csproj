@@ -115,6 +115,10 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Markdown\Editor\Test\Microsoft.Markdown.Editor.Test.csproj">
+      <Project>{56534417-6C60-48A5-B355-12225C70431E}</Project>
+      <Name>Microsoft.Markdown.Editor.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
@@ -206,6 +210,7 @@
     <Compile Include="Browsers\WebBrowserServicesTest.cs" />
     <Compile Include="Feedback\FeedbackCommandTest.cs" />
     <Compile Include="Fixtures\DisposeRInteractiveWorkflowFixture.cs" />
+    <Compile Include="Fixtures\RPackageServicesFixture.cs" />
     <Compile Include="Options\LogVerbosityTest.cs" />
     <Compile Include="Package\RToolbarTest.cs" />
     <Compile Include="Project\SettingsTest.cs" />

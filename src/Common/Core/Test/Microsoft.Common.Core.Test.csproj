@@ -66,7 +66,6 @@
     <Compile Include="Fakes\Shell\TestProgressDialog.cs" />
     <Compile Include="Fakes\Shell\TestServiceManager.cs" />
     <Compile Include="Fakes\Shell\TestUIServices.cs" />
-    <Compile Include="Fixtures\CoreShellProviderFixture.cs" />
     <Compile Include="Fixtures\ServiceManagerFixture.cs" />
     <Compile Include="Fixtures\ServiceManagerWithMefFixture.cs" />
     <Compile Include="Logging\MaxLoggingPermissions.cs" />

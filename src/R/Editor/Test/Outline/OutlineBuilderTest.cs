@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.R.Components.ContentTypes;
@@ -22,8 +23,8 @@ namespace Microsoft.R.Editor.Test.Outline {
         private readonly EditorTestFilesFixture _testFiles;
         private readonly ICoreShell _shell;
 
-        public ROutlineBuilderTest(REditorShellProviderFixture shellProvider, EditorTestFilesFixture testFiles) {
-            _shell = shellProvider.CoreShell;
+        public ROutlineBuilderTest(IServiceContainer services, EditorTestFilesFixture testFiles) {
+            _shell = services.GetService<ICoreShell>();
             _testFiles = testFiles;
         }
 

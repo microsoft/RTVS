@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Utility;
@@ -21,8 +22,8 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
 
-        public RmdClassificationTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _coreShell = shellProvider.CoreShell;
+        public RmdClassificationTest(IServiceContainer services, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
+            _coreShell = services.GetService<ICoreShell>();
             _editorHost = editorHost;
             _files = files;
         }

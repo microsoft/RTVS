@@ -21,11 +21,11 @@ namespace Microsoft.R.Editor.Test.Completions {
     public class FileCompletionProviderTest: IDisposable {
         private const string _testFolderName = "_Rtvs_FileCompletionTest_";
 
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly string _testFolder;
 
-        public FileCompletionProviderTest(REditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public FileCompletionProviderTest(IServiceContainer services) {
+            _services = services;
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _testFolder = Path.Combine(myDocs, _testFolderName);
@@ -51,11 +51,11 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public async Task RemoteFiles() {
-            using (var workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
-                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _coreShell.Services, forceR: true);
+                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _services, forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
                 entries.Should().Contain(e => e.DisplayText == _testFolderName);

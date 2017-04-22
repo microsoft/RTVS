@@ -8,6 +8,7 @@ using System.Threading;
 using FluentAssertions;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
@@ -20,8 +21,8 @@ namespace Microsoft.Languages.Editor.Test.Services {
     public class IdleTaskQueueTest {
         private readonly ICoreShell _shell;
 
-        public IdleTaskQueueTest(EditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
+        public IdleTaskQueueTest() {
+            _shell = TestCoreShell.CreateBasic();
         }
 
         [Test]

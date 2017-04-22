@@ -8,8 +8,8 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
     public class HostClientServicesFixture : ServiceManagerFixture {
-        protected override void AddServices(IServiceManager serviceManager, ITestInput testInput) {
-            base.AddServices(serviceManager, testInput);
+        protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
+            base.SetupServices(serviceManager, testInput);
             serviceManager
                 .AddWindowsHostClientServices()
                 .AddWindowsRInterpretersServices();
