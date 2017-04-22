@@ -52,23 +52,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             return shell;
         }
 
-        /// <summary>
-        /// Creates test core shell with basic services and delegation
-        /// to the supplied export provider for additional services.
-        /// </summary>
-        /// <param name="exportProvider"></param>
-        public TestCoreShell(IExportProvider exportProvider) : this(new TestServiceManager(exportProvider)) {
-            AddBasicServices();
-        }
-
-        public TestCoreShell(ICompositionCatalog catalog) : this(new TestServiceManager(catalog.ExportProvider)) {
-            AddBasicServices();
-            ServiceManager
-                .AddService(catalog)
-                .AddService(catalog.ExportProvider)
-                .AddService(catalog.CompositionService);
-        }
-
         private void AddSubstiteServices() {
             ServiceManager
                 .AddService(Substitute.For<IMainThread>())
