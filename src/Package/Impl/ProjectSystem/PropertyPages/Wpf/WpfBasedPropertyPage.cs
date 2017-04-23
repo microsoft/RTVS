@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
         protected abstract PropertyPageControl CreatePropertyPageControl();
 
-        protected async override Task OnSetObjects(bool isClosing) {
+        protected override async Task OnSetObjects(bool isClosing) {
             if (isClosing) {
                 _control.DetachViewModel();
                 return;
