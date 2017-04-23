@@ -77,6 +77,7 @@
     <Compile Include="Fakes\VisualComponentFactories\TestRPlotDeviceVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\Wpf\TestThemeUtilities.cs" />
+    <Compile Include="Fixtures\RComponentServicesFixture.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="History\RHistoryViewModelTest.cs" />

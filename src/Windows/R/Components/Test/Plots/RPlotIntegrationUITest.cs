@@ -38,15 +38,15 @@ namespace Microsoft.R.Components.Test.Plots {
 
         public RPlotIntegrationUITest(IServiceContainer services, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            services.GetService<IRInteractiveWorkflowProvider>();
             _plotDeviceVisualComponentContainerFactory = services.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
 
             // Don't override the standard behavior of using the control size
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = null;
             _plotHistoryVisualComponentContainerFactory = services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
             _workflow = services.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate();
+            _plotVisual = (IRPlotManagerVisual)_workflow.Plots;
             _plotVisualComponent = UIThreadHelper.Instance.Invoke(() => _workflow.Plots.GetOrCreateVisualComponent(_plotDeviceVisualComponentContainerFactory, PlotWindowInstanceId));
-            UIThreadHelper.Instance.Invoke(() => ((IRPlotManagerVisual)_workflow.Plots).RegisterVisualComponent(_plotVisualComponent));
+             UIThreadHelper.Instance.Invoke(() => ((IRPlotManagerVisual)_workflow.Plots).RegisterVisualComponent(_plotVisualComponent));
         }
 
         public async Task InitializeAsync() {
