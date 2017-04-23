@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Components.ContentTypes;
@@ -18,10 +19,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.SmartIndent]
     public class SmartIndentTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
-        public SmartIndentTest(REditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public SmartIndentTest(IServiceContainer services) {
+            _services = services;
         }
 
         [CompositeTest]
@@ -66,7 +67,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
 
-            var cs = _coreShell.GetService<ICompositionService>();
+            var cs = _services.GetService<ICompositionService>();
             var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
             var provider = composer.GetImport(RContentTypeDefinition.ContentType);
             ISmartIndent indenter = provider.CreateSmartIndent(textView);

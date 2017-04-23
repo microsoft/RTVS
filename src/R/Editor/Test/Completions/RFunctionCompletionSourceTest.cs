@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client.Test.Script;
@@ -18,7 +19,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class RFunctionCompletionSourceTest : FunctionIndexBasedTest {
-        public RFunctionCompletionSourceTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
+        public RFunctionCompletionSourceTest(IServiceContainer services) : base(services) { }
 
         [Test]
         public void BaseFunctions01() {

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
@@ -20,8 +21,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IWritableREditorSettings _settings;
 
-        public RProvisionalTextTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) {
-            _coreShell = shellProvider.CoreShell;
+        public RProvisionalTextTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
+            _coreShell = services.GetService<ICoreShell>();
             _editorHost = editorHost;
             _settings = _coreShell.GetService<IWritableREditorSettings>();
         }

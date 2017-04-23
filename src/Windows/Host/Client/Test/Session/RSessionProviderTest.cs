@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -18,8 +18,8 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     [Category.R.Session]
     public class RSessionProviderTest {
-        private readonly ServiceManagerFixture _services;
-        public RSessionProviderTest(ServiceManagerFixture services) {
+        private readonly IServiceContainer _services;
+        public RSessionProviderTest(IServiceContainer services) {
             _services = services;
         }
 

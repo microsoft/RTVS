@@ -92,8 +92,6 @@
     <Compile Include="PackageManager\TestRepositories.cs" />
     <Compile Include="Plots\RPlotIntegrationUITest.cs" />
     <Compile Include="Plots\RPlotIntegrationTest.cs" />
-    <Compile Include="RComponentsMefCatalog.cs" />
-    <Compile Include="RComponentsShellProviderFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
     <Compile Include="Sql\SqlDbTest.cs" />

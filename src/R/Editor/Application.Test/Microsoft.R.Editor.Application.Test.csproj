@@ -133,7 +133,7 @@
     <Compile Include="Fixtures\EditorAppTestFilesFixture.cs" />
     <Compile Include="Fixtures\EditorHostMethodFixture.cs" />
     <Compile Include="EditorScript.cs" />
-    <Compile Include="Fixtures\REditorApplicationShellProviderFixture.cs" />
+    <Compile Include="Fixtures\REditorApplicationServicesFixture.cs" />
     <Compile Include="Formatting\FormatDocumentTest.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
@@ -142,7 +142,6 @@
     <Compile Include="Markdown\RmdClassificationTest.cs" />
     <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
-    <Compile Include="Fixtures\REditorApplicationMefCatalog.cs" />
     <Compile Include="Selection\SelectionTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="SuggestedActions\SmartTagsTest.cs" />

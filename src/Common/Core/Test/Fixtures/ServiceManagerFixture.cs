@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
@@ -19,16 +18,16 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit.Sdk;
 
 namespace Microsoft.Common.Core.Test.Fixtures {
-    public class ServiceManagerFixture : MethodFixtureBase, IServiceManager {
-        private readonly LogProxy _log;
-        private readonly IServiceManager _serviceManager;
+    public class ServiceManagerFixture : IMethodFixtureFactory<IServiceContainer> {
+        public IServiceContainer Dummy { get; } = new TestServiceManager(null);
 
-        public ServiceManagerFixture() {
-            _log = new LogProxy();
-            _serviceManager = new ServiceManager();
-            _serviceManager
+        public IMethodFixture Create() => CreateFixture();
+
+        protected virtual TestServiceManager CreateFixture() => new TestServiceManager(SetupServices).AddLog();
+
+        protected virtual void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
+            serviceManager
                 .AddService(UIThreadHelper.Instance)
-                .AddService(_log)
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())
@@ -39,42 +38,41 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new TestPlatformServices());
         }
 
-        public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-            try {
-                var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
-                Directory.CreateDirectory(logsFolder);
-                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
-            } catch (Exception) {
-                return Task.FromResult(Task.FromResult(new RunSummary {Failed = 1}));
+        protected class TestServiceManager : ServiceManager, IMethodFixture {
+            private readonly Action<IServiceManager, ITestInput> _addServices;
+            private readonly LogProxy _log;
+
+            public TestServiceManager(Action<IServiceManager, ITestInput> addServices) {
+                _addServices = addServices;
+                _log = new LogProxy();
             }
 
-            return base.InitializeAsync(testInput, messageBus);
-        }
-
-        public override Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
-            if (result.Failed > 0) {
-                _log.Flush();
+            public TestServiceManager AddLog() {
+                AddService(_log);
+                return this;
             }
-            return base.DisposeAsync(result, messageBus);
+
+            public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                try {
+                    var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
+                    Directory.CreateDirectory(logsFolder);
+                    _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
+                    _addServices(this, testInput);
+                } catch (Exception) {
+                    return Task.FromResult(Task.FromResult(new RunSummary {Failed = 1}));
+                }
+
+                return MethodFixtureBase.DefaultInitializeTask;
+            }
+
+            public virtual Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
+                if (result.Failed > 0) {
+                    _log.Flush();
+                }
+                Dispose();
+                return Task.CompletedTask;
+            }
         }
-
-        #region IServiceContainer
-        public T GetService<T>(Type type = null) where T : class => _serviceManager.GetService<T>(type);
-        public IEnumerable<Type> AllServices => _serviceManager.AllServices;
-        public IEnumerable<T> GetServices<T>() where T : class => _serviceManager.GetServices<T>();
-
-#pragma warning disable 67
-        public event EventHandler<ServiceContainerEventArgs> ServiceAdded;
-        public event EventHandler<ServiceContainerEventArgs> ServiceRemoved;
-#pragma warning restore 67
-        #endregion
-
-        #region IServiceManager
-        public void Dispose() { }
-        public IServiceManager AddService<T>(T service, Type type = null) where T : class => _serviceManager.AddService(service, type);
-        public IServiceManager AddService<T>(Func<T> factory = null) where T : class => _serviceManager.AddService(factory);
-        public void RemoveService<T>() where T : class => _serviceManager.RemoveService<T>();
-        #endregion
 
         private class LogProxy : IActionLog {
             private IActionLog _log;

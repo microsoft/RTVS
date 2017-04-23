@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -21,8 +22,8 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public MarkdownRCompletionTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) {
-            _coreShell = shellProvider.CoreShell;
+        public MarkdownRCompletionTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
+            _coreShell = services.GetService<ICoreShell>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }

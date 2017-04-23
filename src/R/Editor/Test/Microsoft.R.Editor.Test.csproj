@@ -153,9 +153,10 @@
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
-    <Compile Include="Fixtures\REditorAssemblyMefCatalog.cs" />
+    <Compile Include="Fixtures\REditorServicesFixture.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
-    <Compile Include="Fixtures\REditorShellProviderFixture.cs" />
+    <Compile Include="Mocks\CompoundUndoActionMock.cs" />
+    <Compile Include="Mocks\ApplicationEditorSupportMock.cs" />
     <Compile Include="Navigation\TextStructureTest.cs" />
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />

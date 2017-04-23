@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -22,7 +23,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public SteppingTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public SteppingTest(IServiceContainer services, TestMethodFixture testMethod) {
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

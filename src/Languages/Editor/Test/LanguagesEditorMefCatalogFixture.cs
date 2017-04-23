@@ -47,7 +47,7 @@ namespace Microsoft.Languages.Editor.Test {
             };
         }
 
-        public virtual IExportProvider Create(ServiceManagerFixture services) => new LanguagesEditorTestExportProvider(CreateContainer(), services);
+        public virtual IExportProvider Create(IServiceContainer services) => new LanguagesEditorTestExportProvider(CreateContainer(), (IServiceManager)services);
 
         protected class LanguagesEditorTestExportProvider : TestExportProvider {
             private readonly ICoreShell _coreShell;

@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
@@ -17,8 +19,8 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
     public class GotoBraceCommandTest {
         private readonly ICoreShell _shell;
 
-        public GotoBraceCommandTest(REditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
+        public GotoBraceCommandTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]

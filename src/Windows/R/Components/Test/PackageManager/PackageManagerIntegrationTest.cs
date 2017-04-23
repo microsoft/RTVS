@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
@@ -26,21 +25,19 @@ namespace Microsoft.R.Components.Test.PackageManager {
     [ExcludeFromCodeCoverage]
     [Category.PackageManager]
     public class PackageManagerIntegrationTest : IAsyncLifetime {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
-        private readonly MethodInfo _testMethod;
         private readonly string _repoPath;
         private readonly string _libPath;
         private readonly string _lib2Path;
         private IRInteractiveWorkflow _workflow;
 
-        public PackageManagerIntegrationTest(RComponentsShellProviderFixture shellProvider, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _coreShell = shellProvider.CoreShell;
-            _workflowProvider = _coreShell.GetService<TestRInteractiveWorkflowProvider>();
-            _testMethod = testMethod.MethodInfo;
+        public PackageManagerIntegrationTest(IServiceContainer services, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _services = services;
+            _workflowProvider = _services.GetService<TestRInteractiveWorkflowProvider>();
             _repoPath = TestRepositories.GetRepoPath(testFiles);
-            _libPath = Path.Combine(testFiles.LibraryDestinationPath, _testMethod.Name);
-            _lib2Path = Path.Combine(testFiles.Library2DestinationPath, _testMethod.Name);
+            _libPath = Path.Combine(testFiles.LibraryDestinationPath, testMethod.MethodInfo.Name);
+            _lib2Path = Path.Combine(testFiles.Library2DestinationPath, testMethod.MethodInfo.Name);
             Directory.CreateDirectory(_libPath);
             Directory.CreateDirectory(_lib2Path);
         }
@@ -273,7 +270,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         private async Task<IRInteractiveWorkflow> CreateWorkflowAsync() {
             var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
-            var settings = _coreShell.GetService<IRSettings>();
+            var settings = _services.GetService<IRSettings>();
             await workflow.RSessions.TrySwitchBrokerAsync(nameof(PackageManagerIntegrationTest));
             await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo (settings.CranMirror, codePage: settings.RCodePage), new RHostClientTestApp(), 50000);
             return workflow;

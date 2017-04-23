@@ -38,10 +38,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 .ToList();
 
             var methodFixtureFactories = _assemblyFixtureMappings.Values
-                .OfType<IMethodFixtureFactory<IMethodFixture>>()
+                .OfType<IMethodFixtureFactory<object>>()
                 .ToList();
 
-            IDictionary<Type, IMethodFixture> methodFixtures;
+            IDictionary<Type, object> methodFixtures;
             try {
                 methodFixtures = MethodFixtureTypes.CreateMethodFixtures(methodFixtureTypes, methodFixtureFactories);
             } catch (Exception exception) {
@@ -74,13 +74,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return runSummaryTask.Result;
         }
 
-        private object[] GetConstructorArguments(IDictionary<Type, IMethodFixture> methodFixtures) {
+        private object[] GetConstructorArguments(IDictionary<Type, object> methodFixtures) {
             var testCaseConstructorArguments = new object[_constructorArguments.Length];
 
             for (var i = 0; i < _constructorArguments.Length; i++) {
                 var argument = _constructorArguments[i];
-                IMethodFixture fixture;
-                if (argument is IMethodFixture && methodFixtures.TryGetValue(argument.GetType(), out fixture)) {
+                if (methodFixtures.TryGetValue(argument.GetType(), out object fixture)) {
                     testCaseConstructorArguments[i] = fixture;
                 } else {
                     testCaseConstructorArguments[i] = _constructorArguments[i];
@@ -90,9 +89,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return testCaseConstructorArguments;
         }
 
-        public async Task<IList<Task<RunSummary>>> InitializeMethodFixturesAsync(ITestInput testInput, IDictionary<Type, IMethodFixture> methodFixtures, IMessageBus messageBus) {
+        public async Task<IList<Task<RunSummary>>> InitializeMethodFixturesAsync(ITestInput testInput, IDictionary<Type, object> methodFixtures, IMessageBus messageBus) {
             var tasks = new List<Task<RunSummary>>();
-            foreach (var methodFixture in methodFixtures.Values) {
+            foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>()) {
                 var task = await methodFixture.InitializeAsync(testInput, messageBus);
                 tasks.Add(task);
             }
@@ -100,8 +99,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return tasks;
         }
         
-        public async Task DisposeMethodFixturesAsync(RunSummary result, IDictionary<Type, IMethodFixture> methodFixtures, IMessageBus messageBus) {
-            foreach (var methodFixture in methodFixtures.Values) {
+        public async Task DisposeMethodFixturesAsync(RunSummary result, IDictionary<Type, object> methodFixtures, IMessageBus messageBus) {
+            foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>()) {
                 await methodFixture.DisposeAsync(result, messageBus);
             }
         }

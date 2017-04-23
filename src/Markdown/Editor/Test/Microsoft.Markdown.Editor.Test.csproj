@@ -113,8 +113,7 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="ContainedLanguage\RCodeSeparatorCollectionTest.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandlerTest.cs" />
-    <Compile Include="MarkdownEditorAssemblyMefCatalog.cs" />
-    <Compile Include="MarkdownEditorShellProviderFixture.cs" />
+    <Compile Include="MarkdownEditorServicesFixture.cs" />
     <Compile Include="MarkdownTestFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classification\MarkdownCodeTest.cs" />

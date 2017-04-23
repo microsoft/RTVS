@@ -268,7 +268,7 @@
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
@@ -298,6 +298,10 @@
     <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
       <Name>Microsoft.R.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

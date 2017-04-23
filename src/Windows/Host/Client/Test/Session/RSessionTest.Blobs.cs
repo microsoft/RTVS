@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public Blobs(ServiceManagerFixture services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+            public Blobs(IServiceContainer services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _testMethod = testMethod;
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(Blobs));

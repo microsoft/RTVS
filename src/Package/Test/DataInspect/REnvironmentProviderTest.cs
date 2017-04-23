@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public REnvironmentProviderTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public REnvironmentProviderTest(IServiceContainer services, TestMethodFixture testMethod) {
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

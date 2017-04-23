@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Composition;
@@ -25,10 +26,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class AutoFormatTest {
-        private readonly ICoreShell _coreShell;
+        private readonly ICoreShell _shell;
 
-        public AutoFormatTest(REditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public AutoFormatTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [CompositeTest]
@@ -49,7 +50,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             var textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
-                var cs = _coreShell.GetService<ICompositionService>();
+                var cs = _shell.GetService<ICompositionService>();
                 var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
                 var provider = composer.GetImport(RContentTypeDefinition.ContentType);
                 var indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
@@ -71,7 +72,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _coreShell);
+                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _shell);
                     }
                 } else {
                     var line = e.After.GetLineFromPosition(position);

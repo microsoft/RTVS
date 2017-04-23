@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public CancelAll(ServiceManagerFixture services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+            public CancelAll(IServiceContainer services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
                 _taskObserver = taskObserver;
                 _callback = new RSessionCallbackStub();
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(CancelAll));
