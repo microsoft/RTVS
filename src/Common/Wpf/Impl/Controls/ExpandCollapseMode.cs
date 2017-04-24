@@ -4,6 +4,6 @@
 namespace Microsoft.Common.Wpf.Controls {
     public enum ExpandCollapseMode {
         Click,
-        LeftRigthArrows
+        LeftRightArrows
     }
 }
