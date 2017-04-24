@@ -4,6 +4,7 @@
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace Microsoft.Common.Wpf.Controls {
     public class ExpandCollapseButton : ButtonBase {
@@ -11,6 +12,8 @@ namespace Microsoft.Common.Wpf.Controls {
         public static readonly RoutedEvent CollapsedEvent = EventManager.RegisterRoutedEvent(nameof(Collapsed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ExpandCollapseButton));
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(ExpandCollapseButton),
                 new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnIsExpandedChanged));
+        public static readonly DependencyProperty ExpandCollapseModeProperty = DependencyProperty.Register(nameof(ExpandCollapseMode), typeof(ExpandCollapseMode), typeof(ExpandCollapseButton),
+                new FrameworkPropertyMetadata(ExpandCollapseMode.Click, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public event RoutedEventHandler Expanded {
             add { AddHandler(ExpandedEvent, value); }
@@ -27,9 +30,27 @@ namespace Microsoft.Common.Wpf.Controls {
             set { SetValue(IsExpandedProperty, value); }
         }
 
+        public ExpandCollapseMode ExpandCollapseMode {
+            get { return (ExpandCollapseMode) GetValue(ExpandCollapseModeProperty); }
+            set { SetValue(ExpandCollapseModeProperty, value); }
+        }
+
         protected override void OnClick() {
-            IsExpanded = !IsExpanded;
+            if (ExpandCollapseMode == ExpandCollapseMode.Click) {
+                IsExpanded = !IsExpanded;
+            }
             base.OnClick();
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            if (ExpandCollapseMode == ExpandCollapseMode.LeftRigthArrows) {
+                if (e.Key == Key.Left) {
+                    IsExpanded = false;
+                } else if (e.Key == Key.Right) {
+                    IsExpanded = true;
+                }
+            }
+            base.OnKeyDown(e);
         }
 
         private static void OnIsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
