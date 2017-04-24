@@ -1526,6 +1526,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.Console.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.Debug.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.EventLog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.ObjectPool.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
