@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -51,13 +52,10 @@ namespace Microsoft.Markdown.Editor.Classification {
             _view.LayoutChanged += OnLayoutChanged;
             _view.Closed += OnClosed;
 
-            var projectionBufferManager = ServiceManager.GetService<IProjectionBufferManager>(view.TextBuffer);
+            var projectionBufferManager = view.TextBuffer.GetService<IProjectionBufferManager>();
             if (projectionBufferManager != null) {
                 projectionBufferManager.MappingsChanged += OnMappingsChanged;
-                _contanedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(projectionBufferManager.DiskBuffer);
-                if(_contanedLanguageHandler == null) {
-                    ServiceManager.AdviseServiceAdded<IContainedLanguageHandler>(projectionBufferManager.DiskBuffer, _coreShell, (s) => _contanedLanguageHandler = s);
-                }
+                _contanedLanguageHandler = projectionBufferManager.DiskBuffer.GetService<IContainedLanguageHandler>();
             }
 
             FetchColors();

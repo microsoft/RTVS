@@ -3,6 +3,7 @@
 
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Classification;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -19,6 +20,7 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
             base(textBuffer, new MdTokenizer(), new MarkdownClassificationNameProvider()) {
             ContentTypeRegistryService = contentTypeRegistryService;
             ClassificationRegistryService = classificationRegistryService;
+            textBuffer.AddService(this);
         }
 
 

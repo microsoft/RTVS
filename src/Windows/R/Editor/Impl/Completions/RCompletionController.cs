@@ -285,7 +285,7 @@ namespace Microsoft.R.Editor.Completions {
                 // However, when user types closing brace is an expression inside
                 // function argument like in x = y * (z + 1) we need to re-trigger
                 // signature session
-                AstRoot ast = REditorDocument.FromTextBuffer(TextView.TextBuffer).EditorTree.AstRoot;
+                AstRoot ast = TextView.TextBuffer.GetEditorDocument<IREditorDocument>().EditorTree.AstRoot;
                 FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
                 if (f != null) {
                     TriggerSignatureHelp();

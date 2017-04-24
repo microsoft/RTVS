@@ -182,6 +182,7 @@
     <Compile Include="Completions\RCompletionTestUtilities.cs" />
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
+    <Compile Include="Extensions\RdAssertionExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
     <Compile Include="Fixtures\REditorServicesFixture.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
@@ -189,7 +190,7 @@
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="Extensions\AssertionExtensions.cs" />
     <Compile Include="BraceMatch\BraceMatchTest.cs" />
     <Compile Include="Fixtures\EditorTestFilesFixture.cs" />
     <Compile Include="Comments\CommenterTest.cs" />

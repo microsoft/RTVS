@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
@@ -17,12 +18,13 @@ namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     public class OutlineTest {
         public static OutlineRegionCollection BuildOutlineRegions(ICoreShell shell, string content) {
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            using (var tree = new EditorTree(textBuffer, shell)) {
+            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var eb = textBuffer.ToEditorBuffer();
+            using (var tree = new EditorTree(eb, shell)) {
                 tree.Build();
                 using (var editorDocument = new EditorDocumentMock(tree)) {
                     using (var ob = new ROutlineRegionBuilder(editorDocument, shell)) {
-                        OutlineRegionCollection rc = new OutlineRegionCollection(0);
+                        var rc = new OutlineRegionCollection(0);
                         ob.BuildRegions(rc);
                         return rc;
                     }
@@ -34,12 +36,12 @@ namespace Microsoft.R.Editor.Test.Outline {
         private static bool _regenerateBaselineFiles = false;
 
         public static void OutlineFile(ICoreShell shell, EditorTestFilesFixture fixture, string name) {
-            string testFile = fixture.GetDestinationPath(name);
-            string baselineFile = testFile + ".outline";
-            string text = fixture.LoadDestinationFile(name);
+            var testFile = fixture.GetDestinationPath(name);
+            var baselineFile = testFile + ".outline";
+            var text = fixture.LoadDestinationFile(name);
 
-            OutlineRegionCollection rc = BuildOutlineRegions(shell, text);
-            string actual = TextRangeCollectionWriter.WriteCollection(rc);
+            var rc = BuildOutlineRegions(shell, text);
+            var actual = TextRangeCollectionWriter.WriteCollection(rc);
 
             if (_regenerateBaselineFiles) {
                 baselineFile = Path.Combine(fixture.SourcePath, Path.GetFileName(testFile)) + ".outline";

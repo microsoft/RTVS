@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -28,19 +29,19 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
             using (var script = await _editorHost.StartScript(_coreShell, "\r\nabc$def['test test']", RContentTypeDefinition.ContentType)) {
 
                 script.MoveDown();
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = script.View.Selection.StreamSelectionSpan;
                 var selectedWord = span.GetText();
                 selectedWord.Should().Be("abc");
 
                 script.MoveRight(2);
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 span = script.View.Selection.StreamSelectionSpan;
                 selectedWord = span.GetText();
                 selectedWord.Should().Be("def");
 
                 script.MoveRight(3);
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 span = script.View.Selection.StreamSelectionSpan;
                 selectedWord = span.GetText();
                 selectedWord.Should().Be("test");
@@ -52,13 +53,13 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         public async Task R_SelectWord02() {
             using (var script = await _editorHost.StartScript(_coreShell, "`abc`$\"def\"", RContentTypeDefinition.ContentType)) {
 
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = script.View.Selection.StreamSelectionSpan;
                 var selectedWord = span.GetText();
                 selectedWord.Should().Be("`abc`");
 
                 script.MoveRight(3);
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 span = script.View.Selection.StreamSelectionSpan;
                 selectedWord = span.GetText();
                 selectedWord.Should().Be("def");
@@ -70,13 +71,13 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         public async Task R_SelectWord03() {
             using (var script = await _editorHost.StartScript(_coreShell, "abc\'def", RContentTypeDefinition.ContentType)) {
 
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = script.View.Selection.StreamSelectionSpan;
                 var selectedWord = span.GetText();
                 selectedWord.Should().Be("abc");
 
                 script.MoveRight(2);
-                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 span = script.View.Selection.StreamSelectionSpan;
                 selectedWord = span.GetText();
                 selectedWord.Should().Be("def");

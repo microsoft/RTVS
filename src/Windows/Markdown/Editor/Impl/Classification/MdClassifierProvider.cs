@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -25,12 +25,8 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
         }
 
         protected override IClassifier CreateClassifier(ITextBuffer textBuffer) {
-            var classifier = ServiceManager.GetService<MdClassifier>(textBuffer);
-            if (classifier == null) {
-                classifier = new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService);
-                ServiceManager.AddService<MdClassifier>(classifier, textBuffer, _shell);
-            }
-            return classifier;
+            var classifier = textBuffer.GetService<MdClassifier>();
+            return classifier ?? new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService);
         }
     }
 }

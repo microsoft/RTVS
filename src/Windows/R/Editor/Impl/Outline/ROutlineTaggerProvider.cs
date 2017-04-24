@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -28,9 +29,9 @@ namespace Microsoft.R.Editor.Outline {
 
         #region ITaggerProvider
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            var tagger = ServiceManager.GetService<ROutliningTagger>(buffer);
+            var tagger = buffer.GetService<ROutliningTagger>();
             if (tagger == null) {
-                var document = ServiceManager.GetService<REditorDocument>(buffer);
+                var document = buffer.GetEditorDocument<IREditorDocument>();
                 if (document != null) {
                     tagger = new ROutliningTagger(document, _shell);
                 }

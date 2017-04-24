@@ -145,7 +145,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                         // Removed range may be out of current snapshot boundaries if, say, 
                         // a lot of elements were removed. Clip it appropriately.
 
-                        range = TextRange.Intersection(_removedRange, 0, _editorTree.TextBuffer.CurrentSnapshot.Length);
+                        range = TextRange.Intersection(_removedRange, 0, _editorTree.TextBuffer().CurrentSnapshot.Length);
                     }
 
                     _removedRange = null;
@@ -173,7 +173,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// <param name="node">Node in the AST</param>
         /// <returns>Text range that encloses removed tag spans</returns>
         public ITextRange RemoveTagsForNode(IAstNode node) {
-            int start = _editorTree.TextBuffer.CurrentSnapshot.Length;
+            int start = _editorTree.TextBuffer().CurrentSnapshot.Length;
             ITextRange range = TextRange.EmptyRange;
             int end = 0;
 

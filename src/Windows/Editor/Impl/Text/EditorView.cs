@@ -21,7 +21,7 @@ namespace Microsoft.Languages.Editor.Text {
             Selection = new EditorSelection(textView);
         }
 
-        public IViewCaret Caret => new ViewCaret(_textView.Caret);
+        public IViewCaret Caret => new ViewCaret(_textView);
 
         public IEditorBuffer EditorBuffer => _textView.TextBuffer.ToEditorBuffer();
         public PropertyDictionary Properties => _properties.Value;

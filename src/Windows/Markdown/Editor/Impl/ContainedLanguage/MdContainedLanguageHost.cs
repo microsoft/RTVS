@@ -51,18 +51,14 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         #region IContainedLanguageHost
         public event EventHandler<EventArgs> Closing;
 
-        public string DocumentPath {
-            get { return _document != null ? _document.TextBuffer.GetTextDocument().FilePath : string.Empty; }
-        }
+        public string DocumentPath => _document != null ? _document.FilePath : string.Empty;
 
         public ICommandTarget SetContainedCommandTarget(ITextView textView, ICommandTarget containedCommandTarget) {
             ContainedCommandTarget = containedCommandTarget;
             return GetBaseCommandTarget(textView);
         }
 
-        public void RemoveContainedCommandTarget(ITextView textView) {
-            ContainedCommandTarget = null;
-        }
+        public void RemoveContainedCommandTarget(ITextView textView) => ContainedCommandTarget = null;
 
         public bool CanFormatLine(ITextView textView, ITextBuffer containedLanguageBuffer, int lineNumber) {
             var line = containedLanguageBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);

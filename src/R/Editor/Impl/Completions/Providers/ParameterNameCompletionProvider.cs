@@ -91,7 +91,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             // Retrieve parameter positions from the current text buffer snapshot
             IFunctionInfo functionInfo = null;
 
-            ParameterInfo parametersInfo = context.AstRoot.GetParametersInfoFromBuffer(context.EditorBuffer.CurrentSnapshot, context.Position);
+            var parametersInfo = context.AstRoot.GetParametersInfoFromBuffer(context.EditorBuffer.CurrentSnapshot, context.Position);
             if (parametersInfo != null) {
                 // User-declared functions take priority
                 functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);

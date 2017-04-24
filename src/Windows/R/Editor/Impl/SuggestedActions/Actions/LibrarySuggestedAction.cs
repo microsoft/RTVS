@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
         }
 
         public override void Invoke(CancellationToken cancellationToken) {
-            var document = REditorDocument.FromTextBuffer(TextBuffer);
+            var document = TextBuffer.GetEditorDocument<IREditorDocument>();
             var tree = document.EditorTree;
             if (tree.IsReady) {
                 var libraryName = document.EditorTree.AstRoot.IsInLibraryStatement(TextView.Caret.Position.BufferPosition);

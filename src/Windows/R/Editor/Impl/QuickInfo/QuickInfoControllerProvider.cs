@@ -3,8 +3,8 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -26,12 +26,8 @@ namespace Microsoft.R.Editor.QuickInfo {
         }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
-            QuickInfoController quickInfoController = ServiceManager.GetService<QuickInfoController>(textView);
-            if (quickInfoController == null) {
-                quickInfoController = new QuickInfoController(textView, subjectBuffers, _quickInfoBroker, _shell);
-            }
-
-            return quickInfoController;
+            var quickInfoController = textView.GetService<QuickInfoController>();
+            return quickInfoController ?? new QuickInfoController(textView, subjectBuffers, _quickInfoBroker, _shell);
         }
     }
 }

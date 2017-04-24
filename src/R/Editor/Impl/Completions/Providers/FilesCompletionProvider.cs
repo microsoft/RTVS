@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -25,18 +26,17 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly IImageService _imageService;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSettings _settings;
-
-        private Task<string> _userDirectoryFetchingTask;
-        private string _directory;
+        private readonly Task<string> _userDirectoryFetchingTask;
+        private readonly string _directory;
+        private readonly bool _forceR; // for tests
         private string _cachedUserDirectory;
-        private bool _forceR; // for tests
 
-        public FilesCompletionProvider(string directoryCandidate, ICoreShell coreShell, bool forceR = false) {
+        public FilesCompletionProvider(string directoryCandidate, IServiceContainer services, bool forceR = false) {
             Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
-            _workflow = coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _imageService = coreShell.GetService<IImageService>();
-            _settings = coreShell.GetService<IRSettings>();
+            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _imageService = services.GetService<IImageService>();
+            _settings = services.GetService<IRSettings>();
             _forceR = forceR;
 
             _directory = ExtractDirectory(directoryCandidate);

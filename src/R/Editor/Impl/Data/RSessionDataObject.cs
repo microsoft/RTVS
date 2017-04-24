@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Data {
 
         private readonly bool _evaluateActiveBindings;
         private readonly object syncObj = new object();
-        private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask = null;
+        private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask;
 
         protected const int DefaultMaxReprLength = 100;
         protected const int DefaultMaxGrandChildren = 20;
@@ -29,10 +29,6 @@ namespace Microsoft.R.Editor.Data {
             MaxReprLength = DefaultMaxReprLength;
         }
 
-        /// <summary>
-        /// Create new instance of <see cref="DataEvaluation"/>
-        /// </summary>
-        /// <param name="evaluation">R session's evaluation result</param>
         public RSessionDataObject(IREvaluationResultInfo evaluation, bool evaluateActiveBindings, int? maxChildrenCount = null) : this() {
             DebugEvaluation = evaluation;
             Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);

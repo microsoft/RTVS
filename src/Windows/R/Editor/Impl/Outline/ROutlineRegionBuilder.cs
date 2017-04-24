@@ -137,10 +137,10 @@ namespace Microsoft.R.Editor.Outline {
                     var lastRegion = context.Regions[context.Regions.Count - 1];
                     if (lastRegion.Length < node.Length) {
                         context.Regions.RemoveAt(context.Regions.Count - 1);
-                        context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, node));
+                        context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer(), node));
                     }
                 } else if (context.LastRegionStartLineNumber != startLineNumber) {
-                    context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, node));
+                    context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer(), node));
                     context.LastRegionStartLineNumber = startLineNumber;
                     context.LastRegionEndLineNumber = endLineNumber;
                 }

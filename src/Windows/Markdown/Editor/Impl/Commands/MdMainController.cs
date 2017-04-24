@@ -3,10 +3,10 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controllers;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -18,26 +18,20 @@ namespace Microsoft.Markdown.Editor.Commands {
     public class MdMainController : ViewController {
         private BraceCompletionWorkaround223902 _workaround;
 
-        public MdMainController(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
-            : base(textView, textBuffer, shell) {
-            ServiceManager.AddService(this, textView, shell);
+        public MdMainController(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
+            : base(textView, textBuffer, services) {
+            textView.AddService(this);
         }
 
-        public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
-            MdMainController controller = FromTextView(textView);
-            if (controller == null) {
-                controller = new MdMainController(textView, textBuffer, coreShell);
-            }
-
-            return controller;
+        public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) {
+            var controller = FromTextView(textView);
+            return controller ?? new MdMainController(textView, textBuffer, services);
         }
 
-        public static new MdMainController FromTextView(ITextView textView) {
-            return ServiceManager.GetService<MdMainController>(textView);
-        }
+        public new static MdMainController FromTextView(ITextView textView) => textView.GetService<MdMainController>();
 
         public override ICommandTarget ChainedController {
-            get { return base.ChainedController; }
+            get => base.ChainedController;
             set {
                 base.ChainedController = value;
                 CommandTargetProxy.SetCommandTarget(TextView, value);
@@ -63,7 +57,7 @@ namespace Microsoft.Markdown.Editor.Commands {
                 if (_workaround == null) {
                     _workaround = new BraceCompletionWorkaround223902(TextView);
                 }
-                CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
+                var result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
                 if (result.WasExecuted) {
                     return result;
                 }
@@ -87,9 +81,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         /// Disposes main controller and removes it from service manager.
         /// </summary>
         protected override void Dispose(bool disposing) {
-            if (TextView != null) {
-                ServiceManager.RemoveService<MdMainController>(TextView);
-            }
+            TextView?.RemoveService(this);
             base.Dispose(disposing);
         }
 
@@ -104,7 +96,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         /// </remarks>
         sealed class BraceCompletionWorkaround223902 : IDisposable {
             private readonly ITextView _textView;
-            private bool _optionValue;
+            private readonly bool _optionValue;
 
             public BraceCompletionWorkaround223902(ITextView textView) {
                 _textView = textView;

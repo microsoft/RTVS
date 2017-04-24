@@ -5,6 +5,7 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Utility;
@@ -32,7 +33,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (!TextView.Caret.InVirtualSpace) {
                 var caretPosition = TextView.Caret.Position.BufferPosition;
-                var document = MdEditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
+                var document = TextView.TextBuffer.GetEditorDocument<IMdEditorDocument>();
                 var handler = document?.ContainedLanguageHandler;
                 var codeRange = handler?.GetCodeBlockOfLocation(caretPosition);
                 if (codeRange != null) {

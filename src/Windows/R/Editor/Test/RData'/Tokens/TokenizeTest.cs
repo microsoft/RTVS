@@ -8,7 +8,7 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Editor.RData.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.R.Support.Test.RD.Tokens {
+namespace Microsoft.R.Editor.Test.RData.Tokens {
     [ExcludeFromCodeCoverage]
     public class TokenizeRdTest : TokenizeTestBase<RdToken, RdTokenType> {
         [Test]

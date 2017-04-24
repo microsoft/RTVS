@@ -38,6 +38,8 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
+        public static IEditorBuffer Create(ITextBuffer textBuffer) => new EditorBuffer(textBuffer);
+
         #region IEditorBuffer
         public IEditorBufferSnapshot CurrentSnapshot => new EditorBufferSnapshot(this, _textBuffer.CurrentSnapshot);
         public PropertyDictionary Properties => _properties.Value;

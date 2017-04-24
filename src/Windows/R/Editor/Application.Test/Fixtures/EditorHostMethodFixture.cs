@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Core;
+using Microsoft.R.Editor.Functions;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;

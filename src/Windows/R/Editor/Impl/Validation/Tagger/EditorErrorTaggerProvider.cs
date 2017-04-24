@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.TaskList;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -30,11 +31,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             EditorErrorTagger tagger = null;
 
             if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer, _shell.GetService<IREditorSettings>())) {
-                tagger = ServiceManager.GetService<EditorErrorTagger>(textBuffer);
-                if (tagger == null) {
-                    tagger = new EditorErrorTagger(textBuffer, _taskList, _shell);
-                    ServiceManager.AddService(tagger, textBuffer, _shell);
-                }
+                tagger = textBuffer.GetService<EditorErrorTagger>();
+                tagger = tagger ?? new EditorErrorTagger(textBuffer, _taskList, _shell);
             }
 
             return tagger as ITagger<T>;

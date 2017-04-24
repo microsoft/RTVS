@@ -9,7 +9,7 @@ using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Outline {
-    internal sealed class RSectionsCollection: IDisposable {
+    internal sealed class RSectionsCollection : IDisposable {
         private class SpanContent {
             public ITrackingSpan TrackingSpan;
             public int OriginalLength;
@@ -25,16 +25,16 @@ namespace Microsoft.R.Editor.Outline {
             foreach (var s in sections) {
                 var span = s.ToSpan();
                 _spans.Add(new SpanContent() {
-                    TrackingSpan = _tree.BufferSnapshot.CreateTrackingRange(span, SpanTrackingMode.EdgePositive),
+                    TrackingSpan = _tree.TextSnapshot().CreateTrackingSpan(span, SpanTrackingMode.EdgePositive),
                     OriginalLength = s.Length
                 });
             }
         }
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            if(!_changed && _tree.AstRoot != null) {
-                foreach(var c in e.Changes) {
-                    if(c.OldText.IndexOf('-') >= 0 || c.NewText.IndexOf('-') >= 0) {
+        private void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
+            if (!_changed && _tree.AstRoot != null) {
+                foreach (var c in e.Changes) {
+                    if (c.OldText.IndexOf('-') >= 0 || c.NewText.IndexOf('-') >= 0) {
                         if (_tree.AstRoot.Comments.GetItemContaining(c.OldPosition) >= 0) {
                             _changed = true;
                             break;
@@ -49,8 +49,8 @@ namespace Microsoft.R.Editor.Outline {
                 if (!_changed) {
                     try {
                         foreach (var s in _spans) {
-                            var start = s.TrackingSpan.GetStartPoint(_tree.TextSnapshot);
-                            var end = s.TrackingSpan.GetEndPoint(_tree.TextSnapshot);
+                            var start = s.TrackingSpan.GetStartPoint(_tree.TextSnapshot());
+                            var end = s.TrackingSpan.GetEndPoint(_tree.TextSnapshot());
                             var currentLength = end - start;
                             if (currentLength != s.OriginalLength) {
                                 _changed = true;
@@ -63,8 +63,6 @@ namespace Microsoft.R.Editor.Outline {
             }
         }
 
-        public void Dispose() {
-            _tree.TextBuffer.Changed -= OnTextBufferChanged;
-        }
+        public void Dispose() => _tree.EditorBuffer.Changed -= OnTextBufferChanged;
     }
 }

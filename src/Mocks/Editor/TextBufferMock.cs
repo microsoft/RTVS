@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
@@ -14,10 +15,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             ContentType = new ContentTypeMock(contentTypeName, new IContentType[] { ContentTypeMock.TextContentType });
             TextVersionMock initialVersion = new TextVersionMock(this, 0, content.Length);
             CurrentSnapshot = new TextSnapshotMock(content, this, initialVersion);
+            EditorBuffer.Create(this);
         }
-        public void Clear() {
-            Replace(new Span(0, CurrentSnapshot.Length), string.Empty);
-        }
+        public void Clear() => Replace(new Span(0, CurrentSnapshot.Length), string.Empty);
 
         #region ITextBuffer Members
 

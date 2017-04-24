@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 // Create a wrapper that will present OLE target as ICommandTarget to
                 // HTML main controller so controller can operate in platform-agnostic way.
                 var es = services.GetService<IEditorSupport>();
-                var nextCommandTarget = es.TranslateCommandTarget(textView, nextOleTarget);
+                var nextCommandTarget = es.TranslateCommandTarget(textView.ToEditorView(), nextOleTarget);
                 controller.ChainedController = nextCommandTarget;
             }
             return oleControllerShim;

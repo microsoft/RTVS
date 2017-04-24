@@ -106,6 +106,10 @@
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>

@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Document;
 
 namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// <summary>
@@ -235,8 +236,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         private ITextBuffer GetTargetBuffer() {
             if (TextView.IsRepl()) {
-                var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
-                return document?.TextBuffer;
+                var document = TextView.TextBuffer.GetEditorDocument<IREditorDocument>();
+                return document?.TextBuffer();
             }
             return TextView.TextBuffer;
         }

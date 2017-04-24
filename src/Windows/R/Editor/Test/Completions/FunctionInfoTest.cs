@@ -17,16 +17,15 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class FunctionInfoTest : IAsyncLifetime {
-        private readonly ICoreShell _shell;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
         private readonly IRInteractiveWorkflow _workflow;
 
         public FunctionInfoTest(IServiceContainer services) {
-            _shell = services.GetService<ICoreShell>();
-            _workflow = UIThreadHelper.Instance.Invoke(() => _shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
-            _packageIndex = _shell.GetService<IPackageIndex>();
-            _functionIndex = _shell.GetService<IFunctionIndex>();
+            var shell = services.GetService<ICoreShell>();
+            _workflow = UIThreadHelper.Instance.Invoke(() => shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
+            _packageIndex = shell.GetService<IPackageIndex>();
+            _functionIndex = shell.GetService<IFunctionIndex>();
         }
 
         public async Task InitializeAsync() {
@@ -34,13 +33,16 @@ namespace Microsoft.R.Editor.Test.Completions {
             await _packageIndex.BuildIndexAsync();
         }
 
-        public Task DisposeAsync() => _packageIndex.DisposeAsync(_shell);
+        public Task DisposeAsync() {
+            _packageIndex.Dispose();
+            return Task.CompletedTask;
+        }
 
         [CompositeTest]
         [InlineData("abs")]
         [InlineData("zzz")]
         public async Task FunctionInfoTest1(string name) {
-            var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "abs");
+            var functionInfo = await _functionIndex.GetFunctionInfoAsync("abs");
 
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("abs");
@@ -48,22 +50,22 @@ namespace Microsoft.R.Editor.Test.Completions {
             functionInfo.Signatures.Should().ContainSingle()
                 .Which.Arguments.Should().ContainSingle();
 
-            List<int> locusPoints = new List<int>();
+            var locusPoints = new List<int>();
             functionInfo.Signatures[0].GetSignatureString(name, locusPoints).Should().Be(name + "(x)");
             locusPoints.Should().Equal(4, 5);
         }
 
         [Test]
         public async Task FunctionInfoTest2() {
-            var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "eval");
+            var functionInfo = await _functionIndex.GetFunctionInfoAsync("eval");
 
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("eval");
             functionInfo.Description.Should().NotBeEmpty();
             functionInfo.Signatures.Should().ContainSingle().Which.Arguments.Should().HaveCount(3);
 
-            List<int> locusPoints = new List<int>();
-            string signature = functionInfo.Signatures[0].GetSignatureString("eval", locusPoints);
+            var locusPoints = new List<int>();
+            var signature = functionInfo.Signatures[0].GetSignatureString("eval", locusPoints);
             signature.Should().Be("eval(expr, envir = parent.frame(), enclos = if(is.list(envir) || is.pairlist(envir)) parent.frame() else baseenv())");
             locusPoints.Should().Equal(5, 11, 35, 114);
         }

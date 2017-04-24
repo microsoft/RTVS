@@ -31,8 +31,9 @@ namespace Microsoft.R.Editor.Test.Outline {
 
         [Test]
         public void ConstructionTest() {
-            TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            var tree = new EditorTree(new EditorBuffer(textBuffer, _shell);
+            var textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
+            var eb = textBuffer.ToEditorBuffer();
+            var tree = new EditorTree(eb, _shell);
             using (var editorDocument = new EditorDocumentMock(tree)) {
                 using (var ob = new ROutlineRegionBuilder(editorDocument, _shell)) {
 
@@ -41,7 +42,7 @@ namespace Microsoft.R.Editor.Test.Outline {
 
                     editorDocument.Closing.GetInvocationList().Should().ContainSingle();
 
-                    FieldInfo treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
                     var d = (MulticastDelegate)treeUpdateField.GetValue(tree);
                     d.GetInvocationList().Should().ContainSingle();
 
@@ -55,7 +56,7 @@ namespace Microsoft.R.Editor.Test.Outline {
 
         [Test(ThreadType.UI)]
         public void EmptyTest() {
-            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_shell, "");
+            var rc = OutlineTest.BuildOutlineRegions(_shell, "");
 
             rc.Should().BeEmpty();
             rc.Start.Should().Be(0);
@@ -64,7 +65,7 @@ namespace Microsoft.R.Editor.Test.Outline {
 
         [Test(ThreadType.UI)]
         public void Conditionals() {
-            string content =
+            var content =
 @"if (ncol(x) == 1L) {
     xnames < -1
 } else {
@@ -75,7 +76,7 @@ namespace Microsoft.R.Editor.Test.Outline {
     xnames<- c(0, xnames)
   }
 ";
-            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_shell, content);
+            var rc = OutlineTest.BuildOutlineRegions(_shell, content);
 
             rc.Should().HaveCount(3);
 
@@ -115,7 +116,8 @@ x <- 1
             OutlineRegionsChangedEventArgs args = null;
 
             textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            using (var tree = new EditorTree(textBuffer, _shell)) {
+            var eb = textBuffer.ToEditorBuffer();
+            using (var tree = new EditorTree(eb, _shell)) {
                 tree.Build();
                 using (var editorDocument = new EditorDocumentMock(tree)) {
                     using (var ob = new ROutlineRegionBuilder(editorDocument, _shell)) {
