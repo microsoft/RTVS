@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class ReplCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var shell = VsAppShell.Current;
-            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowVisualProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var completionBroker = shell.GetService<ICompletionBroker>();
             var editorFactory = shell.GetService<IEditorOperationsFactoryService>();

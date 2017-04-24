@@ -26,11 +26,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class SourceFilesCommand : SendFileCommandBase, IAsyncCommandGroupHandler {
         private readonly ConfiguredProject _configuredProject;
-        private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private IRInteractiveWorkflowVisualProvider _interactiveWorkflowProvider;
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, ICoreShell shell) :
+        public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider, ICoreShell shell) :
             base(interactiveWorkflowProvider, shell.UI(), new FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;

@@ -7,17 +7,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IDebuggerModeTracker {
         bool IsInBreakMode { get; }
 
-        bool IsFocusStolenOnBreak { get; }
-
         /// <summary>
         /// If true, the application is in debug mode
         /// </summary>
         bool IsDebugging { get; }
 
         event EventHandler EnterBreakMode;
-
         event EventHandler LeaveBreakMode;
-
-        bool IsRDebugger();
     }
 }

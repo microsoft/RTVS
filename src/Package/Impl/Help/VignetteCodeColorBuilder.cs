@@ -50,13 +50,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             new CssCodeProperty("paren", PredefinedClassificationTypeNames.Operator),
         };
 
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IClassificationFormatMapService _formatMapService;
         private readonly IClassificationTypeRegistryService _classificationRegistryService;
 
         [ImportingConstructor]
         public VignetteCodeColorBuilder(ICoreShell shell) {
-            _workflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
+            _workflowProvider = shell.GetService<IRInteractiveWorkflowVisualProvider>();
             _formatMapService = shell.GetService<IClassificationFormatMapService>();
             _classificationRegistryService = shell.GetService<IClassificationTypeRegistryService>();
         }

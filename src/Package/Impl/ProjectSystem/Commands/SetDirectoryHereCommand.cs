@@ -15,18 +15,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class SetDirectoryHereCommand : ICommandGroupHandler {
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _interactiveWorkflowProvider;
         private readonly UnconfiguredProject _unconfiguredProject;
 
         [ImportingConstructor]
-        public SetDirectoryHereCommand(UnconfiguredProject unconfiguredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider) {
+        public SetDirectoryHereCommand(UnconfiguredProject unconfiguredProject, IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider) {
             _unconfiguredProject = unconfiguredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if (commandId == RPackageCommandId.icmdSetDirectoryHere && nodes.Count == 1) {
-                var session = _interactiveWorkflowProvider.Active?.RSession;
+                var session = _interactiveWorkflowProvider.GetOrCreate().RSession;
                 bool enabled = session != null && session.IsHostRunning && !session.IsRemote;
                 return new CommandStatusResult(true, commandText, enabled ? CommandStatus.Enabled | CommandStatus.Supported : CommandStatus.Supported);
             }

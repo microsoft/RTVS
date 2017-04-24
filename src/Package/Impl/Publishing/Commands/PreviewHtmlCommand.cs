@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
         public PreviewHtmlCommand(
             ITextView textView,
-            IRInteractiveWorkflowProvider workflowProvider, IServiceContainer services)
+            IRInteractiveWorkflowVisualProvider workflowProvider, IServiceContainer services)
             : base(textView, (int)MdPackageCommandId.icmdPreviewHtml, workflowProvider, services) {
             _wbs = services.GetService<IWebBrowserServices>();
         }

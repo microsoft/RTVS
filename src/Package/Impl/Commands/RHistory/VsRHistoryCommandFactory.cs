@@ -18,13 +18,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
     internal class VsRHistoryCommandFactory : ICommandFactory {
         private readonly IRHistoryProvider _historyProvider;
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflowVisualProvider _interactiveWorkflowProvider;
         private readonly IContentTypeRegistryService _contentTypeRegistry;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
 
         [ImportingConstructor]
         public VsRHistoryCommandFactory(IRHistoryProvider historyProvider,
-            IRInteractiveWorkflowProvider interactiveWorkflowProvider,
+            IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider,
             IContentTypeRegistryService contentTypeRegistry,
             IActiveWpfTextViewTracker textViewTracker) {
 

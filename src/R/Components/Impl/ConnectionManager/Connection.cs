@@ -6,7 +6,7 @@ using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.ConnectionManager {
-    internal class Connection : ConnectionInfo, IConnection {
+    public class Connection : ConnectionInfo, IConnection {
         public static Connection Create(ISecurityService securityService, IConnectionInfo connectionInfo) {
             var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments);
             return new Connection(brokerConnectionInfo, connectionInfo);

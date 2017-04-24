@@ -6,7 +6,7 @@
                  xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
                  xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
                  xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"
-                 xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
+                 xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components.Windows"
                  mc:Ignorable="d" MinHeight="500" MinWidth="728" x:Name="Self"
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
                  Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"

@@ -35,14 +35,14 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         private Task _lastCommandTask;
         private string _outputFilePath;
         private readonly Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler> _flavorHandlers = new Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler>();
-        protected readonly IRInteractiveWorkflowProvider _workflowProvider;
+        protected readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
 
         protected IServiceContainer Services { get; }
 
         protected PreviewCommand(ITextView textView, int id,
-            IRInteractiveWorkflowProvider workflowProvider, IServiceContainer services)
+            IRInteractiveWorkflowVisualProvider workflowProvider, IServiceContainer services)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
             Services = services;

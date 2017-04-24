@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     // Identical to AttachDebugger, and only exists as a separate command so that it can be
     // given a different label for better fit in the "Debug" top-level menu.
     internal sealed class AttachToRInteractiveCommand : AttachDebuggerCommand {
-        public AttachToRInteractiveCommand(IRInteractiveWorkflow interactiveWorkflow)
+        public AttachToRInteractiveCommand(IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(interactiveWorkflow, RPackageCommandId.icmdAttachToRInteractive, DebuggerCommandVisibility.DesignMode) {
         }
     }

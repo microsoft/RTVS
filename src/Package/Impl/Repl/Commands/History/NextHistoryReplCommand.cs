@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class NextHistoryReplCommand : ReplCommandBase {
         private readonly IRHistory _history;
 
-        public NextHistoryReplCommand(IRInteractiveWorkflow interactiveWorkflow) :
+        public NextHistoryReplCommand(IRInteractiveWorkflowVisual interactiveWorkflow) :
             base(interactiveWorkflow, RPackageCommandId.icmdNextHistoryRepl) {
             _history = interactiveWorkflow.History;
         }
