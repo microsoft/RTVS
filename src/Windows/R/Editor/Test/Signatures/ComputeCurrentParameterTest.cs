@@ -106,12 +106,12 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    SignatureHelp sh = signatures[0] as SignatureHelp;
-                    int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                    var sh = signatures[0];
+                    int index = sh.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8);
                     index.Should().Be(11);
 
                     textView.Caret = new TextCaretMock(textView, 15);
-                    index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 15);
+                    index = sh.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 15);
                     index.Should().Be(6);
                 }
             }

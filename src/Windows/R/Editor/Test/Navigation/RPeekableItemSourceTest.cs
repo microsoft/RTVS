@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Navigation.Peek;
@@ -147,10 +148,10 @@ x <- function(a) {
         private void GetPeekableItems(string content, int position, IList<IPeekableItem> items, ITextRange selection = null) {
             var document = new EditorDocumentMock(content, @"C:\file.r");
 
-            TextViewMock textView = new TextViewMock(document.TextBuffer, position);
+            TextViewMock textView = new TextViewMock(document.TextBuffer(), position);
 
             if (selection != null) {
-                textView.Selection.Select(new SnapshotSpan(document.TextBuffer.CurrentSnapshot, new Span(selection.Start, selection.Length)), isReversed: false);
+                textView.Selection.Select(new SnapshotSpan(document.TextBuffer().CurrentSnapshot, new Span(selection.Start, selection.Length)), isReversed: false);
                 textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, selection.End));
             } else {
                 textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position));

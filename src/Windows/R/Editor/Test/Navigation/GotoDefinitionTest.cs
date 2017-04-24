@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client;
@@ -138,8 +139,8 @@ if(TRUE) {
 
         private TextViewMock SetupTextView(string content, int startLineNumber, int startColumn) {
             var document = new EditorDocumentMock(content);
-            var tv = new TextViewMock(document.TextBuffer);
-            var line = document.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(startLineNumber);
+            var tv = new TextViewMock(document.TextBuffer());
+            var line = document.EditorBuffer.CurrentSnapshot.GetLineFromLineNumber(startLineNumber);
             tv.Caret.MoveTo(new SnapshotPoint(tv.TextBuffer.CurrentSnapshot, line.Start + startColumn));
             return tv;
         }

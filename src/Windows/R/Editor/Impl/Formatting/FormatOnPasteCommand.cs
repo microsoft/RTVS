@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
@@ -60,7 +61,7 @@ namespace Microsoft.R.Editor.Formatting {
 
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
-                            RangeFormatter.FormatRange(TextView, document.EditorBuffer.As<ITextBuffer>(),
+                            RangeFormatter.FormatRange(TextView, document.TextBuffer(),
                                 new TextRange(insertionPoint, text.Length), _settings.FormatOptions, Shell);
                         }
                     }

@@ -232,7 +232,7 @@ namespace Microsoft.R.Editor.Tree {
             _astRoot.ReflectTextChanges(changes, EditorBuffer.CurrentSnapshot);
         }
 
-        internal TextChange PendingChanges => TreeUpdateTask.Changes;
+        public TextChange PendingChanges => TreeUpdateTask.Changes;
 
         /// <summary>
         /// Removes nodes from the tree collection if node range is partially or entirely 
@@ -242,7 +242,7 @@ namespace Microsoft.R.Editor.Tree {
         /// so scope nodes may still be used in smart indenter.
         /// </summary>
         /// <param name="range">Range to invalidate elements in</param>
-        internal bool InvalidateInRange(ITextRange range) {
+        public bool InvalidateInRange(ITextRange range) {
             var removedElements = new List<IAstNode>();
             int firstToRemove = -1;
             int lastToRemove = -1;

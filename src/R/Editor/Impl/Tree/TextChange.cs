@@ -6,7 +6,7 @@ using System.Globalization;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.R.Editor.Tree {
-    internal class TextChange {
+    public sealed class TextChange {
         /// <summary>
         /// Text snapshot version
         /// </summary>

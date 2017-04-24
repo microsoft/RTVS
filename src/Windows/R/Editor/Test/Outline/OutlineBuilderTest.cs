@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
@@ -31,14 +32,14 @@ namespace Microsoft.R.Editor.Test.Outline {
         [Test]
         public void ConstructionTest() {
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            var tree = new EditorTree(textBuffer, _shell);
+            var tree = new EditorTree(new EditorBuffer(textBuffer, _shell);
             using (var editorDocument = new EditorDocumentMock(tree)) {
                 using (var ob = new ROutlineRegionBuilder(editorDocument, _shell)) {
 
                     ob.EditorDocument.Should().NotBeNull();
                     ob.EditorTree.Should().NotBeNull();
 
-                    editorDocument.DocumentClosing.GetInvocationList().Should().ContainSingle();
+                    editorDocument.Closing.GetInvocationList().Should().ContainSingle();
 
                     FieldInfo treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
                     var d = (MulticastDelegate)treeUpdateField.GetValue(tree);
@@ -46,7 +47,7 @@ namespace Microsoft.R.Editor.Test.Outline {
 
                     tree.Dispose();
 
-                    editorDocument.DocumentClosing.Should().BeNull();
+                    editorDocument.Closing.Should().BeNull();
                     treeUpdateField.GetValue(tree).Should().BeNull();
                 }
             }

@@ -23,7 +23,7 @@ namespace Microsoft.Languages.Editor.Text {
         private readonly ITextBuffer _textBuffer;
         private readonly ITextDocumentFactoryService _textDocumentFactoryService;
 
-        public EditorBuffer(ITextBuffer textBuffer, ITextDocumentFactoryService textDocumentFactoryService) {
+        public EditorBuffer(ITextBuffer textBuffer, ITextDocumentFactoryService textDocumentFactoryService = null) {
             Check.ArgumentNull(nameof(textBuffer), textBuffer);
             Check.ArgumentNull(nameof(textDocumentFactoryService), textDocumentFactoryService);
 
@@ -33,7 +33,9 @@ namespace Microsoft.Languages.Editor.Text {
             _textBuffer.Properties[typeof(IEditorBuffer)] = this;
 
             _textDocumentFactoryService = textDocumentFactoryService;
-            _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
+            if (_textDocumentFactoryService != null) {
+                _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
+            }
         }
 
         #region IEditorBuffer
@@ -88,7 +90,9 @@ namespace Microsoft.Languages.Editor.Text {
             _textBuffer.Changed -= OnTextBufferChanged;
             _textBuffer.Properties.RemoveProperty(typeof(IEditorBuffer));
 
-            _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
+            if (_textDocumentFactoryService != null) {
+                _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
+            }
             Closing?.Invoke(this, EventArgs.Empty);
         }
         #endregion

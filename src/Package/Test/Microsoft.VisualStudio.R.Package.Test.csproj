@@ -115,7 +115,7 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Markdown\Editor\Test\Microsoft.Markdown.Editor.Test.csproj">
+    <ProjectReference Include="..\..\Windows\Markdown\Editor\Test\Microsoft.Markdown.Editor.Test.csproj">
       <Project>{56534417-6C60-48A5-B355-12225C70431E}</Project>
       <Name>Microsoft.Markdown.Editor.Test</Name>
     </ProjectReference>

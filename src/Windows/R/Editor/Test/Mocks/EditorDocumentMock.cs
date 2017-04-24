@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
     public sealed class EditorDocumentMock : IREditorDocument {
         public EditorDocumentMock(string content, string filePath = null) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            EditorTree = new EditorTreeMock(tb, RParser.Parse(content));
+            EditorTree = new EditorTreeMock(new EditorBuffer(tb), RParser.Parse(content));
             tb.AddService(this);
             if (!string.IsNullOrEmpty(filePath)) {
                 tb.Properties.AddProperty(typeof(ITextDocument), new TextDocumentMock(tb, filePath));
