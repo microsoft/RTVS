@@ -63,6 +63,7 @@
     <Compile Include="DragDrop\DropHandlerProvider.cs" />
     <Compile Include="EditorFactory\REditorViewModel.cs" />
     <Compile Include="EditorFactory\REditorViewModelFactory.cs" />
+    <Compile Include="Extensions\EditorTreeExtensions.cs" />
     <Compile Include="Formatting\AutoFormat.cs" />
     <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />

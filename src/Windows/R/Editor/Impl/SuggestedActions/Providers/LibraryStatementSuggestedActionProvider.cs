@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Providers {
 
         public bool HasSuggestedActions(ITextView textView, ITextBuffer textBuffer, int bufferPosition) {
             string libraryName = null;
-            var doc = REditorDocument.TryFromTextBuffer(textBuffer);
+            var doc = textBuffer.GetEditorDocument<IREditorDocument>();
             if(doc != null && doc.EditorTree.IsReady) {
                 var ast = doc.EditorTree.AcquireReadLock(_treeUsedId);
                 try {

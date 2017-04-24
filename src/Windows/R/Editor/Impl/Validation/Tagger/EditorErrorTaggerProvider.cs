@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         }
 
         public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) where T : ITag {
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
+            IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
             EditorErrorTagger tagger = null;
 
             if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer, _shell.GetService<IREditorSettings>())) {

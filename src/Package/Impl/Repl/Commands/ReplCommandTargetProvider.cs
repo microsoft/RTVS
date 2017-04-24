@@ -32,17 +32,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
             var target = textView.GetService<IOleCommandTarget>();
             if (target == null) {
-                var controller = ReplCommandController.Attach(textView, textView.TextBuffer, _shell);
+                var controller = ReplCommandController.Attach(textView, textView.TextBuffer, _shell.Services);
                 var es = _shell.GetService<IEditorSupport>();
                 // Wrap controller into OLE command target
-                target = es.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
+                target = es.TranslateToHostCommandTarget(textView.ToEditorView(), controller) as IOleCommandTarget;
                 Debug.Assert(target != null);
 
                 textView.AddService(target);
 
                 // Wrap next OLE target in the chain into ICommandTarget so we can have 
                 // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target
-                var nextCommandTarget = es.TranslateCommandTarget(textView, nextTarget);
+                var nextCommandTarget = es.TranslateCommandTarget(textView.ToEditorView(), nextTarget);
                 controller.ChainedController = nextCommandTarget;
 
                 // We need to listed when R projected buffer is attached and 
@@ -86,16 +86,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private void HandleAddRemoveBuffers(ReadOnlyCollection<ITextBuffer> addedBuffers, ReadOnlyCollection<ITextBuffer> removedBuffers) {
             foreach (var tb in addedBuffers) {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
-                    var doc = REditorDocument.TryFromTextBuffer(tb);
+                    var doc = tb.GetEditorDocument<IREditorDocument>();
                     if (doc == null) {
-                        var editorDocument = new REditorDocument(tb, _shell);
+                        new REditorDocument(new EditorBuffer(tb, _shell.GetService<ITextDocumentFactoryService>()), _shell);
                     }
                 }
             }
 
             foreach (var tb in removedBuffers) {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
-                    var doc = REditorDocument.TryFromTextBuffer(tb);
+                    var doc = tb.GetEditorDocument<IREditorDocument>();
                     doc?.Close();
                 }
             }

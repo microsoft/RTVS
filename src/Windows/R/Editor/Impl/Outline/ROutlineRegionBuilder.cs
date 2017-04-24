@@ -8,6 +8,7 @@ using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
@@ -39,7 +40,7 @@ namespace Microsoft.R.Editor.Outline {
         internal IREditorTree EditorTree { get; }
 
         public ROutlineRegionBuilder(IREditorDocument document, ICoreShell shell)
-            : base(document.EditorTree.EditorBuffer, shell) {
+            : base(document.EditorTree.TextBuffer(), shell) {
             EditorDocument = document;
             EditorDocument.Closing += OnDocumentClosing;
 
@@ -122,7 +123,7 @@ namespace Microsoft.R.Editor.Outline {
                 return base.CompareRegions(newRegions, oldRegions, upperBound);
             }
             _forceRegionsChange = false;
-            return new TextRange(0, EditorTree.TextBuffer.CurrentSnapshot.Length);
+            return new TextRange(0, EditorTree.EditorBuffer.CurrentSnapshot.Length);
         }
 
         #region IAstVisitor
@@ -156,7 +157,7 @@ namespace Microsoft.R.Editor.Outline {
         /// <returns>True if names changed and outline regions need to be rebuilt</returns>
         private void OutlineSections(AstRoot ast, OutliningContext context) {
             // Collect comments that define sections
-            var snapshot = EditorTree.TextSnapshot;
+            var snapshot = EditorTree.TextSnapshot();
             var sections = ast.Comments.Where(c => {
                 var text = snapshot.GetText(new Span(c.Start, c.Length));
                 // Section looks like # [NAME] --------
@@ -190,7 +191,7 @@ namespace Microsoft.R.Editor.Outline {
                     var trimBy = text.Length - text.TrimEnd().Length;
                     range = TextRange.FromBounds(range.Start, range.End - trimBy);
 
-                    context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, range, displayText));
+                    context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer(), range, displayText));
                 }
             }
 
@@ -227,13 +228,13 @@ namespace Microsoft.R.Editor.Outline {
                 startLineNumber = endLineNumber = 0;
                 return false;
             }
-            return OutlineRange(EditorTree.TextSnapshot, node, out startLineNumber, out endLineNumber);
+            return OutlineRange(EditorTree.TextSnapshot(), node, out startLineNumber, out endLineNumber);
         }
 
         #region IDisposable
         protected override void Dispose(bool disposing) {
             if (!IsDisposed) {
-                EditorDocument.DocumentClosing -= OnDocumentClosing;
+                EditorDocument.Closing -= OnDocumentClosing;
                 EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 EditorTree.Closing -= OnEditorTreeClosing;
             }

@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.Text;
@@ -28,13 +28,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// </summary>
     public class ReplCommandController : ViewController {
         private readonly ExpansionsController _snippetController;
-        private readonly ICoreShell _coreShell;
 
-        public ReplCommandController(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) : base(textView, textBuffer, coreShell) {
-            _coreShell = coreShell;
+        public ReplCommandController(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) : base(textView, textBuffer, services) {
             textView.AddService(this);
 
-            var textManager = coreShell.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
             textManager.GetExpansionManager(out expansionManager);
 
@@ -42,12 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current);
         }
 
-        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
+        public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) {
             var controller = FromTextView(textView);
-            return controller ?? new ReplCommandController(textView, textBuffer, coreShell);
+            return controller ?? new ReplCommandController(textView, textBuffer, services);
         }
 
-        public static new ReplCommandController FromTextView(ITextView textView) => textView.GetService<ReplCommandController>();
+        public new static ReplCommandController FromTextView(ITextView textView) => textView.GetService<ReplCommandController>();
 
         public override void BuildCommandSet() {
             var factory = new ReplCommandFactory();
@@ -118,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     if (spanText != set.SelectionStatus.Completion.InsertionText) {
                         // If selection is does not match typed text,
                         // control completion depending on the editor setting.
-                        if (set.SelectionStatus.IsSelected && _services.GetService<IREditorSettings>().CommitOnEnter) {
+                        if (set.SelectionStatus.IsSelected && Services.GetService<IREditorSettings>().CommitOnEnter) {
                             controller.CommitCompletionSession();
                             controller.DismissAllSessions();
                             return CommandResult.Executed;
@@ -128,10 +126,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
-            var broker = _coreShell.GetService<ICompletionBroker>();
+            var broker = Services.GetService<ICompletionBroker>();
             broker.DismissAllSessions(TextView);
 
-            var interactiveWorkflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = Services.GetService<IRInteractiveWorkflowProvider>();
             var ops = interactiveWorkflowProvider.GetOrCreate().Operations as IRInteractiveWorkflowOperationsEx;
             ops.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
@@ -154,29 +152,25 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
         }
 
-        private void HandleF1Help(RCompletionController controller) {
-            Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
-        }
+        private void HandleF1Help(RCompletionController controller)
+            => Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
 
         /// <summary>
         /// Determines if command is one of the completion commands
         /// </summary>
-        private bool IsCompletionCommand(Guid group, int id) {
-            ICommand cmd = Find(group, id);
-            return cmd is RCompletionCommandHandler;
-        }
+        private bool IsCompletionCommand(Guid group, int id) => Find(group, id) is RCompletionCommandHandler;
 
         /// <summary>
         /// Disposes main controller and removes it from service manager.
         /// </summary>
         protected override void Dispose(bool disposing) {
-            TextView?.RemoveService<ReplCommandController>();
+            TextView?.RemoveService(this);
             base.Dispose(disposing);
         }
 
         private IRInteractiveWorkflow Workflow {
             get {
-                var interactiveWorkflowProvider = _coreShell.GetService<IRInteractiveWorkflowProvider>();
+                var interactiveWorkflowProvider = Services.GetService<IRInteractiveWorkflowProvider>();
                 return interactiveWorkflowProvider.GetOrCreate();
             }
         }

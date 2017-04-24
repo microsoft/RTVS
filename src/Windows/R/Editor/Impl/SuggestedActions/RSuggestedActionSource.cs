@@ -8,9 +8,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Commands;
@@ -34,10 +35,10 @@ namespace Microsoft.R.Editor.SuggestedActions {
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
             _suggestedActionProviders = suggestedActionProviders;
 
-            _document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            _document.DocumentClosing += OnDocumentClosing;
+            _document = _textBuffer.GetEditorDocument<IREditorDocument>();
+            _document.Closing += OnDocumentClosing;
 
-            ServiceManager.AddService(this, _textView, shell);
+            _textView.AddService(this);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
@@ -45,14 +46,14 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) {
-            var suggestedActionsSource = ServiceManager.GetService<RSuggestedActionSource>(textView);
+            var suggestedActionsSource = textView.GetService<RSuggestedActionSource>();
             if (suggestedActionsSource == null) {
                 // Check for detached documents in the interactive window projected buffers
-                var document = REditorDocument.TryFromTextBuffer(textBuffer);
+                var document = textBuffer.GetEditorDocument<IREditorDocument>();
                 if(document == null || document.IsClosed) {
                     return null;
                 }
-                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = 
+                var suggestedActionProviders = 
                     ComponentLocator<IRSuggestedActionProvider>.ImportMany(shell.GetService<ICompositionService>()).Select(p => p.Value);
                 suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders, shell);
             }
@@ -60,8 +61,8 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            if (_document != null && !_document.IsClosed && _document.EditorTree != null) {
-                SnapshotPoint? bufferPoint = REditorDocument.MapCaretPositionFromView(_textView);
+            if (_document?.EditorTree != null && !_document.IsClosed) {
+                var bufferPoint = _textView.GetCaretPosition(_document.TextBuffer());
                 if (bufferPoint.HasValue) {
                     var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(bufferPoint.Value);
                     if (node != _lastNode) {
@@ -82,19 +83,19 @@ namespace Microsoft.R.Editor.SuggestedActions {
                 return Enumerable.Empty<SuggestedActionSet>();
             }
 
-            List<SuggestedActionSet> actionSets = new List<SuggestedActionSet>();
+            var actionSets = new List<SuggestedActionSet>();
             var caretPosition = _textView.Caret.Position.BufferPosition;
-            SnapshotPoint? bufferPoint = _textView.MapDownToR(caretPosition);
+            var bufferPoint = _textView.MapDownToR(caretPosition);
             if (bufferPoint.HasValue) {
-                AstRoot ast = _document?.EditorTree?.AstRoot;
-                int bufferPosition = bufferPoint.Value.Position;
+                var ast = _document?.EditorTree?.AstRoot;
+                var bufferPosition = bufferPoint.Value.Position;
                 _lastNode = ast?.GetNodeOfTypeFromPosition<TokenNode>(bufferPosition);
                 if (_lastNode != null) {
-                    foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
+                    foreach (var actionProvider in _suggestedActionProviders) {
                         if (actionProvider.HasSuggestedActions(_textView, _textBuffer, bufferPosition)) {
-                            IEnumerable<ISuggestedAction> actions = actionProvider.GetSuggestedActions(_textView, _textBuffer, bufferPosition);
-                            Span applicableSpan = new Span(_lastNode.Start, _lastNode.Length);
-                            SuggestedActionSet actionSet = new SuggestedActionSet(actions, applicableToSpan: applicableSpan);
+                            var actions = actionProvider.GetSuggestedActions(_textView, _textBuffer, bufferPosition);
+                            var applicableSpan = new Span(_lastNode.Start, _lastNode.Length);
+                            var actionSet = new SuggestedActionSet(actions, applicableToSpan: applicableSpan);
                             actionSets.Add(actionSet);
                         }
                     }
@@ -107,7 +108,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
             if (_textView != null && !_textView.Caret.InVirtualSpace) {
                 var rPosition = _textView.MapDownToR(_textView.Caret.Position.BufferPosition);
                 if (rPosition.HasValue) {
-                    foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
+                    foreach (var actionProvider in _suggestedActionProviders) {
                         if (actionProvider.HasSuggestedActions(_textView, _textBuffer, rPosition.Value.Position)) {
                             return Task.FromResult(true);
                         }
@@ -124,13 +125,13 @@ namespace Microsoft.R.Editor.SuggestedActions {
 
         public void Dispose() {
             if (_textView != null) {
-                ServiceManager.RemoveService<RSuggestedActionSource>(_textView);
+                _textView.RemoveService(this);
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;
                 _textBuffer = null;
                 _textView = null;
             }
             if (_document != null) {
-                _document.DocumentClosing -= OnDocumentClosing;
+                _document.Closing -= OnDocumentClosing;
                 _document = null;
             }
         }

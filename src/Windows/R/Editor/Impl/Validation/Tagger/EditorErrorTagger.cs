@@ -48,13 +48,13 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             _shell = shell;
             _settings = _shell.GetService<IREditorSettings>();
 
-            _document = REditorDocument.FromTextBuffer(textBuffer);
-            _document.DocumentClosing += OnDocumentClosing;
+            _document = textBuffer.GetEditorDocument<IREditorDocument>();
+            _document.Closing += OnDocumentClosing;
             _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _document.EditorTree.NodesRemoved += OnNodesRemoved;
             _errorTags = new ErrorTagCollection(_document.EditorTree);
 
-            _textBuffer = _document.EditorTree.TextBuffer;
+            _textBuffer = _document.EditorTree.TextBuffer();
             _textBuffer.Changed += OnTextBufferChanged;
 
             _fireCodeMarkerUponCompletion = true;
@@ -69,9 +69,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 }
             }
 
-            TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree, shell);
-
+            var validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree, shell);
             validator.Cleared += OnCleared;
+
             ResultsQueue = validator.ValidationResults;
             _shell.Idle += OnIdle;
         }
@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
         public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer)
-            => ServiceManager.GetService<EditorErrorTagger>(textBuffer);
+            => textBuffer.GetService<EditorErrorTagger>();
 
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
             foreach (IAstNode node in e.Nodes) {

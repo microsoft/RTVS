@@ -108,7 +108,7 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         private static AstRoot UpdateAst(ITextBuffer textBuffer) {
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
+            IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 document.EditorTree.EnsureTreeReady();
                 return document.EditorTree.AstRoot;
@@ -127,7 +127,7 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine firstLine = snapshot.GetLineFromPosition(range.Start);
             ITextSnapshotLine lastLine = snapshot.GetLineFromPosition(range.End);
 
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
+            IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
 
             for (int i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
                 // Snapshot is updated after each insertion so do not cache

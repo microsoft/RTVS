@@ -15,19 +15,19 @@ namespace Microsoft.R.Editor.RData.Test.Tokens {
         [Test]
         [Category.Rd.Tokenizer]
         public void VerifySortedRdBlockKeywords() {
-            string[] array = new List<string>(RdBlockContentType._rKeywords).ToArray();
+            string[] array = new List<string>(RdBlockContentType.Keywords).ToArray();
             Array.Sort(array);
 
-            array.Should().Equal(RdBlockContentType._rKeywords);
+            array.Should().Equal(RdBlockContentType.Keywords);
         }
 
         [Test]
         [Category.Rd.Tokenizer]
         public void VerifySortedRdVerbatimKeywords() {
-            string[] array = new List<string>(RdBlockContentType._verbatimKeywords).ToArray();
+            string[] array = new List<string>(RdBlockContentType.VerbatimKeywords).ToArray();
             Array.Sort(array);
 
-            array.Should().Equal(RdBlockContentType._verbatimKeywords);
+            array.Should().Equal(RdBlockContentType.VerbatimKeywords);
         }
     }
 }

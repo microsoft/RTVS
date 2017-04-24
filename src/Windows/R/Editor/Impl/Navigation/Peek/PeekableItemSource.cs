@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -29,16 +30,14 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             string itemName = session.TextView.GetIdentifierUnderCaret(out span);
             if (!string.IsNullOrEmpty(itemName)) {
                 ITextDocument textDocument = _textBuffer.GetTextDocument();
-                var document = REditorDocument.TryFromTextBuffer(_textBuffer);
+                var document = _textBuffer.GetEditorDocument<IREditorDocument>();
                 var definitionNode = document?.EditorTree.AstRoot.FindItemDefinition(triggerPoint.Value, itemName);
                 if (definitionNode != null) {
                     peekableItems.Add(new UserDefinedPeekItem(textDocument.FilePath, definitionNode, itemName, _peekResultFactory, _shell));
                 } else {
                     // Not found. Try internal functions
-                    IPeekableItem item = new InternalFunctionPeekItem(textDocument.FilePath, span, itemName, _peekResultFactory, _shell);
-                    if (item != null) {
-                        peekableItems.Add(item);
-                    }
+                    var item = new InternalFunctionPeekItem(textDocument.FilePath, span, itemName, _peekResultFactory, _shell);
+                    peekableItems.Add(item);
                 }
             }
         }
