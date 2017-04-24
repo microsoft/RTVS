@@ -43,7 +43,7 @@ namespace Microsoft.Common.Wpf.Controls {
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
-            if (ExpandCollapseMode == ExpandCollapseMode.LeftRigthArrows) {
+            if (ExpandCollapseMode == ExpandCollapseMode.LeftRightArrows) {
                 if (e.Key == Key.Left) {
                     IsExpanded = false;
                 } else if (e.Key == Key.Right) {
