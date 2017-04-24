@@ -20,6 +20,7 @@ namespace Microsoft.R.Components.Test {
                 "Microsoft.R.Common.Core.dll",
                 "Microsoft.R.Common.Core.Test.dll",
                 "Microsoft.R.Components.dll",
+                "Microsoft.R.Components.Windows.dll",
                 "Microsoft.R.Components.Test.dll",
                 "Microsoft.VisualStudio.Editor.dll",
                 "Microsoft.VisualStudio.Language.Intellisense.dll",

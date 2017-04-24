@@ -6,7 +6,7 @@
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
-             xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
+             xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime;assembly=Microsoft.R.Components.Windows"
              mc:Ignorable="d" x:Name="Self"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPackageManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="600">

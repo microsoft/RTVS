@@ -44,7 +44,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _workflow = _workflowProvider.GetOrCreate();
             _plotDeviceVisualComponentContainerFactory = services.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
             _plotHistoryVisualComponentContainerFactory = services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
-            _testMethod = testMethod.MethodInfo;
+             _testMethod = testMethod.MethodInfo;
             _testFiles = testFiles;
             _ui = _workflow.Shell.UI() as TestUIServices;
         }
@@ -52,8 +52,7 @@ namespace Microsoft.R.Components.Test.Plots {
         public async Task InitializeAsync() {
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationTest));
             _replVisualComponent = await _workflow.GetOrCreateVisualComponentAsync();
-
-            _plotManager = _plotManager as IRPlotManagerVisual;
+            _plotManager = (IRPlotManagerVisual)_workflow.Plots;
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);
         }
 
