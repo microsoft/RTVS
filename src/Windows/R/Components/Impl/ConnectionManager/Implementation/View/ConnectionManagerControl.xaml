@@ -7,9 +7,10 @@
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime"
              xmlns:viewModel="clr-namespace:Microsoft.R.Components.ConnectionManager.ViewModel;assembly=Microsoft.R.Components"
-             xmlns:controls="clr-namespace:Microsoft.R.Wpf.Controls;assembly=Microsoft.R.Wpf"
+             xmlns:rcontrols="clr-namespace:Microsoft.R.Wpf.Controls;assembly=Microsoft.R.Wpf"
              xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
+             xmlns:controls="clr-namespace:Microsoft.Common.Wpf.Controls;assembly=Microsoft.R.Common.Wpf"
              mc:Ignorable="d" x:Name="Self"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeConnectionManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="400">
@@ -89,51 +90,27 @@
                 </Style.Setters>
             </Style>
 
-            <Style x:Key="ToggleButtonLocalConnectionsStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource ExpandCollapseToggleStyle}">
-                <Setter Property="IsChecked" Value="True" />
+            <Style x:Key="ExpandCollapseButtonLocalConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
+                <Setter Property="IsExpanded" Value="True" />
                 <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalConnections}" />
                 <Setter Property="Visibility" Value="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}" />
-                <Style.Triggers>
-                    <Trigger Property="IsChecked" Value="True">
-                        <Setter Property="ToolTip">
-                            <Setter.Value>
-                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Collapse}" />
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Collapse}" />
-                    </Trigger>
-                    <Trigger Property="IsChecked" Value="False">
-                        <Setter Property="ToolTip">
-                            <Setter.Value>
-                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Expand}" />
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Expand}" />
-                    </Trigger>
-                </Style.Triggers>
+                <Setter Property="ToolTip">
+                    <Setter.Value>
+                        <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
             </Style>
 
-            <Style x:Key="ToggleButtonRemoteConnectionsStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource ExpandCollapseToggleStyle}">
-                <Setter Property="IsChecked" Value="True" />
+            <Style x:Key="ExpandCollapseButtonRemoteConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
+                <Setter Property="IsExpanded" Value="True" />
                 <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections}" />
-                <Style.Triggers>
-                    <Trigger Property="IsChecked" Value="True">
-                        <Setter Property="ToolTip">
-                            <Setter.Value>
-                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_RemoteConnections_Collapse}" />
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections_Collapse}" />
-                    </Trigger>
-                    <Trigger Property="IsChecked" Value="False">
-                        <Setter Property="ToolTip">
-                            <Setter.Value>
-                                <TextBlock Text="{x:Static components:Resources.ConnectionManager_RemoteConnections_Expand}" />
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections_Expand}" />
-                    </Trigger>
-                </Style.Triggers>
+                <Setter Property="ToolTip">
+                    <Setter.Value>
+                        <TextBlock Text="{x:Static components:Resources.ConnectionManager_RemoteConnections_Tooltip}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_RemoteConnections_Tooltip}" />
             </Style>
 
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
@@ -159,7 +136,7 @@
 
                         <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}"
                                  Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
+                                 rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
                                  ToolTip="{Binding Path=NameTextBoxTooltip}"
@@ -168,7 +145,7 @@
 
                         <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
+                                 rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
                                  IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
                                  LostFocus="PathTextBox_LostFocus"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
@@ -184,7 +161,7 @@
 
                         <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 controls:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
+                                 rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
                                  ToolTip="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
@@ -231,7 +208,7 @@
 
                         <!-- Test connection -->
                         <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
-                            <controls:Spinner Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            <rcontrols:Spinner Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
                             <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestingConnection}"
                                        Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}"/>
@@ -261,7 +238,7 @@
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
                 <!-- Connection icon -->
-                <controls:IconWithOverlay Margin="4,1,6,1" Width="18" Height="18" Style="{StaticResource ConnectionStyle}" />
+                <rcontrols:IconWithOverlay Margin="4,1,6,1" Width="18" Height="18" Style="{StaticResource ConnectionStyle}" />
             </DataTemplate>
 
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
@@ -424,20 +401,20 @@
             </DockPanel>
 
             <!-- Local connections header -->
-            <ToggleButton x:Name="ToggleButtonLocalConnections" Style="{StaticResource ToggleButtonLocalConnectionsStyle}" DockPanel.Dock="Top" />
+            <controls:ExpandCollapseButton x:Name="ToggleButtonLocalConnections" Style="{StaticResource ExpandCollapseButtonLocalConnectionsStyle}" DockPanel.Dock="Top" />
 
             <!-- Local connections -->
             <ListBox x:Name="LocalList" 
                      DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=LocalConnections}" 
-                     Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+                     Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
             <!-- Remote connections header -->
-            <ToggleButton x:Name="ToggleButtonRemoteConnections" Style="{StaticResource ToggleButtonRemoteConnectionsStyle}" DockPanel.Dock="Top" />
+            <controls:ExpandCollapseButton x:Name="ToggleButtonRemoteConnections" Style="{StaticResource ExpandCollapseButtonRemoteConnectionsStyle}" DockPanel.Dock="Top" />
 
             <!-- Remote connections -->
             <ListBox x:Name="RemoteList"
                      DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=RemoteConnections}" 
-                     Visibility="{Binding ElementName=ToggleButtonRemoteConnections, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+                     Visibility="{Binding ElementName=ToggleButtonRemoteConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
         </DockPanel>
     </ScrollViewer>
 </UserControl>

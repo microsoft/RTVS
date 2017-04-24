@@ -26,6 +26,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xaml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -37,6 +39,8 @@
     <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="Collections\BatchObservableCollection.cs" />
+    <Compile Include="Controls\ExpandCollapseAutomationPeer.cs" />
+    <Compile Include="Controls\ExpandCollapseButton.cs" />
     <Compile Include="Controls\Overlay.cs" />
     <Compile Include="Extensions\VisualTreeExtensions.cs" />
     <Compile Include="Imaging\BitmapImageFactory.cs" />
