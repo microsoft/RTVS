@@ -37,7 +37,7 @@ namespace Microsoft.R.Host.Client {
         /// </param>
         public async Task<IRBlobInfo> SendBytesAsync(byte[] data, bool doCleanUp, IProgress<long> progress, CancellationToken cancellationToken) {
             IRBlobInfo blob = null;
-            using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
+            using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService, cancellationToken))
             using (Stream ms = new MemoryStream(data)) {
                 await ms.CopyToAsync(blobStream, progress, cancellationToken);
                 blob = blobStream.GetBlobInfo();
@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Client {
         /// </param>
         public async Task<IRBlobInfo> SendFileAsync(string filePath, bool doCleanUp, IProgress<long> progress, CancellationToken cancellationToken) {
             IRBlobInfo blob = null;
-            using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService))
+            using (RBlobStream blobStream = await RBlobStream.CreateAsync(_blobService, cancellationToken))
             using (Stream fileStream = _fs.FileOpen(filePath, FileMode.Open)){
                 await fileStream.CopyToAsync(blobStream, progress, cancellationToken);
                 blob = blobStream.GetBlobInfo();
@@ -78,7 +78,7 @@ namespace Microsoft.R.Host.Client {
         /// <param name="filePath">Path to the file where the retrieved data will be written.</param>
         /// <param name="doCleanUp">true to add blob upon transfer for cleanup on dispose, false to ignore it after transfer.</param>
         public async Task FetchFileAsync(IRBlobInfo blob, string filePath, bool doCleanUp, IProgress<long> progress, CancellationToken cancellationToken) {
-            using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService))
+            using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService, cancellationToken))
             using (Stream fileStream = _fs.CreateFile(filePath)) {
                 await blobStream.CopyToAsync(fileStream, progress, cancellationToken);
             }

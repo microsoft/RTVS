@@ -1,7 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Extensions;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.Shell;
@@ -21,25 +25,17 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool TryGetHierarchy(string filePath, out IVsHierarchy vsHierarchy, out uint vsItemId) {
-            bool result = true;
-            vsHierarchy = null;
-            vsItemId = (uint)VSConstants.VSITEMID.Nil;
             var vsUIShellOpenDocument = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+            IOleServiceProvider serviceProviderUnused;
+            IVsUIHierarchy uiHier;
 
-            IOleServiceProvider serviceProviderUnused = null;
-            int docInProject = 0;
-            IVsUIHierarchy uiHier = null;
-
-            int hr = vsUIShellOpenDocument.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out serviceProviderUnused, out docInProject);
-            if (ErrorHandler.Succeeded(hr) && uiHier != null) {
-                vsHierarchy = uiHier as IVsHierarchy;
-            } else {
-                vsHierarchy = null;
-                vsItemId = (uint)VSConstants.VSITEMID.Nil;
-                result = false;
+            if (vsUIShellOpenDocument.TryGetUiHierarchy(filePath, out uiHier, out vsItemId, out serviceProviderUnused)) {
+                vsHierarchy = uiHier;
+                return true;
             }
 
-            return result;
+            vsHierarchy = null;
+            return false;
         }
 
         public static UnconfiguredProject GetUnconfiguredProject(this ITextBuffer textBuffer) {
@@ -58,6 +54,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return vsHierarchy?.GetConfiguredProject();
         }
 
-
+        public static async Task<string> GetRemotePathAsync(this ConfiguredProject configuredProject, string localPath) {
+            var properties = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
+            var projectDir = Path.GetDirectoryName(configuredProject.UnconfiguredProject.FullPath);
+            var projectName = properties.GetProjectName();
+            var remotePath = await properties.GetRemoteProjectPathAsync();
+            return localPath.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
+        }
     }
 }

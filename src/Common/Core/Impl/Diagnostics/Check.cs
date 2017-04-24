@@ -25,6 +25,15 @@ namespace Microsoft.Common.Core.Diagnostics {
             }
         }
 
+        public static void Argument(string argumentName, Func<bool> predicate, string message = null) {
+            if (predicate()) {
+                if (string.IsNullOrEmpty(message)) {
+                    throw new ArgumentException(argumentName);
+                }
+                throw new ArgumentException(argumentName, message);
+            }
+        }
+
         public static void InvalidOperation(Func<bool> predicate) {
             if (predicate()) {
                 throw new InvalidOperationException();

@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static bool TryGetUiHierarchy(this IVsUIShellOpenDocument shellDoc, string filePath, out IVsUIHierarchy uiHier, out uint vsItemId, out OLE.Interop.IServiceProvider sp) {
             int docInProject;
             var hr = shellDoc.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out sp, out docInProject);
-            return ErrorHandler.Succeeded(hr) && uiHier != null;
+            return ErrorHandler.Succeeded(hr) && uiHier != null && docInProject == (int)__VSDOCINPROJECT.DOCINPROJ_DocInProject;
         }
 
         /// <summary>
