@@ -23,7 +23,7 @@ using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
-    internal class RInteractiveWorkflowOperations : IRInteractiveWorkflowOperations {
+    internal class RInteractiveWorkflowOperations : IRInteractiveWorkflowOperationsEx {
         private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
         private IInteractiveWindow _interactiveWindow;
         private readonly IDebuggerModeTracker _debuggerModeTracker;

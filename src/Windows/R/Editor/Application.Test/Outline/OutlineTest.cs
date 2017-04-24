@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
@@ -20,8 +21,8 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
         
-        public OutlineTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _coreShell = shellProvider.CoreShell;
+        public OutlineTest(IServiceContainer services, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
+            _coreShell = services.GetService<ICoreShell>();
             _editorHost = editorHost;
             _files = files;
         }

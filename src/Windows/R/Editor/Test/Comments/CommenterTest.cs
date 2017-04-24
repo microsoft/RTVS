@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
@@ -19,8 +20,8 @@ namespace Microsoft.R.Editor.Test.Comments {
     public class CommenterTest {
         private readonly ICoreShell _shell;
 
-        public CommenterTest(REditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
+        public CommenterTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]

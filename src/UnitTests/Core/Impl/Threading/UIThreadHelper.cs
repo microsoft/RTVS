@@ -14,6 +14,7 @@ using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.Threading {
@@ -60,7 +61,7 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         public Thread Thread => _thread;
         public SynchronizationContext SyncContext => _syncContext;
-        public ControlledTaskScheduler TaskScheduler { get; }
+        public ControlledTaskScheduler TaskScheduler => _taskScheduler;
 
         #region IMainThread
         int IMainThread.ThreadId => Thread.ManagedThreadId;
@@ -187,15 +188,15 @@ namespace Microsoft.UnitTests.Core.Threading {
             }
 
             var sc = SynchronizationContext.Current;
-            SynchronizationContext.SetSynchronizationContext(new BlockingLoopSynchronizationContext(this));
-            var bl = new BlockingLoop(func);
+            var blockingLoopSynchronizationContext = new BlockingLoopSynchronizationContext(this, sc);
+            SynchronizationContext.SetSynchronizationContext(blockingLoopSynchronizationContext);
+            var bl = new BlockingLoop(func, sc);
             try {
                 _blockingLoop.Value = bl;
                 bl.Start();
             } finally {
-                SynchronizationContext.SetSynchronizationContext(sc);
-                bl.ProcessQueue();
                 _blockingLoop.Value = null;
+                SynchronizationContext.SetSynchronizationContext(sc);
             }
 
             return bl.Task;
@@ -282,13 +283,15 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         private class BlockingLoop {
             private readonly Func<Task> _func;
+            private readonly SynchronizationContext _previousSyncContext;
             private readonly AutoResetEvent _are;
             private readonly ConcurrentQueue<Action> _actions;
 
             public Task Task { get; private set; }
 
-            public BlockingLoop(Func<Task> func) {
+            public BlockingLoop(Func<Task> func, SynchronizationContext previousSyncContext) {
                 _func = func;
+                _previousSyncContext = previousSyncContext;
                 _are = new AutoResetEvent(false);
                 _actions = new ConcurrentQueue<Action>();
             }
@@ -302,42 +305,48 @@ namespace Microsoft.UnitTests.Core.Threading {
                 }
             }
 
-            public void ProcessQueue() {
-                Action action;
-                while (_actions.TryDequeue(out action)) {
-                    action();
+            // TODO: Add support for cancellation token
+            public void Post(Action action) {
+                _actions.Enqueue(action);
+                _are.Set();
+                if (Task.IsCompleted) {
+                    _previousSyncContext.Post(c => ProcessQueue(), null);
                 }
             }
 
             private void Complete(Task task)=> _are.Set();
 
-            // TODO: Add support for cancellation token
-            public void Post(Action action) {
-                _actions.Enqueue(action);
-                _are.Set();
+            private void ProcessQueue() {
+                Action action;
+                while (_actions.TryDequeue(out action)) {
+                    action();
+                }
             }
         }
 
         private class BlockingLoopSynchronizationContext : SynchronizationContext {
             private readonly UIThreadHelper _threadHelper;
+            private readonly SynchronizationContext _innerSynchronizationContext;
 
-            public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper)
-                => _threadHelper = threadHelper;
+            public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper, SynchronizationContext innerSynchronizationContext) {
+                _threadHelper = threadHelper;
+                _innerSynchronizationContext = innerSynchronizationContext;
+            }
 
             public override void Send(SendOrPostCallback d, object state)
-                => _threadHelper._application.Dispatcher.Invoke(DispatcherPriority.Send, d, state);
+                => _innerSynchronizationContext.Send(d, state);
 
             public override void Post(SendOrPostCallback d, object state) {
                 var bl = _threadHelper._blockingLoop.Value;
                 if (bl != null) {
                     bl.Post(() => d(state));
                 } else {
-                    _threadHelper._application.Dispatcher.BeginInvoke(DispatcherPriority.Send, d, state);
+                    _innerSynchronizationContext.Post(d, state);
                 }
             }
 
             public override SynchronizationContext CreateCopy()
-                => new BlockingLoopSynchronizationContext(_threadHelper);
+                => new BlockingLoopSynchronizationContext(_threadHelper, _innerSynchronizationContext);
         }
     }
 }

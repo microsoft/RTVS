@@ -15,12 +15,10 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof(IRPlotDeviceVisualComponentContainerFactory))]
     [Export(typeof(TestRPlotDeviceVisualComponentContainerFactory))]
     internal sealed class TestRPlotDeviceVisualComponentContainerFactory : ContainerFactoryBase<IRPlotDeviceVisualComponent>, IRPlotDeviceVisualComponentContainerFactory {
-        private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public TestRPlotDeviceVisualComponentContainerFactory(IRSettings settings, ICoreShell coreShell) {
-            _settings = settings;
+        public TestRPlotDeviceVisualComponentContainerFactory(ICoreShell coreShell) {
             _coreShell = coreShell;
         }
 

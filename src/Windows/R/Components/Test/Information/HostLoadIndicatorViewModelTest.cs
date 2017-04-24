@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Information;
 using Microsoft.R.Host.Client;
@@ -18,20 +19,20 @@ namespace Microsoft.R.Components.Test.Information {
     [Category.Information]
     public sealed class HostLoadIndicatorViewModelTest {
         private readonly IRSessionProvider _sessionProvider = Substitute.For<IRSessionProvider>();
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
-        private readonly HostLoad _hostLoad = new HostLoad() {
+        private readonly HostLoad _hostLoad = new HostLoad {
             CpuLoad = 30,
             MemoryLoad = 40,
             NetworkLoad = 50
         };
 
-        public HostLoadIndicatorViewModelTest(RComponentsShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public HostLoadIndicatorViewModelTest(IServiceContainer services) {
+            _services = services;
         }
         [Test(ThreadType.UI)]
         public async Task Update() {
-            var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _coreShell.MainThread());
+            var viewModel = new HostLoadIndicatorViewModel(_sessionProvider, _services.MainThread());
             var eventArgs = new HostLoadChangedEventArgs(_hostLoad);
             _sessionProvider.HostLoadChanged += Raise.Event<EventHandler<HostLoadChangedEventArgs>>(_sessionProvider, eventArgs);
 

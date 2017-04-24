@@ -21,11 +21,11 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest : IDisposable {
-        private readonly ServiceManagerFixture _services;
+        private readonly IServiceContainer _services;
         private readonly TestMethodFixture _testMethod;
         private readonly IBrokerClient _brokerClient;
 
-        public RSessionTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public RSessionTest(IServiceContainer services, TestMethodFixture testMethod) {
             _services = services;
             _testMethod = testMethod;
             _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest));

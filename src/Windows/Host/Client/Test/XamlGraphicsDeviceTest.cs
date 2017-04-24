@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -28,10 +28,10 @@ namespace Microsoft.R.Host.Client.Test {
         private const int DefaultWidth = 360;
         private const int DefaultHeight = 360;
 
-        private readonly ServiceManagerFixture _services;
+        private readonly IServiceContainer _services;
         private readonly MethodInfo _testMethod;
 
-        public XamlGraphicsDeviceTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public XamlGraphicsDeviceTest(IServiceContainer services, TestMethodFixture testMethod) {
             _services = services;
             _testMethod = testMethod.MethodInfo;
         }

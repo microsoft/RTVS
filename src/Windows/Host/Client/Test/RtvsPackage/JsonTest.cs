@@ -4,6 +4,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -21,7 +23,7 @@ namespace Microsoft.R.RtvsPackage.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public JsonTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public JsonTest(IServiceContainer services, TestMethodFixture testMethod) {
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

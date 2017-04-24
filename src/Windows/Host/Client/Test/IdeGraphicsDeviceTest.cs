@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
@@ -22,7 +23,7 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
     public class IdeGraphicsDeviceTest {
-        private readonly ServiceManagerFixture _services;
+        private readonly IServiceContainer _services;
         private readonly GraphicsDeviceTestFilesFixture _files;
         private readonly TestMethodFixture _testMethod;
 
@@ -38,7 +39,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private PlotDeviceProperties DefaultDeviceProperties = new PlotDeviceProperties(DefaultWidth, DefaultHeight, 96);
 
-        public IdeGraphicsDeviceTest(ServiceManagerFixture services, GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
+        public IdeGraphicsDeviceTest(IServiceContainer services, GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _services = services;
             _files = files;
             _testMethod = testMethod;

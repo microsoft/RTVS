@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -20,11 +21,11 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IRInteractiveWorkflowVisual _workflow;
 
-        public RInteractiveEvaluatorTest(RComponentsShellProviderFixture shellProvider) {
-            var settings = shellProvider.CoreShell.GetService<IRSettings>();
+        public RInteractiveEvaluatorTest(IServiceContainer services) {
+            var settings = services.GetService<IRSettings>();
             settings.RCodePage = 1252;
 
-            _workflowProvider = shellProvider.CoreShell.GetService<IRInteractiveWorkflowVisualProvider>();
+            _workflowProvider = services.GetService<IRInteractiveWorkflowVisualProvider>();
             _workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
         }
 

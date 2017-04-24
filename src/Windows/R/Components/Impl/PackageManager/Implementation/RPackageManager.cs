@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
-    internal class RPackageManager : IRPackageManager {
+    internal class RPackageManager : IRPackageManagerVisual {
         private readonly IRSession _session;
         private readonly IRSettings _settings;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;

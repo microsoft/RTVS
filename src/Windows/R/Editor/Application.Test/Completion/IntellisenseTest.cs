@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Snippets;
@@ -29,9 +30,9 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IWritableREditorSettings _settings;
 
-        public IntellisenseTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) : base(shellProvider.CoreShell) {
+        public IntellisenseTest(IServiceContainer services, EditorHostMethodFixture editorHost) : base(services) {
             _editorHost = editorHost;
-            _settings = shellProvider.CoreShell.GetService<IWritableREditorSettings>();
+            _settings = services.GetService<IWritableREditorSettings>();
         }
 
         [Test]

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -19,7 +20,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class SignatureHelpSourceTest : FunctionIndexBasedTest {
-        public SignatureHelpSourceTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
+        public SignatureHelpSourceTest(IServiceContainer services) : base(services) { }
 
         [Test]
         public async Task SignatureHelpSourceTest01() {

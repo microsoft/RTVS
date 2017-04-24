@@ -25,7 +25,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
-    internal class ConnectionManager : IConnectionManager {
+    internal class ConnectionManager : IConnectionManagerVisual {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly ICoreShell _shell;

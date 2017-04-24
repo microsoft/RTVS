@@ -11,7 +11,7 @@ namespace Microsoft.R.Components {
             DefaultPackageIcon.BeginInit();
 
             // If the DLL name changes, this URI would need to change to match.
-            DefaultPackageIcon.UriSource = new Uri("pack://application:,,,/Microsoft.R.Components;component/Resources/packageicon.png");
+            DefaultPackageIcon.UriSource = new Uri("pack://application:,,,/Microsoft.R.Components.Windows;component/Resources/packageicon.png");
 
             // Instead of scaling larger images and keeping larger image in memory, this makes it so we scale it down, and throw away the bigger image.
             // Only need to set this on one dimension, to preserve aspect ratio

@@ -7,6 +7,8 @@ using System.Threading;
 using FluentAssertions;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Editor.Test.Services {
@@ -14,15 +16,15 @@ namespace Microsoft.Languages.Editor.Test.Services {
     /// Summary description for UnitTest1
     /// </summary>
     [ExcludeFromCodeCoverage]
+    [Category.Languages.Core]
     public class IdleTaskQueueTest {
         private readonly ICoreShell _shell;
 
-        public IdleTaskQueueTest(EditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
+        public IdleTaskQueueTest() {
+            _shell = TestCoreShell.CreateBasic();
         }
 
         [Test]
-        [Category.Languages.Core]
         public void OperationsTest() {
             var results = new List<Result>();
             var queue = new IdleTimeAsyncTaskQueue(_shell);

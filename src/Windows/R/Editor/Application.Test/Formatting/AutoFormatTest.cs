@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
@@ -17,8 +18,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IREditorSettings _settings;
 
-        public AutoFormatTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost) {
-            _shell = shellProvider.CoreShell;
+        public AutoFormatTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
+            _shell = services.GetService<ICoreShell>();
             _editorHost = editorHost;
             _settings = _shell.GetService<IREditorSettings>();
         }

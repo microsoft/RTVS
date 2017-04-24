@@ -74,8 +74,6 @@
     <Compile Include="RD\BraceMatch\BraceMatchTest.cs" />
     <Compile Include="RD\Classification\RdClassifierTest.cs" />
     <Compile Include="RD\Help\GetFunctionInfoTest.cs" />
-    <Compile Include="RSupportAssemblyMefCatalog.cs" />
-    <Compile Include="RSupportShellProviderFixture.cs" />
     <Compile Include="Utility\TokenizeFiles.cs" />
     <Compile Include="RD\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RD\Tokens\TokenizeTest.cs" />

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Functions;
@@ -16,16 +17,16 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class FunctionInfoTest : IAsyncLifetime {
-        private readonly ICoreShell _coreShell;
+        private readonly ICoreShell _shell;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
         private readonly IRInteractiveWorkflow _workflow;
 
-        public FunctionInfoTest(REditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
-            _workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
-            _packageIndex = _coreShell.GetService<IPackageIndex>();
-            _functionIndex = _coreShell.GetService<IFunctionIndex>();
+        public FunctionInfoTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
+            _workflow = UIThreadHelper.Instance.Invoke(() => _shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
+            _packageIndex = _shell.GetService<IPackageIndex>();
+            _functionIndex = _shell.GetService<IFunctionIndex>();
         }
 
         public async Task InitializeAsync() {
@@ -33,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             await _packageIndex.BuildIndexAsync();
         }
 
-        public Task DisposeAsync() => _packageIndex.DisposeAsync(_coreShell);
+        public Task DisposeAsync() => _packageIndex.DisposeAsync(_shell);
 
         [CompositeTest]
         [InlineData("abs")]

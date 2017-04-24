@@ -19,58 +19,61 @@ namespace Microsoft.Languages.Editor.Settings {
         protected IEditorSettingsStorage Storage { get; }
         protected IWritableEditorSettingsStorage WritableStorage { get; }
 
-        public EditorSettings(IEditorSettingsStorage storage) {
+        protected EditorSettings(IEditorSettingsStorage storage) {
             Storage = storage;
             WritableStorage = storage as IWritableEditorSettingsStorage;
-            Storage.SettingsChanged += (s, e) => SettingsChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public event EventHandler<EventArgs> SettingsChanged;
+        public event EventHandler<EventArgs> SettingsChanged {
+            add => Storage.SettingsChanged += value;
+            remove => Storage.SettingsChanged -= value;
+        }
+
         public virtual void ResetSettings() => WritableStorage?.ResetSettings();
 
         public bool AutoFormat {
-            get { return Storage.Get(AutoFormatKey, true); }
-            set { WritableStorage?.Set(AutoFormatKey, value); }
+            get => Storage.Get(AutoFormatKey, true);
+            set => WritableStorage?.Set(AutoFormatKey, value);
         }
 
         public bool CompletionEnabled {
-            get { return Storage.Get(CompletionEnabledKey, true); }
-            set { WritableStorage?.Set(CompletionEnabledKey, value); }
+            get => Storage.Get(CompletionEnabledKey, true);
+            set => WritableStorage?.Set(CompletionEnabledKey, value);
         }
 
         public int IndentSize {
-            get { return Storage.Get(FormatterIndentSizeKey, 4); }
-            set { WritableStorage?.Set(FormatterIndentSizeKey, value); }
+            get => Storage.Get(FormatterIndentSizeKey, 4);
+            set => WritableStorage?.Set(FormatterIndentSizeKey, value);
         }
 
         public IndentType IndentType {
-            get { return (IndentType)Storage.Get(FormatterIndentTypeKey, (int)IndentType.Spaces); }
-            set { WritableStorage?.Set(FormatterIndentTypeKey, (int)value); }
+            get => (IndentType)Storage.Get(FormatterIndentTypeKey, (int)IndentType.Spaces);
+            set => WritableStorage?.Set(FormatterIndentTypeKey, (int)value);
         }
 
         public int TabSize {
-            get { return Storage.Get(FormatterTabSizeKey, 4); }
-            set { WritableStorage?.Set(FormatterTabSizeKey, value); }
+            get => Storage.Get(FormatterTabSizeKey, 4);
+            set => WritableStorage?.Set(FormatterTabSizeKey, value);
         }
 
         public IndentStyle IndentStyle {
-            get { return (IndentStyle)Storage.Get(IndentStyleKey, (int)IndentStyle.Smart); }
-            set { WritableStorage?.Set(IndentStyleKey, (int)value); }
+            get => (IndentStyle)Storage.Get(IndentStyleKey, (int)IndentStyle.Smart);
+            set => WritableStorage?.Set(IndentStyleKey, (int)value);
         }
 
         public bool SyntaxCheckEnabled {
-            get { return Storage.Get(SyntaxCheckKey, true); }
-            set { WritableStorage?.Set(SyntaxCheckKey, value); }
+            get => Storage.Get(SyntaxCheckKey, true);
+            set => WritableStorage?.Set(SyntaxCheckKey, value);
         }
 
         public bool SignatureHelpEnabled {
-            get { return Storage.Get(SignatureHelpEnabledKey, true); }
-            set { WritableStorage?.Set(SignatureHelpEnabledKey, value); }
+            get => Storage.Get(SignatureHelpEnabledKey, true);
+            set => WritableStorage?.Set(SignatureHelpEnabledKey, value);
         }
 
         public bool InsertMatchingBraces {
-            get { return Storage.Get(InsertMatchingBracesKey, true); }
-            set { WritableStorage?.Set(InsertMatchingBracesKey, value); }
+            get => Storage.Get(InsertMatchingBracesKey, true);
+            set => WritableStorage?.Set(InsertMatchingBracesKey, value);
         }
     }
 }

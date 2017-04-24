@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.RData.ContentTypes;
@@ -19,8 +20,8 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
 
-        public TypeFileTest(REditorApplicationShellProviderFixture shellProvider, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _coreShell = shellProvider.CoreShell;
+        public TypeFileTest(IServiceContainer services, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
+            _coreShell = services.GetService<ICoreShell>();
             _editorHost = editorHost;
             _files = files;
         }

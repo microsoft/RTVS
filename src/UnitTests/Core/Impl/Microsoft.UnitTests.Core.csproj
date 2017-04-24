@@ -95,13 +95,11 @@
     <Compile Include="XUnit\IntRangeAttribute.cs" />
     <Compile Include="XUnit\IntRangeDiscoverer.cs" />
     <Compile Include="XUnit\ITestInput.cs" />
-    <Compile Include="XUnit\TestMefCatalog.cs" />
     <Compile Include="XUnit\MessageBusInjections\ExecuteBeforeAfterAttributesMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\ITestAfterStartingBeforeFinishedInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\ITestCaseAfterStartingBeforeFinishedInjection.cs" />
     <Compile Include="XUnit\MessageBusInjections\VerifyGlobalProviderMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusOverride.cs" />
-    <Compile Include="XUnit\AssemblyMefCatalog.cs" />
     <Compile Include="XUnit\MethodFixtures\ContainerHostMethodFixture.cs" />
     <Compile Include="XUnit\MethodFixtures\MethodFixtureBase.cs" />
     <Compile Include="XUnit\MethodFixtures\TaskObserverMethodFixture.cs" />

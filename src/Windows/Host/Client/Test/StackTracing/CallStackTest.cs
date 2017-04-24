@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
@@ -23,7 +23,7 @@ namespace Microsoft.R.StackTracing.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public CallStackTest(ServiceManagerFixture services, TestMethodFixture testMethod) {
+        public CallStackTest(IServiceContainer services, TestMethodFixture testMethod) {
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }

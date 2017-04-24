@@ -3,6 +3,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.XUnit;
 
 // General Information about an assembly is controlled through the following 
@@ -17,6 +18,7 @@ using Microsoft.UnitTests.Core.XUnit;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: TestFrameworkOverride]
+[assembly: AssemblyFixtureImport(typeof(HostClientServicesFixture))]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

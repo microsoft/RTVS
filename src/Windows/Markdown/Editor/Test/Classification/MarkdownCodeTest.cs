@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
@@ -23,8 +24,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         private readonly IClassificationTypeRegistryService _crs;
         private readonly IContentTypeRegistryService _ctrs;
 
-        public MarkdownCodeTest(MarkdownEditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public MarkdownCodeTest(IServiceContainer serviceProvider) {
+            _coreShell = serviceProvider.GetService<ICoreShell>();
             _crs = _coreShell.GetService<IClassificationTypeRegistryService>();
             _ctrs = _coreShell.GetService<IContentTypeRegistryService>();
             _tbfs = _coreShell.GetService<ITextBufferFactoryService>();

@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
@@ -20,9 +21,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
     public class RangeFormatterTest {
         private readonly ICoreShell _shell;
 
-        public RangeFormatterTest(REditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
-         }
+        public RangeFormatterTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
+        }
 
         [Test]
         public void EmptyFileTest() {

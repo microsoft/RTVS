@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Markdown.Editor.ContainedLanguage;
@@ -20,10 +21,8 @@ namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
     public class RLanguageHandlerTest {
         private readonly ICoreShell _coreShell;
 
-        public RLanguageHandlerTest(MarkdownEditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
-            _coreShell.GetService<IProjectionBufferFactoryService>();
-            _coreShell.GetService<IContentTypeRegistryService>();
+        public RLanguageHandlerTest(IServiceContainer services) {
+            _coreShell = services.GetService<ICoreShell>();
         }
 
         [CompositeTest]

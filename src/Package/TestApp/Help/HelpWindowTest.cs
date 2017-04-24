@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using mshtml;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.Help.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -24,15 +25,18 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class HelpWindowTest : HostBasedInteractiveTest {
+        private readonly IServiceContainer _services;
         private const string darkThemeCssColor = "rgb(36,36,36)";
 
-        public HelpWindowTest() : base(true) { }
+        public HelpWindowTest(IServiceContainer services) : base(true) {
+            _services = services;
+        }
 
         [Test]
         public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             await HostScript.InitializeAsync(clientApp);
-            using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
+            using (new ControlTestScript(typeof(HelpVisualComponent), _services)) {
                 DoIdle(100);
 
                 var component = ControlWindow.Component as IHelpVisualComponent;

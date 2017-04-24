@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Signatures;
@@ -24,9 +25,9 @@ namespace Microsoft.R.Editor.Test.Signatures {
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
         private readonly IWritableREditorSettings _settings;
 
-        public ComputeCurrentParameterTest(REditorShellProviderFixture shellProvider) : 
-            base(shellProvider.CoreShell) {
-            _settings = Shell.GetService<IWritableREditorSettings>();
+        public ComputeCurrentParameterTest(IServiceContainer services) : 
+            base(services) {
+            _settings = services.GetService<IWritableREditorSettings>();
         }
 
         [Test(ThreadType = ThreadType.UI)]

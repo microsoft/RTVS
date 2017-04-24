@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
@@ -30,7 +31,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             public ITextBuffer TextBuffer;
         }
 
-        public FunctionIndexTest(REditorShellProviderFixture shellProvider) : base(shellProvider.CoreShell) { }
+        public FunctionIndexTest(IServiceContainer services) : base(services) { }
 
         [CompositeTest]
         [InlineData(true)]

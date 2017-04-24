@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -26,10 +27,10 @@ namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
     [Category.R.Navigation]
     public class RPeekableItemSourceTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
-        public RPeekableItemSourceTest(REditorShellProviderFixture shellProvider) {
-            _coreShell = shellProvider.CoreShell;
+        public RPeekableItemSourceTest(IServiceContainer services) {
+            _services = services;
         }
 
         [Test]
@@ -77,7 +78,7 @@ x <- function(a) {
 
         [Test]
         public async Task PeekInternalFunction01() {
-            using (var workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(RPeekableItemSourceTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
@@ -157,7 +158,7 @@ x <- function(a) {
 
             var peekSession = PeekSessionMock.Create(textView, position);
             var factory = PeekResultFactoryMock.Create();
-            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _coreShell.GetService<ICoreShell>());
+            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _services.GetService<ICoreShell>());
 
             peekSource.AugmentPeekSession(peekSession, items);
         }

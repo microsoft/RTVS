@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.BraceMatch;
 using Microsoft.R.Editor.Test.Utility;
@@ -13,15 +14,15 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
     [Category.R.BraceMatch]
     public class RBraceMatchTest {
-        private readonly ICoreShell _coreshell;
+        private readonly IServiceContainer _services;
 
-        public RBraceMatchTest(REditorShellProviderFixture shellProvider, EditorTestFilesFixture testFiles) {
-            _coreshell = shellProvider.CoreShell;
+        public RBraceMatchTest(IServiceContainer services) {
+            _services = services;
         }
 
         [Test]
         public void RBraceMatch_CurlyBraces01() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a{\"{ }\"}b", _coreshell);
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a{\"{ }\"}b", _services);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -49,7 +50,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
 
         [Test]
         public void RBraceMatch_Braces() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a(\"( )\")b", _coreshell);
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a(\"( )\")b", _services);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -77,7 +78,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
         }
         [Test]
         public void RBraceMatch_CurlyBraces02() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{{\"{ }\"}}", _coreshell);
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{{\"{ }\"}}", _services);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -102,7 +103,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
 
         [Test]
         public void RBraceMatch_MixedBraces() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}", _coreshell);
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}", _services);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;

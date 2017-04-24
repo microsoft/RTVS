@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -23,11 +24,11 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IRHistoryWindowVisualComponent _historyVisualComponent;
         private IDisposable _containerDisposable;
 
-        public RHistoryViewModelTest(RComponentsShellProviderFixture shellProvider, ContainerHostMethodFixture containerHost) {
+        public RHistoryViewModelTest(IServiceContainer services, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            _history = shellProvider.CoreShell.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate().History;
+            _history = services.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate().History;
 
-            var containerFactory = shellProvider.CoreShell.GetService<IRHistoryVisualComponentContainerFactory>();
+            var containerFactory = services.GetService<IRHistoryVisualComponentContainerFactory>();
             _historyVisualComponent = UIThreadHelper.Instance.Invoke(() => _history.GetOrCreateVisualComponent(containerFactory));
         }
         

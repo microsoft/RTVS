@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -19,13 +20,13 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     [Collection(CollectionNames.NonParallel)]
     public class PackageIndexTest : IAsyncLifetime {
-        private readonly TestCoreShell _shell = TestCoreShell.CreateBasic();
+        private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRSessionProvider _sessionProvider;
 
-        public PackageIndexTest(REditorShellProviderFixture shellProvider) {
-            _shell.ServiceManager.AddService(new RSettingsStub());
-            _workflowProvider = shellProvider.CoreShell.GetService<IRInteractiveWorkflowProvider>();
+        public PackageIndexTest(IServiceContainer services) {
+            _coreShell = services.GetService<ICoreShell>();
+            _workflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             _sessionProvider = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate()).RSessions;
         }
         
@@ -69,10 +70,10 @@ namespace Microsoft.R.Editor.Test.Completions {
              };
 
             IPackageIndex packageIndex;
-            using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
+            using (var host = new IntelliSenseRSession(_coreShell, _workflowProvider)) {
                 await host.StartSessionAsync();
-                var functionIndex = new FunctionIndex(_shell, null, host);
-                packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
+                var functionIndex = new FunctionIndex(_coreShell, null, host);
+                packageIndex = new PackageIndex(_workflowProvider, _coreShell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
             }
 
@@ -86,10 +87,10 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public async Task PackageDescriptionTest() {
             PackageIndex packageIndex;
-            using (var host = new IntelliSenseRSession(_shell, _workflowProvider)) {
+            using (var host = new IntelliSenseRSession(_coreShell, _workflowProvider)) {
                 await host.StartSessionAsync();
-                var functionIndex = new FunctionIndex(_shell, null, host);
-                packageIndex = new PackageIndex(_workflowProvider, _shell, host, functionIndex);
+                var functionIndex = new FunctionIndex(_coreShell, null, host);
+                packageIndex = new PackageIndex(_workflowProvider, _coreShell, host, functionIndex);
                 await packageIndex.BuildIndexAsync();
             }
             IPackageInfo pi = await packageIndex.GetPackageInfoAsync("base");

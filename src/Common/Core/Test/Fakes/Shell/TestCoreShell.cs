@@ -23,7 +23,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
         public IServiceManager ServiceManager { get; }
 
-        private TestCoreShell(IServiceManager serviceManager) {
+        public TestCoreShell(IServiceManager serviceManager) {
              ServiceManager = serviceManager;
         }
 
@@ -50,23 +50,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             var shell = new TestCoreShell(new ServiceManager());
             shell.AddSubstiteServices();
             return shell;
-        }
-
-        /// <summary>
-        /// Creates test core shell with basic services and delegation
-        /// to the supplied export provider for additional services.
-        /// </summary>
-        /// <param name="exportProvider"></param>
-        public TestCoreShell(IExportProvider exportProvider) : this(new TestServiceManager(exportProvider)) {
-            AddBasicServices();
-        }
-
-        public TestCoreShell(ICompositionCatalog catalog) : this(new TestServiceManager(catalog.ExportProvider)) {
-            AddBasicServices();
-            ServiceManager
-                .AddService(catalog)
-                .AddService(catalog.ExportProvider)
-                .AddService(catalog.CompositionService);
         }
 
         private void AddSubstiteServices() {

@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Scopes;
@@ -14,15 +15,15 @@ namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
     public class EditorTreeInvalidateTest {
-        private readonly ICoreShell _coreShell;
+        private readonly ICoreShell _shell;
 
-        public EditorTreeInvalidateTest(REditorShellProviderFixture shellProvider, EditorTestFilesFixture testFiles) {
-            _coreShell = shellProvider.CoreShell;
+        public EditorTreeInvalidateTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]
         public void InvalidateAll() {
-            using (var tree = EditorTreeTest.MakeTree(_coreShell, "if(true) x <- a + b")) {
+            using (var tree = EditorTreeTest.MakeTree(_shell, "if(true) x <- a + b")) {
                 tree.Invalidate();
                 tree.AstRoot.Children.Should().ContainSingle();
                 tree.AstRoot.Children[0].Children.Should().BeEmpty();
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) { }", 11, 1)]
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 3)]
         public void InvalidateAllInRange(string content, int start, int length) {
-            using (var tree = EditorTreeTest.MakeTree(_coreShell, content)) {
+            using (var tree = EditorTreeTest.MakeTree(_shell, content)) {
                 bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
                 nodesChanged.Should().BeTrue();
 
@@ -51,7 +52,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 23, 1)]
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 1)]
         public void InvalidatePartsInRange01(string content, int start, int length) {
-            using (var tree = EditorTreeTest.MakeTree(_coreShell, content)) {
+            using (var tree = EditorTreeTest.MakeTree(_shell, content)) {
 
                 bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
                 nodesChanged.Should().BeTrue();

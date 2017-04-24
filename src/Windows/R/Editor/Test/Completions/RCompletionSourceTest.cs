@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.UnitTests.Core.XUnit;
@@ -16,8 +17,8 @@ namespace Microsoft.R.Editor.Test.Completions {
     public class RCompletionSourceTest {
         private readonly ICoreShell _shell;
 
-        public RCompletionSourceTest(REditorShellProviderFixture shellProvider) {
-            _shell = shellProvider.CoreShell;
+        public RCompletionSourceTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
 

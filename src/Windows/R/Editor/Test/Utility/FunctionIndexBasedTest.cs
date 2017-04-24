@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Functions;
@@ -17,8 +18,8 @@ namespace Microsoft.R.Editor.Test.Utility {
         protected IFunctionIndex FunctionIndex { get; }
         protected IRInteractiveWorkflow Workflow { get; }
 
-        protected FunctionIndexBasedTest(ICoreShell coreShell) {
-            Shell = coreShell;
+        protected FunctionIndexBasedTest(IServiceContainer services) {
+            Shell = services.GetService<ICoreShell>();
             Workflow = UIThreadHelper.Instance.Invoke(() => Shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
             FunctionIndex = Shell.GetService<IFunctionIndex>();
             PackageIndex = Shell.GetService<IPackageIndex>();

@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
             }
 
             var textBuffer = _source.EditorBuffer as ITextBuffer;
-            HierarchyItem = textBuffer.GetHierarchy();
+            HierarchyItem = textBuffer?.GetHierarchy();
 
             return oldLine != Line ||
                    oldColumn != Column ||
