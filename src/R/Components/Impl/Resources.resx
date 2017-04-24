@@ -324,20 +324,14 @@
   <data name="ConnectionManager_LocalConnections" xml:space="preserve">
     <value>Local</value>
   </data>
+  <data name="ConnectionManager_LocalConnections_Tooltip" xml:space="preserve">
+    <value>Local R installations</value>
+  </data>
   <data name="ConnectionManager_RemoteConnections" xml:space="preserve">
     <value>Remote</value>
   </data>
-  <data name="ConnectionManager_LocalConnections_Expand" xml:space="preserve">
-    <value>Expand list of local R installations</value>
-  </data>
-  <data name="ConnectionManager_RemoteConnections_Expand" xml:space="preserve">
-    <value>Expand list of remote workspaces</value>
-  </data>
-  <data name="ConnectionManager_LocalConnections_Collapse" xml:space="preserve">
-    <value>Collapse list of local R installations</value>
-  </data>
-  <data name="ConnectionManager_RemoteConnections_Collapse" xml:space="preserve">
-    <value>Collapse list of remote workspaces</value>
+  <data name="ConnectionManager_RemoteConnections_Tooltip" xml:space="preserve">
+    <value>Remote R installations</value>
   </data>
   <data name="ConnectionManager_ConnectTooltip" xml:space="preserve">
     <value>Connect to '{0}'</value>
