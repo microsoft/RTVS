@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -11,46 +13,51 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    internal sealed  class VsEditorSupport : IApplicationEditorSupport {
-        private readonly ICoreShell _coreShell;
+    internal sealed  class VsEditorSupport : IEditorSupport {
+        private readonly IServiceContainer _services;
 
-        public VsEditorSupport(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public VsEditorSupport(IServiceContainer services) {
+            _services = services;
         }
 
-        #region IApplicationEditorSupport 
+        #region IEditorSupport 
         /// <summary>
         /// Provides shim that implements ICommandTarget over 
         /// application-specific command target. For example, 
         /// Visual Studio is using IOleCommandTarget.
         /// </summary>
+        /// <param name="editorView">Editor view</param>
         /// <param name="commandTarget">Command target</param>
         /// <returns>Web components compatible command target</returns>
-        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
+        public ICommandTarget TranslateCommandTarget(IEditorView editorView, object commandTarget) {
             var managedCommandTarget = commandTarget as ICommandTarget;
-            if (managedCommandTarget != null)
+            if (managedCommandTarget != null) {
                 return managedCommandTarget;
-
+            }
             var oleCommandTarget = commandTarget as IOleCommandTarget;
-            if (oleCommandTarget != null)
-                return new OleToCommandTargetShim(textView, oleCommandTarget);
+            if (oleCommandTarget != null) {
+                return new OleToCommandTargetShim(editorView.As<ITextView>(), oleCommandTarget);
+            }
 
             Debug.Fail("Unknown command taget type");
             return null;
         }
 
-        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
+        public object TranslateToHostCommandTarget(IEditorView editorView, object commandTarget) {
             var oleToCommandTargetShim = commandTarget as OleToCommandTargetShim;
-            if (oleToCommandTargetShim != null)
+            if (oleToCommandTargetShim != null) {
                 return oleToCommandTargetShim.OleTarget;
+            }
 
             var managedCommandTarget = commandTarget as ICommandTarget;
-            if (managedCommandTarget != null)
-                return new CommandTargetToOleShim(textView, managedCommandTarget);
+            if (managedCommandTarget != null) {
+                return new CommandTargetToOleShim(editorView.As<ITextView>(), managedCommandTarget);
+            }
 
             var oleCommandTarget = commandTarget as IOleCommandTarget;
-            if (oleCommandTarget != null)
+            if (oleCommandTarget != null) {
                 return oleCommandTarget;
+            }
 
             Debug.Fail("Unknown command taget type");
             return null;
@@ -59,11 +66,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <summary>
         /// Creates compound undo action
         /// </summary>
-        /// <param name="textView">Text view</param>
-        /// <param name="textBuffer">Text buffer</param>
+        /// <param name="editorView">Editor view</param>
         /// <returns>Undo action instance</returns>
-        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer)
-            => new CompoundUndoAction(textView, _coreShell, addRollbackOnCancel: true);
+        public IEditorUndoAction CreateUndoAction(IEditorView editorView)
+            => new VsEditorUndoAction(editorView, _services);
         #endregion
     }
 }

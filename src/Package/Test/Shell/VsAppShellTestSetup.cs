@@ -19,7 +19,6 @@ using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;

@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
@@ -25,6 +26,8 @@ namespace Microsoft.R.Editor.Tree {
     /// validation (syntx check) thread.
     /// </summary>
     public partial class EditorTree : IREditorTree {
+        private const string NotMainThreadMessage = "Method should only be called on the main thread";
+        private const string AcquireReadLockMessage = NotMainThreadMessage + " Use AcquireReadLock when accessing tree from a background thread.";
 
         #region IREditorTree
         /// <summary>
@@ -36,9 +39,7 @@ namespace Microsoft.R.Editor.Tree {
         [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public AstRoot AstRoot {
             get {
-                if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                    throw new ThreadStateException("Method should only be called on the main thread. Use AcquireReadLock when accessing tree from a background thread.");
-                }
+                Check.InvalidOperation(() => _ownerThread == Thread.CurrentThread.ManagedThreadId, AcquireReadLockMessage);
                 // Do not call EnsureTreeReady here since it may slow down
                 // typing A LOT in large files. If some code needs up-to-date
                 // tree it has to call EnsureTreeReady explicitly.
@@ -65,7 +66,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Last text snapshot associated with this tree
         /// </summary>
         public IEditorBufferSnapshot BufferSnapshot {
-            get { return _textSnapShot; }
+            get => _textSnapShot;
             internal set {
                 _textSnapShot = value;
                 if (_astRoot != null) {
@@ -83,9 +84,7 @@ namespace Microsoft.R.Editor.Tree {
             if (TreeUpdateTask == null) {
                 return;
             }
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                throw new ThreadStateException("Method should only be called on the main thread");
-            }
+            Check.InvalidOperation(() => _ownerThread == Thread.CurrentThread.ManagedThreadId, NotMainThreadMessage);
             // OK to run in sync if changes are pending since we need it updated now
             TreeUpdateTask.EnsureProcessingComplete();
         }
@@ -173,16 +172,16 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Creates document tree on a given text buffer.
         /// </summary>
-        /// <param name="textBuffer">Text buffer</param>
-        /// <param name="shell"></param>
-        public EditorTree(IEditorBuffer editorBuffer, ICoreShell coreShell, IExpressionTermFilter filter = null) {
+        /// <param name="editorBuffer">Editor buffer</param>
+        /// <param name="services">Application services</param>
+        public EditorTree(IEditorBuffer editorBuffer, IServiceContainer services, IExpressionTermFilter filter = null) {
             _ownerThread = Thread.CurrentThread.ManagedThreadId;
             ExpressionTermFilter = filter;
 
             EditorBuffer = editorBuffer;
             EditorBuffer.ChangedHighPriority += OnTextBufferChanged;
 
-            TreeUpdateTask = new TreeUpdateTask(this, coreShell);
+            TreeUpdateTask = new TreeUpdateTask(this, services);
             TreeLock = new EditorTreeLock();
         }
         #endregion
@@ -192,11 +191,9 @@ namespace Microsoft.R.Editor.Tree {
         /// Builds initial AST. Subsequent updates should be coming from a background thread.
         /// </summary>
         public void Build() {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-                throw new ThreadStateException("Method should only be called on the main thread");
+            Check.InvalidOperation(() => _ownerThread == Thread.CurrentThread.ManagedThreadId, NotMainThreadMessage);
 
             var sw = Stopwatch.StartNew();
-
             TreeUpdateTask.Cancel();
 
             if (EditorBuffer != null) {
@@ -244,8 +241,8 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="range">Range to invalidate elements in</param>
         public bool InvalidateInRange(ITextRange range) {
             var removedElements = new List<IAstNode>();
-            int firstToRemove = -1;
-            int lastToRemove = -1;
+            var firstToRemove = -1;
+            var lastToRemove = -1;
 
             var node = AstRoot.NodeFromRange(range);
             var scope = node as IScope;
@@ -258,7 +255,7 @@ namespace Microsoft.R.Editor.Tree {
                 node = scope;
             }
 
-            for (int i = 0; i < scope.Children.Count; i++) {
+            for (var i = 0; i < scope.Children.Count; i++) {
                 var child = scope.Children[i];
                 if (TextRange.Intersect(range, child)) {
                     if (firstToRemove < 0) {
@@ -273,8 +270,8 @@ namespace Microsoft.R.Editor.Tree {
                 if (lastToRemove < 0) {
                     lastToRemove = firstToRemove;
                 }
-                for (int i = firstToRemove; i <= lastToRemove; i++) {
-                    IAstNode child = scope.Children[i];
+                for (var i = firstToRemove; i <= lastToRemove; i++) {
+                    var child = scope.Children[i];
                     removedElements.Add(child);
                     _astRoot.Errors.RemoveInRange(child);
                 }
@@ -296,12 +293,10 @@ namespace Microsoft.R.Editor.Tree {
         public void Invalidate() {
             // make sure not to use RootNode property since
             // calling get; causes parse
-            List<IAstNode> removedNodes = new List<IAstNode>();
+            var removedNodes = new List<IAstNode>();
             if (_astRoot.Children.Count > 0) {
                 var gs = _astRoot.Children[0] as GlobalScope;
-                foreach (var child in gs.Children) {
-                    removedNodes.Add(child);
-                }
+                removedNodes.AddRange(gs.Children);
                 gs.RemoveChildren(0, gs.Children.Count);
             }
 
@@ -321,17 +316,9 @@ namespace Microsoft.R.Editor.Tree {
             return null;
         }
 
-        public bool ReleaseReadLock(Guid treeUserId) {
-            return TreeLock.ReleaseReadLock(treeUserId);
-        }
-
-        public bool AcquireWriteLock() {
-            return TreeLock.AcquireWriteLock();
-        }
-
-        public bool ReleaseWriteLock() {
-            return TreeLock.ReleaseWriteLock();
-        }
+        public bool ReleaseReadLock(Guid treeUserId) => TreeLock.ReleaseReadLock(treeUserId);
+        public bool AcquireWriteLock() => TreeLock.AcquireWriteLock();
+        public bool ReleaseWriteLock() => TreeLock.ReleaseWriteLock();
         #endregion
 
         /// <summary>
@@ -340,9 +327,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="position">Position in the document text</param>
         /// <param name="node">Node that contains position</param>
         /// <returns>Position type as a set of flags combined via OR operation</returns>
-        public PositionType GetPositionElement(int position, out IAstNode node) {
-            return this.AstRoot.GetPositionNode(position, out node);
-        }
+        public PositionType GetPositionElement(int position, out IAstNode node) => AstRoot.GetPositionNode(position, out node);
 
         #region Comments
         /// <summary>

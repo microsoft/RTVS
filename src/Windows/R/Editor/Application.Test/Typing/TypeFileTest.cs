@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.RData.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
@@ -16,12 +15,12 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class TypeFileTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
 
         public TypeFileTest(IServiceContainer services, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
             _files = files;
         }
@@ -46,7 +45,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
         /// <param name="fileName">File name</param>
         /// <param name="contentType">File content type</param>
         private async Task<string> TypeFileInEditor(string fileName, string contentType) {
-            using (var script = await _editorHost.StartScript(_coreShell, contentType)) {
+            using (var script = await _editorHost.StartScript(_services, contentType)) {
                 string text = _files.LoadDestinationFile(fileName);
                 string[] lines = text.Split(CharExtensions.LineBreakChars);
                 for (int i = 0; i < lines.Length; i++) {

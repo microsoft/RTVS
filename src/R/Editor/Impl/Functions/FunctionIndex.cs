@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Editor.RData.Parser;
 using static System.FormattableString;
@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Functions {
     /// Provides information on functions in packages for intellisense.
     /// </summary>
     public sealed class FunctionIndex : IFunctionIndex {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IIntellisenseRSession _host;
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
 
@@ -42,14 +42,14 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
-        public FunctionIndex(ICoreShell coreShell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
-            _coreShell = coreShell;
+        public FunctionIndex(IServiceContainer services, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
+            _services = services;
             _functionRdDataProvider = rdDataProfider;
             _host = host;
         }
 
         public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
-            packageIndex = packageIndex ?? _coreShell.GetService<IPackageIndex>();
+            packageIndex = packageIndex ?? _services.GetService<IPackageIndex>();
             var lockToken = await _buildIndexLock.WaitAsync();
             try {
                 if (!lockToken.IsSet) {
@@ -66,9 +66,8 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         private void RegisterFunction(string functionName, string packageName) {
-            List<string> packages;
-            if (!_functionToPackageMap.TryGetValue(functionName, out packages)) {
-                _functionToPackageMap[functionName] = new List<string>() { packageName };
+            if (!_functionToPackageMap.TryGetValue(functionName, out List<string>  packages)) {
+                _functionToPackageMap[functionName] = new List<string> { packageName };
             } else {
                 packages.Add(packageName);
             }

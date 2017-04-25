@@ -55,9 +55,9 @@ namespace Microsoft.R.Editor.Signatures {
                     Debug.Assert(locusLength >= 0);
                     var locus = new TextRange(locusStart, locusLength);
 
-                    /// VS may end showing very long tooltip so we need to keep 
-                    /// description reasonably short: typically about
-                    /// same length as the function signature.
+                    // VS may end showing very long tooltip so we need to keep 
+                    // description reasonably short: typically about
+                    // same length as the function signature.
                     paramList.Add(
                         new FunctionParameter(
                             p.Description.Wrap(

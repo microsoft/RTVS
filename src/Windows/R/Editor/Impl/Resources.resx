@@ -159,63 +159,6 @@
   <data name="ColorName_R_String" xml:space="preserve">
     <value>R String</value>
   </data>
-  <data name="ParseError_CloseBraceExpected" xml:space="preserve">
-    <value>) expected</value>
-  </data>
-  <data name="ParseError_CloseCurlyBraceExpected" xml:space="preserve">
-    <value>} expected</value>
-  </data>
-  <data name="ParseError_CloseSquareBracketExpected" xml:space="preserve">
-    <value>] or ]] expected</value>
-  </data>
-  <data name="ParseError_ExpressionExpected" xml:space="preserve">
-    <value>Expression expected</value>
-  </data>
-  <data name="ParseError_FunctionExpected" xml:space="preserve">
-    <value>Function expected</value>
-  </data>
-  <data name="ParseError_General" xml:space="preserve">
-    <value>Syntax error</value>
-  </data>
-  <data name="ParseError_IndentifierExpected" xml:space="preserve">
-    <value>Identifier expected</value>
-  </data>
-  <data name="ParseError_InKeywordExpected" xml:space="preserve">
-    <value>'in' expected</value>
-  </data>
-  <data name="ParseError_LogicalExpected" xml:space="preserve">
-    <value>Logical expected</value>
-  </data>
-  <data name="ParseError_NumberExpected" xml:space="preserve">
-    <value>Number expected</value>
-  </data>
-  <data name="ParseError_OpenBraceExpected" xml:space="preserve">
-    <value>( expected</value>
-  </data>
-  <data name="ParseError_OpenCurlyBraceExpected" xml:space="preserve">
-    <value>{ expected</value>
-  </data>
-  <data name="ParseError_OpenSquareBracketExpected" xml:space="preserve">
-    <value>[ or [[ expected</value>
-  </data>
-  <data name="ParseError_LeftOperandExpected" xml:space="preserve">
-    <value>Operand to the left expected</value>
-  </data>
-  <data name="ParseError_OperatorExpected" xml:space="preserve">
-    <value>Operator expected</value>
-  </data>
-  <data name="ParseError_StringExpected" xml:space="preserve">
-    <value>String expected</value>
-  </data>
-  <data name="ParseError_UnexpectedEndOfFile" xml:space="preserve">
-    <value>Unexpected end of file</value>
-  </data>
-  <data name="ParseError_UnexpectedToken" xml:space="preserve">
-    <value>Unexpected token</value>
-  </data>
-  <data name="ParseError_FunctionBodyExpected" xml:space="preserve">
-    <value>Function body expected</value>
-  </data>
   <data name="ColorName_R_TypeFunction" xml:space="preserve">
     <value>R Type Functions</value>
   </data>
@@ -231,12 +174,6 @@
   <data name="AutoFormat" xml:space="preserve">
     <value>Automatic formatting</value>
   </data>
-  <data name="ParseError_RightOperandExpected" xml:space="preserve">
-    <value>Operand to the right expected</value>
-  </data>
-  <data name="AsyncIntellisense" xml:space="preserve">
-    <value>Parsing document...</value>
-  </data>
   <data name="SmartTagName_InstallPackage" xml:space="preserve">
     <value>Install package</value>
   </data>
@@ -248,5 +185,11 @@
   </data>
   <data name="DragDropOperation" xml:space="preserve">
     <value>Drag/drop</value>
+  </data>
+  <data name="ColorName_RD_Argument" xml:space="preserve">
+    <value>RD Argument</value>
+  </data>
+  <data name="ColorName_RD_CurlyBraces" xml:space="preserve">
+    <value>RD Braces</value>
   </data>
 </root>

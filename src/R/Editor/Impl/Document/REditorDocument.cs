@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Parser;
@@ -15,24 +16,17 @@ namespace Microsoft.R.Editor.Document {
     /// Main editor document for the R language
     /// </summary>
     public class REditorDocument : IREditorDocument {
-        private EditorTree _editorTree; // Editor parse tree (AST + dynamic tree update task)
-        private TreeValidator _validator; // Asynchronous AST syntax checker
-
-        protected EditorTree Tree {get;}
-
-        #region Constructors
-        public REditorDocument(IEditorBuffer editorBuffer, ICoreShell coreShell, IExpressionTermFilter termFilter = null) {
+        public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, IExpressionTermFilter termFilter = null) {
             EditorBuffer = editorBuffer;
             IsClosed = false;
 
             EditorBuffer.Services.AddService(this);
             EditorBuffer.Closing += OnBufferClosing;
 
-            var tree = new EditorTree(EditorBuffer, coreShell, termFilter);
+            var tree = new EditorTree(EditorBuffer, services, termFilter);
             tree.Build();
             EditorTree = tree;
         }
-        #endregion
 
         #region IREditorDocument
         public IEditorBuffer EditorBuffer { get; private set; }

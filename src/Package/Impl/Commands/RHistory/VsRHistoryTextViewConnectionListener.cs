@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.History;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
@@ -33,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                 // Check if another buffer already attached a command controller to the view.
                 // Don't allow two to be attached, or commands could be run twice.
                 // This currently can only happen with inline diff views.
-                RMainController mainController = RMainController.FromTextView(textView);
+                var mainController = textView.GetService<RMainController>();
                 if (textBuffer == mainController.TextBuffer) {
                     // Connect main controller to VS text view filter chain. The chain looks like
                     // VS IDE -> main controller -> Core editor
@@ -49,21 +50,19 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                         // Create OLE shim that wraps main controller ICommandTarget and represents
                         // it as IOleCommandTarget that is accepted by VS IDE.
                         var oleController = new CommandTargetToOleShim(textView, mainController);
-                        var es = _coreShell.GetService<IApplicationEditorSupport>();
+                        var es = _coreShell.GetService<IEditorSupport>();
 
-                        IOleCommandTarget nextOleTarget;
-                        viewAdapter.AddCommandFilter(oleController, out nextOleTarget);
+                        viewAdapter.AddCommandFilter(oleController, out IOleCommandTarget nextOleTarget);
 
                         // nextOleTarget is typically a core editor wrapped into OLE layer.
                         // Create a wrapper that will present OLE target as ICommandTarget to
                         // HTML main controller so controller can operate in platform-agnostic way.
-                        var nextCommandTarget = es.TranslateCommandTarget(textView, nextOleTarget);
+                        var nextCommandTarget = es.TranslateCommandTarget(textView.ToEditorView(), nextOleTarget);
 
                         mainController.ChainedController = nextCommandTarget;
                     }
                 }
             }
-
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
         }
     }

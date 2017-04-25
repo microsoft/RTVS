@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Parser;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Errors;
 
@@ -40,12 +41,12 @@ namespace Microsoft.R.Editor.Validation {
         internal ConcurrentQueue<IValidationError> ValidationResults { get; }
 
         private IREditorTree _editorTree;
-        private readonly ICoreShell _shell;
         private readonly IREditorSettings _settings;
-        private bool _syntaxCheckEnabled = false;
-        private bool _validationStarted = false;
+        private readonly IIdleTimeService _idleTime;
+        private bool _syntaxCheckEnabled;
+        private bool _validationStarted;
 
-        private bool _advisedToIdleTime = false;
+        private bool _advisedToIdleTime;
         private DateTime _idleRequestTime = DateTime.UtcNow;
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace Microsoft.R.Editor.Validation {
         public event EventHandler<EventArgs> Cleared;
 
         #region Constructors
-        public TreeValidator(IREditorTree editorTree, IREditorSettings settings) {
+        public TreeValidator(IREditorTree editorTree, IServiceContainer services) {
 #if DEBUG
             TraceValidation.Enabled = false;
 #endif
@@ -65,7 +66,9 @@ namespace Microsoft.R.Editor.Validation {
             _editorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _editorTree.Closing += OnTreeClose;
 
-            _settings = settings;
+            _settings = services.GetService<IREditorSettings>();
+            _idleTime = services.GetService<IIdleTimeService>();
+
             // Advise to settings changed *after* accessing the RSettings, 
             // since accessing the host application (VS) settings object may 
             // cause it fire Changed notification in some cases.
@@ -78,7 +81,7 @@ namespace Microsoft.R.Editor.Validation {
             StartValidationNextIdle();
             ValidationResults = new ConcurrentQueue<IValidationError>();
 
-            editorTree.EditorBuffer.Services.AddService(this);
+            editorTree.EditorBuffer.AddService(this);
         }
         #endregion
 
@@ -86,19 +89,16 @@ namespace Microsoft.R.Editor.Validation {
         /// Retrieves (or creates) the validator (syntax checker) 
         /// for the document that is associated with the text buffer
         /// </summary>
-        /// <param name="textBuffer">Text buffer</param>
         /// <param name="editorTree"></param>
-        /// <param name="shell"></param>
-        public static TreeValidator EnsureFromEditorBuffer(IEditorBuffer editorBuffer, IREditorTree editorTree, IREditorSettings settings)
-            => editorBuffer.Services.GetService<TreeValidator>() ?? new TreeValidator(editorTree, settings);
+        /// <param name="services"></param>
+        public static TreeValidator EnsureFromEditorBuffer(IREditorTree editorTree, IServiceContainer services)
+            => editorTree.EditorBuffer.GetService<TreeValidator>() ?? new TreeValidator(editorTree, services);
 
         /// <summary>
         /// Determines if background validation is currently in 
         /// progress (i.e. validation thread is running).
         /// </summary>
-        public bool IsValidationInProgress {
-            get { return _syntaxCheckEnabled && _validationStarted; }
-        }
+        public bool IsValidationInProgress => _syntaxCheckEnabled && _validationStarted;
 
         private void StartValidationNextIdle() {
             if (_syntaxCheckEnabled) {
@@ -118,19 +118,17 @@ namespace Microsoft.R.Editor.Validation {
         private void AdviseToIdle() {
             if (!_advisedToIdleTime) {
                 _idleRequestTime = DateTime.UtcNow;
-
-                _shell.Idle += OnIdle;
+                _idleTime.Idle += OnIdle;
                 _advisedToIdleTime = true;
             }
         }
 
         private void UnadviseFromIdle() {
             if (_advisedToIdleTime) {
-                _shell.Idle -= OnIdle;
+                _idleTime.Idle -= OnIdle;
                 _advisedToIdleTime = false;
             }
         }
-
         #endregion
 
         #region Settings change handler
@@ -149,15 +147,15 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        //public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer) {
-        //    var document = editorBuffer.GetDocument<IREditorDocument>();
-        //    if (document != null) {
-        //        var view = document.GetFirstView();
-        //        var settings = editorBuffer.GetService<IREditorSettings>();
-        //        return view != null && view.IsRepl() ? settings.SyntaxCheckInRepl : settings.SyntaxCheck;
-        //    }
-        //    return false;
-        //}
+        public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer) {
+            var document = editorBuffer.GetEditorDocument<IREditorDocument>();
+            if (document != null) {
+                var view = document.GetFirstView();
+                var settings = editorBuffer.GetService<IREditorSettings>();
+                return view != null && view.IsRepl() ? settings.SyntaxCheckInRepl : settings.SyntaxCheckEnabled;
+            }
+            return false;
+        }
 
         private void StartValidation() {
             if (_syntaxCheckEnabled && _editorTree != null) {
@@ -171,8 +169,7 @@ namespace Microsoft.R.Editor.Validation {
 
             //  Empty the results queue
             while (!ValidationResults.IsEmpty) {
-                IValidationError error;
-                ValidationResults.TryDequeue(out error);
+                ValidationResults.TryDequeue(out IValidationError error);
             }
 
             UnadviseFromIdle();
@@ -215,6 +212,7 @@ namespace Microsoft.R.Editor.Validation {
             _editorTree = null;
 
             _settings.SettingsChanged -= OnSettingsChanged;
+            _idleTime.Idle -= OnIdle;
         }
         #endregion
 
@@ -222,7 +220,6 @@ namespace Microsoft.R.Editor.Validation {
             foreach (var child in node.Children) {
                 ClearResultsForNode(child);
             }
-
             // Adding sentinel will cause task list handler
             // to remove all results from the task list 
             ValidationResults.Enqueue(new ValidationSentinel());
@@ -230,7 +227,7 @@ namespace Microsoft.R.Editor.Validation {
 
         private void QueueTreeForValidation() {
             // Transfer available errors from the tree right away
-            foreach (ParseError e in _editorTree.AstRoot.Errors) {
+            foreach (var e in _editorTree.AstRoot.Errors) {
                 ValidationResults.Enqueue(new ValidationError(e, ErrorText.GetText(e.ErrorType), e.Location));
             }
         }

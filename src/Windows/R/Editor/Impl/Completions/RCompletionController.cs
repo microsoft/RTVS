@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
@@ -29,10 +29,10 @@ namespace Microsoft.R.Editor.Completions {
         private ITextBuffer _textBuffer;
         private char _commitChar = '\0';
 
-        private RCompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell)
-            : base(textView, subjectBuffers, shell) {
+        private RCompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services)
+            : base(textView, subjectBuffers, services) {
             _textBuffer = subjectBuffers[0];
-            _settings = shell.GetService<IREditorSettings>();
+            _settings = services.GetService<IREditorSettings>();
             TextView.AddService(this);
         }
 
@@ -56,9 +56,9 @@ namespace Microsoft.R.Editor.Completions {
         /// </summary>
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
-        public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell) {
+        public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services) {
             var completionController = textView.GetService<RCompletionController>();
-            completionController = completionController ?? new RCompletionController(textView, subjectBuffers, shell);
+            completionController = completionController ?? new RCompletionController(textView, subjectBuffers, services);
             return completionController;
         }
 
@@ -376,7 +376,7 @@ namespace Microsoft.R.Editor.Completions {
         /// Default signature session dismisses when caret changes position.
         /// </summary>
         public override void TriggerSignatureHelp() {
-            DismissSignatureSession(TextView, Shell);
+            DismissSignatureSession(TextView, Services);
             DismissQuickInfoSession(TextView);
             SignatureBroker.TriggerSignatureHelp(TextView);
         }

@@ -88,10 +88,7 @@ namespace Microsoft.Common.Core.Services {
 
         public virtual void RemoveService(object service) {
             _disposeToken.ThrowIfDisposed();
-            var key = AllServices.FirstOrDefault(x => {
-                object value;
-                return _s.TryGetValue(x, out value);
-            });
+            var key = AllServices.FirstOrDefault(x => _s.TryGetValue(x, out object value));
             if (_s.TryRemove(key, out object dummy)) {
                 ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(key));
             }
@@ -126,7 +123,6 @@ namespace Microsoft.Common.Core.Services {
                 (service as IDisposable)?.Dispose();
                 _disposeToken.ThrowIfDisposed();
             }
-
             return service;
         }
 

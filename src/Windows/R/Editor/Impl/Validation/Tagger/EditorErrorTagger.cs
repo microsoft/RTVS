@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.TaskList;
@@ -24,7 +25,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     public class EditorErrorTagger : ITagger<IErrorTag>, IEditorTaskListItemSource {
         private readonly IEditorTaskList _taskList;
         private readonly IREditorSettings _settings;
-        private readonly ICoreShell _shell;
+        private readonly IIdleTimeService _idleTime;
 
         /// <summary>
         /// Tells the editor (or any listener) that syntax errors have changed
@@ -41,11 +42,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         private ErrorTagCollection _errorTags;
         private bool _fireCodeMarkerUponCompletion;
 
-        public EditorErrorTagger(ITextBuffer textBuffer, IEditorTaskList taskList, ICoreShell shell) {
+        public EditorErrorTagger(ITextBuffer textBuffer, IEditorTaskList taskList, IServiceContainer services) {
             _taskList = taskList;
 
-            _shell = shell;
-            _settings = _shell.GetService<IREditorSettings>();
+            _settings = services.GetService<IREditorSettings>();
+            _idleTime = services.GetService<IIdleTimeService>();
 
             _document = textBuffer.GetEditorDocument<IREditorDocument>();
             _document.Closing += OnDocumentClosing;
@@ -68,11 +69,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 }
             }
 
-            var validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree, services);
+            var validator = TreeValidator.EnsureFromEditorBuffer(_document.EditorTree, services);
             validator.Cleared += OnCleared;
 
             ResultsQueue = validator.ValidationResults;
-            _shell.Idle += OnIdle;
+            _idleTime.Idle += OnIdle;
 
             textBuffer.AddService(this);
         }
@@ -140,7 +141,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         #region Tree event handlers
         private void OnDocumentClosing(object sender, EventArgs e) {
             if (_textBuffer != null) {
-                _shell.Idle -= OnIdle;
+                _idleTime.Idle -= OnIdle;
 
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 _document.EditorTree.NodesRemoved -= OnNodesRemoved;

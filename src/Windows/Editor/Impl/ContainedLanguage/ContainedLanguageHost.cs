@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
@@ -18,14 +19,14 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// </summary>
         /// <param name="textView">Primary text view</param>
         /// <param name="textBuffer">Contained language buffer</param>
-        /// <param name="shell"></param>
+        /// <param name="services"></param>
         /// <returns>Contained language host for this buffer and language, <seealso cref="IContainedLanguageHost"/></returns>
-        public static IContainedLanguageHost GetHost(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) {
+        public static IContainedLanguageHost GetHost(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) {
             var containedLanguageHost = TryGetHost(textBuffer);
             if (containedLanguageHost == null) {
                 var containedLanguageHostProvider =
                     ComponentLocatorForOrderedContentType<IContainedLanguageHostProvider>.
-                            FindFirstOrderedComponent(shell.GetService<ICompositionCatalog>(), textView.TextDataModel.DocumentBuffer.ContentType.TypeName);
+                            FindFirstOrderedComponent(services.GetService<ICompositionCatalog>(), textView.TextDataModel.DocumentBuffer.ContentType.TypeName);
                 containedLanguageHost = containedLanguageHostProvider?.GetContainedLanguageHost(textView, textBuffer);
             }
             return containedLanguageHost;

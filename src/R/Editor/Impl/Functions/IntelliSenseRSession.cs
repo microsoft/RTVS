@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -25,12 +26,14 @@ namespace Microsoft.R.Editor.Functions {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
-        private IEnumerable<string> _loadedPackages = null;
+        private readonly bool _unitTests;
+        private IEnumerable<string> _loadedPackages;
 
-        public IntelliSenseRSession(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider) {
-            Shell = coreShell;
-            _workflow = workflowProvider.GetOrCreate();
+        public IntelliSenseRSession(IServiceContainer services) {
+            Services = services;
+            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _sessionProvider = _workflow.RSessions;
+            _unitTests = Services.GetService<ICoreShell>().IsUnitTestEnvironment;
         }
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         public static int HostStartTimeout { get; set; } = 3000;
 
-        public ICoreShell Shell { get; }
+        public IServiceContainer Services { get; }
 
         public IRSession Session { get; private set; }
 
@@ -91,8 +94,8 @@ namespace Microsoft.R.Editor.Functions {
                 }
 
                 if (!Session.IsHostRunning) {
-                    int timeout = Shell.IsUnitTestEnvironment ? 10000 : 3000;
-                    var settings = Shell.GetService<IRSettings>();
+                    int timeout = _unitTests ? 10000 : 3000;
+                    var settings = Services.GetService<IRSettings>();
                     await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout);
                 }
             } finally {
@@ -134,7 +137,7 @@ namespace Microsoft.R.Editor.Functions {
             // Normal case is to use the interacive session.
             if (_workflow.RSession.IsHostRunning) {
                 session = _workflow.RSession;
-            } else if (Shell.IsUnitTestEnvironment) {
+            } else if (_unitTests) {
                 // For tests that only employ standard packages we can reuse the same session.
                 // This improves test performance and makes test code simpler.
                 session = Session;

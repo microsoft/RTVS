@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
@@ -12,13 +12,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.ViewModel {
     public sealed class MdEditorViewModel : ProjectionEditorViewModel {
-        public MdEditorViewModel(ITextBuffer diskBuffer, ICoreShell coreShell) :
-            base(
-                new MdEditorDocument(diskBuffer, coreShell),
-                coreShell.GetService<ITextDocumentFactoryService>()
-            ) { }
+        public MdEditorViewModel(IEditorBuffer diskBuffer, IServiceContainer services) :
+            base(new MdEditorDocument(diskBuffer, services), services.GetService<ITextDocumentFactoryService>()) { }
 
-        #region IEditorInstance
+        #region IEditorViewModel
         /// <summary>
         /// Retrieves editor instance command target for a particular view
         /// </summary>

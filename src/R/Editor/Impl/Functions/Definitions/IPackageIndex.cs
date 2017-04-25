@@ -33,5 +33,15 @@ namespace Microsoft.R.Editor.Functions {
         /// is not in the index, attempts to locate the package in the current R session.
         /// </summary>
         Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames);
+
+        /// <summary>
+        /// Path to the cache.
+        /// </summary>
+        string CacheFolderPath { get; }
+
+        /// <summary>
+        /// Clears in-memory function and package information cache.
+        /// </summary>
+        void ClearCache();
     }
 }

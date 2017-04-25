@@ -73,7 +73,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         /// caret position to detemine if it is in a secondary language block.
         /// </summary>
         public ICommandTarget GetContainedCommandTarget() {
-            var containedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(TextBuffer);
+            var containedLanguageHandler = TextBuffer.GetService<IContainedLanguageHandler>();
             return containedLanguageHandler?.GetCommandTargetOfLocation(TextView, TextView.Caret.Position.BufferPosition);
         }
 

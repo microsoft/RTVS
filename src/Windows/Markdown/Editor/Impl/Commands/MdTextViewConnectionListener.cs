@@ -12,7 +12,7 @@ namespace Microsoft.Markdown.Editor.Commands {
     // application-specific listener or in text buffer / editor factory.
     public class MdTextViewConnectionListener : TextViewConnectionListener {
         protected override void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            MdMainController.Attach(textView, textBuffer, Shell);
+            MdMainController.Attach(textView, textBuffer, Shell.Services);
             base.OnTextViewConnected(textView, textBuffer);
         }
 

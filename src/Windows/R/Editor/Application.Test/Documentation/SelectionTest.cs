@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -14,11 +13,11 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class DocumentationTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
 
         public DocumentationTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
         }
 
@@ -43,7 +42,7 @@ x <- function(a,b,c) { }
 x <- function(a,b,c) { }
 ";
 
-            using (var script = await _editorHost.StartScript(_coreShell, content, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, content, RContentTypeDefinition.ContentType)) {
                 script.Type("###");
                 var actual = script.TextBuffer.CurrentSnapshot.GetText();
                 actual.Should().Be(expected);

@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
@@ -13,20 +12,20 @@ using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Selection {
     [ExcludeFromCodeCoverage]
+    [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
-    public class SignatureTest {
-        private readonly ICoreShell _coreShell;
+    public sealed class SignatureTest {
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
 
         public SignatureTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_SelectWord01() {
-            using (var script = await _editorHost.StartScript(_coreShell, "\r\nabc$def['test test']", RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, "\r\nabc$def['test test']", RContentTypeDefinition.ContentType)) {
 
                 script.MoveDown();
                 script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
@@ -49,9 +48,8 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_SelectWord02() {
-            using (var script = await _editorHost.StartScript(_coreShell, "`abc`$\"def\"", RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, "`abc`$\"def\"", RContentTypeDefinition.ContentType)) {
 
                 script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = script.View.Selection.StreamSelectionSpan;
@@ -67,9 +65,8 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_SelectWord03() {
-            using (var script = await _editorHost.StartScript(_coreShell, "abc\'def", RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, "abc\'def", RContentTypeDefinition.ContentType)) {
 
                 script.Execute(VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = script.View.Selection.StreamSelectionSpan;

@@ -22,8 +22,7 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public partial class VsAppShell {
-        private readonly VsIdleTimeService _idleTimeService = new VsIdleTimeService();
-        private VsServiceManager _services;
+        private readonly VsServiceManager _services;
 
         public IServiceContainer Services => _services;
 
@@ -52,7 +51,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(settings)
                 .AddService(new REditorSettings(new LanguageSettingsStorage(this, RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, new string[] { RPackage.ProductName })))
                 .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
-                .AddService(new VsEditorSupport(this))
+                .AddService(new VsEditorSupport(this.Services))
+                .AddService(new VsApplicationFolderService())
                 .AddService(telemetry)
                 .AddService(new FileSystem())
                 .AddService(new ProcessServices())

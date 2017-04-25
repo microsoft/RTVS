@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Functions;
 using Microsoft.UnitTests.Core.Threading;
@@ -13,16 +12,16 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public abstract class FunctionIndexBasedTest : IAsyncLifetime {
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
         protected IPackageIndex PackageIndex { get; }
         protected IFunctionIndex FunctionIndex { get; }
         protected IRInteractiveWorkflow Workflow { get; }
 
         protected FunctionIndexBasedTest(IServiceContainer services) {
-            Shell = services.GetService<ICoreShell>();
-            Workflow = UIThreadHelper.Instance.Invoke(() => Shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
-            FunctionIndex = Shell.GetService<IFunctionIndex>();
-            PackageIndex = Shell.GetService<IPackageIndex>();
+            Services = services;
+            Workflow = UIThreadHelper.Instance.Invoke(() => Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
+            FunctionIndex = Services.GetService<IFunctionIndex>();
+            PackageIndex = Services.GetService<IPackageIndex>();
         }
 
         public async Task InitializeAsync() {
@@ -31,8 +30,6 @@ namespace Microsoft.R.Editor.Test.Utility {
             await FunctionIndex.BuildIndexAsync();
         }
 
-        public async Task DisposeAsync() {
-            await PackageIndex.DisposeAsync(Shell);
-        }
+        public Task DisposeAsync() => Task.CompletedTask;
      }
 }

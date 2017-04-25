@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
@@ -19,12 +19,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options, ICoreShell shell) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            int start = formatRange.Start;
-            int end = formatRange.End;
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
+            var snapshot = textBuffer.CurrentSnapshot;
+            var start = formatRange.Start;
+            var end = formatRange.End;
 
-            if(!CanFormatRange(textView, textBuffer, formatRange, shell)) {
+            if(!CanFormatRange(textView, textBuffer, formatRange, services)) {
                 return false;
             }
 
@@ -60,20 +60,19 @@ namespace Microsoft.R.Editor.Formatting {
             // the AST is damaged at this point. As a workaround, we will check 
             // if the previous line ends with an operator current line starts with 
             // an operator.
-            int startPosition = FindStartOfExpression(textBuffer, startLine.Start);
+            int startPosition = FindStartOfExpression(textBuffer.ToEditorBuffer(), startLine.Start);
 
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
-            return FormatRangeExact(textView, textBuffer, formatRange, options, shell);
+            return FormatRangeExact(textView, textBuffer.ToEditorBuffer(), formatRange, settings, services);
         }
 
-        public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options, ICoreShell shell) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            Span spanToFormat = new Span(formatRange.Start, formatRange.Length);
-            string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
-            string trimmedSpanText = spanText.Trim();
+        public static bool FormatRangeExact(ITextView textView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
+            var snapshot = editorBuffer.CurrentSnapshot;
+            var spanText = snapshot.GetText(formatRange);
+            var trimmedSpanText = spanText.Trim();
 
-            RFormatter formatter = new RFormatter(options);
-            string formattedText = formatter.Format(trimmedSpanText);
+            var formatter = new RFormatter(settings.FormatOptions);
+            var formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // There may be inserted line breaks after {
             // Apply formatted text without indentation. We then will update the parse tree 
@@ -81,24 +80,24 @@ namespace Microsoft.R.Editor.Formatting {
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
                 // Extract existing indent before applying changes. Existing indent
                 // may be used by the smart indenter for function argument lists.
-                var startLine = snapshot.GetLineFromPosition(spanToFormat.Start);
-                var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), options.IndentSize);
+                var startLine = snapshot.GetLineFromPosition(formatRange.Start);
+                var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), settings.IndentSize);
 
-                var selectionTracker = new RSelectionTracker(textView, textBuffer, formatRange);
+                var selectionTracker = new RSelectionTracker(textView, editorBuffer.As<ITextBuffer>(), formatRange);
                 RTokenizer tokenizer = new RTokenizer();
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
                 IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
 
                 IncrementalTextChangeApplication.ApplyChangeByTokens(
-                    textBuffer,
+                    editorBuffer.As<ITextBuffer>(),
                     new TextStream(spanText), new TextStream(formattedText),
                     oldTokens, newTokens,
                     formatRange,
-                    Resources.AutoFormat, selectionTracker, shell,
+                    Resources.AutoFormat, selectionTracker, services,
                     () => {
-                        var ast = UpdateAst(textBuffer);
+                        var ast = UpdateAst(editorBuffer);
                         // Apply indentation
-                        IndentLines(textView, textBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, options, originalIndentSizeInSpaces);
+                        IndentLines(editorBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, settings, originalIndentSizeInSpaces);
                     });
 
                 return true;
@@ -107,44 +106,42 @@ namespace Microsoft.R.Editor.Formatting {
             return false;
         }
 
-        private static AstRoot UpdateAst(ITextBuffer textBuffer) {
-            IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
+        private static AstRoot UpdateAst(IEditorBuffer editorBuffer) {
+            var document = editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 document.EditorTree.EnsureTreeReady();
                 return document.EditorTree.AstRoot;
             }
-            return RParser.Parse(new TextProvider(textBuffer.CurrentSnapshot));
+            return RParser.Parse(editorBuffer.CurrentSnapshot);
         }
 
         /// <summary>
         /// Appends indentation to each line so formatted text appears properly 
         /// indented inside the host document (script block in HTML page).
         /// </summary>
-        private static void IndentLines(ITextView textView, ITextBuffer textBuffer,
-                                        ITextRange range, AstRoot ast,
-                                        RFormatOptions options, int originalIndentSizeInSpaces) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            ITextSnapshotLine firstLine = snapshot.GetLineFromPosition(range.Start);
-            ITextSnapshotLine lastLine = snapshot.GetLineFromPosition(range.End);
+        private static void IndentLines(IEditorBuffer textBuffer, ITextRange range, AstRoot ast,
+                                        IREditorSettings settings, int originalIndentSizeInSpaces) {
+            var snapshot = textBuffer.CurrentSnapshot;
+            var firstLine = snapshot.GetLineFromPosition(range.Start);
+            var lastLine = snapshot.GetLineFromPosition(range.End);
+            var document = textBuffer.GetEditorDocument<IREditorDocument>();
 
-            IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
-
-            for (int i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
+            for (var i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
                 // Snapshot is updated after each insertion so do not cache
-                ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
-                int indent = SmartIndenter.GetSmartIndent(line, options, ast, originalIndentSizeInSpaces, formatting: true);
+                var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
+                var indent = SmartIndenter.GetSmartIndent(line, settings, ast, originalIndentSizeInSpaces, formatting: true);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
-                    int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), options.TabSize);
+                    int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), settings.TabSize);
                     indent = Math.Max(0, indent - currentIndentSize);
                     if (indent > 0) {
-                        string indentString = IndentBuilder.GetIndentString(indent, options.IndentType, options.TabSize);
+                        string indentString = IndentBuilder.GetIndentString(indent, settings.IndentType, settings.TabSize);
                         textBuffer.Insert(line.Start, indentString);
                         if (document == null) {
                             // Typically this is a test scenario only. In the real editor
                             // instance document is available and automatically updates AST
                             // when whitespace inserted, not no manual update is necessary.
-                            ast.ReflectTextChange(line.Start, 0, indentString.Length, new TextProvider(textBuffer.CurrentSnapshot));
+                            ast.ReflectTextChange(line.Start, 0, indentString.Length, textBuffer.CurrentSnapshot);
                         }
                     }
                 }
@@ -154,17 +151,17 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Given position in the buffer tries to detemine start of the expression.
         /// </summary>
-        private static int FindStartOfExpression(ITextBuffer textBuffer, int position) {
+        private static int FindStartOfExpression(IEditorBuffer textBuffer, int position) {
             // Go up line by line, tokenize each line
             // and check if it starts or ends with an operator
-            int lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
+            var lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
             var tokenizer = new RTokenizer(separateComments: true);
 
             var text = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum).GetText();
             var tokens = tokenizer.Tokenize(text);
-            bool nextLineStartsWithOperator = tokens.Count > 0 && tokens[0].TokenType == RTokenType.Operator;
+            var nextLineStartsWithOperator = tokens.Count > 0 && tokens[0].TokenType == RTokenType.Operator;
 
-            for (int i = lineNum - 1; i >= 0; i--) {
+            for (var i = lineNum - 1; i >= 0; i--) {
                 var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
                 text = line.GetText();
                 tokens = tokenizer.Tokenize(text);
@@ -181,15 +178,14 @@ namespace Microsoft.R.Editor.Formatting {
             return position;
         }
 
-        private static bool CanFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, ICoreShell shell) {
+        private static bool CanFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IServiceContainer services) {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, textBuffer, shell);
+            var host = ContainedLanguageHost.GetHost(textView, textBuffer, services);
             if (host != null) {
-                ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-
-                int startLine = snapshot.GetLineNumberFromPosition(formatRange.Start);
-                int endLine = snapshot.GetLineNumberFromPosition(formatRange.End);
+                var snapshot = textBuffer.CurrentSnapshot;
+                var startLine = snapshot.GetLineNumberFromPosition(formatRange.Start);
+                var endLine = snapshot.GetLineNumberFromPosition(formatRange.End);
                 for(int i = startLine; i<= endLine; i++) {
                     if (!host.CanFormatLine(textView, textBuffer, i)) {
                         return false;

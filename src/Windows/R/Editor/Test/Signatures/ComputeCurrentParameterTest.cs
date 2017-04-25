@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Signatures;
@@ -26,78 +25,71 @@ namespace Microsoft.R.Editor.Test.Signatures {
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
         private readonly IWritableREditorSettings _settings;
 
-        public ComputeCurrentParameterTest(IServiceContainer services) : 
+        public ComputeCurrentParameterTest(IServiceContainer services) :
             base(services) {
             _settings = services.GetService<IWritableREditorSettings>();
         }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter01() {
-            ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer, Shell);
-            SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
-            TextViewMock textView = session.TextView as TextViewMock;
-            List<ISignature> signatures = new List<ISignature>();
+            var textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
+            var editorBuffer = textBuffer.ToEditorBuffer();
+            var source = new SignatureHelpSource(textBuffer, Services);
+            var session = new SignatureHelpSessionMock(textBuffer, 0);
+            var textView = session.TextView as TextViewMock;
+            var signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(textBuffer, Shell)) {
+            using (var tree = new EditorTree(editorBuffer, Services)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
 
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-                    await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "aov");
+                    await FunctionIndex.GetFunctionInfoAsync("aov");
 
                     tree.TakeThreadOwnerShip();
                     await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
 
                     signatures.Should().ContainSingle();
 
-                    int index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                    int index = GetCurrentParameterIndex(signatures[0], signatures[0].CurrentParameter);
                     index.Should().Be(0);
 
                     textView.Caret = new TextCaretMock(textView, 5);
                     TextBufferUtility.ApplyTextChange(textBuffer, 4, 0, 1, "a");
-                    index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                    index = GetCurrentParameterIndex(signatures[0], signatures[0].CurrentParameter);
                     index.Should().Be(0);
 
                     textView.Caret = new TextCaretMock(textView, 6);
                     TextBufferUtility.ApplyTextChange(textBuffer, 5, 0, 1, ",");
                     tree.EnsureTreeReady();
-                    index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                    index = GetCurrentParameterIndex(signatures[0], signatures[0].CurrentParameter);
                     index.Should().Be(1);
 
                     textView.Caret = new TextCaretMock(textView, 7);
                     TextBufferUtility.ApplyTextChange(textBuffer, 6, 0, 1, ",");
                     tree.EnsureTreeReady();
-                    index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
+                    index = GetCurrentParameterIndex(signatures[0], signatures[0].CurrentParameter);
                     index.Should().Be(2);
                 }
             }
         }
 
-        private int GetCurrentParameterIndex(SignatureHelp sh, IParameter parameter) {
-            for (int i = 0; i < sh.Parameters.Count; i++) {
-                if (sh.Parameters[i] == parameter) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
+        private int GetCurrentParameterIndex(ISignature sh, IParameter parameter) => sh.Parameters.IndexOf(parameter);
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter02() {
-            await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
+            await FunctionIndex.GetFunctionInfoAsync("legend");
 
             _settings.PartialArgumentNameMatch = true;
 
             var textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Shell);
+            var source = new SignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(eb, Shell)) {
+            using (var tree = new EditorTree(eb, Services)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
@@ -121,16 +113,16 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter03() {
-            await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
+            await FunctionIndex.GetFunctionInfoAsync("legend");
 
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Shell);
+            var source = new SignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(eb, Shell)) {
+            using (var tree = new EditorTree(eb, Services)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
@@ -150,18 +142,18 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter04() {
-            await PackageIndexUtility.GetFunctionInfoAsync(FunctionIndex, "legend");
+            await FunctionIndex.GetFunctionInfoAsync("legend");
 
             _settings.PartialArgumentNameMatch = true;
 
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Shell);
+            var source = new SignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 
-            using (var tree = new EditorTree(eb, Shell)) {
+            using (var tree = new EditorTree(eb, Services)) {
                 tree.Build();
                 using (var document = new EditorDocumentMock(tree)) {
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 7, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
@@ -172,7 +164,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0] as SignatureHelp;
+                    var sh = signatures[0];
                     int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
                     index.Should().Be(9);
                 }

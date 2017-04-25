@@ -30,7 +30,7 @@
     <Compile Include="Core\DefaultTextViewRoleSet.cs" />
     <Compile Include="Core\TextDataModel.cs" />
     <Compile Include="Core\TextViewRoleSet.cs" />
-    <Compile Include="Host\EditorInstanceFactory.cs" />
+    <Compile Include="Host\EditorViewModelFactory.cs" />
     <Compile Include="Packages\MarkdownPackage.cs" />
     <Compile Include="Packages\TextPackage.cs" />
     <Compile Include="Packages\RPackage.cs" />

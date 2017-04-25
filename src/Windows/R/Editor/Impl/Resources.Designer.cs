@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.R.Editor {
+namespace Microsoft.R.Editor.Windows {
     using System;
     
     
@@ -57,15 +57,6 @@ namespace Microsoft.R.Editor {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parsing document....
-        /// </summary>
-        internal static string AsyncIntellisense {
-            get {
-                return ResourceManager.GetString("AsyncIntellisense", resourceCulture);
             }
         }
         
@@ -214,6 +205,24 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RD Argument.
+        /// </summary>
+        internal static string ColorName_RD_Argument {
+            get {
+                return ResourceManager.GetString("ColorName_RD_Argument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RD Braces.
+        /// </summary>
+        internal static string ColorName_RD_CurlyBraces {
+            get {
+                return ResourceManager.GetString("ColorName_RD_CurlyBraces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Comment selection.
         /// </summary>
         internal static string CommentSelection {
@@ -237,186 +246,6 @@ namespace Microsoft.R.Editor {
         internal static string FormatDocument {
             get {
                 return ResourceManager.GetString("FormatDocument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ) expected.
-        /// </summary>
-        internal static string ParseError_CloseBraceExpected {
-            get {
-                return ResourceManager.GetString("ParseError_CloseBraceExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to } expected.
-        /// </summary>
-        internal static string ParseError_CloseCurlyBraceExpected {
-            get {
-                return ResourceManager.GetString("ParseError_CloseCurlyBraceExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ] or ]] expected.
-        /// </summary>
-        internal static string ParseError_CloseSquareBracketExpected {
-            get {
-                return ResourceManager.GetString("ParseError_CloseSquareBracketExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Expression expected.
-        /// </summary>
-        internal static string ParseError_ExpressionExpected {
-            get {
-                return ResourceManager.GetString("ParseError_ExpressionExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Function body expected.
-        /// </summary>
-        internal static string ParseError_FunctionBodyExpected {
-            get {
-                return ResourceManager.GetString("ParseError_FunctionBodyExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Function expected.
-        /// </summary>
-        internal static string ParseError_FunctionExpected {
-            get {
-                return ResourceManager.GetString("ParseError_FunctionExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Syntax error.
-        /// </summary>
-        internal static string ParseError_General {
-            get {
-                return ResourceManager.GetString("ParseError_General", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Identifier expected.
-        /// </summary>
-        internal static string ParseError_IndentifierExpected {
-            get {
-                return ResourceManager.GetString("ParseError_IndentifierExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;in&apos; expected.
-        /// </summary>
-        internal static string ParseError_InKeywordExpected {
-            get {
-                return ResourceManager.GetString("ParseError_InKeywordExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operand to the left expected.
-        /// </summary>
-        internal static string ParseError_LeftOperandExpected {
-            get {
-                return ResourceManager.GetString("ParseError_LeftOperandExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logical expected.
-        /// </summary>
-        internal static string ParseError_LogicalExpected {
-            get {
-                return ResourceManager.GetString("ParseError_LogicalExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number expected.
-        /// </summary>
-        internal static string ParseError_NumberExpected {
-            get {
-                return ResourceManager.GetString("ParseError_NumberExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ( expected.
-        /// </summary>
-        internal static string ParseError_OpenBraceExpected {
-            get {
-                return ResourceManager.GetString("ParseError_OpenBraceExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to { expected.
-        /// </summary>
-        internal static string ParseError_OpenCurlyBraceExpected {
-            get {
-                return ResourceManager.GetString("ParseError_OpenCurlyBraceExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [ or [[ expected.
-        /// </summary>
-        internal static string ParseError_OpenSquareBracketExpected {
-            get {
-                return ResourceManager.GetString("ParseError_OpenSquareBracketExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operator expected.
-        /// </summary>
-        internal static string ParseError_OperatorExpected {
-            get {
-                return ResourceManager.GetString("ParseError_OperatorExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Operand to the right expected.
-        /// </summary>
-        internal static string ParseError_RightOperandExpected {
-            get {
-                return ResourceManager.GetString("ParseError_RightOperandExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to String expected.
-        /// </summary>
-        internal static string ParseError_StringExpected {
-            get {
-                return ResourceManager.GetString("ParseError_StringExpected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unexpected end of file.
-        /// </summary>
-        internal static string ParseError_UnexpectedEndOfFile {
-            get {
-                return ResourceManager.GetString("ParseError_UnexpectedEndOfFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unexpected token.
-        /// </summary>
-        internal static string ParseError_UnexpectedToken {
-            get {
-                return ResourceManager.GetString("ParseError_UnexpectedToken", resourceCulture);
             }
         }
         

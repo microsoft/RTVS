@@ -3,19 +3,17 @@
 
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
+using System.Linq;
+using System.Windows.Media;
+using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.Languages.Editor.Completions {
-    using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
     public sealed class CompletionList : List<Completion>, INotifyCollectionChanged {
         // Once this list starts being used by completion, it never changes, so don't fire the event
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public CompletionList(IEnumerable<Completion> completions)
-            : base(completions) {
-            // This makes the compiler happy about the unused event
-            Debug.Assert(CollectionChanged == null);
-        }
+        public CompletionList(IEnumerable<ICompletionEntry> completions) :
+            base(completions.Select(c => new Completion(c.DisplayText, c.InsertionText, c.Description, (ImageSource)c.ImageSource, c.AccessibleText))) { }
 
         public void FireCollectionChanged() => CollectionChanged?.Invoke(this, null);
     }

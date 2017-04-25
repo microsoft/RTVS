@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -17,16 +16,16 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class SmartIndentTest : IAsyncLifetime {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IWritableREditorSettings _settings;
 
         public SmartIndentTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
-            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
+            _services = services;
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
-            _settings = _coreShell.GetService<IWritableREditorSettings>();
+            _settings = _services.GetService<IWritableREditorSettings>();
         }
 
         public Task InitializeAsync() => _sessionProvider.TrySwitchBrokerAsync(nameof(SmartIndentTest));
@@ -36,7 +35,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         [Category.Interactive]
         public async Task R_SmartIndentTest01() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, string.Empty, RContentTypeDefinition.ContentType)) {
                 _settings.FormatOptions.BracesOnNewLine = false;
                 script.MoveRight();
                 script.Type("{{ENTER}a");
@@ -52,7 +51,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         [Category.Interactive]
         public async Task R_SmartIndentTest02() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_services, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
                 _settings.FormatOptions.BracesOnNewLine = false;
                 script.Type("if(TRUE)");
                 script.DoIdle(300);
@@ -71,7 +70,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         [Category.Interactive]
         public async Task R_SmartIndentTest03() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, string.Empty, RContentTypeDefinition.ContentType)) {
                 _settings.FormatOptions.BracesOnNewLine = false;
                 script.MoveRight();
                 script.Type("while(TRUE){{ENTER}if(1){");
@@ -93,7 +92,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         [Category.Interactive]
         public async Task R_SmartIndentTest04() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, string.Empty, RContentTypeDefinition.ContentType)) {
                 _settings.FormatOptions.BracesOnNewLine = false;
                 script.MoveRight();
                 script.Type("{{ENTER}if(1)");

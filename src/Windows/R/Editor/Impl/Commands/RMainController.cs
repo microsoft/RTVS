@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers;
@@ -14,17 +15,18 @@ namespace Microsoft.R.Editor.Commands {
     /// Main R editor command controller
     /// </summary>
     public class RMainController : ViewController {
-        public RMainController(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
-            : base(textView, textBuffer, shell) {
+        public RMainController(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
+            : base(textView, textBuffer, services) {
             textView.AddService(this);
         }
 
         /// <summary>
         /// Attaches command controller to the view and projected buffer
         /// </summary>
-        public static RMainController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) {
+        public static RMainController Attach(ITextView textView, ITextBuffer textBuffer, IServiceContainer services
+            ) {
             var controller = FromTextView(textView);
-            return controller ?? new RMainController(textView, textBuffer, shell);
+            return controller ?? new RMainController(textView, textBuffer, services);
         }
 
         /// <summary>

@@ -3,27 +3,27 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public sealed class IdleTimeSource : IOleComponent, IDisposable {
-        public event EventHandler<EventArgs> Idle;
+    public sealed class VsIdleTimeService : IIdleTimeService, IIdleTimeSource, IOleComponent, IDisposable {
         public event EventHandler<EventArgs> ApplicationClosing;
         public event EventHandler<EventArgs> ApplicationStarted;
+        public event EventHandler<EventArgs> Closing;
 
-        private uint _componentID = 0;
+        private uint _componentID;
         private bool _startupComplete;
 
-        public IdleTimeSource() {
+        public VsIdleTimeService() {
             var crinfo = new OLECRINFO[1];
             crinfo[0].cbSize = (uint)Marshal.SizeOf(typeof(OLECRINFO));
             crinfo[0].grfcrf = (uint)_OLECRF.olecrfNeedIdleTime | (uint)_OLECRF.olecrfNeedPeriodicIdleTime;
             crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal | (uint)_OLECADVF.olecadvfRedrawOff | (uint)_OLECADVF.olecadvfWarningsOff;
             crinfo[0].uIdleTimeInterval = 200;
 
-            var oleComponentManager = RPackage.GetGlobalService(typeof(SOleComponentManager)) as IOleComponentManager;
+            var oleComponentManager = VisualStudio.Shell.Package.GetGlobalService(typeof(SOleComponentManager)) as IOleComponentManager;
             oleComponentManager.FRegisterComponent(this, crinfo, out _componentID);
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public int FContinueMessageLoop(uint uReason, IntPtr pvLoopData, MSG[] pMsgPeeked) => VSConstants.S_OK;
 
         public int FDoIdle(uint grfidlef) {
-            if(!_startupComplete) {
+            if (!_startupComplete) {
                 ApplicationStarted?.Invoke(this, EventArgs.Empty);
                 _startupComplete = true;
             }
@@ -45,6 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public int FQueryTerminate(int fPromptUser) {
             // Although this theoretically can be canceled, it never used in VS
             // since package QueryClose is the proper way of canceling the shutdown.
+            Closing?.Invoke(this, EventArgs.Empty);
             ApplicationClosing?.Invoke(this, EventArgs.Empty);
             return 1;
         }
@@ -59,16 +60,22 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public void Terminate() { }
         #endregion
 
-        #region IDisposable Members
+        #region IDisposable
         public void Dispose() {
             if (_componentID != 0) {
                 var oleComponentManager = ServiceProvider.GlobalProvider.GetService(typeof(SOleComponentManager)) as IOleComponentManager;
-                if (oleComponentManager != null)
-                    oleComponentManager.FRevokeComponent(_componentID);
-
+                oleComponentManager?.FRevokeComponent(_componentID);
                 _componentID = 0;
             }
         }
+        #endregion
+
+        #region IIdleTimeSource
+        public void DoIdle() => Idle?.Invoke(this, EventArgs.Empty);
+        #endregion
+
+        #region IIdleTimeService
+        public event EventHandler<EventArgs> Idle;
         #endregion
     }
 }

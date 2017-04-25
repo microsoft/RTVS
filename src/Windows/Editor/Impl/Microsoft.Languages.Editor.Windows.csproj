@@ -45,6 +45,7 @@
     <Compile Include="BraceMatch\BraceTokenPair.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Completions\CompletionCommittedEventArgs.cs" />
+    <Compile Include="Completions\EditorCompletionSession.cs" />
     <Compile Include="Completions\ViewCompletionBroker.cs" />
     <Compile Include="Completions\CompletionList.cs" />
     <Compile Include="ContainedLanguage\BufferGenerator.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="DragDrop\DropFileType.cs" />
     <Compile Include="DragDrop\ProjectDataObjectReader.cs" />
     <Compile Include="Extensions\DocumentExtensions.cs" />
+    <Compile Include="Extensions\EditorBufferExtensions.cs" />
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="Text\TrackingTextRange.cs" />
     <Compile Include="ViewModel\ProjectionEditorViewModel.cs" />

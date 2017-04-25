@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.SuggestedActions.Actions;
 using Microsoft.UnitTests.Core.XUnit;
@@ -18,25 +17,25 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class SmartTagsTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
 
         public SmartTagsTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_LibrarySuggestedActions() {
-            using (var script = await _editorHost.StartScript(_coreShell, " library(base)", RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, " library(base)", RContentTypeDefinition.ContentType)) {
                 IEnumerable<SuggestedActionSet> sets = null;
                 ILightBulbSession session = null;
 
-                var svc = _coreShell.GetService<ISuggestedActionCategoryRegistryService>();
+                var svc = _services.GetService<ISuggestedActionCategoryRegistryService>();
 
                 script.Invoke(() => {
-                    var broker = _coreShell.GetService<ILightBulbBroker>();
+                    var broker = _services.GetService<ILightBulbBroker>();
                     broker.CreateSession(svc.AllCodeFixes, script.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();
@@ -54,7 +53,7 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
 
                 sets = null;
                 script.Invoke(() => {
-                    var broker = _coreShell.GetService<ILightBulbBroker>();
+                    var broker = _services.GetService<ILightBulbBroker>();
                     broker.DismissSession(script.View);
                     broker.CreateSession(svc.Any, script.View);
                     session = script.GetLightBulbSession();

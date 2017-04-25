@@ -14,6 +14,6 @@ namespace Microsoft.Languages.Editor.Completions {
         IEditorView View { get; }
         bool IsDismissed { get; }
 
-        event EventHandler<EventArgs> Dismissed;
+        event EventHandler Dismissed;
     }
 }

@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Commands {
         private ITextBuffer _textBuffer;
 
         protected override void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            RMainController.Attach(textView, textBuffer, Shell);
+            RMainController.Attach(textView, textBuffer, Shell.Services);
             if (textBuffer != textView.TextBuffer) {
                 // Projected scenario
                 _containedLanguageHost = ContainedLanguageHost.GetHost(textView, textBuffer, Shell);

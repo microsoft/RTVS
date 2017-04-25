@@ -5,26 +5,25 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Signatures {
     [ExcludeFromCodeCoverage]
+    [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class SignatureTest : IAsyncLifetime {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IRSessionProvider _sessionProvider;
 
         public SignatureTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
-            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
+            _services = services;
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
@@ -35,15 +34,15 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Test]
         [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
                 await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
 
                 script.Type("x <- lm(");
                 script.DoIdle(2000);
 
-                ISignatureHelpSession session = script.GetSignatureSession();
+                var session = script.GetSignatureSession();
                 session.Should().NotBeNull();
-                IParameter parameter = session.SelectedSignature.CurrentParameter;
+                var parameter = session.SelectedSignature.CurrentParameter;
                 parameter.Should().NotBeNull();
 
                 parameter.Name.Should().Be("formula");
@@ -56,18 +55,14 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 parameter = session.SelectedSignature.CurrentParameter;
                 parameter.Name.Should().Be("subset");
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("x <- lm(subset = )");
-
-                session = script.GetSignatureSession();
-                parameter = session.SelectedSignature.CurrentParameter;
             }
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_SignatureSessionNavigation() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
                 await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
 
                 script.Type("x <- lm(subset = a, sing");
@@ -75,11 +70,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.Type("{TAB}");
                 script.DoIdle(1000);
 
-                ISignatureHelpSession session = script.GetSignatureSession();
+                var session = script.GetSignatureSession();
                 session.Should().NotBeNull();
 
                 script.DoIdle(200);
-                IParameter parameter = session.SelectedSignature.CurrentParameter;
+                var parameter = session.SelectedSignature.CurrentParameter;
                 parameter.Should().NotBeNull();
                 parameter.Name.Should().Be("singular.ok");
 
@@ -96,9 +91,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_EqualsCompletion01() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, "file", RContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
                 await _editorHost.FunctionIndex.GetFunctionInfoAsync("addmargins");
 
                 script.DoIdle(100);
@@ -107,8 +101,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 script.Type("=");
                 script.DoIdle(300);
 
-                string expected = "addmargins(FUN = )";
-                string actual = script.EditorText;
+                var expected = "addmargins(FUN = )";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }

@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Formatting;
@@ -14,8 +15,6 @@ using Microsoft.R.Editor.Formatting.Data;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Formatting {
@@ -34,8 +33,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("\r\nif(x<1){x<-2}", "\r\nif (x < 1) { x <- 2 }")]
         [InlineData("\r\nif(x<1){x<-2\n}", "\r\nif (x < 1) {\r\n    x <- 2\r\n}")]
         public void FormatDocument(string original, string expected) {
-            ITextBuffer textBuffer = new TextBufferMock(original, RContentTypeDefinition.ContentType);
-            ITextView textView = new TextViewMock(textBuffer);
+            var textBuffer = new TextBufferMock(original, RContentTypeDefinition.ContentType);
+            var textView = new TextViewMock(textBuffer);
 
             using (var command = new FormatDocumentCommand(textView, textBuffer, _shell)) {
                 var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT);
@@ -45,14 +44,14 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 command.Invoke(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT, null, ref o);
             }
 
-            string actual = textBuffer.CurrentSnapshot.GetText();
+            var actual = textBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatOnPasteStatus() {
-            ITextBuffer textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            ITextView textView = new TextViewMock(textBuffer);
+            var textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
+            var textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
             using (var command = new FormatOnPasteCommand(textView, textBuffer, _shell)) {
@@ -73,13 +72,14 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("if(x<1){x<-2}", "if (x < 1) { x <- 2 }")]
         [InlineData("\"a\r\nb\r\nc\"", "\"a\r\nb\r\nc\"")]
         public void FormatOnPaste(string content, string expected) {
-            string actual = FormatFromClipboard(content);
+            var actual = FormatFromClipboard(content);
             actual.Should().Be(expected);
         }
 
         private string FormatFromClipboard(string content) {
-            ITextBuffer textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            ITextView textView = new TextViewMock(textBuffer);
+            var textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
+            var editorBuffer = textBuffer.ToEditorBuffer();
+            var textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
             using (var command = new FormatOnPasteCommand(textView, textBuffer, _shell)) {
@@ -89,8 +89,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 clipboard.Data = content;
 
                 var ast = RParser.Parse(textBuffer.CurrentSnapshot.GetText());
-                using (var document = new EditorDocumentMock(new EditorTreeMock(textBuffer, ast))) {
-                    object o = new object();
+                using (var document = new EditorDocumentMock(new EditorTreeMock(editorBuffer, ast))) {
+                    var o = new object();
                     command.Invoke(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, null, ref o);
                 }
             }
@@ -98,17 +98,12 @@ namespace Microsoft.R.Editor.Test.Formatting {
             return textBuffer.CurrentSnapshot.GetText();
         }
 
-        class ClipboardDataProvider : IClipboardDataProvider {
+        private class ClipboardDataProvider : IClipboardDataProvider {
             public string Format { get; set; }
             public object Data { get; set; }
 
-            public bool ContainsData(string format) {
-                return format == Format;
-            }
-
-            public object GetData(string format) {
-                return format == Format ? Data : null;
-            }
+            public bool ContainsData(string format) => format == Format;
+            public object GetData(string format) => format == Format ? Data : null;
         }
     }
 }

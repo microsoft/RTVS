@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Editor.Test.Services {
@@ -27,7 +26,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
         [Test]
         public void OperationsTest() {
             var results = new List<Result>();
-            var queue = new IdleTimeAsyncTaskQueue(_shell);
+            var queue = new IdleTimeAsyncTaskQueue(_shell.Services);
 
             var ta = new TaskAction(1, results);
             queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
@@ -75,27 +74,20 @@ namespace Microsoft.Languages.Editor.Test.Services {
             }
         }
 
-        class TaskAction {
-            public int Id { get; }
-
-            private List<Result> _results;
+        private class TaskAction {
+            private readonly int _id;
+            private readonly List<Result> _results;
 
             public TaskAction(int id, List<Result> results) {
-                Id = id;
+                _id = id;
                 _results = results;
             }
-            public object Action() {
-                return new Result(Id);
-            }
-
-            public void CallBackAction(object result) {
-                _results.Add(result as Result);
-            }
+            public object Action() => new Result(_id);
+            public void CallBackAction(object result) => _results.Add(result as Result);
         }
 
-        class Result {
+        private class Result {
             public int Id { get; }
-
             public Result(int id) {
                 Id = id;
             }

@@ -50,7 +50,8 @@ namespace Microsoft.Markdown.Editor.Commands {
         }
 
         private bool IsInRCode() {
-            var caret = REditorDocument.MapCaretPositionFromView(TextView);
+            var document = TextView.TextBuffer.GetEditorDocument<IMdEditorDocument>();
+            var caret = TextView.GetCaretPosition(document.EditorBuffer);
             return caret.HasValue;
         }
     }

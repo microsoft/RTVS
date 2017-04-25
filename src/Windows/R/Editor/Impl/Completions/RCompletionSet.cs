@@ -12,20 +12,16 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions {
     internal sealed class RCompletionSet : CompletionSet {
-        private ITextBuffer _textBuffer;
-        private CompletionList _completions;
-        private FilteredObservableCollection<Completion> _filteredCompletions;
+        private readonly CompletionList _completions;
+        private readonly FilteredObservableCollection<Completion> _filteredCompletions;
 
-        public RCompletionSet(ITextBuffer textBuffer, ITrackingSpan trackingSpan, List<ICompletionEntry> completions) :
+        public RCompletionSet(ITrackingSpan trackingSpan, List<ICompletionEntry> completions) :
             base("R Completion", "R Completion", trackingSpan, Enumerable.Empty<RCompletion>(), Enumerable.Empty<RCompletion>()) {
-            _textBuffer = textBuffer;
             _completions = OrderList(completions);
             _filteredCompletions = new FilteredObservableCollection<Completion>(_completions);
         }
 
-        public override IList<Completion> Completions {
-            get { return _filteredCompletions; }
-        }
+        public override IList<Completion> Completions => _filteredCompletions;
 
         /// <summary>
         /// Performs filtering based on the potential commit character
@@ -44,16 +40,16 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         private void UpdateVisibility(char commitChar = '\0') {
-            Dictionary<int, List<Completion>> matches = new Dictionary<int, List<Completion>>();
-            int maxKey = 0;
+            var matches = new Dictionary<int, List<Completion>>();
+            var maxKey = 0;
 
-            string typedText = GetTypedText();
+            var typedText = GetTypedText();
             if (typedText.Length == 0) {
                 return;
             }
 
-            foreach (RCompletion c in _completions) {
-                int key = Match(typedText, c.DisplayText, commitChar);
+            foreach (var c in _completions) {
+                var key = Match(typedText, c.DisplayText, commitChar);
                 if (key > 0) {
                     List<Completion> list;
                     if (!matches.TryGetValue(key, out list)) {
@@ -90,25 +86,23 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         private string GetTypedText() {
-            ITextSnapshot snapshot = ApplicableTo.TextBuffer.CurrentSnapshot;
+            var snapshot = ApplicableTo.TextBuffer.CurrentSnapshot;
             return ApplicableTo.GetText(snapshot);
         }
 
-        private static CompletionList OrderList(IReadOnlyCollection<Completion> completions) {
+        private static CompletionList OrderList(IReadOnlyCollection<ICompletionEntry> completions) {
             // Place 'name =' at the top prioritizing argument names
             // Place items starting with non-alpha characters like .Call and &&
             // at the end of the list.
-            var argumentNames = completions.Where(x => RTokenizer.IsIdentifierCharacter(x.DisplayText[0]) && x.DisplayText.EndsWith("=", StringComparison.Ordinal));
-
-            var rtvsNames = completions.Where(x => x.DisplayText.IndexOfIgnoreCase(".rtvs") >= 0);
-            var specialNames = completions.Where(x => !char.IsLetter(x.DisplayText[0]));
-            specialNames = specialNames.Except(rtvsNames);
+            var argumentNames = completions.Where(x => RTokenizer.IsIdentifierCharacter(x.DisplayText[0]) && x.DisplayText.EndsWith("=", StringComparison.Ordinal)).ToArray();
+            var rtvsNames = completions.Where(x => x.DisplayText.IndexOfIgnoreCase(".rtvs") >= 0).ToArray();
+            var specialNames = completions.Where(x => !char.IsLetter(x.DisplayText[0])).Except(rtvsNames).ToArray();
 
             var generalEntries = completions.Except(argumentNames);
             generalEntries = generalEntries.Except(rtvsNames);
             generalEntries = generalEntries.Except(specialNames);
 
-            List<Completion> orderedCompletions = new List<Completion>();
+            var orderedCompletions = new List<ICompletionEntry>();
             orderedCompletions.AddRange(argumentNames);
             orderedCompletions.AddRange(generalEntries);
             orderedCompletions.AddRange(specialNames);

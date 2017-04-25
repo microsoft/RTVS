@@ -5,38 +5,30 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
     public sealed class TextBufferInitializationTracker : IVsTextBufferDataEvents {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly List<TextBufferInitializationTracker> _trackers;
-        private readonly VSConstants.VSITEMID _itemid;
-        private readonly string _documentName;
 
         private Guid _languageServiceGuid;
         private IVsTextLines _textLines;
-        private uint cookie = 0;
-        private IConnectionPoint cp = null;
-        private IVsHierarchy _hierarchy;
+        private uint cookie;
+        private IConnectionPoint cp;
 
         #region Constructors
-        public TextBufferInitializationTracker(
-            ICoreShell coreShell, string documentName, IVsHierarchy hierarchy, VSConstants.VSITEMID itemid,
-            IVsTextLines textLines, Guid languageServiceId, List<TextBufferInitializationTracker> trackers) {
-
-            _coreShell = coreShell;
-            _documentName = documentName;
-            _hierarchy = hierarchy;
-            _itemid = itemid;
+        public TextBufferInitializationTracker(IServiceContainer services, IVsTextLines textLines, Guid languageServiceId, List<TextBufferInitializationTracker> trackers) {
+            _services = services;
             _textLines = textLines;
             _languageServiceGuid = languageServiceId;
             _trackers = trackers;
@@ -64,18 +56,14 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(diskBuffer != null);
 
             try {
-                var editorInstance = diskBuffer.GetService<IEditorInstance>();
+                var editorInstance = diskBuffer.GetService<IEditorViewModel>();
                 if (editorInstance == null) {
-                    var cs = _coreShell.GetService<ICompositionService>();
-                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
+                    var cs = _services.GetService<ICompositionService>();
+                    var importComposer = new ContentTypeImportComposer<IEditorViewModelFactory>(cs);
                     var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
-                    Debug.Assert(instancefactory != null);
 
-                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(cs);
-                    var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
-                    Debug.Assert(documentFactory != null);
-
-                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer.ToEditorBuffer(), documentFactory);
+                    Debug.Assert(instancefactory != null, "No editor factory found for the provided text buffer");
+                    editorInstance = instancefactory.CreateEditorViewModel(diskBuffer.ToEditorBuffer());
                 }
 
                 Debug.Assert(editorInstance != null);
@@ -83,12 +71,9 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             } finally {
                 cp.Unadvise(cookie);
                 cookie = 0;
-
                 _textLines = null;
-                _hierarchy = null;
                 _trackers.Remove(this);
             }
-
             return VSConstants.S_OK;
         }
         #endregion

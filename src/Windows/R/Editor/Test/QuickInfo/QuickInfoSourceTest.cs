@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Script;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -28,7 +29,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             public AstRoot Ast;
             public ITrackingSpan ApplicableSpan;
             public List<object> QuickInfoContent;
-            public ITextBuffer TextBuffer;
+            public IEditorBuffer EditorBuffer;
         }
 
         public FunctionIndexTest(IServiceContainer services) : base(services) { }
@@ -38,12 +39,12 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         [InlineData(false)]
         public async Task CacheTest(bool cached) {
             if (!cached) {
-                Support.Help.Packages.PackageIndex.ClearCache();
+                PackageIndex.ClearCache();
             }
 
             string content = @"x <- as.matrix(x)";
             var session = await TriggerSessionAsync(content, 15);
-            var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+            var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
@@ -57,7 +58,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             string content = @"x <- as.Date.character(x)";
 
             var session = await TriggerSessionAsync(content, 23);
-            var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+            var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
@@ -73,7 +74,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 12);
-                var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+                var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().BeEmpty();
@@ -102,7 +103,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 3);
-                var parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(session.Ast, session.TextBuffer.CurrentSnapshot, 10);
+                var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().BeEmpty();
@@ -122,15 +123,16 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         }
 
         private async Task<Session> TriggerSessionAsync(string content, int caretPosition) {
-            var s = new Session();
+            var s = new Session {
+                Ast = RParser.Parse(content),
+                EditorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer()
+            };
 
-            s.Ast = RParser.Parse(content);
-            s.TextBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, Shell);
-            QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(s.TextBuffer, caretPosition);
+            var quickInfoSource = new QuickInfoSource(s.EditorBuffer.As<ITextBuffer>(), Services);
+            var quickInfoSession = new QuickInfoSessionMock(s.EditorBuffer.As<ITextBuffer>(), caretPosition);
             s.QuickInfoContent = new List<object>();
 
-            quickInfoSession.TriggerPoint = new SnapshotPoint(s.TextBuffer.CurrentSnapshot, caretPosition);
+            quickInfoSession.TriggerPoint = new SnapshotPoint(s.EditorBuffer.TextSnapshot(), caretPosition);
             s.ApplicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(s.Ast, caretPosition, quickInfoSession, s.QuickInfoContent);
 
             return s;

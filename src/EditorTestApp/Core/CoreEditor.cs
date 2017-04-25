@@ -10,15 +10,16 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 
@@ -35,30 +36,30 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private readonly IEditorOperationsFactoryService _editorOperationsFactoryService;
         private readonly IEditorOptionsFactoryService _editorOptionsFactoryService;
 
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly string _filePath;
 
         private IWpfTextViewHost _wpftextViewHost;
         private IContentType _contentType;
         private ITextBufferUndoManager _undoManager;
         private IEditorOperations _editorOperations;
-        private IEditorInstance _editorIntance;
+        private IEditorViewModel _editorViewModel;
 
-        public CoreEditor(ICoreShell coreShell, string text, string filePath, string contentTypeName) {
-            _textEditorFactoryService = coreShell.GetService<ITextEditorFactoryService>();
-            _textDocumentFactoryService = coreShell.GetService<ITextDocumentFactoryService>();
-            _textBufferFactoryService = coreShell.GetService<ITextBufferFactoryService>();
-            _classificationFormatMapService = coreShell.GetService<IClassificationFormatMapService>();
-            _textBufferUndoManagerProvider = coreShell.GetService<ITextBufferUndoManagerProvider>();
-            _editorOperationsFactoryService = coreShell.GetService<IEditorOperationsFactoryService>();
-            _editorOptionsFactoryService = coreShell.GetService<IEditorOptionsFactoryService>();
+        public CoreEditor(IServiceContainer services, string text, string filePath, string contentTypeName) {
+            _textEditorFactoryService = services.GetService<ITextEditorFactoryService>();
+            _textDocumentFactoryService = services.GetService<ITextDocumentFactoryService>();
+            _textBufferFactoryService = services.GetService<ITextBufferFactoryService>();
+            _classificationFormatMapService = services.GetService<IClassificationFormatMapService>();
+            _textBufferUndoManagerProvider = services.GetService<ITextBufferUndoManagerProvider>();
+            _editorOperationsFactoryService = services.GetService<IEditorOperationsFactoryService>();
+            _editorOptionsFactoryService = services.GetService<IEditorOptionsFactoryService>();
 
-            _coreShell = coreShell;
+            _services = services;
             _filePath = filePath;
 
             if (string.IsNullOrEmpty(_filePath) || Path.GetExtension(_filePath).Length == 0) {
                 Check.ArgumentNull(nameof(contentTypeName), contentTypeName);
-                var contentTypeRegistryService = coreShell.GetService<IContentTypeRegistryService>();
+                var contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
                 _contentType = contentTypeRegistryService.GetContentType(contentTypeName);
             }
 
@@ -66,15 +67,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         }
 
         #region Properties
-
-        public IWpfTextView View {
-            get {
-                if (_wpftextViewHost != null)
-                    return _wpftextViewHost.TextView;
-
-                return null;
-            }
-        }
+        public IWpfTextView View  => _wpftextViewHost?.TextView;
 
         public ITextBufferUndoManager UndoManager {
             get {
@@ -105,10 +98,9 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IContentType ContentType {
             get {
                 if (_contentType == null) {
-                    var ctl = new ContentTypeLocator(_coreShell.GetService<ICompositionService>());
+                    var ctl = new ContentTypeLocator(_services.GetService<ICompositionService>());
                     _contentType = ctl.FindContentType(_filePath);
                 }
-
                 return _contentType;
             }
         }
@@ -116,16 +108,15 @@ namespace Microsoft.Languages.Editor.Application.Core {
         #endregion
 
         private void CreateTextViewHost(string text, string filePath) {
+            ITextDataModel textDataModel;
             text = text ?? string.Empty;
 
             var diskBuffer = _textBufferFactoryService.CreateTextBuffer(text, ContentType);
-            var cs = _coreShell.GetService<ICompositionService>();
-            _editorIntance = EditorInstanceFactory.CreateEditorInstance(diskBuffer, cs);
+            var cs = _services.GetService<ICompositionService>();
+            _editorViewModel = EditorViewModelFactory.CreateEditorViewModel(diskBuffer, cs);
 
-            ITextDataModel textDataModel;
-
-            if (_editorIntance != null) {
-                textDataModel = new TextDataModel(diskBuffer, _editorIntance.ViewBuffer);
+            if (_editorViewModel != null) {
+                textDataModel = new TextDataModel(diskBuffer, _editorViewModel.ViewBuffer.As<ITextBuffer>());
             } else {
                 textDataModel = new TextDataModel(diskBuffer, diskBuffer);
             }
@@ -145,15 +136,16 @@ namespace Microsoft.Languages.Editor.Application.Core {
             var baseController = new BaseController();
             BaseController = baseController;
 
-            if (_editorIntance != null) {
-                CommandTarget = _editorIntance.GetCommandTarget(textView);
-                var controller = CommandTarget as Microsoft.Languages.Editor.Controllers.Controller;
+            if (_editorViewModel != null) {
+                CommandTarget = _editorViewModel.GetCommandTarget(textView.ToEditorView());
+                var controller = CommandTarget as Common.Core.UI.Commands.Controller;
+                Debug.Assert(controller != null);
                 controller.ChainedController = baseController;
             } else {
                 CommandTarget = baseController;
             }
 
-            baseController.Initialize(textView, EditorOperations, UndoManager, _coreShell);
+            baseController.Initialize(textView, EditorOperations, UndoManager, _services);
         }
 
         public void Close() {
@@ -162,9 +154,9 @@ namespace Microsoft.Languages.Editor.Application.Core {
                 _wpftextViewHost = null;
             }
 
-            if (_editorIntance != null) {
-                _editorIntance.Dispose();
-                _editorIntance = null;
+            if (_editorViewModel != null) {
+                _editorViewModel.Dispose();
+                _editorViewModel = null;
             }
         }
 
@@ -213,17 +205,14 @@ namespace Microsoft.Languages.Editor.Application.Core {
         public ITextDocument TextDocument { get; private set; }
 
         public string Text {
-            get { return TextBuffer.CurrentSnapshot.GetText(); }
-            set {
-                string text = value ?? string.Empty;
-                TextBuffer.Replace(new Span(0, TextBuffer.CurrentSnapshot.Length), text);
-            }
+            get => TextBuffer.CurrentSnapshot.GetText();
+            set => TextBuffer.Replace(new Span(0, TextBuffer.CurrentSnapshot.Length), value ?? string.Empty);
         }
 
         public int CurrentColumn {
             get {
-                ITextViewLine caretViewLine = View.Caret.ContainingTextViewLine;
-                double columnWidth = View.FormattedLineSource.ColumnWidth;
+                var caretViewLine = View.Caret.ContainingTextViewLine;
+                var columnWidth = View.FormattedLineSource.ColumnWidth;
                 return (int)Math.Round((View.Caret.Left - caretViewLine.Left) / columnWidth);
             }
         }
@@ -237,14 +226,12 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
         public void GoTo(int line, int offsetFromStart, int length) {
             var snapshot = View.TextSnapshot;
-
             if (line >= snapshot.LineCount || line < 0) {
                 Debug.Fail("Line number must be between 0 and linecount");
                 return;
             }
 
             var snapshotLine = View.TextSnapshot.GetLineFromLineNumber(line);
-
             if (offsetFromStart > 0 && (offsetFromStart > snapshotLine.LengthIncludingLineBreak || offsetFromStart < 0)) {
                 Debug.Fail("Offset must be between 0 and chars in line");
                 return;
@@ -255,12 +242,10 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
             View.Caret.MoveTo(bufferPosition);
             Debug.Assert(length >= 0, "Length must be 0 or more");
-
             if (length > 0) {
                 var selectionSpan = new SnapshotSpan(bufferPosition, length);
                 View.Selection.Select(selectionSpan, false);
             }
-
             Focus();
         }
     }

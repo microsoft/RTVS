@@ -13,13 +13,13 @@ namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion function entry in the R intellisense completion set
     /// </summary>
-    [DebuggerDisplay("{DisplayText}")]
-    public class RFunctionCompletion : RCompletion {
+    [DebuggerDisplay("{" + nameof(DisplayText) + "}")]
+    public class RFunctionCompletion : Completion {
         private readonly IFunctionIndex _functionIndex;
         private readonly ICompletionSession _session;
 
         public RFunctionCompletion(string displayText, string insertionText, string description, ImageSource iconSource, IFunctionIndex functionIndex, ICompletionSession session) :
-            base(displayText, insertionText, description, iconSource) {
+            base(displayText, insertionText, description, iconSource, displayText) {
             _functionIndex = functionIndex;
             _session = session;
         }
@@ -31,19 +31,17 @@ namespace Microsoft.R.Editor.Completions {
                 }
                 return base.Description;
             }
-            set { base.Description = value; }
+            set => base.Description = value;
         }
 
-        private void TryFetchDescription() {
-            Task.Run(async () => {
-                SetDescription(await _functionIndex.GetFunctionInfoAsync(this.DisplayText));
-            }).Wait(500);
-        }
+        private void TryFetchDescription() => Task.Run(async () => {
+            SetDescription(await _functionIndex.GetFunctionInfoAsync(this.DisplayText));
+        }).Wait(500);
 
         private void SetDescription(IFunctionInfo fi) {
             if (fi != null) {
-                string sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
-                this.Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
+                var sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
+                Description = sig != null ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
             }
         }
     }

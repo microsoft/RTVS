@@ -3,9 +3,10 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Functions {
@@ -66,13 +67,10 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         private string GetRtvsFunctionRdData(string functionName) {
-            var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-            var asmFolder = Path.GetDirectoryName(asmPath);
-            var dataFilePath = Path.Combine(asmFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
-            if(File.Exists(dataFilePath)) {
-                return File.ReadAllText(dataFilePath);
-            }
-            return string.Empty;
+            var fs = _host.Services.GetService<IFileSystem>();
+            var afs = _host.Services.GetService<IApplicationFolderService>();
+            var dataFilePath = Path.Combine(afs.ApplicationFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
+            return fs.FileExists(dataFilePath) ? fs.ReadAllText(dataFilePath) : string.Empty;
         }
     }
 }

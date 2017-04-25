@@ -12,6 +12,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         public async Task R_KeywordIntellisense() {
-            using (var script = await _editorHost.StartScript(Shell, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(Services, RContentTypeDefinition.ContentType)) {
                 script.Type("funct");
                 script.DoIdle(100);
                 script.Type("{TAB}");
@@ -151,7 +152,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(Shell, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
                 string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                var settings = Workflow.Shell.GetService<IRToolsSettings>();
+                var settings = Workflow.Shell.GetService<IRSettings>();
                 settings.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
                 script.DoIdle(100);

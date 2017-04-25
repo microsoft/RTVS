@@ -103,7 +103,7 @@ namespace Microsoft.R.Editor.Formatting {
 
         public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, ICoreShell shell) {
             var es = shell.GetService<IEditorSupport>();
-            using (var undoAction = es.CreateCompoundAction(textView, textView.TextBuffer)) {
+            using (var undoAction = es.CreateUndoAction(textView.ToEditorView(), textView.TextBuffer.ToEditorBuffer())) {
                 undoAction.Open(Resources.AutoFormat);
                 var result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, shell.GetService<IREditorSettings>().FormatOptions, shell);
                 if (result) {
@@ -131,7 +131,7 @@ namespace Microsoft.R.Editor.Formatting {
             var rCaretPosition = caretBufferPoint.Position;
 
             var caretLine = rSnapshot.GetLineFromPosition(rCaretPosition);
-            var innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer, scope, options);
+            var innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer.ToEditorBuffer(), scope, options);
 
             var openBraceLineNumber = rSnapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
             var braceLine = rSnapshot.GetLineFromLineNumber(openBraceLineNumber);

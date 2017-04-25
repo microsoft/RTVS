@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
@@ -65,24 +66,18 @@ namespace Microsoft.R.Editor.Completions {
         /// <param name="completionSets">Completion sets to add to</param>
         /// <param name="ast">Document abstract syntax tree</param>
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
-            var context = new RCompletionContext(session, _textBuffer, ast, position);
-
-            bool autoShownCompletion = true;
-            if (session.TextView.Properties.ContainsProperty(CompletionController.AutoShownCompletion)) {
-                autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
-            }
-
-            IReadOnlyCollection<IRCompletionListProvider> providers = _completionEngine.GetCompletionForLocation(context);
+            var context = new RCompletionContext(new EditorCompletionSession(session), _textBuffer.ToEditorBuffer(), ast, position);
+            var providers = _completionEngine.GetCompletionForLocation(context);
 
             // Position is in R as is the applicable spa, so no need to map down
-            Span? applicableSpan = GetApplicableSpan(position, session);
+            var applicableSpan = GetApplicableSpan(position, session);
             if (applicableSpan.HasValue) {
                 var snapshot = context.EditorBuffer.CurrentSnapshot.As<ITextSnapshot>();
                 var trackingSpan = snapshot.CreateTrackingSpan(applicableSpan.Value, SpanTrackingMode.EdgeInclusive);
                 var completions = new List<ICompletionEntry>();
                 bool sort = true;
 
-                foreach (IRCompletionListProvider provider in providers) {
+                foreach (var provider in providers) {
                     var entries = provider.GetEntries(context);
                     Debug.Assert(entries != null);
 
@@ -93,12 +88,11 @@ namespace Microsoft.R.Editor.Completions {
                 }
 
                 if (sort) {
-                    completions.Sort(RCompletion.CompareOrdinal);
-                    completions.RemoveDuplicates(RCompletion.CompareOrdinal);
+                    completions.Sort(new CompletionEntryComparer(StringComparison.OrdinalIgnoreCase));
+                    completions.RemoveDuplicates(new CompletionEntryComparer(StringComparison.Ordinal));
                 }
 
-                CompletionSet completionSet = new RCompletionSet(session.TextView.TextBuffer, trackingSpan, completions);
-                completionSets.Add(completionSet);
+                completionSets.Add(new RCompletionSet(trackingSpan, completions));
             }
         }
 
@@ -150,10 +144,6 @@ namespace Microsoft.R.Editor.Completions {
             return new Span(position, 0);
         }
 
-        #region Dispose
-        public void Dispose() {
-            _textBuffer = null;
-        }
-        #endregion
+        public void Dispose() { }
     }
 }

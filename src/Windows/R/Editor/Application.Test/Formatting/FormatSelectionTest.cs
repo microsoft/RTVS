@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
@@ -15,11 +14,11 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class FormatSelectionTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
 
         public FormatSelectionTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
         }
 
@@ -28,7 +27,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         public async Task R_FormatSelection01() {
             var content = "\nwhile (TRUE) {\n        if(x>1) {\n   }\n}";
             var expected = "\nwhile (TRUE) {\n    if (x > 1) {\n    }\n}";
-            using (var script = await _editorHost.StartScript(_coreShell, content, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, content, RContentTypeDefinition.ContentType)) {
                 script.Select(20, 18);
                 script.Execute(VSConstants.VSStd2KCmdID.FORMATSELECTION, 50);
                 var actual = script.EditorText;

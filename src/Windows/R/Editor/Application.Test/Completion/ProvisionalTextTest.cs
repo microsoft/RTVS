@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -14,20 +13,20 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public sealed class RProvisionalTextTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IWritableREditorSettings _settings;
 
         public RProvisionalTextTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
-            _settings = _coreShell.GetService<IWritableREditorSettings>();
+            _settings = _services.GetService<IWritableREditorSettings>();
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalText01() {
-            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
                 script.Type("{");
                 script.Type("(");
                 script.Type("[");
@@ -56,7 +55,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalText02() {
-            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
                 script.Type("c(\"");
 
                 string expected = "c(\"\")";
@@ -85,7 +84,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalCurlyBrace01() {
-            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
                 _settings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(1)");

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
@@ -30,12 +31,14 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
 
         // Keep track of how many views are using each text buffer
         protected Dictionary<ITextBuffer, TextViewData> TextBufferToViewData { get; private set; }
+
         private Action _pendingCheckForViewlessTextBuffers;
+        private Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType;
+        private IIdleTimeService _idleTime;
 
         // The editor should only import one of these objects, so cache it
         private static IList<TextViewConnectionListener> _allInstances;
 
-        private Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType;
 
         protected TextViewConnectionListener() {
             if (_allInstances == null) {
@@ -43,6 +46,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
             }
             // This class is never disposed, so it always stays in the global list
             _allInstances.Add(this);
+            _idleTime = Shell.GetService<IIdleTimeService>();
         }
 
         private void EnsureInitialized() {
@@ -69,10 +73,9 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         public virtual void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
             EnsureInitialized();
 
-            foreach (ITextBuffer textBuffer in subjectBuffers) {
-                TextViewData viewData = null;
-                bool newBuffer = !TextBufferToViewData.ContainsKey(textBuffer);
-
+            foreach (var textBuffer in subjectBuffers) {
+                TextViewData viewData;
+                var newBuffer = !TextBufferToViewData.ContainsKey(textBuffer);
                 if (newBuffer) {
                     viewData = new TextViewData();
                     TextBufferToViewData[textBuffer] = viewData;
@@ -81,7 +84,6 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
                 }
 
                 viewData.AddView(textView);
-
                 if (newBuffer) {
                      OnTextBufferCreated(textView, textBuffer);
                 }
@@ -92,7 +94,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
 
         public virtual void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
             if (TextBufferToViewData != null) {
-                foreach (ITextBuffer textBuffer in subjectBuffers) {
+                foreach (var textBuffer in subjectBuffers) {
                     OnTextViewDisconnected(textView, textBuffer);
 
                     if (TextBufferToViewData.ContainsKey(textBuffer)) {
@@ -104,7 +106,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
                                 // The buffer could be temporarily removed from the view, so don't
                                 // immediately check if it's unused - do that after posting a message.
                                 _pendingCheckForViewlessTextBuffers = CheckForViewlessTextBuffers;
-                                Shell.Idle += OnIdle;
+                                _idleTime.Idle += OnIdle;
                             } else {
                                 CheckForViewlessTextBuffers();
                             }
@@ -120,7 +122,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
 
         private void OnIdle(object sender, EventArgs e) {
             FlushPendingAction();
-            Shell.Idle -= OnIdle;
+            _idleTime.Idle -= OnIdle;
         }
         #endregion
 
@@ -131,17 +133,9 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
             _pendingCheckForViewlessTextBuffers = null;
 
             if (TextBufferToViewData != null) {
-                IList<ITextBuffer> unusedBuffers = new List<ITextBuffer>();
-
-                foreach (KeyValuePair<ITextBuffer, TextViewData> pair in TextBufferToViewData) {
-                    if (pair.Value.AllViews.Count == 0) {
-                        unusedBuffers.Add(pair.Key);
-                    }
-                }
-
-                foreach (ITextBuffer textBuffer in unusedBuffers) {
+                var unusedBuffers = (from pair in TextBufferToViewData where pair.Value.AllViews.Count == 0 select pair.Key).ToList();
+                foreach (var textBuffer in unusedBuffers) {
                     TextBufferToViewData.Remove(textBuffer);
-
                     OnTextBufferDisposing(textBuffer);
                 }
             }
@@ -151,10 +145,9 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
             // CheckForDisposedTextBuffer won't be called when the app terminates, so
             // dispose of each text buffer now.
             if (TextBufferToViewData != null) {
-                foreach (ITextBuffer textBuffer in TextBufferToViewData.Keys) {
+                foreach (var textBuffer in TextBufferToViewData.Keys) {
                     OnTextBufferDisposing(textBuffer);
                 }
-
                 TextBufferToViewData.Clear();
             }
         }
@@ -163,24 +156,18 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// Called when text view is connected to the subject buffer
         /// </summary>
         protected virtual void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            EventHandler gotFocus = null;
-
-            gotFocus = (object sender, EventArgs eventArgs) => {
+            void GotFocus(object sender, EventArgs eventArgs) {
                 this.OnTextViewGotAggregateFocus(textView, textBuffer);
-                textView.GotAggregateFocus -= gotFocus;
-            };
+                textView.GotAggregateFocus -= GotFocus;
+            }
 
-            textView.GotAggregateFocus += gotFocus;
+            textView.GotAggregateFocus += GotFocus;
+            var contentType = textBuffer.ContentType;
 
-            IContentType contentType = textBuffer.ContentType;
-
-            foreach (Lazy<ITextViewListener, IOrderedComponentContentTypes> listener in TextViewListeners) {
+            foreach (var listener in TextViewListeners) {
                 if (listener.Metadata.ContentTypes != null) {
-                    foreach (string curContentType in listener.Metadata.ContentTypes) {
-                        if (contentType.IsOfType(curContentType)) {
-                            listener.Value.OnTextViewConnected(textView, textBuffer);
-                            break;
-                        }
+                    if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
+                        listener.Value.OnTextViewConnected(textView, textBuffer);
                     }
                 }
             }
@@ -216,15 +203,11 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// Called when text view is disconnected from the subject buffer
         /// </summary>
         protected virtual void OnTextViewDisconnected(ITextView textView, ITextBuffer textBuffer) {
-            IContentType contentType = textBuffer.ContentType;
-
-            foreach (Lazy<ITextViewListener, IOrderedComponentContentTypes> listener in TextViewListeners) {
+            var contentType = textBuffer.ContentType;
+            foreach (var listener in TextViewListeners) {
                 if (listener.Metadata.ContentTypes != null) {
-                    foreach (string curContentType in listener.Metadata.ContentTypes) {
-                        if (contentType.IsOfType(curContentType)) {
-                            listener.Value.OnTextViewDisconnected(textView, textBuffer);
-                            break;
-                        }
+                    if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
+                        listener.Value.OnTextViewDisconnected(textView, textBuffer);
                     }
                 }
             }
@@ -234,17 +217,13 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// Called once for every new text buffer.
         /// </summary>
         protected virtual void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
-            IContentType contentType = textBuffer.ContentType;
-
+            var contentType = textBuffer.ContentType;
             _bufferToOriginalContentType.Add(textBuffer, contentType);
 
             foreach (var listener in TextBufferListeners) {
                 if (listener.Metadata.ContentTypes != null) {
-                    foreach (string curContentType in listener.Metadata.ContentTypes) {
-                        if (contentType.IsOfType(curContentType)) {
-                            listener.Value.OnTextBufferCreated(textBuffer);
-                            break;
-                        }
+                    if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
+                        listener.Value.OnTextBufferCreated(textBuffer);
                     }
                 }
             }
@@ -255,8 +234,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// </summary>
         protected virtual void OnTextBufferDisposing(ITextBuffer textBuffer) {
             // These listeners must be called in the reverse order
-
-            List<ITextBufferListener> reverseListeners = new List<ITextBufferListener>();
+            var reverseListeners = new List<ITextBufferListener>();
             IContentType contentType;
 
             // This has to be obtained from this dictionary, as a content type for this buffer 
@@ -267,11 +245,8 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
 
                 foreach (var listener in TextBufferListeners) {
                     if (listener.Metadata.ContentTypes != null) {
-                        foreach (string curContentType in listener.Metadata.ContentTypes) {
-                            if (contentType.IsOfType(curContentType)) {
-                                reverseListeners.Insert(0, listener.Value);
-                                break;
-                            }
+                        if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
+                            reverseListeners.Insert(0, listener.Value);
                         }
                     }
                 }
@@ -283,32 +258,22 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         }
 
         public static IEnumerable<ITextView> GetViewsForBuffer(ITextBuffer textBuffer) {
-            TextViewData textViewData = GetTextViewDataForBuffer(textBuffer);
-
+            var textViewData = GetTextViewDataForBuffer(textBuffer);
             return textViewData != null ? textViewData.AllViews : new ITextView[0];
         }
 
-        public static ITextView GetFirstViewForBuffer(ITextBuffer textBuffer) {
-            foreach (ITextView textView in GetViewsForBuffer(textBuffer)) {
-                return textView;
-            }
-
-            return null;
-        }
+        public static ITextView GetFirstViewForBuffer(ITextBuffer textBuffer) => GetViewsForBuffer(textBuffer).FirstOrDefault();
 
         public static TextViewData GetTextViewDataForBuffer(ITextBuffer textBuffer) {
             if (_allInstances != null) {
                 foreach (TextViewConnectionListener instance in _allInstances) {
-                    TextViewData textViewData = null;
-
-                    if ((instance.TextBufferToViewData != null) && (instance.TextBufferToViewData.TryGetValue(textBuffer, out textViewData))) {
+                    if (instance.TextBufferToViewData != null && instance.TextBufferToViewData.TryGetValue(textBuffer, out TextViewData textViewData)) {
                         if (textViewData.AllViews.Count > 0) {
                             return textViewData;
                         }
                     }
                 }
             }
-
             return null;
         }
 

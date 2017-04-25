@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.R.Editor.Functions;
 using Microsoft.R.Host.Client;
@@ -16,31 +16,31 @@ namespace Microsoft.R.Editor.Application.Test {
         public IPackageIndex PackageIndex { get; private set; }
         public IFunctionIndex FunctionIndex { get; private set; }
 
-        public Task<IEditorScript> StartScript(ICoreShell coreShell, string contentType) =>
-            StartScript(coreShell, string.Empty, "filename", contentType, null);
+        public Task<IEditorScript> StartScript(IServiceContainer services, string contentType) =>
+            StartScript(services, string.Empty, "filename", contentType, null);
 
-        public Task<IEditorScript> StartScript(ICoreShell coreShell, string contentType, IRSessionProvider sessionProvider) =>
-            StartScript(coreShell, string.Empty, "filename", contentType, sessionProvider);
+        public Task<IEditorScript> StartScript(IServiceContainer services, string contentType, IRSessionProvider sessionProvider) =>
+            StartScript(services, string.Empty, "filename", contentType, sessionProvider);
 
-        public Task<IEditorScript> StartScript(ICoreShell coreShell, string text, string contentType) =>
-            StartScript(coreShell, text, "filename", contentType, null);
+        public Task<IEditorScript> StartScript(IServiceContainer services, string text, string contentType) =>
+            StartScript(services, text, "filename", contentType, null);
 
-        public async Task<IEditorScript> StartScript(ICoreShell coreShell, string text, string filename, string contentType, IRSessionProvider sessionProvider) {
-            var coreEditor = await InUI(() => new CoreEditor(coreShell, text, filename, contentType));
+        public async Task<IEditorScript> StartScript(IServiceContainer services, string text, string filename, string contentType, IRSessionProvider sessionProvider) {
+            var coreEditor = await InUI(() => new CoreEditor(services, text, filename, contentType));
             var containerDisposable = await AddToHost(coreEditor.Control);
 
             if (sessionProvider != null) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
                 HostScript = new RHostScript(sessionProvider);
 
-                PackageIndex = coreShell.GetService<IPackageIndex>();
+                PackageIndex = services.GetService<IPackageIndex>();
                 await PackageIndex.BuildIndexAsync();
 
-                FunctionIndex = coreShell.GetService<IFunctionIndex>();
+                FunctionIndex = services.GetService<IFunctionIndex>();
                 await FunctionIndex.BuildIndexAsync();
             }
 
-            return new EditorScript(coreShell, coreEditor, containerDisposable);
+            return new EditorScript(services, coreEditor, containerDisposable);
         }
     }
 }

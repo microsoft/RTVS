@@ -5,6 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.Settings;
@@ -48,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _history = _historyProvider.GetAssociatedRHistory(Component.TextView);
             _history.HistoryChanged += OnHistoryChanged;
             _historyFiltering = _historyProvider.CreateFiltering(Component);
-            _commandTarget = new CommandTargetToOleShim(Component.TextView, ServiceManager.GetService<ICommandTarget>(Component.TextView));
+            _commandTarget = new CommandTargetToOleShim(Component.TextView, Component.TextView.GetService<ICommandTarget>());
 
             base.OnCreate();
         }
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override void OnToolWindowCreated() {
-            Guid commandUiGuid = VSConstants.GUID_TextEditorFactory;
+            var commandUiGuid = VSConstants.GUID_TextEditorFactory;
             ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref commandUiGuid);
             base.OnToolWindowCreated();
         }
@@ -91,9 +92,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
             base.ProvideSearchSettings(pSearchSettings);
         }
 
-        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Services);
-        }
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) 
+            => new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Services);
 
         public override void ClearSearch() {
             Services.MainThread().Post(() => _historyFiltering.ClearFilter());

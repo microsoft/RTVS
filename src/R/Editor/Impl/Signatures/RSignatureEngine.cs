@@ -5,26 +5,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Signatures;
 using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Signatures {
-    public sealed class RSignatureSource : IFunctionSignatureSource {
-        private readonly ICoreShell _coreShell;
-        private readonly DisposeToken _disposeToken;
+    public sealed class RSignatureEngine : IFunctionSignatureSource {
+        private readonly IServiceContainer _services;
         private string _packageName;
 
-        public RSignatureSource(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public RSignatureEngine(IServiceContainer services) {
+            _services = services;
         }
 
         #region IFunctionSignatureSource
         public async Task<IEnumerable<IFunctionSignature>> GetSignaturesAsync(IRCompletionContext context) {
-            if (!_coreShell.GetService<IREditorSettings>().SignatureHelpEnabled || context.Session.IsDismissed) {
+            if (!_services.GetService<IREditorSettings>().SignatureHelpEnabled || context.Session.IsDismissed) {
                 return Enumerable.Empty<IFunctionSignature>();
             }
 
@@ -52,7 +50,7 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             if (functionInfo == null) {
-                var functionIndex = _coreShell.GetService<IFunctionIndex>();
+                var functionIndex = _services.GetService<IFunctionIndex>();
                 // Then try package functions
                 packageName = packageName ?? _packageName;
                 _packageName = null;
@@ -63,7 +61,7 @@ namespace Microsoft.R.Editor.Signatures {
             var signatures = new List<IFunctionSignature>();
             if (functionInfo?.Signatures != null) {
                 foreach (var signatureInfo in functionInfo.Signatures) {
-                    var signature = FunctionSignature.Create(context, functionInfo, signatureInfo);
+                    var signature = FunctionSignature.Create(context, functionInfo, signatureInfo, applicableToSpan);
                     signatures.Add(signature);
                 }
                 context.Session.Properties["functionInfo"] = functionInfo;

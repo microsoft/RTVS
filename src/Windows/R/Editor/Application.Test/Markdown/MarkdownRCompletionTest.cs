@@ -5,26 +5,24 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class MarkdownRCompletionTest : IAsyncLifetime {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
         public MarkdownRCompletionTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
-            _coreShell = services.GetService<ICoreShell>();
-            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
+            _services = services;
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
@@ -35,7 +33,7 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Test]
         [Category.Interactive]
         public async Task TypeRBlock() {
-            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_services, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
                 var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("abbreviate");
                 info.Should().NotBeNull();
 
@@ -51,13 +49,13 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
                 script.DoIdle(200);
                 script.Type("{ENTER}abbr{TAB}(");
 
-                string expected =
+                var expected =
 @"```{r}
 x <- function() {
     abbreviate()
 }
 ```";
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be(expected);
             }
         }
@@ -65,7 +63,7 @@ x <- function() {
         [Test]
         [Category.Interactive]
         public async Task RSignature() {
-            using (var script = await _editorHost.StartScript(_coreShell, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_services, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
                 var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
                 info.Should().NotBeNull();
 
@@ -74,9 +72,9 @@ x <- function() {
                 script.Type("x <- lm(");
                 script.DoIdle(2000);
 
-                ISignatureHelpSession session = script.GetSignatureSession();
+                var session = script.GetSignatureSession();
                 session.Should().NotBeNull();
-                IParameter parameter = session.SelectedSignature.CurrentParameter;
+                var parameter = session.SelectedSignature.CurrentParameter;
                 parameter.Should().NotBeNull();
                 parameter.Name.Should().Be("formula");
 
@@ -88,11 +86,8 @@ x <- function() {
                 parameter = session.SelectedSignature.CurrentParameter;
                 parameter.Name.Should().Be("subset");
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("```{r}\r\nx <- lm(subset = )\r\n```");
-
-                session = script.GetSignatureSession();
-                parameter = session.SelectedSignature.CurrentParameter;
             }
         }
     }

@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
@@ -22,19 +21,19 @@ namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
         private readonly DisposeToken _disposeToken;
         private readonly ITextBuffer _textBuffer;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
         private string _packageName;
 
-        public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
+        public SignatureHelpSource(ITextBuffer textBuffer, IServiceContainer services) {
             _disposeToken = DisposeToken.Create<SignatureHelpSource>();
             _textBuffer = textBuffer;
-            _shell = shell;
+            _services = services;
             textBuffer.AddService(this);
         }
 
         #region ISignatureHelpSource
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
-            if (!_shell.GetService<IREditorSettings>().SignatureHelpEnabled || session.IsDismissed) {
+            if (!_services.GetService<IREditorSettings>().SignatureHelpEnabled || session.IsDismissed) {
                 return;
             }
 
@@ -42,7 +41,7 @@ namespace Microsoft.R.Editor.Signatures {
             if (document != null) {
                 if (!document.EditorTree.IsReady) {
                     document.EditorTree.InvokeWhenReady((p) => {
-                        var broker = _shell.GetService<ISignatureHelpBroker>();
+                        var broker = _services.GetService<ISignatureHelpBroker>();
                         broker.DismissAllSessions((ITextView)p);
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);
@@ -53,15 +52,16 @@ namespace Microsoft.R.Editor.Signatures {
         }
 
         public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object, string> triggerSession, string packageName) {
+            var editorBuffer = _textBuffer.ToEditorBuffer();
             var snapshot = _textBuffer.CurrentSnapshot;
             var position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
-            var source = new RSignatureSource(_shell);
+            var source = new RSignatureEngine(_services);
             var context = new RSignatureHelpContext(session, _textBuffer, ast, position);
             source.GetSignaturesAsync(context).ContinueWith(t => {
 
             }).DoNotWait();
             // Retrieve parameter positions from the current text buffer snapshot
-            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
+            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, position);
             if (parametersInfo != null) {
                 position = Math.Min(parametersInfo.SignatureEnd, position);
                 int start = Math.Min(position, snapshot.Length);
@@ -78,7 +78,7 @@ namespace Microsoft.R.Editor.Signatures {
                 }
 
                 if (functionInfo == null) {
-                    var functionIndex = _shell.GetService<IFunctionIndex>();
+                    var functionIndex = _services.GetService<IFunctionIndex>();
                     // Then try package functions
                     packageName = packageName ?? _packageName;
                     _packageName = null;
@@ -87,8 +87,8 @@ namespace Microsoft.R.Editor.Signatures {
                 }
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
-                    foreach (ISignatureInfo signatureInfo in functionInfo.Signatures) {
-                        ISignature signature = CreateSignature(session, parametersInfo.FunctionName, functionInfo, signatureInfo, applicableToSpan, ast, position);
+                    foreach (var signatureInfo in functionInfo.Signatures) {
+                        var signature = CreateSignature(session, parametersInfo.FunctionName, functionInfo, signatureInfo, applicableToSpan, ast, position);
                         signatures.Add(signature);
                     }
 
@@ -104,7 +104,7 @@ namespace Microsoft.R.Editor.Signatures {
             _packageName = packageName;
             if (o != null && packageName != null) {
                 var session = o as ISignatureHelpSession;
-                SignatureHelp.TriggerSignatureHelp(session.TextView, _shell);
+                SignatureHelp.TriggerSignatureHelp(session.TextView, _services);
             }
         }
 
@@ -115,9 +115,7 @@ namespace Microsoft.R.Editor.Signatures {
 
                 var typedText = text.Trim();
                 foreach (var sig in session.Signatures) {
-                    var jsSig = sig as SignatureHelp;
-
-                    if (jsSig != null && jsSig.FunctionName.StartsWith(text, StringComparison.Ordinal)) {
+                    if (sig.FunctionName.StartsWith(text, StringComparison.Ordinal)) {
                         return sig;
                     }
                 }
@@ -130,7 +128,7 @@ namespace Microsoft.R.Editor.Signatures {
         private ISignature CreateSignature(ISignatureHelpSession session,
                                        string functionName, IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
                                        ITrackingSpan span, AstRoot ast, int position) {
-            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionName, string.Empty, signatureInfo, _shell);
+            var sig = new SignatureHelp(session, _textBuffer, functionName, string.Empty, signatureInfo, _services);
             List<IParameter> paramList = new List<IParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
@@ -151,9 +149,9 @@ namespace Microsoft.R.Editor.Signatures {
                     Debug.Assert(locusLength >= 0);
                     Span locus = new Span(locusStart, locusLength);
 
-                    /// VS may end showing very long tooltip so we need to keep 
-                    /// description reasonably short: typically about
-                    /// same length as the function signature.
+                    // VS may end showing very long tooltip so we need to keep 
+                    // description reasonably short: typically about
+                    // same length as the function signature.
                     paramList.Add(
                         new SignatureParameter(
                             p.Description.Wrap(

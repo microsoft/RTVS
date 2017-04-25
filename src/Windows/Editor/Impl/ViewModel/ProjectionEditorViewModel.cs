@@ -8,11 +8,11 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.ViewModel {
     public abstract class ProjectionEditorViewModel : EditorViewModel {
-        public ProjectionEditorViewModel(IEditorDocument document, ITextDocumentFactoryService textDocumentFactoryService):
-            base(document, textDocumentFactoryService) { }
+        protected ProjectionEditorViewModel(IEditorDocument document, ITextDocumentFactoryService textDocumentFactoryService) : 
+            base(document, CreateViewBuffer(document.TextBuffer(), textDocumentFactoryService)) { }
 
-        protected override IEditorBuffer CreateViewBuffer(ITextDocumentFactoryService textDocumentFactoryService) {
-            var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(DiskBuffer.As<ITextBuffer>());
+        private static IEditorBuffer CreateViewBuffer(ITextBuffer diskBuffer, ITextDocumentFactoryService textDocumentFactoryService) {
+            var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(diskBuffer);
             return new EditorBuffer(projectionBufferManager.ViewBuffer, textDocumentFactoryService);
         }
     }

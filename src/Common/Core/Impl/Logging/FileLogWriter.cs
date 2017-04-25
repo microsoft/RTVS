@@ -56,8 +56,7 @@ namespace Microsoft.Common.Core.Logging {
             await _semaphore.WaitAsync();
             try {
                 var sb = new StringBuilder();
-                string message;
-                while (_messages.TryDequeue(out message)) {
+                while (_messages.TryDequeue(out string message)) {
                     sb.AppendLine(message);
                 }
 

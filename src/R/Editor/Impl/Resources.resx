@@ -117,48 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ColorName_R_Assignment" xml:space="preserve">
-    <value>R Assignment</value>
-  </data>
-  <data name="ColorName_R_Braces" xml:space="preserve">
-    <value>R Braces</value>
-  </data>
-  <data name="ColorName_R_Brackets" xml:space="preserve">
-    <value>R Square Brackets</value>
-  </data>
-  <data name="ColorName_R_Builtin" xml:space="preserve">
-    <value>R Builtin Function</value>
-  </data>
-  <data name="ColorName_R_Comment" xml:space="preserve">
-    <value>R Comment</value>
-  </data>
-  <data name="ColorName_R_CurlyBrace" xml:space="preserve">
-    <value>R Curly Brace</value>
-  </data>
-  <data name="ColorName_R_CurlyBraces" xml:space="preserve">
-    <value>R Curly Braces</value>
-  </data>
-  <data name="ColorName_R_FunctionDefaultParameter" xml:space="preserve">
-    <value>R Function Default Parameter</value>
-  </data>
-  <data name="ColorName_R_FunctionReference" xml:space="preserve">
-    <value>R Function Reference</value>
-  </data>
-  <data name="ColorName_R_Keyword" xml:space="preserve">
-    <value>R Keyword</value>
-  </data>
-  <data name="ColorName_R_Number" xml:space="preserve">
-    <value>R Number</value>
-  </data>
-  <data name="ColorName_R_Operator" xml:space="preserve">
-    <value>R Operator</value>
-  </data>
-  <data name="ColorName_R_Punctuation" xml:space="preserve">
-    <value>R Punctuation</value>
-  </data>
-  <data name="ColorName_R_String" xml:space="preserve">
-    <value>R String</value>
-  </data>
   <data name="ParseError_CloseBraceExpected" xml:space="preserve">
     <value>) expected</value>
   </data>
@@ -216,37 +174,7 @@
   <data name="ParseError_FunctionBodyExpected" xml:space="preserve">
     <value>Function body expected</value>
   </data>
-  <data name="ColorName_R_TypeFunction" xml:space="preserve">
-    <value>R Type Functions</value>
-  </data>
-  <data name="FormatDocument" xml:space="preserve">
-    <value>Format document</value>
-  </data>
-  <data name="CommentSelection" xml:space="preserve">
-    <value>Comment selection</value>
-  </data>
-  <data name="UncommentSelection" xml:space="preserve">
-    <value>Uncomment selection</value>
-  </data>
-  <data name="AutoFormat" xml:space="preserve">
-    <value>Automatic formatting</value>
-  </data>
   <data name="ParseError_RightOperandExpected" xml:space="preserve">
     <value>Operand to the right expected</value>
-  </data>
-  <data name="AsyncIntellisense" xml:space="preserve">
-    <value>Parsing document...</value>
-  </data>
-  <data name="SmartTagName_InstallPackage" xml:space="preserve">
-    <value>Install package</value>
-  </data>
-  <data name="SmartTagName_LoadLibrary" xml:space="preserve">
-    <value>Load library</value>
-  </data>
-  <data name="ReplWindowName" xml:space="preserve">
-    <value>Interactive Window</value>
-  </data>
-  <data name="DragDropOperation" xml:space="preserve">
-    <value>Drag/drop</value>
   </data>
 </root>

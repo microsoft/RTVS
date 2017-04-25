@@ -92,7 +92,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             set {
                 double newOffset = value;
 
-                if (newOffset < 0) newOffset = 0;
+                if (newOffset < 0) {
+                    newOffset = 0;
+                }
+
                 if (newOffset > (VerticalExtent - ViewportHeight)) {
                     newOffset = Math.Max(0.0, VerticalExtent - ViewportHeight);
                 }
@@ -111,7 +114,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             set {
                 double newOffset = value;
-                if (newOffset < 0) newOffset = 0;
+                if (newOffset < 0) {
+                    newOffset = 0;
+                }
+
                 if (newOffset > (HorizontalExtent - ViewportWidth)) {
                     newOffset = Math.Max(0.0, HorizontalExtent - ViewportWidth);
                 }

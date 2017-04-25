@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -18,12 +17,12 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
     public class RmdClassificationTest {
         private static bool _regenerateBaselineFiles = false;
 
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
 
         public RmdClassificationTest(IServiceContainer services, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
             _files = files;
         }
@@ -33,7 +32,7 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [InlineData("01.rmd")]
         public async Task RColors(string fileName) {
             string content = _files.LoadDestinationFile(fileName);
-            using (var script = await _editorHost.StartScript(_coreShell, content, fileName, MdContentTypeDefinition.ContentType, null)) {
+            using (var script = await _editorHost.StartScript(_services, content, fileName, MdContentTypeDefinition.ContentType, null)) {
                 script.DoIdle(500);
                 var spans = script.GetClassificationSpans();
                 var actual = ClassificationWriter.WriteClassifications(spans);

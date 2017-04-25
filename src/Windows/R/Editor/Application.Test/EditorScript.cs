@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Application.Core;
@@ -20,10 +21,12 @@ namespace Microsoft.R.Editor.Application.Test {
         private const int _defaultTypingTimeout = 25;
         private readonly CoreEditor _coreEditor;
         private readonly IDisposable _containerDisposable;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
+        private readonly IIdleTimeSource _idleTime;
 
-        public EditorScript(ICoreShell coreShell, CoreEditor coreEditor, IDisposable containerDisposable) {
-            _shell = coreShell;
+        public EditorScript(IServiceContainer services, CoreEditor coreEditor, IDisposable containerDisposable) {
+            _services = services;
+            _idleTime = services.GetService<IIdleTimeSource>();
             _coreEditor = coreEditor;
             _containerDisposable = containerDisposable;
         }
@@ -127,7 +130,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
         public IEditorScript DoIdle(int ms = 100) {
             for (var i = 0; i < ms; i += 20) {
-                ((IIdleTimeSource)_shell).DoIdle();
+                _idleTime.DoIdle();
                 UIThreadHelper.Instance.DoEvents(20);
             }
             return this;
@@ -186,12 +189,11 @@ namespace Microsoft.R.Editor.Application.Test {
             for (var i = 0; i < count; i++) {
                 Execute(cmdId, msIdle);
             }
-
             return this;
         }
         
         public IEnumerable<ClassificationSpan> GetClassificationSpans() {
-            var svc = _shell.GetService<IViewTagAggregatorFactoryService>();
+            var svc = _services.GetService<IViewTagAggregatorFactoryService>();
             var aggregator = svc.CreateTagAggregator<IClassificationTag>(_coreEditor.View);
             var textBuffer = _coreEditor.View.TextBuffer;
             var snapshot = textBuffer.CurrentSnapshot;
@@ -200,31 +202,31 @@ namespace Microsoft.R.Editor.Application.Test {
         }
 
         public ICompletionSession GetCompletionSession() {
-            var broker = _shell.GetService<ICompletionBroker>();
+            var broker = _services.GetService<ICompletionBroker>();
             return Retry(() => broker.GetSessions(_coreEditor.View).FirstOrDefault());
         }
 
         public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
-            var aggregatorService = _shell.GetService<IViewTagAggregatorFactoryService>();
+            var aggregatorService = _services.GetService<IViewTagAggregatorFactoryService>();
             var tagAggregator = aggregatorService.CreateTagAggregator<IErrorTag>(_coreEditor.View);
             var textBuffer = _coreEditor.View.TextBuffer;
             return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
         }
 
         public ILightBulbSession GetLightBulbSession() {
-            var broker = _shell.GetService<ILightBulbBroker>();
+            var broker = _services.GetService<ILightBulbBroker>();
             return Retry(() => broker.GetSession(_coreEditor.View));
         }
 
         public IList<IMappingTagSpan<IOutliningRegionTag>> GetOutlineTagSpans() {
-            var aggregatorService = _shell.GetService<IViewTagAggregatorFactoryService>();
+            var aggregatorService = _services.GetService<IViewTagAggregatorFactoryService>();
             var tagAggregator = aggregatorService.CreateTagAggregator<IOutliningRegionTag>(_coreEditor.View);
             var textBuffer = _coreEditor.View.TextBuffer;
             return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
         }
 
         public ISignatureHelpSession GetSignatureSession() {
-            var broker = _shell.GetService<ISignatureHelpBroker>();
+            var broker = _services.GetService<ISignatureHelpBroker>();
             return Retry(() => broker.GetSessions(_coreEditor.View).FirstOrDefault());
         }
 

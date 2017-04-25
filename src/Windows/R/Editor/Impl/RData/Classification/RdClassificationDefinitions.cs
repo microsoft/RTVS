@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.RData.Classification {
         internal sealed class RdBracesClassificationFormat : ClassificationFormatDefinition {
             public RdBracesClassificationFormat() {
                 ForegroundColor = Colors.Gray;
-                this.DisplayName = Resources.ColorName_RD_CurlyBraces;
+                DisplayName = Microsoft.R.Editor.Windows.Resources.ColorName_RD_CurlyBraces;
             }
         }
     }

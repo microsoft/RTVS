@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// services and so on.
     /// </summary>
     [Export(typeof(ICoreShell))]
-    public sealed partial class VsAppShell : ICoreShell, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
+    public sealed partial class VsAppShell : ICoreShell, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
 
         public VsAppShell() {

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
@@ -18,12 +17,12 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class OutlineTest {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
         
         public OutlineTest(IServiceContainer services, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
-            _coreShell = services.GetService<ICoreShell>();
+            _services = services;
             _editorHost = editorHost;
             _files = files;
         }
@@ -32,10 +31,10 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
         [Category.Interactive]
         public async Task R_OutlineToggleAll() {
             string text = _files.LoadDestinationFile("lsfit.r");
-            using (var script = await _editorHost.StartScript(_coreShell, text, "filename", RContentTypeDefinition.ContentType, null)) {
+            using (var script = await _editorHost.StartScript(_services, text, "filename", RContentTypeDefinition.ContentType, null)) {
                 script.DoIdle(500);
 
-                var svc = _coreShell.GetService<IOutliningManagerService>();
+                var svc = _services.GetService<IOutliningManagerService>();
                 var mgr = svc.GetOutliningManager(script.View);
                 var snapshot = script.TextBuffer.CurrentSnapshot;
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
@@ -20,12 +21,12 @@ namespace Microsoft.Markdown.Editor.Document {
         private readonly IProjectionBufferManager _projectionBufferManager;
 
         #region Constructors
-        public MdEditorDocument(ITextBuffer textBuffer, ICoreShell coreShell) {
-            EditorBuffer = new EditorBuffer(textBuffer, coreShell.GetService<ITextDocumentFactoryService>());
+        public MdEditorDocument(IEditorBuffer editorBuffer, IServiceContainer services) {
+            EditorBuffer = editorBuffer;
             EditorBuffer.AddService(this);
 
-            _projectionBufferManager = new ProjectionBufferManager(textBuffer, coreShell, MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
-            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, coreShell);
+            _projectionBufferManager = new ProjectionBufferManager(editorBuffer.As<ITextBuffer>(), services, MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
+            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, services);
         }
         #endregion
 

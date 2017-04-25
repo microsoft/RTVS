@@ -4,6 +4,8 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
@@ -12,9 +14,9 @@ namespace Microsoft.Markdown.Editor.Document {
     /// <summary>
     /// Factory for Markdown language editor document
     /// </summary>
-    [Export(typeof(IEditorDocumentFactory))]
+    [Export(typeof(IEditorViewModelFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    public class MdEditorDocumentFactory : IEditorDocumentFactory {
+    public class MdEditorDocumentFactory : IEditorViewModelFactory {
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
@@ -22,8 +24,8 @@ namespace Microsoft.Markdown.Editor.Document {
             _shell = shell;
         }
 
-        public IEditorDocument CreateDocument(IEditorInstance editorInstance) {
-            return new MdEditorDocument(editorInstance.DiskBuffer.As<ITextBuffer>(), _shell);
+        public IEditorViewModel CreateEditorViewModel(IEditorBuffer editorBuffer) {
+            return new MdEditorDocument(editorBuffer, _shell.Services);
         }
     }
 }

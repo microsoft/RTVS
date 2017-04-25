@@ -73,11 +73,10 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                             }
                             hr = _expansionClient.GoToNextExpansionField();
                         } else {
-                            bool snippetInserted = false;
-
-                            hr = _expansionClient.StartSnippetInsertion(out snippetInserted);
-                            if (!snippetInserted)
+                            hr = _expansionClient.StartSnippetInsertion(out bool snippetInserted);
+                            if (!snippetInserted) {
                                 return CommandResult.NotSupported;
+                            }
                         }
                         break;
 

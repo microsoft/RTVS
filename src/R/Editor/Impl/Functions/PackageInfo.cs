@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Functions {
         public PackageInfo(IIntellisenseRSession host, string name, string description, string version, IEnumerable<string> functionNames) :
             base(name, description, NamedItemType.Package) {
             _host = host;
-            _fs = _host.Shell.FileSystem();
+            _fs = _host.Services.FileSystem();
             _version = version;
             _functions = new ConcurrentBag<INamedItemInfo>(functionNames.Select(fn => new FunctionInfo(fn)));
         }
@@ -65,7 +65,7 @@ namespace Microsoft.R.Editor.Functions {
                     }
                     _saved = true;
                 } catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException) {
-                    _host.Shell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
+                    _host.Services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
                 }
             }
         }
@@ -113,6 +113,6 @@ namespace Microsoft.R.Editor.Functions {
             return null;
         }
 
-        private string CacheFilePath => Path.Combine(PackageIndex.CacheFolderPath, Invariant($"{this.Name}_{_version}.functions"));
+        private string CacheFilePath => Path.Combine(_host.Services.GetService<IPackageIndex>().CacheFolderPath, Invariant($"{this.Name}_{_version}.functions"));
     }
 }

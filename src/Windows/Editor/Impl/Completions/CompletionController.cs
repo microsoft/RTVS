@@ -4,7 +4,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -23,21 +24,21 @@ namespace Microsoft.Languages.Editor.Completions {
         protected IQuickInfoBroker QuickInfoBroker { get; set; }
         public ICompletionSession CompletionSession { get; protected set; }
         protected ICompletionBroker CompletionBroker { get; set; }
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
         private readonly ViewCompletionBroker _viewCompletionBroker;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        protected CompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, ICoreShell shell) {
-            Shell = shell;
+        protected CompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services) {
+            Services = services;
             TextView = textView;
 
             SubjectBuffers = subjectBuffers;
-            CompletionBroker = Shell.GetService<ICompletionBroker>();
-            QuickInfoBroker = Shell.GetService<IQuickInfoBroker>();
-            SignatureBroker = Shell.GetService<ISignatureHelpBroker>();
+            CompletionBroker = Services.GetService<ICompletionBroker>();
+            QuickInfoBroker = Services.GetService<IQuickInfoBroker>();
+            SignatureBroker = Services.GetService<ISignatureHelpBroker>();
 
-            _viewCompletionBroker = new ViewCompletionBroker(shell, textView);
+            _viewCompletionBroker = new ViewCompletionBroker(Services, textView.ToEditorView());
         }
 
         public abstract void ConnectSubjectBuffer(ITextBuffer subjectBuffer);
@@ -126,7 +127,7 @@ namespace Microsoft.Languages.Editor.Completions {
         /// Called when the user executes a command that should show the signature help tooltip
         /// </summary>
         public virtual void OnShowSignatureHelp() {
-            DismissSignatureSession(TextView, Shell);
+            DismissSignatureSession(TextView, Services);
             ShowSignature(autoShown: false);
         }
 
@@ -157,7 +158,7 @@ namespace Microsoft.Languages.Editor.Completions {
                 }
 
                 if (HasActiveSignatureSession(TextView) && CanDismissSignatureOnCommit()) {
-                    DismissSignatureSession(TextView, Shell);
+                    DismissSignatureSession(TextView, Services);
                 }
             }
             return handled;
@@ -198,13 +199,13 @@ namespace Microsoft.Languages.Editor.Completions {
         /// Is there an active completion session? (is the dropdown showing?)
         /// </summary>
         public bool HasActiveCompletionSession => CompletionSession != null && !CompletionSession.IsDismissed;
-        public bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, Shell);
+        public bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, Services);
 
         /// <summary>
         /// Is there an active signature help session? (is the tooltip showing?)
         /// </summary>
-        public static bool HasActiveSignatureSession(ITextView textView, ICoreShell shell) {
-            ISignatureHelpBroker broker = shell.GetService<ISignatureHelpBroker>();
+        public static bool HasActiveSignatureSession(ITextView textView, IServiceContainer services) {
+            var broker = services.GetService<ISignatureHelpBroker>();
             return broker.IsSignatureHelpActive(textView);
         }
 
@@ -213,12 +214,12 @@ namespace Microsoft.Languages.Editor.Completions {
         /// </summary>
         public virtual void DismissAllSessions() {
             DismissCompletionSession();
-            DismissSignatureSession(TextView, Shell);
+            DismissSignatureSession(TextView, Services);
             DismissQuickInfoSession(TextView);
         }
 
         public void DismissQuickInfoSession(ITextView textView) {
-            IQuickInfoBroker broker = Shell.GetService<IQuickInfoBroker>();
+            var broker = Services.GetService<IQuickInfoBroker>();
             var sessions = broker.GetSessions(textView);
             foreach (var s in sessions) {
                 s.Dismiss();
@@ -398,9 +399,9 @@ namespace Microsoft.Languages.Editor.Completions {
             ShowCompletion(autoShownCompletion);
         }
 
-        public static void DismissSignatureSession(ITextView textView, ICoreShell shell) {
-            if (HasActiveSignatureSession(textView, shell)) {
-                ISignatureHelpBroker broker = shell.GetService<ISignatureHelpBroker>();
+        public static void DismissSignatureSession(ITextView textView, IServiceContainer services) {
+            if (HasActiveSignatureSession(textView, services)) {
+                var broker = services.GetService<ISignatureHelpBroker>();
                 broker.DismissAllSessions(textView);
             }
         }

@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
         }
 
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() {
-            yield return new MdEditorFactory(this);
+            yield return new MdEditorFactory(this, VsAppShell.Current.Services);
         }
     }
 }

@@ -17,11 +17,8 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextBufferExtensions {
-        public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer) {
-            IEditorBuffer buffer = null;
-            textBuffer.Properties.TryGetProperty(typeof(IEditorBuffer), out buffer);
-            return buffer;
-        }
+        public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer)
+            => textBuffer.Properties.TryGetProperty(typeof(IEditorBuffer), out IEditorBuffer buffer) ? buffer : null;
 
         /// <summary>
         /// Retrieves service manager attached to the text buffer

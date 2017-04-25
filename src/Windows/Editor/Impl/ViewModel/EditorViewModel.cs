@@ -6,7 +6,6 @@ using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.ViewModel {
     /// <summary>
@@ -15,20 +14,22 @@ namespace Microsoft.Languages.Editor.ViewModel {
     public abstract class EditorViewModel : IEditorViewModel {
         private IEditorDocument _document;
 
-        public EditorViewModel(IEditorDocument document, ITextDocumentFactoryService textDocumentFactoryService) {
+        protected EditorViewModel(IEditorDocument document, IEditorBuffer viewBuffer = null) {
             Check.ArgumentNull(nameof(document), document);
-            Check.ArgumentNull(nameof(textDocumentFactoryService), textDocumentFactoryService);
+            Check.ArgumentNull(nameof(viewBuffer), viewBuffer);
 
             DiskBuffer = document.EditorBuffer;
             DiskBuffer.AddService(this);
 
-            ViewBuffer = CreateViewBuffer(textDocumentFactoryService);
-            ViewBuffer.AddService(this);
+            ViewBuffer = viewBuffer ?? DiskBuffer;
+            if (viewBuffer != null) {
+                ViewBuffer.AddService(this);
+            }
 
             _document = document;
         }
 
-        #region IEditorInstance
+        #region IEditorViewModel
         /// <summary>
         /// Text buffer containing document data that is to be attached to the text view. 
         /// In languages that support projected language scenarios this is the top level
@@ -55,8 +56,8 @@ namespace Microsoft.Languages.Editor.ViewModel {
 
         #region IDisposable
         protected virtual void Dispose(bool disposing) {
-            ViewBuffer?.Services?.RemoveService(this);
-            DiskBuffer?.Services?.RemoveService(this);
+            ViewBuffer?.RemoveService(this);
+            DiskBuffer?.RemoveService(this);
             _document?.Dispose();
             _document = null;
         }
@@ -66,7 +67,5 @@ namespace Microsoft.Languages.Editor.ViewModel {
             GC.SuppressFinalize(this);
         }
         #endregion
-
-        protected virtual IEditorBuffer CreateViewBuffer(ITextDocumentFactoryService textDocumentFactoryService) => DiskBuffer;
     }
 }

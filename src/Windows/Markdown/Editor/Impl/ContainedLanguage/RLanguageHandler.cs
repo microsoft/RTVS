@@ -3,6 +3,7 @@
 
 using System.Linq;
 using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
@@ -19,12 +20,12 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         private readonly RCodeSeparatorCollection _separators = new RCodeSeparatorCollection();
         private readonly IBufferGenerator _generator = new BufferGenerator();
         private readonly IProjectionBufferManager _projectionBufferManager;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
-        public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager, ICoreShell coreShell) :
-            base(textBuffer, coreShell) {
+        public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager, IServiceContainer services) :
+            base(textBuffer) {
             _projectionBufferManager = projectionBufferManager;
-            _coreShell = coreShell;
+            _services = services;
             UpdateProjections();
         }
 
@@ -33,9 +34,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             return block != null ? (ICommandTarget)RMainController.FromTextView(textView) : null;
         }
 
-        public override ITextRange GetCodeBlockOfLocation(int bufferPosition) {
-            return GetLanguageBlockOfLocation(bufferPosition);
-        }
+        public override ITextRange GetCodeBlockOfLocation(int bufferPosition) => GetLanguageBlockOfLocation(bufferPosition);
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             var changes = e.ConvertToRelative();
@@ -45,7 +44,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                     // Allow existing command call to complete so we don't yank projections
                     // from underneath code that expects text buffer to exist, such as formatter.
                     IdleTimeAction.Cancel(GetType());
-                    IdleTimeAction.Create(UpdateProjections, 0, GetType(), _coreShell);
+                    IdleTimeAction.Create(UpdateProjections, 0, GetType(), _services.GetService<IIdleTimeService>());
                     break;
                 } else {
                     Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);
@@ -78,8 +77,6 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             foreach (MarkdownCodeToken t in rCodeTokens) {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
-                var text = t.GetText(TextBuffer.CurrentSnapshot);
-
                 _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```r{ or `r
                 if (t.IsWellFormed) {
                     // Count backticks

@@ -19,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
     [Export(typeof(IStatusBar))]
     internal class VsStatusBar : IStatusBar {
         private readonly ICoreShell _shell;
+        private readonly IIdleTimeService _idleTime;
         private ItemsControl _itemsControl;
         private Visual _visualRoot;
         private bool _onIdleScheduled;
@@ -26,13 +27,12 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         [ImportingConstructor]
         public VsStatusBar(ICoreShell shell) {
             _shell = shell;
+            _idleTime = shell.GetService<IIdleTimeService>();
         }
 
         private Visual GetRootVisual() {
             var shell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
-            IntPtr window;
-            shell.GetDialogOwnerHwnd(out window);
-
+            shell.GetDialogOwnerHwnd(out IntPtr window);
             if (window == IntPtr.Zero) {
                 return null;
             }
@@ -104,13 +104,13 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             }
 
             if (!TryAddItemsControlToVisualRoot() && !_onIdleScheduled) {
-                _shell.Idle += OnVsIdle;
+                _idleTime.Idle += OnVsIdle;
                 _onIdleScheduled = true;
             }
         }
 
         private void OnVsIdle(object sender, EventArgs e) {
-            _shell.Idle -= OnVsIdle;
+            _idleTime.Idle -= OnVsIdle;
             TryAddItemsControlToVisualRoot();
         }
     }

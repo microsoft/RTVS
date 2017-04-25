@@ -53,8 +53,7 @@ namespace Microsoft.Common.Core.Services {
             Check.ArgumentNull(nameof(factory), factory);
 
             lock (_lock) {
-                object property;
-                if (_properties.Value.TryGetValue(key, out property)) {
+                if (_properties.Value.TryGetValue(key, out object property)) {
                     return property as T;
                 }
 
@@ -112,8 +111,7 @@ namespace Microsoft.Common.Core.Services {
                     throw new KeyNotFoundException(nameof(key));
                 }
 
-                object item;
-                if (!_properties.Value.TryGetValue(key, out item)) {
+                if (!_properties.Value.TryGetValue(key, out object item)) {
                     throw new KeyNotFoundException(nameof(key));
                 }
                 return item;

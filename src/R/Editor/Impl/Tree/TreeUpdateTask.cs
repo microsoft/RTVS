@@ -6,14 +6,17 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
     /// <summary>
@@ -33,9 +36,9 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Editor tree that task is servicing
         /// </summary>
-        private EditorTree _editorTree;
-
-        private readonly ICoreShell _coreShell;
+        private readonly EditorTree _editorTree;
+        private readonly IServiceContainer _services;
+        private readonly IIdleTimeService _idleTime;
 
         /// <summary>
         /// Text buffer
@@ -45,18 +48,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Output queue of the background parser
         /// </summary>
-        private ConcurrentQueue<EditorTreeChangeCollection> _backgroundParsingResults = new ConcurrentQueue<EditorTreeChangeCollection>();
-
-        /// <summary>
-        /// Pending changes since the last parse or since async parsing task started.
-        /// </summary>
-        private TextChange _pendingChanges = new TextChange();
-
-        /// <summary>
-        /// Time when background task requested transition to main thread.
-        /// Used for debugging/profiling purposes.
-        /// </summary>
-        private DateTime _uiThreadTransitionRequestTime;
+        private readonly ConcurrentQueue<EditorTreeChangeCollection> _backgroundParsingResults = new ConcurrentQueue<EditorTreeChangeCollection>();
 
         /// <summary>
         /// If true the task was disposed (document was closed and tree is now orphaned).
@@ -67,16 +59,17 @@ namespace Microsoft.R.Editor.Tree {
         /// Prevents disposing when background task is running
         /// </summary>
         private readonly object _disposeLock = new object();
-
+        private readonly TextChange _pendingChanges = new TextChange();
         private DateTime _lastChangeTime = DateTime.UtcNow;
         #endregion
 
         #region Constructors
-        public TreeUpdateTask(EditorTree editorTree, ICoreShell coreShell) {
+        public TreeUpdateTask(EditorTree editorTree, IServiceContainer services) {
             _editorTree = editorTree;
-            _coreShell = coreShell;
-            if (coreShell != null) {
-                coreShell.Idle += OnIdle;
+            _services = services;
+            _idleTime = services.GetService<IIdleTimeService>();
+            if (_idleTime != null) {
+                _idleTime.Idle += OnIdle;
             }
         }
         #endregion
@@ -86,22 +79,12 @@ namespace Microsoft.R.Editor.Tree {
         /// Detemines if tree is 'out of date' i.e. user made changes to the document
         /// so text snapshot attached to the tree is no longer the same as ITextBuffer.CurrentSnapshot
         /// </summary>
-        /// <returns></returns>
-        internal bool ChangesPending {
-            get { return !_pendingChanges.IsEmpty; }
-        }
-
-        /// <summary>
-        /// Returns an object that describes pending changes if any, null otherwise
-        /// </summary>
-        internal TextChange Changes {
-            get { return _pendingChanges; }
-        }
+        internal bool ChangesPending => !_pendingChanges.IsEmpty;
         #endregion
 
         internal void TakeThreadOwnership() => _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
 
-        internal void ClearChanges() {
+        internal void ClearChanges() { 
             Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
             _pendingChanges.Clear();
         }
@@ -139,7 +122,7 @@ namespace Microsoft.R.Editor.Tree {
                         } catch (Exception e) {
                             Debug.Assert(false, "Guarded invoke caught exception", e.Message);
                         }
-                    }, 10, this.GetType(), _coreShell);
+                    }, 10, GetType(), _idleTime);
                 }
             }
         }
@@ -232,7 +215,7 @@ namespace Microsoft.R.Editor.Tree {
             // Cancel background parse if it is running
             Cancel();
 
-            TextChange textChange = new TextChange() {
+            var textChange = new TextChange() {
                 OldTextProvider = context.OldTextProvider,
                 NewTextProvider = context.NewTextProvider
             };
@@ -288,22 +271,21 @@ namespace Microsoft.R.Editor.Tree {
 
             TextChange textChange = context.PendingChanges;
             var changeType = textChange.TextChangeType;
-            bool elementsChanged = false;
+            var elementsChanged = false;
 
             if (changeType == TextChangeType.Structure) {
-                IAstNode changedElement = context.ChangedNode;
-                int start = context.NewStart;
+                var changedElement = context.ChangedNode;
+                var start = context.NewStart;
 
                 // We delete change nodes unless node is a token node 
                 // which range can be modified such as string or comment
                 var positionType = PositionType.Undefined;
 
                 if (changedElement != null) {
-                    IAstNode node;
-                    positionType = changedElement.GetPositionNode(context.NewStart, out node);
+                    positionType = changedElement.GetPositionNode(context.NewStart, out IAstNode node);
                 }
 
-                bool deleteElements = (context.OldLength > 0) || (positionType != PositionType.Token);
+                var deleteElements = (context.OldLength > 0) || (positionType != PositionType.Token);
 
                 // In case of delete or replace we need to invalidate elements that were 
                 // damaged by the delete operation. We need to remove elements so they 
@@ -330,7 +312,6 @@ namespace Microsoft.R.Editor.Tree {
             if (_lastChangeTime != DateTime.MinValue && TimeUtility.MillisecondsSinceUtc(_lastChangeTime) > _parserDelay) {
                 // Kick background parsing when idle slot comes so parser does not hit on every keystroke
                 ProcessPendingTextBufferChanges(async: true);
-
                 _lastChangeTime = DateTime.MinValue;
             }
         }
@@ -366,7 +347,7 @@ namespace Microsoft.R.Editor.Tree {
                 // Therefore setting task state in the task body creates a gap
                 // where we may end up spawning another task.
 
-                base.Run((isCancelledCallback) => ProcessTextChanges(changesToProcess, async, isCancelledCallback), async);
+                Run(isCancelledCallback => ProcessTextChanges(changesToProcess, async, isCancelledCallback), async);
             }
         }
 
@@ -403,21 +384,20 @@ namespace Microsoft.R.Editor.Tree {
                         changeProcessor.ProcessChange(changeToProcess, treeChanges);
                     }
                 } finally {
-                    if (async && _editorTree != null) {
-                        _editorTree.ReleaseReadLock(_treeUserId);
+                    if (async) {
+                        _editorTree?.ReleaseReadLock(_treeUserId);
                     }
                 }
 
                 // Lock should be released at this point since actual application
                 // of tree changes is going to be happen from the main thread.
 
-                if (!isCancelledCallback() && treeChanges != null) {
+                if (!isCancelledCallback() && treeChanges.Changes.Any()) {
                     // Queue results for the main thread application. This must be done before 
                     // signaling that the task is complete since if EnsureProcessingComplete 
                     // is waiting it will want to apply changes itself rather than wait for 
                     // the DispatchOnUIThread to go though and hence it will need all changes
                     // stored and ready for application.
-
                     _backgroundParsingResults.Enqueue(treeChanges);
                 }
 
@@ -426,15 +406,13 @@ namespace Microsoft.R.Editor.Tree {
                 SignalTaskComplete(taskId);
 
                 if (_backgroundParsingResults.Count > 0) {
-                    _uiThreadTransitionRequestTime = DateTime.UtcNow;
-
                     // It is OK to post results while main thread might be working
                     // on them since if if it does, by the time posted request comes
                     // queue will already be empty.
                     if (async) {
                         // Post request to apply tree changes to the main thread.
                         // This must NOT block or else task will never enter 'RanToCompletion' state.
-                        _coreShell.MainThread().Post(ApplyBackgroundProcessingResults);
+                        _services.MainThread().Post(ApplyBackgroundProcessingResults);
                     } else {
                         // When processing is synchronous, apply changes and fire events right away.
                         ApplyBackgroundProcessingResults();
@@ -488,12 +466,10 @@ namespace Microsoft.R.Editor.Tree {
 
 #if DEBUG
                     if (retryCount == 10) {
-                        string msg = string.Format(CultureInfo.InvariantCulture,
-                            "Pending changes remain: ChangesPending: {0}, original:\"{1}\", new:\"{2}\"",
-                            ChangesPending, originalPendingChanges, Changes.ToString());
+                        string msg = string.Format(CultureInfo.InvariantCulture, );
 
                         // using Debugger.Break as I want all threads suspended so the state doesn't change
-                        Debug.Assert(false, msg);
+                        Debug.Assert(false, Invariant($"Pending changes remain: ChangesPending: {ChangesPending}"));
                     }
 #endif
                 }
@@ -590,8 +566,8 @@ namespace Microsoft.R.Editor.Tree {
                     Cancel();
 
                     _disposed = true;
-                    if (_coreShell != null) {
-                        _coreShell.Idle -= OnIdle;
+                    if (_idleTime != null) {
+                        _idleTime.Idle -= OnIdle;
                     }
                 }
                 base.Dispose(disposing);

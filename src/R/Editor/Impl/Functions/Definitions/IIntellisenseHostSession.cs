@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Functions {
     public interface IIntellisenseRSession : IDisposable {
-        ICoreShell Shell { get; }
+        IServiceContainer Services { get; }
 
         /// <summary>
         /// Intellisense R session. The session is different from the interactive

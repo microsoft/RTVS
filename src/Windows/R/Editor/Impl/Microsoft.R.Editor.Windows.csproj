@@ -195,6 +195,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <CustomToolNamespace>Microsoft.R.Editor.Windows</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

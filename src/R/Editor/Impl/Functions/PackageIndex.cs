@@ -10,7 +10,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
@@ -27,7 +29,6 @@ namespace Microsoft.R.Editor.Functions {
     public sealed class PackageIndex : IPackageIndex {
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
-        private readonly ICoreShell _shell;
         private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
@@ -36,12 +37,11 @@ namespace Microsoft.R.Editor.Functions {
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
-        public PackageIndex(ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
-            _shell = shell;
+        public PackageIndex(IServiceContainer services, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _host = host;
             _functionIndex = functionIndex;
 
-            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = interactiveWorkflowProvider.GetOrCreate();
 
             _interactiveSession = _workflow.RSession;
@@ -261,20 +261,25 @@ namespace Microsoft.R.Editor.Functions {
             return Enumerable.Empty<string>();
         }
 
-        internal static string CacheFolderPath =>
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Microsoft\VisualStudio\RTVS\IntelliSense\");
+        public string CacheFolderPath {
+            get {
+                var afs = _host.Services.GetService<IApplicationFolderService>();
+                return Path.Combine(afs.ApplicationDataFolder, @"Microsoft\RTVS\IntelliSense\");
+            }
+        }
 
-        public static void ClearCache() {
+        public void ClearCache() {
             try {
-                if (Directory.Exists(CacheFolderPath)) {
-                    Directory.Delete(CacheFolderPath, recursive: true);
+                var fs = _host.Services.GetService<IFileSystem>();
+                if (fs.DirectoryExists(CacheFolderPath)) {
+                    fs.DeleteDirectory(CacheFolderPath, recursive: true);
                 }
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
 
         private void ScheduleIdleTimeRebuild() {
             IdleTimeAction.Cancel(typeof(PackageIndex));
-            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, typeof(PackageIndex), _shell);
+            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, typeof(PackageIndex), _host.Services);
         }
 
         private async Task RebuildIndexAsync() {
@@ -293,9 +298,8 @@ namespace Microsoft.R.Editor.Functions {
         /// if it is not in the index such as when package was just installed.
         /// </summary>
         private IPackageInfo GetPackageInfo(string packageName) {
-            PackageInfo package = null;
             packageName = packageName.TrimQuotes().Trim();
-            _packages.TryGetValue(packageName, out package);
+            _packages.TryGetValue(packageName, out PackageInfo package);
             return package;
         }
     }

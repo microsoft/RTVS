@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.UI.Commands {
     /// </summary>
     public class Controller : ICommandTarget, IDisposable {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public Dictionary<Guid, Dictionary<int, ICommand>> CommandMap { get; private set; }
+        public Dictionary<Guid, Dictionary<int, ICommand>> CommandMap { get; }
 
         /// <summary>
         /// Chained controller is the one below this one in the controller chain.
@@ -27,9 +27,7 @@ namespace Microsoft.Common.Core.UI.Commands {
         private ICommandTarget _chainedController;
 
         // From outside of the base editor we should always use the ViewController only
-        public Controller()
-            : this(null) {
-        }
+        public Controller() : this(null) { }
 
         public Controller(ICommandTarget chainedController) {
             CommandMap = new Dictionary<Guid, Dictionary<int, ICommand>>();
@@ -103,12 +101,9 @@ namespace Microsoft.Common.Core.UI.Commands {
         /// <param name="group">Group id</param>
         /// <returns>Map of command id to command object</returns>
         public IDictionary<int, ICommand> GetGroupCommands(Guid group) {
-            Dictionary<int, ICommand> groupCommands = null;
-
-            if (CommandMap.TryGetValue(group, out groupCommands)) {
+            if (CommandMap.TryGetValue(group, out Dictionary<int, ICommand> groupCommands)) {
                 return groupCommands;
             }
-
             return new Dictionary<int, ICommand>();
         }
 
@@ -118,10 +113,8 @@ namespace Microsoft.Common.Core.UI.Commands {
         /// <param name="command">Command object</param>
         public void AddCommand(ICommand command) {
             if (command != null) {
-                foreach (CommandId commandId in command.CommandIds) {
-                    Dictionary<int, ICommand> idToCommandMap = null;
-
-                    if (!CommandMap.TryGetValue(commandId.Group, out idToCommandMap)) {
+                foreach (var commandId in command.CommandIds) {
+                    if (!CommandMap.TryGetValue(commandId.Group, out Dictionary<int, ICommand> idToCommandMap)) {
                         idToCommandMap = new Dictionary<int, ICommand>();
                         CommandMap.Add(commandId.Group, idToCommandMap);
                     }
@@ -138,22 +131,17 @@ namespace Microsoft.Common.Core.UI.Commands {
         /// <param name="commands">List of commands</param>
         public void AddCommandSet(IEnumerable<ICommand> commands) {
             if (commands != null) {
-                foreach (ICommand command in commands) {
+                foreach (var command in commands) {
                     AddCommand(command);
                 }
             }
         }
 
         public ICommand Find(Guid group, int id) {
-            Dictionary<int, ICommand> idToCommandMap = null;
-
-            if (!CommandMap.TryGetValue(group, out idToCommandMap))
+            if (!CommandMap.TryGetValue(group, out Dictionary<int, ICommand> idToCommandMap)) {
                 return null;
-
-            ICommand cmd = null;
-            idToCommandMap.TryGetValue(id, out cmd);
-
-            return cmd;
+            }
+            return idToCommandMap.TryGetValue(id, out ICommand cmd) ? cmd : null;
         }
 
         #region IDisposable
