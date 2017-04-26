@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
@@ -18,25 +17,22 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     /// Host for contained (embedded) language editors such as R editor inside 
     /// ``` code ``` blocks in R Markdown.
     /// </summary>
-    public class MdContainedLanguageHost : IContainedLanguageHost {
+    internal sealed class MdContainedLanguageHost : IContainedLanguageHost {
         private readonly ITextBuffer _textBuffer;
-        private readonly ICoreShell _coreShell;
-        private IEditorDocument _document;
+        private readonly IEditorDocument _document;
 
         /// <summary>
         /// Creates contained language host with default settings.
         /// </summary>
         /// <param name="document">Markdown editor document</param>
-        /// <param name="textBuffer">Contained language text buffer</param>
-        /// <param name="coreShell"></param>
-        public MdContainedLanguageHost(IEditorDocument document, ITextBuffer textBuffer, ICoreShell coreShell) {
-            _textBuffer = textBuffer;
-            _coreShell = coreShell;
+        /// <param name="editorBuffer">Contained language text buffer</param>
+        public MdContainedLanguageHost(IEditorDocument document, IEditorBuffer editorBuffer) {
+            _textBuffer = editorBuffer.As<ITextBuffer>();
 
             _document = document;
             _document.Closing += OnDocumentClosing;
 
-            textBuffer.AddService(this);
+            editorBuffer.AddService(this);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
@@ -49,19 +45,43 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         public ICommandTarget ContainedCommandTarget { get; private set; }
 
         #region IContainedLanguageHost
+        /// <summary>
+        /// Fires when primary document is closing. After this event certain properties 
+        /// like BufferGraph become unavailable and may return null.
+        /// </summary>
         public event EventHandler<EventArgs> Closing;
 
+        /// <summary>
+        /// Full path to the primary document. Typically used by the contained
+        /// language syntax check to output correct path in the task list.
+        /// </summary>
         public string DocumentPath => _document != null ? _document.FilePath : string.Empty;
 
-        public ICommandTarget SetContainedCommandTarget(ITextView textView, ICommandTarget containedCommandTarget) {
+        /// <summary>
+        /// Sets command target of the contained language editor.
+        /// </summary>
+        /// <returns>Command target for the contained language to use as a base</returns>
+        public ICommandTarget SetContainedCommandTarget(IEditorView editorView, ICommandTarget containedCommandTarget) {
             ContainedCommandTarget = containedCommandTarget;
-            return GetBaseCommandTarget(textView);
+            return GetBaseCommandTarget(editorView.As<ITextView>());
         }
 
-        public void RemoveContainedCommandTarget(ITextView textView) => ContainedCommandTarget = null;
+        /// <summary>
+        /// Removes contained command target
+        /// </summary>
+        /// <param name="editorView">Text view associated with the command target to remove.</param>
+        public void RemoveContainedCommandTarget(IEditorView editorView) => ContainedCommandTarget = null;
 
-        public bool CanFormatLine(ITextView textView, ITextBuffer containedLanguageBuffer, int lineNumber) {
-            var line = containedLanguageBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+        /// <summary>
+        /// Determines if secondary language can format given line.
+        /// </summary>
+        /// <param name="editorView">Text view</param>
+        /// <param name="containedLanguageBuffer">Contained language buffer</param>
+        /// <param name="lineNumber">Line number in the contained language buffer</param>
+        public bool CanFormatLine(IEditorView editorView, IEditorBuffer containedLanguageBuffer, int lineNumber) {
+            var textView = editorView.As<ITextView>();
+            var textBuffer = containedLanguageBuffer.As<ITextBuffer>();
+            var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
             var viewPoint = textView.MapUpToView(line.Start);
             if (viewPoint.HasValue) {
                 var lineText = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPoint.Value).GetText();
@@ -72,7 +92,6 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
 
         #endregion
 
-        #region IMdContainedLanguageHost
         /// <summary>
         /// Detemines if particular range should not be treated as contained language and 
         /// instead should be ignored or 'skipped over'. Used by R parser to ignore 'R' in
@@ -87,22 +106,19 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             if (range.Length == 1 && range.Start > 0) {
                 // Map range up from contained language
                 var view = _textBuffer.GetFirstView();
-                if (view != null) {
-                    var viewPoint = view.MapUpToView(new SnapshotPoint(_textBuffer.CurrentSnapshot, range.Start));
-                    if (viewPoint.HasValue) {
-                        var snapshot = view.TextBuffer.CurrentSnapshot;
-                        if (snapshot.Length >= 2 && snapshot.GetText(viewPoint.Value - 1, 2).EqualsIgnoreCase("`r")) {
-                            return true;
-                        }
-                        if (snapshot.Length >= 5 && viewPoint.Value > 3 && snapshot.GetText(viewPoint.Value - 4, 5).EqualsIgnoreCase("```{r")) {
-                            return true;
-                        }
+                var viewPoint = view?.MapUpToView(new SnapshotPoint(_textBuffer.CurrentSnapshot, range.Start));
+                if (viewPoint.HasValue) {
+                    var snapshot = view.TextBuffer.CurrentSnapshot;
+                    if (snapshot.Length >= 2 && snapshot.GetText(viewPoint.Value - 1, 2).EqualsIgnoreCase("`r")) {
+                        return true;
+                    }
+                    if (snapshot.Length >= 5 && viewPoint.Value > 3 && snapshot.GetText(viewPoint.Value - 4, 5).EqualsIgnoreCase("```{r")) {
+                        return true;
                     }
                 }
             }
             return false;
         }
-        #endregion
 
         /// <summary>
         /// Retrieves base command target that is chained to the main controller
@@ -112,13 +128,9 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         /// <returns>Chained command target</returns>
         private ICommandTarget GetBaseCommandTarget(ITextView textView) {
             var controller = MdMainController.FromTextView(textView);
-
             // If there is no chained target yet, create a simple proxy target
             // for now. Real target will be set later.
-            if (controller != null && controller.ChainedController != null) {
-                return controller.ChainedController;
-            }
-            return CommandTargetProxy.GetProxyTarget(textView, _coreShell);
+            return controller?.ChainedController ?? CommandTargetProxy.GetProxyTarget(textView);
         }
     }
 }

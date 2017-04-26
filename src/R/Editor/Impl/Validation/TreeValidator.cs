@@ -149,7 +149,7 @@ namespace Microsoft.R.Editor.Validation {
         public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer, IREditorSettings settings) {
             var document = editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
-                var view = document.GetFirstView();
+                var view = document.PrimaryView;
                 return view != null && view.IsRepl() ? settings.SyntaxCheckInRepl : settings.SyntaxCheckEnabled;
             }
             return false;

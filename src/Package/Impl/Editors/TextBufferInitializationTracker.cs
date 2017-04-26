@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
@@ -58,9 +59,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             try {
                 var editorInstance = diskBuffer.GetService<IEditorViewModel>();
                 if (editorInstance == null) {
-                    var cs = _services.GetService<ICompositionService>();
-                    var importComposer = new ContentTypeImportComposer<IEditorViewModelFactory>(cs);
-                    var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
+                    var locator = _services.GetService<IContentTypeServiceLocator>();
+                    var instancefactory = locator.GetService<IEditorViewModelFactory>(diskBuffer.ContentType.TypeName);
 
                     Debug.Assert(instancefactory != null, "No editor factory found for the provided text buffer");
                     editorInstance = instancefactory.CreateEditorViewModel(diskBuffer.ToEditorBuffer());

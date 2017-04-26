@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.UnitTests.Core.XUnit;
@@ -16,10 +14,10 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
     public class GotoBraceCommandTest {
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
         public GotoBraceCommandTest(IServiceContainer services) {
-            _shell = services.GetService<ICoreShell>();
+            _services = services;
         }
 
         [Test]
@@ -28,7 +26,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
             string content = "if(x<1) {x<-2}";
             ITextBuffer textBuffer = new TextBufferMock(content, "R");
             ITextView textView = new TextViewMock(textBuffer);
-            var command = new GotoBraceCommand(textView, textBuffer, _shell);
+            var command = new GotoBraceCommand(textView, textBuffer, _services);
             object o = new object();
 
             var status = command.Status(VSConstants.VSStd2K, (int) VSConstants.VSStd2KCmdID.GOTOBRACE);

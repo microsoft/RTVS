@@ -7,14 +7,11 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.Common.Core.Test
-{
+namespace Microsoft.Common.Core.Test {
     [ExcludeFromCodeCoverage]
-    public class EnumerableExtensionsTest
-    {
+    public class EnumerableExtensionsTest {
         [Test]
-        public void AsList_Enumerable()
-        {
+        public void AsList_Enumerable() {
             var actual = Enumerable.Range(0, 3).AsList();
             var expected = Enumerable.Range(0, 3).ToList();
 
@@ -25,8 +22,7 @@ namespace Microsoft.Common.Core.Test
         }
 
         [Test]
-        public void AsList_Array()
-        {
+        public void AsList_Array() {
             var actual = Enumerable.Range(0, 3).ToArray().AsList();
             var expected = Enumerable.Range(0, 3).ToList();
 
@@ -37,8 +33,7 @@ namespace Microsoft.Common.Core.Test
         }
 
         [Test]
-        public void AsList_List()
-        {
+        public void AsList_List() {
             var source = Enumerable.Range(0, 3).ToList();
             var actual = source.AsList();
             var expected = source;
@@ -47,8 +42,7 @@ namespace Microsoft.Common.Core.Test
         }
 
         [Test]
-        public void AsArray_Enumerable()
-        {
+        public void AsArray_Enumerable() {
             var actual = Enumerable.Range(0, 3).AsArray();
             var expected = new[] { 0, 1, 2 };
 
@@ -59,8 +53,7 @@ namespace Microsoft.Common.Core.Test
         }
 
         [Test]
-        public void AsArray_List()
-        {
+        public void AsArray_List() {
             var actual = Enumerable.Range(0, 3).ToList().AsArray();
             var expected = new[] { 0, 1, 2 };
 
@@ -71,23 +64,20 @@ namespace Microsoft.Common.Core.Test
         }
 
         [Test]
-        public void AsArray_Array()
-        {
-            var expected = new [] { 0,1,2 };
+        public void AsArray_Array() {
+            var expected = new[] { 0, 1, 2 };
             var actual = expected.AsArray();
 
             actual.Should().BeSameAs(expected);
         }
 
         [Test]
-        public void Append()
-        {
-            new[] {1, 2, 3}.Append(5).Should().Equal(1, 2, 3, 5);
+        public void Append() {
+            new[] { 1, 2, 3 }.Concat(new[] { 5 }).Should().Equal(1, 2, 3, 5);
         }
 
         [Test]
-        public void Split()
-        {
+        public void Split() {
             var actual = Enumerable.Range(0, 10).Split(3);
             var expected = new IReadOnlyCollection<int>[]
             {
@@ -101,30 +91,27 @@ namespace Microsoft.Common.Core.Test
         }
 
         [Test]
-        public void Split_Empty()
-        {
+        public void Split_Empty() {
             var actual = Enumerable.Empty<int>().Split(3);
             actual.Should().Equal(Enumerable.Empty<IReadOnlyCollection<int>>());
         }
 
         [Test]
-        public void IndexWhere()
-        {
+        public void IndexWhere() {
             var actual = Enumerable.Range(2, 10).IndexWhere(v => v % 3 == 0);
             actual.Should().Equal(1, 4, 7);
         }
 
         [Test]
-        public void TraverseBreadthFirst()
-        {
-            var tree = new TreeItem(0, new []
+        public void TraverseBreadthFirst() {
+            var tree = new TreeItem(0, new[]
             {
-                new TreeItem(1, new[] { new TreeItem(2), new TreeItem(3), new TreeItem(4) }), 
+                new TreeItem(1, new[] { new TreeItem(2), new TreeItem(3), new TreeItem(4) }),
                 new TreeItem(5, new[] {
                     new TreeItem(6),
                     new TreeItem(7, new []{ new TreeItem(8), new TreeItem(9) })
-                }), 
-                new TreeItem(10, new[] { new TreeItem(11) }), 
+                }),
+                new TreeItem(10, new[] { new TreeItem(11) }),
             });
 
             var actual = tree.TraverseBreadthFirst(ti => ti.Children);
@@ -148,19 +135,16 @@ namespace Microsoft.Common.Core.Test
         }
 
         [ExcludeFromCodeCoverage]
-        public class TreeItem
-        {
+        public class TreeItem {
             public int Value { get; }
             public IEnumerable<TreeItem> Children { get; }
 
-            public TreeItem(int value)
-            {
+            public TreeItem(int value) {
                 Value = value;
                 Children = Enumerable.Empty<TreeItem>();
             }
 
-            public TreeItem(int value, IEnumerable<TreeItem> children)
-            {
+            public TreeItem(int value, IEnumerable<TreeItem> children) {
                 Value = value;
                 Children = children;
             }

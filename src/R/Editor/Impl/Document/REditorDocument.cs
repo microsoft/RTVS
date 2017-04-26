@@ -3,22 +3,22 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Validation;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Document {
     /// <summary>
     /// Main editor document for the R language
     /// </summary>
-    public class REditorDocument : IREditorDocument {
+    public sealed class REditorDocument : IREditorDocument {
+        private readonly IServiceContainer _services;
+
         public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, IExpressionTermFilter termFilter = null) {
             EditorBuffer = editorBuffer;
-            IsClosed = false;
+            _services = services;
 
             EditorBuffer.Services.AddService(this);
             EditorBuffer.Closing += OnBufferClosing;
@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Document {
         /// <summary>
         /// Full path to the document file. May be null or empty in transient documents.
         /// </summary>
-        public virtual string FilePath => EditorBuffer.FilePath;
+        public string FilePath => EditorBuffer.FilePath;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Closing;
@@ -41,12 +41,7 @@ namespace Microsoft.R.Editor.Document {
         #endregion
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)=> Close();
-
-        public void Dispose() {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => Close();
 
         private void OnBufferClosing(object sender, EventArgs e) => Close();
         #endregion
@@ -60,7 +55,7 @@ namespace Microsoft.R.Editor.Document {
         /// <summary>
         /// Closes the document
         /// </summary>
-        public virtual void Close() {
+        public void Close() {
             if (IsClosed) {
                 return;
             }
@@ -72,9 +67,12 @@ namespace Microsoft.R.Editor.Document {
             EditorTree = null;
 
             if (Closing != null) {
-                foreach (EventHandler<EventArgs> eh in Closing.GetInvocationList()) {
-                    Debug.Fail(String.Format(CultureInfo.CurrentCulture, "There are still listeners in the EditorDocument.OnDocumentClosing event list: {0}", eh.Target));
-                    Closing -= eh;
+                foreach (var eh in Closing.GetInvocationList()) {
+                    var closingHandler = eh as EventHandler<EventArgs>;
+                    if (closingHandler != null) {
+                        Debug.Fail(Invariant($"There are still listeners in the EditorDocument.OnDocumentClosing event list: {eh.Target}"));
+                        Closing -= closingHandler;
+                    }
                 }
             }
 
@@ -93,20 +91,22 @@ namespace Microsoft.R.Editor.Document {
         /// R parser anc classifier and remove all projections. AST is no longer 
         /// valid after this call.
         /// </summary>
-        public virtual void BeginMassiveChange() { }
+        public void BeginMassiveChange() { }
 
         /// <summary>
         /// Tells document that massive change to text buffer is complete. Document will perform full parse, 
         /// resume tracking of text buffer changes and classification (colorization).
         /// </summary>
         /// <returns>True if changes were made to the text buffer since call to BeginMassiveChange</returns>
-        public virtual bool EndMassiveChange() => true;
+        public bool EndMassiveChange() => true;
 
         /// <summary>
         /// Indicates if massive change to the document is in progress. If massive change
         /// is in progress, tree updates and colorizer are suspended.
         /// </summary>
-        public virtual bool IsMassiveChangeInProgress => false;
+        public bool IsMassiveChangeInProgress => false;
+
+        public IEditorView PrimaryView => _services.GetService<IEditorViewLocator>()?.GetPrimaryView(EditorBuffer);
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> MassiveChangeBegun;
@@ -114,7 +114,7 @@ namespace Microsoft.R.Editor.Document {
 #pragma warning restore 67
         #endregion
 
-        protected void FireMassiveChangeBegun() => MassiveChangeBegun?.Invoke(this, EventArgs.Empty);
-        protected void FireMassiveChangeEnded() => MassiveChangeEnded?.Invoke(this, EventArgs.Empty);
+        public void FireMassiveChangeBegun() => MassiveChangeBegun?.Invoke(this, EventArgs.Empty);
+        public void FireMassiveChangeEnded() => MassiveChangeEnded?.Invoke(this, EventArgs.Empty);
     }
 }

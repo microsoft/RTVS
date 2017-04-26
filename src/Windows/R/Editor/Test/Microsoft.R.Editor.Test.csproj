@@ -186,6 +186,7 @@
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
     <Compile Include="Fixtures\REditorServicesFixture.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
+    <Compile Include="Mocks\EditorUndoActionMock.cs" />
     <Compile Include="Navigation\TextStructureTest.cs" />
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="RData%27\Tokens\TokenizeTest.cs" />
     <Compile Include="RData%27\Tokens\VerifySortedTables.cs" />
     <Compile Include="Script\RHostScript.cs" />
+    <Compile Include="Mocks\EditorSupportMock.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />
     <Compile Include="Signatures\ComputeCurrentParameterTest.cs" />
@@ -224,6 +226,7 @@
     <Compile Include="Utility\FunctionIndexBasedTest.cs" />
     <Compile Include="Utility\QuickInfoSourceUtility.cs" />
     <Compile Include="Utility\SignatureHelpSourceUtility.cs" />
+    <Compile Include="Utility\TestRSettings.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
     <Compile Include="Utility\TextBufferUtility.cs" />
   </ItemGroup>

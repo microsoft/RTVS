@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Text;
@@ -16,12 +15,15 @@ namespace Microsoft.Markdown.Editor.Document {
     /// <summary>
     /// Main editor document for Markdown language
     /// </summary>
-    public class MdEditorDocument : IMdEditorDocument {
+    public sealed class MdEditorDocument : IMdEditorDocument {
+        private readonly IServiceContainer _services;
         private readonly RLanguageHandler _rLanguageHandler;
         private readonly IProjectionBufferManager _projectionBufferManager;
 
         #region Constructors
         public MdEditorDocument(IEditorBuffer editorBuffer, IServiceContainer services) {
+            _services = services;
+
             EditorBuffer = editorBuffer;
             EditorBuffer.AddService(this);
 
@@ -42,7 +44,10 @@ namespace Microsoft.Markdown.Editor.Document {
         public event EventHandler<EventArgs> Closing;
 #pragma warning restore 67
 
-        public virtual void Close() => IsClosed = true;
+        public void Close() => IsClosed = true;
+
+        public IEditorView PrimaryView => _services.GetService<IEditorViewLocator>()?.GetPrimaryView(EditorBuffer);
+
         #endregion
 
         #region IMdEditorDocument
@@ -50,16 +55,9 @@ namespace Microsoft.Markdown.Editor.Document {
         #endregion
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing) {
-            if (disposing) {
-                EditorBuffer.RemoveService(this);
-                _projectionBufferManager.Dispose();
-            }
-        }
-
         public void Dispose() {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            EditorBuffer.RemoveService(this);
+            _projectionBufferManager.Dispose();
         }
         #endregion
     }

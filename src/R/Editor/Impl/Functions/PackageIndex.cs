@@ -203,7 +203,7 @@ namespace Microsoft.R.Editor.Functions {
             if (!token.IsSet) {
                 try {
                     var installed = await GetInstalledPackagesAsync();
-                    var installedNames = installed.Select(p => p.Package).Append("rtvs").ToList();
+                    var installedNames = installed.Select(p => p.Package).Concat(new[] { "rtvs" }).ToList();
 
                     var currentNames = _packages.Keys.ToArray();
                     var removedNames = currentNames.Except(installedNames);

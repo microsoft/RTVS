@@ -16,18 +16,16 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class RangeFormatterTest {
-        private readonly IServiceContainer _services;
-        private readonly IREditorSettings _settings;
+        private readonly RangeFormatter _formatter;
 
         public RangeFormatterTest(IServiceContainer services) {
-            _services = services;
-            _settings = services.GetService<IREditorSettings>();
+            _formatter = new RangeFormatter(services);
         }
 
         [Test]
         public void EmptyFileTest() {
             var editorView = TextViewTest.MakeTextView(string.Empty, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.EmptyRange, _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.EmptyRange);
 
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
             actual.Should().BeEmpty();
@@ -41,7 +39,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("c[[a,b,]]", "c[[a, b,]]")]
         public void FormatArgumentsTest(string content, string expected) {
             var editorView = TextViewTest.MakeTextView(content, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.EmptyRange, _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.EmptyRange);
 
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
@@ -52,25 +50,25 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("if (a==a+((b +c) /x)){\nif(func(a,b,c +2, x =2,...)){}}", 2, 2, "if (a == a + ((b + c) / x)) {\nif(func(a,b,c +2, x =2,...)){}}")]
         public void FormatConditional(string original, int start, int end, string expected) {
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(start, end), _settings, _services);
-            string actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(start, end));
+
+            var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatConditionalTest03() {
-            var original =
+            const string original =
 @"if(true){
   if(false){
 x<-1
   }
 }";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf('x'), 1));
 
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf('x'), 1), _settings, _services);
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
-
-            var expected =
+            const string expected =
 @"if(true){
   if(false){
     x <- 1
@@ -81,41 +79,38 @@ x<-1
 
         [Test]
         public void FormatConditionalTest04() {
-            var original = "if (x > 1)\r\ny<-2";
+            const string original = "if (x > 1)\r\ny<-2";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf('y'), 0));
 
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf('y'), 0), _settings, _services);
-
-            var expected = "if (x > 1)\r\n  y <- 2";
+            const string expected = "if (x > 1)\r\n  y <- 2";
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
-
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatConditionalTest05() {
-            var original = "if(true){\n} else {}\n";
+            const string original = "if(true){\n} else {}\n";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf("else"), 0), _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf("else"), 0));
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
 
-            var expected = "if(true){\n} else { }\n";
+            const string expected = "if(true){\n} else { }\n";
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatConditionalTest06() {
-            AstRoot ast;
-            string original =
+            const string original =
 @"if(true)
    while(true) {
 } else {}
 ";
-            var editorView = TextViewTest.MakeTextView(original, out ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf("else"), 0), _settings, _services);
+            var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf("else"), 0));
             string actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
 
-            string expected =
+            const string expected =
 @"if(true)
    while(true) {
    } else { }
@@ -125,15 +120,15 @@ x<-1
 
         [Test]
         public void FormatOneLine() {
-            var original =
+            const string original =
 @"foo(cache=TRUE)
 foo(cache=TRUE)
 ";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(0, original.LastIndexOf("foo", StringComparison.Ordinal)), _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(0, original.LastIndexOf("foo", StringComparison.Ordinal)));
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
 
-            var expected =
+            const string expected =
 @"foo(cache = TRUE)
 foo(cache=TRUE)
 ";
@@ -147,14 +142,14 @@ foo(cache=TRUE)
         [InlineData("{\n    {\n  } }", 6, 13, "{\n  {\n  }\n}")]
         public void FormatScope(string content, int start, int end, string expected) {
             var editorView = TextViewTest.MakeTextView(content, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(start, end), _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(start, end));
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatScopeLessIf01() {
-            var original =
+            const string original =
 @"
 if (x != nrx) 
     stop()
@@ -162,9 +157,9 @@ if (x != nrx)
     stop()
 ";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf("if (z"), 0), _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf("if (z"), 0));
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
-            var expected =
+            const string expected =
 @"
 if (x != nrx) 
     stop()
@@ -176,15 +171,15 @@ if (z < ncx)
 
         [Test]
         public void FormatMultiline01() {
-            var original =
+            const string original =
 @"x %>%y %>%
     z %>%a";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
 
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(
-                                  original.IndexOf("z"), original.IndexOf("a") + 1), _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(
+                                  original.IndexOf("z"), original.IndexOf("a") + 1));
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
-            var expected =
+            const string expected =
 @"x %>% y %>%
     z %>% a";
             actual.Should().Be(expected);
@@ -192,15 +187,14 @@ if (z < ncx)
 
         [Test]
         public void FormatMultiline02() {
-            var original =
+            const string original =
 @"((x %>%y)
     %>% z %>%a)";
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
 
-            RangeFormatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(
-                                  original.IndexOf("%>% z"), original.IndexOf("a") + 2), _settings, _services);
+            _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(original.IndexOf("%>% z"), original.IndexOf("a") + 2));
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
-            var expected =
+            const string expected =
 @"((x %>% y)
     %>% z %>% a)";
             actual.Should().Be(expected);

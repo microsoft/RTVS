@@ -22,6 +22,11 @@ namespace Microsoft.Languages.Editor.Text {
         PropertyDictionary Properties { get; }
 
         /// <summary>
+        /// Name of the content type. Typically language name like 'R' or 'HTML'.
+        /// </summary>
+        string ContentType { get; }
+
+        /// <summary>
         /// Current buffer snapshot
         /// </summary>
         IEditorBufferSnapshot CurrentSnapshot { get; }

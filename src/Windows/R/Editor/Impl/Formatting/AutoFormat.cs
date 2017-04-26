@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Formatting {
             // which looks like ```{r. 'r' should not separate from {.
             var textBuffer = document.EditorBuffer.As<ITextBuffer>();
             var host = ContainedLanguageHost.GetHost(textView, textBuffer, services);
-            if (host != null && !host.CanFormatLine(textView, textBuffer, textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
+            if (host != null && !host.CanFormatLine(textView.ToEditorView(), textBuffer.ToEditorBuffer(), textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
 

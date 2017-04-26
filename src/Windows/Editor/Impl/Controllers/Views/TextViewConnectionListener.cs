@@ -33,8 +33,8 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         protected Dictionary<ITextBuffer, TextViewData> TextBufferToViewData { get; private set; }
 
         private Action _pendingCheckForViewlessTextBuffers;
-        private Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType;
-        private IIdleTimeService _idleTime;
+        private readonly Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
+        private readonly IIdleTimeService _idleTime;
 
         // The editor should only import one of these objects, so cache it
         private static IList<TextViewConnectionListener> _allInstances;
@@ -52,19 +52,14 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         private void EnsureInitialized() {
             if (TextBufferToViewData == null) {
                 TextBufferToViewData = new Dictionary<ITextBuffer, TextViewData>();
-
                 Shell.Terminating += OnTerminateApp;
                 TextBufferListeners = Orderer.Order(TextBufferListeners);
-                _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
             }
         }
 
         #region IWpfTextViewCreationListener
         // Called once when view is created
-        public void TextViewCreated(IWpfTextView textView) {
-            OnTextViewCreated(textView);
-        }
-
+        public void TextViewCreated(IWpfTextView textView) => OnTextViewCreated(textView);
         #endregion
 
         #region IWpfTextViewConnectionListener
@@ -266,7 +261,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
 
         public static TextViewData GetTextViewDataForBuffer(ITextBuffer textBuffer) {
             if (_allInstances != null) {
-                foreach (TextViewConnectionListener instance in _allInstances) {
+                foreach (var instance in _allInstances) {
                     if (instance.TextBufferToViewData != null && instance.TextBufferToViewData.TryGetValue(textBuffer, out TextViewData textViewData)) {
                         if (textViewData.AllViews.Count > 0) {
                             return textViewData;

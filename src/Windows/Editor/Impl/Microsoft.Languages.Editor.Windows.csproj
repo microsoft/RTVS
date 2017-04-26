@@ -54,8 +54,6 @@
     <Compile Include="ContainedLanguage\ContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHandler.cs" />
     <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
-    <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHost.cs" />
-    <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHostProvider.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="DragDrop\DataObjectFlags.cs" />
     <Compile Include="DragDrop\DataObjectFormats.cs" />

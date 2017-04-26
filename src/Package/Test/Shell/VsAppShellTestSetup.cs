@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
     static class VsAppShellTestSetup {
         public static void Setup(VsAppShell instance) {
-            var serviceManager = instance.Services as VsServiceManager;
+            var serviceManager = (VsServiceManager)instance.Services;
             Debug.Assert(!serviceManager.AllServices.Any(), "Test VsAppShell service container must be empty at init time");
 
             var catalog = VsTestCompositionCatalog.Current;

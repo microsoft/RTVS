@@ -18,8 +18,8 @@ namespace Microsoft.Languages.Editor.Test.ContainedLanguage {
         [Category.Languages.Contained]
         public void Test01() {
             var tv = new TextViewMock(new TextBufferMock(string.Empty, "text"));
-            var proxy = CommandTargetProxy.GetProxyTarget(tv, null);
-            object o = new object();
+            var proxy = CommandTargetProxy.GetProxyTarget(tv);
+            var o = new object();
 
             proxy.Should().NotBeNull();
             tv.GetService<CommandTargetProxy>().Should().Be(proxy);

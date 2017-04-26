@@ -27,14 +27,14 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         /// <summary>
         /// Retrieves contained language host for a given text buffer.
         /// </summary>
-        /// <param name="textView">Primary text view</param>
-        /// <param name="textBuffer">Contained language text buffer</param>
+        /// <param name="editorView">Primary text view</param>
+        /// <param name="editorBuffer">Contained language text buffer</param>
         /// <returns>Contained language host, <seealso cref="IContainedLanguageHost"/></returns>
-        public IContainedLanguageHost GetContainedLanguageHost(ITextView textView, ITextBuffer textBuffer) {
-            var containedLanguageHost = textBuffer.GetService<IContainedLanguageHost>();
+        public IContainedLanguageHost GetContainedLanguageHost(IEditorView editorView, IEditorBuffer editorBuffer) {
+            var containedLanguageHost = editorBuffer.GetService<IContainedLanguageHost>();
             if (containedLanguageHost == null) {
-                var document = textView.TextDataModel.DocumentBuffer.GetEditorDocument<MdEditorDocument>();
-                containedLanguageHost = new MdContainedLanguageHost(document, textBuffer, _coreShell);
+                var document = editorView.EditorBuffer.GetEditorDocument<IMdEditorDocument>();
+                containedLanguageHost = new MdContainedLanguageHost(document, editorBuffer);
             }
             return containedLanguageHost;
         }

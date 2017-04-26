@@ -2,31 +2,28 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.BraceMatch {
     public class GotoBraceCommand : ViewCommand {
-        private IBraceMatcherProvider _braceMatcherProvider;
+        private readonly IBraceMatcherProvider _braceMatcherProvider;
         protected ITextBuffer TextBuffer { get; set; }
 
-        private static CommandId[] _commands = new CommandId[]
-        {
+        private static readonly CommandId[] _commands = {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.GOTOBRACE),
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.GOTOBRACE_EXT),
         };
 
         public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) :
             base(textView, _commands, false) {
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(services.GetService<ICompositionService>());
-            _braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
-
+            var locator = services.GetService<IContentTypeServiceLocator>();
+            _braceMatcherProvider = locator.GetService< IBraceMatcherProvider>(textBuffer.ContentType.TypeName);
             TextBuffer = textBuffer;
         }
 

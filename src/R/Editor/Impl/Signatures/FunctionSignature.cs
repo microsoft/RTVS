@@ -96,7 +96,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         internal int ComputeCurrentParameter(IEditorBufferSnapshot snapshot, AstRoot ast, int position) {
             var parameterInfo = FunctionParameter.FromEditorBuffer(ast, snapshot, position);
-            int index = 0;
+            var index = 0;
 
             if (parameterInfo != null) {
                 index = parameterInfo.ParameterIndex;
@@ -111,7 +111,8 @@ namespace Microsoft.R.Editor.Signatures {
                     // their full names. Then the unnamed arguments are matched in positional order to 
                     // the remaining formal arguments.
 
-                    int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, _shell.GetService<IREditorSettings>().PartialArgumentNameMatch);
+                    var partialMatch = _services.GetService<IREditorSettings>().PartialArgumentNameMatch;
+                    var argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, partialMatch);
                     if (argumentIndexInSignature >= 0) {
                         index = argumentIndexInSignature;
                     }

@@ -4,8 +4,7 @@
 using System;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// <summary>
@@ -13,7 +12,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// </summary>
     public interface IContainedLanguageHost {
         /// <summary>
-        /// Full path to the host document. Typically used by the contained
+        /// Full path to the primary document. Typically used by the contained
         /// language syntax check to output correct path in the task list.
         /// </summary>
         string DocumentPath { get; }
@@ -22,28 +21,28 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// Sets command target of the contained language editor.
         /// </summary>
         /// <returns>Command target for the contained language to use as a base</returns>
-        ICommandTarget SetContainedCommandTarget(ITextView textView, ICommandTarget containedCommandTarget);
+        ICommandTarget SetContainedCommandTarget(IEditorView editorView, ICommandTarget containedCommandTarget);
 
         /// <summary>
         /// Removes contained command target
         /// </summary>
-        /// <param name="textView">Text view associated with the command target to remove.</param>
-        void RemoveContainedCommandTarget(ITextView textView);
+        /// <param name="editorView">Text view associated with the command target to remove.</param>
+        void RemoveContainedCommandTarget(IEditorView editorView);
 
         /// <summary>
-        /// Fires when host document is closing. After this event certain properties like BufferGraph
-        /// become unavailable and may return null.
+        /// Fires when primary document is closing. After this event certain properties 
+        /// like BufferGraph become unavailable and may return null.
         /// </summary>
         event EventHandler<EventArgs> Closing;
 
         /// <summary>
         /// Determines if secondary language can format given line.
         /// </summary>
-        /// <param name="textView">Text view</param>
+        /// <param name="editorView">Text view</param>
         /// <param name="containedLanguageBuffer">Contained language buffer</param>
         /// <param name="lineNumber">Line number in the contained language buffer</param>
         /// <returns></returns>
-        bool CanFormatLine(ITextView textView, ITextBuffer containedLanguageBuffer, int lineNumber);
+        bool CanFormatLine(IEditorView editorView, IEditorBuffer containedLanguageBuffer, int lineNumber);
 
         /// <summary>
         /// Detemines if particular range should not be treated as contained language and 

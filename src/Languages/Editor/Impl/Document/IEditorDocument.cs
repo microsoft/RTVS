@@ -30,5 +30,11 @@ namespace Microsoft.Languages.Editor.Document {
         /// Full path to the document file. May be null or empty in transient documents.
         /// </summary>
         string FilePath { get; }
+
+        /// <summary>
+        /// Retrieves primary view for the document. It may or may not exist.
+        /// In some environments document may have multiple views.
+        /// </summary>
+        IEditorView PrimaryView { get; }
     }
 }

@@ -30,8 +30,6 @@ namespace Microsoft.R.Editor.Completions.Engine {
         /// Provides list of completion entries for a given location in the AST.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="autoShownCompletion">True if completion is forced (like when typing Ctrl+Space)</param>
-        /// <param name="shell"></param>
         /// <returns>List of completion entries for a given location in the AST</returns>
         public IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(IRCompletionContext context) {
             var ast = context.AstRoot;
@@ -46,7 +44,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
             string directory;
             if (CanShowFileCompletion(ast, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    providers.Add(new FilesCompletionProvider(directory, _coreShell));
+                    providers.Add(new FilesCompletionProvider(directory, _services));
                 }
                 return providers;
             }

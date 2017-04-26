@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
@@ -51,10 +50,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         public static void InitEditorInstance(ITextBuffer textBuffer, IServiceContainer services) {
             if (textBuffer.GetService<IEditorViewModel>() == null) {
-                var cs = services.GetService<ICompositionService>();
-                var importComposer1 = new ContentTypeImportComposer<IEditorViewModelFactory>(cs);
-                var viewModelFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
-
+                var locator = services.GetService<IContentTypeServiceLocator>();
+                var viewModelFactory = locator.GetService<IEditorViewModelFactory>(textBuffer.ContentType.TypeName);
                 var viewModel = viewModelFactory.CreateEditorViewModel(textBuffer);
             }
         }

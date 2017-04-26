@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor {
     public static class ViewExtensions {
+        private const string _replContentTypeName = "Interactive Content";
+
         /// <summary>
         /// Extracts identifier sequence at the caret location.
         /// Fetches parts of 'abc$def' rather than tne entire expression.
@@ -144,5 +147,11 @@ namespace Microsoft.R.Editor {
             }
             return false;
         }
+
+        /// <summary>
+        /// Determines if given text view is interactive window
+        /// </summary>
+        public static bool IsRepl(this IEditorView editorView)
+            => editorView.EditorBuffer.ContentType.EqualsIgnoreCase(_replContentTypeName);
     }
 }

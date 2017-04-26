@@ -63,7 +63,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             // documents such as in document attached to a projected buffer
             // in the R interactive window
             if (_taskList != null) {
-                var view = _document.GetFirstView();
+                var view = _document.PrimaryView;
                 if (view != null && !view.IsRepl()) {
                     _taskList.AddTaskSource(this);
                 }

@@ -3,14 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Services;
 
 namespace Microsoft.Languages.Editor.Controllers {
     public abstract class ViewController : Controller {
@@ -63,28 +63,19 @@ namespace Microsoft.Languages.Editor.Controllers {
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public virtual void BuildCommandSet() {
-            // It is allowed here not to have host. The reason is that we allow using controller classes
-            // without host as long as derived controller is adding commands manually. Without host there is
-            // no composition service and hence we are unable to import command factories.
-            var cs = Services.GetService<ICompositionService>();
-            if (cs != null) {
-                var importComposer = new ContentTypeImportComposer<ICommandFactory>(cs);
-                var commandFactories = importComposer.GetAll(TextBuffer.ContentType.TypeName);
-
-                foreach (var factory in commandFactories) {
-                    var commands = factory.GetCommands(TextView, TextBuffer);
-                    AddCommandSet(commands);
-                }
+            var locator = Services.GetService<IContentTypeServiceLocator>();
+            var commandFactories = locator.GetAllServices<ICommandFactory>(TextBuffer.ContentType.TypeName);
+            foreach (var factory in commandFactories) {
+                var commands = factory.GetCommands(TextView, TextBuffer);
+                AddCommandSet(commands);
             }
         }
 
         private void BuildControllerSet() {
-            var cs = Services.GetService<ICompositionService>();
-            var controllerFactories = ComponentLocatorForOrderedContentType<IControllerFactory>.ImportMany(cs, TextBuffer.ContentType);
-            if (controllerFactories != null) {
-                foreach (var factory in controllerFactories) {
-                    _controllers.AddRange(factory.Value.GetControllers(TextView, TextBuffer));
-                }
+            var locator = Services.GetService<IContentTypeServiceLocator>();
+            var controllerFactories = locator.GetAllOrderedServices<IControllerFactory>(TextBuffer.ContentType.TypeName);
+            foreach (var factory in controllerFactories) {
+                _controllers.AddRange(factory.Value.GetControllers(TextView, TextBuffer));
             }
         }
 
@@ -95,7 +86,6 @@ namespace Microsoft.Languages.Editor.Controllers {
                     return status;
                 }
             }
-
             return base.Status(group, id);
         }
 

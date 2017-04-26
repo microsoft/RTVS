@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Commands {
                     _textBuffer = textBuffer;
 
                     var mainController = RMainController.FromTextView(textView);
-                    var nextTarget = _containedLanguageHost.SetContainedCommandTarget(textView, mainController);
+                    var nextTarget = _containedLanguageHost.SetContainedCommandTarget(textView.ToEditorView(), mainController);
                     // Convert chained target to ICommandTarget (chained target might be IOleCommandTarget and host will create a shim then).
                     mainController.ChainedController = nextTarget;
                 }
@@ -37,7 +37,7 @@ namespace Microsoft.R.Editor.Commands {
             if (textBuffer != textView.TextBuffer) {
                 if (_containedLanguageHost != null) {
                     _containedLanguageHost.Closing -= OnContainedLanguageHostClosing;
-                    _containedLanguageHost.RemoveContainedCommandTarget(textView);
+                    _containedLanguageHost.RemoveContainedCommandTarget(textView.ToEditorView());
                 }
             }
             base.OnTextViewDisconnected(textView, textBuffer);

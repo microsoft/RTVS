@@ -6,6 +6,9 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Languages.Editor.Formatting;
+using Microsoft.Languages.Editor.Selection;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
@@ -15,13 +18,21 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.SmartIndent;
 
 namespace Microsoft.R.Editor.Formatting {
-    public static class RangeFormatter {
-        public static bool FormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
+    public sealed class RangeFormatter {
+        private readonly IServiceContainer _services;
+        private readonly IREditorSettings _settings;
+
+        public RangeFormatter(IServiceContainer services) {
+            _services = services;
+            _settings = services.GetService<IREditorSettings>();
+        }
+
+        public bool FormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
             var snapshot = editorBuffer.CurrentSnapshot;
             var start = formatRange.Start;
             var end = formatRange.End;
 
-            if(!CanFormatRange(editorView, editorBuffer, formatRange, services)) {
+            if (!CanFormatRange(editorView, editorBuffer, formatRange)) {
                 return false;
             }
 
@@ -60,15 +71,15 @@ namespace Microsoft.R.Editor.Formatting {
             int startPosition = FindStartOfExpression(editorBuffer, startLine.Start);
 
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
-            return FormatRangeExact(editorBuffer, editorBuffer, formatRange, settings, services);
+            return FormatRangeExact(editorView, editorBuffer, formatRange);
         }
 
-        public static bool FormatRangeExact(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
+        private bool FormatRangeExact(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
             var snapshot = editorBuffer.CurrentSnapshot;
             var spanText = snapshot.GetText(formatRange);
             var trimmedSpanText = spanText.Trim();
 
-            var formatter = new RFormatter(settings.FormatOptions);
+            var formatter = new RFormatter(_settings.FormatOptions);
             var formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // There may be inserted line breaks after {
@@ -78,23 +89,24 @@ namespace Microsoft.R.Editor.Formatting {
                 // Extract existing indent before applying changes. Existing indent
                 // may be used by the smart indenter for function argument lists.
                 var startLine = snapshot.GetLineFromPosition(formatRange.Start);
-                var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), settings.IndentSize);
+                var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), _settings.IndentSize);
 
-                var selectionTracker = new RSelectionTracker(textView, editorBuffer, formatRange);
-                RTokenizer tokenizer = new RTokenizer();
-                IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
-                IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
+                var selectionTracker = GetSelectionTracker(editorView, editorBuffer, formatRange);
+                var tokenizer = new RTokenizer();
+                var oldTokens = tokenizer.Tokenize(spanText);
+                var newTokens = tokenizer.Tokenize(formattedText);
 
-                IncrementalTextChangeApplication.ApplyChangeByTokens(
-                    editorBuffer.As<ITextBuffer>(),
+                var wsChangeHandler = _services.GetService<IIncrementalWhitespaceChangeHandler>();
+                wsChangeHandler.ApplyChange(
+                    editorBuffer,
                     new TextStream(spanText), new TextStream(formattedText),
                     oldTokens, newTokens,
                     formatRange,
-                    Resources.AutoFormat, selectionTracker, services,
+                    Resources.AutoFormat, selectionTracker,
                     () => {
                         var ast = UpdateAst(editorBuffer);
                         // Apply indentation
-                        IndentLines(editorBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, settings, originalIndentSizeInSpaces);
+                        IndentLines(editorBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, originalIndentSizeInSpaces);
                     });
 
                 return true;
@@ -103,7 +115,7 @@ namespace Microsoft.R.Editor.Formatting {
             return false;
         }
 
-        private static AstRoot UpdateAst(IEditorBuffer editorBuffer) {
+        private AstRoot UpdateAst(IEditorBuffer editorBuffer) {
             var document = editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 document.EditorTree.EnsureTreeReady();
@@ -116,8 +128,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// Appends indentation to each line so formatted text appears properly 
         /// indented inside the host document (script block in HTML page).
         /// </summary>
-        private static void IndentLines(IEditorBuffer textBuffer, ITextRange range, AstRoot ast,
-                                        IREditorSettings settings, int originalIndentSizeInSpaces) {
+        private void IndentLines(IEditorBuffer textBuffer, ITextRange range, AstRoot ast, int originalIndentSizeInSpaces) {
             var snapshot = textBuffer.CurrentSnapshot;
             var firstLine = snapshot.GetLineFromPosition(range.Start);
             var lastLine = snapshot.GetLineFromPosition(range.End);
@@ -126,13 +137,13 @@ namespace Microsoft.R.Editor.Formatting {
             for (var i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
                 // Snapshot is updated after each insertion so do not cache
                 var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
-                var indent = SmartIndenter.GetSmartIndent(line, settings, ast, originalIndentSizeInSpaces, formatting: true);
+                var indent = SmartIndenter.GetSmartIndent(line, _settings, ast, originalIndentSizeInSpaces, formatting: true);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
-                    int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), settings.TabSize);
+                    int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), _settings.TabSize);
                     indent = Math.Max(0, indent - currentIndentSize);
                     if (indent > 0) {
-                        string indentString = IndentBuilder.GetIndentString(indent, settings.IndentType, settings.TabSize);
+                        var indentString = IndentBuilder.GetIndentString(indent, _settings.IndentType, _settings.TabSize);
                         textBuffer.Insert(line.Start, indentString);
                         if (document == null) {
                             // Typically this is a test scenario only. In the real editor
@@ -148,7 +159,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Given position in the buffer tries to detemine start of the expression.
         /// </summary>
-        private static int FindStartOfExpression(IEditorBuffer textBuffer, int position) {
+        private int FindStartOfExpression(IEditorBuffer textBuffer, int position) {
             // Go up line by line, tokenize each line
             // and check if it starts or ends with an operator
             var lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
@@ -175,23 +186,41 @@ namespace Microsoft.R.Editor.Formatting {
             return position;
         }
 
-        private static bool CanFormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IServiceContainer services) {
+        private bool CanFormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var view = editorView.As<ITextView>();
-            var tb = editorBuffer.As<ITextBuffer>();
-            var host = ContainedLanguageHost.GetHost(view, tb, services);
+            var locator = _services.GetService<IContentTypeServiceLocator>();
+            var provider = locator.GetService<IContainedLanguageHostProvider>("R");
+            var host = provider?.GetContainedLanguageHost(editorView, editorBuffer);
             if (host != null) {
                 var snapshot = editorBuffer.CurrentSnapshot;
                 var startLine = snapshot.GetLineNumberFromPosition(formatRange.Start);
                 var endLine = snapshot.GetLineNumberFromPosition(formatRange.End);
-                for(int i = startLine; i<= endLine; i++) {
-                    if (!host.CanFormatLine(view, tb, i)) {
+                for (var i = startLine; i <= endLine; i++) {
+                    if (!host.CanFormatLine(editorView, editorBuffer, i)) {
                         return false;
                     }
                 }
             }
             return true;
+        }
+
+        private ISelectionTracker GetSelectionTracker(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
+            var locator = _services.GetService<IContentTypeServiceLocator>();
+            var provider = locator?.GetService<ISelectionTrackerProvider>(editorBuffer.ContentType);
+            return provider?.CreateSelectionTracker(editorView, editorBuffer, formatRange) ?? new DefaultSelectionTracker(editorView);
+        }
+
+        private sealed class DefaultSelectionTracker: ISelectionTracker {
+            public DefaultSelectionTracker(IEditorView editorView) {
+                EditorView = editorView;
+            }
+
+            public IEditorView EditorView { get; }
+            public void StartTracking(bool automaticTracking) { }
+            public void EndTracking() { }
+            public void MoveToBeforeChanges() { }
+            public void MoveToAfterChanges(int virtualSpaces = 0) { }
         }
     }
 }

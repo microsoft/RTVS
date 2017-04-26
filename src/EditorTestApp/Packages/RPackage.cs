@@ -4,7 +4,7 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
@@ -36,11 +36,10 @@ namespace Microsoft.Languages.Editor.Application.Packages {
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
             if (textBuffer.GetService<IEditorViewModel>() == null) {
-                var cs = _shell.GetService<ICompositionService>();
                 var tdfs = _shell.GetService<ITextDocumentFactoryService>();
-                var importComposer = new ContentTypeImportComposer<IEditorViewModelFactory>(cs);
-                var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-                var viewMode = factory.CreateEditorViewModel(new EditorBuffer(textBuffer, tdfs));
+                var locator = _shell.GetService<IContentTypeServiceLocator>();
+                var factory = locator.GetService< IEditorViewModelFactory>(textBuffer.ContentType.TypeName);
+                var viewModel = factory.CreateEditorViewModel(new EditorBuffer(textBuffer, tdfs));
             }
         }
     }

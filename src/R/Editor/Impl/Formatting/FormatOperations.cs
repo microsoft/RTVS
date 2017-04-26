@@ -65,7 +65,8 @@ namespace Microsoft.R.Editor.Formatting {
                 var settings = services.GetService<IREditorSettings>();
                 undoAction.Open(Resources.AutoFormat);
                 // Now format the scope
-                var changed = RangeFormatter.FormatRange(editorView, textBuffer, scope, settings, services);
+                var formatter = new RangeFormatter(services);
+                var changed = formatter.FormatRange(editorView, textBuffer, scope);
                 if (indentCaret) {
                     // Formatting may change AST and the caret position so we need to reacquire both
                     caretPoint = editorView.GetCaretPosition(textBuffer);
@@ -103,7 +104,8 @@ namespace Microsoft.R.Editor.Formatting {
             var es = services.GetService<IEditorSupport>();
             using (var undoAction = es.CreateUndoAction(editorView)) {
                 undoAction.Open(Resources.AutoFormat);
-                var result = RangeFormatter.FormatRange(editorView, textBuffer, formatRange, services.GetService<IREditorSettings>(), services);
+                var formatter = new RangeFormatter(services);
+                var result = formatter.FormatRange(editorView, textBuffer, formatRange);
                 if (result) {
                     undoAction.Commit();
                 }
@@ -121,7 +123,7 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         private static void IndentCaretInNewScope(IEditorView editorView, IScope scope, ISnapshotPoint caretBufferPoint, RFormatOptions options) {
-            if (scope == null || scope.OpenCurlyBrace == null) {
+            if (scope?.OpenCurlyBrace == null) {
                 return;
             }
             var rSnapshot = caretBufferPoint.Snapshot;
@@ -139,9 +141,9 @@ namespace Microsoft.R.Editor.Formatting {
             indentLine = rTextBuffer.CurrentSnapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
 
             // Map new caret position back to the view
-            var positionInView = textView.MapUpToView(indentLine.Start);
-            if (positionInView.HasValue) {
-                var viewIndentLine = editorView.EditorBuffer.CurrentSnapshot.GetLineFromPosition(positionInView.Value);
+            var positionInView = editorView.MapToView(new EditorSnapshotPoint(rTextBuffer.CurrentSnapshot, indentLine.Start));
+            if (positionInView != null) {
+                var viewIndentLine = editorView.EditorBuffer.CurrentSnapshot.GetLineFromPosition(positionInView.Position);
                 editorView.Caret.MoveTo(viewIndentLine.Start, innerIndentSize);
             }
         }

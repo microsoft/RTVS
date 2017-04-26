@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -46,13 +45,12 @@ namespace Microsoft.R.Editor.Test.Formatting {
         public void SmartIndentTest05() {
             var editorView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out AstRoot ast);
             using (var document = new EditorDocumentMock(new EditorTreeMock(editorView.EditorBuffer, ast))) {
-                var cs = _services.GetService<ICompositionService>();
-                var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
-                var provider = composer.GetImport(RContentTypeDefinition.ContentType);
+                var locator = _services.GetService<IContentTypeServiceLocator>();
+                var provider = locator.GetService<ISmartIndentProvider>(RContentTypeDefinition.ContentType);
                 var tv = editorView.As<ITextView>();
-                var indenter = provider.CreateSmartIndent(tv);
 
-                int? indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1));
+                var indenter = provider.CreateSmartIndent(tv);
+                var indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1));
                 indent.Should().HaveValue().And.Be(2);
             }
         }
@@ -64,7 +62,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 ast.ReflectTextChanges(e.ConvertToRelative(), new TextProvider(textView.TextBuffer.CurrentSnapshot));
 
                 if (e.Changes[0].NewText.Length == 1) {
-                    char ch = e.Changes[0].NewText[0];
+                    var ch = e.Changes[0].NewText[0];
                     if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));

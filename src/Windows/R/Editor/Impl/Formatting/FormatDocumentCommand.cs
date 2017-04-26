@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Formatting;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
@@ -65,12 +66,13 @@ namespace Microsoft.R.Editor.Formatting {
                         //    }
                         //}
 #endif
-                        IncrementalTextChangeApplication.ApplyChangeByTokens(
-                            TargetBuffer,
+                        var wsChangeHandler = Services.GetService<IIncrementalWhitespaceChangeHandler>();
+                        wsChangeHandler.ApplyChange(
+                            TargetBuffer.ToEditorBuffer(),
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker, Services);
+                            Resources.FormatDocument, selectionTracker);
                     }
                 } finally {
                     selectionTracker.EndTracking();

@@ -29,10 +29,10 @@ namespace Microsoft.R.Editor.Formatting {
                 snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)
             );
 
+            var formatter = new RangeFormatter(Services);
             foreach (var spanToFormat in rSpans) {
-                RangeFormatter.FormatRange(TextView.ToEditorView(), spanToFormat.Snapshot.TextBuffer.ToEditorBuffer(),
-                                           new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
-                                           Services.GetService<IREditorSettings>(), Services);
+                formatter.FormatRange(TextView.ToEditorView(), spanToFormat.Snapshot.TextBuffer.ToEditorBuffer(),
+                                           new TextRange(spanToFormat.Start.Position, spanToFormat.Length));
             }
             return new CommandResult(CommandStatus.Supported, 0);
         }

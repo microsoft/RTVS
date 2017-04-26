@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Test.Mocks;
@@ -65,9 +64,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
             var editorView = TextViewTest.MakeTextView(content, 0, out AstRoot ast);
             var document = new EditorDocumentMock(new EditorTreeMock(editorView.EditorBuffer, ast));
 
-            var cs = _services.GetService<ICompositionService>();
-            var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
-            var provider = composer.GetImport(RContentTypeDefinition.ContentType);
+            var locator = _services.GetService<IContentTypeServiceLocator>();
+            var provider = locator.GetService<ISmartIndentProvider>(RContentTypeDefinition.ContentType);
             var tv = editorView.As<ITextView>();
             var indenter = provider.CreateSmartIndent(tv);
             var indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));

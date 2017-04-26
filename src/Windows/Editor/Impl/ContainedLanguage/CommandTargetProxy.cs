@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Text;
@@ -17,7 +18,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     public sealed class CommandTargetProxy : ICommandTarget {
         private ICommandTarget _commandTarget;
 
-        public static CommandTargetProxy GetProxyTarget(ITextView textView, ICoreShell coreShell) {
+        public static CommandTargetProxy GetProxyTarget(ITextView textView) {
             var proxy = textView.GetService<CommandTargetProxy>();
             proxy = proxy ?? new CommandTargetProxy(textView);
             return proxy;

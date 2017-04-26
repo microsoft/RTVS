@@ -61,6 +61,7 @@
     <Compile Include="DragDrop\DataObject.cs" />
     <Compile Include="DragDrop\DropHandler.cs" />
     <Compile Include="DragDrop\DropHandlerProvider.cs" />
+    <Compile Include="Selection\RSelectionTrackerProvider.cs" />
     <Compile Include="ViewModel\REditorViewModel.cs" />
     <Compile Include="ViewModel\REditorViewModelFactory.cs" />
     <Compile Include="Extensions\EditorTreeExtensions.cs" />

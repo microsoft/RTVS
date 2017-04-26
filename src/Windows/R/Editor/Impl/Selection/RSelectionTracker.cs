@@ -5,7 +5,6 @@ using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Selection;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -35,8 +34,7 @@ namespace Microsoft.R.Editor.Selection {
         /// <param name="textView">Text view</param>
         /// <param name="textBuffer">Editor text buffer (may be different from one attached to text view)</param>
         /// <param name="changingRange">Range that is changing in the buffer</param>
-        public RSelectionTracker(ITextView textView, ITextBuffer textBuffer, ITextRange changingRange)
-            : base(textView) {
+        public RSelectionTracker(ITextView textView, ITextBuffer textBuffer, ITextRange changingRange) : base(textView.ToEditorView()) {
             TextBuffer = textBuffer;
             _changingRange = changingRange;
             _lengthBeforeChange = TextBuffer.CurrentSnapshot.Length;
@@ -87,18 +85,17 @@ namespace Microsoft.R.Editor.Selection {
             }
 
             var tokenizer = new RTokenizer();
-            IReadOnlyTextRangeCollection<RToken> tokens =
-                tokenizer.Tokenize(new TextProvider(snapshot), _changingRange.Start, _changingRange.Length, true);
+            var tokens = tokenizer.Tokenize(new TextProvider(snapshot), _changingRange.Start, _changingRange.Length, true);
 
             // Check if position is adjacent to previous token
-            int prevItemIndex = tokens.GetFirstItemBeforePosition(position);
+            var prevItemIndex = tokens.GetFirstItemBeforePosition(position);
             if (prevItemIndex >= 0 && tokens[prevItemIndex].End == position) {
                 itemIndex = prevItemIndex;
                 offset = -tokens[itemIndex].Length;
                 return;
             }
 
-            int nextItemIndex = tokens.GetFirstItemAfterOrAtPosition(position);
+            var nextItemIndex = tokens.GetFirstItemAfterOrAtPosition(position);
             if (nextItemIndex >= 0) {
                 // If two tokens are adjacent, gravity is negative, i.e. caret travels
                 // with preceding token so it won't just to aniother line if, say, 
@@ -124,13 +121,13 @@ namespace Microsoft.R.Editor.Selection {
         }
 
         private int PositionFromTokens(ITextSnapshot snapshot, int itemIndex, int offset) {
-            int lengthChange = snapshot.Length - _lengthBeforeChange;
+            var lengthChange = snapshot.Length - _lengthBeforeChange;
             var tokenizer = new RTokenizer();
             var tokens = tokenizer.Tokenize(
                 new TextProvider(snapshot), _changingRange.Start, _changingRange.Length + lengthChange, true);
 
             if (itemIndex >= 0 && itemIndex < tokens.Count) {
-                int position = tokens[itemIndex].Start - offset;
+                var position = tokens[itemIndex].Start - offset;
 
                 position = Math.Min(position, snapshot.Length);
                 position = Math.Max(position, 0);

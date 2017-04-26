@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
 
         public bool IsTransient => false;
 
-        public bool IsClosed { get; private set; }
+        public bool IsClosed => false;
 
         public bool IsMassiveChangeInProgress => false;
         public bool IsProjected { get; set; }
@@ -70,5 +70,8 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public void BeginMassiveChange() { }
         public void Dispose() { }
         public bool EndMassiveChange() => true;
+
+        public IEditorView PrimaryView => null;
+
     }
 }
