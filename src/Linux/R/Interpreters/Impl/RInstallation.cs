@@ -50,7 +50,7 @@ namespace Microsoft.R.Interpreters
             {
                 var files = package.GetPackageFiles(_fileSystem);
                 string libRPath = GetLibRPath(files, _fileSystem);
-                list.Add(new RInterpreterInfo($"Microsoft R Open '{package.Version}'", Path.GetDirectoryName(libRPath), _fileSystem));
+                list.Add(new RInterpreterInfo($"Microsoft R Open '{package.Version}'", Path.GetDirectoryName(libRPath), package.Version, package.GetVersion(), _fileSystem));
             }
 
             return list;
@@ -64,7 +64,7 @@ namespace Microsoft.R.Interpreters
             {
                 var files = package.GetPackageFiles(_fileSystem);
                 string libRPath = GetLibRPath(files, _fileSystem);
-                list.Add(new RInterpreterInfo($"R '{package.Version}'", Path.GetDirectoryName(libRPath), _fileSystem));
+                list.Add(new RInterpreterInfo($"R '{package.Version}'", Path.GetDirectoryName(libRPath), package.Version, package.GetVersion(), _fileSystem));
             }
 
             return list;
