@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Completions;
@@ -17,11 +18,11 @@ namespace Microsoft.R.Editor.Commands {
     /// to receive typing as commands
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler {
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
-        public RTypingCommandHandler(ITextView textView, ICoreShell shell)
+        public RTypingCommandHandler(ITextView textView, IServiceContainer services)
             : base(textView) {
-            _shell = shell;
+            _services = services;
         }
 
         #region ICommand
@@ -30,7 +31,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
-                    AutoFormat.HandleAutoformat(TextView, _shell, typedChar);
+                    AutoFormat.HandleAutoformat(TextView, _services, typedChar);
                 }
             }
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -40,7 +41,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
-                    AutoFormat.HandleAutoformat(TextView, _shell, typedChar);
+                    AutoFormat.HandleAutoformat(TextView, _services, typedChar);
                 }
 
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);

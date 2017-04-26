@@ -33,8 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             textView.AddService(this);
 
             var textManager = Services.GetService<IVsTextManager2>(typeof(SVsTextManager));
-            IVsExpansionManager expansionManager;
-            textManager.GetExpansionManager(out expansionManager);
+             textManager.GetExpansionManager(out IVsExpansionManager expansionManager);
 
             // TODO: make this extensible via MEF like commands and controllers in the editor
             _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current);
@@ -69,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
-                RCompletionController controller = RCompletionController.FromTextView(TextView);
+                var controller = RCompletionController.FromTextView(TextView);
                 if (controller != null) {
                     if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
                         return HandleEnter(controller);
@@ -80,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 }
             } else if (group == VSConstants.GUID_VSStandardCommandSet97) {
                 if (id == (int)VSConstants.VSStd97CmdID.F1Help) {
-                    RCompletionController controller = RCompletionController.FromTextView(TextView);
+                    var controller = RCompletionController.FromTextView(TextView);
                     if (controller != null) {
                         // Translate to R help
                         HandleF1Help(controller);
@@ -108,10 +107,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 // current completion entry is 'X11' then we complete depending on
                 // the 'complete on enter' setting.
                 try {
-                    ICompletionSession session = controller.CompletionSession;
-                    CompletionSet set = session.SelectedCompletionSet;
-                    ITrackingSpan span = set.ApplicableTo;
-                    ITextSnapshot snapshot = span.TextBuffer.CurrentSnapshot;
+                    var session = controller.CompletionSession;
+                    var set = session.SelectedCompletionSet;
+                    var span = set.ApplicableTo;
+                    var snapshot = span.TextBuffer.CurrentSnapshot;
                     string spanText = snapshot.GetText(span.GetSpan(snapshot));
                     if (spanText != set.SelectionStatus.Completion.InsertionText) {
                         // If selection is does not match typed text,
@@ -140,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
-                FormatOperations.FormatCurrentStatement(textView, textBuffer, VsAppShell.Current);
+                FormatOperations.FormatCurrentStatement(textView.ToEditorView(), textBuffer.ToEditorBuffer(), VsAppShell.Current.Services);
             }
         }
 

@@ -166,9 +166,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int FormatSpan(IVsTextLines vsTextLines, TextSpan[] ts) {
-            int hr = VSConstants.S_OK;
-            int startPos = -1;
-            int endPos = -1;
+            var hr = VSConstants.S_OK;
+            var startPos = -1;
+            var endPos = -1;
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
                 var textBuffer = vsTextLines.ToITextBuffer();
@@ -176,7 +176,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 // Do not format standalone operators
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
                 if (CanFormat(text)) {
-                    RangeFormatter.FormatRange(TextView, textBuffer, range, VsAppShell.Current.GetService<IREditorSettings>().FormatOptions, VsAppShell.Current);
+                    RangeFormatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range, 
+                        VsAppShell.Current.GetService<IREditorSettings>(), VsAppShell.Current.Services);
                 }
             }
             return hr;
@@ -206,12 +207,10 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.S_OK;
         }
 
-        public int OnBeforeInsertion(IVsExpansionSession pSession) {
-            return VSConstants.S_OK;
-        }
+        public int OnBeforeInsertion(IVsExpansionSession pSession) => VSConstants.S_OK;
 
         public int OnItemChosen(string pszTitle, string pszPath) {
-            int hr = VSConstants.E_FAIL;
+            var hr = VSConstants.E_FAIL;
             if (!TextView.Caret.InVirtualSpace) {
                 var span = new Span(TextView.Caret.Position.BufferPosition, 0);
                 var ts = TextSpanFromViewSpan(span);
@@ -229,9 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return hr;
         }
 
-        public int PositionCaretForEditing(IVsTextLines pBuffer, TextSpan[] ts) {
-            return PositionCaretInField(0);
-        }
+        public int PositionCaretForEditing(IVsTextLines pBuffer, TextSpan[] ts) => PositionCaretInField(0);
         #endregion
 
         private ITextBuffer GetTargetBuffer() {

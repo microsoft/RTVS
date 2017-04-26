@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
@@ -24,6 +26,9 @@ namespace Microsoft.Languages.Editor.Completions {
 
             view.AddService(this);
         }
+
+        public IEnumerable<IEditorCompletionSession> GetSessions(IEditorView view) 
+            => _completionBroker.GetSessions(view.As<ITextView>()).Select(s => new EditorCompletionSession(s));
 
         public void TriggerCompletionSession() => _completionBroker.TriggerCompletion(_view);
         public void DismissCompletionSession() => _completionBroker.DismissAllSessions(_view);

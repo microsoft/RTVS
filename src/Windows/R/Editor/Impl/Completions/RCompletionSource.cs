@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Utility;
+using Microsoft.Languages.Core;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
@@ -21,13 +22,13 @@ namespace Microsoft.R.Editor.Completions {
     /// </summary>
     public sealed class RCompletionSource : ICompletionSource {
         private readonly RCompletionEngine _completionEngine;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
         private readonly ITextBuffer _textBuffer;
 
-        public RCompletionSource(ITextBuffer textBuffer, ICoreShell shell) {
+        public RCompletionSource(ITextBuffer textBuffer, IServiceContainer services) {
             _textBuffer = textBuffer;
-            _shell = shell;
-            _completionEngine = new RCompletionEngine(_shell);
+            _services = services;
+            _completionEngine = new RCompletionEngine(services);
         }
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Completions {
         /// <param name="session">Completion session</param>
         /// <param name="completionSets">Completion sets to populate</param>
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
-            _shell.AssertIsOnMainThread();
+            _services.MainThread().Assert();
 
             var doc = _textBuffer.GetEditorDocument<IREditorDocument>();
             if (doc == null) {
@@ -75,7 +76,7 @@ namespace Microsoft.R.Editor.Completions {
                 var snapshot = context.EditorBuffer.CurrentSnapshot.As<ITextSnapshot>();
                 var trackingSpan = snapshot.CreateTrackingSpan(applicableSpan.Value, SpanTrackingMode.EdgeInclusive);
                 var completions = new List<ICompletionEntry>();
-                bool sort = true;
+                var sort = true;
 
                 foreach (var provider in providers) {
                     var entries = provider.GetEntries(context);
@@ -113,24 +114,24 @@ namespace Microsoft.R.Editor.Completions {
                 return null;
             }
 
-            ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
-            string lineText = snapshot.GetText(line.Start, line.Length);
-            int linePosition = position - line.Start;
+            var snapshot = _textBuffer.CurrentSnapshot;
+            var line = snapshot.GetLineFromPosition(position);
+            var lineText = snapshot.GetText(line.Start, line.Length);
+            var linePosition = position - line.Start;
 
-            int start = 0;
-            int end = line.Length;
+            var start = 0;
+            var end = line.Length;
 
-            for (int i = linePosition - 1; i >= 0; i--) {
-                char ch = lineText[i];
+            for (var i = linePosition - 1; i >= 0; i--) {
+                var ch = lineText[i];
                 if (!RTokenizer.IsIdentifierCharacter(ch)) {
                     start = i + 1;
                     break;
                 }
             }
 
-            for (int i = linePosition; i < lineText.Length; i++) {
-                char ch = lineText[i];
+            for (var i = linePosition; i < lineText.Length; i++) {
+                var ch = lineText[i];
                 if (!RTokenizer.IsIdentifierCharacter(ch)) {
                     end = i;
                     break;

@@ -50,11 +50,9 @@
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
     <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
     <Compile Include="Document\IMdEditorDocument.cs" />
-    <Compile Include="Document\MdEditorViewModel.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
-    <Compile Include="Document\MdEditorDocumentFactory.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="ViewModel\MdEditorViewModel.cs" />
     <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />

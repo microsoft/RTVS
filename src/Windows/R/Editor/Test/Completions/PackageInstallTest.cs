@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Completions {
                 await PackageIndex.BuildIndexAsync();
 
                 completionSets.Clear();
-                RCompletionTestUtilities.GetCompletions(Shell, "abc::", 5, completionSets);
+                RCompletionTestUtilities.GetCompletions(Services, "abc::", 5, completionSets);
 
                 completionSets.Should().ContainSingle();
                 // Try again one more time
@@ -52,7 +52,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             await PackageIndex.BuildIndexAsync();
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(Shell, "abc::", 5, completionSets);
+            RCompletionTestUtilities.GetCompletions(Services, "abc::", 5, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Completions.Should().NotBeEmpty();

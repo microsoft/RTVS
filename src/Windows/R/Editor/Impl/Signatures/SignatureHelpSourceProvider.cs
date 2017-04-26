@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer) {
             var helpSource = textBuffer.GetService<SignatureHelpSource>();
-            return helpSource ?? new SignatureHelpSource(textBuffer, _shell);
+            return helpSource ?? new SignatureHelpSource(textBuffer, _shell.Services);
         }
     }
 }

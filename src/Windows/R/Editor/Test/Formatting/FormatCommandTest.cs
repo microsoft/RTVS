@@ -21,10 +21,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class FormatCommandTest {
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
         public FormatCommandTest(IServiceContainer services) {
-            _shell = services.GetService<ICoreShell>();
+            _services = services;
         }
 
         [CompositeTest]
@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             var textBuffer = new TextBufferMock(original, RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer);
 
-            using (var command = new FormatDocumentCommand(textView, textBuffer, _shell)) {
+            using (var command = new FormatDocumentCommand(textView, textBuffer, _services)) {
                 var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT);
                 status.Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -54,7 +54,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             var textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
-            using (var command = new FormatOnPasteCommand(textView, textBuffer, _shell)) {
+            using (var command = new FormatOnPasteCommand(textView, textBuffer, _services)) {
                 command.ClipboardDataProvider = clipboard;
 
                 var status = command.Status(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste);
@@ -82,7 +82,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             var textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
-            using (var command = new FormatOnPasteCommand(textView, textBuffer, _shell)) {
+            using (var command = new FormatOnPasteCommand(textView, textBuffer, _services)) {
                 command.ClipboardDataProvider = clipboard;
 
                 clipboard.Format = DataFormats.UnicodeText;

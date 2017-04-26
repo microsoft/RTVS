@@ -12,13 +12,10 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.SmartIndent;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
-    internal static class RangeFormatter {
+    public static class RangeFormatter {
         public static bool FormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
             var snapshot = editorBuffer.CurrentSnapshot;
             var start = formatRange.Start;
@@ -60,13 +57,13 @@ namespace Microsoft.R.Editor.Formatting {
             // the AST is damaged at this point. As a workaround, we will check 
             // if the previous line ends with an operator current line starts with 
             // an operator.
-            int startPosition = FindStartOfExpression(textBuffer.ToEditorBuffer(), startLine.Start);
+            int startPosition = FindStartOfExpression(editorBuffer, startLine.Start);
 
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
-            return FormatRangeExact(textView, textBuffer.ToEditorBuffer(), formatRange, settings, services);
+            return FormatRangeExact(editorBuffer, editorBuffer, formatRange, settings, services);
         }
 
-        public static bool FormatRangeExact(ITextView textView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
+        public static bool FormatRangeExact(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
             var snapshot = editorBuffer.CurrentSnapshot;
             var spanText = snapshot.GetText(formatRange);
             var trimmedSpanText = spanText.Trim();
@@ -83,7 +80,7 @@ namespace Microsoft.R.Editor.Formatting {
                 var startLine = snapshot.GetLineFromPosition(formatRange.Start);
                 var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), settings.IndentSize);
 
-                var selectionTracker = new RSelectionTracker(textView, editorBuffer.As<ITextBuffer>(), formatRange);
+                var selectionTracker = new RSelectionTracker(textView, editorBuffer, formatRange);
                 RTokenizer tokenizer = new RTokenizer();
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
                 IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);

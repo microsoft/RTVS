@@ -12,6 +12,7 @@ using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -20,7 +21,6 @@ using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Browsers;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
 using ContentControl = System.Windows.Controls.ContentControl;
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly ContentControl _windowContentControl;
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
         private readonly IServiceContainer _services;
-        private IRSession _session;
+        private readonly IRSession _session;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent(IServiceContainer services) {
@@ -243,7 +243,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
-                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), VsAppShell.Current);
+                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), _services.GetService<IIdleTimeService>());
             }
         }
 
@@ -275,7 +275,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void DisconnectFromSessionEvents() {
             if (_session != null) {
                 _session.Disconnected -= OnRSessionDisconnected;
-                _session = null;
             }
         }
 

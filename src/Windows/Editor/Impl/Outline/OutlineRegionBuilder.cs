@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 using Microsoft.Common.Core.Idle;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
@@ -24,19 +24,19 @@ namespace Microsoft.Languages.Editor.Outline {
         protected IdleTimeAsyncTask BackgroundTask { get; set; }
         protected ITextBuffer TextBuffer { get; set; }
         protected virtual bool IsEnabled { get; } = true;
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
         private long _disposed = 0;
         private readonly object _regionsLock = new object();
 
-        protected OutlineRegionBuilder(ITextBuffer textBuffer, ICoreShell shell) {
-            Shell = shell;
+        protected OutlineRegionBuilder(ITextBuffer textBuffer, IServiceContainer services) {
+            Services = services;
             CurrentRegions = new OutlineRegionCollection(0);
 
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
 
-            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, shell);
+            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, services);
             if (IsEnabled) {
                 BackgroundTask.DoTaskOnIdle(300);
             }
@@ -54,14 +54,14 @@ namespace Microsoft.Languages.Editor.Outline {
                 int start, oldLength, newLength;
                 TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
 
-                int changeStart = Int32.MaxValue;
-                int changeEnd = 0;
+                var changeStart = Int32.MaxValue;
+                var changeEnd = 0;
 
                 lock (_regionsLock) {
                     // Remove affected regions and shift the remaining ones. Outlining 
                     // regions are not sorted and can overlap. Hence linear search.
 
-                    for (int i = 0; i < CurrentRegions.Count; i++) {
+                    for (var i = 0; i < CurrentRegions.Count; i++) {
                         var region = CurrentRegions[i];
 
                         if (region.End <= start) {
@@ -101,16 +101,14 @@ namespace Microsoft.Languages.Editor.Outline {
 
         public abstract bool BuildRegions(OutlineRegionCollection newRegions);
 
-        protected bool IsDisposed {
-            get { return Interlocked.Read(ref _disposed) > 0; }
-        }
+        protected bool IsDisposed => Interlocked.Read(ref _disposed) > 0;
 
         protected virtual object TaskAction() {
             if (!IsDisposed) {
                 var snapshot = TextBuffer.CurrentSnapshot;
                 var newRegions = new OutlineRegionCollection(snapshot.Version.VersionNumber);
 
-                bool regionsBuilt = BuildRegions(newRegions);
+                var regionsBuilt = BuildRegions(newRegions);
                 if (regionsBuilt) {
                     lock (_regionsLock) {
                         var changedRange = CompareRegions(newRegions, CurrentRegions, snapshot.Length);
@@ -118,7 +116,6 @@ namespace Microsoft.Languages.Editor.Outline {
                     }
                 }
             }
-
             return null;
         }
 

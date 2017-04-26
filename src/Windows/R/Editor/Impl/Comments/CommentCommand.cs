@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
@@ -12,8 +13,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Comments {
     internal sealed class CommentCommand : EditingCommand {
-        internal CommentCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
-            : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK)) {
+        internal CommentCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
+            : base(textView, services, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK)) {
         }
 
         #region ICommand

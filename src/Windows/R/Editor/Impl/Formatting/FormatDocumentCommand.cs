@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
@@ -18,8 +19,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {
-        internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
-            : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
+        internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
+            : base(textView, services, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
             TargetBuffer = textBuffer;
         }
 
@@ -27,9 +28,9 @@ namespace Microsoft.R.Editor.Formatting {
 
         #region ICommand
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            string originalText = TargetBuffer.CurrentSnapshot.GetText();
-            string formattedText = string.Empty;
-            var formatter = new RFormatter(Shell.GetService<IREditorSettings>().FormatOptions);
+            var originalText = TargetBuffer.CurrentSnapshot.GetText();
+            var formattedText = string.Empty;
+            var formatter = new RFormatter(Services.GetService<IREditorSettings>().FormatOptions);
 
             try {
                 formattedText = formatter.Format(originalText);
@@ -42,7 +43,7 @@ namespace Microsoft.R.Editor.Formatting {
                 selectionTracker.StartTracking(automaticTracking: false);
 
                 try {
-                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Shell, Resources.FormatDocument)) {
+                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Services, Resources.FormatDocument)) {
                         var document = TargetBuffer.GetService<IREditorDocument>();
                         document?.EditorTree?.Invalidate();
 
@@ -69,7 +70,7 @@ namespace Microsoft.R.Editor.Formatting {
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker, Shell);
+                            Resources.FormatDocument, selectionTracker, Services);
                     }
                 } finally {
                     selectionTracker.EndTracking();

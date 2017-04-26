@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.Selection {
     /// <summary>
@@ -13,7 +13,7 @@ namespace Microsoft.Languages.Editor.Selection {
         /// <summary>
         /// Editor text view
         /// </summary>
-        ITextView TextView { get; }
+        IEditorView EditorView { get; }
 
         /// <summary>
         /// Saves current caret position and optionally starts tracking 

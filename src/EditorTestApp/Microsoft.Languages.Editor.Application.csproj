@@ -72,6 +72,10 @@
       <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
       <Name>Microsoft.Markdown.Editor.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
+      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
+      <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor.Windows</Name>

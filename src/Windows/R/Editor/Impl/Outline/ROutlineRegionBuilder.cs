@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Outline;
@@ -39,8 +39,8 @@ namespace Microsoft.R.Editor.Outline {
         internal IREditorDocument EditorDocument { get; }
         internal IREditorTree EditorTree { get; }
 
-        public ROutlineRegionBuilder(IREditorDocument document, ICoreShell shell)
-            : base(document.EditorTree.TextBuffer(), shell) {
+        public ROutlineRegionBuilder(IREditorDocument document, IServiceContainer services)
+            : base(document.EditorTree.TextBuffer(), services) {
             EditorDocument = document;
             EditorDocument.Closing += OnDocumentClosing;
 
@@ -49,7 +49,7 @@ namespace Microsoft.R.Editor.Outline {
             EditorTree.Closing += OnEditorTreeClosing;
         }
 
-        protected override bool IsEnabled => Shell.GetService<IREditorSettings>().EnableOutlining;
+        protected override bool IsEnabled => Services.GetService<IREditorSettings>().EnableOutlining;
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             if (IsEnabled && e.Before.LineCount != e.After.LineCount) {
@@ -90,7 +90,7 @@ namespace Microsoft.R.Editor.Outline {
                     // we must obtain the read lock first.
                     rootNode = EditorTree.AcquireReadLock(_treeUserId);
                     if (rootNode != null) {
-                        OutliningContext context = new OutliningContext();
+                        var context = new OutliningContext();
                         context.Regions = newRegions;
                         // Walk the tree and construct new regions
                         rootNode.Accept(this, context);
@@ -166,9 +166,9 @@ namespace Microsoft.R.Editor.Outline {
 
             // Construct collapsible regions
             var ranges = new List<ITextRange>();
-            for (int i = 0; i < sections.Length; i++) {
+            for (var i = 0; i < sections.Length; i++) {
                 var startLine = snapshot.GetLineFromPosition(sections[i].Start);
-                int end = -1;
+                var end = -1;
 
                 var text = snapshot.GetText(new Span(sections[i].Start, sections[i].Length));
                 var displayText = text.Substring(0, text.IndexOfOrdinal("---")).Trim();
@@ -207,8 +207,8 @@ namespace Microsoft.R.Editor.Outline {
         /// Determines if range is large enough to be outlined
         /// </summary>
         private static bool OutlineRange(ITextSnapshot snapshot, ITextRange range, out int startLineNumber, out int endLineNumber) {
-            int start = Math.Max(0, range.Start);
-            int end = Math.Min(range.End, snapshot.Length);
+            var start = Math.Max(0, range.Start);
+            var end = Math.Min(range.End, snapshot.Length);
 
             startLineNumber = endLineNumber = 0;
             if (start < end) {

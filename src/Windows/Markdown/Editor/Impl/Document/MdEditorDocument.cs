@@ -26,7 +26,7 @@ namespace Microsoft.Markdown.Editor.Document {
             EditorBuffer.AddService(this);
 
             _projectionBufferManager = new ProjectionBufferManager(editorBuffer.As<ITextBuffer>(), services, MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
-            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, services);
+            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(editorBuffer.As<ITextBuffer>(), _projectionBufferManager, services);
         }
         #endregion
 

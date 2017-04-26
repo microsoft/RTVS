@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Editor.ViewModel;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
@@ -23,7 +24,7 @@ namespace Microsoft.R.Editor.EditorFactory {
 
         public IEditorViewModel CreateEditorViewModel(IEditorBuffer editorBuffer) {
             Check.ArgumentNull(nameof(editorBuffer), editorBuffer);
-            return new REditorViewModel(editorBuffer.As<ITextBuffer>(), _coreShell);
+            return new REditorViewModel(editorBuffer.As<ITextBuffer>(), _coreShell.Services);
         }
     }
 }

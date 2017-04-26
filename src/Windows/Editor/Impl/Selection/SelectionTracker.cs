@@ -14,6 +14,7 @@ namespace Microsoft.Languages.Editor.Selection {
     /// choose to implement their own.
     /// </summary>
     public class SelectionTracker : ISelectionTracker {
+        private readonly ITextView _textView;
         private double _offsetFromTop;
         private bool _automaticTracking;
 
@@ -21,16 +22,16 @@ namespace Microsoft.Languages.Editor.Selection {
         protected SnapshotPoint PositionAfterChanges { get; set; }
         protected int VirtualSpaces { get; set; }
 
-        public SelectionTracker(ITextView textView) {
-            TextView = textView;
+        public SelectionTracker(IEditorView editorView) {
+            EditorView = editorView;
+            _textView = editorView.As<ITextView>();
         }
 
         #region ISelectionTracker
-
         /// <summary>
         /// Editor text view
         /// </summary>
-        public ITextView TextView { get; private set; }
+        public IEditorView EditorView { get; }
 
         /// <summary>
         /// Saves current caret position and optionally starts tracking 
@@ -48,12 +49,12 @@ namespace Microsoft.Languages.Editor.Selection {
 
             // Beware: snapshot point may be relative to HTML buffer snapshot
             // and not relative to actual text view [projection] buffer snapshot.
-            PositionBeforeChanges = TextView.Caret.Position.BufferPosition;
+            PositionBeforeChanges = _textView.Caret.Position.BufferPosition;
             PositionAfterChanges = PositionBeforeChanges;
 
-            var viewLine = TextView.TextViewLines.GetTextViewLineContainingBufferPosition(PositionBeforeChanges);
+            var viewLine = _textView.TextViewLines.GetTextViewLineContainingBufferPosition(PositionBeforeChanges);
             if (viewLine != null)
-                _offsetFromTop = viewLine.Top - TextView.ViewportTop;
+                _offsetFromTop = viewLine.Top - _textView.ViewportTop;
         }
 
         /// <summary>
@@ -65,29 +66,24 @@ namespace Microsoft.Languages.Editor.Selection {
                 var snapshot = PositionBeforeChanges.Snapshot.TextBuffer.CurrentSnapshot;
                 PositionAfterChanges = PositionBeforeChanges.TranslateTo(snapshot, PointTrackingMode.Positive);
             } else {
-                PositionAfterChanges = TextView.Caret.Position.BufferPosition;
+                PositionAfterChanges = _textView.Caret.Position.BufferPosition;
             }
-
             MoveToAfterChanges(VirtualSpaces);
         }
 
         /// <summary>
         /// Moves caret to 'before changes' position.
         /// </summary>
-        public void MoveToBeforeChanges() {
-            MoveCaretTo(PositionBeforeChanges, VirtualSpaces);
-        }
+        public void MoveToBeforeChanges() => MoveCaretTo(PositionBeforeChanges, VirtualSpaces);
 
         /// <summary>
         /// Moves caret to 'after changes' position
         /// </summary>
-        public void MoveToAfterChanges(int virtualSpaces = 0) {
-            MoveCaretTo(PositionAfterChanges, virtualSpaces);
-        }
+        public void MoveToAfterChanges(int virtualSpaces = 0) => MoveCaretTo(PositionAfterChanges, virtualSpaces);
         #endregion
 
         protected virtual void MoveCaretTo(SnapshotPoint position, int virtualSpaces) {
-            SnapshotPoint? viewPosition = TextView.MapUpToView(position);
+            SnapshotPoint? viewPosition = _textView.MapUpToView(position);
             if (viewPosition.HasValue) {
                 try {
                     // If position is in virtual space (virtualSpaces > 0) a new line
@@ -96,15 +92,15 @@ namespace Microsoft.Languages.Editor.Selection {
                     // we want to offset from the start of the line rather than from
                     // the last know token position.
                     if (virtualSpaces > 0) {
-                        var line = TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPosition.Value);
-                        TextView.Caret.MoveTo(new VirtualSnapshotPoint(line, virtualSpaces));
+                        var line = _textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPosition.Value);
+                        _textView.Caret.MoveTo(new VirtualSnapshotPoint(line, virtualSpaces));
                     } else {
-                        TextView.Caret.MoveTo(viewPosition.Value);
+                        _textView.Caret.MoveTo(viewPosition.Value);
                     }
 
-                    if (TextView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible) {
-                        TextView.Caret.EnsureVisible();
-                        TextView.DisplayTextLineContainingBufferPosition(viewPosition.Value, _offsetFromTop, ViewRelativePosition.Top);
+                    if (_textView.Caret.ContainingTextViewLine.VisibilityState != VisibilityState.FullyVisible) {
+                        _textView.Caret.EnsureVisible();
+                        _textView.DisplayTextLineContainingBufferPosition(viewPosition.Value, _offsetFromTop, ViewRelativePosition.Top);
                     }
                 } catch(ArgumentException) {
                     // In case formatting changes code in a way that position

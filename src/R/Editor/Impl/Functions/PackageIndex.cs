@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
@@ -279,7 +280,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private void ScheduleIdleTimeRebuild() {
             IdleTimeAction.Cancel(typeof(PackageIndex));
-            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, typeof(PackageIndex), _host.Services);
+            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, typeof(PackageIndex), _host.Services.GetService<IIdleTimeService>());
         }
 
         private async Task RebuildIndexAsync() {

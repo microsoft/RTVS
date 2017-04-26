@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Outline {
             if (tagger == null) {
                 var document = buffer.GetEditorDocument<IREditorDocument>();
                 if (document != null) {
-                    tagger = new ROutliningTagger(document, _shell);
+                    tagger = new ROutliningTagger(document, _shell.Services);
                 }
             }
             return tagger as ITagger<T>;

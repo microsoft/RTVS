@@ -6,15 +6,12 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.SmartIndent;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
@@ -26,10 +23,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class AutoFormatTest {
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
         public AutoFormatTest(IServiceContainer services) {
-            _shell = services.GetService<ICoreShell>();
+            _services = services;
         }
 
         [CompositeTest]
@@ -41,29 +38,28 @@ namespace Microsoft.R.Editor.Test.Formatting {
         public void FormatTest(string content, int position, string expected) {
             var textView = TestAutoFormat(position, content);
 
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            var actual = textView.TextBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
 
         [Test]
         public void SmartIndentTest05() {
-            AstRoot ast;
-            var textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
-            using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
-                var cs = _shell.GetService<ICompositionService>();
+            var editorView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out AstRoot ast);
+            using (var document = new EditorDocumentMock(new EditorTreeMock(editorView.EditorBuffer, ast))) {
+                var cs = _services.GetService<ICompositionService>();
                 var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
                 var provider = composer.GetImport(RContentTypeDefinition.ContentType);
-                var indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
+                var tv = editorView.As<ITextView>();
+                var indenter = provider.CreateSmartIndent(tv);
 
-                int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
+                int? indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1));
                 indent.Should().HaveValue().And.Be(2);
             }
         }
 
         private ITextView TestAutoFormat(int position, string initialContent = "") {
-            AstRoot ast;
-            var textView = TextViewTest.MakeTextView(initialContent, position, out ast);
-
+            var editorView = TextViewTest.MakeTextView(initialContent, position, out AstRoot ast);
+            var textView = editorView.As<ITextView>();
             textView.TextBuffer.Changed += (object sender, TextContentChangedEventArgs e) => {
                 ast.ReflectTextChanges(e.ConvertToRelative(), new TextProvider(textView.TextBuffer.CurrentSnapshot));
 
@@ -72,7 +68,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                        FormatOperations.FormatViewLine(textView, textView.TextBuffer, -1, _shell);
+                        FormatOperations.FormatViewLine(editorView, editorView.EditorBuffer, -1, _services);
                     }
                 } else {
                     var line = e.After.GetLineFromPosition(position);
@@ -81,7 +77,6 @@ namespace Microsoft.R.Editor.Test.Formatting {
             };
 
             Typing.Type(textView.TextBuffer, position, "\n");
-
             return textView;
         }
     }

@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                     var doc = tb.GetEditorDocument<IREditorDocument>();
                     if (doc == null) {
-                        new REditorDocument(new EditorBuffer(tb, _shell.GetService<ITextDocumentFactoryService>()), _shell);
+                        new REditorDocument(new EditorBuffer(tb, _shell.GetService<ITextDocumentFactoryService>()), _shell.Services);
                     }
                 }
             }

@@ -18,6 +18,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private readonly ICoreShell _shell;
+        private readonly IIdleTimeService _idleTime;
         private ITextBuffer _textBuffer;
         private ITextView _textView;
         private SnapshotPoint? _currentChar;
@@ -29,6 +30,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             _textBuffer = textBuffer;
             _textView = view;
             _shell = shell;
+            _idleTime = _shell.GetService<IIdleTimeService>();
             _textView.AddService(this);
         }
 
@@ -52,14 +54,14 @@ namespace Microsoft.Languages.Editor.BraceMatch {
 
         void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
             if (CanHighlight(_textView) || _highlighted) {
-                IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _shell);
+                IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _idleTime);
             }
         }
 
         void OnViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (e.NewSnapshot != e.OldSnapshot) {
                 if (CanHighlight(_textView) || _highlighted) {
-                    IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _shell);
+                    IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _idleTime);
                 }
             }
         }
@@ -123,7 +125,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         }
 
         private static bool IsHighlightablePosition(ITextSnapshot snapshot, int caretPosition) {
-            bool highlitable = false;
+            var highlitable = false;
 
             if (caretPosition < snapshot.Length) {
                 highlitable = IsHighlightableCharacter(snapshot[caretPosition]);
@@ -144,7 +146,6 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 case ')':
                     return true;
             }
-
             return false;
         }
 

@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
         }
 
         public IPeekableItemSource TryCreatePeekableItemSource(ITextBuffer textBuffer) {
-            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new PeekableItemSource(textBuffer, _peekResultFactory, _shell));
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new PeekableItemSource(textBuffer, _peekResultFactory, _shell.Services));
         }
     }
 }

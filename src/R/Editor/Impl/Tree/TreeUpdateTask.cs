@@ -466,8 +466,6 @@ namespace Microsoft.R.Editor.Tree {
 
 #if DEBUG
                     if (retryCount == 10) {
-                        string msg = string.Format(CultureInfo.InvariantCulture, );
-
                         // using Debugger.Break as I want all threads suspended so the state doesn't change
                         Debug.Assert(false, Invariant($"Pending changes remain: ChangesPending: {ChangesPending}"));
                     }

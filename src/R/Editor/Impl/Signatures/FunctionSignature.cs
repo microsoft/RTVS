@@ -34,12 +34,12 @@ namespace Microsoft.R.Editor.Signatures {
         public string FunctionName { get; private set; }
 
         public static IFunctionSignature Create(IRCompletionContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo, ITrackingTextRange applicableSpan) {
-            var sig = new FunctionSignature(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo, _sh);
+            var sig = new FunctionSignature(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo, _services);
             var paramList = new List<ISignatureParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
             var locusPoints = new List<int>();
-            string signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
+            var signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
             sig.Content = signatureString;
             sig.ApplicableToSpan = applicableSpan;
 

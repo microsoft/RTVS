@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

@@ -170,7 +170,7 @@ namespace Microsoft.R.Editor.Functions {
             if (string.IsNullOrEmpty(packageName)) {
                 // Even if nothing is found, still notify the callback
                 if (infoReadyCallback != null) {
-                    _coreShell.MainThread().Post(() => {
+                    _services.MainThread().Post(() => {
                         infoReadyCallback(null, null);
                     });
                 }
@@ -193,7 +193,7 @@ namespace Microsoft.R.Editor.Functions {
                         // If package is found update data in the index
                         UpdateIndex(functionName, packageName, rdData);
                     }
-                    _coreShell.MainThread().Post(() => infoReadyCallback(parameter, packageName));
+                    _services.MainThread().Post(() => infoReadyCallback(parameter, packageName));
                 });
             return packageName;
         }

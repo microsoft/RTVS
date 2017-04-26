@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controllers.Commands;
@@ -12,8 +12,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Comments {
     internal sealed class UncommentCommand : EditingCommand {
-        internal UncommentCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
-            : base(textView, shell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK)) {
+        internal UncommentCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services)
+            : base(textView, services, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK)) {
         }
 
         #region ICommand
@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Comments {
             var selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
             RCommenter.UncommentBlock(TextView.ToEditorView(), TextView.TextBuffer.ToEditorBuffer(),
-                new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell.GetService<IEditorSupport>());
+                new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Services.GetService<IEditorSupport>());
 
             return CommandResult.Executed;
         }

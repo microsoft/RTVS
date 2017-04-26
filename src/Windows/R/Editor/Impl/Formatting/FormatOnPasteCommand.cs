@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
@@ -22,10 +23,10 @@ namespace Microsoft.R.Editor.Formatting {
 
         internal IClipboardDataProvider ClipboardDataProvider { get; set; }
 
-        public FormatOnPasteCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
-            base(textView, shell, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste)) {
+        public FormatOnPasteCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) :
+            base(textView, services, new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste)) {
             ClipboardDataProvider = new ClipboardDataProvider();
-            _settings = shell.GetService<IREditorSettings>();
+            _settings = services.GetService<IREditorSettings>();
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -61,8 +62,8 @@ namespace Microsoft.R.Editor.Formatting {
 
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
-                            RangeFormatter.FormatRange(TextView, document.TextBuffer(),
-                                new TextRange(insertionPoint, text.Length), _settings.FormatOptions, Shell);
+                            RangeFormatter.FormatRange(TextView.ToEditorView(), document.EditorBuffer,
+                                new TextRange(insertionPoint, text.Length), _settings, Services);
                         }
                     }
                 }

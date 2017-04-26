@@ -13,7 +13,7 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.SmartIndent;
 
 namespace Microsoft.R.Editor.Formatting {
-    internal static class FormatOperations {
+    public static class FormatOperations {
         /// <summary>
         /// Formats statement that the caret is at
         /// </summary>

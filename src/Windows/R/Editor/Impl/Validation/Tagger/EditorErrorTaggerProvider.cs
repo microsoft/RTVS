@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.TaskList;
 using Microsoft.Languages.Editor.Text;
@@ -30,9 +29,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
             EditorErrorTagger tagger = null;
 
-            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer, _shell.GetService<IREditorSettings>())) {
+            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer.ToEditorBuffer(), _shell.GetService<IREditorSettings>())) {
                 tagger = textBuffer.GetService<EditorErrorTagger>();
-                tagger = tagger ?? new EditorErrorTagger(textBuffer, _taskList, _shell);
+                tagger = tagger ?? new EditorErrorTagger(textBuffer, _taskList, _shell.Services);
             }
 
             return tagger as ITagger<T>;

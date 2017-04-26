@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Comments {
             int startLineNumber = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(start);
             int endLineNumber = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(end);
 
-            using (var undoAction = es.CreateUndoAction(editorView, editorBuffer)) {
+            using (var undoAction = es.CreateUndoAction(editorView)) {
                 undoAction.Open(actionName);
                 bool changed = false;
                 for (int i = startLineNumber; i <= endLineNumber; i++) {

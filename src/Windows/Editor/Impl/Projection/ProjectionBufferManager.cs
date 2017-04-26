@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
@@ -21,11 +22,11 @@ namespace Microsoft.Languages.Editor.Projection {
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private int? _savedCaretPosition;
 
-        public ProjectionBufferManager(ITextBuffer diskBuffer, ICoreShell coreShell, string topLevelContentTypeName, string secondaryContentTypeName) {
+        public ProjectionBufferManager(ITextBuffer diskBuffer, IServiceContainer services, string topLevelContentTypeName, string secondaryContentTypeName) {
             DiskBuffer = diskBuffer;
 
-            var projectionBufferFactoryService = coreShell.GetService<IProjectionBufferFactoryService>();
-            _contentTypeRegistryService = coreShell.GetService<IContentTypeRegistryService>();
+            var projectionBufferFactoryService = services.GetService<IProjectionBufferFactoryService>();
+            _contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
 
             var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
             ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);

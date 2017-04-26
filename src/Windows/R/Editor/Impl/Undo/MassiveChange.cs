@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Undo;
@@ -15,10 +16,10 @@ namespace Microsoft.R.Editor.Undo {
         private readonly ITextUndoTransaction _transaction;
         private readonly ITextBuffer _textBuffer;
 
-        public MassiveChange(ITextView textView, ITextBuffer textBuffer, ICoreShell shell, string description) {
+        public MassiveChange(ITextView textView, ITextBuffer textBuffer, IServiceContainer services, string description) {
             _textBuffer = textBuffer;
 
-            var undoManagerProvider = shell.GetService<ITextBufferUndoManagerProvider>();
+            var undoManagerProvider = services.GetService<ITextBufferUndoManagerProvider>();
             var undoManager = undoManagerProvider.GetTextBufferUndoManager(textView.TextBuffer);
 
             var innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(description);

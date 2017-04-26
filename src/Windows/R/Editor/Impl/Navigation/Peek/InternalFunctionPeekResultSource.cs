@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -18,15 +19,15 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Editor.Navigation.Peek {
     internal sealed class InternalFunctionPeekResultSource : IPeekResultSource {
         private readonly InternalFunctionPeekItem _peekItem;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
         private Exception _exception;
         private IDocumentPeekResult _result;
 
         internal Task<IDocumentPeekResult> LookupTask { get; }
 
-        public InternalFunctionPeekResultSource(string sourceFileName, Span sourceSpan, string functionName, InternalFunctionPeekItem peekItem, ICoreShell shell) {
+        public InternalFunctionPeekResultSource(string sourceFileName, Span sourceSpan, string functionName, InternalFunctionPeekItem peekItem, IServiceContainer services) {
             _peekItem = peekItem;
-            _shell = shell;
+            _services = services;
             // Start asynchronous function fetching so by the time FindResults 
             // is called the task may be already completed or close to that.
             LookupTask = FindFunctionAsync(sourceFileName, sourceSpan, functionName);
@@ -41,7 +42,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             }
 
             // If task is still running, wait a bit, but not too long.
-            LookupTask.Wait(_shell.IsUnitTestEnvironment ? 50000 : 2000);
+            LookupTask.Wait(_services.GetService<ICoreShell>().IsUnitTestEnvironment ? 50000 : 2000);
             if (_exception != null) {
                 callback.ReportFailure(_exception);
             } else if (LookupTask.IsCompleted && LookupTask.Result != null) {
@@ -67,12 +68,12 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                         // Editor opens external items as plain text. When file opens, change content type to R.
                         IdleTimeAction.Create(() => {
                             if (_result.Span.IsDocumentOpen) {
-                                var rs = _shell.GetService<IContentTypeRegistryService>();
+                                var rs = _services.GetService<IContentTypeRegistryService>();
                                 var ct = rs.GetContentType(RContentTypeDefinition.ContentType);
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
                                 try { File.Delete(tempFile); } catch (IOException) { } catch (UnauthorizedAccessException) { }
                             }
-                        }, 50, GetType(), _shell);
+                        }, 50, GetType(), _services.GetService<IIdleTimeService>());
 
                         return _result;
                     }
@@ -84,11 +85,11 @@ namespace Microsoft.R.Editor.Navigation.Peek {
         }
 
         private async Task<string> GetFunctionCode(string functionName) {
-            var workflow = _shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             var rSession = workflow.RSession;
             string functionCode = await rSession.GetFunctionCodeAsync(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {
-                var formatter = new RFormatter(_shell.GetService<IREditorSettings>().FormatOptions);
+                var formatter = new RFormatter(_services.GetService<IREditorSettings>().FormatOptions);
                 functionCode = formatter.Format(functionCode);
             }
             return functionCode;

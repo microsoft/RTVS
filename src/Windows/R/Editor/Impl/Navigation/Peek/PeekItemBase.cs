@@ -2,19 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Navigation.Peek {
     internal abstract class PeekItemBase : IPeekableItem {
-        public PeekItemBase(string name, IPeekResultFactory peekResultFactory, ICoreShell shell) {
+        protected PeekItemBase(string name, IPeekResultFactory peekResultFactory, IServiceContainer services) {
             PeekResultFactory = peekResultFactory;
-            Shell = shell;
+            Services = services;
             DisplayName = name;
         }
 
         public string DisplayName { get; }
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
         public IEnumerable<IPeekRelationship> Relationships {
             get { yield return PredefinedPeekRelationships.Definitions; }
@@ -23,6 +23,5 @@ namespace Microsoft.R.Editor.Navigation.Peek {
         public abstract IPeekResultSource GetOrCreateResultSource(string relationshipName);
 
         internal IPeekResultFactory PeekResultFactory { get; }
-
     }
 }

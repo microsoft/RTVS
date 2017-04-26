@@ -103,7 +103,6 @@
     <Compile Include="Controllers\ViewController.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
-    <Compile Include="Selection\ISelectionTracker.cs" />
     <Compile Include="Selection\SelectionTracker.cs" />
     <Compile Include="Selection\SelectionUndo.cs" />
     <Compile Include="SuggestedActions\SuggestedActionBase.cs" />

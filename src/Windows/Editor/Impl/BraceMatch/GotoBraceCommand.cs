@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.Languages.Editor.Composition;
@@ -22,9 +22,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.GOTOBRACE_EXT),
         };
 
-        public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
+        public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) :
             base(textView, _commands, false) {
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(shell.GetService<ICompositionService>());
+            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(services.GetService<ICompositionService>());
             _braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
             TextBuffer = textBuffer;

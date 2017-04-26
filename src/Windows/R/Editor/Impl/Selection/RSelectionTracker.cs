@@ -53,11 +53,10 @@ namespace Microsoft.R.Editor.Selection {
         /// Saves current selection
         /// </summary>
         public override void StartTracking(bool automaticTracking) {
-            int position = TextView.Caret.Position.BufferPosition;
-            SnapshotPoint? documentPosition = TextView.MapDownToBuffer(position, TextBuffer);
-            if (documentPosition.HasValue) {
-                VirtualSpaces = TextView.Caret.Position.VirtualSpaces;
-                TokenFromPosition(TextBuffer.CurrentSnapshot, documentPosition.Value, out _index, out _offset);
+            var documentPosition = EditorView.GetCaretPosition(TextBuffer.ToEditorBuffer());
+            if (documentPosition != null) {
+                VirtualSpaces = EditorView.As<ITextView>().Caret.Position.VirtualSpaces;
+                TokenFromPosition(TextBuffer.CurrentSnapshot, documentPosition.Position, out _index, out _offset);
             }
             base.StartTracking(false);
         }

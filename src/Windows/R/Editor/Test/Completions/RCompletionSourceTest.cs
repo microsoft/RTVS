@@ -15,17 +15,17 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
     public class RCompletionSourceTest {
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
         public RCompletionSourceTest(IServiceContainer services) {
-            _shell = services.GetService<ICoreShell>();
+            _services = services;
         }
 
 
         [Test]
         public void Keywords01() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(_shell, "f", 1, completionSets, new TextRange(0, 1));
+            RCompletionTestUtilities.GetCompletions(_services, "f", 1, completionSets, new TextRange(0, 1));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("\"", 1)]
         public void SuppressedCompletion(string content, int position) {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(_shell, content, position, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, position, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().BeEmpty();
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void BeforeComment() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(_shell, "#No", 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, "#No", 0, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().NotBeEmpty();
@@ -64,7 +64,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void FunctionDefinition01() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(_shell, "x <- function()", 14, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, "x <- function()", 14, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().BeEmpty();
@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         public void FunctionDefinition02() {
             for (int i = 14; i <= 18; i++) {
                 var completionSets = new List<CompletionSet>();
-                RCompletionTestUtilities.GetCompletions(_shell, "x <- function(a, b)", i, completionSets);
+                RCompletionTestUtilities.GetCompletions(_services, "x <- function(a, b)", i, completionSets);
 
                 completionSets.Should().ContainSingle()
                     .Which.Completions.Should().BeEmpty();
@@ -85,7 +85,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         public void FunctionDefinition03() {
             for (int i = 14; i <= 19; i++) {
                 var completionSets = new List<CompletionSet>();
-                RCompletionTestUtilities.GetCompletions(_shell, "x <- function(a, b = x+y)", i, completionSets);
+                RCompletionTestUtilities.GetCompletions(_services, "x <- function(a, b = x+y)", i, completionSets);
 
                 completionSets.Should().ContainSingle()
                     .Which.Completions.Should().BeEmpty();
@@ -93,7 +93,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
             for (int i = 20; i <= 24; i++) {
                 var completionSets = new List<CompletionSet>();
-                RCompletionTestUtilities.GetCompletions(_shell, "x <- function(a, b = x+y)", i, completionSets);
+                RCompletionTestUtilities.GetCompletions(_services, "x <- function(a, b = x+y)", i, completionSets);
 
                 completionSets.Should().NotBeEmpty();
                 completionSets[0].Completions.Should().NotBeEmpty();
@@ -110,7 +110,7 @@ aaa123 <- 1
 bbb123 = 1
 
 ";
-            RCompletionTestUtilities.GetCompletions(_shell, content, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -120,7 +120,7 @@ bbb123 = 1
                 .And.Contain(c => c.DisplayText == "bbb123");
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(_shell, content, 2, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 2, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -130,7 +130,7 @@ bbb123 = 1
                 .And.Contain(c => c.DisplayText == "bbb123");
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(_shell, content, 4, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 4, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -153,7 +153,7 @@ bbb123 = 1
 
 }
 ";
-            RCompletionTestUtilities.GetCompletions(_shell, content, 2, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 2, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -163,7 +163,7 @@ bbb123 = 1
                 .And.NotContain(c => c.DisplayText == "bbb123");
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(_shell, content, 4, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 4, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -173,7 +173,7 @@ bbb123 = 1
                 .And.NotContain(c => c.DisplayText == "bbb123");
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(_shell, content, 6, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 6, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -190,7 +190,7 @@ bbb123 = 1
 @"x123 <- 1
 for(x456 in 1:10) x";
 
-            RCompletionTestUtilities.GetCompletions(_shell, content, 0, content.Length, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 0, content.Length, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -203,7 +203,7 @@ for(x456 in 1:10) x";
         [Test]
         public void UserFunctions01() {
             var completionSets = new List<CompletionSet>();
-            RCompletionTestUtilities.GetCompletions(_shell, "aaaa <- function(a,b,c)\r\na", 25, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, "aaaa <- function(a,b,c)\r\na", 25, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -223,12 +223,12 @@ aaa456 <- function() { }
 #
 aa
 }";
-            RCompletionTestUtilities.GetCompletions(_shell, content, content.IndexOf('#') + 4, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, content.IndexOf('#') + 4, completionSets);
             completionSets.Should().ContainSingle();
             completionSets[0].Completions.Should().BeEmpty();
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(_shell, content, content.IndexOf('#') + 5, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, content.IndexOf('#') + 5, completionSets);
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
 
@@ -253,7 +253,7 @@ aa
 }
 aaa789 = function(a,b,c) { }
 ";
-            RCompletionTestUtilities.GetCompletions(_shell, content, 4, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 4, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -265,7 +265,7 @@ aaa789 = function(a,b,c) { }
             completions.Should().Contain(c => c.DisplayText == "aaa789");
 
             completionSets.Clear();
-            RCompletionTestUtilities.GetCompletions(_shell, content, 7, 0, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 7, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -285,7 +285,7 @@ aaa789 = function(a,b,c) { }
 aaa <- function(a, b, c) { }
 aaa(a
 ";
-            RCompletionTestUtilities.GetCompletions(_shell, content, 2, 5, completionSets);
+            RCompletionTestUtilities.GetCompletions(_services, content, 2, 5, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();

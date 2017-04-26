@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Test.Navigation {
 
         [Test]
         public void PeekFunction01() {
-            string content =
+            var content =
 @"
 x <- function(a) { }
 z <- 1
@@ -46,7 +46,7 @@ x()";
 
         [Test]
         public void PeekFunction02() {
-            string content =
+            var content =
 @"
 func1 <- function(a) { }
 z <- 1
@@ -56,7 +56,7 @@ func1()";
 
         [Test]
         public void PeekVariable01() {
-            string content =
+            var content =
 @"
 x <- function(a) { }
 z <- 1
@@ -67,7 +67,7 @@ z";
 
         [Test]
         public void PeekArgument01() {
-            string content =
+            var content =
 @"
 x <- function(a) {
     z <- 1
@@ -83,7 +83,7 @@ x <- function(a) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(RPeekableItemSourceTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
-                string content = @"lm()";
+                var content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
             }
         }
@@ -147,8 +147,7 @@ x <- function(a) {
 
         private void GetPeekableItems(string content, int position, IList<IPeekableItem> items, ITextRange selection = null) {
             var document = new EditorDocumentMock(content, @"C:\file.r");
-
-            TextViewMock textView = new TextViewMock(document.TextBuffer(), position);
+            var textView = new TextViewMock(document.TextBuffer(), position);
 
             if (selection != null) {
                 textView.Selection.Select(new SnapshotSpan(document.TextBuffer().CurrentSnapshot, new Span(selection.Start, selection.Length)), isReversed: false);
@@ -159,7 +158,7 @@ x <- function(a) {
 
             var peekSession = PeekSessionMock.Create(textView, position);
             var factory = PeekResultFactoryMock.Create();
-            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _services.GetService<ICoreShell>());
+            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _services);
 
             peekSource.AugmentPeekSession(peekSession, items);
         }

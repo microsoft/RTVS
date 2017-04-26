@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
@@ -26,12 +25,12 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task SignatureHelpSourceTest01() {
             string content = @"x <- as.matrix(x)";
 
-            AstRoot ast = RParser.Parse(content);
-            int caretPosition = 15;
-            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, Shell);
-            SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
-            List<ISignature> signatures = new List<ISignature>();
+            var ast = RParser.Parse(content);
+            var caretPosition = 15;
+            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var signatureHelpSource = new SignatureHelpSource(textBuffer, Services);
+            var signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
+            var signatures = new List<ISignature>();
 
             signatureHelpSession.TrackingPoint = new TrackingPointMock(textBuffer, caretPosition, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
             await signatureHelpSource.AugmentSignatureHelpSessionAsync(signatureHelpSession, signatures, ast);
@@ -45,18 +44,18 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test]
         public async Task SignatureHelpSourceTest02() {
-            string content = 
+            var content = 
 @"
 x <- function(a, b = TRUE, c = 12/7) { }
 x( )
 ";
 
-            AstRoot ast = RParser.Parse(content);
-            int caretPosition = content.IndexOf("( )")+1;
-            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, Shell);
-            SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
-            List<ISignature> signatures = new List<ISignature>();
+            var ast = RParser.Parse(content);
+            var caretPosition = content.IndexOf("( )")+1;
+            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var signatureHelpSource = new SignatureHelpSource(textBuffer, Services);
+            var signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
+            var signatures = new List<ISignature>();
 
             signatureHelpSession.TrackingPoint = new TrackingPointMock(textBuffer, caretPosition, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
             await signatureHelpSource.AugmentSignatureHelpSessionAsync(signatureHelpSession, signatures, ast);

@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Commands {
             RMainController.Attach(textView, textBuffer, Shell.Services);
             if (textBuffer != textView.TextBuffer) {
                 // Projected scenario
-                _containedLanguageHost = ContainedLanguageHost.GetHost(textView, textBuffer, Shell);
+                _containedLanguageHost = ContainedLanguageHost.GetHost(textView, textBuffer, Shell.Services);
                 if (_containedLanguageHost != null) {
                     _containedLanguageHost.Closing += OnContainedLanguageHostClosing;
                     _textBuffer = textBuffer;

@@ -26,6 +26,6 @@ namespace Microsoft.R.Editor.Completions {
         public RCompletionControllerProvider(ICoreShell shell) => _shell = shell;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView view, IList<ITextBuffer> subjectBuffers)
-            => RCompletionController.Create(view, subjectBuffers, _shell);
+            => RCompletionController.Create(view, subjectBuffers, _shell.Services);
     }
 }

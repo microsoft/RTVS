@@ -5,7 +5,6 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
@@ -63,15 +62,15 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
         public void Scope(string content, int lineNum, int expectedIndent) {
-            AstRoot ast;
-            ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);
-            var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
+            var editorView = TextViewTest.MakeTextView(content, 0, out AstRoot ast);
+            var document = new EditorDocumentMock(new EditorTreeMock(editorView.EditorBuffer, ast));
 
             var cs = _services.GetService<ICompositionService>();
             var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
             var provider = composer.GetImport(RContentTypeDefinition.ContentType);
-            ISmartIndent indenter = provider.CreateSmartIndent(textView);
-            int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));
+            var tv = editorView.As<ITextView>();
+            var indenter = provider.CreateSmartIndent(tv);
+            var indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));
             indent.Should().HaveValue().And.Be(expectedIndent);
         }
     }

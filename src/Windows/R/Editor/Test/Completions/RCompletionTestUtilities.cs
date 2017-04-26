@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
@@ -15,13 +15,13 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     internal static class RCompletionTestUtilities {
-        public static void GetCompletions(ICoreShell coreShell, string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
+        public static void GetCompletions(IServiceContainer services, string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
             var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            GetCompletions(coreShell, content, line.Start + column, completionSets, selectedRange);
+            GetCompletions(services, content, line.Start + column, completionSets, selectedRange);
         }
 
-        public static void GetCompletions(ICoreShell coreShell, string content, int caretPosition, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
+        public static void GetCompletions(IServiceContainer services, string content, int caretPosition, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
             var ast = RParser.Parse(content);
 
             var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             }
 
             var completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
-            var completionSource = new RCompletionSource(textBuffer, coreShell);
+            var completionSource = new RCompletionSource(textBuffer, services);
 
             completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }

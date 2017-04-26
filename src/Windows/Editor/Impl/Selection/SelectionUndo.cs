@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Selection {
@@ -14,13 +15,15 @@ namespace Microsoft.Languages.Editor.Selection {
     /// </summary>
     public sealed class SelectionUndo : IDisposable {
         private readonly ISelectionTracker _selectionTracker;
+        private readonly ITextBuffer _textBuffer;
         private readonly ITextUndoTransaction _transaction;
 
         public SelectionUndo(ISelectionTracker selectionTracker, ITextBufferUndoManagerProvider undoManagerProvider, string transactionName, bool automaticTracking) {
             _selectionTracker = selectionTracker;
-            var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
+            _textBuffer = selectionTracker.EditorView.EditorBuffer.As<ITextBuffer>();
+            var undoManager = undoManagerProvider.GetTextBufferUndoManager(_textBuffer);
 
-            ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
+            var innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
             _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
             _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
 
@@ -42,7 +45,7 @@ namespace Microsoft.Languages.Editor.Selection {
         private readonly ISelectionTracker _selectionTracker;
 
         public StartSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
-            : base(selectionTracker.TextView.TextBuffer) {
+            : base(selectionTracker.EditorView.EditorBuffer.As<ITextBuffer>()) {
             _selectionTracker = selectionTracker;
         }
 
@@ -56,7 +59,7 @@ namespace Microsoft.Languages.Editor.Selection {
         private readonly ISelectionTracker _selectionTracker;
 
         public EndSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
-            : base(selectionTracker.TextView.TextBuffer) {
+            : base(selectionTracker.EditorView.EditorBuffer.As<ITextBuffer>()) {
             _selectionTracker = selectionTracker;
         }
 

@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
@@ -20,8 +21,8 @@ namespace Microsoft.R.Editor.Formatting {
         public static bool IsPreProcessAutoformatTriggerCharacter(char ch) => ch == ';';
         public static bool IsPostProcessAutoformatTriggerCharacter(char ch) => ch.IsLineBreak() || ch == '}';
 
-        public static void HandleAutoformat(ITextView textView, ICoreShell shell, char typedChar) {
-            var settings = shell.GetService<IREditorSettings>();
+        public static void HandleAutoformat(ITextView textView, IServiceContainer services, char typedChar) {
+            var settings = services.GetService<IREditorSettings>();
             if (!settings.AutoFormat || (!settings.FormatScope && typedChar == '}')) {
                 return;
             }
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.Formatting {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
             var textBuffer = document.EditorBuffer.As<ITextBuffer>();
-            var host = ContainedLanguageHost.GetHost(textView, textBuffer, shell);
+            var host = ContainedLanguageHost.GetHost(textView, textBuffer, services);
             if (host != null && !host.CanFormatLine(textView, textBuffer, textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
@@ -47,7 +48,10 @@ namespace Microsoft.R.Editor.Formatting {
                 return;
             }
 
-            ITextBuffer subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
+            var subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
+            var editorView = textView.ToEditorView();
+            var editorBuffer = subjectBuffer.ToEditorBuffer();
+
             if (typedChar.IsLineBreak()) {
                 // Special case for hitting caret after } and before 'else'. We do want to format
                 // the construct as '} else {' but if user types Enter after } and we auto-format
@@ -58,9 +62,9 @@ namespace Microsoft.R.Editor.Formatting {
                     var scopeStatement = GetFormatScope(textView, subjectBuffer, ast);
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
-                        FormatOperations.FormatNode(textView, subjectBuffer, shell, scopeStatement);
+                        FormatOperations.FormatNode(editorView, editorBuffer, services, scopeStatement);
                     } else if (CanFormatLine(textView, subjectBuffer, -1)) {
-                        FormatOperations.FormatViewLine(textView, subjectBuffer, -1, shell);
+                        FormatOperations.FormatViewLine(editorView, editorBuffer, -1, services);
                     }
                 }
             } else if (typedChar == ';') {
@@ -70,10 +74,10 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatViewLine(textView, subjectBuffer, 0, shell);
+                    FormatOperations.FormatViewLine(editorView, editorBuffer, 0, services);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, shell, limitAtCaret: true, caretOffset: -1);
+                FormatOperations.FormatCurrentStatement(editorView, editorBuffer, services, limitAtCaret: true, caretOffset: -1);
             }
         }
 

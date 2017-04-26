@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
         public void Start(IBraceCompletionSession session) {
             if (session.OpeningBrace == '{' && _settings.AutoFormat) {
                 EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer, _shell);
+                FormatOperations.FormatCurrentStatement(session.TextView.ToEditorView(), session.SubjectBuffer.ToEditorBuffer(), _shell.Services);
             }
         }
 
@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
         public void OnReturn(IBraceCompletionSession session) {
             if (session.OpeningBrace == '{' && _settings.AutoFormat) {
                 EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, _shell, indentCaret: true);
+                FormatOperations.FormatCurrentScope(session.TextView.ToEditorView(), session.SubjectBuffer.ToEditorBuffer(), _shell.Services, indentCaret: true);
             }
         }
 

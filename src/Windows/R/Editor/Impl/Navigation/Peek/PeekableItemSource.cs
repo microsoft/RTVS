@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -13,30 +13,30 @@ namespace Microsoft.R.Editor.Navigation.Peek {
     internal sealed class PeekableItemSource : IPeekableItemSource {
         private readonly ITextBuffer _textBuffer;
         private readonly IPeekResultFactory _peekResultFactory;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
-        public PeekableItemSource(ITextBuffer textBuffer, IPeekResultFactory peekResultFactory, ICoreShell shell) {
+        public PeekableItemSource(ITextBuffer textBuffer, IPeekResultFactory peekResultFactory, IServiceContainer services) {
             _textBuffer = textBuffer;
             _peekResultFactory = peekResultFactory;
-            _shell = shell;
+            _services = services;
         }
 
         public void AugmentPeekSession(IPeekSession session, IList<IPeekableItem> peekableItems) {
             var triggerPoint = session.GetTriggerPoint(_textBuffer.CurrentSnapshot);
-            if (!triggerPoint.HasValue)
+            if (!triggerPoint.HasValue) {
                 return;
+            }
 
-            Span span;
-            string itemName = session.TextView.GetIdentifierUnderCaret(out span);
+            var itemName = session.TextView.GetIdentifierUnderCaret(out Span span);
             if (!string.IsNullOrEmpty(itemName)) {
-                ITextDocument textDocument = _textBuffer.GetTextDocument();
+                var textDocument = _textBuffer.GetTextDocument();
                 var document = _textBuffer.GetEditorDocument<IREditorDocument>();
                 var definitionNode = document?.EditorTree.AstRoot.FindItemDefinition(triggerPoint.Value, itemName);
                 if (definitionNode != null) {
-                    peekableItems.Add(new UserDefinedPeekItem(textDocument.FilePath, definitionNode, itemName, _peekResultFactory, _shell));
+                    peekableItems.Add(new UserDefinedPeekItem(textDocument.FilePath, definitionNode, itemName, _peekResultFactory, _services));
                 } else {
                     // Not found. Try internal functions
-                    var item = new InternalFunctionPeekItem(textDocument.FilePath, span, itemName, _peekResultFactory, _shell);
+                    var item = new InternalFunctionPeekItem(textDocument.FilePath, span, itemName, _peekResultFactory, _services);
                     peekableItems.Add(item);
                 }
             }

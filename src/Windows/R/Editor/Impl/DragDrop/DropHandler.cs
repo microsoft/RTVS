@@ -76,13 +76,13 @@ namespace Microsoft.R.Editor.DragDrop {
             }
 
             var es = _shell.GetService<IEditorSupport>();
-            using (var undoAction = es.CreateUndoAction(_wpfTextView.ToEditorView(), textBuffer.ToEditorBuffer())) {
+            using (var undoAction = es.CreateUndoAction(_wpfTextView.ToEditorView())) {
                 undoAction.Open(Resources.DragDropOperation);
                 textBuffer.Replace(new Span(dropPosition, 0), text);
 
                 if (_settings.FormatOnPaste) {
-                    RangeFormatter.FormatRange(_wpfTextView, document.EditorBuffer.As<ITextBuffer>(), 
-                        new TextRange(dropPosition, text.Length), _shell.GetService<IREditorSettings>().FormatOptions, _shell);
+                    RangeFormatter.FormatRange(_wpfTextView.ToEditorView(), document.EditorBuffer, 
+                        new TextRange(dropPosition, text.Length), _shell.GetService<IREditorSettings>(), _shell.Services);
                 }
 
                 if (_wpfTextView.Selection != null) {
