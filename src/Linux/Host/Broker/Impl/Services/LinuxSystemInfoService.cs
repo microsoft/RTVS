@@ -1,26 +1,172 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 
 namespace Microsoft.R.Host.Broker.Services {
-    class LinuxSystemInfoService : ISystemInfoService {
+    public class LinuxSystemInfoService : ISystemInfoService {
+        private readonly IFileSystem _fs;
+
+        public LinuxSystemInfoService(IFileSystem fs) {
+            _fs = fs;
+        }
+
         public double GetCpuLoad() {
-            throw new NotImplementedException();
+            var initial = GetCurrentCpuUsage();
+            Thread.Sleep(500);
+            var current = GetCurrentCpuUsage();
+
+            long initTimeSinceBoot = initial.user + initial.nice + initial.system + initial.idle + initial.iowait + initial.irq + initial.softirq + initial.steal;
+            long currentTimeSinceBoot = current.user + current.nice + current.system + current.idle + current.iowait + current.irq + current.softirq + current.steal;
+            long deltaTimeSinceBoot = currentTimeSinceBoot - initTimeSinceBoot;
+
+            long initIdleTime = initial.idle + initial.iowait;
+            long currentIdleTime = current.idle + current.iowait;
+            long deltaIdleTime = currentIdleTime - initIdleTime;
+
+            long deltaUsage = deltaTimeSinceBoot - deltaIdleTime;
+            return deltaUsage / deltaTimeSinceBoot;
         }
 
         public (long TotalVirtualMemory, long FreeVirtualMemory, long TotalPhysicalMemory, long FreePhysicalMemory) GetMemoryInformation() {
-            throw new NotImplementedException();
+            var meminfo = GetMemInfo();
+            return (
+                meminfo["SwapTotal"] / (1000 * 1000),
+                meminfo["SwapFree"] / (1000 * 1000),
+                meminfo["MemTotal"] / (1000 * 1000),
+                meminfo["MemFree"] / (1000 * 1000)
+                );
         }
 
         public double GetNetworkLoad() {
-            throw new NotImplementedException();
+            try {
+                if (!NetworkInterface.GetIsNetworkAvailable()) {
+                    return 0;
+                }
+
+                // Select compatible active network interfaces
+                var interfaces = NetworkInterface.GetAllNetworkInterfaces()
+                    .Where(x => x.Speed > 0
+                        && x.Supports(NetworkInterfaceComponent.IPv4)
+                        && x.Supports(NetworkInterfaceComponent.IPv6)
+                        && x.OperationalStatus == OperationalStatus.Up
+                        && IsCompatibleInterface(x.NetworkInterfaceType)).ToArray();
+
+                // Take initial measurement, wait 500ms, take another.
+                var stats = interfaces.Select(s => s.GetIPStatistics()).ToArray();
+                var initialBytes = stats.Select(s => s.BytesSent + s.BytesReceived).ToArray();
+
+                Thread.Sleep(500);
+
+                stats = interfaces.Select(s => s.GetIPStatistics()).ToArray();
+                var currentBytes = stats.Select(s => s.BytesSent + s.BytesReceived).ToArray();
+
+                // Figure out how many bytes were sent and received within 500ms
+                // and calculate adapter load depending on speed. Take the highest value.
+                double maxLoad = 0;
+                for (int i = 0; i < initialBytes.Length; i++) {
+                    // 16 = 8 bits per byte in 1/2 second. Speed it in bits per second.
+                    var load = 16.0 * (currentBytes[i] - initialBytes[i]) / interfaces[i].Speed;
+                    maxLoad = Math.Max(maxLoad, load);
+                }
+                return maxLoad;
+            } catch (PlatformNotSupportedException) {
+                return 0;
+            }
         }
 
         public (string VideoCardName, long VideoRAM, string VideoProcessor) GetVideoControllerInformation() {
-            throw new NotImplementedException();
+            return ("Unknown", 0, "Unknown");
+        }
+
+        private static char[] _cpuInfoSplitter = new char[] { ' ', ':', '\t' };
+        private (long user, long nice, long system, long idle, long iowait, long irq, long softirq, long steal) GetCurrentCpuUsage() {
+            string cpuLoadInfo = "/proc/stat";
+            var lines = _fs.FileReadAllLines(cpuLoadInfo).ToArray();
+            var split = lines[0].Split(_cpuInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
+            long user = 0, nice = 0, system = 0, idle = 0, iowait = 0, irq = 0, softirq = 0, steal = 0;
+            // split[0] == "cpu" so ignore the first item;
+            if (split.Length > 1 && !long.TryParse(split[1], out user)) {
+                user = 0;
+            }
+
+            if (split.Length > 2 && !long.TryParse(split[2], out nice)) {
+                nice = 0;
+            }
+
+            if (split.Length > 3 && !long.TryParse(split[3], out system)) {
+                system = 0;
+            }
+
+            if (split.Length > 4 && !long.TryParse(split[4], out idle)) {
+                idle = 0;
+            }
+
+            if (split.Length > 5 && !long.TryParse(split[5], out iowait)) {
+                iowait = 0;
+            }
+
+            if (split.Length > 6 && !long.TryParse(split[6], out irq)) {
+                irq = 0;
+            }
+
+            if (split.Length > 7 && !long.TryParse(split[7], out softirq)) {
+                softirq = 0;
+            }
+
+            if (split.Length > 8 && !long.TryParse(split[8], out steal)) {
+                steal = 0;
+            }
+
+            return (user, nice, system, idle, iowait, irq, softirq, steal);
+        }
+
+        private static char[] _memInfoSplitter = new char[] { ' ', ':', '\t' };
+        private static Dictionary<string, long> _sizeLUT = new Dictionary<string, long> {
+            {"KB", 1000L},
+            {"MB", 1000L * 1000L},
+            {"GB", 1000L * 1000L * 1000L},
+            {"TB", 1000L * 1000L * 1000L * 1000L},
+        };
+
+        private Dictionary<string, long> GetMemInfo() {
+            string memInfoFile = "/proc/meminfo";
+            var data = _fs.FileReadAllLines(memInfoFile);
+            
+            Dictionary<string, long> meminfo = new Dictionary<string, long>();
+            foreach (string line in data) {
+                string[] split = line.Split(_memInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length == 3) {
+                    long value;
+                    if (split.Length > 2 && long.TryParse(split[1], out value)) {
+                        long multiplier;
+                        if(!_sizeLUT.TryGetValue(split[2].ToUpper(), out multiplier)) {
+                            multiplier = 1;
+                        }
+                        meminfo.Add(split[0], value * multiplier);
+                    } else if(long.TryParse(split[1], out value)) {
+                        meminfo.Add(split[0], value);
+                    }
+                }
+            }
+            return meminfo;
+        }
+
+        private static bool IsCompatibleInterface(NetworkInterfaceType nit) {
+            switch (nit) {
+                case NetworkInterfaceType.Loopback:
+                case NetworkInterfaceType.HighPerformanceSerialBus:
+                case NetworkInterfaceType.Ppp:
+                    return false;
+                default:
+                    return true;
+            }
         }
     }
 }
