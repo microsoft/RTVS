@@ -55,7 +55,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
                 textView.Closed += TextView_Closed;
             }
-
             return target;
         }
 

@@ -13,11 +13,8 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextViewExtensions {
-        public static IEditorView ToEditorView(this ITextView textView) {
-            IEditorView view = null;
-            textView.Properties.TryGetProperty(typeof(IEditorView), out view);
-            return view;
-        }
+        public static IEditorView ToEditorView(this ITextView textView)
+            => textView.Properties.TryGetProperty(typeof(IEditorView), out IEditorView view) ? view : null;
 
         /// <summary>
         /// Retrieves service manager attached to the text view

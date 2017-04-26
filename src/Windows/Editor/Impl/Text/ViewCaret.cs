@@ -2,27 +2,31 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Text {
     public sealed class ViewCaret : IViewCaret {
         private readonly ITextView _textView;
-        private readonly ITextCaret _caret;
 
         public ViewCaret(ITextView textView) {
-            _caret = textView.Caret;
-            _caret.PositionChanged += OnCaretPositionChanged;
+            _textView = textView;
+            textView.Caret.PositionChanged += OnCaretPositionChanged;
         }
 
         #region IViewCaret
-        public bool InVirtualSpace => _caret.InVirtualSpace;
+        public bool InVirtualSpace => _textView.Caret.InVirtualSpace;
         public IViewCaretPosition Position {
             get {
-                var p = _caret.Position.BufferPosition;
-                return new CaretPosition(new EditorSnapshotPoint(p.Snapshot.TextBuffer.ToEditorBuffer().CurrentSnapshot, p), _caret.Position.VirtualSpaces);
+                var p = _textView.Caret.Position.BufferPosition;
+                return new CaretPosition(new EditorSnapshotPoint(p.Snapshot.TextBuffer.ToEditorBuffer().CurrentSnapshot, p), _textView.Caret.Position.VirtualSpaces);
             }
         }
+
         public event EventHandler<ViewCaretPositionChangedEventArgs> PositionChanged;
+
+        public void MoveTo(int point, int virtualSpaces)
+            => _textView.Caret.MoveTo(new VirtualSnapshotPoint(new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, point), virtualSpaces));
         #endregion
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) 

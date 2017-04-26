@@ -9,5 +9,6 @@ namespace Microsoft.Languages.Editor.Text {
         IViewCaretPosition Position { get; }
 
         event EventHandler<ViewCaretPositionChangedEventArgs> PositionChanged;
+        void MoveTo(int point, int virtualSpaces);
     }
 }

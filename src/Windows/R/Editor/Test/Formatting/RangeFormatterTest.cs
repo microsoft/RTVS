@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Formatting;
@@ -19,20 +20,20 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class RangeFormatterTest {
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
+        private readonly IREditorSettings _settings;
 
         public RangeFormatterTest(IServiceContainer services) {
-            _shell = services.GetService<ICoreShell>();
+            _services = services;
+            _settings = services.GetService<IREditorSettings>();
         }
 
         [Test]
         public void EmptyFileTest() {
-            AstRoot ast;
-            ITextView textView = TextViewTest.MakeTextView(string.Empty, out ast);
+            var textView = TextViewTest.MakeTextView(string.Empty, out AstRoot ast);
+            RangeFormatter.FormatRange(textView, textView.EditorBuffer, TextRange.EmptyRange, _settings, _services);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), _shell);
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-
+            string actual = textView.EditorBuffer.CurrentSnapshot.GetText();
             actual.Should().BeEmpty();
         }
 

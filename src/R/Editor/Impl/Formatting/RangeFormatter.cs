@@ -19,12 +19,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
-            var snapshot = textBuffer.CurrentSnapshot;
+        public static bool FormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IREditorSettings settings, IServiceContainer services) {
+            var snapshot = editorBuffer.CurrentSnapshot;
             var start = formatRange.Start;
             var end = formatRange.End;
 
-            if(!CanFormatRange(textView, textBuffer, formatRange, services)) {
+            if(!CanFormatRange(editorView, editorBuffer, formatRange, services)) {
                 return false;
             }
 
@@ -32,19 +32,19 @@ namespace Microsoft.R.Editor.Formatting {
             // ends in the beginning of the next line. In order to prevent formatting
             // of the next line that user did not select, we need to shrink span to
             // format and exclude the trailing line break.
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(formatRange.End);
+            var line = snapshot.GetLineFromPosition(formatRange.End);
 
-            if (line.Start.Position == formatRange.End && formatRange.Length > 0) {
+            if (line.Start == formatRange.End && formatRange.Length > 0) {
                 if (line.LineNumber > 0) {
                     line = snapshot.GetLineFromLineNumber(line.LineNumber - 1);
-                    end = line.End.Position;
+                    end = line.End;
                     start = Math.Min(start, end);
                 }
             }
 
             // Expand span to include the entire line
-            ITextSnapshotLine startLine = snapshot.GetLineFromPosition(start);
-            ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
+            var startLine = snapshot.GetLineFromPosition(start);
+            var endLine = snapshot.GetLineFromPosition(end);
 
             // In case of formatting of multiline expressions formatter needs
             // to know the entire expression since otherwise it may not correctly
@@ -178,16 +178,18 @@ namespace Microsoft.R.Editor.Formatting {
             return position;
         }
 
-        private static bool CanFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IServiceContainer services) {
+        private static bool CanFormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange, IServiceContainer services) {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, textBuffer, services);
+            var view = editorView.As<ITextView>();
+            var tb = editorBuffer.As<ITextBuffer>();
+            var host = ContainedLanguageHost.GetHost(view, tb, services);
             if (host != null) {
-                var snapshot = textBuffer.CurrentSnapshot;
+                var snapshot = editorBuffer.CurrentSnapshot;
                 var startLine = snapshot.GetLineNumberFromPosition(formatRange.Start);
                 var endLine = snapshot.GetLineNumberFromPosition(formatRange.End);
                 for(int i = startLine; i<= endLine; i++) {
-                    if (!host.CanFormatLine(textView, textBuffer, i)) {
+                    if (!host.CanFormatLine(view, tb, i)) {
                         return false;
                     }
                 }

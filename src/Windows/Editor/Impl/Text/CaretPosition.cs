@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.Languages.Editor.Text {
-    internal sealed class CaretPosition : IViewCaretPosition {
+    public sealed class CaretPosition : IViewCaretPosition {
         private readonly ISnapshotPoint _point;
 
         public CaretPosition(ISnapshotPoint point, int virtualSpaces) {

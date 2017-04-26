@@ -67,11 +67,9 @@
     <Compile Include="Formatting\AutoFormat.cs" />
     <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
-    <Compile Include="Formatting\FormatOperations.cs" />
     <Compile Include="Formatting\FormatSelectionCommand.cs" />
     <Compile Include="Formatting\FormatOnPasteCommand.cs" />
     <Compile Include="Formatting\Data\IClipboardDataProvider.cs" />
-    <Compile Include="Formatting\RangeFormatter.cs" />
     <Compile Include="Navigation\CodeNavigator.cs" />
     <Compile Include="Navigation\Commands\PeekDefinitionCommand.cs" />
     <Compile Include="Navigation\Commands\GoToDefinitionCommand.cs" />

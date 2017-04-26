@@ -3,43 +3,42 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class TextViewTest {
-        public static ITextView MakeTextView(string content, out AstRoot ast) {
+        public static IEditorView MakeTextView(string content, out AstRoot ast) {
             return MakeTextView(content, 0, out ast);
         }
 
-        public static ITextView MakeTextViewRealTextBuffer(string content, IServiceContainer services) {
-            ITextBufferFactoryService svc = services.GetService<ITextBufferFactoryService>();
-            IContentTypeRegistryService rg = services.GetService<IContentTypeRegistryService>();
-            ITextBuffer textBuffer = svc.CreateTextBuffer(content, rg.GetContentType(RContentTypeDefinition.ContentType));
-            return new TextViewMock(textBuffer, 0);
+        public static IEditorView MakeTextViewRealTextBuffer(string content, IServiceContainer services) {
+            var svc = services.GetService<ITextBufferFactoryService>();
+            var rg = services.GetService<IContentTypeRegistryService>();
+            var textBuffer = svc.CreateTextBuffer(content, rg.GetContentType(RContentTypeDefinition.ContentType));
+            return new TextViewMock(textBuffer, 0).ToEditorView();
         }
 
-        public static ITextView MakeTextView(string content, int caretPosition, out AstRoot ast) {
+        public static IEditorView MakeTextView(string content, int caretPosition, out AstRoot ast) {
             ast = RParser.Parse(content);
-            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            return new TextViewMock(textBuffer, caretPosition);
+            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            return new TextViewMock(textBuffer, caretPosition).ToEditorView();
         }
 
-        public static ITextView MakeTextView(string content, ITextRange selectionRange) {
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            TextViewMock textView = new TextViewMock(textBuffer);
+        public static IEditorView MakeTextView(string content, ITextRange selectionRange) {
+            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var textView = new TextViewMock(textBuffer);
 
             textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot,
                      new Span(selectionRange.Start, selectionRange.Length)), false);
-            return textView;
+            return textView.ToEditorView();
         }
     }
 }
