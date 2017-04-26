@@ -20,7 +20,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.R.Wpf;component/CommonResources.xaml " />
                 <ResourceDictionary Source="DataGridStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -137,7 +137,7 @@
                             Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}"
                             AutomationProperties.Name="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.ShowDetailCommandAutomationName}}"
                             AutomationProperties.HelpText="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.ShowDetailCommandAutomationHelpText}}"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center" Focusable="False">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
                         </Button>
                         <Button
@@ -145,7 +145,7 @@
                             Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}"
                             AutomationProperties.Name="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.OpenCsvAppCommandAutomationName}}"
                             AutomationProperties.HelpText="{Binding Path=Model.Content.Name, StringFormat={x:Static pkg:Resources.OpenCsvAppCommandAutomationHelpText}}"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center" Focusable="False">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
                         </Button>
                     </StackPanel>
@@ -154,16 +154,14 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid KeyboardNavigation.TabNavigation="Cycle">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox x:Name="EnvironmentComboBox"
-                  Margin="4"
-                  ItemsSource="{Binding Environments}"
-                  SelectedItem="{Binding SelectedEnvironment}"
+        <ComboBox x:Name="EnvironmentComboBox" Margin="4" TabIndex="1"
+                  ItemsSource="{Binding Environments}" SelectedItem="{Binding SelectedEnvironment}"
                   SelectionChanged="EnvironmentComboBox_SelectionChanged"
                   AutomationProperties.Name="{x:Static pkg:Resources.VariableExplorer_EnvironmentsCombo_AccessibleName}">
             <ComboBox.ItemTemplate>
@@ -175,7 +173,7 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
             <ComboBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{wpf:StyleSetter Style={StaticResource {x:Type ComboBox}}, Property=ItemsControl.ItemContainerStyle}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Name}" Value="{x:Null}">
                             <Setter Property="IsEnabled" Value="False"/>
@@ -194,10 +192,19 @@
         </ComboBox>
 
         <local:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"
-                  AutoGenerateColumns="False"
-                  ScrollViewer.VerticalScrollBarVisibility="Visible"
-                  IsReadOnly="True"
-                  RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
+                        AutoGenerateColumns="False" TabIndex="0" 
+                        ScrollViewer.VerticalScrollBarVisibility="Visible"
+                        IsReadOnly="True" PreviewKeyDown="OnPreviewKeyDown" PreviewKeyUp="OnPreviewKeyUp" ItemsChanged="OnItemsChanged"
+                        RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
+            <DataGrid.Resources>
+                <Style x:Key="SelectableCellStyle" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                    <Setter Property="KeyboardNavigation.IsTabStop" Value="{Binding Path=IsSelected, RelativeSource={RelativeSource Self}}" />
+                </Style>
+
+                <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                    <Setter Property="KeyboardNavigation.IsTabStop" Value="False" />
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="MouseDoubleClick" Handler="GridRow_MouseDoubleClick" />
@@ -206,7 +213,7 @@
             </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}"
-                                        Width="2*" 
+                                        Width="2*" CellStyle="{StaticResource SelectableCellStyle}"
                                         CanUserSort="True" SortMemberPath="DummyValue" />
                 <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}"
                                         Width="3*" CanUserSort="False" />

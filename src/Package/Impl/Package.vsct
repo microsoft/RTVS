@@ -2411,6 +2411,9 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="dataSubMenuEditGroup" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="veCommandGroup" priority="0x0300">
+      <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
+    </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="directorySubMenuGroup"/>

@@ -1,12 +1,41 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Common.Wpf.Extensions;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class TreeGrid : DataGrid {
+        public static readonly DependencyProperty IsCellFocusedProperty = DependencyProperty.RegisterAttached("IsCellFocused", typeof(bool), typeof(TreeGrid), new PropertyMetadata(false, OnIsCellFocusedChanged));
+        public static readonly DependencyProperty IsFocusInRowProperty = DependencyProperty.RegisterAttached("IsFocusInRow", typeof(bool), typeof(TreeGrid), new PropertyMetadata(false));
 
+        public static bool GetIsCellFocused(DataGridCell cell) => (bool)cell.GetValue(IsCellFocusedProperty);
+        public static void SetIsCellFocused(DataGridCell cell, bool value) => cell.SetValue(IsCellFocusedProperty, value);
+             
+        public static bool GetIsFocusInRow(DataGridCell cell) => (bool)cell.GetValue(IsFocusInRowProperty);
+        public static void SetIsFocusInRow(DataGridCell cell, bool value) => cell.SetValue(IsFocusInRowProperty, value);
+             
+        private static void OnIsCellFocusedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            var cellsPanel = d.GetParentOfType<DataGridCellsPanel>();
+            var cells = cellsPanel.GetChildrenOfType<DataGridCell>().ToList();
+            var isFocused = cells.Any(c => c.IsFocused);
+            foreach (var cell in cells) {
+                SetIsFocusInRow(cell, isFocused);
+            }
+        }
+
+        public event EventHandler<NotifyCollectionChangedEventArgs> ItemsChanged;
+
+        protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e) {
+            base.OnItemsChanged(e);
+            ItemsChanged?.Invoke(this, e);
+        }
+ 
         #region Keyboard navigation
 
         protected override void OnKeyDown(KeyEventArgs e) {
@@ -74,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             CurrentItem = item;
         }
 
-        private void SetCurrentItem(int index) {
+        public void SetCurrentItem(int index) {
             var item = Items[index];
             SetCurrentItem(item);
         }
