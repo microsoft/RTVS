@@ -9,8 +9,7 @@ namespace Microsoft.Languages.Editor.Completions {
     /// <summary>
     /// Represents active completion session in the editor.
     /// </summary>
-    public interface IEditorCompletionSession {
-        PropertyDictionary Properties { get; }
+    public interface IEditorCompletionSession: IPlatformSpecificObject, IPropertyHolder {
         IEditorView View { get; }
         bool IsDismissed { get; }
 

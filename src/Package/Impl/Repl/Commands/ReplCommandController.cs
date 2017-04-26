@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
              textManager.GetExpansionManager(out IVsExpansionManager expansionManager);
 
             // TODO: make this extensible via MEF like commands and controllers in the editor
-            _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current);
+            _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current, services);
         }
 
         public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) {

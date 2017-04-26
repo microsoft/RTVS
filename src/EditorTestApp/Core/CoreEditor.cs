@@ -113,7 +113,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
             var diskBuffer = _textBufferFactoryService.CreateTextBuffer(text, ContentType);
             var cs = _services.GetService<ICompositionService>();
-            _editorViewModel = EditorViewModelFactory.CreateEditorViewModel(diskBuffer, cs);
+            _editorViewModel = EditorViewModelFactory.CreateEditorViewModel(diskBuffer, _services);
 
             if (_editorViewModel != null) {
                 textDataModel = new TextDataModel(diskBuffer, _editorViewModel.ViewBuffer.As<ITextBuffer>());

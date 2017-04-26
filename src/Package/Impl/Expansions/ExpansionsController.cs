@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -15,19 +16,17 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// Code expansions (aka snippets) command controller
     /// </summary>
     internal sealed class ExpansionsController : ICommandTarget {
-        private ExpansionClient _expansionClient;
-        private ITextView _textView;
-        private ITextBuffer _textBuffer;
+        private readonly IServiceContainer _services;
+        private readonly ExpansionClient _expansionClient;
+        private readonly ITextView _textView;
 
-        public ExpansionsController(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
+        public ExpansionsController(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache, IServiceContainer services) {
             _textView = textView;
-            _textBuffer = textBuffer;
-            _expansionClient = new ExpansionClient(textView, textBuffer, expansionManager, cache);
+            _expansionClient = new ExpansionClient(textView, textBuffer, expansionManager, cache, services);
+            _services = services;
         }
 
-        internal IVsExpansionClient ExpansionClient {
-            get { return _expansionClient; }
-        }
+        internal IVsExpansionClient ExpansionClient => _expansionClient;
 
         #region ICommandTarget
         public CommandStatus Status(Guid group, int id) {
@@ -35,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 if (!_expansionClient.IsEditingExpansion()) {
                     switch ((VSConstants.VSStd2KCmdID)id) {
                         case VSConstants.VSStd2KCmdID.TAB:
-                            return _expansionClient.TextView.IsStatementCompletionWindowActive(VsAppShell.Current) ? 
+                            return _expansionClient.TextView.IsStatementCompletionWindowActive(_services) ? 
                                 CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
 
                         case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
@@ -87,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         break;
 
                     case VSConstants.VSStd2KCmdID.RETURN:
-                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive(VsAppShell.Current) && _expansionClient.IsEditingExpansion()) {
+                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive(_services) && _expansionClient.IsEditingExpansion()) {
                             if (_expansionClient.IsCaretInsideSnippetFields()) {
                                 // End the current expansion session and position the 
                                 // edit caret according to the code snippet template.
@@ -102,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         break;
 
                     case VSConstants.VSStd2KCmdID.CANCEL:
-                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive(VsAppShell.Current) && _expansionClient.IsEditingExpansion()) {
+                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive(_services) && _expansionClient.IsEditingExpansion()) {
                             _expansionClient.EndExpansionSession(true);
                             return CommandResult.Executed;
                         }
@@ -113,8 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return hr == VSConstants.S_OK ? CommandResult.Executed : CommandResult.NotSupported;
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
-        }
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) { }
         #endregion
 
         private bool IsPossibleFilePathCompletion() {

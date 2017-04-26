@@ -96,7 +96,6 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
                     tree.TakeThreadOwnerShip();
                     await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
-
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);

@@ -71,10 +71,10 @@ namespace Microsoft.Languages.Editor.Text {
             return null;
         }
 
-        public static bool IsStatementCompletionWindowActive(this ITextView textView, ICoreShell coreShell) {
-            bool result = false;
+        public static bool IsStatementCompletionWindowActive(this ITextView textView, IServiceContainer services) {
+            var result = false;
             if (textView != null) {
-                var completionBroker = coreShell.GetService<ICompletionBroker>();
+                var completionBroker = services.GetService<ICompletionBroker>();
                 result = completionBroker.IsCompletionActive(textView);
             }
             return result;

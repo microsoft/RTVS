@@ -15,8 +15,8 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Document;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// <summary>
@@ -28,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         private readonly IVsExpansionManager _expansionManager;
         private readonly IExpansionsCache _cache;
+        private readonly IServiceContainer _services;
 
         private IVsExpansionSession _expansionSession;
         private int _currentFieldIndex = -1;
@@ -40,11 +41,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 StreamMarker = m;
             }
         }
-        public ExpansionClient(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
+        public ExpansionClient(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache, IServiceContainer services) {
             TextView = textView;
             TextBuffer = textBuffer;
             _expansionManager = expansionManager;
             _cache = cache;
+            _services = services;
         }
 
         public ITextBuffer TextBuffer { get; }
@@ -87,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                     this,
                     RGuidList.RLanguageServiceGuid,
                     snippetTypes,
-                    (snippetTypes != null) ? snippetTypes.Length : 0,
+                    snippetTypes?.Length ?? 0,
                     0,
                     null, // Snippet kinds
                     0,    // Length of snippet kinds
@@ -100,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         public int GoToNextExpansionField() {
             int hr = VSConstants.E_FAIL;
-            if (!TextView.IsStatementCompletionWindowActive(VsAppShell.Current)) {
+            if (!TextView.IsStatementCompletionWindowActive(_services)) {
                 hr = Session.GoToNextExpansionField(0);
                 if (VSConstants.S_OK != hr) {
                     var index = _currentFieldIndex < _markerCount - 1 ? _currentFieldIndex + 1 : 0;
@@ -112,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         public int GoToPreviousExpansionField() {
             int hr = VSConstants.E_FAIL;
-            if (!TextView.IsStatementCompletionWindowActive(VsAppShell.Current)) {
+            if (!TextView.IsStatementCompletionWindowActive(_services)) {
                 hr = Session.GoToPreviousExpansionField();
                 if (VSConstants.S_OK != hr) {
                     var index = _currentFieldIndex > 0 ? _currentFieldIndex - 1 : _markerCount - 1;
@@ -134,14 +136,11 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             // Get the text at the current caret position and
             // determine if it is a snippet shortcut.
             if (!TextView.Caret.InVirtualSpace) {
-                SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
-
                 var textBuffer = GetTargetBuffer();
                 var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
 
-                Span span;
-                var shortcut = TextView.GetItemBeforeCaret(out span, x => true);
-                VsExpansion? exp = _cache.GetExpansion(shortcut);
+                var shortcut = TextView.GetItemBeforeCaret(out Span span, x => true);
+                var exp = _cache.GetExpansion(shortcut);
 
                 var ts = TextSpanFromViewSpan(span);
                 if (exp.HasValue && ts.HasValue) {
@@ -166,7 +165,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int FormatSpan(IVsTextLines vsTextLines, TextSpan[] ts) {
-            var hr = VSConstants.S_OK;
             var startPos = -1;
             var endPos = -1;
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
@@ -176,11 +174,11 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 // Do not format standalone operators
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
                 if (CanFormat(text)) {
-                    RangeFormatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range, 
-                        VsAppShell.Current.GetService<IREditorSettings>(), VsAppShell.Current.Services);
+                    var formatter = new RangeFormatter(VsAppShell.Current.Services);
+                    formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
                 }
             }
-            return hr;
+            return VSConstants.S_OK;
         }
 
         private bool CanFormat(string text) {
@@ -203,10 +201,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.S_OK;
         }
 
-        public int OnAfterInsertion(IVsExpansionSession pSession) {
-            return VSConstants.S_OK;
-        }
-
+        public int OnAfterInsertion(IVsExpansionSession pSession) => VSConstants.S_OK;
         public int OnBeforeInsertion(IVsExpansionSession pSession) => VSConstants.S_OK;
 
         public int OnItemChosen(string pszTitle, string pszPath) {

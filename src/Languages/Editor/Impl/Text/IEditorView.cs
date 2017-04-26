@@ -7,16 +7,11 @@ namespace Microsoft.Languages.Editor.Text {
     /// <summary>
     /// Represents editor view
     /// </summary>
-    public interface IEditorView {
+    public interface IEditorView: IPlatformSpecificObject, IPropertyHolder {
         /// <summary>
         /// Services attached to the view
         /// </summary>
         IServiceManager Services { get; }
-
-        /// <summary>
-        /// Property collection that holds any custom data attached to the view
-        /// </summary>
-        PropertyDictionary Properties { get; }
 
         /// <summary>
         /// Top level (view buffer)
@@ -39,7 +34,5 @@ namespace Microsoft.Languages.Editor.Text {
         IEditorSelection Selection { get; }
 
         ISnapshotPoint MapToView(ISnapshotPoint point);
-
-        T As<T>() where T : class;
     }
 }

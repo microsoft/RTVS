@@ -448,10 +448,6 @@ namespace Microsoft.R.Editor.Tree {
 
                  ApplyBackgroundProcessingResults();
                 if (ChangesPending) {
-#if DEBUG
-                    string originalPendingChanges = Changes.ToString();
-#endif
-
                     // We *sometimes* still have pending changes even after calling ProcessPendingTextBufferChanges(async: false).
                     //   I'd like to determine whether this is a timing issue by retrying here multiple times and seeing if it helps.
                     int retryCount = 0;

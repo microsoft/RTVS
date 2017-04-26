@@ -18,7 +18,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
-    sealed class SignatureHelpSource : ISignatureHelpSource {
+    /// <summary>
+    /// Implements <see cref="ISignatureHelpSource"/>. Provides 
+    /// function signature help to the Visual Studio editor
+    /// </summary>
+    internal sealed class SignatureHelpSource : ISignatureHelpSource {
         private readonly DisposeToken _disposeToken;
         private readonly ITextBuffer _textBuffer;
         private readonly IServiceContainer _services;

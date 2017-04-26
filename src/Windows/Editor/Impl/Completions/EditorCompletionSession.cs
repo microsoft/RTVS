@@ -15,6 +15,10 @@ namespace Microsoft.Languages.Editor.Completions {
         private readonly ICompletionSession _session;
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
 
+        public T As<T>() where T: class {
+
+        }
+
         public PropertyDictionary Properties => _properties.Value;
         public IEditorView View => _session.TextView.ToEditorView();
         public bool IsDismissed => _session.IsDismissed;

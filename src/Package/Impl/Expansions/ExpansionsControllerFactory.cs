@@ -19,14 +19,19 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     [Name("R Expansions Command Controller")]
     [Order(Before = "Default")]
     internal class ExpansionsControllerFactory : IControllerFactory {
+        private readonly ICoreShell _coreShell;
+
+        [ImportingConstructor]
+        public ExpansionsControllerFactory(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
+
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
             var textManager = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
-
-            IVsExpansionManager expansionManager;
-            textManager.GetExpansionManager(out expansionManager);
+            textManager.GetExpansionManager(out IVsExpansionManager expansionManager);
 
             return new List<ICommandTarget> {
-                new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current)
+                new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current, _coreShell.Services)
             };
         }
     }

@@ -10,16 +10,11 @@ namespace Microsoft.Languages.Editor.Text {
     /// <summary>
     /// Represents editor code (text) buffer
     /// </summary>
-    public interface IEditorBuffer {
+    public interface IEditorBuffer: IPlatformSpecificObject, IPropertyHolder {
         /// <summary>
         /// Set of services attached to the text buffer
         /// </summary>
         IServiceManager Services { get; }
-
-        /// <summary>
-        /// Set of properties (user data) attached to the text buffer
-        /// </summary>
-        PropertyDictionary Properties { get; }
 
         /// <summary>
         /// Name of the content type. Typically language name like 'R' or 'HTML'.
@@ -51,12 +46,6 @@ namespace Microsoft.Languages.Editor.Text {
         /// Path to the file being edited, if any.
         /// </summary>
         string FilePath { get; }
-
-        /// <summary>
-        /// Returns underlying platform object such as ITextBuffer in Visual Studio.
-        /// May return null if there is no underlying implementation.
-        /// </summary>
-        T As<T>() where T: class;
 
         /// <summary>
         /// Attempts to locate associated editor document.

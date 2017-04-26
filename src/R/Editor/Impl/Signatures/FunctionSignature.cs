@@ -18,7 +18,7 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Signatures {
-    public partial class FunctionSignature : IFunctionSignature {
+    public sealed class FunctionSignature : IFunctionSignature {
         // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.language.intellisense.isignature.aspx
 
         private IEditorCompletionSession _session;
