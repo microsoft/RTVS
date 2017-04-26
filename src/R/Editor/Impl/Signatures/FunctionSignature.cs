@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
@@ -28,7 +29,7 @@ namespace Microsoft.R.Editor.Signatures {
         private ITrackingTextRange _applicableToRange;
         private int _initialPosition;
         private readonly ISignatureInfo _signatureInfo;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
         private readonly IViewCompletionBroker _completionBroker;
 
         public string FunctionName { get; private set; }
@@ -72,10 +73,10 @@ namespace Microsoft.R.Editor.Signatures {
             return sig;
         }
 
-        private FunctionSignature(IEditorCompletionSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo, ICoreShell shell) {
+        private FunctionSignature(IEditorCompletionSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo, IServiceContainer services) {
             FunctionName = functionName;
             _signatureInfo = signatureInfo;
-            _shell = shell;
+            _services = services;
 
             Documentation = documentation;
             Parameters = null;
@@ -261,12 +262,10 @@ namespace Microsoft.R.Editor.Signatures {
         /// when user types nested function calls such as 'a(b(c(...), d(...)))'
         /// </summary>
         private bool IsSameSignatureContext() {
-            var sessions = _completionBroker.GetSessions(textView);
+            var sessions = _completionBroker.GetSessions(_view);
             Debug.Assert(sessions.Count < 2);
             if (sessions.Count == 1) {
-                IFunctionInfo sessionFunctionInfo = null;
-                sessions[0].Properties.TryGetProperty("functionInfo", out sessionFunctionInfo);
-
+                sessions[0].Properties.TryGetProperty("functionInfo", out IFunctionInfo sessionFunctionInfo);
                 if (sessionFunctionInfo != null) {
                     try {
                         var document = _editorBuffer.GetEditorDocument<IREditorDocument>();

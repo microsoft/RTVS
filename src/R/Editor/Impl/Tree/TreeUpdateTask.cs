@@ -446,9 +446,7 @@ namespace Microsoft.R.Editor.Tree {
                 // and then got cancelled before actually sarting, it will never complete.
                 WaitForCompletion(2000);
 
-                _uiThreadTransitionRequestTime = DateTime.UtcNow;
-                ApplyBackgroundProcessingResults();
-
+                 ApplyBackgroundProcessingResults();
                 if (ChangesPending) {
 #if DEBUG
                     string originalPendingChanges = Changes.ToString();

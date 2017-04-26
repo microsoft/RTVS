@@ -6,7 +6,7 @@ using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.Completions {
     public interface IViewCompletionBroker {
-        IEnumerable<IEditorCompletionSession> GetSessions(IEditorView view);
+        IReadOnlyList<IEditorCompletionSession> GetSessions(IEditorView view);
         void TriggerCompletionSession();
         void DismissCompletionSession();
         void TriggerSignatureSession();

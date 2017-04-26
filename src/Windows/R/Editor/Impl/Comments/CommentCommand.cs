@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Comments {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
             RCommenter.CommentBlock(TextView.ToEditorView(), TextView.TextBuffer.ToEditorBuffer(), 
-                                    new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Shell.GetService<IEditorSupport>());
+                                    new TextRange(selectionSpan.Start.Position, selectionSpan.Length), Services.GetService<IEditorSupport>());
             return CommandResult.Executed;
         }
 

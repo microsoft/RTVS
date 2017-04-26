@@ -27,8 +27,8 @@ namespace Microsoft.Languages.Editor.Completions {
             view.AddService(this);
         }
 
-        public IEnumerable<IEditorCompletionSession> GetSessions(IEditorView view) 
-            => _completionBroker.GetSessions(view.As<ITextView>()).Select(s => new EditorCompletionSession(s));
+        public IReadOnlyList<IEditorCompletionSession> GetSessions(IEditorView view) 
+            => _completionBroker.GetSessions(view.As<ITextView>()).Select(s => new EditorCompletionSession(s)).ToList();
 
         public void TriggerCompletionSession() => _completionBroker.TriggerCompletion(_view);
         public void DismissCompletionSession() => _completionBroker.DismissAllSessions(_view);

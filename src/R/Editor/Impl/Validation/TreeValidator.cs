@@ -73,7 +73,7 @@ namespace Microsoft.R.Editor.Validation {
             // since accessing the host application (VS) settings object may 
             // cause it fire Changed notification in some cases.
             _settings.SettingsChanged += OnSettingsChanged;
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer);
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
 
             // We don't want to start validation right away since it may 
             // interfere with the editor perceived startup performance.
@@ -135,8 +135,7 @@ namespace Microsoft.R.Editor.Validation {
         private void OnSettingsChanged(object sender, EventArgs e) {
             bool syntaxCheckWasEnabled = _syntaxCheckEnabled;
 
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer);
-
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
             if (syntaxCheckWasEnabled && !_syntaxCheckEnabled) {
                 StopValidation();
             } else if (!syntaxCheckWasEnabled && _syntaxCheckEnabled) {

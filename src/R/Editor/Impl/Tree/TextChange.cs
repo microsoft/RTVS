@@ -10,39 +10,40 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Text snapshot version
         /// </summary>
-        public int Version;
+        public int Version { get; set; }
 
         /// <summary>
         /// Type of pending changes.
         /// </summary>
-        public TextChangeType TextChangeType;
+        public TextChangeType TextChangeType { get; set; }
 
         /// <summary>
         /// Changed range in the old snapshot.
         /// </summary>
-        public ITextRange OldRange;
+        public ITextRange OldRange { get; set; }
 
         /// <summary>
         /// Changed range in the current snapshot.
         /// </summary>
-        public ITextRange NewRange;
+        public ITextRange NewRange { get; set; }
 
         /// <summary>
         /// True if full parse required.
         /// </summary>
-        public bool FullParseRequired;
+        public bool FullParseRequired { get; set; }
 
         /// <summary>
         /// Previuos text snapshot
         /// </summary>
-        public ITextProvider OldTextProvider;
+        public ITextProvider OldTextProvider { get; set; }
 
         /// <summary>
         /// Current text snapshot
         /// </summary>
-        public ITextProvider NewTextProvider;
+        public ITextProvider NewTextProvider { get; set; }
 
         public TextChange() => Clear();
+
         public TextChange(TextChange change, ITextProvider newTextProvider) : this() => Combine(change);
 
         public void Clear() {
@@ -84,5 +85,14 @@ namespace Microsoft.R.Editor.Tree {
             => string.Format(CultureInfo.InvariantCulture,
                 "Version:{0}, TextChangeType:{1}, OldRange:{2}, NewRange:{3}, FullParseRequired:{4}",
                 Version, TextChangeType, OldRange, NewRange, FullParseRequired);
+
+        public TextChange Clone() => new TextChange() {
+            TextChangeType = this.TextChangeType,
+            OldRange = this.OldRange,
+            NewRange = this.NewRange,
+            FullParseRequired = this.FullParseRequired,
+            OldTextProvider = this.OldTextProvider.Clone(),
+            NewTextProvider = this.NewTextProvider.Clone()
+        };
     }
 }

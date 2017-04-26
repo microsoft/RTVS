@@ -15,9 +15,9 @@ namespace Microsoft.Languages.Editor.Text {
         private const int DefaultBlockLength = 16384;
         private const int DefaultPreBlockLength = 128;
 
+        private readonly bool _partial;
         private string _cachedBlock;
         private int _basePosition;
-        private bool _partial;
         private int _partialBlockLength;
 
         public TextProvider(ITextSnapshot snapshot) : this(snapshot, 0) { }
@@ -67,6 +67,8 @@ namespace Microsoft.Languages.Editor.Text {
                 return _cachedBlock[position - _basePosition];
             }
         }
+
+        public string GetText() => GetText(0, Length);
 
         public string GetText(int position, int length) {
             UpdateCachedBlock(position, length);
