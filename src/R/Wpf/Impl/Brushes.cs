@@ -18,8 +18,8 @@ namespace Microsoft.R.Wpf {
         public static object ContentInactiveSelectedTextBrushKey { get; set; } = SystemColors.InactiveSelectionHighlightTextBrushKey;
         public static object ContentMouseOverBrushKey { get; set; } = SystemColors.ControlBrushKey;
         public static object ContentMouseOverTextBrushKey { get; set; } = SystemColors.HotTrackBrushKey;
-        public static object ContentSelectedBrushKey { get; set; } = SystemColors.HighlightBrushKey;
-        public static object ContentSelectedTextBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object ContentSelectedBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
+        public static object ContentSelectedTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
         public static object ControlKey { get; set; } = SystemColors.ControlBrushKey;
         public static object ControlDarkKey { get; set; } = SystemColors.ControlDarkBrushKey;
         public static object ControlLightKey { get; set; } = SystemColors.ControlLightBrushKey;
@@ -100,8 +100,10 @@ namespace Microsoft.R.Wpf {
 
         public static object TreeViewBackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object TreeViewBackgroundTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
-        public static object TreeViewSelectedItemActiveBrushKey { get; set; } = SystemColors.HighlightBrushKey;
-        public static object TreeViewSelectedItemActiveTextBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object TreeViewSelectedItemActiveBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
+        public static object TreeViewSelectedItemActiveTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
+        public static object TreeViewSelectedItemInactiveBrushKey { get; set; } = SystemColors.InactiveCaptionBrushKey;
+        public static object TreeViewSelectedItemInactiveTextBrushKey { get; set; } = SystemColors.InactiveCaptionTextBrushKey;
         public static object TreeViewGlyphBrushKey { get; set; } = SystemColors.WindowTextBrushKey;
         public static object TreeViewGlyphMouseOverBrushKey { get; set; } = SystemColors.HotTrackBrushKey;
 

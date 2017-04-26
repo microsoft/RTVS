@@ -6,9 +6,10 @@
 
     <!-- Data grid cell -->
     <Style x:Uid="Style_1" TargetType="{x:Type DataGridCell}">
-        <Setter x:Uid="Setter_1" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundBrushKey}}" />
-        <Setter x:Uid="Setter_2" Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundTextBrushKey}}" />
-        <Setter x:Uid="Setter_3" Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundBrushKey}}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundTextBrushKey}}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="local:TreeGrid.IsCellFocused" Value="{Binding Path=IsFocused, RelativeSource={RelativeSource Self}}" />
         <!-- Disable cell selection color -->
         <Setter x:Uid="Setter_4" Property="Padding" Value="1" />
         <!-- 1px of vertical padding between rows, including selection, 1px of internal padding -->
@@ -28,9 +29,7 @@
                     <Setter Property="Control.Template">
                         <Setter.Value>
                             <ControlTemplate>
-                                <Border>
-                                    <Rectangle StrokeThickness="0" Stroke="#00000000" StrokeDashArray="1 2" />
-                                </Border>
+                                <Border />
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -38,10 +37,22 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <Trigger x:Uid="Trigger_1" Property="IsSelected" Value="True">
-                <Setter x:Uid="Setter_6" Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveBrushKey}}" />
-                <Setter x:Uid="Setter_7" Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveTextBrushKey}}" />
-            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True" />
+                    <Condition Property="local:TreeGrid.IsFocusInRow" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveBrushKey}}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemActiveTextBrushKey}}" />
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected" Value="True" />
+                    <Condition Property="local:TreeGrid.IsFocusInRow" Value="False" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemInactiveBrushKey}}" />
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.TreeViewSelectedItemInactiveTextBrushKey}}" />
+            </MultiTrigger>
         </Style.Triggers>
     </Style>
     
