@@ -5407,7 +5407,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Finestre]]></Val>
+              <Val><![CDATA[F&inestre]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

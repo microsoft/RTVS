@@ -4033,7 +4033,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Editor Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Opcje edy&tora...]]></Val>
+              <Val><![CDATA[Op&cje edytora...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
