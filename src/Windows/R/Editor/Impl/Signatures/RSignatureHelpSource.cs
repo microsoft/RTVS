@@ -15,7 +15,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -59,12 +58,15 @@ namespace Microsoft.R.Editor.Signatures {
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);
                 } else {
-                    AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot);
+                    AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, (textView, sigs) => {
+                        _signatures = sigs;
+                        _broker.TriggerSignatureHelp(textView);
+                    });
                 }
             }
         }
 
-        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast) {
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<ITextView, IEnumerable<IFunctionSignatureHelp>> callback) {
             if (_signatures != null) {
                 foreach (var s in _signatures) {
                     signatures.Add(new RSignatureHelp(s));
@@ -73,16 +75,17 @@ namespace Microsoft.R.Editor.Signatures {
                 return true;
             }
 
-            var editorBuffer = _textBuffer.ToEditorBuffer();
-            var eis = new EditorIntellisenseSession(session, _services);
-            var position = session.GetTriggerPoint(_textBuffer).GetCurrentPosition();
-            var context = new RIntellisenseContext(eis, editorBuffer, ast, position);
+            if (callback != null) {
+                var editorBuffer = _textBuffer.ToEditorBuffer();
+                var eis = new EditorIntellisenseSession(session, _services);
+                var position = session.GetTriggerPoint(_textBuffer).GetCurrentPosition();
+                var context = new RIntellisenseContext(eis, editorBuffer, ast, position);
 
-            _engine.GetSignaturesAsync(context).ContinueWith(async t => {
-                await _services.MainThread().SwitchToAsync();
-                _signatures = t.Result;
-                _broker.TriggerSignatureHelp(session.TextView);
-            }).DoNotWait();
+                _engine.GetSignaturesAsync(context).ContinueWith(async t => {
+                    await _services.MainThread().SwitchToAsync();
+                    callback(session.TextView, t.Result);
+                }).DoNotWait();
+            }
 
             return false;
         }

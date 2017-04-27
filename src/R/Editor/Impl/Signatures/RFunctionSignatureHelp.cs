@@ -20,11 +20,12 @@ namespace Microsoft.R.Editor.Signatures {
     /// <summary>
     /// Implements function signature help in for the editor intellisense session.
     /// </summary>
-    public sealed class RFunctionSignatureHelp : IFunctionSignatureHelp {
+    public sealed class RFunctionSignatureHelp : IRFunctionSignatureHelp {
+        private const int MaxSignatureLength = Functions.SignatureInfo.MaxSignatureLength;
+
         private readonly IEditorIntellisenseSession _session;
         private readonly IEditorView _view;
         private readonly IEditorBuffer _editorBuffer;
-        private readonly ISignatureInfo _signatureInfo;
         private readonly IViewCompletionBroker _completionBroker;
 
         private ISignatureParameterHelp _currentParameter;
@@ -41,7 +42,7 @@ namespace Microsoft.R.Editor.Signatures {
             sig.Content = signatureString;
             sig.ApplicableToRange = applicableSpan;
 
-            sig.Documentation = functionInfo.Description?.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
+            sig.Documentation = functionInfo.Description?.Wrap(Math.Min(MaxSignatureLength, sig.Content.Length));
 
             Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
             for (var i = 0; i < signatureInfo.Arguments.Count; i++) {
@@ -56,7 +57,7 @@ namespace Microsoft.R.Editor.Signatures {
                     // VS may end showing very long tooltip so we need to keep 
                     // description reasonably short: typically about
                     // same length as the function signature.
-                    var description = p.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
+                    var description = p.Description.Wrap(Math.Min(MaxSignatureLength, sig.Content.Length));
                     paramList.Add(new RSignatureParameterHelp(description, locus, p.Name, sig));
                 }
             }
@@ -69,7 +70,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         private RFunctionSignatureHelp(IEditorIntellisenseSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo) {
             FunctionName = functionName;
-            _signatureInfo = signatureInfo;
+            SignatureInfo = signatureInfo;
 
             Documentation = documentation;
             Parameters = null;
@@ -87,7 +88,9 @@ namespace Microsoft.R.Editor.Signatures {
             _editorBuffer.Changed += OnTextBufferChanged;
         }
 
-        #region IFunctionSignatureHelp
+        #region IRFunctionSignatureHelp
+        public ISignatureInfo SignatureInfo { get; }
+
         public string FunctionName { get; }
 
         /// <summary>
@@ -198,7 +201,7 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             var settings = _session.Services.GetService<IREditorSettings>();
-            var parameterIndex = _signatureInfo.ComputeCurrentParameter(_editorBuffer.CurrentSnapshot, ast, position, settings);
+            var parameterIndex = SignatureInfo.ComputeCurrentParameter(_editorBuffer.CurrentSnapshot, ast, position, settings);
             if (parameterIndex < Parameters.Count) {
                 CurrentParameter = Parameters[parameterIndex];
             } else {

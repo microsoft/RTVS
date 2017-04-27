@@ -80,6 +80,7 @@ namespace Microsoft.R.Editor.Tree {
         /// so text snapshot attached to the tree is no longer the same as ITextBuffer.CurrentSnapshot
         /// </summary>
         internal bool ChangesPending => !_pendingChanges.IsEmpty;
+        internal TextChange Changes => _pendingChanges;
         #endregion
 
         internal void TakeThreadOwnership() => _ownerThreadId = Thread.CurrentThread.ManagedThreadId;

@@ -37,9 +37,9 @@
       <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
-      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
-      <Name>Microsoft.R.Host.Client.Test</Name>
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
@@ -61,17 +61,9 @@
       <Project>{56534417-6c60-48a5-b355-12225c70431e}</Project>
       <Name>Microsoft.Markdown.Editor.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
-      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
-      <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
@@ -80,6 +72,10 @@
     <ProjectReference Include="..\..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
@@ -140,7 +136,7 @@
     <Compile Include="Validation\ErrorTagTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\UnitTests\app.config">
+    <None Include="..\..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
     <None Include="Files\01.rd" />

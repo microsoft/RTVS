@@ -23,6 +23,7 @@ namespace Microsoft.R.Editor.Functions {
         /// <param name="actualName">
         /// Actual function name (may be alias different from <see cref="FunctionName"/> but with the same signature)
         /// </param>
+        /// <param name="locusPoints">Locations of arguments inside the formatted signature</param>
         string GetSignatureString(string actualName, List<int> locusPoints = null);
 
         /// <summary>

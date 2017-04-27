@@ -16,6 +16,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Signatures {
@@ -23,11 +24,11 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
     public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
-        private readonly IWritableREditorSettings _settings;
+        private readonly IREditorSettings _settings;
 
         public ComputeCurrentParameterTest(IServiceContainer services) :
             base(services) {
-            _settings = services.GetService<IWritableREditorSettings>();
+            _settings = Substitute.For<IREditorSettings>();
         }
 
         [Test(ThreadType = ThreadType.UI)]
@@ -80,7 +81,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter02() {
             await FunctionIndex.GetFunctionInfoAsync("legend");
 
-            _settings.PartialArgumentNameMatch = true;
+            _settings.PartialArgumentNameMatch.Returns(true);
 
             var textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
@@ -99,12 +100,12 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0];
-                    int index = sh.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8);
+                    var sh = signatures[0] as IRFunctionSignatureHelp;
+                    var index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(11);
 
                     textView.Caret = new TextCaretMock(textView, 15);
-                    index = sh.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 15);
+                    index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 15, _settings);
                     index.Should().Be(6);
                 }
             }
@@ -132,8 +133,8 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0] as SignatureHelp;
-                    int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                    var sh = signatures[0] as IRFunctionSignatureHelp;
+                    int index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(0);
                 }
             }
@@ -143,7 +144,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter04() {
             await FunctionIndex.GetFunctionInfoAsync("legend");
 
-            _settings.PartialArgumentNameMatch = true;
+            _settings.PartialArgumentNameMatch.Returns(true);
 
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
@@ -163,8 +164,8 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0];
-                    int index = sh.ComputeCurrentParameter(tree.TextSnapshot, tree.AstRoot, 8);
+                    var sh = signatures[0] as IRFunctionSignatureHelp;
+                    int index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(9);
                 }
             }

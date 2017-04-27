@@ -14,10 +14,10 @@ namespace Microsoft.R.Editor.Test.Utility {
         internal static Task AugmentSignatureHelpSessionAsync(this RSignatureHelpSource signatureHelpSource, ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast) {
             var tcs = new TaskCompletionSource<object>();
 
-            var ready = signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, (o, p) => {
-                signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, null, p);
+            var ready = signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, (tv, sigs) => {
+                signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, null);
                 tcs.TrySetResult(null);
-            }, null);
+            });
 
             if (ready) {
                 tcs.TrySetResult(null);
