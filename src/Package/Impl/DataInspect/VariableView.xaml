@@ -194,27 +194,40 @@
         <local:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"
                         AutoGenerateColumns="False" TabIndex="0" 
                         ScrollViewer.VerticalScrollBarVisibility="Visible"
-                        IsReadOnly="True" PreviewKeyDown="OnPreviewKeyDown" PreviewKeyUp="OnPreviewKeyUp" ItemsChanged="OnItemsChanged"
+                        IsReadOnly="True" ItemsChanged="OnItemsChanged"
                         RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
             <DataGrid.Resources>
                 <Style x:Key="SelectableCellStyle" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
                     <Setter Property="KeyboardNavigation.IsTabStop" Value="{Binding Path=IsSelected, RelativeSource={RelativeSource Self}}" />
                 </Style>
-
                 <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
                     <Setter Property="KeyboardNavigation.IsTabStop" Value="False" />
                 </Style>
             </DataGrid.Resources>
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <DataGridCellsPanel KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="0" Focusable="False"  />
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
                     <EventSetter Event="MouseDoubleClick" Handler="GridRow_MouseDoubleClick" />
                     <EventSetter Event="MouseRightButtonUp" Handler="GridRow_MouseRightButtonUp" />
+                    <EventSetter Event="PreviewKeyDown" Handler="OnPreviewKeyDown" />
+                    <EventSetter Event="PreviewKeyUp" Handler="OnPreviewKeyUp" />
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}"
-                                        Width="2*" CellStyle="{StaticResource SelectableCellStyle}"
-                                        CanUserSort="True" SortMemberPath="DummyValue" />
+                                        Width="2*" CellStyle="{StaticResource SelectableCellStyle}" CanUserSort="True" SortMemberPath="DummyValue">
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                            <Setter Property="Focusable" Value="True" />
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}"
                                         Width="3*" CanUserSort="False" />
             </DataGrid.Columns>
