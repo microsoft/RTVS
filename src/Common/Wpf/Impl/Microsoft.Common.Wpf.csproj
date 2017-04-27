@@ -48,6 +48,7 @@
     <Compile Include="LambdaConverter\LambdaConverter.cs" />
     <Compile Include="LambdaConverter\LambdaExtension.cs" />
     <Compile Include="LambdaConverter\LambdaProperties.cs" />
+    <Compile Include="LambdaConverter\StyleSetterExtension.cs" />
     <Compile Include="Selectors\TypeDataTemplateSelector.cs" />
   </ItemGroup>
   <ItemGroup>
