@@ -4291,7 +4291,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Interrupt R]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Прервать R]]></Val>
+              <Val><![CDATA[П&рервать R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
