@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// the caret position. Enumerates variables and function that appear before the
     /// current caret position as well as those declared in outer scopes.
     /// </summary>
-    public class UserVariablesCompletionProvider : IRCompletionListProvider {
+    public sealed class UserVariablesCompletionProvider : IRCompletionListProvider {
         private readonly object _functionGlyph;
         private readonly object _variableGlyph;
 
@@ -26,10 +26,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-
             var ast = context.AstRoot;
+
             // First try simple scope like in 'for(x in 1:10) x|'
             IScope scope = ast.GetNodeOfTypeFromPosition<SimpleScope>(context.Position, includeEnd: true);
             // If not found, look for the regular scope
@@ -37,9 +37,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
             var variables = scope.GetApplicableVariables(context.Position);
             foreach (var v in variables) {
-                ICompletionEntry completion;
-                RFunction f = v.Value as RFunction;
-                completion = new EditorCompletionEntry(v.Name, v.Name.BacktickName(), string.Empty, f != null ? _functionGlyph : _variableGlyph);
+                var f = v.Value as RFunction;
+                var completion = new EditorCompletionEntry(v.Name, v.Name.BacktickName(), string.Empty, f != null ? _functionGlyph : _variableGlyph);
                 completions.Add(completion);
             }
 

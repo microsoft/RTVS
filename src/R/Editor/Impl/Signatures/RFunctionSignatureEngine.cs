@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
@@ -12,41 +13,48 @@ using Microsoft.Languages.Editor.Signatures;
 using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Signatures {
-    public sealed class RSignatureEngine : IFunctionSignatureSource {
+    /// <summary>
+    /// Implements engine that provides information on function signature
+    /// given intellisense context (text buffer, position, AST).
+    /// </summary>
+    public sealed class RFunctionSignatureEngine : IFunctionSignatureEngine {
         private readonly IServiceContainer _services;
         private string _packageName;
 
-        public RSignatureEngine(IServiceContainer services) {
+        public RFunctionSignatureEngine(IServiceContainer services) {
             _services = services;
         }
 
-        #region IFunctionSignatureSource
-        public async Task<IEnumerable<IFunctionSignature>> GetSignaturesAsync(IRCompletionContext context) {
-            if (!_services.GetService<IREditorSettings>().SignatureHelpEnabled || context.Session.IsDismissed) {
-                return Enumerable.Empty<IFunctionSignature>();
+        #region IFunctionSignatureEngine
+        public async Task<IEnumerable<IFunctionSignatureHelp>> GetSignaturesAsync(IIntellisenseContext ic) {
+            Check.Argument(nameof(ic), () => ic is IRIntellisenseContext);
+
+            if (!_services.GetService<IREditorSettings>().SignatureHelpEnabled || ic.Session.IsDismissed) {
+                return Enumerable.Empty<IFunctionSignatureHelp>();
             }
 
+            var context = (IRIntellisenseContext)ic;
             var snapshot = context.EditorBuffer.CurrentSnapshot;
             var position = context.Position;
             // Retrieve parameter positions from the current text buffer snapshot
-            var parametersInfo = FunctionParameter.FromEditorBuffer(context.AstRoot, snapshot, context.Position);
-            if (parametersInfo == null) {
-                return Enumerable.Empty<IFunctionSignature>();
+            var signatureInfo = context.AstRoot.GetSignatureInfoFromBuffer(snapshot, context.Position);
+            if (signatureInfo == null) {
+                return Enumerable.Empty<IFunctionSignatureHelp>();
             }
 
-            position = Math.Min(parametersInfo.SignatureEnd, position);
+            position = Math.Min(signatureInfo.FunctionCall.SignatureEnd, position);
             var start = Math.Min(position, snapshot.Length);
-            var end = Math.Min(parametersInfo.SignatureEnd, snapshot.Length);
+            var end = Math.Min(signatureInfo.FunctionCall.SignatureEnd, snapshot.Length);
 
             var applicableToSpan = snapshot.CreateTrackingRange(TextRange.FromBounds(start, end));
             IFunctionInfo functionInfo = null;
             string packageName = null;
 
             // First try user-defined function
-            if (string.IsNullOrEmpty(parametersInfo.PackageName)) {
-                functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, position);
+            if (string.IsNullOrEmpty(signatureInfo.PackageName)) {
+                functionInfo = context.AstRoot.GetUserFunctionInfo(signatureInfo.FunctionName, position);
             } else {
-                packageName = parametersInfo.PackageName;
+                packageName = signatureInfo.PackageName;
             }
 
             if (functionInfo == null) {
@@ -55,13 +63,13 @@ namespace Microsoft.R.Editor.Signatures {
                 packageName = packageName ?? _packageName;
                 _packageName = null;
                 // Get collection of function signatures from documentation (parsed RD file)
-                functionInfo = await functionIndex.GetFunctionInfoAsync(parametersInfo.FunctionName, packageName);
+                functionInfo = await functionIndex.GetFunctionInfoAsync(signatureInfo.FunctionName, packageName);
             }
 
-            var signatures = new List<IFunctionSignature>();
+            var signatures = new List<IFunctionSignatureHelp>();
             if (functionInfo?.Signatures != null) {
-                foreach (var signatureInfo in functionInfo.Signatures) {
-                    var signature = FunctionSignature.Create(context, functionInfo, signatureInfo, applicableToSpan);
+                foreach (var s in functionInfo.Signatures) {
+                    var signature = RFunctionSignatureHelp.Create(context, functionInfo, s, applicableToSpan);
                     signatures.Add(signature);
                 }
                 context.Session.Properties["functionInfo"] = functionInfo;

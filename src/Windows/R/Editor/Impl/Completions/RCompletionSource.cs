@@ -67,7 +67,7 @@ namespace Microsoft.R.Editor.Completions {
         /// <param name="completionSets">Completion sets to add to</param>
         /// <param name="ast">Document abstract syntax tree</param>
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
-            var context = new RCompletionContext(new EditorCompletionSession(session), _textBuffer.ToEditorBuffer(), ast, position);
+            var context = new RIntellisenseContext(new EditorIntellisenseSession(session, _services), _textBuffer.ToEditorBuffer(), ast, position);
             var providers = _completionEngine.GetCompletionForLocation(context);
 
             // Position is in R as is the applicable spa, so no need to map down

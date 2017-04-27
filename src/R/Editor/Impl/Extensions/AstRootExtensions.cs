@@ -26,8 +26,7 @@ namespace Microsoft.R.Editor {
         }
 
         public static bool IsPositionInComment(this AstRoot ast, int position) {
-            bool inComment = false;
-            inComment = ast.Comments.GetItemsContainingInclusiveEnd(position).Count > 0;
+            var inComment = ast.Comments.GetItemsContainingInclusiveEnd(position).Count > 0;
             if (!inComment) {
                 var snapshot = (ast.TextProvider as IEditorBufferSnapshotProvider)?.Snapshot;
                 if (snapshot != null) {
@@ -45,16 +44,11 @@ namespace Microsoft.R.Editor {
         /// Given position in a text buffer finds method name.
         /// </summary>
         public static string GetFunctionNameFromBuffer(this AstRoot astRoot, ref int position, out int signatureEnd) {
-            FunctionCall functionCall;
-            Variable functionVariable;
-
             signatureEnd = -1;
-
-            if (GetFunction(astRoot, ref position, out functionCall, out functionVariable)) {
+            if (GetFunction(astRoot, ref position, out var functionCall, out var functionVariable)) {
                 signatureEnd = functionCall.End;
                 return functionVariable.Name;
             }
-
             return null;
         }
 
@@ -63,16 +57,14 @@ namespace Microsoft.R.Editor {
             // when position is over 'def' we actually want signature help for 'abc' 
             // while simple depth search will find 'def'.            
             functionVariable = null;
-            int p = position;
-            functionCall = astRoot.GetSpecificNodeFromPosition<FunctionCall>(p, (x) => {
-                var fc = x as FunctionCall;
-                if (fc != null && fc.OpenBrace.End <= p) {
+            var p = position;
+            functionCall = astRoot.GetSpecificNodeFromPosition<FunctionCall>(p, x => {
+                if (x is FunctionCall fc && fc.OpenBrace.End <= p) {
                     if (fc.CloseBrace != null) {
                         return p <= fc.CloseBrace.Start; // between ( and )
-                    } else {
-                        // Take into account incomplete argument lists line in 'func(a|'
-                        return fc.Arguments.End == p;
                     }
+                    // Take into account incomplete argument lists line in 'func(a|'
+                    return fc.Arguments.End == p;
                 }
                 return false;
             });
@@ -98,8 +90,7 @@ namespace Microsoft.R.Editor {
                 functionVariable = functionCall.Children[0] as Variable;
                 if (functionVariable == null) {
                     // Might be in a namespace
-                    var op = functionCall.Children[0] as IOperator;
-                    if (op != null && op.OperatorType == OperatorType.Namespace) {
+                    if (functionCall.Children[0] is IOperator op && op.OperatorType == OperatorType.Namespace) {
                         functionVariable = op.RightOperand as Variable;
                     }
                 }
@@ -111,31 +102,24 @@ namespace Microsoft.R.Editor {
 
         /// <summary>
         /// Given position in a text buffer finds method name, 
-        /// parameter index as well as where method signature ends.
+        /// parameter index as well as where the method signature ends.
         /// </summary>
-        public static FunctionParameter GetParametersInfoFromBuffer(this AstRoot astRoot, IEditorBufferSnapshot snapshot, int position) {
-            FunctionCall functionCall;
-            Variable functionVariable;
-            int parameterIndex = -1;
-            string parameterName;
-            bool namedParameter = false;
-            string packageName = null;
-
-            if (!astRoot.GetFunction(ref position, out functionCall, out functionVariable)) {
+        public static RFunctionSignatureInfo GetSignatureInfoFromBuffer(this AstRoot ast, IEditorBufferSnapshot snapshot, int position) {
+            if (!ast.GetFunction(ref position, out FunctionCall functionCall, out Variable functionVariable)) {
                 return null;
             }
 
-            parameterIndex = functionCall.GetParameterIndex(position);
-            parameterName = functionCall.GetParameterName(parameterIndex, out namedParameter);
+            var parameterIndex = functionCall.GetParameterIndex(position);
+            var parameterName = functionCall.GetParameterName(parameterIndex, out bool namedParameter);
 
-            var op = functionVariable.Parent as Operator;
-            if (op != null && op.OperatorType == OperatorType.Namespace) {
+            string packageName = null;
+            if (functionVariable.Parent is Operator op && op.OperatorType == OperatorType.Namespace) {
                 var id = (op.LeftOperand as Variable)?.Identifier;
-                packageName = id != null ? astRoot.TextProvider.GetText(id) : null;
+                packageName = id != null ? ast.TextProvider.GetText(id) : null;
             }
 
-            if (!string.IsNullOrEmpty(functionVariable.Name) && functionCall != null && parameterIndex >= 0) {
-                return new FunctionParameter(packageName, functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
+            if (!string.IsNullOrEmpty(functionVariable.Name) && parameterIndex >= 0) {
+                return new RFunctionSignatureInfo(packageName, functionVariable.Name, functionCall, parameterIndex, parameterName, namedParameter);
             }
 
             return null;
@@ -149,8 +133,8 @@ namespace Microsoft.R.Editor {
         ///        when user types inside function call.
         /// </summary>
         public static bool IsInFunctionArgumentName<T>(this AstRoot ast, int position) where T : class, IFunction {
-            T funcDef = ast.GetNodeOfTypeFromPosition<T>(position);
-            if (funcDef == null || funcDef.OpenBrace == null || funcDef.Arguments == null) {
+            var funcDef = ast.GetNodeOfTypeFromPosition<T>(position);
+            if (funcDef?.OpenBrace == null || funcDef.Arguments == null) {
                 return false;
             }
 
@@ -158,16 +142,15 @@ namespace Microsoft.R.Editor {
                 return false;
             }
 
-            int start = funcDef.OpenBrace.End;
-            int end = funcDef.SignatureEnd;
+            var start = funcDef.OpenBrace.End;
+            var end = funcDef.SignatureEnd;
 
             if (funcDef.Arguments.Count == 0 && position >= start && position <= end) {
                 return true;
             }
 
-            for (int i = 0; i < funcDef.Arguments.Count; i++) {
-                CommaSeparatedItem csi = funcDef.Arguments[i];
-                NamedArgument na = csi as NamedArgument;
+            foreach (var csi in funcDef.Arguments) {
+                var na = csi as NamedArgument;
 
                 if (position < csi.Start) {
                     break;
@@ -194,8 +177,8 @@ namespace Microsoft.R.Editor {
         /// </summary>
         public static bool IsInObjectMemberName(this ITextProvider textProvider, int position) {
             if (position > 0) {
-                for (int i = position - 1; i >= 0; i--) {
-                    char ch = textProvider[i];
+                for (var i = position - 1; i >= 0; i--) {
+                    var ch = textProvider[i];
 
                     if (ch == '$' || ch == '@') {
                         return true;

@@ -44,7 +44,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             string content = @"x <- as.matrix(x)";
             var session = await TriggerSessionAsync(content, 15);
-            var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
+            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
@@ -58,7 +58,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             string content = @"x <- as.Date.character(x)";
 
             var session = await TriggerSessionAsync(content, 23);
-            var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
+            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 12);
-                var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
+                var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().BeEmpty();
@@ -103,7 +103,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 3);
-                var parametersInfo = session.Ast.GetParametersInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
+                var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().BeEmpty();

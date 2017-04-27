@@ -54,10 +54,8 @@ namespace Microsoft.R.Editor.QuickInfo {
         internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
                                               Action<object, string> retriggerAction, string packageName) {
-            int signatureEnd = position;
             applicableToSpan = null;
-
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
+            var functionName = ast.GetFunctionNameFromBuffer(ref position, out int signatureEnd);
             if (!string.IsNullOrEmpty(functionName)) {
                 var snapshot = session.TextView.TextBuffer.CurrentSnapshot;
 

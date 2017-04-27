@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
         public async Task ParameterTest_ComputeCurrentParameter01() {
             var textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
             var editorBuffer = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Services);
+            var source = new RSignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
@@ -84,7 +84,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
             var textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Services);
+            var source = new RSignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
@@ -116,7 +116,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Services);
+            var source = new RSignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
@@ -147,7 +147,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
-            var source = new SignatureHelpSource(textBuffer, Services);
+            var source = new RSignatureHelpSource(textBuffer, Services);
             var session = new SignatureHelpSessionMock(textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();

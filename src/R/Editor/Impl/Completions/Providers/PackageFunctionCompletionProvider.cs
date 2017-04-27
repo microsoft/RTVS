@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
             var infoSource = _snippetInformationSource?.InformationSource;
 
@@ -86,7 +86,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         }
         #endregion
 
-        private IEnumerable<IPackageInfo> GetPackages(IRCompletionContext context) {
+        private IEnumerable<IPackageInfo> GetPackages(IRIntellisenseContext context) {
             if (context.IsCaretInNameSpace()) {
                 return GetSpecificPackage(context);
             }
@@ -101,7 +101,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         /// so intellisense can show list of functions available
         /// in the specific package.
         /// </summary>
-        private IEnumerable<IPackageInfo> GetSpecificPackage(IRCompletionContext context) {
+        private IEnumerable<IPackageInfo> GetSpecificPackage(IRIntellisenseContext context) {
             var packages = new List<IPackageInfo>();
             var snapshot = context.EditorBuffer.CurrentSnapshot;
             int colons = 0;
@@ -146,7 +146,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(IRCompletionContext context) {
+        private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(IRIntellisenseContext context) {
 
             IEnumerable<string> loadedPackages = _session?.LoadedPackageNames ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();

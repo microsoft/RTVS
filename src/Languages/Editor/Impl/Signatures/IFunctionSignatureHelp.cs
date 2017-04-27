@@ -6,11 +6,20 @@ using System.Collections.ObjectModel;
 using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.Signatures {
-    public interface IFunctionSignature {
+    /// <summary>
+    /// Represents visible function signature help (visual tooltip in the editor)
+    /// which display function signature, current parameter and its description.
+    /// </summary>
+    public interface IFunctionSignatureHelp {
+        /// <summary>
+        /// Function name
+        /// </summary>
+        string FunctionName { get; }
+
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
-        ITrackingTextRange ApplicableToSpan { get; }
+        ITrackingTextRange ApplicableToRange { get; set; }
 
         /// <summary>
         /// Content of the signature, including all the characters to be displayed.
@@ -20,7 +29,7 @@ namespace Microsoft.Languages.Editor.Signatures {
         /// <summary>
         /// Current parameter for this signature.
         /// </summary>
-        ISignatureParameter CurrentParameter { get; }
+        ISignatureParameterHelp CurrentParameter { get; set; }
 
         /// <summary>
         /// Documentation associated with this signature.
@@ -30,7 +39,7 @@ namespace Microsoft.Languages.Editor.Signatures {
         /// <summary>
         /// List of parameters that this signature knows about.
         /// </summary>
-        ReadOnlyCollection<ISignatureParameter> Parameters { get; }
+        ReadOnlyCollection<ISignatureParameterHelp> Parameters { get; }
 
         /// <summary>
         /// Content of the signature, pretty-printed into a form suitable for display

@@ -4,11 +4,13 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
+    [Category.R.Tokenizer]
     public class TokenizeFunctionsTest : TokenizeTestBase<RToken, RTokenType> {
         private readonly CoreTestFilesFixture _files;
 
@@ -17,7 +19,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeFunctionsTest1() {
             var tokens = Tokenize("x <- function( ", new RTokenizer());
 
@@ -41,9 +42,7 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
-        public void TokenizeFile_FunctionsFile() {
-            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Functions.r");
-        }
+        public void TokenizeFile_FunctionsFile() 
+            => TokenizeFiles.TokenizeFile<RToken, RTokenType, RTokenizer>(_files, @"Tokenization\Functions.r", "R");
     }
 }

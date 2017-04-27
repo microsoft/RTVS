@@ -14,7 +14,7 @@ namespace Microsoft.Languages.Editor.Completions {
         /// </summary>
         /// <param name="context">Completion context</param>
         /// <returns>List of completion entries</returns>
-        IReadOnlyCollection<ICompletionEntry> GetEntries(ICompletionContext context);
+        IReadOnlyCollection<ICompletionEntry> GetEntries(IIntellisenseContext context);
 
         /// <summary>
         /// Allows or disallows sorting of the provided entries.

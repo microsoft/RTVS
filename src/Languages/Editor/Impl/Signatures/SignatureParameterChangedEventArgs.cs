@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Languages.Editor.Signatures {
     public sealed class SignatureParameterChangedEventArgs: EventArgs {
-        public SignatureParameterChangedEventArgs(ISignatureParameter previousParameter, ISignatureParameter newParameter) {
+        public SignatureParameterChangedEventArgs(ISignatureParameterHelp previousParameter, ISignatureParameterHelp newParameter) {
             PreviousParameter = previousParameter;
             NewParameter = newParameter;
         }
@@ -13,11 +13,11 @@ namespace Microsoft.Languages.Editor.Signatures {
         /// <summary>
         /// Parameter that is now the current parameter.
         /// </summary>
-        public ISignatureParameter NewParameter { get; }
+        public ISignatureParameterHelp NewParameter { get; }
 
         /// <summary>
         /// Parameter that was previously the current parameter.
         /// </summary>
-        public ISignatureParameter PreviousParameter { get; }
+        public ISignatureParameterHelp PreviousParameter { get; }
     }
 }

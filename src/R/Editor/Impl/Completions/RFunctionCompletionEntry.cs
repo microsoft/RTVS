@@ -15,9 +15,9 @@ namespace Microsoft.R.Editor.Completions {
     [DebuggerDisplay("{DisplayText}")]
     public class RFunctionCompletionEntry : EditorCompletionEntry {
         private readonly IFunctionIndex _functionIndex;
-        private readonly IEditorCompletionSession _session;
+        private readonly IEditorIntellisenseSession _session;
 
-        public RFunctionCompletionEntry(string displayText, string insertionText, string description, object iconSource, IFunctionIndex functionIndex, IEditorCompletionSession session) :
+        public RFunctionCompletionEntry(string displayText, string insertionText, string description, object iconSource, IFunctionIndex functionIndex, IEditorIntellisenseSession session) :
             base(displayText, insertionText, description, iconSource) {
             _functionIndex = functionIndex;
             _session = session;

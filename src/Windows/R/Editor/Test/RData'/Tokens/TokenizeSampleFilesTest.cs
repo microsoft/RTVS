@@ -2,13 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.R.Core.Test.Tokens;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Editor.RData.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.RData.Tokens {
     [ExcludeFromCodeCoverage]
+    [Category.Rd.Tokenizer]
     public class TokenizeSampleRdFilesTest {
         private readonly EditorTestFilesFixture _files;
 
@@ -29,9 +30,7 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         [InlineData(@"Tokenization\10.rd")]
         [InlineData(@"Tokenization\11.rd")]
         [InlineData(@"Tokenization\12.rd")]
-        [Category.Rd.Tokenizer]
-        public void TokenizeSampleRdFile(string fileName) {
-            TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(_files, fileName, "RD");
-        }
+        public void TokenizeSampleRdFile(string fileName)
+            => TokenizeFiles.TokenizeFile<RdToken, RdTokenType, RdTokenizer>(_files, fileName, "RD");
     }
 }

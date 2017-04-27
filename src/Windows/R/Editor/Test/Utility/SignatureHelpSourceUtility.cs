@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     internal static class SignatureHelpSourceUtility {
-        internal static Task AugmentSignatureHelpSessionAsync(this SignatureHelpSource signatureHelpSource, ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast) {
+        internal static Task AugmentSignatureHelpSessionAsync(this RSignatureHelpSource signatureHelpSource, ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast) {
             var tcs = new TaskCompletionSource<object>();
 
             var ready = signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, (o, p) => {

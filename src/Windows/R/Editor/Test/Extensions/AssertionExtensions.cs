@@ -8,8 +8,8 @@ using Microsoft.R.Editor.Test.Assertions;
 namespace Microsoft.R.Editor.Test {
     [ExcludeFromCodeCoverage]
     internal static class AssertionExtensions {
-        public static FunctionParameterAssertion Should(this FunctionParameter parameter) {
-            return new FunctionParameterAssertion(parameter);
+        public static FunctionSignatureAssertion Should(this RFunctionSignatureInfo si) {
+            return new FunctionSignatureAssertion(si);
         }
     }
 }

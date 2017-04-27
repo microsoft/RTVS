@@ -11,15 +11,13 @@ namespace Microsoft.Languages.Editor.Completions {
     /// <summary>
     /// Wraps VS editor completion session in a portable way.
     /// </summary>
-    public sealed class EditorCompletionSession: IEditorCompletionSession {
-        private readonly ICompletionSession _session;
+    public sealed class EditorIntellisenseSession : IEditorIntellisenseSession {
+        private readonly IIntellisenseSession _session;
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
 
-        public T As<T>() where T: class {
-
-        }
-
+        public T As<T>() where T: class => _session as T;
         public PropertyDictionary Properties => _properties.Value;
+        public IServiceContainer Services { get; }
         public IEditorView View => _session.TextView.ToEditorView();
         public bool IsDismissed => _session.IsDismissed;
 
@@ -28,8 +26,9 @@ namespace Microsoft.Languages.Editor.Completions {
             remove => _session.Dismissed -= value;
         }
 
-        public EditorCompletionSession(ICompletionSession session) {
+        public EditorIntellisenseSession(IIntellisenseSession session, IServiceContainer services) {
             _session = session;
+            Services = services;
         }
     }
 }

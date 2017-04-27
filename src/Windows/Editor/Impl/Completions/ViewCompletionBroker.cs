@@ -11,12 +11,15 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completions {
     internal sealed class ViewCompletionBroker : IViewCompletionBroker {
+        private readonly IServiceContainer _services;
         private readonly ICompletionBroker _completionBroker;
         private readonly ISignatureHelpBroker _signatureBroker;
         private readonly IQuickInfoBroker _quickInfoBroker;
         private readonly ITextView _view;
 
         public ViewCompletionBroker(IServiceContainer services, IEditorView view) {
+            _services = services;
+
             _view = view.As<ITextView>();
             Check.ArgumentNull(nameof(view), _view);
 
@@ -27,8 +30,8 @@ namespace Microsoft.Languages.Editor.Completions {
             view.AddService(this);
         }
 
-        public IReadOnlyList<IEditorCompletionSession> GetSessions(IEditorView view) 
-            => _completionBroker.GetSessions(view.As<ITextView>()).Select(s => new EditorCompletionSession(s)).ToList();
+        public IReadOnlyList<IEditorIntellisenseSession> GetSessions(IEditorView view) 
+            => _completionBroker.GetSessions(view.As<ITextView>()).Select(s => new EditorIntellisenseSession(s, _services)).ToList();
 
         public void TriggerCompletionSession() => _completionBroker.TriggerCompletion(_view);
         public void DismissCompletionSession() => _completionBroker.DismissAllSessions(_view);

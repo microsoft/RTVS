@@ -9,10 +9,25 @@ namespace Microsoft.Languages.Editor.Completions {
     /// <summary>
     /// Represents active completion session in the editor.
     /// </summary>
-    public interface IEditorCompletionSession: IPlatformSpecificObject, IPropertyHolder {
+    public interface IEditorIntellisenseSession : IPlatformSpecificObject, IPropertyHolder {
+        /// <summary>
+        /// Application global services
+        /// </summary>
+        IServiceContainer Services { get; }
+
+        /// <summary>
+        /// Associated editor view
+        /// </summary>
         IEditorView View { get; }
+
+        /// <summary>
+        /// If true, the session was dismissed
+        /// </summary>
         bool IsDismissed { get; }
 
+        /// <summary>
+        /// Fires when session is dismissed
+        /// </summary>
         event EventHandler Dismissed;
     }
 }

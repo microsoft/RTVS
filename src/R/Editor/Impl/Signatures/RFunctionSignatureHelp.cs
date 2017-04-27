@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completions;
@@ -18,31 +17,29 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Signatures {
-    public sealed class FunctionSignature : IFunctionSignature {
-        // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.language.intellisense.isignature.aspx
-
-        private IEditorCompletionSession _session;
-        private IEditorView _view;
-        private IEditorBuffer _editorBuffer;
-
-        private ISignatureParameter _currentParameter;
-        private ITrackingTextRange _applicableToRange;
-        private int _initialPosition;
+    /// <summary>
+    /// Implements function signature help in for the editor intellisense session.
+    /// </summary>
+    public sealed class RFunctionSignatureHelp : IFunctionSignatureHelp {
+        private readonly IEditorIntellisenseSession _session;
+        private readonly IEditorView _view;
+        private readonly IEditorBuffer _editorBuffer;
         private readonly ISignatureInfo _signatureInfo;
-        private readonly IServiceContainer _services;
         private readonly IViewCompletionBroker _completionBroker;
 
-        public string FunctionName { get; private set; }
+        private ISignatureParameterHelp _currentParameter;
+        private ITrackingTextRange _applicableToRange;
+        private int _initialPosition;
 
-        public static IFunctionSignature Create(IRCompletionContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo, ITrackingTextRange applicableSpan) {
-            var sig = new FunctionSignature(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo, _services);
-            var paramList = new List<ISignatureParameter>();
+        public static IFunctionSignatureHelp Create(IRIntellisenseContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo, ITrackingTextRange applicableSpan) {
+            var sig = new RFunctionSignatureHelp(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo);
+            var paramList = new List<ISignatureParameterHelp>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
             var locusPoints = new List<int>();
             var signatureString = signatureInfo.GetSignatureString(functionInfo.Name, locusPoints);
             sig.Content = signatureString;
-            sig.ApplicableToSpan = applicableSpan;
+            sig.ApplicableToRange = applicableSpan;
 
             sig.Documentation = functionInfo.Description?.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
 
@@ -59,24 +56,20 @@ namespace Microsoft.R.Editor.Signatures {
                     // VS may end showing very long tooltip so we need to keep 
                     // description reasonably short: typically about
                     // same length as the function signature.
-                    paramList.Add(
-                        new FunctionParameter(
-                            p.Description.Wrap(
-                                Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length)),
-                                locus, locus, p.Name, sig));
+                    var description = p.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
+                    paramList.Add(new RSignatureParameterHelp(description, locus, p.Name, sig));
                 }
             }
 
-            sig.Parameters = new ReadOnlyCollection<ISignatureParameter>(paramList);
+            sig.Parameters = new ReadOnlyCollection<ISignatureParameterHelp>(paramList);
             sig.ComputeCurrentParameter(context.AstRoot, context.Position);
 
             return sig;
         }
 
-        private FunctionSignature(IEditorCompletionSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo, IServiceContainer services) {
+        private RFunctionSignatureHelp(IEditorIntellisenseSession session, IEditorBuffer textBuffer, string functionName, string documentation, ISignatureInfo signatureInfo) {
             FunctionName = functionName;
             _signatureInfo = signatureInfo;
-            _services = services;
 
             Documentation = documentation;
             Parameters = null;
@@ -94,34 +87,9 @@ namespace Microsoft.R.Editor.Signatures {
             _editorBuffer.Changed += OnTextBufferChanged;
         }
 
-        internal int ComputeCurrentParameter(IEditorBufferSnapshot snapshot, AstRoot ast, int position) {
-            var parameterInfo = FunctionParameter.FromEditorBuffer(ast, snapshot, position);
-            var index = 0;
+        #region IFunctionSignatureHelp
+        public string FunctionName { get; }
 
-            if (parameterInfo != null) {
-                index = parameterInfo.ParameterIndex;
-                if (parameterInfo.NamedParameter) {
-                    // A function f <- function(foo, bar) is said to have formal parameters "foo" and "bar", 
-                    // and the call f(foo=3, ba=13) is said to have (actual) arguments "foo" and "ba".
-                    // R first matches all arguments that have exactly the same name as a formal parameter. 
-                    // Two identical argument names cause an error. Then, R matches any argument names that
-                    // partially matches a(yet unmatched) formal parameter. But if two argument names partially 
-                    // match the same formal parameter, that also causes an error. Also, it only matches 
-                    // formal parameters before ... So formal parameters after ... must be specified using 
-                    // their full names. Then the unnamed arguments are matched in positional order to 
-                    // the remaining formal arguments.
-
-                    var partialMatch = _services.GetService<IREditorSettings>().PartialArgumentNameMatch;
-                    var argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, partialMatch);
-                    if (argumentIndexInSignature >= 0) {
-                        index = argumentIndexInSignature;
-                    }
-                }
-            }
-            return index;
-        }
-
-        #region IFunctionSignature
         /// <summary>
         /// Content of the signature, including all the characters to be displayed.
         /// </summary>
@@ -135,8 +103,8 @@ namespace Microsoft.R.Editor.Signatures {
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
-        public ITrackingTextRange ApplicableToSpan {
-            get { return _applicableToRange; }
+        public ITrackingTextRange ApplicableToRange {
+            get => _applicableToRange;
             set {
                 if (_editorBuffer != null) {
                     _initialPosition = value.GetStartPoint(_editorBuffer.CurrentSnapshot);
@@ -148,7 +116,7 @@ namespace Microsoft.R.Editor.Signatures {
         /// <summary>
         /// List of parameters that this signature knows about.
         /// </summary>
-        public ReadOnlyCollection<ISignatureParameter> Parameters { get; private set; }
+        public ReadOnlyCollection<ISignatureParameterHelp> Parameters { get; private set; }
 
         /// <summary>
         /// Content of the signature, pretty-printed into a form suitable for display on-screen.
@@ -163,9 +131,9 @@ namespace Microsoft.R.Editor.Signatures {
         /// <summary>
         /// Current parameter for this signature.
         /// </summary>
-        public ISignatureParameter CurrentParameter {
-            get { return _currentParameter; }
-            internal set {
+        public ISignatureParameterHelp CurrentParameter {
+            get => _currentParameter;
+            set {
                 if (_currentParameter != value) {
                     var prevCurrentParameter = _currentParameter;
                     _currentParameter = value;
@@ -176,9 +144,9 @@ namespace Microsoft.R.Editor.Signatures {
         #endregion
 
         #region Event handlers
-        protected virtual void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
+        private void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
             if (_session != null) {
-                int position = e.Start + e.NewLength;
+                var position = e.Start + e.NewLength;
                 if (position < _initialPosition) {
                     _completionBroker.DismissSignatureSession();
                 } else {
@@ -189,14 +157,13 @@ namespace Microsoft.R.Editor.Signatures {
 
         private void OnCaretPositionChanged(object sender, ViewCaretPositionChangedEventArgs e) {
             if (_view != null) {
-                if (IsSameSignatureContext()) {
+                if (IsSameSignatureContext(_view, _editorBuffer, _session.Services)) {
                     UpdateCurrentParameter();
                 } else {
                     _completionBroker.DismissSignatureSession();
                     _completionBroker.TriggerSignatureSession();
                 }
-            }
-            else {
+            } else {
                 e.View.Caret.PositionChanged -= OnCaretPositionChanged;
             }
         }
@@ -207,7 +174,7 @@ namespace Microsoft.R.Editor.Signatures {
                 var document = _editorBuffer.GetEditorDocument<IREditorDocument>();
                 if (document != null) {
                     var p = _view.GetCaretPosition(_editorBuffer);
-                     if (p != null) {
+                    if (p != null) {
                         document.EditorTree.InvokeWhenReady((o) => {
                             if (_view != null) {
                                 // Session is still active
@@ -224,13 +191,14 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
-        public virtual void ComputeCurrentParameter(AstRoot ast, int position) {
+        public void ComputeCurrentParameter(AstRoot ast, int position) {
             if (Parameters == null || Parameters.Count == 0 || _editorBuffer == null) {
                 CurrentParameter = null;
                 return;
             }
 
-            var parameterIndex = ComputeCurrentParameter(_editorBuffer.CurrentSnapshot, ast, position);
+            var settings = _session.Services.GetService<IREditorSettings>();
+            var parameterIndex = _signatureInfo.ComputeCurrentParameter(_editorBuffer.CurrentSnapshot, ast, position, settings);
             if (parameterIndex < Parameters.Count) {
                 CurrentParameter = Parameters[parameterIndex];
             } else {
@@ -239,20 +207,17 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
-        protected virtual void OnSessionDismissed(object sender, EventArgs e) {
+        private void OnSessionDismissed(object sender, EventArgs e) {
             if (_session != null) {
                 _session.Dismissed -= OnSessionDismissed;
-                _session = null;
             }
 
             if (_editorBuffer != null) {
                 _editorBuffer.Changed -= OnTextBufferChanged;
-                _editorBuffer = null;
             }
 
             if (_view != null) {
                 _view.Caret.PositionChanged -= OnCaretPositionChanged;
-                _view = null;
             }
         }
 
@@ -262,24 +227,22 @@ namespace Microsoft.R.Editor.Signatures {
         /// help session should be dismissed and re-triggered. This is helpful
         /// when user types nested function calls such as 'a(b(c(...), d(...)))'
         /// </summary>
-        private bool IsSameSignatureContext() {
-            var sessions = _completionBroker.GetSessions(_view);
+        public static bool IsSameSignatureContext(IEditorView editorView, IEditorBuffer editorBuffer, IServiceContainer services) {
+            var broker = services.GetService<IViewCompletionBroker>();
+            var sessions = broker.GetSessions(editorView);
             Debug.Assert(sessions.Count < 2);
             if (sessions.Count == 1) {
                 sessions[0].Properties.TryGetProperty("functionInfo", out IFunctionInfo sessionFunctionInfo);
                 if (sessionFunctionInfo != null) {
                     try {
-                        var document = _editorBuffer.GetEditorDocument<IREditorDocument>();
+                        var document = editorBuffer.GetEditorDocument<IREditorDocument>();
                         document.EditorTree.EnsureTreeReady();
 
-                        var parametersInfo = FunctionParameter.FromEditorBuffer(
-                            document.EditorTree.AstRoot, _editorBuffer.CurrentSnapshot, _view.Caret.Position.Position);
-
+                        var parametersInfo = document.EditorTree.AstRoot.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, editorView.Caret.Position.Position);
                         return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
-                    } catch (Exception) { }
+                    } catch (ArgumentException) { }
                 }
             }
-
             return false;
         }
     }

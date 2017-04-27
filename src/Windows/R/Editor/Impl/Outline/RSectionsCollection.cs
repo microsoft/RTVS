@@ -33,12 +33,9 @@ namespace Microsoft.R.Editor.Outline {
 
         private void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
             if (!_changed && _tree.AstRoot != null) {
-                foreach (var c in e.Changes) {
-                    if (c.OldText.IndexOf('-') >= 0 || c.NewText.IndexOf('-') >= 0) {
-                        if (_tree.AstRoot.Comments.GetItemContaining(c.OldPosition) >= 0) {
-                            _changed = true;
-                            break;
-                        }
+                if (e.OldText.IndexOf('-', 0) >= 0 || e.NewText.IndexOf('-', 0) >= 0) {
+                    if (_tree.AstRoot.Comments.GetItemContaining(e.OldStart) >= 0) {
+                        _changed = true;
                     }
                 }
             }

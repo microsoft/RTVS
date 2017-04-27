@@ -14,6 +14,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Signatures;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -275,7 +276,7 @@ namespace Microsoft.R.Editor.Completions {
                 // Check if caret moved into a different functions such as when
                 // user types a sequence of nested function calls. If so,
                 // dismiss current signature session and start a new one.
-                if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer, SignatureBroker)) {
+                if (!RFunctionSignatureHelp.IsSameSignatureContext(TextView.ToEditorView(), _textBuffer.ToEditorBuffer(), Services)) {
                     DismissAllSessions();
                     TriggerSignatureHelp();
                 }

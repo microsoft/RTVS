@@ -4,7 +4,7 @@
 using Microsoft.R.Core.AST;
 
 namespace Microsoft.Languages.Editor.Completions {
-    public interface IRCompletionContext: ICompletionContext {
+    public interface IRIntellisenseContext: IIntellisenseContext {
         AstRoot AstRoot { get; }
         bool AutoShownCompletion { get; }
         bool InternalFunctions { get; set; }

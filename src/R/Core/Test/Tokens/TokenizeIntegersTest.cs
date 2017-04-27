@@ -4,11 +4,13 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
+    [Category.R.Tokenizer]
     public class TokenizeIntegersTest : TokenizeTestBase<RToken, RTokenType> {
         private readonly CoreTestFilesFixture _files;
 
@@ -17,7 +19,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIntegers1() {
             var tokens = Tokenize("+1 ", new RTokenizer());
 
@@ -28,7 +29,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIntegers2() {
             var tokens = this.Tokenize("-12 +1", new RTokenizer());
 
@@ -48,7 +48,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIntegers3() {
             var tokens = Tokenize("-12+-1", new RTokenizer());
 
@@ -68,7 +67,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeHex1() {
             var tokens = Tokenize("0x10000", new RTokenizer());
 
@@ -80,15 +78,11 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
-        public void TokenizeFile_IntegerFile() {
-            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Integers.r");
-        }
+        public void TokenizeFile_IntegerFile() 
+            => TokenizeFiles.TokenizeFile<RToken, RTokenType, RTokenizer>(_files, @"Tokenization\Integers.r", "R");
 
         [Test]
-        [Category.R.Tokenizer]
-        public void TokenizeFile_HexFile() {
-            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Hex.r");
-        }
+        public void TokenizeFile_HexFile() 
+            => TokenizeFiles.TokenizeFile<RToken, RTokenType, RTokenizer>(_files, @"Tokenization\Hex.r", "R");
     }
 }

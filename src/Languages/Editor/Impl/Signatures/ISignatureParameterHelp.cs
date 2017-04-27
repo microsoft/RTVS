@@ -5,10 +5,11 @@ using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Editor.Signatures {
     /// <summary>
-    /// Represents an individual parameter description inside the description 
-    /// of a signature for Signature Help (Parameter Info)
+    /// Represents an individual parameter inside function signature 
+    /// in the the visual signature help session in the editor.
+    /// <see cref="IFunctionSignatureHelp"/>
     /// </summary>
-    public interface ISignatureParameter {
+    public interface ISignatureParameterHelp {
         /// <summary>
         /// Parameter description
         /// </summary>
@@ -26,6 +27,6 @@ namespace Microsoft.Languages.Editor.Signatures {
         /// <summary>
         /// Function signature of which this parameter is a part.
         /// </summary>
-        IFunctionSignature Signature { get; }
+        IFunctionSignatureHelp Signature { get; }
     }
 }

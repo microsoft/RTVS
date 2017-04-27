@@ -11,7 +11,7 @@ namespace Microsoft.R.Editor.Completions {
     /// caret position and other necessary data for the completion engine.
     /// </summary>
     public static class RCompletionContextExtensions {
-        public static bool IsCaretInNameSpace(this IRCompletionContext context)
+        public static bool IsCaretInNameSpace(this IRIntellisenseContext context)
             => context.Session.View.IsCaretInNamespace(context.EditorBuffer);
 
         public static bool IsCaretInNamespace(this IEditorView view, IEditorBuffer editorBuffer = null) {
@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Completions {
             return false;
         }
 
-        public static bool IsCaretInNamespace(this IRCompletionContext context, IEditorView view) {
+        public static bool IsCaretInNamespace(this IRIntellisenseContext context, IEditorView view) {
             var bufferPosition = context.Session.View.GetCaretPosition(context.EditorBuffer);
             if (bufferPosition != null) {
                 return bufferPosition.Snapshot.IsPositionInNamespace(bufferPosition.Position);
@@ -41,7 +41,7 @@ namespace Microsoft.R.Editor.Completions {
             return false;
         }
 
-        public static bool IsCaretInLibraryStatement(this IRCompletionContext context)
+        public static bool IsCaretInLibraryStatement(this IRIntellisenseContext context)
             => context.Session.View.IsCaretInLibraryStatement(context.EditorBuffer);
 
         public static bool IsCaretInLibraryStatement(this IEditorView view, IEditorBuffer editorBuffer = null) {

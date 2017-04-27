@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
         /// </summary>
         /// <param name="context"></param>
         /// <returns>List of completion entries for a given location in the AST</returns>
-        public IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(IRCompletionContext context) {
+        public IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(IRIntellisenseContext context) {
             var ast = context.AstRoot;
 
             var providers = new List<IRCompletionListProvider>();

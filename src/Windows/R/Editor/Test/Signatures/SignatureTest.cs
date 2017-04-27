@@ -3,7 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -19,10 +18,8 @@ namespace Microsoft.R.Editor.Test.Signatures {
         [InlineData(@"x <- as.matrix(func(x))", 16, "as.matrix", 23)]
         [InlineData(@"x <- as.matrix(func(x))", 20, "func", 22)]
         public void Signature(string content, int position, string expectedFunctionName, int expectedSignatureEnd) {
-            AstRoot ast = RParser.Parse(content);
-
-            int signatureEnd;
-            string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
+            var ast = RParser.Parse(content);
+            var functionName = ast.GetFunctionNameFromBuffer(ref position, out int signatureEnd);
 
             functionName.Should().Be(expectedFunctionName);
             signatureEnd.Should().Be(expectedSignatureEnd);

@@ -9,12 +9,12 @@ namespace Microsoft.R.Editor.Completions {
     /// Completion context. Provides information about current document, 
     /// caret position and other necessary data for the completion engine.
     /// </summary>
-    public class CompletionContext: ICompletionContext {
+    public class IntellisenseContext : IIntellisenseContext {
         public int Position { get; set; }
-        public IEditorCompletionSession Session { get; }
+        public IEditorIntellisenseSession Session { get; }
         public IEditorBuffer EditorBuffer { get; }
  
-        public CompletionContext(IEditorCompletionSession session, IEditorBuffer editorBuffer, int position) {
+        public IntellisenseContext(IEditorIntellisenseSession session, IEditorBuffer editorBuffer, int position) {
             Session = session;
             EditorBuffer = editorBuffer;
             Position = position;

@@ -62,6 +62,7 @@
     <Compile Include="DragDrop\DropHandler.cs" />
     <Compile Include="DragDrop\DropHandlerProvider.cs" />
     <Compile Include="Selection\RSelectionTrackerProvider.cs" />
+    <Compile Include="Signatures\RSignatureHelp.cs" />
     <Compile Include="ViewModel\REditorViewModel.cs" />
     <Compile Include="ViewModel\REditorViewModelFactory.cs" />
     <Compile Include="Extensions\EditorTreeExtensions.cs" />
@@ -112,10 +113,9 @@
     <Compile Include="Selection\RSelectionTracker.cs" />
     <Compile Include="Selection\SelectWordCommand.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
-    <Compile Include="Signatures\RSignatureHelpContext.cs" />
-    <Compile Include="Signatures\SignatureHelpSourceProvider.cs" />
-    <Compile Include="Signatures\SignatureHelpSource.cs" />
-    <Compile Include="Signatures\SignatureParameter.cs" />
+    <Compile Include="Signatures\RSignatureHelpSourceProvider.cs" />
+    <Compile Include="Signatures\RSignatureHelpSource.cs" />
+    <Compile Include="Signatures\RSignatureHelpParameter.cs" />
     <Compile Include="SmartIndent\SmartIndent.cs" />
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
     <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />

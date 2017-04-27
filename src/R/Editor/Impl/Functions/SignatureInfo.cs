@@ -108,9 +108,9 @@ namespace Microsoft.R.Editor.Functions {
             bool unique = true;
 
             for (int i = 0; i < Arguments.Count; i++) {
-                IArgumentInfo argInfo = Arguments[i];
+                var argInfo = Arguments[i];
                 if (argInfo.Name.StartsWith(argumentName, StringComparison.Ordinal)) {
-                    int lengthDifference = argInfo.Name.Length - argumentName.Length;
+                    var lengthDifference = argInfo.Name.Length - argumentName.Length;
                     if (lengthDifference < minLengthDifference) {
                         minLengthDifference = lengthDifference;
                         index = i;

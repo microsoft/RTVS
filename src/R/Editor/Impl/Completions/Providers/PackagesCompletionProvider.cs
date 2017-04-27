@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             return _packageIndex.Packages
                 .Select(p => new EditorCompletionEntry(p.Name, p.Name, p.Description, _glyph))
                 .ToList();

@@ -6,6 +6,6 @@ using Microsoft.Languages.Editor.Completions;
 
 namespace Microsoft.R.Editor.Completions.Engine {
     public interface IRCompletionEngine {
-        IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(IRCompletionContext context);
+        IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(IRIntellisenseContext context);
     }
 }

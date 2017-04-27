@@ -182,6 +182,7 @@
     <Compile Include="Completions\RCompletionTestUtilities.cs" />
     <Compile Include="Documentation\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
+    <Compile Include="Extensions\AssertionExtensions.cs" />
     <Compile Include="Extensions\RdAssertionExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
     <Compile Include="Fixtures\REditorServicesFixture.cs" />
@@ -191,7 +192,6 @@
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\AssertionExtensions.cs" />
     <Compile Include="BraceMatch\BraceMatchTest.cs" />
     <Compile Include="Fixtures\EditorTestFilesFixture.cs" />
     <Compile Include="Comments\CommenterTest.cs" />
@@ -213,7 +213,7 @@
     <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Mocks\EditorSupportMock.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
-    <Compile Include="Assertions\ParameterInfoAssertion.cs" />
+    <Compile Include="Assertions\FunctionSignatureAssertion.cs" />
     <Compile Include="Signatures\ComputeCurrentParameterTest.cs" />
     <Compile Include="Signatures\ParameterTest.cs" />
     <Compile Include="Signatures\SignatureHelpSourceTest.cs" />

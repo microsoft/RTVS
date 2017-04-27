@@ -50,7 +50,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = false;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
             string directory = null;
             string userDirectory = null;

@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
 
             var start = DateTime.Now;
@@ -67,7 +67,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         ///     dt[c|
         /// we want to complete for 'cyl'. This expressions can be nested.
         /// </remarks>
-        private static IEnumerable<string> GetFieldProvidingVariableNames(IRCompletionContext context) {
+        private static IEnumerable<string> GetFieldProvidingVariableNames(IRIntellisenseContext context) {
             var list = new List<string>();
             // Traverse AST up to the nearest expression which parent is a scope
             // (i.e. not nested in other expressions) collecting names of indexed

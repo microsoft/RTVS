@@ -11,6 +11,8 @@ namespace Microsoft.Languages.Editor.Text {
             _span = span;
         }
 
+        public T As<T>() where T : class => _span as T;
+
         public int GetEndPoint(IEditorBufferSnapshot snapshot) => _span.GetEndPoint(snapshot.As<ITextSnapshot>());
         public int GetStartPoint(IEditorBufferSnapshot snapshot) => _span.GetStartPoint(snapshot.As<ITextSnapshot>());
     }

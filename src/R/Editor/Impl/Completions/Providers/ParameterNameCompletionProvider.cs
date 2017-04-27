@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
             FunctionCall funcCall;
             var functionGlyph = _imageService.GetImage(ImageType.ValueType);
@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         }
         #endregion
 
-        private static bool ShouldProvideCompletions(IRCompletionContext context, out FunctionCall funcCall) {
+        private static bool ShouldProvideCompletions(IRIntellisenseContext context, out FunctionCall funcCall) {
             // Safety checks
             funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
             if (funcCall == null || funcCall.OpenBrace == null || funcCall.Arguments == null) {
@@ -87,11 +87,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
         /// Extracts information on the current function in the completion context, if any.
         /// </summary>
         /// <returns></returns>
-        private IFunctionInfo GetFunctionInfo(IRCompletionContext context) {
+        private IFunctionInfo GetFunctionInfo(IRIntellisenseContext context) {
             // Retrieve parameter positions from the current text buffer snapshot
             IFunctionInfo functionInfo = null;
 
-            var parametersInfo = context.AstRoot.GetParametersInfoFromBuffer(context.EditorBuffer.CurrentSnapshot, context.Position);
+            var parametersInfo = context.AstRoot.GetSignatureInfoFromBuffer(context.EditorBuffer.CurrentSnapshot, context.Position);
             if (parametersInfo != null) {
                 // User-declared functions take priority
                 functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);

@@ -8,8 +8,8 @@ namespace Microsoft.Languages.Editor.Completions {
     /// Completion context. Provides information about current document, 
     /// caret position and other necessary data for the completion engine.
     /// </summary>
-    public interface ICompletionContext {
-        IEditorCompletionSession Session { get; }
+    public interface IIntellisenseContext {
+        IEditorIntellisenseSession Session { get; }
         IEditorBuffer EditorBuffer { get; }
         int Position { get; }
     }

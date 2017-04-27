@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var ast = RParser.Parse(content);
 
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 10);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 10);
 
             parametersInfo.Should().NotBeNull()
                 .And.HaveFunctionCall()
@@ -26,19 +26,19 @@ namespace Microsoft.R.Editor.Test.Signatures {
                 .And.HaveParameterIndex(0)
                 .And.HaveSignatureEnd(17);
 
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
             parametersInfo.Should().HaveParameterIndex(1);
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
             parametersInfo.Should().HaveParameterIndex(1);
 
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 13);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 13);
             parametersInfo.Should().HaveParameterIndex(2);
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 14);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 14);
             parametersInfo.Should().HaveParameterIndex(2);
 
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 15);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 15);
             parametersInfo.Should().HaveParameterIndex(3);
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 16);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 16);
             parametersInfo.Should().HaveParameterIndex(3);
         }
 
@@ -48,18 +48,18 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var ast = RParser.Parse(content);
 
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 9);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 9);
 
             parametersInfo.Should().NotBeNull()
                 .And.HaveFunctionCall()
                 .And.HaveFunctionName("foo")
                 .And.HaveParameterIndex(0);
 
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 10);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 10);
             parametersInfo.Should().HaveParameterIndex(1);
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
             parametersInfo.Should().HaveParameterIndex(2);
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
             parametersInfo.Should().HaveParameterIndex(3);
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var ast = RParser.Parse(content);
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
 
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
             parametersInfo.Should().HaveParameterIndex(2);
         }
 
@@ -82,9 +82,9 @@ if(x > 1) {";
             var ast = RParser.Parse(content);
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
 
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 11);
             parametersInfo.Should().HaveParameterIndex(2);
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
             parametersInfo.Should().HaveParameterIndex(2);
         }
 
@@ -97,7 +97,7 @@ if(x > 1) {";
 while";
             var ast = RParser.Parse(content);
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, content.Length - 5);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, content.Length - 5);
 
             parametersInfo.Should().NotBeNull()
                 .And.HaveFunctionCall()
@@ -116,7 +116,7 @@ function(a) {
             var ast = RParser.Parse(content);
 
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, content.Length - 1);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, content.Length - 1);
 
             parametersInfo.Should().NotBeNull()
                 .And.HaveFunctionCall()
@@ -131,13 +131,13 @@ function(a) {
             var ast = RParser.Parse(content);
 
             var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer();
-            var parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
+            var parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 12);
             parametersInfo.Should().NotBeNull()
                 .And.HaveFunctionCall()
                 .And.HaveFunctionName("a")
                 .And.HaveParameterIndex(1);
 
-            parametersInfo = ast.GetParametersInfoFromBuffer(editorBuffer.CurrentSnapshot, 13);
+            parametersInfo = ast.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, 13);
             parametersInfo.Should().NotBeNull()
                 .And.HaveFunctionCall()
                 .And.HaveFunctionName("a")
