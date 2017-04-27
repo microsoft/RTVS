@@ -4228,7 +4228,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Load Workspace...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Carregar Espaço de Trabalho...]]></Val>
+              <Val><![CDATA[Carre&gar Espaço de Trabalho...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4291,7 +4291,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Interrupt R]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Interromper R]]></Val>
+              <Val><![CDATA[Interro&mper R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
