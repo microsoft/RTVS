@@ -116,7 +116,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote machine '{0}' does not have certificate installed for the TLS with the Remote R Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リモート マシン '{0}' には、リモート R Service によって TLS 用に証明書がインストールされていません。]]></Val>
+            <Val><![CDATA[リモート マシン '{0}' には、リモート R Service の TLS 用証明書がインストールされていません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
