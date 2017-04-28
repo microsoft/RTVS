@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Languages.Editor.Text;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.ViewModel {
     /// <summary>
@@ -13,6 +13,6 @@ namespace Microsoft.Languages.Editor.ViewModel {
         /// <summary>
         /// Creates an instance of an editor over the text buffer.
         /// </summary>
-        IEditorViewModel CreateEditorViewModel(IEditorBuffer editorBuffer);
+        IEditorViewModel CreateEditorViewModel(ITextBuffer textBuffer);
     }
 }

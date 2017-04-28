@@ -170,7 +170,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     // Must unescape JSON since VS roaming settings are converted to JSON
                     var token = Json.ParseToken((string)o);
                     try {
-                        var str = token.ToObject<string>();
+                        var str = token.ToString();
                         value = Json.DeserializeObject(str, t);
                     } catch (ArgumentException) {
                         value = null; // Protect against stale or corrupted data in the roaming storage

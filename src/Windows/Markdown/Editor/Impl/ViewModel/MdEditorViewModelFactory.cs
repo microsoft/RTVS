@@ -3,11 +3,11 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Languages.Editor.ViewModel;
-using Microsoft.Languages.Editor.Text;
-using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.ViewModel;
+using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.ViewModel {
     /// <summary>
@@ -25,9 +25,9 @@ namespace Microsoft.Markdown.Editor.ViewModel {
             _coreShell = coreShell;
         }
 
-        public IEditorViewModel CreateEditorViewModel(IEditorBuffer editorBuffer) {
-            Check.ArgumentNull(nameof(editorBuffer), editorBuffer);
-            return new MdEditorViewModel(editorBuffer, _coreShell.Services);
+        public IEditorViewModel CreateEditorViewModel(ITextBuffer textBuffer) {
+            Check.ArgumentNull(nameof(textBuffer), textBuffer);
+            return new MdEditorViewModel(textBuffer, _coreShell.Services);
         }
     }
 }

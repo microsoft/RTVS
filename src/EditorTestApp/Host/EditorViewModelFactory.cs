@@ -14,7 +14,7 @@ namespace Microsoft.Languages.Editor.Application.Host {
         public static IEditorViewModel CreateEditorViewModel(ITextBuffer textBuffer, IServiceContainer services) {
             var locator = services.GetService<IContentTypeServiceLocator>();
             var factory = locator.GetService<IEditorViewModelFactory>(textBuffer.ContentType.TypeName);
-            return factory?.CreateEditorViewModel(textBuffer.ToEditorBuffer());
+            return factory?.CreateEditorViewModel(textBuffer);
         }
     }
 }

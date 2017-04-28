@@ -12,8 +12,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.ViewModel {
     public sealed class MdEditorViewModel : ProjectionEditorViewModel {
-        public MdEditorViewModel(IEditorBuffer diskBuffer, IServiceContainer services) :
-            base(new MdEditorDocument(diskBuffer, services), services.GetService<ITextDocumentFactoryService>()) { }
+        public MdEditorViewModel(ITextBuffer diskBuffer, IServiceContainer services) :
+            base(new MdEditorDocument(
+                       new EditorBuffer(diskBuffer, services.GetService<ITextDocumentFactoryService>()
+                     ), services), services.GetService<ITextDocumentFactoryService>()) { }
 
         #region IEditorViewModel
         /// <summary>

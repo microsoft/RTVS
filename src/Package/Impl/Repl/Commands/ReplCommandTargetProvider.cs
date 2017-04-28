@@ -30,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
+            EditorView.Create(textView);
             var target = textView.GetService<IOleCommandTarget>();
             if (target == null) {
                 var controller = ReplCommandController.Attach(textView, textView.TextBuffer, _shell.Services);
@@ -87,7 +88,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                     var doc = tb.GetEditorDocument<IREditorDocument>();
                     if (doc == null) {
-                        new REditorDocument(new EditorBuffer(tb, _shell.GetService<ITextDocumentFactoryService>()), _shell.Services);
+                        var eb = EditorBuffer.Create(tb, _shell.GetService<ITextDocumentFactoryService>());
+                        new REditorDocument(eb, _shell.Services);
                     }
                 }
             }

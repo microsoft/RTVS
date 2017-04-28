@@ -17,22 +17,20 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextBufferExtensions {
-        public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer)
-            => textBuffer.Properties.TryGetProperty(typeof(IEditorBuffer), out IEditorBuffer buffer) ? buffer : null;
+        public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer) => EditorBuffer.FromTextBuffer(textBuffer);
 
         /// <summary>
         /// Retrieves service manager attached to the text buffer
         /// </summary>
         public static IServiceManager Services(this ITextBuffer textBuffer) {
             var editorBuffer = textBuffer.ToEditorBuffer();
-            Check.InvalidOperation(() => editorBuffer != null);
-            return editorBuffer.Services;
+            return editorBuffer?.Services;
         }
 
         /// <summary>
         /// Retrieves service from the service container attached to the text buffer
         /// </summary>
-        public static T GetService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services().GetService<T>();
+        public static T GetService<T>(this ITextBuffer textBuffer) where T : class => textBuffer.Services()?.GetService<T>();
 
         /// <summary>
         /// Adds service to the service container attached to the text buffer
@@ -42,7 +40,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Removes service from the service container attached to the text buffer
         /// </summary>
-        public static void RemoveService(this ITextBuffer textBuffer, object service) => textBuffer.Services().RemoveService(service);
+        public static void RemoveService(this ITextBuffer textBuffer, object service) => textBuffer.Services()?.RemoveService(service);
 
         /// <summary>
         /// Attempts to locate associated editor document. Implementation depends on the platform.

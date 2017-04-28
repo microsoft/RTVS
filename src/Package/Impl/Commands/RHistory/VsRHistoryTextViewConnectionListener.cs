@@ -21,12 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
     [Name("Visual Studio R History Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsRHistoryTextViewConnectionListener : RTextViewConnectionListener {
-        private readonly ICoreShell _coreShell;
-
         [ImportingConstructor]
-        public VsRHistoryTextViewConnectionListener(ICoreShell coreShell) {
-            _coreShell = coreShell;
-        }
+        public VsRHistoryTextViewConnectionListener(ICoreShell coreShell): base(coreShell) { }
 
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
             // Only attach controllers if the document is editable
@@ -43,14 +39,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
-                    var adapterService = _coreShell.GetService<IVsEditorAdaptersFactoryService>();
+                    var adapterService = Services.GetService<IVsEditorAdaptersFactoryService>();
                     var viewAdapter = adapterService.GetViewAdapter(textView);
 
                     if (viewAdapter != null) {
                         // Create OLE shim that wraps main controller ICommandTarget and represents
                         // it as IOleCommandTarget that is accepted by VS IDE.
                         var oleController = new CommandTargetToOleShim(textView, mainController);
-                        var es = _coreShell.GetService<IEditorSupport>();
+                        var es = Services.GetService<IEditorSupport>();
 
                         viewAdapter.AddCommandFilter(oleController, out IOleCommandTarget nextOleTarget);
 

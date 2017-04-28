@@ -22,12 +22,8 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [Name("R Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener {
-        private readonly ICoreShell _shell;
-
         [ImportingConstructor]
-        public TestRTextViewConnectionListener(ICoreShell shell) {
-            _shell = shell;
-        }
+        public TestRTextViewConnectionListener(ICoreShell shell): base(shell) { }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             InitEditorInstance(textBuffer);
@@ -36,10 +32,9 @@ namespace Microsoft.Languages.Editor.Application.Packages {
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
             if (textBuffer.GetService<IEditorViewModel>() == null) {
-                var tdfs = _shell.GetService<ITextDocumentFactoryService>();
-                var locator = _shell.GetService<IContentTypeServiceLocator>();
+                var locator = Services.GetService<IContentTypeServiceLocator>();
                 var factory = locator.GetService< IEditorViewModelFactory>(textBuffer.ContentType.TypeName);
-                var viewModel = factory.CreateEditorViewModel(new EditorBuffer(textBuffer, tdfs));
+                var viewModel = factory.CreateEditorViewModel(textBuffer);
             }
         }
     }

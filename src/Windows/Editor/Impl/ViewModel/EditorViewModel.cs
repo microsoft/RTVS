@@ -16,7 +16,6 @@ namespace Microsoft.Languages.Editor.ViewModel {
 
         protected EditorViewModel(IEditorDocument document, IEditorBuffer viewBuffer = null) {
             Check.ArgumentNull(nameof(document), document);
-            Check.ArgumentNull(nameof(viewBuffer), viewBuffer);
 
             DiskBuffer = document.EditorBuffer;
             DiskBuffer.AddService(this);

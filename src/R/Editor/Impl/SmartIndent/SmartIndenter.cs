@@ -27,13 +27,13 @@ namespace Microsoft.R.Editor.SmartIndent {
 
         private SmartIndenter(IEditorView view, IREditorSettings settings) {
             _view = view;
+            _settings = settings;
             _view.AddService(this);
         }
 
         #region ISmartIndenter
         public int? GetDesiredIndentation(IEditorLine line) {
-            var settings = _view.GetService<IREditorSettings>();
-            int? res = GetDesiredIndentation(line, settings.IndentStyle);
+            var res = GetDesiredIndentation(line, _settings.IndentStyle);
             if (res != null && line.Snapshot.EditorBuffer != _view.EditorBuffer) {
                 var target = _view.MapToView(new EditorSnapshotPoint(line.Snapshot, line.Start));
                 if (target != null) {
@@ -61,7 +61,7 @@ namespace Microsoft.R.Editor.SmartIndent {
         #endregion
 
         public static int GetBlockIndent(IEditorLine line, IREditorSettings settings) {
-            int lineNumber = line.LineNumber;
+            var lineNumber = line.LineNumber;
 
             //Scan the previous lines for the first line that isn't an empty line.
             while (--lineNumber >= 0) {
@@ -114,7 +114,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             // like in 'if(...)' { in order to locate 'if' and then, if nothing is found,
             // try end of the line as in 'x <- function(...) {'
             prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
-            string prevLineText = prevLine.GetText();
+            var prevLineText = prevLine.GetText();
             if (prevLineText.Trim().Equals("else", StringComparison.Ordinal)) {
                 // Quick short circuit for new 'else' since it is not in the ASt yet.
                 return GetBlockIndent(line, settings) + settings.IndentSize;
@@ -204,8 +204,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             // }
             // the indent in scope is defined by the function and not by the opening {
             if (scope != null) {
-                var parentStarement = scope.Parent as IAstNodeWithScope;
-                if (parentStarement != null && parentStarement.Scope == scope) {
+                if (scope.Parent is IAstNodeWithScope parentStarement && parentStarement.Scope == scope) {
                     scopeStatement = parentStarement;
                     scope = null;
                 }
@@ -233,14 +232,14 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // of the closing }, it should be indented at the outer indent so closing scope aligns with
                 // the beginning of the statement.
                 if (scopeStatement.Scope.CloseCurlyBrace != null) {
-                    int endOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
+                    var endOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
                     if (endOfScopeLine <= line.LineNumber) {
                         return OuterIndentSizeFromNode(editorBuffer, scopeStatement, settings.FormatOptions);
                     }
                 }
 
                 if (scopeStatement.Scope.OpenCurlyBrace != null && settings.FormatOptions.BracesOnNewLine) {
-                    int startOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.OpenCurlyBrace.Start);
+                    var startOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.OpenCurlyBrace.Start);
                     if (startOfScopeLine == line.LineNumber) {
                         return OuterIndentSizeFromNode(editorBuffer, scopeStatement, settings.FormatOptions);
                     }
@@ -253,7 +252,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             // Try locate the scope itself, if any
             if (scope != null && scope.OpenCurlyBrace != null) {
                 if (scope.CloseCurlyBrace != null) {
-                    int endOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scope.CloseCurlyBrace.Start);
+                    var endOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scope.CloseCurlyBrace.Start);
                     if (endOfScopeLine == line.LineNumber) {
                         return OuterIndentSizeFromNode(editorBuffer, scope, settings.FormatOptions);
                     }
@@ -299,16 +298,16 @@ namespace Microsoft.R.Editor.SmartIndent {
         }
 
         public static int InnerIndentSizeFromLine(IEditorLine line, RFormatOptions options) {
-            string lineText = line.GetText();
-            string leadingWhitespace = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
+            var lineText = line.GetText();
+            var leadingWhitespace = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
             var indentbuilder = new IndentBuilder(options.IndentType, options.IndentSize, options.TabSize);
 
             return IndentBuilder.TextIndentInSpaces(leadingWhitespace + indentbuilder.SingleIndentString, options.TabSize);
         }
 
         public static int OuterIndentSizeFromLine(IEditorLine line, RFormatOptions options) {
-            string lineText = line.GetText();
-            string leadingWhitespace = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
+            var lineText = line.GetText();
+            var leadingWhitespace = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
             return IndentBuilder.TextIndentInSpaces(leadingWhitespace, options.TabSize);
         }
     }

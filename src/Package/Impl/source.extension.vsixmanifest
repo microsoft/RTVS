@@ -45,9 +45,8 @@
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.Windows.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.Windows.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Support.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.Windows.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.Windows.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Sql.dll" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates" />

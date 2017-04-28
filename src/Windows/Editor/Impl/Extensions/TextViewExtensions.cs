@@ -3,9 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,22 +11,20 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextViewExtensions {
-        public static IEditorView ToEditorView(this ITextView textView)
-            => textView.Properties.TryGetProperty(typeof(IEditorView), out IEditorView view) ? view : null;
+        public static IEditorView ToEditorView(this ITextView textView) => EditorView.FromTextView(textView);
 
         /// <summary>
         /// Retrieves service manager attached to the text view
         /// </summary>
         public static IServiceManager Services(this ITextView textView) {
             var view = textView.ToEditorView();
-            Check.InvalidOperation(() => view != null);
-            return view.Services;
+            return view?.Services;
         }
 
         /// <summary>
         /// Retrieves service from the service container attached to the view
         /// </summary>
-        public static T GetService<T>(this ITextView textView) where T : class => textView.Services().GetService<T>();
+        public static T GetService<T>(this ITextView textView) where T : class => textView.Services()?.GetService<T>();
 
         /// <summary>
         /// Adds service to this instance of the view
@@ -38,7 +34,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Removes service from this instance of the view
         /// </summary>
-        public static void RemoveService(this ITextView textView, object service) => textView.Services().RemoveService(service);
+        public static void RemoveService(this ITextView textView, object service) => textView.Services()?.RemoveService(service);
 
         /// <summary>
         /// Determines caret position in the provided text buffer of a certain content type.

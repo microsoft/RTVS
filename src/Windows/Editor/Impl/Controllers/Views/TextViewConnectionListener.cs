@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Linq;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
@@ -20,53 +22,55 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
     /// gets aggregate focus.
     /// </summary>
     public abstract class TextViewConnectionListener : IWpfTextViewCreationListener, IWpfTextViewConnectionListener {
-        [Import]
-        public ICoreShell Shell { get; set; }
+        private readonly IEnumerable<Lazy<ITextBufferListener, IOrderedComponentContentTypes>> _textBufferListeners;
+        private readonly IEnumerable<Lazy<ITextViewListener, IOrderedComponentContentTypes>> _textViewListeners;
+        private readonly Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
+        private readonly ITextDocumentFactoryService _tdfs;
+        private readonly IIdleTimeService _idleTime;
+        private Action _pendingCheckForViewlessTextBuffers;
 
-        [ImportMany]
-        public IEnumerable<Lazy<ITextBufferListener, IOrderedComponentContentTypes>> TextBufferListeners { get; set; }
-
-        [ImportMany]
-        public IEnumerable<Lazy<ITextViewListener, IOrderedComponentContentTypes>> TextViewListeners { get; set; }
+        protected ICoreShell Shell { get; private set; }
+        protected IServiceContainer Services => Shell.Services;
 
         // Keep track of how many views are using each text buffer
-        protected Dictionary<ITextBuffer, TextViewData> TextBufferToViewData { get; private set; }
-
-        private Action _pendingCheckForViewlessTextBuffers;
-        private readonly Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
-        private readonly IIdleTimeService _idleTime;
+        protected Dictionary<ITextBuffer, TextViewData> TextBufferToViewData { get; } = new Dictionary<ITextBuffer, TextViewData>();
 
         // The editor should only import one of these objects, so cache it
         private static IList<TextViewConnectionListener> _allInstances;
 
+        protected TextViewConnectionListener(ICoreShell coreShell) {
+            Shell = coreShell;
 
-        protected TextViewConnectionListener() {
-            if (_allInstances == null) {
-                _allInstances = new List<TextViewConnectionListener>();
-            }
+            var ep = coreShell.GetService<ExportProvider>();
+            _textBufferListeners = Orderer.Order(ep.GetExports<ITextBufferListener, IOrderedComponentContentTypes>());
+            _textViewListeners = ep.GetExports<ITextViewListener, IOrderedComponentContentTypes>();
+            _textViewListeners = ep.GetExports<ITextViewListener, IOrderedComponentContentTypes>();
+            _tdfs = coreShell.GetService<ITextDocumentFactoryService>();
+
+            _allInstances = _allInstances ?? new List<TextViewConnectionListener>();
             // This class is never disposed, so it always stays in the global list
             _allInstances.Add(this);
             _idleTime = Shell.GetService<IIdleTimeService>();
-        }
 
-        private void EnsureInitialized() {
-            if (TextBufferToViewData == null) {
-                TextBufferToViewData = new Dictionary<ITextBuffer, TextViewData>();
-                Shell.Terminating += OnTerminateApp;
-                TextBufferListeners = Orderer.Order(TextBufferListeners);
-            }
+            Shell.Terminating += OnTerminateApp;
         }
 
         #region IWpfTextViewCreationListener
-        // Called once when view is created
-        public void TextViewCreated(IWpfTextView textView) => OnTextViewCreated(textView);
+        /// <summary>
+        /// Called once when view is created
+        /// </summary>
+        public void TextViewCreated(IWpfTextView textView) {
+            EditorView.Create(textView);
+            OnTextViewCreated(textView);
+        }
         #endregion
 
         #region IWpfTextViewConnectionListener
-
-        // Called multiple times as subject buffers get connected and disconnected in the buffer graph
-        public virtual void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
-            EnsureInitialized();
+        /// <summary>
+        /// Called multiple times as subject buffers get connected and disconnected in the buffer graph
+        /// </summary>
+        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
+            EditorView.Create(textView);
 
             foreach (var textBuffer in subjectBuffers) {
                 TextViewData viewData;
@@ -80,7 +84,8 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
 
                 viewData.AddView(textView);
                 if (newBuffer) {
-                     OnTextBufferCreated(textView, textBuffer);
+                    EditorBuffer.Create(textBuffer, _tdfs);
+                    OnTextBufferCreated(textView, textBuffer);
                 }
 
                 OnTextViewConnected(textView, textBuffer);
@@ -151,7 +156,8 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// Called when text view is connected to the subject buffer
         /// </summary>
         protected virtual void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            void GotFocus(object sender, EventArgs eventArgs) {
+            void GotFocus(object sender, EventArgs eventArgs)
+            {
                 this.OnTextViewGotAggregateFocus(textView, textBuffer);
                 textView.GotAggregateFocus -= GotFocus;
             }
@@ -159,7 +165,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
             textView.GotAggregateFocus += GotFocus;
             var contentType = textBuffer.ContentType;
 
-            foreach (var listener in TextViewListeners) {
+            foreach (var listener in _textViewListeners) {
                 if (listener.Metadata.ContentTypes != null) {
                     if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
                         listener.Value.OnTextViewConnected(textView, textBuffer);
@@ -199,7 +205,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// </summary>
         protected virtual void OnTextViewDisconnected(ITextView textView, ITextBuffer textBuffer) {
             var contentType = textBuffer.ContentType;
-            foreach (var listener in TextViewListeners) {
+            foreach (var listener in _textViewListeners) {
                 if (listener.Metadata.ContentTypes != null) {
                     if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
                         listener.Value.OnTextViewDisconnected(textView, textBuffer);
@@ -215,7 +221,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
             var contentType = textBuffer.ContentType;
             _bufferToOriginalContentType.Add(textBuffer, contentType);
 
-            foreach (var listener in TextBufferListeners) {
+            foreach (var listener in _textBufferListeners) {
                 if (listener.Metadata.ContentTypes != null) {
                     if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
                         listener.Value.OnTextBufferCreated(textBuffer);
@@ -238,7 +244,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
             if (_bufferToOriginalContentType.TryGetValue(textBuffer, out contentType)) {
                 _bufferToOriginalContentType.Remove(textBuffer);
 
-                foreach (var listener in TextBufferListeners) {
+                foreach (var listener in _textBufferListeners) {
                     if (listener.Metadata.ContentTypes != null) {
                         if (listener.Metadata.ContentTypes.Any(curContentType => contentType.IsOfType(curContentType))) {
                             reverseListeners.Insert(0, listener.Value);

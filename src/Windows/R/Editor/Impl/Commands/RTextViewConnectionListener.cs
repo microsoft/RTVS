@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controllers.Views;
 using Microsoft.Languages.Editor.Text;
@@ -15,11 +16,14 @@ namespace Microsoft.R.Editor.Commands {
         private IContainedLanguageHost _containedLanguageHost;
         private ITextBuffer _textBuffer;
 
+        public RTextViewConnectionListener(ICoreShell coreShell) : base(coreShell) { }
+
         protected override void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            RMainController.Attach(textView, textBuffer, Shell.Services);
+            RMainController.Attach(textView, textBuffer, Services);
+
             if (textBuffer != textView.TextBuffer) {
                 // Projected scenario
-                _containedLanguageHost = ContainedLanguageHost.GetHost(textView, textBuffer, Shell.Services);
+                _containedLanguageHost = ContainedLanguageHost.GetHost(textView, textBuffer, Services);
                 if (_containedLanguageHost != null) {
                     _containedLanguageHost.Closing += OnContainedLanguageHostClosing;
                     _textBuffer = textBuffer;

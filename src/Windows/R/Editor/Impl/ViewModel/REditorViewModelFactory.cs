@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ViewModel;
@@ -22,9 +21,9 @@ namespace Microsoft.R.Editor.EditorFactory {
             _coreShell = coreShell;
         }
 
-        public IEditorViewModel CreateEditorViewModel(IEditorBuffer editorBuffer) {
-            Check.ArgumentNull(nameof(editorBuffer), editorBuffer);
-            return new REditorViewModel(editorBuffer.As<ITextBuffer>(), _coreShell.Services);
+        public IEditorViewModel CreateEditorViewModel(ITextBuffer textBuffer) {
+            Check.ArgumentNull(nameof(textBuffer), textBuffer);
+            return new REditorViewModel(textBuffer, _coreShell.Services);
         }
     }
 }

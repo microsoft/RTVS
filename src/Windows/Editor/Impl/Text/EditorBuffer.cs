@@ -18,6 +18,8 @@ namespace Microsoft.Languages.Editor.Text {
     /// Implements IEditorBuffer abstraction over Visual Studio text buffer.
     /// </summary>
     public sealed class EditorBuffer : IEditorBuffer {
+        private const string Key = "XEditorBuffer";
+
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
         private readonly Lazy<ServiceManager> _services = Lazy.Create(() => new ServiceManager());
         private readonly ITextBuffer _textBuffer;
@@ -30,7 +32,7 @@ namespace Microsoft.Languages.Editor.Text {
             _textBuffer = textBuffer;
             _textBuffer.ChangedHighPriority += OnTextBufferChangedHighPriority;
             _textBuffer.Changed += OnTextBufferChanged;
-            _textBuffer.Properties[typeof(IEditorBuffer)] = this;
+            _textBuffer.Properties[Key] = this;
 
             _textDocumentFactoryService = textDocumentFactoryService;
             if (_textDocumentFactoryService != null) {
@@ -38,7 +40,11 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
-        public static IEditorBuffer Create(ITextBuffer textBuffer) => new EditorBuffer(textBuffer);
+        public static IEditorBuffer Create(ITextBuffer textBuffer, ITextDocumentFactoryService textDocumentFactoryService)
+            => textBuffer.ToEditorBuffer() ?? new EditorBuffer(textBuffer, textDocumentFactoryService);
+
+        public static IEditorBuffer FromTextBuffer(ITextBuffer textBuffer)
+            => textBuffer.Properties.TryGetProperty(Key, out IEditorBuffer buffer) ? buffer : null;
 
         #region IEditorBuffer
         public string ContentType => _textBuffer.ContentType.TypeName;
@@ -98,6 +104,10 @@ namespace Microsoft.Languages.Editor.Text {
                 _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
             }
             Closing?.Invoke(this, EventArgs.Empty);
+
+            if (_services.IsValueCreated) {
+                _services.Value.Dispose();
+            }
         }
         #endregion
 

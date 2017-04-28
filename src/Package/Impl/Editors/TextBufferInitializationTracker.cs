@@ -63,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                     var instancefactory = locator.GetService<IEditorViewModelFactory>(diskBuffer.ContentType.TypeName);
 
                     Debug.Assert(instancefactory != null, "No editor factory found for the provided text buffer");
-                    editorInstance = instancefactory.CreateEditorViewModel(diskBuffer.ToEditorBuffer());
+                    editorInstance = instancefactory.CreateEditorViewModel(diskBuffer);
                 }
 
                 Debug.Assert(editorInstance != null);

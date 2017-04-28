@@ -51,9 +51,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public static void InitEditorInstance(ITextBuffer textBuffer, IServiceContainer services) {
             if (textBuffer.GetService<IEditorViewModel>() == null) {
                 var locator = services.GetService<IContentTypeServiceLocator>();
-                var tdfs = services.GetService<ITextDocumentFactoryService>();
                 var viewModelFactory = locator.GetService<IEditorViewModelFactory>(textBuffer.ContentType.TypeName);
-                viewModelFactory.CreateEditorViewModel(new EditorBuffer(textBuffer, tdfs));
+                viewModelFactory.CreateEditorViewModel(textBuffer);
             }
         }
     }

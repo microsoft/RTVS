@@ -12,6 +12,8 @@ namespace Microsoft.Languages.Editor.Text {
     /// Implementation of <see cref="IEditorView"/> over Visual Studio text editor
     /// </summary>
     public sealed class EditorView : IEditorView {
+        private const string Key = "XEditorView";
+
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
         private readonly Lazy<ServiceManager> _services = Lazy.Create(() => new ServiceManager());
         private readonly ITextView _textView;
@@ -19,10 +21,12 @@ namespace Microsoft.Languages.Editor.Text {
         public EditorView(ITextView textView) {
             _textView = textView;
             Selection = new EditorSelection(textView);
+
+            _textView.Properties[Key] = this;
+            _textView.Closed += OnClosed;
         }
 
         public IViewCaret Caret => new ViewCaret(_textView);
-
         public IEditorBuffer EditorBuffer => _textView.TextBuffer.ToEditorBuffer();
         public PropertyDictionary Properties => _properties.Value;
         public IServiceManager Services => _services.Value;
@@ -40,6 +44,18 @@ namespace Microsoft.Languages.Editor.Text {
                     new SnapshotPoint(point.Snapshot.As<ITextSnapshot>(), point.Position), 
                     PointTrackingMode.Positive, PositionAffinity.Successor, _textView.TextBuffer);
             return target.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.ToEditorBuffer().CurrentSnapshot, target.Value) : null;
+        }
+
+        public static IEditorView Create(ITextView textView) 
+            => textView.ToEditorView() ?? new EditorView(textView);
+
+        public static IEditorView FromTextView(ITextView textView)
+            => textView.Properties.TryGetProperty(Key, out IEditorView view) ? view : null;
+
+        private void OnClosed(object sender, EventArgs e) {
+            if (_services.IsValueCreated) {
+                _services.Value.Dispose();
+            }
         }
     }
 }

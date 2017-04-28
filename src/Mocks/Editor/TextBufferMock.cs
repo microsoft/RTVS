@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             ContentType = new ContentTypeMock(contentTypeName, new IContentType[] { ContentTypeMock.TextContentType });
             TextVersionMock initialVersion = new TextVersionMock(this, 0, content.Length);
             CurrentSnapshot = new TextSnapshotMock(content, this, initialVersion);
-            EditorBuffer.Create(this);
+            EditorBuffer.Create(this, null);
         }
         public void Clear() => Replace(new Span(0, CurrentSnapshot.Length), string.Empty);
 
