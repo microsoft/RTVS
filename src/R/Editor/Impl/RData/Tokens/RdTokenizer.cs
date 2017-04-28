@@ -50,8 +50,9 @@ namespace Microsoft.R.Editor.RData.Tokens {
         public override void AddNextToken() {
             SkipWhitespace();
 
-            if (_cs.IsEndOfStream())
+            if (_cs.IsEndOfStream()) {
                 return;
+            }
 
             HandleLatexContent(block: false);
         }
@@ -85,8 +86,9 @@ namespace Microsoft.R.Editor.RData.Tokens {
                         if (braceCounter != null && braceCounter.CountBrace(_cs.CurrentChar)) {
                             handled = AddBraceToken();
 
-                            if (braceCounter.Count == 0)
+                            if (braceCounter.Count == 0) {
                                 return;
+                            }
                         }
                         break;
                 }
@@ -227,8 +229,9 @@ namespace Microsoft.R.Editor.RData.Tokens {
                         if (braceCounter.CountBrace(_cs.CurrentChar)) {
                             handled = AddBraceToken();
 
-                            if (braceCounter.Count == 0)
+                            if (braceCounter.Count == 0) {
                                 return;
+                            }
                         } else {
                             // Check if sequence is a candidate for a number.
                             // The check is not perfect but numbers in R-like content
@@ -317,8 +320,9 @@ namespace Microsoft.R.Editor.RData.Tokens {
                         if (braceCounter.CountBrace(_cs.CurrentChar)) {
                             handled = AddBraceToken();
 
-                            if (braceCounter.Count == 0)
+                            if (braceCounter.Count == 0) {
                                 return;
+                            }
                         } else if (_cs.CurrentChar == '#' && HandlePragma()) {
                             continue;
                         }
@@ -356,11 +360,13 @@ namespace Microsoft.R.Editor.RData.Tokens {
         }
 
         private char GetMatchingBrace(char brace) {
-            if (brace == '{')
+            if (brace == '{') {
                 return '}';
+            }
 
-            if (brace == '[')
+            if (brace == '[') {
                 return ']';
+            }
 
             return char.MinValue;
         }
@@ -436,8 +442,9 @@ namespace Microsoft.R.Editor.RData.Tokens {
         /// </summary>
         internal void SkipUnknown() {
             while (!_cs.IsEndOfStream() && !_cs.IsWhiteSpace()) {
-                if (_cs.CurrentChar == '%')
+                if (_cs.CurrentChar == '%') {
                     break;
+                }
 
                 _cs.MoveToNextChar();
             }

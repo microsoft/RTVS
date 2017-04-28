@@ -27,21 +27,24 @@ namespace Microsoft.Languages.Core.Tokens {
                 // Keep on adding tokens
                 AddNextToken();
 
-                if (_cs.Position >= end)
+                if (_cs.Position >= end) {
                     break;
+                }
             }
 
             if (excludePartialTokens) {
                 // Exclude tokens that are beyond the specified range
                 int i;
                 for (i = _tokens.Count - 1; i >= 0; i--) {
-                    if (_tokens[i].End <= end)
+                    if (_tokens[i].End <= end) {
                         break;
+                    }
                 }
 
                 i++;
-                if (i < _tokens.Count)
+                if (i < _tokens.Count) {
                     _tokens.RemoveRange(i, _tokens.Count - i);
+                }
             }
 
             return new ReadOnlyTextRangeCollection<T>(_tokens);
@@ -60,12 +63,14 @@ namespace Microsoft.Languages.Core.Tokens {
         public abstract void AddNextToken();
 
         public void SkipWhitespace() {
-            if (_cs.IsEndOfStream())
+            if (_cs.IsEndOfStream()) {
                 return;
+            }
 
             while (_cs.IsWhiteSpace()) {
-                if (!_cs.MoveToNextChar())
+                if (!_cs.MoveToNextChar()) {
                     break;
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ namespace Microsoft.R.Core.AST {
     /// </summary>
     [DebuggerDisplay("[Children = {Children.Count}  {Start}...{End}, Length = {Length}]")]
     public abstract class AstNode : IAstNode {
-        private Lazy<PropertyDictionary> _properties = new Lazy<PropertyDictionary>(() => new PropertyDictionary());
+        private readonly Lazy<PropertyDictionary> _properties = new Lazy<PropertyDictionary>(() => new PropertyDictionary());
         private IAstNode _parent;
         protected TextRangeCollection<IAstNode> _children = new TextRangeCollection<IAstNode>();
 
@@ -26,13 +26,13 @@ namespace Microsoft.R.Core.AST {
         /// <summary>
         /// AST root node
         /// </summary>
-        public virtual AstRoot Root => Parent != null ? Parent.Root : null;
+        public virtual AstRoot Root => Parent?.Root;
 
         /// <summary>
         /// This node's parent
         /// </summary>
         public IAstNode Parent {
-            get { return _parent; }
+            get => _parent;
             set {
                 if (_parent != null && _parent != value && value != null) {
                     throw new InvalidOperationException("Node already has parent");
@@ -74,14 +74,14 @@ namespace Microsoft.R.Core.AST {
                 _children = new TextRangeCollection<IAstNode>();
             } else {
                 var newChildren = new IAstNode[Children.Count - count];
-                int j = 0;
-                for (int i = 0; i < start; i++, j++) {
+                var j = 0;
+                for (var i = 0; i < start; i++, j++) {
                     newChildren[j] = Children[i];
                 }
-                for (int i = start; i < start + count; i++) {
+                for (var i = start; i < start + count; i++) {
                     Children[i].Parent = null;
                 }
-                for (int i = start + count; i < Children.Count; i++, j++) {
+                for (var i = start + count; i < Children.Count; i++, j++) {
                     newChildren[j] = Children[i];
                 }
                 _children = new TextRangeCollection<IAstNode>(newChildren);
@@ -99,14 +99,16 @@ namespace Microsoft.R.Core.AST {
                 return null; // not this element
             }
 
-            for (int i = 0; i < this.Children.Count; i++) {
+            for (var i = 0; i < this.Children.Count; i++) {
                 var child = Children[i];
 
-                if (child.Start > position)
+                if (child.Start > position) {
                     break;
+                }
 
-                if (child.Contains(position))
+                if (child.Contains(position)) {
                     return child.NodeFromPosition(position);
+                }
             }
 
             return this;
@@ -121,11 +123,12 @@ namespace Microsoft.R.Core.AST {
             if (TextRange.Contains(this, range, inclusiveEnd)) {
                 node = this;
 
-                for (int i = 0; i < this.Children.Count; i++) {
+                for (var i = 0; i < this.Children.Count; i++) {
                     var child = Children[i];
 
-                    if (range.End < child.Start)
+                    if (range.End < child.Start) {
                         break;
+                    }
 
                     if (TextRange.Contains(child, range, inclusiveEnd)) {
                         node = (child.Children.Count > 0)
@@ -154,11 +157,12 @@ namespace Microsoft.R.Core.AST {
                 return PositionType.Undefined;
             }
 
-            for (int i = 0; i < this.Children.Count; i++) {
+            for (var i = 0; i < this.Children.Count; i++) {
                 var child = Children[i];
 
-                if (position < child.Start)
+                if (position < child.Start) {
                     break;
+                }
 
                 if (child.Contains(position)) {
                     return child.GetPositionNode(position, out node);
@@ -183,7 +187,7 @@ namespace Microsoft.R.Core.AST {
                                 int start, int length,
                                 out IAstNode startNode, out PositionType startPositionType,
                                 out IAstNode endNode, out PositionType endPositionType) {
-            int end = start + length;
+            var end = start + length;
 
             startPositionType = PositionType.Undefined;
             endPositionType = PositionType.Undefined;
@@ -194,8 +198,9 @@ namespace Microsoft.R.Core.AST {
             startPositionType = GetPositionNode(start, out startNode);
             endPositionType = GetPositionNode(end, out endNode);
 
-            if (startNode == endNode)
+            if (startNode == endNode) {
                 return startNode;
+            }
 
             return this;
         }
@@ -230,11 +235,12 @@ namespace Microsoft.R.Core.AST {
         #region IAstVisitorPattern
         public virtual bool Accept(IAstVisitor visitor, object parameter) {
             if (visitor != null && visitor.Visit(this, parameter)) {
-                for (int i = 0; i < Children.Count; i++) {
+                for (var i = 0; i < Children.Count; i++) {
                     var child = Children[i] as IAstNode;
 
-                    if (child != null && !child.Accept(visitor, parameter))
+                    if (child != null && !child.Accept(visitor, parameter)) {
                         return false;
+                    }
                 }
 
                 return true;
@@ -245,9 +251,10 @@ namespace Microsoft.R.Core.AST {
 
         public virtual bool Accept(Func<IAstNode, object, bool> visitor, object parameter) {
             if (visitor != null && visitor(this, parameter)) {
-                foreach (IAstNode child in Children) {
-                    if (!child.Accept(visitor, parameter))
+                foreach (var child in Children) {
+                    if (!child.Accept(visitor, parameter)) {
                         return false;
+                    }
                 }
 
                 return true;

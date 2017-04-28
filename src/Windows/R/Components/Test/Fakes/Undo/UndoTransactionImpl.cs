@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.R.Components.Test.Fakes.Undo {
@@ -22,25 +23,14 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
         #endregion
 
         public UndoTransactionImpl(ITextUndoHistory history, ITextUndoTransaction parent, string description) {
-            if (history == null) {
-                throw new ArgumentNullException(nameof(history));
-            }
-
-            if (string.IsNullOrEmpty(description)) {
-                throw new ArgumentNullException(nameof(description));
-            }
+            Check.ArgumentNull(nameof(history), history);
+            Check.ArgumentStringNullOrEmpty(nameof(description), description);
 
             _history = history as UndoHistoryImpl;
-
-            if (_history == null) {
-                throw new ArgumentException("Invalid history in registry");
-            }
+            Check.ArgumentNull(nameof(history), _history);
 
             _parent = parent as UndoTransactionImpl;
-
-            if (_parent == null && parent != null) {
-                throw new ArgumentException("Invalid parent in transaction");
-            }
+            Check.ArgumentNull(nameof(parent), _parent);
 
             Description = description;
 
@@ -131,7 +121,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
         /// </summary>
         /// <param name="transaction">The UndoTransactionImpl to copy from.</param>
         public void CopyPrimitivesFrom(UndoTransactionImpl transaction) {
-            foreach (ITextUndoPrimitive p in transaction.UndoPrimitives) {
+            foreach (var p in transaction.UndoPrimitives) {
                 AddUndo(p);
             }
         }
@@ -140,11 +130,9 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
         /// Cancel marks an Open transaction Canceled, and Undoes and clears any primitives that have been added.
         /// </summary>
         public void Cancel() {
-            if (State != UndoTransactionState.Open) {
-                throw new InvalidOperationException("Strings.CancelCalledOnTransationThatIsNotOpened");
-            }
+            Check.InvalidOperation(() => State == UndoTransactionState.Open, "Cancel called on transation that is not opened");
 
-            for (int i = _primitives.Count - 1; i >= 0; --i) {
+            for (var i = _primitives.Count - 1; i >= 0; --i) {
                 _primitives[i].Undo();
             }
 
@@ -157,9 +145,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
         /// </summary>
         /// <param name="undo"></param>
         public void AddUndo(ITextUndoPrimitive undo) {
-            if (State != UndoTransactionState.Open) {
-                throw new InvalidOperationException("Strings.AddUndoCalledOnTransationThatIsNotOpened");
-            }
+            Check.InvalidOperation(() => State == UndoTransactionState.Open, "Cancel called on transation that is not opened");
 
             _primitives.Add(undo);
             undo.Parent = this;
@@ -176,12 +162,12 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
                 return;
             }
 
-            ITextUndoPrimitive top = _primitives[_primitives.Count - 1];
+            var top = _primitives[_primitives.Count - 1];
 
             ITextUndoPrimitive victim = null;
-            int victimIndex = -1;
+            var victimIndex = -1;
 
-            for (int i = _primitives.Count - 2; i >= 0; --i) {
+            for (var i = _primitives.Count - 2; i >= 0; --i) {
                 if (top.GetType() == _primitives[i].GetType() && top.CanMerge(_primitives[i])) {
                     victim = _primitives[i];
                     victimIndex = i;
@@ -190,7 +176,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
             }
 
             if (victim != null) {
-                ITextUndoPrimitive newPrimitive = top.Merge(victim);
+                var newPrimitive = top.Merge(victim);
                 _primitives.RemoveRange(_primitives.Count - 1, 1);
                 _primitives.RemoveRange(victimIndex, 1);
                 _primitives.Add(newPrimitive);
@@ -250,7 +236,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
 
             _state = UndoTransactionState.Redoing;
 
-            for (int i = 0; i < _primitives.Count; ++i) {
+            for (var i = 0; i < _primitives.Count; ++i) {
                 _primitives[i].Do();
             }
 
@@ -271,7 +257,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
 
             _state = UndoTransactionState.Undoing;
 
-            for (int i = _primitives.Count - 1; i >= 0; --i) {
+            for (var i = _primitives.Count - 1; i >= 0; --i) {
                 _primitives[i].Undo();
             }
 
@@ -282,15 +268,9 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
         /// 
         /// </summary>
         public IMergeTextUndoTransactionPolicy MergePolicy {
-            get {
-                return _mergePolicy;
-            }
-
+            get => _mergePolicy;
             set {
-                if (value == null) {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
+                Check.ArgumentNull(nameof(value), value);
                 _mergePolicy = value;
             }
         }

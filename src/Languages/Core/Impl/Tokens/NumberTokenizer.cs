@@ -122,12 +122,13 @@ namespace Microsoft.Languages.Core.Tokens {
                 cs.MoveToNextChar();
             }
 
-            if (hasSign && digitsStart == cs.Position)
+            if (hasSign && digitsStart == cs.Position) {
                 return 0; // NaN like 1.0E-
+            }
 
             // Technically if letter or braces follows this is not 
             // a number but we'll leave it alone for now.
-            
+
             // TODO: This code is not language specific and yet it currently
             // handles complex 'i' as well as R-specific 'L' suffix.
             // Ideally this needs to be extended in a way so language-specific

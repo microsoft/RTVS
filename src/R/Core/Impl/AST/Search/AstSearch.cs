@@ -38,8 +38,9 @@ namespace Microsoft.R.Core.AST {
             }
 
             public bool Visit(IAstNode element, object parameter) {
-                if (!_match(element))
+                if (!_match(element)) {
                     return true;
+                }
 
                 Result = element;
                 return false;
@@ -56,8 +57,9 @@ namespace Microsoft.R.Core.AST {
             }
 
             public bool Visit(IAstNode element, object parameter) {
-                if (_match(element))
+                if (_match(element)) {
                     Result.Add(element);
+                }
 
                 return true;
             }

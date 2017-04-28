@@ -144,8 +144,9 @@ namespace Microsoft.Languages.Editor.Classification {
             ITextSnapshot textSnapshot = TextBuffer.CurrentSnapshot;
             if (span.Length <= 2) {
                 string ws = textSnapshot.GetText(span);
-                if (String.IsNullOrWhiteSpace(ws))
+                if (String.IsNullOrWhiteSpace(ws)) {
                     return classifications;
+                }
             }
 
             // Token collection at this point contains valid tokens at least to a point

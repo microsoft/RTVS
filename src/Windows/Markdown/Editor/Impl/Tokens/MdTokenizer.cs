@@ -21,8 +21,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
         public override void AddNextToken() {
             SkipWhitespace();
 
-            if (_cs.IsEndOfStream())
+            if (_cs.IsEndOfStream()) {
                 return;
+            }
 
             HandleCharacter();
         }
@@ -97,8 +98,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
 
         protected bool HandleQuote() {
             if (_cs.Position == 0 || _cs.PrevChar.IsLineBreak()) {
-                if (_cs.NextChar == ' ')
+                if (_cs.NextChar == ' ') {
                     return HandleSequenceToEmptyLine(MarkdownTokenType.Blockquote);
+                }
             }
 
             return false;
@@ -107,8 +109,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
         protected bool HandleAltText() {
             int start = _cs.Position;
             while (!_cs.IsEndOfStream()) {
-                if (_cs.CurrentChar == ']' || _cs.IsAtNewLine())
+                if (_cs.CurrentChar == ']' || _cs.IsAtNewLine()) {
                     break;
+                }
 
                 _cs.MoveToNextChar();
             }
@@ -118,8 +121,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
                 _cs.Advance(2);
 
                 while (!_cs.IsEndOfStream()) {
-                    if (_cs.CurrentChar == ')' || _cs.IsAtNewLine())
+                    if (_cs.CurrentChar == ')' || _cs.IsAtNewLine()) {
                         break;
+                    }
 
                     _cs.MoveToNextChar();
                 }
@@ -266,8 +270,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
                     return true;
                 }
 
-                if (_cs.IsAtNewLine())
+                if (_cs.IsAtNewLine()) {
                     break;
+                }
 
                 _cs.MoveToNextChar();
             }
@@ -301,8 +306,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
                     return true;
                 }
 
-                if (_cs.IsAtNewLine())
+                if (_cs.IsAtNewLine()) {
                     break;
+                }
 
                 _cs.MoveToNextChar();
             }

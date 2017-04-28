@@ -103,8 +103,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks
 
                 if (end < _snapshot.Length)
                 {
-                    if (_snapshot[end] == '\n')
+                    if (_snapshot[end] == '\n') {
                         extra++;
+                    }
                 }
 
                 return extra;

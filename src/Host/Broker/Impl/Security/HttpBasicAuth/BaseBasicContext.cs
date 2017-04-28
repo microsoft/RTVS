@@ -11,10 +11,11 @@ namespace Odachi.AspNetCore.Authentication.Basic
 		public BaseBasicContext(HttpContext context, BasicOptions options)
 			: base(context)
 		{
-			if (options == null)
-				throw new ArgumentNullException(nameof(options));
+			if (options == null) {
+                throw new ArgumentNullException(nameof(options));
+            }
 
-			Options = options;
+            Options = options;
 		}
 
 		public BasicOptions Options { get; }

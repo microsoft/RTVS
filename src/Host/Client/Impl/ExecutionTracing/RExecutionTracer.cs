@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
 using static System.FormattableString;
@@ -48,9 +49,7 @@ namespace Microsoft.R.ExecutionTracing {
         }
 
         internal RExecutionTracer(IRSession session) {
-            if (session == null) {
-                throw new ArgumentNullException(nameof(session));
-            }
+            Check.ArgumentNull(nameof(session), session);
 
             Session = session;
             Session.Connected += RSession_Connected;

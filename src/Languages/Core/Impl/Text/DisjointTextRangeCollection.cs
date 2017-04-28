@@ -27,12 +27,14 @@ namespace Microsoft.Languages.Core.Text {
 
         #region ITextRange
         public override bool Contains(int position) {
-            if (this.Count == 0)
+            if (this.Count == 0) {
                 return false;
+            }
 
             foreach (ITextRange range in this) {
-                if (range.Contains(position))
+                if (range.Contains(position)) {
                     return true;
+                }
             }
 
             return false;
@@ -40,12 +42,14 @@ namespace Microsoft.Languages.Core.Text {
         #endregion
 
         public bool Contains(int position, bool inclusiveEnd) {
-            if (this.Count == 0)
+            if (this.Count == 0) {
                 return false;
+            }
 
             foreach (ITextRange range in this) {
-                if (range.Contains(position) || (inclusiveEnd && range.End == position))
+                if (range.Contains(position) || (inclusiveEnd && range.End == position)) {
                     return true;
+                }
             }
 
             return false;

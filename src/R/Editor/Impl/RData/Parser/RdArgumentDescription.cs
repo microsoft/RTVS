@@ -60,8 +60,9 @@ namespace Microsoft.R.Editor.RData.Parser {
 
                         if (context.IsAtKeyword(@"\item")) {
                             IEnumerable<IArgumentInfo> args = ParseArgumentItem(context);
-                            if (args == null)
+                            if (args == null) {
                                 break;
+                            }
 
                             foreach (var a in args) {
                                 argumentDescriptions[a.Name] = a.Description;

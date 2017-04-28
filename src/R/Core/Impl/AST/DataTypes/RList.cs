@@ -30,8 +30,9 @@ namespace Microsoft.R.Core.AST.DataTypes {
 
         public RObject this[int index] {
             get {
-                if (this.properties.IsValueCreated)
+                if (this.properties.IsValueCreated) {
                     return (RObject)properties.Value[index];
+                }
 
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
@@ -44,8 +45,9 @@ namespace Microsoft.R.Core.AST.DataTypes {
         #region IDictionary
         public RObject this[RString key] {
             get {
-                if (this.properties.IsValueCreated)
+                if (this.properties.IsValueCreated) {
                     return (RObject)this.properties.Value[key];
+                }
 
                 throw new ArgumentOutOfRangeException(nameof(key));
             }
@@ -99,20 +101,23 @@ namespace Microsoft.R.Core.AST.DataTypes {
         }
 
         public void Clear() {
-            if (this.properties.IsValueCreated)
+            if (this.properties.IsValueCreated) {
                 this.properties.Value.Clear();
+            }
         }
 
         public bool Contains(KeyValuePair<RString, RObject> item) {
-            if (this.properties.IsValueCreated)
+            if (this.properties.IsValueCreated) {
                 return this.properties.Value.Contains(item.Key);
+            }
 
             return false;
         }
 
         public bool ContainsKey(RString key) {
-            if (this.properties.IsValueCreated)
+            if (this.properties.IsValueCreated) {
                 return this.properties.Value.Contains(key);
+            }
 
             return false;
         }

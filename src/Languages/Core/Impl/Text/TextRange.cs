@@ -151,8 +151,9 @@ namespace Microsoft.Languages.Core.Text {
         }
 
         public virtual void Expand(int startOffset, int endOffset) {
-            if (_start + startOffset > _end + endOffset)
+            if (_start + startOffset > _end + endOffset) {
                 throw new ArgumentException("Combination of start and end offsets should not be making range invalid");
+            }
 
             _start += startOffset;
             _end += endOffset;
@@ -167,10 +168,14 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         public virtual bool ContainsUsingInclusion(int position) {
             if ((position >= Start) && (position <= End)) {
-                if (position == Start)
+                if (position == Start) {
                     return IsStartInclusive || ((position == End) && IsEndInclusive);
-                if (position == End)
+                }
+
+                if (position == End) {
                     return IsEndInclusive;
+                }
+
                 return true;
             }
             return false;
@@ -189,12 +194,14 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="right">Second range</param>
         /// <returns>True if ranges are equal</returns>
         public static bool AreEqual(ITextRange left, ITextRange right) {
-            if (Object.ReferenceEquals(left, right))
+            if (Object.ReferenceEquals(left, right)) {
                 return true;
+            }
 
             // If one is null, but not both, return false.
-            if (((object)left == null) || ((object)right == null))
+            if (((object)left == null) || ((object)right == null)) {
                 return false;
+            }
 
             return (left.Start == right.Start) && (left.End == right.End);
         }
@@ -220,10 +227,11 @@ namespace Microsoft.Languages.Core.Text {
         /// Determines if range contains another range
         /// </summary>
         public static bool Contains(ITextRange range, ITextRange other, bool inclusiveEnd) {
-            if (inclusiveEnd)
+            if (inclusiveEnd) {
                 return ContainsInclusiveEnd(range, other);
-            else
+            } else {
                 return range.Contains(other.Start) && range.Contains(other.End);
+            }
         }
 
         /// <summary>
@@ -242,8 +250,9 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position</param>
         /// <returns>Tru if position is inside the range</returns>
         public static bool Contains(int rangeStart, int rangeLength, int position) {
-            if (rangeLength == 0 && position == rangeStart)
+            if (rangeLength == 0 && position == rangeStart) {
                 return true;
+            }
 
             return position >= rangeStart && position < rangeStart + rangeLength;
         }
@@ -282,14 +291,17 @@ namespace Microsoft.Languages.Core.Text {
 
             // Support intersection with empty ranges
 
-            if (rangeLength1 == 0 && rangeLength2 == 0)
+            if (rangeLength1 == 0 && rangeLength2 == 0) {
                 return rangeStart1 == rangeStart2;
+            }
 
-            if (rangeLength1 == 0)
+            if (rangeLength1 == 0) {
                 return Contains(rangeStart2, rangeLength2, rangeStart1);
+            }
 
-            if (rangeLength2 == 0)
+            if (rangeLength2 == 0) {
                 return Contains(rangeStart1, rangeLength1, rangeStart2);
+            }
 
             return rangeStart2 + rangeLength2 > rangeStart1 && rangeStart2 < rangeStart1 + rangeLength1;
         }

@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Diagnostics;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -15,20 +16,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #region field and ctor
 
         private readonly string ReadOnlyExceptionMessage = Invariant($"{typeof(DelegateList<T>)} is read only");
-        private Func<int, T> _getItem;
+        private readonly Func<int, T> _getItem;
 
-        public DelegateList(
-            int index,
-            Func<int, T> GetItem,
-            int count) {
-            if (GetItem == null) {
-                throw new ArgumentNullException(nameof(GetItem));
-            }
+        public DelegateList( int index, Func<int, T> getItem,int count) {
+            Check.ArgumentNull(nameof(getItem), getItem);
 
             Index = index;
-
-            _getItem = GetItem;
-
+            _getItem = getItem;
             Count = count;
         }
 

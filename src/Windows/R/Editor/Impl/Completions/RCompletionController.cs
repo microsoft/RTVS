@@ -75,29 +75,33 @@ namespace Microsoft.R.Editor.Completions {
         public override bool IsCommitChar(char typedChar) {
             if (HasActiveCompletionSession && typedChar != 0) {
                 // only ( completes keywords
-                CompletionSet completionSet = CompletionSession.SelectedCompletionSet;
-                string completionText = completionSet.SelectionStatus.Completion.InsertionText;
+                var completionSet = CompletionSession.SelectedCompletionSet;
+                var completionText = completionSet.SelectionStatus.Completion.InsertionText;
 
                 if (completionText == "else" || completionText == "repeat") {
                     // { after 'else' or 'repeat' completes keyword
-                    if (typedChar == '{')
+                    if (typedChar == '{') {
                         return true;
+                    }
 
                     // Space completes if selection is unique
-                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
+                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique) {
                         return true;
+                    }
 
                     return false;
                 }
 
                 // ';' completes after next or break keyword
                 if (completionText == "break" || completionText == "next") {
-                    if (typedChar == ';')
+                    if (typedChar == ';') {
                         return true;
+                    }
 
                     // Space completes if selection is unique
-                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
+                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique) {
                         return true;
+                    }
                 }
 
                 // Handle ( after keyword that is usually followed by expression in braces
@@ -113,7 +117,7 @@ namespace Microsoft.R.Editor.Completions {
                     rset?.SelectBestMatch();
                 }
 
-                bool unique = completionSet.SelectionStatus.IsUnique;
+                var unique = completionSet.SelectionStatus.IsUnique;
                 switch (typedChar) {
                     case '=':
                     case '<':
@@ -192,8 +196,8 @@ namespace Microsoft.R.Editor.Completions {
                     var document = position.Value.Snapshot.TextBuffer.GetService<IREditorDocument>();
                     if (!document.IsPositionInComment(pos)) {
                         if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                            bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
-                            bool showCompletion = endOfIdentifier && _settings.ShowCompletionOnTab;
+                            var endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
+                            var showCompletion = endOfIdentifier && _settings.ShowCompletionOnTab;
                             if (!showCompletion) {
                                 string directory;
                                 showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
@@ -286,8 +290,8 @@ namespace Microsoft.R.Editor.Completions {
                 // However, when user types closing brace is an expression inside
                 // function argument like in x = y * (z + 1) we need to re-trigger
                 // signature session
-                AstRoot ast = TextView.TextBuffer.GetEditorDocument<IREditorDocument>().EditorTree.AstRoot;
-                FunctionCall f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
+                var ast = TextView.TextBuffer.GetEditorDocument<IREditorDocument>().EditorTree.AstRoot;
+                var f = ast.GetNodeOfTypeFromPosition<FunctionCall>(TextView.Caret.Position.BufferPosition);
                 if (f != null) {
                     TriggerSignatureHelp();
                 }
@@ -334,7 +338,7 @@ namespace Microsoft.R.Editor.Completions {
 
         public override bool IsMuteCharacter(char typedCharacter) {
             if (typedCharacter == '=') {
-                bool? equalsCompletion = CompletionSession.SelectedCompletionSet?.SelectionStatus?
+                var equalsCompletion = CompletionSession.SelectedCompletionSet?.SelectionStatus?
                                                          .Completion.InsertionText.TrimEnd().EndsWithOrdinal("=");
                 if (equalsCompletion.HasValue && equalsCompletion.Value) {
                     return true;
@@ -348,7 +352,7 @@ namespace Microsoft.R.Editor.Completions {
         protected override void UpdateInsertionText() {
             if (CompletionSession != null && !IsMuteCharacter(_commitChar)) {
                 var curCompletion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
-                string insertionText = curCompletion.InsertionText;
+                var insertionText = curCompletion.InsertionText;
 
                 if (insertionText[insertionText.Length - 1] == _commitChar) {
                     curCompletion.InsertionText = insertionText.Substring(0, insertionText.Length - 1);
@@ -383,7 +387,7 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         private bool TryInsertRoxygenBlock() {
-            SnapshotPoint? point = TextView.GetCaretPosition(_textBuffer);
+            var point = TextView.GetCaretPosition(_textBuffer);
             if (point.HasValue) {
                 var snapshot = _textBuffer.CurrentSnapshot;
                 var line = snapshot.GetLineFromPosition(point.Value);

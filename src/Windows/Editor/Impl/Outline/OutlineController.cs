@@ -43,11 +43,11 @@ namespace Microsoft.Languages.Editor.Outline {
         }
 
         private void ToggleAll() {
-            if (AnyExpandableOutliningRegions)
+            if (AnyExpandableOutliningRegions) {
                 ExpandAll();
-            else
+            } else {
                 CollapseAll();
-
+            }
         }
 
         private void ToggleCurrent() {
@@ -76,10 +76,11 @@ namespace Microsoft.Languages.Editor.Outline {
             }
 
             if (region != null) {
-                if (region.IsCollapsed)
+                if (region.IsCollapsed) {
                     OutliningManager.Expand(region as ICollapsed);
-                else
+                } else {
                     OutliningManager.TryCollapse(region);
+                }
             }
         }
 

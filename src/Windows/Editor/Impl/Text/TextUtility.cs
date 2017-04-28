@@ -61,8 +61,9 @@ namespace Microsoft.Languages.Editor.Text {
                 var change = changes[i];
 
                 if (previousChange != null) {
-                    if (previousChange.OldEnd > change.OldPosition || previousChange.NewEnd > change.NewPosition)
+                    if (previousChange.OldEnd > change.OldPosition || previousChange.NewEnd > change.NewPosition) {
                         throw new ArgumentException("List of changes must not overlap", "changes");
+                    }
                 }
 
                 var textChange = new TextChangeEventArgs(change.NewPosition, change.OldPosition, change.OldLength, change.NewLength, oldText, newText);

@@ -11,10 +11,11 @@ namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class TextBufferUtility {
         public static void ApplyTextChange(ITextBuffer textBuffer, int start, int oldLength, int newLength, string newText) {
-            TextChange tc = new TextChange();
-            tc.OldRange = new TextRange(start, oldLength);
-            tc.NewRange = new TextRange(start, newLength);
-            tc.OldTextProvider = new TextProvider(textBuffer.CurrentSnapshot);
+            TextChange tc = new TextChange {
+                OldRange = new TextRange(start, oldLength),
+                NewRange = new TextRange(start, newLength),
+                OldTextProvider = new TextProvider(textBuffer.CurrentSnapshot)
+            };
 
             if (oldLength == 0 && newText.Length > 0) {
                 textBuffer.Insert(start, newText);

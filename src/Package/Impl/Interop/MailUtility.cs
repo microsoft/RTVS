@@ -108,8 +108,9 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
         IntPtr GetRecipients(out int recipCount) {
             recipCount = 0;
-            if (_recipients.Count == 0)
+            if (_recipients.Count == 0) {
                 return IntPtr.Zero;
+            }
 
             int size = Marshal.SizeOf(typeof(MapiRecipDesc));
             IntPtr intPtr = Marshal.AllocHGlobal(_recipients.Count * size);
@@ -126,12 +127,14 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
         IntPtr GetAttachments(out int fileCount) {
             fileCount = 0;
-            if (_attachments == null)
+            if (_attachments == null) {
                 return IntPtr.Zero;
+            }
 
             if ((_attachments.Count <= 0) || (_attachments.Count >
-                maxAttachments))
+                maxAttachments)) {
                 return IntPtr.Zero;
+            }
 
             int size = Marshal.SizeOf(typeof(MapiFileDesc));
             IntPtr intPtr = Marshal.AllocHGlobal(_attachments.Count * size);

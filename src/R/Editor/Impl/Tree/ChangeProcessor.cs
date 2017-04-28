@@ -92,8 +92,9 @@ namespace Microsoft.R.Editor.Tree {
                 }
             }
 
-            if (IsCancellationRequested())
+            if (IsCancellationRequested()) {
                 return;
+            }
 
             if (!(commonParent is AstRoot)) {
                 Debug.Assert(commonParent is IScope);

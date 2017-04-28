@@ -217,7 +217,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override int VisualChildrenCount {
             get {
-                if (_visualChildren.Count == 0) return 0;
+                if (_visualChildren.Count == 0) {
+                    return 0;
+                }
+
                 return _visualChildren.Count + 1;
             }
         }

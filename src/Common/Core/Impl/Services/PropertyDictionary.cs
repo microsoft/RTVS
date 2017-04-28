@@ -156,8 +156,8 @@ namespace Microsoft.Common.Core.Services {
         /// Gets or sets the <see cref="System.Object"/> with the specified key.
         /// </summary>
         public object this[object key] {
-            get { return GetProperty(key); }
-            set { SetProperty(key, value); }
+            get => GetProperty(key);
+            set => SetProperty(key, value);
         }
 
         /// <summary>

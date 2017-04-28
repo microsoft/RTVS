@@ -157,8 +157,9 @@ namespace Microsoft.Languages.Editor.Composition {
 
                 allContentTypeNames.Add(curContentType.TypeName);
                 foreach (var baseContentType in curContentType.BaseTypes) {
-                    if (!allContentTypeNames.Contains(baseContentType.TypeName))
+                    if (!allContentTypeNames.Contains(baseContentType.TypeName)) {
                         allContentTypes.Add(baseContentType);
+                    }
                 }
             }
         }

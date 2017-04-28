@@ -257,10 +257,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                         }
 
                         if (start != Int32.MaxValue) {
-                            if (_removedRange != null)
+                            if (_removedRange != null) {
                                 _removedRange = TextRange.Union(_removedRange, start, end - start);
-                            else
+                            } else {
                                 _removedRange = TextRange.FromBounds(start, end);
+                            }
                         }
                     }
                 }

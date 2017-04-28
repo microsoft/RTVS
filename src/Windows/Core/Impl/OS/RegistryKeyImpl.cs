@@ -16,17 +16,9 @@ namespace Microsoft.Common.Core.OS {
             _key = null;
         }
 
-        public string[] GetSubKeyNames() {
-            return _key != null ? _key.GetSubKeyNames() : new string[0];
-        }
-
-        public object GetValue(string name) {
-            return _key != null ? _key.GetValue(name) : null;
-        }
-
-        public void SetValue(string name, object value) {
-            _key?.SetValue(name, value);
-        }
+        public string[] GetSubKeyNames() => _key?.GetSubKeyNames() ?? new string[0];
+        public object GetValue(string name) => _key?.GetValue(name);
+        public void SetValue(string name, object value) => _key?.SetValue(name, value);
 
         public IRegistryKey OpenSubKey(string name, bool writable = false) {
             var key = _key.OpenSubKey(name, writable);

@@ -71,8 +71,9 @@ namespace Microsoft.Languages.Editor.Text {
                 var currentBuffer = allBuffers[i] as IProjectionBuffer;
                 if (currentBuffer != null) {
                     foreach (ITextBuffer sourceBuffer in currentBuffer.SourceBuffers) {
-                        if (!allBuffers.Contains(sourceBuffer))
+                        if (!allBuffers.Contains(sourceBuffer)) {
                             allBuffers.Add(sourceBuffer);
+                        }
                     }
                 }
             }

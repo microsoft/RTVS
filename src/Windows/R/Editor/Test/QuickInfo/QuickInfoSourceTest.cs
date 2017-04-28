@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 PackageIndex.ClearCache();
             }
 
-            string content = @"x <- as.matrix(x)";
+            var content = @"x <- as.matrix(x)";
             var session = await TriggerSessionAsync(content, 15);
             var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         public async Task AliasTest() {
             // 'as.Date.character' RD contains no function info for 'as.Date.character', but the one for 'as.Date'
             // and as.Date.character appears as alias. We verify as.Date.character is shown in the signature info.
-            string content = @"x <- as.Date.character(x)";
+            var content = @"x <- as.Date.character(x)";
 
             var session = await TriggerSessionAsync(content, 23);
             var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
@@ -68,7 +68,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
         [Test]
         public async Task NonUniqueNameTest() {
-            string content = @"x <- select()";
+            var content = @"x <- select()";
 
             using (var hostScript = new RHostScript(Workflow.RSessions)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
@@ -97,7 +97,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
         [Test]
         public async Task LoadUnloadPackageTest() {
-            string content = @"do()";
+            var content = @"do()";
 
             using (var hostScript = new RHostScript(Workflow.RSessions)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");

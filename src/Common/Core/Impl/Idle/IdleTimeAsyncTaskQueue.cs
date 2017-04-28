@@ -39,12 +39,13 @@ namespace Microsoft.Common.Core.Idle {
 
             var logicalCpuCount = Environment.ProcessorCount;
             var taskCount = logicalCpuCount / 4;
-            if (taskCount == 0)
+            if (taskCount == 0) {
                 taskCount = 1;
+            }
 
             _workerTasks = new IdleTimeAsyncTask[taskCount];
 
-            for (int i = 0; i < _workerTasks.Length; i++) {
+            for (var i = 0; i < _workerTasks.Length; i++) {
                 _workerTasks[i] = new IdleTimeAsyncTask(_services);
             }
         }
@@ -73,7 +74,7 @@ namespace Microsoft.Common.Core.Idle {
         /// <param name="tag">Object uniquely indentifying the task</param>
         public void CancelTasks(object tag) {
             if (_taskQueue.Count > 0) {
-                for (int i = _taskQueue.Count - 1; i >= 0; i--) {
+                for (var i = _taskQueue.Count - 1; i >= 0; i--) {
                     if (_taskQueue[i].Tag == tag) {
                         _taskQueue.RemoveAt(i);
                     }
@@ -86,7 +87,7 @@ namespace Microsoft.Common.Core.Idle {
         }
 
         public void IncreasePriority(object tag) {
-            for (int i = 0; i < _taskQueue.Count; i++) {
+            for (var i = 0; i < _taskQueue.Count; i++) {
                 var task = _taskQueue[i];
 
                 if (task.Tag == tag) {
@@ -110,7 +111,7 @@ namespace Microsoft.Common.Core.Idle {
                 // We're holding onto these tasks in a static, let's clean them up
                 //   Otherwise, they could be pointing to closed documents/views
                 //   or other stale data that the Tag or callbacks hold onto.
-                for (int i = 0; i < _workerTasks.Length; i++) {
+                for (var i = 0; i < _workerTasks.Length; i++) {
                     _workerTasks[i] = new IdleTimeAsyncTask(_services);
                 }
                 _idleTime.Idle -= OnIdle;
@@ -118,19 +119,21 @@ namespace Microsoft.Common.Core.Idle {
         }
 
         private void OnIdle(object sender, EventArgs e) {
-            for (int i = 0; i < _taskQueue.Count; i++) {
-                TaskQueueEntry taskEntry = _taskQueue[i];
+            for (var i = 0; i < _taskQueue.Count; i++) {
+                var taskEntry = _taskQueue[i];
                 IdleTimeAsyncTask worker;
 
-                if (!GetAvailableTask(taskEntry.Tag, out worker))
+                if (!GetAvailableTask(taskEntry.Tag, out worker)) {
                     return; // all worker threads are busy
+                }
 
                 if (worker != null) {
                     _taskQueue.RemoveAt(i);
 
                     worker.DoTaskOnIdle(taskEntry.TaskAction, taskEntry.CallbackAction, taskEntry.CancelAction, taskEntry.Tag);
-                    if (_taskQueue.Count == 0)
+                    if (_taskQueue.Count == 0) {
                         DisconnectFromIdle();
+                    }
 
                     break;
                 }
@@ -143,7 +146,7 @@ namespace Microsoft.Common.Core.Idle {
             // will run in the same document.
 
             worker = null;
-            bool thisTagIsRunning = false;
+            var thisTagIsRunning = false;
 
             foreach (var candidate in _workerTasks) {
                 if (candidate.TaskRunning && candidate.Tag == tag) {

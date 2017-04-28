@@ -67,7 +67,7 @@ namespace Microsoft.R.Debugger {
                     return new IREvaluationResultInfo[0];
                 }
 
-                REvaluationResultProperties properties = _settings.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
+                var properties = _settings.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
                 properties |= PrefetchedProperties;
                 var children = await valueResult.DescribeChildrenAsync(properties, Repr, ChildrenMaxCount, ct);
 
@@ -96,7 +96,7 @@ namespace Microsoft.R.Debugger {
             var valueResult = EvaluationResult as IRValueInfo;
             if (valueResult != null) {
                 if (valueResult.HasAttributes() == true) {
-                    string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
+                    var attrExpr = Invariant($"base::attributes({valueResult.Expression})");
                     var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedProperties, Repr, ct));
                     if (!(attrResult is IRErrorInfo)) {
                         var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
@@ -105,7 +105,7 @@ namespace Microsoft.R.Debugger {
                 }
 
                 if (valueResult.Flags.HasFlag(RValueFlags.HasParentEnvironment)) {
-                    string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
+                    var parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
                     var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedProperties, Repr, ct));
                     if (!(parentResult is IRErrorInfo)) {
                         var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
@@ -223,7 +223,7 @@ namespace Microsoft.R.Debugger {
                 return VSConstants.E_FAIL;
             }
 
-            for (int i = 0; i < buflen; ++i) {
+            for (var i = 0; i < buflen; ++i) {
                 rgString[i] = _reprToString.Value[i];
             }
             return VSConstants.S_OK;
@@ -248,10 +248,9 @@ namespace Microsoft.R.Debugger {
         }
 
         internal DEBUG_PROPERTY_INFO GetDebugPropertyInfo(uint radix, enum_DEBUGPROP_INFO_FLAGS fields) {
-            var dpi = new DEBUG_PROPERTY_INFO();
+            var dpi = new DEBUG_PROPERTY_INFO {pProperty = this};
 
             // Always provide the property so that we can access locals from the automation object.
-            dpi.pProperty = this;
             dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_PROP;
 
             var valueInfo = EvaluationResult as IRValueInfo;

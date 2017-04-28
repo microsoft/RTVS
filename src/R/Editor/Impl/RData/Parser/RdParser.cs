@@ -26,8 +26,8 @@ namespace Microsoft.R.Editor.RData.Parser {
             var tokenizer = new RdTokenizer(tokenizeRContent: false);
 
             ITextProvider textProvider = new TextStream(rdHelpData);
-            IReadOnlyTextRangeCollection<RdToken> tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-            RdParseContext context = new RdParseContext(tokens, textProvider);
+            var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
+            var context = new RdParseContext(tokens, textProvider);
 
             return ParseFunctions(context);
         }
@@ -37,20 +37,20 @@ namespace Microsoft.R.Editor.RData.Parser {
             IReadOnlyDictionary<string, string> argumentDescriptions = null;
             var aliases = new List<string>();
             string functionDescription = null; // Description is normally one for all similar functions
-            bool isInternal = false;
+            var isInternal = false;
             string returnValue = null;
             string primaryName = null;
 
             while (!context.Tokens.IsEndOfStream() &&
                    (functionDescription == null || argumentDescriptions == null ||
                     signatureInfos == null || returnValue == null)) {
-                RdToken token = context.Tokens.CurrentToken;
+                var token = context.Tokens.CurrentToken;
 
                 if (context.IsAtKeywordWithParameters()) {
                     if (string.IsNullOrEmpty(functionDescription) && context.IsAtKeyword(@"\description")) {
                         functionDescription = RdText.GetText(context);
                     } else if (context.IsAtKeyword(@"\keyword")) {
-                        string keyword = RdText.GetText(context);
+                        var keyword = RdText.GetText(context);
                         if (!string.IsNullOrEmpty(keyword) && keyword.Contains("internal")) {
                             isInternal = true;
                         }
@@ -79,7 +79,7 @@ namespace Microsoft.R.Editor.RData.Parser {
 
             // Merge descriptions into signatures
             if (argumentDescriptions != null && signatureInfos != null) {
-                foreach (ISignatureInfo sigInfo in signatureInfos) {
+                foreach (var sigInfo in signatureInfos) {
                     // Add missing arguments from the \arguments{} section
                     foreach (var arg in sigInfo.Arguments) {
                         string description;
@@ -94,7 +94,7 @@ namespace Microsoft.R.Editor.RData.Parser {
             var functionInfos = new Dictionary<string, FunctionInfo>();
             if (signatureInfos != null) {
                 var functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
-                foreach (ISignatureInfo sigInfo in signatureInfos) {
+                foreach (var sigInfo in signatureInfos) {
                     FunctionInfo functionInfo;
                     List<ISignatureInfo> sigList;
                     if (!functionInfos.TryGetValue(sigInfo.FunctionName, out functionInfo)) {
@@ -130,9 +130,10 @@ namespace Microsoft.R.Editor.RData.Parser {
         }
 
         private static FunctionInfo CreateFunctionInfo(string functionName, string functionDescription, string returnValue, bool isInternal) {
-            var functionInfo = new FunctionInfo(functionName, functionDescription);
-            functionInfo.IsInternal = isInternal;
-            functionInfo.ReturnValue = returnValue;
+            var functionInfo = new FunctionInfo(functionName, functionDescription) {
+                IsInternal = isInternal,
+                ReturnValue = returnValue
+            };
             return functionInfo;
         }
     }

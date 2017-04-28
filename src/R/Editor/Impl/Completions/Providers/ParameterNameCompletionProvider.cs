@@ -42,26 +42,26 @@ namespace Microsoft.R.Editor.Completions.Providers {
             }
 
             // Get collection of function signatures from documentation (parsed RD file)
-            IFunctionInfo functionInfo = GetFunctionInfo(context);
+            var functionInfo = GetFunctionInfo(context);
             if (functionInfo == null) {
                 return completions;
             }
 
             // Collect parameter names from all signatures
             IEnumerable<KeyValuePair<string, IArgumentInfo>> arguments = new Dictionary<string, IArgumentInfo>();
-            foreach (ISignatureInfo signature in functionInfo.Signatures) {
+            foreach (var signature in functionInfo.Signatures) {
                 var args = signature.Arguments.ToDictionary(x => x.Name);
                 arguments = arguments.Union(args);
             }
 
             // Add names of arguments that  are not yet specified to the completion
             // list with '=' sign so user can tell them from function names.
-            IEnumerable<string> declaredArguments = funcCall.Arguments.Where(x => x is NamedArgument).Select(x => ((NamedArgument)x).Name);
+            var declaredArguments = funcCall.Arguments.Where(x => x is NamedArgument).Select(x => ((NamedArgument)x).Name);
             var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             foreach (var arg in possibleArguments) {
-                string displayText = arg.Key + " =";
-                string insertionText = arg.Key + " = ";
+                var displayText = arg.Key + " =";
+                var insertionText = arg.Key + " = ";
                 completions.Add(new EditorCompletionEntry(displayText, insertionText, arg.Value.Description, functionGlyph));
             }
 

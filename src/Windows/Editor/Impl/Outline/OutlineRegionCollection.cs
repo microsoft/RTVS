@@ -17,8 +17,9 @@ namespace Microsoft.Languages.Editor.Outline {
         public OutlineRegionCollection Clone() {
             var clone = new OutlineRegionCollection(TextBufferVersion);
 
-            foreach (var item in this)
+            foreach (var item in this) {
                 clone.Add(item.Clone() as OutlineRegion);
+            }
 
             return clone;
         }

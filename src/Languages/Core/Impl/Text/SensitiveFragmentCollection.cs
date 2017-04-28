@@ -113,8 +113,9 @@ namespace Microsoft.Languages.Core.Text {
                 // deleting text right before %> or ?> does not make change destructive.
                 int rightSeparatorStart = itemsInRange[0].End - rightSeparator.Length;
                 if (start + oldLength > rightSeparatorStart) {
-                    if (TextRange.Intersect(rightSeparatorStart, rightSeparator.Length, start, oldLength))
+                    if (TextRange.Intersect(rightSeparatorStart, rightSeparator.Length, start, oldLength)) {
                         return true;
+                    }
                 }
 
                 // Touching left separator is destructive too, like when changing <% to <%@
@@ -122,8 +123,9 @@ namespace Microsoft.Languages.Core.Text {
                 if (itemsInRange[0].Start + leftSeparator.Length == start) {
                     if (oldLength == 0) {
                         string text = newText.GetText(new TextRange(start, newLength));
-                        if (string.IsNullOrWhiteSpace(text))
+                        if (string.IsNullOrWhiteSpace(text)) {
                             return false;
+                        }
                     }
                     return true;
                 }
@@ -134,8 +136,9 @@ namespace Microsoft.Languages.Core.Text {
                 int fragmentEnd = itemsInRange[0].End + changeLength;
                 fragmentEnd = Math.Min(fragmentEnd, start + newLength + separatorInfo.RightSeparator.Length - 1);
 
-                if (newText.IndexOf(separatorInfo.RightSeparator, TextRange.FromBounds(fragmentStart, fragmentEnd), true) >= 0)
+                if (newText.IndexOf(separatorInfo.RightSeparator, TextRange.FromBounds(fragmentStart, fragmentEnd), true) >= 0) {
                     return true;
+                }
 
                 return false;
             }

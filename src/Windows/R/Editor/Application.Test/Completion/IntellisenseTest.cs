@@ -43,8 +43,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
-                string expected = "function";
-                string actual = script.EditorText;
+                var expected = "function";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }
@@ -57,8 +57,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
-                string expected = "library(utils)";
-                string actual = script.EditorText;
+                var expected = "library(utils)";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }
@@ -71,8 +71,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(100);
                 script.Type("{TAB}");
 
-                string expected = "require(utils)";
-                string actual = script.EditorText;
+                var expected = "require(utils)";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }
@@ -92,8 +92,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(100);
                 script.Type("abels.{TAB}");
 
-                string expected = "x <- labels.default";
-                string actual = script.EditorText;
+                var expected = "x <- labels.default";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }
@@ -106,8 +106,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(100);
                 script.Type("+");
 
-                string expected = "x <- lm+";
-                string actual = script.EditorText;
+                var expected = "x <- lm+";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }
@@ -151,7 +151,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(Services, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
-                string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
                 var settings = Workflow.Shell.GetService<IRSettings>();
                 settings.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
@@ -272,7 +272,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("{TAB}");
                 script.DoIdle(100);
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("install.packages()");
                 script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length - 1);
 
@@ -295,7 +295,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("{TAB}");
                 script.DoIdle(100);
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("base");
 
                 message.Should().NotContain("Error");
@@ -311,7 +311,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("{TAB}");
                 script.DoIdle(100);
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("f1<-function(x,y)");
 
                 script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length);
@@ -332,7 +332,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("{TAB}");
                 script.DoIdle(200);
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("f1<-lapply");
 
                 _settings.ShowCompletionOnTab = false;
@@ -350,7 +350,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("{TAB}");
                 script.DoIdle(100);
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("while aaa"); // nothing was inserted from the completion list
 
                 script.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length);
@@ -368,7 +368,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("{TAB}a");
                 script.DoIdle(100);
 
-                string actual = script.EditorText;
+                var actual = script.EditorText;
                 actual.Should().Be("#com    a"); // Tab was not consumed
             }
         }
@@ -387,7 +387,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 var infoSource = infoSourceProvider.InformationSource;
                 var completion = session.SelectedCompletionSet.SelectionStatus.Completion;
 
-                bool isSnippet = infoSource.IsSnippet(completion.DisplayText);
+                var isSnippet = infoSource.IsSnippet(completion.DisplayText);
                 isSnippet.Should().BeTrue();
             }
         }
@@ -412,8 +412,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(500);
                 script.Type("{TAB}");
 
-                string expected = "zzz111$y222";
-                string actual = script.EditorText;
+                var expected = "zzz111$y222";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }
@@ -439,8 +439,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.DoIdle(500);
                 script.Type("{TAB}");
 
-                string expected = "hadley@name";
-                string actual = script.EditorText;
+                var expected = "hadley@name";
+                var actual = script.EditorText;
 
                 actual.Should().Be(expected);
             }

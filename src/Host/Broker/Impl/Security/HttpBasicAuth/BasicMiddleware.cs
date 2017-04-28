@@ -19,14 +19,17 @@ namespace Odachi.AspNetCore.Authentication.Basic
             UrlEncoder encoder)
             : base(next, options, loggerFactory, encoder)
         {
-			if (Options.Events == null)
-				Options.Events = new BasicEvents();
+			if (Options.Events == null) {
+                Options.Events = new BasicEvents();
+            }
 
-            if (string.IsNullOrEmpty(Options.Realm))
+            if (string.IsNullOrEmpty(Options.Realm)) {
                 Options.Realm = BasicDefaults.Realm;
+            }
 
-			if (Options.Credentials == null)
-				Options.Credentials = new BasicCredential[0];
+            if (Options.Credentials == null) {
+                Options.Credentials = new BasicCredential[0];
+            }
         }
 
         protected override AuthenticationHandler<BasicOptions> CreateHandler()

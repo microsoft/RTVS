@@ -2,18 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
     internal abstract class PlotDeviceCommand : InteractiveWorkflowAsyncCommand {
         protected IRPlotDeviceVisualComponent VisualComponent { get; }
 
-        public PlotDeviceCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent) :
+        protected PlotDeviceCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotDeviceVisualComponent visualComponent) :
             base(interactiveWorkflow) {
-            if (visualComponent == null) {
-                throw new ArgumentNullException(nameof(visualComponent));
-            }
-
+            Check.ArgumentNull(nameof(visualComponent), visualComponent);
             VisualComponent = visualComponent;
         }
 

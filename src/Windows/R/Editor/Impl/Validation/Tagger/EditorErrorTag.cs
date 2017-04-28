@@ -35,8 +35,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
 
             _range = error;
 
-            if (_range == null || _range.Start < 0)
+            if (_range == null || _range.Start < 0) {
                 _range = TextRange.EmptyRange;
+            }
         }
 
         #region ITagSpan<IErrorTag> Members
@@ -122,8 +123,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         public void Expand(int startOffset, int endOffset) {
             var expandable = _range as IExpandableTextRange;
 
-            if (expandable != null)
+            if (expandable != null) {
                 expandable.Expand(startOffset, endOffset);
+            }
         }
 
         public bool AllowZeroLength => false;

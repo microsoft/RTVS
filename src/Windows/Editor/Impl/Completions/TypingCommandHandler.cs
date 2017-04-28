@@ -122,8 +122,9 @@ namespace Microsoft.Languages.Editor.Completions {
                         // and hence we don't want to trigger intellisense on it.
                         var typedChar = GetTypedChar(group, id, inputArg);
                         if (TextView.Selection.SelectedSpans.Count > 0) {
-                            if (TextView.Selection.SelectedSpans[0].Length > 0)
+                            if (TextView.Selection.SelectedSpans[0].Length > 0) {
                                 typedChar = '\0';
+                            }
                         }
                         break;
                 }

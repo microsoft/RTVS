@@ -83,19 +83,23 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 int length = _lines[i].Length;
 
                 if (length == _lines[i].Length) {
-                    if ((start <= position && position <= start + length) || start == position + 1)
+                    if ((start <= position && position <= start + length) || start == position + 1) {
                         return _lines[i];
+                    }
                 } else {
-                    if (start <= position && position < start + length)
+                    if (start <= position && position < start + length) {
                         return _lines[i];
+                    }
                 }
             }
 
-            if (position == 0)
+            if (position == 0) {
                 return _lines[0];
+            }
 
-            if (position >= _lines[_lines.Length - 1].Length)
+            if (position >= _lines[_lines.Length - 1].Length) {
                 return _lines[_lines.Length - 1];
+            }
 
             return null;
         }
@@ -177,8 +181,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 if (start < text.Length && text[start].IsLineBreak()) {
                     start++;
 
-                    if (text[start - 1] == '\r' && start < text.Length && text[start] == '\n')
+                    if (text[start - 1] == '\r' && start < text.Length && text[start] == '\n') {
                         start++;
+                    }
                 }
 
                 list.Add(new TextLineMock(this, start, text.Length - start, list.Count));

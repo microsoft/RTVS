@@ -30,8 +30,9 @@ namespace Microsoft.Languages.Core.Text {
                 for (int i = position - 1; i >= 0; i--) {
                     char ch = textProvider[i];
 
-                    if (!Char.IsWhiteSpace(ch))
+                    if (!Char.IsWhiteSpace(ch)) {
                         return false;
+                    }
 
                     if (ch.IsLineBreak()) {
                         newLinePosition = i;
@@ -55,8 +56,9 @@ namespace Microsoft.Languages.Core.Text {
                 for (int i = position - 1; i >= 0; i--) {
                     char ch = textProvider[i];
 
-                    if (!Char.IsWhiteSpace(ch))
+                    if (!Char.IsWhiteSpace(ch)) {
                         return count;
+                    }
 
                     if (ch == '\r' || ch == '\n') {
                         if (i > 0 && (textProvider[i - 1] == '\r' || textProvider[i - 1] == '\n')) {
@@ -81,8 +83,9 @@ namespace Microsoft.Languages.Core.Text {
             for (int i = position; i < textProvider.Length; i++) {
                 char ch = textProvider[i];
 
-                if (!Char.IsWhiteSpace(ch))
+                if (!Char.IsWhiteSpace(ch)) {
                     return count;
+                }
 
                 if (ch == '\r' || ch == '\n') {
                     if (i < textProvider.Length - 1 && (textProvider[i + 1] == '\r' || textProvider[i + 1] == '\n')) {

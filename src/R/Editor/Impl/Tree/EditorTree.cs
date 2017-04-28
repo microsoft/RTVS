@@ -340,8 +340,9 @@ namespace Microsoft.R.Editor.Tree {
             TextRangeCollection<RToken> comments = this.AstRoot.Comments;
 
             var commentsInRange = comments.ItemsInRange(range);
-            if (commentsInRange.Count == 1)
+            if (commentsInRange.Count == 1) {
                 return commentsInRange[0];
+            }
 
             return TextRange.EmptyRange;
         }

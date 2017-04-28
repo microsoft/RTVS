@@ -177,7 +177,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Handles simple (safe) changes.
         /// </summary>
         private void ProcessSimpleChange(TextChangeContext context) {
-            bool elementsRemoved = false;
+            var elementsRemoved = false;
 
             try {
                 _editorTree.AcquireWriteLock();
@@ -235,7 +235,7 @@ namespace Microsoft.R.Editor.Tree {
 
                     // Remove damaged elements if any and reflect text change.
                     // the tree remains usable outside of the damaged scope.
-                    bool elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
+                    var elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
                     _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
                 } else {
                     textChange.OldRange = context.OldRange;
@@ -270,7 +270,7 @@ namespace Microsoft.R.Editor.Tree {
         internal bool DeleteAndShiftElements(TextChangeContext context) {
             Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
-            TextChange textChange = context.PendingChanges;
+            var textChange = context.PendingChanges;
             var changeType = textChange.TextChangeType;
             var elementsChanged = false;
 
@@ -362,7 +362,7 @@ namespace Microsoft.R.Editor.Tree {
                 }
                 EditorTreeChangeCollection treeChanges = null;
                 // Cache id since it can change if task is canceled
-                long taskId = TaskId;
+                var taskId = TaskId;
 
                 try {
                     AstRoot rootNode;
@@ -378,7 +378,7 @@ namespace Microsoft.R.Editor.Tree {
                     treeChanges = new EditorTreeChangeCollection(changeToProcess.Version, changeToProcess.FullParseRequired);
                     var changeProcessor = new TextChangeProcessor(_editorTree, rootNode, isCancelledCallback);
 
-                    bool fullParseRequired = changeToProcess.FullParseRequired;
+                    var fullParseRequired = changeToProcess.FullParseRequired;
                     if (fullParseRequired) {
                         changeProcessor.FullParse(treeChanges, changeToProcess.NewTextProvider);
                     } else {
@@ -451,7 +451,7 @@ namespace Microsoft.R.Editor.Tree {
                 if (ChangesPending) {
                     // We *sometimes* still have pending changes even after calling ProcessPendingTextBufferChanges(async: false).
                     //   I'd like to determine whether this is a timing issue by retrying here multiple times and seeing if it helps.
-                    int retryCount = 0;
+                    var retryCount = 0;
                     while (retryCount < 10 && ChangesPending) {
                         // Changes are still pending. Even if they are already in a backround processing,
                         // process them right away here and ignore background processing results
@@ -483,9 +483,9 @@ namespace Microsoft.R.Editor.Tree {
             }
 
             EditorTreeChangeCollection treeChanges;
-            bool changed = false;
-            bool fullParse = false;
-            bool staleChanges = false;
+            var changed = false;
+            var fullParse = false;
+            var staleChanges = false;
 
             while (_backgroundParsingResults.TryDequeue(out treeChanges)) {
                 // If no changes are pending, then main thread already processes
@@ -510,7 +510,7 @@ namespace Microsoft.R.Editor.Tree {
                         // Added local variable as I hit this assert, but _backgroundParsingResults.Count was zero
                         //   by the time I broke into the debugger. If this hits again, we may need to 
                         //   think through this code and whether we need to be protecting against concurrent access.
-                        int count = _backgroundParsingResults.Count;
+                        var count = _backgroundParsingResults.Count;
                         Debug.Assert(count == 0);
 
                         // Clear pending changes as we are done

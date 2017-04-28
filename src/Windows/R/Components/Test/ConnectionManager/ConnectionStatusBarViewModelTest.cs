@@ -31,8 +31,9 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void ConnectStates() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
-            m.IsConnected = true;
+            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services) {
+                IsConnected = true
+            };
             m.IsRunning.Should().BeFalse();
 
             m.IsRunning = true;

@@ -32,15 +32,16 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         public string GetSignatureString(string actualName, List<int> locusPoints = null) {
             var sb = new StringBuilder(actualName);
-            int lineCount = 0;
+            var lineCount = 0;
 
             sb.Append('(');
 
-            if (locusPoints != null)
+            if (locusPoints != null) {
                 locusPoints.Add(sb.Length);
+            }
 
-            for (int i = 0; i < Arguments.Count; i++) {
-                IArgumentInfo arg = Arguments[i];
+            for (var i = 0; i < Arguments.Count; i++) {
+                var arg = Arguments[i];
                 sb.Append(arg.Name);
 
                 if (!string.IsNullOrEmpty(arg.DefaultValue)) {
@@ -52,8 +53,9 @@ namespace Microsoft.R.Editor.Functions {
                     sb.Append(", ");
                 }
 
-                if (locusPoints != null)
+                if (locusPoints != null) {
                     locusPoints.Add(sb.Length);
+                }
 
                 if (sb.Length > (lineCount + 1) * MaxSignatureLength && i != Arguments.Count - 1) {
                     sb.Append("\r\n");
@@ -91,8 +93,8 @@ namespace Microsoft.R.Editor.Functions {
             }
 
             // full name match first
-            for (int i = 0; i < Arguments.Count; i++) {
-                IArgumentInfo argInfo = Arguments[i];
+            for (var i = 0; i < Arguments.Count; i++) {
+                var argInfo = Arguments[i];
                 if (argInfo.Name.Equals(argumentName, StringComparison.Ordinal)) {
                     return i;
                 }
@@ -103,11 +105,11 @@ namespace Microsoft.R.Editor.Functions {
             }
 
             // Try partial match. Only match unique or longest
-            int minLengthDifference = Int32.MaxValue;
-            int index = -1;
-            bool unique = true;
+            var minLengthDifference = Int32.MaxValue;
+            var index = -1;
+            var unique = true;
 
-            for (int i = 0; i < Arguments.Count; i++) {
+            for (var i = 0; i < Arguments.Count; i++) {
                 var argInfo = Arguments[i];
                 if (argInfo.Name.StartsWith(argumentName, StringComparison.Ordinal)) {
                     var lengthDifference = argInfo.Name.Length - argumentName.Length;

@@ -73,8 +73,9 @@ namespace Microsoft.Languages.Core.Formatting {
         public void CloseIndentLevel() {
             // Debug.Assert(_indentLevel > 0);
 
-            if (IndentLevel > 0)
+            if (IndentLevel > 0) {
                 IndentLevel--;
+            }
         }
 
         public void SetIndentLevel(int indentLevel) {
@@ -136,8 +137,9 @@ namespace Microsoft.Languages.Core.Formatting {
         /// <returns>String for the indent</returns>
         public string IndentLevelString {
             get {
-                if (IndentLevel == 0)
+                if (IndentLevel == 0) {
                     return _indentStrings[0];
+                }
 
                 if (IndentLevel >= _indentStrings.Count) {
                     StringBuilder sb = new StringBuilder();
@@ -191,13 +193,15 @@ namespace Microsoft.Languages.Core.Formatting {
             for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
-                if (ch.IsLineBreak())
+                if (ch.IsLineBreak()) {
                     break;
+                }
 
                 length += IndentBuilder.GetWhiteSpaceCharLength(ch, spaces, tabSize);
 
-                if (ch == ' ')
+                if (ch == ' ') {
                     spaces++;
+                }
             }
 
             return length;
@@ -218,16 +222,19 @@ namespace Microsoft.Languages.Core.Formatting {
             for (int i = 0; i < text.Length; i++) {
                 char ch = text[i];
 
-                if (!Char.IsWhiteSpace(ch))
+                if (!Char.IsWhiteSpace(ch)) {
                     break;
+                }
 
-                if (ch.IsLineBreak())
+                if (ch.IsLineBreak()) {
                     break;
+                }
 
                 indent += IndentBuilder.GetWhiteSpaceCharLength(ch, spaces, tabSize);
 
-                if (ch == ' ')
+                if (ch == ' ') {
                     spaces++;
+                }
             }
 
             return indent;

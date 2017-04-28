@@ -104,8 +104,9 @@ namespace Microsoft.Languages.Core.Text {
         public char LookAhead(int offset) {
             int pos = Position + offset;
 
-            if (pos < 0 || pos >= _text.Length)
+            if (pos < 0 || pos >= _text.Length) {
                 return '\0';
+            }
 
             return _text[pos];
         }
@@ -176,12 +177,14 @@ namespace Microsoft.Languages.Core.Text {
         public void SkipLineBreak() {
             if (CurrentChar == '\n') {
                 MoveToNextChar();
-                if (CurrentChar == '\r')
+                if (CurrentChar == '\r') {
                     MoveToNextChar();
+                }
             } else if (CurrentChar == '\r') {
                 MoveToNextChar();
-                if (CurrentChar == '\n')
+                if (CurrentChar == '\n') {
                     MoveToNextChar();
+                }
             }
         }
 
@@ -236,14 +239,16 @@ namespace Microsoft.Languages.Core.Text {
         }
 
         private void CheckBounds() {
-            if (_position < 0)
+            if (_position < 0) {
                 _position = 0;
+            }
 
             int maxPosition = Math.Min(_text.Length, _range.End);
 
             _isEndOfStream = _position >= maxPosition;
-            if (_isEndOfStream)
+            if (_isEndOfStream) {
                 _position = maxPosition;
+            }
 
             _currentChar = _isEndOfStream ? '\0' : _text[Position];
         }

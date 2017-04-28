@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Tokens {
@@ -22,9 +23,7 @@ namespace Microsoft.Languages.Core.Tokens {
         private bool _isEndOfStream;
 
         public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken) {
-            if (tokens == null) {
-                throw new ArgumentNullException(nameof(tokens));
-            }
+            Check.ArgumentNull(nameof(tokens), tokens);
 
             _index = 0;
             _tokens = tokens;
@@ -98,8 +97,9 @@ namespace Microsoft.Languages.Core.Tokens {
         /// <param name="position"></param>
         /// <returns></returns>
         public T GetTokenAt(int position) {
-            if (position >= 0 && position < _tokens.Count)
+            if (position >= 0 && position < _tokens.Count) {
                 return _tokens[position];
+            }
 
             return _endOfStreamToken;
         }
@@ -158,8 +158,8 @@ namespace Microsoft.Languages.Core.Tokens {
         /// </summary>
         public void MoveToNextLine(ITextProvider textProvider, Func<TokenStream<T>, bool> stopFunction = null) {
             while (!IsEndOfStream()) {
-                int currentTokenEnd = CurrentToken.End;
-                int nextTokenStart = NextToken.Start;
+                var currentTokenEnd = CurrentToken.End;
+                var nextTokenStart = NextToken.Start;
 
                 MoveToNextToken();
 
@@ -187,13 +187,13 @@ namespace Microsoft.Languages.Core.Tokens {
                 tokenIndex = 0;
             }
 
-            T currentToken = GetTokenAt(tokenIndex);
+            var currentToken = GetTokenAt(tokenIndex);
 
-            int currentTokenEnd = currentToken.End;
+            var currentTokenEnd = currentToken.End;
             int nextTokenStart;
 
             if (tokenIndex < _tokens.Count - 1) {
-                T nextToken = _tokens[tokenIndex + 1];
+                var nextToken = _tokens[tokenIndex + 1];
                 nextTokenStart = nextToken.Start;
             } else {
                 nextTokenStart = textProvider.Length;

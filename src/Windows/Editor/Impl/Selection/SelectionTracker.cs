@@ -53,8 +53,9 @@ namespace Microsoft.Languages.Editor.Selection {
             PositionAfterChanges = PositionBeforeChanges;
 
             var viewLine = _textView.TextViewLines.GetTextViewLineContainingBufferPosition(PositionBeforeChanges);
-            if (viewLine != null)
+            if (viewLine != null) {
                 _offsetFromTop = viewLine.Top - _textView.ViewportTop;
+            }
         }
 
         /// <summary>

@@ -30,14 +30,17 @@ namespace Microsoft.R.Editor.RData.Tokens {
         }
 
         public int CompareTo(RdToken other) {
-            if (other == null)
+            if (other == null) {
                 return -1;
+            }
 
-            if (this.TokenType == other.TokenType)
+            if (this.TokenType == other.TokenType) {
                 return 0;
+            }
 
-            if ((int)this.TokenType < (int)other.TokenType)
+            if ((int)this.TokenType < (int)other.TokenType) {
                 return -1;
+            }
 
             return 1;
         }

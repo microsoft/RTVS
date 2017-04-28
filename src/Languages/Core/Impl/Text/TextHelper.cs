@@ -23,11 +23,13 @@ namespace Microsoft.Languages.Core.Text {
             for (int i = position; i < textProvider.Length; i++) {
                 char ch = textProvider[i];
 
-                if (ch.IsLineBreak())
+                if (ch.IsLineBreak()) {
                     return true;
+                }
 
-                if (!Char.IsWhiteSpace(ch))
+                if (!Char.IsWhiteSpace(ch)) {
                     break;
+                }
             }
 
             return false;

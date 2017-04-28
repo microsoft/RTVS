@@ -70,11 +70,11 @@ namespace Microsoft.Common.Core.Logging {
         private bool GetEffectiveFeedbackSetting() {
             int adminSetValue;
             if (_telemetryService.IsEnabled) {
-                adminSetValue = _registryFeedbackSetting.HasValue ? _registryFeedbackSetting.Value : 1;
+                adminSetValue = _registryFeedbackSetting ?? 1;
                 return MathExtensions.Min(adminSetValue, 1) == 1;
             }
             // If telemetry is disabled, registry setting allows enabling the feedback.
-            adminSetValue = _registryFeedbackSetting.HasValue ? _registryFeedbackSetting.Value : 0;
+            adminSetValue = _registryFeedbackSetting ?? 0;
             return MathExtensions.Max(adminSetValue, 0) == 1;
         }
 

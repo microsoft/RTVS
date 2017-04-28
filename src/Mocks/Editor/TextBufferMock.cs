@@ -26,8 +26,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
             ContentType = newContentType;
 
-            if (ContentTypeChanged != null)
+            if (ContentTypeChanged != null) {
                 ContentTypeChanged(this, new ContentTypeChangedEventArgs(CurrentSnapshot, CurrentSnapshot, before, newContentType, new object()));
+            }
         }
 
         public event EventHandler<TextContentChangedEventArgs> BeforeChanged; // unit tests only, for internal mock use

@@ -52,7 +52,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
                     signatures.Should().ContainSingle();
 
-                    int index = GetCurrentParameterIndex(signatures[0], signatures[0].CurrentParameter);
+                    var index = GetCurrentParameterIndex(signatures[0], signatures[0].CurrentParameter);
                     index.Should().Be(0);
 
                     textView.Caret = new TextCaretMock(textView, 5);
@@ -134,7 +134,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
                     textView.Caret = new TextCaretMock(textView, 8);
                     var sh = signatures[0] as IRFunctionSignatureHelp;
-                    int index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
+                    var index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(0);
                 }
             }
@@ -165,7 +165,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
                     textView.Caret = new TextCaretMock(textView, 8);
                     var sh = signatures[0] as IRFunctionSignatureHelp;
-                    int index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
+                    var index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(9);
                 }
             }

@@ -69,8 +69,9 @@ namespace Microsoft.Common.Core.UI.Commands {
         public virtual CommandStatus NonRoutedStatus(Guid group, int id, object inputArg) {
             ICommand cmd = Find(group, id);
 
-            if (cmd != null)
+            if (cmd != null) {
                 return cmd.Status(group, id);
+            }
 
             return CommandStatus.NotSupported;
         }
@@ -78,11 +79,13 @@ namespace Microsoft.Common.Core.UI.Commands {
         public virtual CommandStatus Status(Guid group, int id) {
             var status = NonRoutedStatus(group, id, null);
 
-            if (status != CommandStatus.NotSupported)
+            if (status != CommandStatus.NotSupported) {
                 return status;
+            }
 
-            if (ChainedController != null)
+            if (ChainedController != null) {
                 return ChainedController.Status(group, id);
+            }
 
             return CommandStatus.NotSupported;
         }
@@ -90,8 +93,9 @@ namespace Microsoft.Common.Core.UI.Commands {
         public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
             ICommand cmd = Find(group, id);
 
-            if (cmd != null && ChainedController == null)
+            if (cmd != null && ChainedController == null) {
                 cmd.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
+            }
         }
         #endregion
 
@@ -119,8 +123,9 @@ namespace Microsoft.Common.Core.UI.Commands {
                         CommandMap.Add(commandId.Group, idToCommandMap);
                     }
 
-                    if (!idToCommandMap.ContainsKey(commandId.Id))
+                    if (!idToCommandMap.ContainsKey(commandId.Id)) {
                         idToCommandMap.Add(commandId.Id, command);
+                    }
                 }
             }
         }
@@ -148,8 +153,9 @@ namespace Microsoft.Common.Core.UI.Commands {
         protected virtual void Dispose(bool disposing) {
             foreach (var kvp in CommandMap) {
                 var disposable = kvp.Value as IDisposable;
-                if (disposable != null)
+                if (disposable != null) {
                     disposable.Dispose();
+                }
             }
 
             ChainedController = null;
