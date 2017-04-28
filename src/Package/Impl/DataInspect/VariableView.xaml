@@ -14,8 +14,7 @@
              mc:Ignorable="d" x:Name="Self"
              d:DesignHeight="300" d:DesignWidth="300"
              Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
-             HorizontalAlignment="Stretch"
-             FocusManager.FocusedElement="{Binding ElementName=RootTreeGrid}">
+             HorizontalAlignment="Stretch">
 
     <UserControl.Resources>
         <ResourceDictionary>

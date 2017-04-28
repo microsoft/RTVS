@@ -50,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             InitializeComponent();
             SetImageBackground();
+            FocusManager.SetFocusedElement(this, RootTreeGrid);
 
             _aggregator = _shell.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
             SetRootNode(VariableViewModel.Ellipsis);
@@ -162,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (row != null) {
                 SelectRow(row);
                 var pt = PointToScreen(e.GetPosition(this));
-                _shell.ShowContextMenu(new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                _shell.ShowContextMenu(new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
                 e.Handled = true;
             }
         }
@@ -234,7 +235,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (focus != null) {
                 var pt = focus.PointToScreen(new Point(1, 1));
                 _shell.ShowContextMenu(
-                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
             }
         }
 
