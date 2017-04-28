@@ -347,6 +347,19 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="FocusVisualStyle">
+            <Setter.Value>
+                <Style>
+                    <Setter Property="Control.Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Rectangle SnapsToDevicePixels="true" Margin="0" Stroke="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" StrokeDashArray="1 2" StrokeThickness="1"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.GrayTextBrushKey}}" />

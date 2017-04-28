@@ -90,7 +90,7 @@
         <Grid HorizontalAlignment="Stretch" IsEnabled="{Binding ElementName=chkTransferFilesOnRun, Path=IsChecked}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>Ы
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" x:Uid="TransferFilesFilterLabel" Content="{x:Static Package:Resources.RunPropertyPage_TransferFilesFilter}" Target="{Binding ElementName=txtTransferFilesFilter, Mode=OneWay}" />
