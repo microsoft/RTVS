@@ -54,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
                 .AddService(new VsEditorSupport(this))
                 .AddService(telemetry)
-                .AddService(new FileSystem())
+                .AddService(new WindowsFileSystem())
                 .AddService(new ProcessServices())
                 .AddService(new RegistryImpl())
                 .AddService(new MicrosoftRClientInstaller())

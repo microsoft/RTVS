@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
 using System.IO;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 
 namespace Microsoft.R.Interpreters {
@@ -34,8 +34,7 @@ namespace Microsoft.R.Interpreters {
         /// <param name="name">Name of the R interpreter</param>
         /// <param name="path">Path to the /R folder</param>
         /// <param name="fileSystem"></param>
-        public RInterpreterInfo(string name, string path, string version, Version parsedVersion, IFileSystem fileSystem)
-        {
+        public RInterpreterInfo(string name, string path, string version, Version parsedVersion, IFileSystem fileSystem) {
             Name = name;
             InstallPath = path;
             BinPath = GetRLibPath();
@@ -44,8 +43,7 @@ namespace Microsoft.R.Interpreters {
             Version = parsedVersion;
         }
 
-        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null)
-        {
+        public bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null) {
             var ui = services?.GetService<IUIService>();
             if (_isValid.HasValue) {
                 return _isValid.Value;
@@ -59,26 +57,30 @@ namespace Microsoft.R.Interpreters {
             try {
                 if (_fileSystem.DirectoryExists(InstallPath) && _fileSystem.DirectoryExists(BinPath) &&
                     _fileSystem.FileExists(libRPath)) {
-                    _isValid = svr.IsCompatibleVersion(Version);
-                    if (!_isValid.Value) {
-                        ui?.ShowMessage(
-                            string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
-                            Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
-                            svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);
+                    if (Version != null) {
+                        _isValid = svr.IsCompatibleVersion(Version);
+                        if (!_isValid.Value) {
+                            ui?.ShowMessage(
+                                Resources.Error_UnsupportedRVersion.FormatInvariant(
+                                Version.Major, Version.Minor, Version.Build, svr.MinMajorVersion, svr.MinMinorVersion, "*",
+                                svr.MaxMajorVersion, svr.MaxMinorVersion, "*"), MessageButtons.OK);
+                        }
+                    } else {
+                        // In linux there is no direct way to get version from binary. So assume valid version for a user provided
+                        // interpreter path.
+                        _isValid = true;
                     }
                 } else {
-                    ui?.ShowMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, InstallPath), MessageButtons.OK);
+                    ui?.ShowMessage(Resources.Error_CannotFindRBinariesFormat.FormatInvariant(InstallPath), MessageButtons.OK);
                 }
             } catch (Exception ex) when (ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException) {
-                ui?.ShowErrorMessage(
-                    string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, ex.Message));
+                ui?.ShowErrorMessage(Resources.Error_ExceptionAccessingPath.FormatInvariant(InstallPath, ex.Message));
             }
 
             return _isValid.Value;
         }
 
-        private string GetRLibPath()
-        {
+        private string GetRLibPath() {
             return Path.Combine(InstallPath, "lib");
         }
     }

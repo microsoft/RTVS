@@ -53,7 +53,7 @@ namespace Microsoft.R.Components.History.Implementation {
         public IRHistory CreateRHistory(IRInteractiveWorkflowVisual interactiveWorkflow) {
             var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
             var textBuffer = _textBufferFactory.CreateTextBuffer(contentType);
-            var history = new RHistory(interactiveWorkflow, textBuffer, new FileSystem(), _settings, _editorOperationsFactory, _rtfBuilderService, () => RemoveRHistory(textBuffer));
+            var history = new RHistory(interactiveWorkflow, textBuffer, new WindowsFileSystem(), _settings, _editorOperationsFactory, _rtfBuilderService, () => RemoveRHistory(textBuffer));
             _histories[textBuffer] = history;
             return history;
         }

@@ -1,4 +1,7 @@
-﻿using Microsoft.Common.Core;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using System;
 using System.Collections.Generic;
@@ -33,7 +36,7 @@ namespace Microsoft.R.Common.Core.Linux {
                 return fs.FileReadAllLines(path);
             }
 
-            var files = Directory.GetFiles("/var/lib/dpkg/info", $"{PackageName}*.list", SearchOption.TopDirectoryOnly);
+            var files = fs.GetFiles("/var/lib/dpkg/info", $"{PackageName}*.list", SearchOption.TopDirectoryOnly);
             if (files.Length > 0) {
                 return fs.FileReadAllLines(files[0]);
             }
@@ -49,7 +52,7 @@ namespace Microsoft.R.Common.Core.Linux {
             try {
                 var lines = fs.FileReadAllLines("/var/lib/dpkg/status").ToArray();
                 int i = 0;
-                while (i<lines.Length) {
+                while (i < lines.Length) {
                     string packageName = GetPart(lines, packagePart, ref i);
                     string architecture = GetPart(lines, architecturePart, ref i);
                     string version = GetPart(lines, versionPart, ref i);
@@ -74,7 +77,7 @@ namespace Microsoft.R.Common.Core.Linux {
         private static string GetPart(string[] lines, string part, ref int index) {
             if (index < lines.Length) {
                 string line = lines[index];
-                while (!line.StartsWith(part)) {
+                while (!line.StartsWithOrdinal(part)) {
                     if (++index >= lines.Length) {
                         return null;
                     }
@@ -85,12 +88,12 @@ namespace Microsoft.R.Common.Core.Linux {
             return null;
         }
 
-        static string[] versionSeperators = { ".", "-", "~", " ", ":", "+" };
+        static string[] versionSeparators = { ".", "-", "~", " ", ":", "+" };
         private static Version ParseVersion(string version) {
             // this is linux package version string which might contain text
             // e.g, 3.2.3~pre-6ubuntu8 OR 8c-0ubuntu1 OR 2016asdc-ubuntu02
             // extract major and minor version, only if it exists
-            string[] split = version.Split(versionSeperators, StringSplitOptions.RemoveEmptyEntries);
+            string[] split = version.Split(versionSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             Version v;
             if (split.Length >= 4 && System.Version.TryParse($"{split[0]}.{split[1]}.{split[2]}.{split[3]}", out v)) {

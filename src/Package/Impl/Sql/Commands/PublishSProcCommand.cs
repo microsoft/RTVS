@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         [ImportingConstructor]
         public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) :
-            this(shell, pss, new FileSystem(), dacServicesProvider, settings) {
+            this(shell, pss, new WindowsFileSystem(), dacServicesProvider, settings) {
         }
 
         public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) {

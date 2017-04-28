@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
         [Test]
         public void GenerateEmpty() {
-            var fs = new FileSystem();
+            var fs = new WindowsFileSystem();
             var g = new SProcProjectFilesGenerator(_pss, fs);
             var settings = new SqlSProcPublishSettings();
             g.Generate(settings, Enumerable.Empty<string>(), _project);
@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [InlineData("sqlcode2.r", RCodePlacement.Inline, SqlQuoteType.Bracket, "a b")]
         [InlineData("sqlcode2.r", RCodePlacement.Table, SqlQuoteType.Quote, "a b")]
         public void Generate(string rFile, RCodePlacement codePlacement, SqlQuoteType quoteType, string sprocName) {
-            var fs = new FileSystem();
+            var fs = new WindowsFileSystem();
             var settings = new SqlSProcPublishSettings();
             var g = new SProcProjectFilesGenerator(_pss, fs);
 

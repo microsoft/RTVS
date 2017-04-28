@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public SettingsPageControl() : this(
             VsAppShell.Current.GetService<IProjectConfigurationSettingsProvider>(), 
-            VsAppShell.Current, new FileSystem()) { }
+            VsAppShell.Current, new WindowsFileSystem()) { }
 
         public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, ICoreShell shell, IFileSystem fs) {
             Check.ArgumentNull(nameof(settingsProvider), settingsProvider);

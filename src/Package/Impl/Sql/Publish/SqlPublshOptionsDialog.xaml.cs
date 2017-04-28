@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public static async Task<SqlPublshOptionsDialog> CreateAsync(
             ICoreShell shell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
-            var dialog = await CreateAsync(shell, pss, new FileSystem(), pcsp, settings);
+            var dialog = await CreateAsync(shell, pss, new WindowsFileSystem(), pcsp, settings);
 
             await shell.SwitchToMainThreadAsync();
             dialog.InitializeComponent();

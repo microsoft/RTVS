@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _pss = pss;
         }
 
-        internal IFileSystem FileSystem { get; set; } = new FileSystem();
+        internal IFileSystem FileSystem { get; set; } = new WindowsFileSystem();
 
         private IRSession Session => _interactiveWorkflow.RSession;
 

@@ -31,7 +31,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())
-                .AddService(new FileSystem())
+                .AddService(new WindowsFileSystem())
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
                 .AddService(new TestUIServices())

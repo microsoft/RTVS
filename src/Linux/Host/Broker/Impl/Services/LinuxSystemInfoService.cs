@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,13 @@ using System.Threading;
 namespace Microsoft.R.Host.Broker.Services {
     public class LinuxSystemInfoService : ISystemInfoService {
         private readonly IFileSystem _fs;
+        private static char[] _memInfoSplitter = new char[] { ' ', ':', '\t' };
+        private static Dictionary<string, long> _sizeLUT = new Dictionary<string, long> {
+            {"KB", 1000L},
+            {"MB", 1000L * 1000L},
+            {"GB", 1000L * 1000L * 1000L},
+            {"TB", 1000L * 1000L * 1000L * 1000L},
+        };
 
         public LinuxSystemInfoService(IFileSystem fs) {
             _fs = fs;
@@ -35,13 +43,35 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         public (long TotalVirtualMemory, long FreeVirtualMemory, long TotalPhysicalMemory, long FreePhysicalMemory) GetMemoryInformation() {
-            var meminfo = GetMemInfo();
-            return (
-                meminfo["SwapTotal"] / (1000 * 1000),
-                meminfo["SwapFree"] / (1000 * 1000),
-                meminfo["MemTotal"] / (1000 * 1000),
-                meminfo["MemFree"] / (1000 * 1000)
-                );
+            try {
+                string memInfoFile = "/proc/meminfo";
+                var data = _fs.FileReadAllLines(memInfoFile);
+
+                Dictionary<string, long> meminfo = new Dictionary<string, long>();
+                foreach (string line in data) {
+                    string[] split = line.Split(_memInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
+                    if (split.Length == 3) {
+                        long value;
+                        if (split.Length > 2 && long.TryParse(split[1], out value)) {
+                            long multiplier;
+                            if (!_sizeLUT.TryGetValue(split[2].ToUpper(), out multiplier)) {
+                                multiplier = 1;
+                            }
+                            meminfo.Add(split[0], value * multiplier);
+                        } else if (long.TryParse(split[1], out value)) {
+                            meminfo.Add(split[0], value);
+                        }
+                    }
+                }
+                return (
+                    meminfo["SwapTotal"] / (1000 * 1000),
+                    meminfo["SwapFree"] / (1000 * 1000),
+                    meminfo["MemTotal"] / (1000 * 1000),
+                    meminfo["MemFree"] / (1000 * 1000)
+                    );
+            } catch(Exception ex) when (!ex.IsCriticalException()) {
+                return (1, 1, 1, 1);
+            }
         }
 
         public double GetNetworkLoad() {
@@ -82,80 +112,52 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         public (string VideoCardName, long VideoRAM, string VideoProcessor) GetVideoControllerInformation() {
-            return ("Unknown", 0, "Unknown");
+            return ("", 0, "");
         }
 
         private static char[] _cpuInfoSplitter = new char[] { ' ', ':', '\t' };
         private (long user, long nice, long system, long idle, long iowait, long irq, long softirq, long steal) GetCurrentCpuUsage() {
             string cpuLoadInfo = "/proc/stat";
             var lines = _fs.FileReadAllLines(cpuLoadInfo).ToArray();
-            var split = lines[0].Split(_cpuInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
-            long user = 0, nice = 0, system = 0, idle = 0, iowait = 0, irq = 0, softirq = 0, steal = 0;
-            // split[0] == "cpu" so ignore the first item;
-            if (split.Length > 1 && !long.TryParse(split[1], out user)) {
-                user = 0;
-            }
-
-            if (split.Length > 2 && !long.TryParse(split[2], out nice)) {
-                nice = 0;
-            }
-
-            if (split.Length > 3 && !long.TryParse(split[3], out system)) {
-                system = 0;
-            }
-
-            if (split.Length > 4 && !long.TryParse(split[4], out idle)) {
-                idle = 0;
-            }
-
-            if (split.Length > 5 && !long.TryParse(split[5], out iowait)) {
-                iowait = 0;
-            }
-
-            if (split.Length > 6 && !long.TryParse(split[6], out irq)) {
-                irq = 0;
-            }
-
-            if (split.Length > 7 && !long.TryParse(split[7], out softirq)) {
-                softirq = 0;
-            }
-
-            if (split.Length > 8 && !long.TryParse(split[8], out steal)) {
-                steal = 0;
-            }
-
-            return (user, nice, system, idle, iowait, irq, softirq, steal);
-        }
-
-        private static char[] _memInfoSplitter = new char[] { ' ', ':', '\t' };
-        private static Dictionary<string, long> _sizeLUT = new Dictionary<string, long> {
-            {"KB", 1000L},
-            {"MB", 1000L * 1000L},
-            {"GB", 1000L * 1000L * 1000L},
-            {"TB", 1000L * 1000L * 1000L * 1000L},
-        };
-
-        private Dictionary<string, long> GetMemInfo() {
-            string memInfoFile = "/proc/meminfo";
-            var data = _fs.FileReadAllLines(memInfoFile);
-            
-            Dictionary<string, long> meminfo = new Dictionary<string, long>();
-            foreach (string line in data) {
-                string[] split = line.Split(_memInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length == 3) {
-                    long value;
-                    if (split.Length > 2 && long.TryParse(split[1], out value)) {
-                        long multiplier;
-                        if(!_sizeLUT.TryGetValue(split[2].ToUpper(), out multiplier)) {
-                            multiplier = 1;
-                        }
-                        meminfo.Add(split[0], value * multiplier);
-                    } else if(long.TryParse(split[1], out value)) {
-                        meminfo.Add(split[0], value);
-                    }
+            if (lines.Length > 0) {
+                var split = lines[0].Split(_cpuInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
+                long user, nice, system, idle, iowait, irq, softirq, steal;
+                user = nice = system = idle = iowait = irq = softirq = steal = 0;
+                // split[0] == "cpu" so ignore the first item;
+                if (split.Length > 1) {
+                    long.TryParse(split[1], out user);
                 }
+
+                if (split.Length > 2) {
+                    long.TryParse(split[1], out nice);
+                }
+
+                if (split.Length > 3) {
+                    long.TryParse(split[3], out system);
+                }
+
+                if (split.Length > 4) {
+                    long.TryParse(split[4], out idle);
+                }
+
+                if (split.Length > 5) {
+                    long.TryParse(split[5], out iowait);
+                }
+
+                if (split.Length > 6) {
+                    long.TryParse(split[6], out irq);
+                }
+
+                if (split.Length > 7) {
+                    long.TryParse(split[7], out softirq);
+                }
+
+                if (split.Length > 8) {
+                    long.TryParse(split[8], out steal);
+                }
+                return (user, nice, system, idle, iowait, irq, softirq, steal);
             }
-            return meminfo;
+            return (0, 0, 0, 0, 0, 0, 0, 0);
         }
 
         private static bool IsCompatibleInterface(NetworkInterfaceType nit) {
