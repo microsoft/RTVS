@@ -1340,7 +1340,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Historia kreślenia w języku R]]></Val>
+            <Val><![CDATA[Historia wykresów w języku R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1349,7 +1349,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R]]></Val>
+            <Val><![CDATA[Wykres w języku R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1358,7 +1358,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - Device {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R — urządzenie {0}]]></Val>
+            <Val><![CDATA[Wykres w języku R — urządzenie {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1367,7 +1367,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - Device {0} - Active]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R — urządzenie {0} — aktywne]]></Val>
+            <Val><![CDATA[Wykres w języku R — urządzenie {0} — aktywne]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1376,7 +1376,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R]]></Val>
+            <Val><![CDATA[Wykres w języku R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3280,7 +3280,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot History Context]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Kontekst historii kreślenia]]></Val>
+              <Val><![CDATA[Kontekst historii wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -3292,7 +3292,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Device Context]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Kontekst urządzenia kreślenia]]></Val>
+              <Val><![CDATA[Kontekst urządzenia wykreślającego]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4717,7 +4717,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Remove Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Usuń kreślenie]]></Val>
+              <Val><![CDATA[Usuń wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4726,7 +4726,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Remove Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Usuń kreślenie]]></Val>
+              <Val><![CDATA[&Usuń wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4738,7 +4738,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Next Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Następne kreślenie]]></Val>
+              <Val><![CDATA[Następny wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4747,7 +4747,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Ne&xt Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[N&astępne kreślenie]]></Val>
+              <Val><![CDATA[N&astępny wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4759,7 +4759,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Previous Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Poprzednie kreślenie]]></Val>
+              <Val><![CDATA[Poprzedni wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4768,7 +4768,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Pre&vious Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[P&oprzednie kreślenie]]></Val>
+              <Val><![CDATA[P&oprzedni wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4906,7 +4906,7 @@
           <Str Cat="Button">
             <Val><![CDATA[New Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Nowe okno kreślenia]]></Val>
+              <Val><![CDATA[Nowe okno wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4915,7 +4915,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&New Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Nowe okno kreślenia]]></Val>
+              <Val><![CDATA[&Nowe okno wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4927,7 +4927,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Activate Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Aktywuj okno kreślenia]]></Val>
+              <Val><![CDATA[Aktywuj okno wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4936,7 +4936,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Activate Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Aktywuj okno kreślenia]]></Val>
+              <Val><![CDATA[&Aktywuj okno wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4948,7 +4948,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Plot History Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Okno historii kreślenia]]></Val>
+              <Val><![CDATA[Okno historii wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4957,7 +4957,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Plot &History Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Okno &historii kreślenia]]></Val>
+              <Val><![CDATA[Okno &historii wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5032,7 +5032,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Pokaż kreślenie]]></Val>
+              <Val><![CDATA[Pokaż wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5041,7 +5041,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Show &Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Pokaż &kreślenie]]></Val>
+              <Val><![CDATA[Pokaż &wykres]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5053,7 +5053,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Hide All Plot Windows]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Ukryj wszystkie okna kreślenia]]></Val>
+              <Val><![CDATA[Ukryj wszystkie okna wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5062,7 +5062,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Hide All Plot Windows]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Ukryj wszystkie okna kreślenia]]></Val>
+              <Val><![CDATA[&Ukryj wszystkie okna wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5074,7 +5074,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Plot - Device X]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Kreślenie w języku R — urządzenie X]]></Val>
+              <Val><![CDATA[Wykres w języku R — urządzenie X]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5263,7 +5263,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Okno kreślenia]]></Val>
+              <Val><![CDATA[Okno wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5275,7 +5275,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot History Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Okno historii kreślenia]]></Val>
+              <Val><![CDATA[Okno historii wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5335,7 +5335,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Plot &Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Okna &kreślenia]]></Val>
+              <Val><![CDATA[Okna &wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5491,7 +5491,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Plot Windows]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Pokaż okna kreślenia]]></Val>
+              <Val><![CDATA[Pokaż okna wykresów]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -6086,7 +6086,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provides project system, R Interactive window, plotting, and more for the R programming language.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Oferuje system projektów, okno R Interactive, kreślenie i wiele innych elementów na potrzeby języka programowania R.]]></Val>
+            <Val><![CDATA[Oferuje system projektów, okno R Interactive, wykreślanie i wiele innych elementów na potrzeby języka programowania R.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

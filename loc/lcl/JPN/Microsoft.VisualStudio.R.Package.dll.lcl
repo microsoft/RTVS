@@ -512,7 +512,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.]D;]A;    ]D;]A;Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[マークダウンを発行するには Pandoc が必要です。リモート マシンの管理者に連絡し、http://pandoc.org/installing.html から Windows 用 Pandoc をインストールするようご依頼ください。]D;]A;    ]D;]A;[OK]5D; をクリックし、既定のブラウザーで Pandoc ダウンロード ページを開きます。Pandoc のセットアップ完了後、R リモート サービス プロセスの再起動が必要にある場合があります。]]></Val>
+            <Val><![CDATA[マークダウンを発行するには Pandoc が必要です。リモート マシンの管理者に連絡し、http://pandoc.org/installing.html から Windows 用 Pandoc をインストールするようご依頼ください。]D;]A;    ]D;]A;[OK]5D; をクリックし、既定のブラウザーで Pandoc ダウンロード ページを開きます。Pandoc のセットアップ完了後、R リモート サービス プロセスの再起動が必要になる場合があります。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1862,7 +1862,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Determines if R Tools should always be using external Web browser or try and send R Help pages to the R Help tool window. This setting does not affect F1 Web search.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Tools で外部 Web ブラウザーを必ず使用するか、それとも R ヘルプ ページを R ヘルプ ツール ウィンドウに送信しようとするかどうかを決定します。この設定は、F1 の Web 検索には影響を及ぼしません。]]></Val>
+            <Val><![CDATA[R Tools で外部 Web ブラウザーを必ず使用するか、それとも R ヘルプ ページを R ヘルプ ツール ウィンドウに送信しようとするかどうかを決定します。この設定は、F1 キーの Web 検索には影響を及ぼしません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4585,7 +4585,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Clear Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[対話型ウィンドウをクリア]]></Val>
+              <Val><![CDATA[インタラクティブ ウィンドウをクリア]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

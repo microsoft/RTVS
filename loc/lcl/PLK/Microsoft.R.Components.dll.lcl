@@ -800,7 +800,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Error rendering plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Błąd podczas renderowania kreślenia]]></Val>
+            <Val><![CDATA[Błąd podczas renderowania wykresu]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1457,7 +1457,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Plot history is empty]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Historia kreślenia jest pusta]]></Val>
+            <Val><![CDATA[Historia wykresów jest pusta]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1466,7 +1466,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Run plotting command in R Interactive Window]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Uruchom polecenie kreślenia w oknie R Interactive]]></Val>
+            <Val><![CDATA[Uruchom polecenie wykreślania w oknie R Interactive]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1475,7 +1475,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Error copying plot to the clipboard.\n{0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Błąd podczas kopiowania kreślenia do schowka.\n{0}]]></Val>
+            <Val><![CDATA[Błąd podczas kopiowania wykresu do schowka.\n{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1502,7 +1502,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Export Plot As Image]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eksportowanie kreślenia jako obrazu]]></Val>
+            <Val><![CDATA[Eksportowanie wykresu jako obrazu]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1520,7 +1520,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Export Plot As PDF]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Eksportowanie kreślenia jako pliku PDF]]></Val>
+            <Val><![CDATA[Eksportowanie wykresu jako pliku PDF]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1556,7 +1556,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove the current plot from {0}?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Czy na pewno chcesz usunąć bieżące kreślenie z {0}?]]></Val>
+            <Val><![CDATA[Czy na pewno chcesz usunąć bieżący wykres z {0}?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1565,7 +1565,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to remove the selected plot?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Czy na pewno chcesz usunąć wybrane kreślenie?]]></Val>
+            <Val><![CDATA[Czy na pewno chcesz usunąć wybrany wykres?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1574,7 +1574,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Locator is active. Click in the plot window to select points then choose End Locator.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Lokalizator jest aktywny. Kliknij w oknie kreślenia, aby wybrać punkty, a następnie wybierz pozycję Zakończ lokalizatora.]]></Val>
+            <Val><![CDATA[Lokalizator jest aktywny. Kliknij w oknie wykresów, aby wybrać punkty, a następnie wybierz pozycję Zakończ lokalizatora.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1592,7 +1592,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R — {0}]]></Val>
+            <Val><![CDATA[Wykres w języku R — {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1601,7 +1601,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - {0} - Active]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R — {0} — aktywny]]></Val>
+            <Val><![CDATA[Wykres w języku R — {0} — aktywny]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1610,7 +1610,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - {0} - Locator is Active]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R — {0} — lokalizator jest aktywny]]></Val>
+            <Val><![CDATA[Wykres w języku R — {0} — lokalizator jest aktywny]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1619,7 +1619,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Kreślenie w języku R]]></Val>
+            <Val><![CDATA[Wykres w języku R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1824,54 +1824,54 @@
       </Item>
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
+          <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Trwa automatyczne zapisywanie obszaru roboczego do obrazu '{0}'...]]></Val>
+            <Val><![CDATA[Trwa automatyczne zapisywanie obszaru roboczego do obrazu „%s”...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
+          <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Usunąć automatycznie zapisany obraz obszaru roboczego '{0}'?]]></Val>
+            <Val><![CDATA[Usunąć automatycznie zapisany obraz obszaru roboczego „%s”?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
+          <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Usuwanie automatycznie zapisanego obrazu obszaru roboczego '{0}'.]]></Val>
+            <Val><![CDATA[Usuwanie automatycznie zapisanego obrazu obszaru roboczego „%s”.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
+          <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można załadować obszaru roboczego z automatycznie zapisanego obrazu '{0}'.]]></Val>
+            <Val><![CDATA[Nie można załadować obszaru roboczego z automatycznie zapisanego obrazu „%s”.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
+          <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Załadowano obszar roboczy z automatycznie zapisanego obrazu '{0}'.]]></Val>
+            <Val><![CDATA[Załadowano obszar roboczy z automatycznie zapisanego obrazu „%s”.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
+          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Poprzednia sesja języka została przerwana, a jej globalny obszar roboczy został zapisany do obrazu '{0}'. Czy chcesz ją ponownie załadować?]]></Val>
+            <Val><![CDATA[Poprzednia sesja języka została przerwana, a jej globalny obszar roboczy został zapisany do obrazu „%s”. Czy chcesz ją ponownie załadować?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
