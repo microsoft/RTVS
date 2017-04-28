@@ -162,7 +162,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (row != null) {
                 SelectRow(row);
                 var pt = PointToScreen(e.GetPosition(this));
-                _services.ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                _services.ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
                 e.Handled = true;
             }
         }
