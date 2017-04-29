@@ -85,8 +85,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(new TestImageService())
                 .AddService(new TestPlatformServices())
                 .AddService(new TestApplication())
-                .AddService(new TestIdleTimeService())
-                .AddService(new TestMainThread());
+                .AddService(new TestIdleTimeService());
         }
 
         public IServiceContainer Services => ServiceManager;

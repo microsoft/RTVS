@@ -35,7 +35,9 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
                 .AddService(new TestUIServices())
-                .AddService(new TestPlatformServices());
+                .AddService(new TestPlatformServices())
+                .AddService(new TestApplication())
+                .AddService(new TestIdleTimeService());
         }
 
         protected class TestServiceManager : ServiceManager, IMethodFixture {
@@ -59,7 +61,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                     _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
                     _addServices(this, testInput);
                 } catch (Exception) {
-                    return Task.FromResult(Task.FromResult(new RunSummary {Failed = 1}));
+                    return Task.FromResult(Task.FromResult(new RunSummary { Failed = 1 }));
                 }
 
                 return MethodFixtureBase.DefaultInitializeTask;
@@ -81,7 +83,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 _log = log;
             }
 
-            public void Write(LogVerbosity verbosity, MessageCategory category, string message) 
+            public void Write(LogVerbosity verbosity, MessageCategory category, string message)
                 => _log.Write(verbosity, category, message);
 
             public void WriteFormat(LogVerbosity verbosity, MessageCategory category, string format, params object[] arguments)
