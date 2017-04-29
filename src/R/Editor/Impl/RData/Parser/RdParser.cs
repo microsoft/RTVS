@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.RData.Parser {
         public static IReadOnlyList<IFunctionInfo> GetFunctionInfos(string rdHelpData) {
             var tokenizer = new RdTokenizer(tokenizeRContent: false);
 
-            ITextProvider textProvider = new TextStream(rdHelpData);
+            var textProvider = new TextStream(rdHelpData);
             var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
             var context = new RdParseContext(tokens, textProvider);
 
@@ -82,8 +82,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                 foreach (var sigInfo in signatureInfos) {
                     // Add missing arguments from the \arguments{} section
                     foreach (var arg in sigInfo.Arguments) {
-                        string description;
-                        if (argumentDescriptions.TryGetValue(arg.Name, out description)) {
+                        if (argumentDescriptions.TryGetValue(arg.Name, out var description)) {
                             ((NamedItemInfo)arg).Description = description ?? string.Empty;
                         }
                     }

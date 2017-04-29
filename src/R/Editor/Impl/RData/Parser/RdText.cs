@@ -24,15 +24,13 @@ namespace Microsoft.R.Editor.RData.Parser {
 
             // Clean descripton so it only consists of plain text
             var sb = new StringBuilder();
-
             for (int i = startTokenIndex; i < endTokenIndex; i++) {
-                TextRange range = TextRange.FromBounds(context.Tokens[i].End, context.Tokens[i + 1].Start);
-                string s = context.TextProvider.GetText(range);
+                var range = TextRange.FromBounds(context.Tokens[i].End, context.Tokens[i + 1].Start);
+                var s = context.TextProvider.GetText(range);
 
                 s = CleanRawRdText(s);
                 sb.Append(s);
             }
-
             return sb.ToString();
         }
 

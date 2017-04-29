@@ -41,8 +41,8 @@ namespace Microsoft.R.Editor.RData.Parser {
             int startTokenIndex, endTokenIndex;
             if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex)) {
                 // Get inner content of the \usage{...} block cleaned up for R parsing
-                string usage = GetRText(context, startTokenIndex, endTokenIndex);
-                IReadOnlyList<ISignatureInfo> sigs = ParseSignatures(usage);
+                var usage = GetRText(context, startTokenIndex, endTokenIndex);
+                var sigs = ParseSignatures(usage);
                 if (sigs != null) {
                     signatures.AddRange(sigs);
                 }
@@ -61,12 +61,12 @@ namespace Microsoft.R.Editor.RData.Parser {
         /// which we need to filter out since they are irrelevant to intellisense.
         /// </summary>
         private static string GetRText(RdParseContext context, int startTokenIndex, int endTokenIndex) {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             for (int i = startTokenIndex; i < endTokenIndex; i++) {
                 int fragmentStart;
                 int fragmentEnd;
 
-                RdToken token = context.Tokens[i];
+                var token = context.Tokens[i];
                 if (token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\method") {
                     fragmentStart = SkipS3Method(context, ref i);
                     fragmentEnd = context.Tokens[i].Start;
@@ -92,7 +92,7 @@ namespace Microsoft.R.Editor.RData.Parser {
         }
 
         private static int SkipS3Method(RdParseContext context, ref int index) {
-            RdToken token = context.Tokens[index];
+            var token = context.Tokens[index];
             Debug.Assert(token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\method");
 
             index++;
@@ -105,13 +105,13 @@ namespace Microsoft.R.Editor.RData.Parser {
                 }
             }
             // Should be past \method{...}{...}. Now skip signature
-            BraceCounter<char> bc = new BraceCounter<char>(new char[] { '(', ')' });
-            for (int i = context.Tokens[index - 1].End; i < context.TextProvider.Length; i++) {
+            var bc = new BraceCounter<char>(new char[] { '(', ')' });
+            for (var i = context.Tokens[index - 1].End; i < context.TextProvider.Length; i++) {
                 if (bc.CountBrace(context.TextProvider[i])) {
                     if (bc.Count == 0) {
                         // Calculate index of the next token after text position 'i'
                         index = context.Tokens.Length - 1;
-                        for (int j = index; j < context.Tokens.Length; j++) {
+                        for (var j = index; j < context.Tokens.Length; j++) {
                             if (context.Tokens[j].Start >= i) {
                                 index = j;
                                 break;
@@ -131,13 +131,13 @@ namespace Microsoft.R.Editor.RData.Parser {
             // '\method{as.matrix}{data.frame}(x, rownames.force = NA, \dots)'
             // which we need to filter out since they are irrelevant to intellisense.
 
-            List<ISignatureInfo> signatures = new List<ISignatureInfo>();
+            var signatures = new List<ISignatureInfo>();
             usageContent = usageContent.Replace(@"\dots", "...");
 
-            RTokenizer tokenizer = new RTokenizer(separateComments: true);
-            IReadOnlyTextRangeCollection<RToken> collection = tokenizer.Tokenize(usageContent);
-            ITextProvider textProvider = new TextStream(usageContent);
-            TokenStream<RToken> tokens = new TokenStream<RToken>(collection, RToken.EndOfStreamToken);
+            var tokenizer = new RTokenizer(separateComments: true);
+            var collection = tokenizer.Tokenize(usageContent);
+            var textProvider = new TextStream(usageContent);
+            var tokens = new TokenStream<RToken>(collection, RToken.EndOfStreamToken);
 
             var parseContext = new ParseContext(textProvider,
                          TextRange.FromBounds(tokens.CurrentToken.Start, textProvider.Length),
@@ -153,10 +153,10 @@ namespace Microsoft.R.Editor.RData.Parser {
                     break;
                 }
 
-                string functionName = textProvider.GetText(tokens.CurrentToken);
+                var functionName = textProvider.GetText(tokens.CurrentToken);
                 tokens.MoveToNextToken();
 
-                ISignatureInfo info = ParseSignature(functionName, parseContext);
+                var info = ParseSignature(functionName, parseContext);
                 if (info != null) {
                     signatures.Add(info);
                 }
@@ -166,38 +166,35 @@ namespace Microsoft.R.Editor.RData.Parser {
         }
 
         private static ISignatureInfo ParseSignature(string functionName, ParseContext context) {
-            SignatureInfo info = new SignatureInfo(functionName);
-            List<IArgumentInfo> signatureArguments = new List<IArgumentInfo>();
+            var info = new SignatureInfo(functionName);
+            var signatureArguments = new List<IArgumentInfo>();
 
             // RD data may contain function name(s) without braces
             if (context.Tokens.CurrentToken.TokenType == RTokenType.OpenBrace) {
-                FunctionCall functionCall = new FunctionCall();
+                var functionCall = new FunctionCall();
                 functionCall.Parse(context, context.AstRoot);
 
-                for (int i = 0; i < functionCall.Arguments.Count; i++) {
-                    IAstNode arg = functionCall.Arguments[i];
+                for (var i = 0; i < functionCall.Arguments.Count; i++) {
+                    var arg = functionCall.Arguments[i];
 
                     string argName = null;
                     string argDefaultValue = null;
-                    bool isEllipsis = false;
-                    bool isOptional = false;
+                    var isEllipsis = false;
+                    var isOptional = false;
 
                     ExpressionArgument expArg = arg as ExpressionArgument;
                     if (expArg != null) {
                         argName = context.TextProvider.GetText(expArg.ArgumentValue);
                     } else {
-                        NamedArgument nameArg = arg as NamedArgument;
-                        if (nameArg != null) {
+                        if (arg is NamedArgument nameArg) {
                             argName = context.TextProvider.GetText(nameArg.NameRange);
-                            argDefaultValue = nameArg.DefaultValue != null ? 
+                            argDefaultValue = nameArg.DefaultValue != null ?
                                  RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue)) : string.Empty;
                         } else {
-                            MissingArgument missingArg = arg as MissingArgument;
-                            if (missingArg != null) {
+                            if (arg is MissingArgument missingArg) {
                                 argName = string.Empty;
                             } else {
-                                EllipsisArgument ellipsisArg = arg as EllipsisArgument;
-                                if (ellipsisArg != null) {
+                                if (arg is EllipsisArgument ellipsisArg) {
                                     argName = "...";
                                     isEllipsis = true;
                                 }
@@ -205,7 +202,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                         }
                     }
 
-                    ArgumentInfo argInfo = new ArgumentInfo(argName);
+                    var argInfo = new ArgumentInfo(argName);
                     argInfo.DefaultValue = argDefaultValue;
                     argInfo.IsEllipsis = isEllipsis;
                     argInfo.IsOptional = isOptional; // TODO: actually parse

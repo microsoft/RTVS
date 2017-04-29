@@ -10,9 +10,9 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.RData.Tokens {
     [ExcludeFromCodeCoverage]
+    [Category.Rd.Tokenizer]
     public class TokenizeRdTest : TokenizeTestBase<RdToken, RdTokenType> {
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdKeywords1() {
             var tokens = Tokenize(@" \title", new RdTokenizer());
             tokens.Should().ContainSingle()
@@ -20,7 +20,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdKeywords2() {
             var tokens = Tokenize(@" \title{}", new RdTokenizer());
             tokens.Should().HaveCount(3);
@@ -30,7 +29,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdPragmas1() {
             var tokens = Tokenize("#ifdef\ntext\n#endif", new RdTokenizer());
             tokens.Should().HaveCount(2);
@@ -39,14 +37,12 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdPragmas2() {
             var tokens = Tokenize(" #if\ntext\n #endif", new RdTokenizer());
             tokens.Should().BeEmpty();
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments01() {
             var actualTokens = Tokenize(@"\a1{arg[text \a1[=a2]] text}", new RdTokenizer());
             var expectedTokens = new[]
@@ -66,7 +62,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
 
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments02() {
             var actualTokens = Tokenize(@"\method{as.matrix}{data.frame}(x)", new RdTokenizer());
             var expectedTokens = new[]
@@ -82,7 +77,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments03() {
             var actualTokens = Tokenize(@"\usage{\method{as.matrix}{data.frame}(x)}", new RdTokenizer());
             var expectedTokens = new[]
@@ -101,7 +95,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments04() {
             var actualTokens = Tokenize(@"\ifelse{{latex}{\out[x]{~}}{ }}{}", new RdTokenizer());
             var expectedTokens = new[]
@@ -128,7 +121,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdArguments05() {
             var actualTokens = Tokenize(@"\item{\dots}{ A }", new RdTokenizer());
             var expectedTokens = new[]
@@ -145,7 +137,6 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
         }
 
         [Test]
-        [Category.Rd.Tokenizer]
         public void TokenizeRdVerbationContent() {
             var actualTokens = Tokenize(
 @"\alias{\% \dots %foo}
@@ -162,6 +153,13 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
             };
 
             TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);
+        }
+
+        [Test]
+        public void TokenizeCppFormatContent() {
+            var actualTokens = Tokenize("\\usage{bmp(filename = \"Rplot%03d.jpg\", width = 480)}", new RdTokenizer(false));
+            actualTokens.Should().HaveCount(1);
+            actualTokens[0].Should().Be(RdTokenType.Keyword, 0, 6);
         }
     }
 }

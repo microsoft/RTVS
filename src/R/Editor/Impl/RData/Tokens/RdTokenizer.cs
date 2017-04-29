@@ -15,23 +15,19 @@ namespace Microsoft.R.Editor.RData.Tokens {
     /// https://developer.r-project.org/parseRd.pdf
     /// </summary>
     public class RdTokenizer : BaseTokenizer<RdToken> {
-        private bool _tokenizeRContent;
+        private readonly bool _tokenizeRContent;
         private BlockContentType _currentContentType = BlockContentType.Latex;
 
-        public RdTokenizer() :
-            this(tokenizeRContent: true) {
-        }
+        public RdTokenizer() : this(tokenizeRContent: true) { }
 
         /// <summary>
         /// Creates RD tokenizer.
         /// </summary>
         /// <param name="tokenizeRContent">
-        /// If true, RD tokenizer will use R rokenizer to process 
-        /// content in R-like sections such as \usage. This is 
-        /// the default behavior since it allows colorizer to
-        /// properly display strings and numbers. However, during
-        /// processing of RD data for the function signature help
-        /// and quick info tooltips plain text is preferred.
+        /// If true, RD tokenizer will use R rokenizer to process  content in R-like sections
+        /// such as \usage. This is the default behavior since it allows colorizer to properly
+        /// display strings and numbers. However, during processing of RD data for the function
+        /// signature help and quick info tooltips plain text is preferred.
         /// </param>
         public RdTokenizer(bool tokenizeRContent = true) {
             _tokenizeRContent = tokenizeRContent;
@@ -100,18 +96,19 @@ namespace Microsoft.R.Editor.RData.Tokens {
         }
 
         private bool HandleKeyword() {
-            int start = _cs.Position;
+            var start = _cs.Position;
 
             if (MoveToKeywordEnd()) {
                 AddToken(RdTokenType.Keyword, start, _cs.Position - start);
                 SkipWhitespace();
 
                 if (_cs.CurrentChar == '{' || _cs.CurrentChar == '[') {
-                    string keyword = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
-                    BlockContentType contentType = RdBlockContentType.GetBlockContentType(keyword);
+                    var keyword = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
+                    var contentType = RdBlockContentType.GetBlockContentType(keyword);
 
                     if (!_tokenizeRContent && contentType == BlockContentType.R) {
-                        contentType = BlockContentType.Latex;
+                        SkipToClosingBrace(GetMatchingBrace(_cs.CurrentChar));
+                        return true;
                     }
 
                     if (_currentContentType != contentType) {
@@ -126,15 +123,13 @@ namespace Microsoft.R.Editor.RData.Tokens {
                         HandleKeywordArguments(contentType);
                     }
                 }
-
                 return true;
             }
-
             return false;
         }
 
         private bool MoveToKeywordEnd() {
-            int start = _cs.Position;
+            var start = _cs.Position;
 
             _cs.MoveToNextChar();
             SkipKeyword();
@@ -167,6 +162,23 @@ namespace Microsoft.R.Editor.RData.Tokens {
         }
 
         /// <summary>
+        /// When tokenization of R is not needed, R content is returned
+        /// as a single string token.
+        /// </summary>
+        private void SkipToClosingBrace(char closeBrace) {
+            var braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
+            _cs.MoveToNextChar();
+            while (!_cs.IsEndOfStream()) {
+                if (braceCounter.CountBrace(_cs.CurrentChar)) {
+                    if (braceCounter.Count == 0) {
+                        return;
+                    }
+                }
+                _cs.MoveToNextChar();
+            }
+        }
+
+        /// <summary>
         /// Handles R-like content in RD. This includes handling # and ##
         /// as comments, counting brace nesting, handling "..." as string
         /// (not true in plain RD LaTeX-like content) and colorizing numbers
@@ -181,11 +193,11 @@ namespace Microsoft.R.Editor.RData.Tokens {
         /// </summary>
         /// <param name="closeBrace"></param>
         private void HandleRContent(char closeBrace) {
-            BraceCounter<char> braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
-            int start = _cs.Position;
+            var braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
+            var start = _cs.Position;
 
             while (!_cs.IsEndOfStream()) {
-                bool handled = false;
+                var handled = false;
                 switch (_cs.CurrentChar) {
                     case '\"':
                     case '\'':
@@ -212,10 +224,10 @@ namespace Microsoft.R.Editor.RData.Tokens {
                                 // For example, there are statements like \code{#}.
                                 // Heuristic is to treat text that contains {} or \
                                 // as NOT a comment.
-                                int commentStart = _cs.Position;
+                                var commentStart = _cs.Position;
                                 _cs.SkipToEol();
 
-                                string commentText = _cs.Text.GetText(TextRange.FromBounds(commentStart, _cs.Position));
+                                var commentText = _cs.Text.GetText(TextRange.FromBounds(commentStart, _cs.Position));
                                 _cs.Position = commentStart;
 
                                 if (commentText.IndexOfAny(new char[] { '{', '\\', '}' }) < 0) {
@@ -239,13 +251,13 @@ namespace Microsoft.R.Editor.RData.Tokens {
                             // code examples and do not contain exotic sequences.
 
                             if (!char.IsLetter(_cs.PrevChar) && (_cs.IsDecimal() || _cs.CurrentChar == '-' || _cs.CurrentChar == '.')) {
-                                int sequenceStart = _cs.Position;
+                                var sequenceStart = _cs.Position;
                                 _cs.SkipToWhitespace();
 
                                 if (_cs.Position > sequenceStart) {
-                                    RTokenizer rt = new RTokenizer();
+                                    var rt = new RTokenizer();
 
-                                    string candidate = _cs.Text.GetText(TextRange.FromBounds(sequenceStart, _cs.Position));
+                                    var candidate = _cs.Text.GetText(TextRange.FromBounds(sequenceStart, _cs.Position));
                                     var rTokens = rt.Tokenize(candidate);
 
                                     if (rTokens.Count > 0 && rTokens[0].TokenType == RTokenType.Number) {
@@ -293,10 +305,10 @@ namespace Microsoft.R.Editor.RData.Tokens {
         /// as escapes must themselves be escaped. 
         /// </summary>
         private void HandleVerbatimContent(char closeBrace) {
-            BraceCounter<char> braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
+            var braceCounter = new BraceCounter<char>(new char[] { '{', '}', '[', ']' });
 
             while (!_cs.IsEndOfStream()) {
-                bool handled = false;
+                var handled = false;
 
                 switch (_cs.CurrentChar) {
                     case '\\':
@@ -309,7 +321,7 @@ namespace Microsoft.R.Editor.RData.Tokens {
                         break;
 
                     case '%':
-                        // In 'verbatim' text we handke % as comment
+                        // In 'verbatim' text we handle % as comment
                         // when it is in the beginning of the file
                         if (_cs.Position == 0 || _cs.PrevChar == '\r' || _cs.PrevChar == '\n') {
                             handled = HandleComment();
@@ -341,12 +353,12 @@ namespace Microsoft.R.Editor.RData.Tokens {
         /// <returns></returns>
         private bool HandlePragma() {
             if (_cs.Position == 0 || _cs.PrevChar.IsLineBreak()) {
-                int start = _cs.Position;
+                var start = _cs.Position;
                 SkipUnknown();
 
-                int length = _cs.Position - start;
+                var length = _cs.Position - start;
                 if (length > 1) {
-                    string pragma = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
+                    var pragma = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
                     if (pragma == "#ifdef" || pragma == "#ifndef" || pragma == "#endif") {
                         AddToken(RdTokenType.Pragma, start, length);
                         return true;
@@ -372,7 +384,7 @@ namespace Microsoft.R.Editor.RData.Tokens {
         }
 
         private bool AddBraceToken() {
-            RdTokenType tokenType = RdTokenType.Unknown;
+            var tokenType = RdTokenType.Unknown;
 
             switch (_cs.CurrentChar) {
                 case '{':
@@ -402,9 +414,8 @@ namespace Microsoft.R.Editor.RData.Tokens {
             return false;
         }
 
-        private bool IsEscape() {
-            return _cs.NextChar == '%' || _cs.NextChar == '\\' || _cs.NextChar == '{' || _cs.NextChar == '}' || _cs.NextChar == 'R';
-        }
+        private bool IsEscape()
+            => _cs.NextChar == '%' || _cs.NextChar == '\\' || _cs.NextChar == '{' || _cs.NextChar == '}' || _cs.NextChar == 'R';
 
         /// <summary>
         /// Handle RD comment. Comment starts with %
@@ -450,8 +461,6 @@ namespace Microsoft.R.Editor.RData.Tokens {
             }
         }
 
-        private bool IsIdentifierCharacter() {
-            return (_cs.IsLetter() || _cs.IsDecimal());
-        }
+        private bool IsIdentifierCharacter() => (_cs.IsLetter() || _cs.IsDecimal());
     }
 }
