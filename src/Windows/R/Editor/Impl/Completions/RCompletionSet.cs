@@ -12,11 +12,12 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions {
     internal sealed class RCompletionSet : CompletionSet {
-        private readonly CompletionList _completions;
+        private readonly List<Completion> _completions;
         private readonly FilteredObservableCollection<Completion> _filteredCompletions;
 
-        public RCompletionSet(ITrackingSpan trackingSpan, List<ICompletionEntry> completions) :
+        public RCompletionSet(ITrackingSpan trackingSpan, List<ICompletionEntry> completionEntries) :
             base("R Completion", "R Completion", trackingSpan, Enumerable.Empty<RCompletion>(), Enumerable.Empty<RCompletion>()) {
+            var completions = completionEntries.Select(e => new RCompletion(e));
             _completions = OrderList(completions);
             _filteredCompletions = new FilteredObservableCollection<Completion>(_completions);
         }
@@ -51,8 +52,7 @@ namespace Microsoft.R.Editor.Completions {
             foreach (var c in _completions) {
                 var key = Match(typedText, c.DisplayText, commitChar);
                 if (key > 0) {
-                    List<Completion> list;
-                    if (!matches.TryGetValue(key, out list)) {
+                    if (!matches.TryGetValue(key, out var list)) {
                         list = new List<Completion>();
                         matches[key] = list;
                         maxKey = Math.Max(maxKey, key);
@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Completions {
             }
 
             // Match at least something
-            int i = 0;
+            var i = 0;
             for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
                 if (char.ToLowerInvariant(typedText[i]) != char.ToLowerInvariant(compText[i])) {
                     return i;
@@ -90,7 +90,7 @@ namespace Microsoft.R.Editor.Completions {
             return ApplicableTo.GetText(snapshot);
         }
 
-        private static CompletionList OrderList(IReadOnlyCollection<ICompletionEntry> completions) {
+        private static CompletionList OrderList(IEnumerable<Completion> completions) {
             // Place 'name =' at the top prioritizing argument names
             // Place items starting with non-alpha characters like .Call and &&
             // at the end of the list.
@@ -102,7 +102,7 @@ namespace Microsoft.R.Editor.Completions {
             generalEntries = generalEntries.Except(rtvsNames);
             generalEntries = generalEntries.Except(specialNames);
 
-            var orderedCompletions = new List<ICompletionEntry>();
+            var orderedCompletions = new List<Completion>();
             orderedCompletions.AddRange(argumentNames);
             orderedCompletions.AddRange(generalEntries);
             orderedCompletions.AddRange(specialNames);

@@ -57,7 +57,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             }
 
             public override T GetService<T>(Type type = null) 
-                => base.GetService<T>(type) ?? _compositionContainer.GetExportedValue<T>();
+                => base.GetService<T>(type) ?? _compositionContainer.GetExportedValueOrDefault<T>();
         }
     }
 }

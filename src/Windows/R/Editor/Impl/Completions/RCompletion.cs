@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using System.Windows.Media;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completions {
@@ -11,8 +12,8 @@ namespace Microsoft.R.Editor.Completions {
     /// </summary>
     [DebuggerDisplay("{" + nameof(DisplayText) + "}")]
     public sealed class RCompletion : Completion {
-        public RCompletion(string displayText, string insertionText, string description, ImageSource iconSource) :
-            base(displayText, insertionText, description, iconSource, string.Empty) { }
+        public RCompletion(ICompletionEntry e) :
+            base(e.DisplayText, e.InsertionText, e.Description, e.ImageSource as ImageSource, e.AccessibleText) { }
 
         public bool IsVisible { get; set; } = true;
     }

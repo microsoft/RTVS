@@ -9,9 +9,9 @@ using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Interpreters;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Fixtures {
@@ -30,7 +30,6 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Windows.dll",
             "Microsoft.R.Components.Test.dll",
-            "Microsoft.R.Support.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Windows.dll",
             "Microsoft.R.Editor.dll",
@@ -43,6 +42,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             serviceManager
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
+                .AddEditorServices()
                 .AddService(new EditorSupportMock())
                 .AddService(new TestImageService())
                 .AddService(new TestRSettings(testInput.FileSytemSafeName))

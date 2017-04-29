@@ -27,7 +27,6 @@ namespace Microsoft.Languages.Editor.Text {
 
         public EditorBuffer(ITextBuffer textBuffer, ITextDocumentFactoryService textDocumentFactoryService = null) {
             Check.ArgumentNull(nameof(textBuffer), textBuffer);
-            Check.ArgumentNull(nameof(textDocumentFactoryService), textDocumentFactoryService);
 
             _textBuffer = textBuffer;
             _textBuffer.ChangedHighPriority += OnTextBufferChangedHighPriority;

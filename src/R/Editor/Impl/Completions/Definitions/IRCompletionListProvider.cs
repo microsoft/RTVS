@@ -9,7 +9,7 @@ namespace Microsoft.R.Editor.Completions
     /// <summary>
     /// An interface implemented by R completion provider that supplies
     /// list of entries to intellisense. There may be more than one provider.
-    /// Providers are exported via MEF.
+    /// Providers may be exported via MEF.
     /// </summary>
     public interface IRCompletionListProvider
     {

@@ -13,7 +13,7 @@ using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Interpreters;
 
-namespace Microsoft.R.Support.Test.Utility {
+namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public sealed class TestRSettings : IRSettings {
         private readonly ConnectionInfo[] _connections;

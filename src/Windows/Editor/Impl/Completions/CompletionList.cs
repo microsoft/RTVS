@@ -12,8 +12,10 @@ namespace Microsoft.Languages.Editor.Completions {
         // Once this list starts being used by completion, it never changes, so don't fire the event
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public CompletionList(IEnumerable<ICompletionEntry> completions) :
-            base(completions.Select(c => new Completion(c.DisplayText, c.InsertionText, c.Description, (ImageSource)c.ImageSource, c.AccessibleText))) { }
+        public CompletionList(IEnumerable<Completion> completions) : base(completions) { }
+
+        public CompletionList() {
+        }
 
         public void FireCollectionChanged() => CollectionChanged?.Invoke(this, null);
     }
