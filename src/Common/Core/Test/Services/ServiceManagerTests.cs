@@ -18,12 +18,12 @@ namespace Microsoft.Common.Core.Test.Services {
         [Test]
         public void GetAccessToNonCreatedService_Recursion() {
             _serviceManager
-                .AddService<I1>(() => {
-                    var i2 = _serviceManager.GetService<I2>();
+                .AddService<I1>((s) => {
+                    var i2 = s.GetService<I2>();
                     return new C1();
                 })
-                .AddService<I2>(() => {
-                    var i1 = _serviceManager.GetService<I1>();
+                .AddService<I2>((s) => {
+                    var i1 = s.GetService<I1>();
                     return new C2();
                 });
 
@@ -61,7 +61,7 @@ namespace Microsoft.Common.Core.Test.Services {
             a = () => _serviceManager.AddService<I2>(new C2());
             a.ShouldThrow<ObjectDisposedException>();
 
-            a = () => _serviceManager.AddService<I2>(() => new C2());
+            a = () => _serviceManager.AddService<I2>((s) => new C2());
             a.ShouldThrow<ObjectDisposedException>();
 
             a = () => _serviceManager.GetService<I1>();

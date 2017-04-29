@@ -36,9 +36,9 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Components.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Debugger.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Common.Wpf.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Wpf.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ImageCatalog.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.Dialog.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />

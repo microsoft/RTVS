@@ -4,7 +4,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Microsoft.R.Wpf {
+namespace Microsoft.R.Wpf.Controls {
     /// <summary>
     /// Interaction logic for IconWithOverlay.xaml
     /// </summary>

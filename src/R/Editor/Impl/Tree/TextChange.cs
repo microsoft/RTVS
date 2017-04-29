@@ -70,9 +70,19 @@ namespace Microsoft.R.Editor.Tree {
             if (!other.IsEmpty) {
                 OldRange = TextRange.Union(OldRange, other.OldRange);
                 NewRange = TextRange.Union(NewRange, other.NewRange);
-                OldTextProvider = other.OldTextProvider.Version < this.OldTextProvider.Version ? other.OldTextProvider : this.OldTextProvider;
-                NewTextProvider = other.NewTextProvider.Version > this.NewTextProvider.Version ? other.NewTextProvider : this.NewTextProvider;
-                Version = Math.Max(this.Version, other.Version);
+
+                if (OldTextProvider == null) {
+                    OldTextProvider = other.OldTextProvider;
+                } else {
+                    OldTextProvider = other.OldTextProvider.Version < OldTextProvider.Version ? other.OldTextProvider : OldTextProvider;
+                }
+
+                if (NewTextProvider == null) {
+                    NewTextProvider = other.NewTextProvider;
+                } else {
+                    NewTextProvider = other.NewTextProvider.Version > NewTextProvider.Version ? other.NewTextProvider : NewTextProvider;
+                }
+                Version = NewTextProvider.Version;
             }
         }
 

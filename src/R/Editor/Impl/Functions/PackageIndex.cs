@@ -38,6 +38,12 @@ namespace Microsoft.R.Editor.Functions {
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
+        public static IPackageIndex CreateService(IServiceContainer services) {
+            var intellisenseSession = services.GetService<IIntellisenseRSession>();
+            var functionIndex = services.GetService<IFunctionIndex>();
+            return new PackageIndex(services, intellisenseSession, functionIndex);
+        }
+
         public PackageIndex(IServiceContainer services, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _host = host;
             _functionIndex = functionIndex;
@@ -57,9 +63,7 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private void OnSessionConnected(object sender, RConnectedEventArgs e) {
-            BuildIndexAsync().DoNotWait();
-        }
+        private void OnSessionConnected(object sender, RConnectedEventArgs e) => BuildIndexAsync().DoNotWait();
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (e.IsConnected) {
@@ -67,9 +71,7 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private void OnPackagesChanged(object sender, EventArgs e) {
-            UpdateInstalledPackagesAsync().DoNotWait();
-        }
+        private void OnPackagesChanged(object sender, EventArgs e) => UpdateInstalledPackagesAsync().DoNotWait();
 
         #region IPackageIndex
         /// <summary>

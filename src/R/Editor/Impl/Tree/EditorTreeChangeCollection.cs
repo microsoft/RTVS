@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Changes to apply to the tree
         /// </summary>
-        public IEnumerable<EditorTreeChange> Changes { get; }
+        public IEnumerable<EditorTreeChange> Changes => _changes;
 
         /// <summary>
         /// Version of the text snaphot the changes were generated agaist.
@@ -28,8 +28,7 @@ namespace Microsoft.R.Editor.Tree {
         public bool FullParseRequired { get; }
 
         public EditorTreeChangeCollection(int _snapshotVersion, bool fullParseRequired)
-            : this(new Queue<EditorTreeChange>(), _snapshotVersion, fullParseRequired) {
-        }
+            : this(new Queue<EditorTreeChange>(), _snapshotVersion, fullParseRequired) { }
 
         public EditorTreeChangeCollection(IEnumerable<EditorTreeChange> changes, int _snapshotVersion, bool fullParseRequired) {
             _changes.AddRange(changes);
@@ -37,8 +36,6 @@ namespace Microsoft.R.Editor.Tree {
             FullParseRequired = fullParseRequired;
         }
 
-        public void Append(EditorTreeChange change) {
-            _changes.Add(change);
-        }
+        public void Append(EditorTreeChange change) => _changes.Add(change);
     }
 }

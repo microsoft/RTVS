@@ -29,6 +29,8 @@ namespace Microsoft.R.Editor.Functions {
         private readonly bool _unitTests;
         private IEnumerable<string> _loadedPackages;
 
+        public static IIntellisenseRSession CreateService(IServiceContainer services) => new IntelliSenseRSession(services);
+
         public IntelliSenseRSession(IServiceContainer services) {
             Services = services;
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();

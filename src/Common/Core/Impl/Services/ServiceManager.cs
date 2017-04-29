@@ -48,10 +48,10 @@ namespace Microsoft.Common.Core.Services {
         /// Adds on-demand created service
         /// </summary>
         /// <param name="factory">Service factory</param>
-        public virtual IServiceManager AddService<T>(Func<T> factory) where T : class {
+        public virtual IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class {
             _disposeToken.ThrowIfDisposed();
 
-            var lazy = new Lazy<object>(() => factory());
+            var lazy = new Lazy<object>(() => factory(this));
             Check.InvalidOperation(() => _s.TryAdd(typeof(T), lazy), "Service already exists");
             ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             return this;

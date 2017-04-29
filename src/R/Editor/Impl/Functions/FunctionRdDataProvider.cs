@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Functions {
@@ -15,6 +16,9 @@ namespace Microsoft.R.Editor.Functions {
     /// </summary>
     public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
         private readonly IIntellisenseRSession _host;
+
+        public static IFunctionRdDataProvider CreateService(IServiceContainer services)
+            => new FunctionRdDataProvider(services.GetService<IIntellisenseRSession>());
 
         public FunctionRdDataProvider(IIntellisenseRSession host) {
             _host = host;

@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Editor;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -61,7 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new RegistryImpl())
                 .AddService(new MicrosoftRClientInstaller())
                 .AddWindowsRInterpretersServices()
-                .AddWindowsHostClientServices();
+                .AddWindowsHostClientServices()
+                .AddEditorServices();
             // TODO: add more
 
             settings.LoadSettings();

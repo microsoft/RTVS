@@ -148,9 +148,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
         /// <returns></returns>
         private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(IRIntellisenseContext context) {
 
-            IEnumerable<string> loadedPackages = _session?.LoadedPackageNames ?? Enumerable.Empty<string>();
-            IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
+            var loadedPackages = _session?.LoadedPackageNames ?? Enumerable.Empty<string>();
+            var filePackageNames = context.AstRoot.GetFilePackageNames();
+            var allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 
             return _packageIndex.GetPackagesInfoAsync(allPackageNames);
         }
