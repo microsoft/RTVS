@@ -27,10 +27,10 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         private readonly Dictionary<ITextBuffer, IContentType> _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
         private readonly ITextDocumentFactoryService _tdfs;
         private readonly IIdleTimeService _idleTime;
+        private readonly IApplication _application;
         private Action _pendingCheckForViewlessTextBuffers;
 
-        protected ICoreShell Shell { get; private set; }
-        protected IServiceContainer Services => Shell.Services;
+        protected IServiceContainer Services { get; }
 
         // Keep track of how many views are using each text buffer
         protected Dictionary<ITextBuffer, TextViewData> TextBufferToViewData { get; } = new Dictionary<ITextBuffer, TextViewData>();
@@ -38,21 +38,22 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         // The editor should only import one of these objects, so cache it
         private static IList<TextViewConnectionListener> _allInstances;
 
-        protected TextViewConnectionListener(ICoreShell coreShell) {
-            Shell = coreShell;
+        protected TextViewConnectionListener(IServiceContainer services) {
+            Services = services;
 
-            var ep = coreShell.GetService<ExportProvider>();
+            var ep = services.GetService<ExportProvider>();
             _textBufferListeners = Orderer.Order(ep.GetExports<ITextBufferListener, IOrderedComponentContentTypes>());
             _textViewListeners = ep.GetExports<ITextViewListener, IOrderedComponentContentTypes>();
             _textViewListeners = ep.GetExports<ITextViewListener, IOrderedComponentContentTypes>();
-            _tdfs = coreShell.GetService<ITextDocumentFactoryService>();
+            _tdfs = services.GetService<ITextDocumentFactoryService>();
 
             _allInstances = _allInstances ?? new List<TextViewConnectionListener>();
             // This class is never disposed, so it always stays in the global list
             _allInstances.Add(this);
-            _idleTime = Shell.GetService<IIdleTimeService>();
+            _idleTime = services.GetService<IIdleTimeService>();
+            _application = services.GetService<IApplication>();
 
-            Shell.Terminating += OnTerminateApp;
+            _application.Terminating += OnTerminateApp;
         }
 
         #region IWpfTextViewCreationListener
@@ -150,6 +151,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
                 }
                 TextBufferToViewData.Clear();
             }
+            _application.Terminating -= OnTerminateApp;
         }
 
         /// <summary>
@@ -192,7 +194,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// needs to access native VS adapters, like IVsTextView.
         /// </summary>
         protected virtual void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
-            var cs = Shell.GetService<ICompositionService>();
+            var cs = Services.GetService<ICompositionService>();
             var listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(cs, textBuffer.ContentType);
 
             foreach (var listener in listeners) {

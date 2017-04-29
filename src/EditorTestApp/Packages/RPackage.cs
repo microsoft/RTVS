@@ -23,7 +23,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [Order(Before = "Default")]
     internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener {
         [ImportingConstructor]
-        public TestRTextViewConnectionListener(ICoreShell shell): base(shell) { }
+        public TestRTextViewConnectionListener(ICoreShell shell): base(shell.Services) { }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             InitEditorInstance(textBuffer);

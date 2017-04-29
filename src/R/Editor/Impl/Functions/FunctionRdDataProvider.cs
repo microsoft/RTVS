@@ -6,8 +6,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Functions {
@@ -72,8 +72,8 @@ namespace Microsoft.R.Editor.Functions {
 
         private string GetRtvsFunctionRdData(string functionName) {
             var fs = _host.Services.GetService<IFileSystem>();
-            var afs = _host.Services.GetService<IApplicationFolderService>();
-            var dataFilePath = Path.Combine(afs.ApplicationFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
+            var app = _host.Services.GetService<IApplication>();
+            var dataFilePath = Path.Combine(app.ApplicationFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
             return fs.FileExists(dataFilePath) ? fs.ReadAllText(dataFilePath) : string.Empty;
         }
     }

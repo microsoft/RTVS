@@ -12,29 +12,10 @@ namespace Microsoft.Common.Core.Shell {
     /// </summary>
     public interface ICoreShell {
         /// <summary>
-        /// Application name to use in log, system events, etc.
-        /// </summary>
-        string ApplicationName { get; }
-
-        /// <summary>
-        /// Application locale ID (LCID)
-        /// </summary>
-        int LocaleId { get; }
-
-        /// <summary>
         /// Application-global services access
         /// </summary>
         IServiceContainer Services { get; }
 
-        /// <summary>
-        /// Fires when host application has completed it's startup sequence
-        /// </summary>
-        event EventHandler<EventArgs> Started;
-
-        /// <summary>
-        /// Fires when host application is terminating
-        /// </summary>
-        event EventHandler<EventArgs> Terminating;
 
         /// <summary>
         /// Tells if code runs in unit test environment

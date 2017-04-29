@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [Order(Before = "Default")]
     internal sealed class TestMdTextViewConnectionListener : MdTextViewConnectionListener {
         [ImportingConstructor]
-        public TestMdTextViewConnectionListener(ICoreShell coreShell): base(coreShell) { }
+        public TestMdTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) { }
     }
 
     [ExcludeFromCodeCoverage]

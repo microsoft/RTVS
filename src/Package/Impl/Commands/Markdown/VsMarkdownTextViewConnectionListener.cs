@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
         private CommandTargetToOleShim _oleController;
 
         [ImportingConstructor]
-        public VsMarkdownTextViewConnectionListener(ICoreShell coreShell): base(coreShell) {
+        public VsMarkdownTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) {
             _adapterService = Services.GetService<IVsEditorAdaptersFactoryService>();
         }
 

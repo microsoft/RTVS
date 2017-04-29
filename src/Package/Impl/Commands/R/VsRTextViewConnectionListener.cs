@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
         private CommandTargetToOleShim _oleController;
 
         [ImportingConstructor]
-        public VsRTextViewConnectionListener(ICoreShell coreShell): base(coreShell) {
+        public VsRTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) {
             _adapterService = coreShell.GetService< IVsEditorAdaptersFactoryService>();
         }
 

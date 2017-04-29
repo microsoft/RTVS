@@ -17,11 +17,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ICoreShell))]
     public sealed partial class VsAppShell : ICoreShell, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
+        private readonly VsApplication _application;
 
         public VsAppShell() {
             Debug.Assert(_instance == null, "VsAppShell is a singleton and cannot be created twice");
             _instance = this;
             _services = new VsServiceManager(this);
+            _application = new VsApplication(this);
         }
 
         /// <summary>
@@ -31,8 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static ICoreShell Current {
             get {
-                _instance  = _instance ?? new VsAppShell();
-                if(!_instance.Services.AllServices.Any()) {
+                _instance = _instance ?? new VsAppShell();
+                if (!_instance.Services.AllServices.Any()) {
                     // Assuming test mode since otherwise VS package 
                     // would have called Initialize() by now.
                     _instance.IsUnitTestEnvironment = true;
@@ -42,5 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return _instance.IsUnitTestEnvironment ? _instance : GetInstance();
             }
         }
+
+        public bool IsUnitTestEnvironment { get; private set; }
     }
 }

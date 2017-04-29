@@ -266,8 +266,8 @@ namespace Microsoft.R.Editor.Functions {
 
         public string CacheFolderPath {
             get {
-                var afs = _host.Services.GetService<IApplicationFolderService>();
-                return Path.Combine(afs.ApplicationDataFolder, @"Microsoft\RTVS\IntelliSense\");
+                var app = _host.Services.GetService<IApplication>();
+                return Path.Combine(app.ApplicationDataFolder, @"IntelliSense\");
             }
         }
 

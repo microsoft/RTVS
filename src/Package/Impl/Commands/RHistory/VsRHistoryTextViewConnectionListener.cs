@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
     [Order(Before = "Default")]
     internal sealed class VsRHistoryTextViewConnectionListener : RTextViewConnectionListener {
         [ImportingConstructor]
-        public VsRHistoryTextViewConnectionListener(ICoreShell coreShell): base(coreShell) { }
+        public VsRHistoryTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) { }
 
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
             // Only attach controllers if the document is editable
