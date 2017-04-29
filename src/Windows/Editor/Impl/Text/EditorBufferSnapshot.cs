@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.Languages.Editor.Text {
     public sealed class EditorBufferSnapshot: TextProvider, IEditorBufferSnapshot {
         private readonly ITextSnapshot _snapshot;
-        public EditorBufferSnapshot(IEditorBuffer editorBuffer, ITextSnapshot snapshot): base(snapshot) {
+        public EditorBufferSnapshot(ITextSnapshot snapshot): base(snapshot) {
             _snapshot = snapshot;
         }
 

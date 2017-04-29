@@ -35,15 +35,15 @@ namespace Microsoft.Languages.Editor.Text {
 
         public ISnapshotPoint GetCaretPosition(IEditorBuffer editorBuffer) {
             var point = _textView.GetCaretPosition(editorBuffer);
-            return point.HasValue ? new EditorSnapshotPoint(editorBuffer.CurrentSnapshot, point.Value) : null;
+            return point.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.CurrentSnapshot, point.Value) : null;
         }
 
-        public ISnapshotPoint MapToView(ISnapshotPoint point) {
+        public ISnapshotPoint MapToView(IEditorBufferSnapshot snapshot, int position) {
             var target = _textView.BufferGraph
                 .MapUpToBuffer(
-                    new SnapshotPoint(point.Snapshot.As<ITextSnapshot>(), point.Position), 
+                    new SnapshotPoint(snapshot.As<ITextSnapshot>(), position), 
                     PointTrackingMode.Positive, PositionAffinity.Successor, _textView.TextBuffer);
-            return target.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.ToEditorBuffer().CurrentSnapshot, target.Value) : null;
+            return target.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.CurrentSnapshot, target.Value) : null;
         }
 
         public static IEditorView Create(ITextView textView) 

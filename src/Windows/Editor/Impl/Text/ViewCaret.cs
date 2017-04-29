@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Text {
         public IViewCaretPosition Position {
             get {
                 var p = _textView.Caret.Position.BufferPosition;
-                return new CaretPosition(new EditorSnapshotPoint(p.Snapshot.TextBuffer.ToEditorBuffer().CurrentSnapshot, p), _textView.Caret.Position.VirtualSpaces);
+                return new CaretPosition(new EditorSnapshotPoint(p.Snapshot.TextBuffer.CurrentSnapshot, p), _textView.Caret.Position.VirtualSpaces);
             }
         }
 

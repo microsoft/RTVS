@@ -141,7 +141,7 @@ namespace Microsoft.R.Editor.Formatting {
             indentLine = rTextBuffer.CurrentSnapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
 
             // Map new caret position back to the view
-            var positionInView = editorView.MapToView(new EditorSnapshotPoint(rTextBuffer.CurrentSnapshot, indentLine.Start));
+            var positionInView = editorView.MapToView(rTextBuffer.CurrentSnapshot, indentLine.Start);
             if (positionInView != null) {
                 var viewIndentLine = editorView.EditorBuffer.CurrentSnapshot.GetLineFromPosition(positionInView.Position);
                 editorView.Caret.MoveTo(viewIndentLine.Start, innerIndentSize);

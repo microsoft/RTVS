@@ -76,7 +76,13 @@ namespace Microsoft.Common.Core.Services {
         /// <typeparam name="T">Service type</typeparam>
         /// <returns>Service instance or null if it doesn't exist</returns>
         public virtual T GetService<T>(Type type = null) where T : class {
-            _disposeToken.ThrowIfDisposed();
+            if (_disposeToken.IsDisposed) {
+                // Do not throw. When editor text buffer is closed, the associated service manager
+                // is disposed. However, some actions may still hold on the text buffer reference
+                // and actually determine if buffer is closed by checking if editor document 
+                // is still attached as a service.
+                return null;
+            }
 
             type = type ?? typeof(T);
             if (!_s.TryGetValue(type, out object value)) {

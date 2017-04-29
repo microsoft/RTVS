@@ -93,7 +93,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
             var packageIndex = _services.GetService<IPackageIndex>();
 
             if (ast.TextProvider.IsInObjectMemberName(context.Position)) {
-                providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, _imageService));
+                 providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, _imageService));
                 return providers;
             }
 

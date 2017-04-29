@@ -16,6 +16,6 @@ namespace Microsoft.Languages.Editor.Text {
         public int LineNumber => _line.LineNumber;
         public string GetText() => _line.GetText();
         public override void Shift(int offset) { }
-        public IEditorBufferSnapshot Snapshot => new EditorBufferSnapshot(_line.Snapshot.TextBuffer.ToEditorBuffer(), _line.Snapshot);
+        public IEditorBufferSnapshot Snapshot => new EditorBufferSnapshot(_line.Snapshot);
     }
 }

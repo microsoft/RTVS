@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -31,6 +32,9 @@ namespace Microsoft.R.Editor.Data {
         /// </summary>
         private readonly Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
         private bool _updating;
+
+        public static IVariablesProvider CreateService(IServiceContainer services)
+            => new WorkspaceVariableProvider(services.GetService<IRInteractiveWorkflowProvider>());
 
         public WorkspaceVariableProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
 

@@ -33,6 +33,6 @@ namespace Microsoft.Languages.Editor.Text {
         /// </summary>
         IEditorSelection Selection { get; }
 
-        ISnapshotPoint MapToView(ISnapshotPoint point);
+        ISnapshotPoint MapToView(IEditorBufferSnapshot snapshot, int position);
     }
 }

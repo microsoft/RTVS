@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.VisualStudio.Text;
+
 namespace Microsoft.Languages.Editor.Text {
     public sealed class EditorSnapshotPoint : ISnapshotPoint {
-        public EditorSnapshotPoint(IEditorBufferSnapshot snapshot, int position) {
-            Snapshot = snapshot;
+        public EditorSnapshotPoint(ITextSnapshot snapshot, int position) {
+            Snapshot = new EditorBufferSnapshot(snapshot);
             Position = position;
         }
 

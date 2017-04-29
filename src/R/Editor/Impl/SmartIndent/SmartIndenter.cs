@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.SmartIndent {
         public int? GetDesiredIndentation(IEditorLine line) {
             var res = GetDesiredIndentation(line, _settings.IndentStyle);
             if (res != null && line.Snapshot.EditorBuffer != _view.EditorBuffer) {
-                var target = _view.MapToView(new EditorSnapshotPoint(line.Snapshot, line.Start));
+                var target = _view.MapToView(line.Snapshot, line.Start);
                 if (target != null) {
                     // The indentation level is relative to the line in the text view when
                     // we were created, not to the line we were provided with on this call.
