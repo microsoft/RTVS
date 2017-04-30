@@ -10,7 +10,7 @@ namespace Microsoft.Markdown.Editor.Test {
     [ExcludeFromCodeCoverage]
     public class MarkdownEditorServicesFixture : REditorServicesFixture {
         protected override IEnumerable<string> GetAssemblyNames() => base.GetAssemblyNames().Concat(new[] {
-            "Microsoft.Markdown.Editor.dll",
+            "Microsoft.Markdown.Editor.Windows.dll",
             "Microsoft.Markdown.Editor.Test.dll"
         });
     }

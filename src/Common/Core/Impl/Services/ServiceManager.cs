@@ -93,19 +93,15 @@ namespace Microsoft.Common.Core.Services {
         }
 
         public virtual void RemoveService(object service) {
-            _disposeToken.ThrowIfDisposed();
             var key = AllServices.FirstOrDefault(x => _s.TryGetValue(x, out object value));
-            if (_s.TryRemove(key, out object dummy)) {
-                ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(key));
+            if (key != null) {
+                if (_s.TryRemove(key, out object dummy)) {
+                    ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(key));
+                }
             }
         }
 
-        public virtual IEnumerable<Type> AllServices {
-            get {
-                _disposeToken.ThrowIfDisposed();
-                return _s.Keys.ToList();
-            }
-        }
+        public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
 
         public virtual IEnumerable<T> GetServices<T>() where T : class {
             _disposeToken.ThrowIfDisposed();

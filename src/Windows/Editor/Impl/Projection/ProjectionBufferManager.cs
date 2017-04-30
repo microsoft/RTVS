@@ -17,21 +17,19 @@ namespace Microsoft.Languages.Editor.Projection {
     /// Manages the projection buffer for the primary language
     /// </summary>
     public sealed class ProjectionBufferManager : IProjectionBufferManager {
-        private const string _inertContentTypeName = "inert";
-
-        private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private int? _savedCaretPosition;
 
         public ProjectionBufferManager(ITextBuffer diskBuffer, IServiceContainer services, string topLevelContentTypeName, string secondaryContentTypeName) {
             DiskBuffer = diskBuffer;
 
             var projectionBufferFactoryService = services.GetService<IProjectionBufferFactoryService>();
-            _contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
+            var contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
 
-            var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
+            var contentType = contentTypeRegistryService.GetContentType(topLevelContentTypeName);
             ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
+            EditorBuffer.Create(ViewBuffer, services.GetService<ITextDocumentFactoryService>());
 
-            contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
+            contentType = contentTypeRegistryService.GetContentType(secondaryContentTypeName);
             ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
             DiskBuffer.AddService(this);

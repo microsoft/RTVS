@@ -26,8 +26,6 @@ namespace Microsoft.Languages.Editor.Completions {
         protected ICompletionBroker CompletionBroker { get; set; }
         protected IServiceContainer Services { get; }
 
-        private readonly ViewCompletionBroker _viewCompletionBroker;
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected CompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services) {
             Services = services;
@@ -37,8 +35,6 @@ namespace Microsoft.Languages.Editor.Completions {
             CompletionBroker = Services.GetService<ICompletionBroker>();
             QuickInfoBroker = Services.GetService<IQuickInfoBroker>();
             SignatureBroker = Services.GetService<ISignatureHelpBroker>();
-
-            _viewCompletionBroker = new ViewCompletionBroker(Services, textView.ToEditorView());
         }
 
         public abstract void ConnectSubjectBuffer(ITextBuffer subjectBuffer);

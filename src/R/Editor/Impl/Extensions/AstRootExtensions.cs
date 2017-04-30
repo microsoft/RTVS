@@ -52,6 +52,24 @@ namespace Microsoft.R.Editor {
             return null;
         }
 
+        public static string GetFunctionName(this AstRoot ast, int position) {
+            IAstNode node;
+            ast.GetPositionNode(position, out node);
+            if (node == null) {
+                return null;
+            }
+
+            // In abc(de|f(x)) first find inner function, then outer.
+            FunctionCall fc;
+            if (node is TokenNode && node.Parent is FunctionCall) {
+                fc = (FunctionCall)node.Parent;
+            } else {
+                fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+            }
+            var nameRange = fc?.RightOperand as TokenNode;
+            return nameRange != null ? ast.TextProvider.GetText(nameRange) : null;
+        }
+
         public static bool GetFunction(this AstRoot astRoot, ref int position, out FunctionCall functionCall, out Variable functionVariable) {
             // Note that we do not want just the deepest call since in abc(def()) 
             // when position is over 'def' we actually want signature help for 'abc' 

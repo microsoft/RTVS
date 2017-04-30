@@ -13,6 +13,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         }
 
         public event EventHandler<EventArgs> Idle;
+#pragma warning disable 67
         public event EventHandler<EventArgs> Closing;
     }
 }

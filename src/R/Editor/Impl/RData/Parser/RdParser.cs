@@ -71,7 +71,10 @@ namespace Microsoft.R.Editor.RData.Parser {
                     } else {
                         context.Tokens.Advance(2);
                     }
-                } else {
+                }
+
+                if (token == context.Tokens.CurrentToken) {
+                    // If token is not recognized, move on
                     context.Tokens.MoveToNextToken();
                 }
             }

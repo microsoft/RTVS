@@ -102,7 +102,7 @@ namespace Microsoft.R.Editor.Formatting {
                     new TextStream(spanText), new TextStream(formattedText),
                     oldTokens, newTokens,
                     formatRange,
-                    Resources.AutoFormat, selectionTracker,
+                    Microsoft.R.Editor.Resources.AutoFormat, selectionTracker,
                     () => {
                         var ast = UpdateAst(editorBuffer);
                         // Apply indentation

@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Signatures {
             _view = session.View;
             _view.Caret.PositionChanged += OnCaretPositionChanged;
 
-            _completionBroker = _view.GetService<IViewCompletionBroker>();
+            _completionBroker = session.Services.GetService<IViewCompletionBroker>();
             Debug.Assert(_completionBroker != null);
 
             _editorBuffer = textBuffer;
@@ -151,7 +151,7 @@ namespace Microsoft.R.Editor.Signatures {
             if (_session != null) {
                 var position = e.Start + e.NewLength;
                 if (position < _initialPosition) {
-                    _completionBroker.DismissSignatureSession();
+                    _completionBroker.DismissSignatureSession(_view);
                 } else {
                     UpdateCurrentParameter();
                 }
@@ -163,8 +163,8 @@ namespace Microsoft.R.Editor.Signatures {
                 if (IsSameSignatureContext(_view, _editorBuffer, _session.Services)) {
                     UpdateCurrentParameter();
                 } else {
-                    _completionBroker.DismissSignatureSession();
-                    _completionBroker.TriggerSignatureSession();
+                    _completionBroker.DismissSignatureSession(_view);
+                    _completionBroker.TriggerSignatureSession(_view);
                 }
             } else {
                 e.View.Caret.PositionChanged -= OnCaretPositionChanged;
@@ -188,7 +188,7 @@ namespace Microsoft.R.Editor.Signatures {
                             }
                         }, null, GetType());
                     } else {
-                        _completionBroker.DismissSignatureSession();
+                        _completionBroker.DismissSignatureSession(_view);
                     }
                 }
             }

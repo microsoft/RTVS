@@ -17,7 +17,6 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
     public sealed class SignatureHelpSessionMock : ISignatureHelpSession {
         public SignatureHelpSessionMock(IServiceContainer services, ITextBuffer textBuffer, int caretPosition) {
             TextView = new TextViewMock(textBuffer, caretPosition);
-            var broker = new ViewCompletionBroker(services, TextView.ToEditorView());
         }
 
         public SnapshotPoint SnapshotPoint { get; set; }

@@ -68,6 +68,17 @@ is.matrix(x)
         }
 
         [Test]
+        public void GetRdFunctionArgumentsTest03() {
+            const string rdData = @"
+\title{Parentheses and Braces}\name{Paren}\alias{Paren}\alias{(}\alias{{}\keyword{programming}\description{
+  Open parenthesis, \code{(}, and open brace, \code{{}, are \code{\link{.Primitive}} functions in \R.
+}\usage{
+}";
+            var functionInfos = RdParser.GetFunctionInfos("package", rdData);
+            functionInfos.Should().BeEmpty();
+        }
+
+        [Test]
         public void GetRdFunctionArgumentsDescriptionsTest01() {
             const string rdData = @"\alias{abind}
 \usage {

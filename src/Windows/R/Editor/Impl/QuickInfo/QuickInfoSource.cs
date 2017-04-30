@@ -54,43 +54,49 @@ namespace Microsoft.R.Editor.QuickInfo {
         internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
                                               Action<object, string> retriggerAction, string packageName) {
-            applicableToSpan = null;
-            var functionName = ast.GetFunctionNameFromBuffer(ref position, out int signatureEnd);
+            int signatureEnd = position;
+            var snapshot = session.TextView.TextBuffer.CurrentSnapshot;
+
+            position = Math.Min(signatureEnd, position);
+            var start = Math.Min(position, snapshot.Length);
+            var end = Math.Min(signatureEnd, snapshot.Length);
+            IFunctionInfo functionInfo = null;
+
+            applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
+            packageName = packageName ?? _packageName;
+            _packageName = null;
+
+            // Get function name from the AST. We don't use signature support here since
+            // when caret or mouse is inside function arguments such as in abc(de|f(x)) 
+            // it gives information of the outer function since signature is about help
+            // on the function arguments.
+            var functionName = ast.GetFunctionName(position);
             if (!string.IsNullOrEmpty(functionName)) {
-                var snapshot = session.TextView.TextBuffer.CurrentSnapshot;
-
-                position = Math.Min(signatureEnd, position);
-                var start = Math.Min(position, snapshot.Length);
-                var end = Math.Min(signatureEnd, snapshot.Length);
-
-                applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
-                packageName = packageName ?? _packageName;
-                _packageName = null;
-
-                var functionInfo = _functionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
-                if (functionInfo?.Signatures != null) {
-                    foreach (var sig in functionInfo.Signatures) {
-                        string signatureString = sig.GetSignatureString(functionName);
-                        int wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
-                        string text;
-
-                        if (string.IsNullOrWhiteSpace(functionInfo.Description)) {
-                            text = string.Empty;
-                        } else {
-                            // VS may end showing very long tooltip so we need to keep 
-                            // description reasonably short: typically about
-                            // same length as the function signature.
-                            text = signatureString + "\r\n" + functionInfo.Description.Wrap(wrapLength);
-                        }
-
-                        if (text.Length > 0) {
-                            quickInfoContent.Add(text);
-                            return true;
-                        }
-                    }
-                }
+                functionInfo = _functionIndex.GetFunctionInfo(functionName, packageName, retriggerAction, session);
+            }
+            if (functionInfo?.Signatures == null) {
+                return false;
             }
 
+            foreach (var sig in functionInfo.Signatures) {
+                var signatureString = sig.GetSignatureString(functionName);
+                var wrapLength = Math.Min(SignatureInfo.MaxSignatureLength, signatureString.Length);
+                string text;
+
+                if (string.IsNullOrWhiteSpace(functionInfo.Description)) {
+                    text = string.Empty;
+                } else {
+                    // VS may end showing very long tooltip so we need to keep 
+                    // description reasonably short: typically about
+                    // same length as the function signature.
+                    text = signatureString + "\r\n" + functionInfo.Description.Wrap(wrapLength);
+                }
+
+                if (text.Length > 0) {
+                    quickInfoContent.Add(text);
+                    return true;
+                }
+            }
             return false;
         }
         #endregion

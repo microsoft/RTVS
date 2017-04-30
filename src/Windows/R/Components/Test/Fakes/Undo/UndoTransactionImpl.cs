@@ -30,7 +30,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
             Check.ArgumentNull(nameof(history), _history);
 
             _parent = parent as UndoTransactionImpl;
-            Check.ArgumentNull(nameof(parent), _parent);
+            Check.Argument(nameof(parent), () => _parent != null || parent == null);
 
             Description = description;
 

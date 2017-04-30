@@ -7,11 +7,11 @@ using Microsoft.Languages.Editor.Text;
 namespace Microsoft.Languages.Editor.Completions {
     public interface IViewCompletionBroker {
         IReadOnlyList<IEditorIntellisenseSession> GetSessions(IEditorView view);
-        void TriggerCompletionSession();
-        void DismissCompletionSession();
-        void TriggerSignatureSession();
-        void DismissSignatureSession();
-        void TriggerQuickInfoSession();
-        void DismissQuickInfoSession();
+        void TriggerCompletionSession(IEditorView view);
+        void DismissCompletionSession(IEditorView view);
+        void TriggerSignatureSession(IEditorView view);
+        void DismissSignatureSession(IEditorView view);
+        void TriggerQuickInfoSession(IEditorView view);
+        void DismissQuickInfoSession(IEditorView view);
     }
 }

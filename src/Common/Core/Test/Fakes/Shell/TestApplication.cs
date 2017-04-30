@@ -24,7 +24,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 return Path.GetDirectoryName(asmPath);
             }
         }
-
+#pragma warning disable 67
         public event EventHandler Started;
         public event EventHandler Terminating;
     }

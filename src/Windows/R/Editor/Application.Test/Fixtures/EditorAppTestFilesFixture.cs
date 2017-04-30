@@ -8,6 +8,6 @@ namespace Microsoft.R.Editor.Application.Test {
     [ExcludeFromCodeCoverage]
     [AssemblyFixture]
     public class EditorAppTestFilesFixture : DeployFilesFixture {
-        public EditorAppTestFilesFixture() : base(@"R\Editor\Application.Test\Files", "Files") { }
+        public EditorAppTestFilesFixture() : base(@"Windows\R\Editor\Application.Test\Files", "Files") { }
     }
 }

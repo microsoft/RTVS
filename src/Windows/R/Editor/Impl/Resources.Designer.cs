@@ -61,15 +61,6 @@ namespace Microsoft.R.Editor.Windows {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Automatic formatting.
-        /// </summary>
-        internal static string AutoFormat {
-            get {
-                return ResourceManager.GetString("AutoFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Assignment.
         /// </summary>
         internal static string ColorName_R_Assignment {

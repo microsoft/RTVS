@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Languages.Core.Text;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.RData.Parser;
 using static System.FormattableString;
 
@@ -46,7 +48,7 @@ namespace Microsoft.R.Editor.Functions {
             var intellisenseSession = services.GetService<IIntellisenseRSession>();
             var dataProvider = services.GetService<IFunctionRdDataProvider>();
             return new FunctionIndex(services, dataProvider, intellisenseSession);
-         }
+        }
 
         public FunctionIndex(IServiceContainer services, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
             _services = services;
@@ -72,7 +74,7 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         private void RegisterFunction(string functionName, string packageName) {
-            if (!_functionToPackageMap.TryGetValue(functionName, out List<string>  packages)) {
+            if (!_functionToPackageMap.TryGetValue(functionName, out List<string> packages)) {
                 _functionToPackageMap[functionName] = new List<string> { packageName };
             } else {
                 packages.Add(packageName);
@@ -102,10 +104,14 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName, string packageName = null) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
-            if (functionInfo != null) {
-                return functionInfo;
+            if (!string.IsNullOrEmpty(packageName)) {
+                // Specific package
+                var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
+                if (functionInfo != null) {
+                    return functionInfo;
+                }
             }
+
             packageName = await GetFunctionInfoFromEngineAsync(functionName, packageName);
             return await TryGetCachedFunctionInfoAsync(functionName, packageName);
         }
@@ -117,7 +123,7 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         private IFunctionInfo TryGetCachedFunctionInfo(string functionName, ref string packageName) {
             IFunctionInfo functionInfo = null;
-           if (string.IsNullOrEmpty(packageName)) {
+            if (string.IsNullOrEmpty(packageName)) {
                 // Find packages that the function may belong to. There may be more than one.
                 List<string> packages;
                 if (!_functionToPackageMap.TryGetValue(functionName, out packages) || packages.Count == 0) {
@@ -153,15 +159,12 @@ namespace Microsoft.R.Editor.Functions {
         /// or the package name is known.
         /// </summary>
         private async Task<IFunctionInfo> TryGetCachedFunctionInfoAsync(string functionName, string packageName) {
-            if (packageName == null) {
-                packageName = await GetFunctionLoadedPackage(functionName);
-            }
+            packageName = packageName ?? await GetFunctionLoadedPackage(functionName);
             return TryGetCachedFunctionInfo(functionName, ref packageName);
         }
 
-        private string GetQualifiedName(string functionName, string packageName) {
-            return Invariant($"{packageName}:::{functionName}");
-        }
+        private string GetQualifiedName(string functionName, string packageName)
+            => Invariant($"{packageName}:::{functionName}");
 
         /// <summary>
         /// Fetches help on the function from R asynchronously.
@@ -171,9 +174,13 @@ namespace Microsoft.R.Editor.Functions {
         /// fetch function information from the index.
         /// </summary>
         private async Task<string> GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
-            packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+            var tokens = new RTokenizer().Tokenize(functionName);
+            var validName = tokens.Count == 1 && tokens[0].TokenType == RTokenType.Identifier;
+            if (validName) {
+                packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+            }
 
-            if (string.IsNullOrEmpty(packageName)) {
+            if (!validName && string.IsNullOrEmpty(packageName)) {
                 // Even if nothing is found, still notify the callback
                 if (infoReadyCallback != null) {
                     _services.MainThread().Post(() => {
@@ -213,9 +220,9 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         private void UpdateIndex(string functionName, string packageName, string rdData) {
-            IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(packageName, rdData);
+            var functionInfos = GetFunctionInfosFromRd(packageName, rdData);
 
-            foreach (IFunctionInfo info in functionInfos) {
+            foreach (var info in functionInfos) {
                 _functionToInfoMap[GetQualifiedName(info.Name, packageName)] = info;
             }
 

@@ -177,4 +177,7 @@
   <data name="ParseError_RightOperandExpected" xml:space="preserve">
     <value>Operand to the right expected</value>
   </data>
+  <data name="AutoFormat" xml:space="preserve">
+    <value>Automatic formatting</value>
+  </data>
 </root>
