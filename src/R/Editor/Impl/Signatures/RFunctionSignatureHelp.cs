@@ -164,6 +164,7 @@ namespace Microsoft.R.Editor.Signatures {
                     UpdateCurrentParameter();
                 } else {
                     _completionBroker.DismissSignatureSession(_view);
+                    _completionBroker.DismissQuickInfoSession(_view);
                     _completionBroker.TriggerSignatureSession(_view);
                 }
             } else {

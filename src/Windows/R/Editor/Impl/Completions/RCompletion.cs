@@ -12,8 +12,16 @@ namespace Microsoft.R.Editor.Completions {
     /// </summary>
     [DebuggerDisplay("{" + nameof(DisplayText) + "}")]
     public sealed class RCompletion : Completion {
-        public RCompletion(ICompletionEntry e) :
-            base(e.DisplayText, e.InsertionText, e.Description, e.ImageSource as ImageSource, e.AccessibleText) { }
+        private readonly ICompletionEntry _entry;
+        public RCompletion(ICompletionEntry entry) {
+            _entry = entry;
+        }
+
+        public override string Description => _entry.Description;
+        public override string DisplayText => _entry.DisplayText;
+        public override string InsertionText => _entry.InsertionText;
+        public override ImageSource IconSource => _entry.ImageSource as ImageSource;
+        public override string IconAutomationText => _entry.AccessibleText;
 
         public bool IsVisible { get; set; } = true;
     }

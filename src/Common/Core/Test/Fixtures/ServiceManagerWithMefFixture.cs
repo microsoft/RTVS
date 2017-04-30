@@ -33,6 +33,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         private sealed class TestServiceManagerWithMef : TestServiceManager {
             private readonly CompositionContainer _compositionContainer;
+            private readonly object _lock = new object();
             private bool _disposed;
 
             public TestServiceManagerWithMef(ComposablePartCatalog catalog, Action<IServiceManager, ITestInput> addServices) : base(addServices) {
@@ -53,16 +54,20 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             }
 
             public override Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
-                _compositionContainer.Dispose();
-                _disposed = true;
-                return base.DisposeAsync(result, messageBus);
+                lock (_lock) {
+                    _compositionContainer.Dispose();
+                    _disposed = true;
+                    return base.DisposeAsync(result, messageBus);
+                }
             }
 
-            public override T GetService<T>(Type type = null) { 
-                if(_disposed) {
-                    return null;
+            public override T GetService<T>(Type type = null) {
+                lock (_lock) {
+                    if (_disposed) {
+                        return null;
+                    }
+                    return base.GetService<T>(type) ?? _compositionContainer.GetExportedValueOrDefault<T>();
                 }
-                return base.GetService<T>(type) ?? _compositionContainer.GetExportedValueOrDefault<T>();
             }
         }
     }

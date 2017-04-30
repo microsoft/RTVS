@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Signatures {
         /// <summary>
         /// Content of the signature, including all the characters to be displayed.
         /// </summary>
-        public string Content { get; set; }
+        public string Content => _signatureHelp.Content;
 
         /// <summary>
         /// Documentation associated with this signature.
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Signatures {
         /// <summary>
         /// Content of the signature, pretty-printed into a form suitable for display on-screen.
         /// </summary>
-        public string PrettyPrintedContent { get; set; }
+        public string PrettyPrintedContent => _signatureHelp.PrettyPrintedContent;
 
         /// <summary>
         /// Occurs when the currently-selected parameter changes.

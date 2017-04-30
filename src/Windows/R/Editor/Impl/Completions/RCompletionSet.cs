@@ -17,8 +17,7 @@ namespace Microsoft.R.Editor.Completions {
 
         public RCompletionSet(ITrackingSpan trackingSpan, List<ICompletionEntry> completionEntries) :
             base("R Completion", "R Completion", trackingSpan, Enumerable.Empty<RCompletion>(), Enumerable.Empty<RCompletion>()) {
-            var completions = completionEntries.Select(e => new RCompletion(e));
-            _completions = OrderList(completions);
+            _completions = OrderList(completionEntries);
             _filteredCompletions = new FilteredObservableCollection<Completion>(_completions);
         }
 
@@ -90,20 +89,30 @@ namespace Microsoft.R.Editor.Completions {
             return ApplicableTo.GetText(snapshot);
         }
 
-        private static CompletionList OrderList(IEnumerable<Completion> completions) {
+        private static CompletionList OrderList(List<ICompletionEntry> completions) {
             // Place 'name =' at the top prioritizing argument names
             // Place items starting with non-alpha characters like .Call and &&
             // at the end of the list.
-            var argumentNames = completions.Where(x => RTokenizer.IsIdentifierCharacter(x.DisplayText[0]) && x.DisplayText.EndsWith("=", StringComparison.Ordinal)).ToArray();
-            var rtvsNames = completions.Where(x => x.DisplayText.IndexOfIgnoreCase(".rtvs") >= 0).ToArray();
-            var specialNames = completions.Where(x => !char.IsLetter(x.DisplayText[0])).Except(rtvsNames).ToArray();
-
-            var generalEntries = completions.Except(argumentNames);
-            generalEntries = generalEntries.Except(rtvsNames);
-            generalEntries = generalEntries.Except(specialNames);
 
             var orderedCompletions = new List<Completion>();
-            orderedCompletions.AddRange(argumentNames);
+            var specialNames = new List<Completion>();
+            var generalEntries = new List<Completion>();
+
+            foreach (var c in completions) {
+                if(RTokenizer.IsIdentifierCharacter(c.DisplayText[0]) && c.DisplayText.EndsWith("=", StringComparison.Ordinal)) {
+                    // Place argument completions first
+                    orderedCompletions.Add(new RCompletion(c));
+                } else if(c.DisplayText.IndexOfIgnoreCase(".rtvs") < 0) {
+                    // Exclude .rtvs
+                    if (!char.IsLetter(c.DisplayText[0])) {
+                        // Special names will come last
+                        specialNames.Add(new RCompletion(c));
+                    } else {
+                        generalEntries.Add(new RCompletion(c));
+                    }
+                } 
+            }
+
             orderedCompletions.AddRange(generalEntries);
             orderedCompletions.AddRange(specialNames);
 
