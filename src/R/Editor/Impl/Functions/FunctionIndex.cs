@@ -213,7 +213,7 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         private void UpdateIndex(string functionName, string packageName, string rdData) {
-            IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
+            IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(packageName, rdData);
 
             foreach (IFunctionInfo info in functionInfos) {
                 _functionToInfoMap[GetQualifiedName(info.Name, packageName)] = info;
@@ -235,10 +235,10 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private IReadOnlyList<IFunctionInfo> GetFunctionInfosFromRd(string rdData) {
+        private IReadOnlyList<IFunctionInfo> GetFunctionInfosFromRd(string packageName, string rdData) {
             IReadOnlyList<IFunctionInfo> infos = null;
             try {
-                infos = RdParser.GetFunctionInfos(rdData);
+                infos = RdParser.GetFunctionInfos(packageName, rdData);
             } catch (Exception ex) {
                 Debug.WriteLine("Exception in parsing R engine RD response: {0}", ex.Message);
             }

@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var caretPosition = 15;
             var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var signatureHelpSource = new RSignatureHelpSource(textBuffer, Services);
-            var signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
+            var signatureHelpSession = new SignatureHelpSessionMock(Services, textBuffer, caretPosition);
             var signatures = new List<ISignature>();
 
             signatureHelpSession.TrackingPoint = new TrackingPointMock(textBuffer, caretPosition, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
@@ -55,7 +55,7 @@ x( )
             var caretPosition = content.IndexOfOrdinal("( )") + 1;
             var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var signatureHelpSource = new RSignatureHelpSource(textBuffer, Services);
-            var signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
+            var signatureHelpSession = new SignatureHelpSessionMock(Services, textBuffer, caretPosition);
             var signatures = new List<ISignature>();
 
             signatureHelpSession.TrackingPoint = new TrackingPointMock(textBuffer, caretPosition, PointTrackingMode.Positive, TrackingFidelityMode.Forward);

@@ -20,13 +20,11 @@ namespace Microsoft.R.Editor.RData.Classification {
         protected override int GetAnchorPosition(int position) {
             // Walk back to the nearest content defining token
             // if any and re-tokenize from there
-
-            for (int i = Tokens.Count - 1; i >= 0; i--) {
+            for (var i = Tokens.Count - 1; i >= 0; i--) {
                 if (Tokens[i].ContentTypeChange) {
                     return Tokens[i].Start;
                 }
             }
-
             return base.GetAnchorPosition(position);
         }
 

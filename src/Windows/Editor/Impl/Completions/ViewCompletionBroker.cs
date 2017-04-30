@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completions {
-    internal sealed class ViewCompletionBroker : IViewCompletionBroker {
+    public sealed class ViewCompletionBroker : IViewCompletionBroker {
         private readonly IServiceContainer _services;
         private readonly ICompletionBroker _completionBroker;
         private readonly ISignatureHelpBroker _signatureBroker;

@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.RData.Test.Help {
       use.first.dimnames=FALSE, hier.names=FALSE, use.dnns=
       FALSE)
 }";
-            var functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos("package", rdData);
             functionInfos.Should().ContainSingle()
                 .Which.Signatures.Should().ContainSingle()
                 .Which.Arguments.ShouldBeEquivalentTo(new [] {
@@ -57,7 +57,7 @@ as.matrix(x, \dots)
 
 is.matrix(x)
 }";
-            var functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos("package", rdData);
             functionInfos.Should().Equal(new[] {"matrix", "as.matrix", "is.matrix"}, (a, e) => a.Name == e)
                 .And.OnlyContain(fi => fi.Signatures.Count == 1, "there should be only one signature");
 
@@ -80,7 +80,7 @@ is.matrix(x)
   }
 }
 ";
-            var functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos("package", rdData);
 
             functionInfos.Should().ContainSingle()
                 .Which.Signatures.Should().ContainSingle()
@@ -95,7 +95,7 @@ is.matrix(x)
         [Test]
         public void GetRdFunctionInfoTest01() {
             var rdData = _files.LoadDestinationFile(@"Help\01.rd");
-            var functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos("package", rdData);
 
             functionInfos.Should().HaveCount(2);
 
@@ -110,7 +110,7 @@ is.matrix(x)
         [Test]
         public void GetRdFunctionInfoTest02() {
             var rdData = _files.LoadDestinationFile(@"Help\02.rd");
-            var functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos("package", rdData);
             functionInfos.Should().Equal(new[] {
                     "lockEnvironment",
                     "environmentIsLocked",
@@ -134,7 +134,7 @@ is.matrix(x)
 
         [Test]
         public void GetRdFunctionArgumentsBadData01() {
-            var functionInfos = RdParser.GetFunctionInfos(string.Empty);
+            var functionInfos = RdParser.GetFunctionInfos(string.Empty, string.Empty);
             functionInfos.Should().BeEmpty();
         }
     }

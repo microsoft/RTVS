@@ -157,14 +157,12 @@ namespace Microsoft.R.Editor.Test.RData.Tokens {
 
         [Test]
         public void TokenizeCppFormatContent() {
-            var actualTokens = Tokenize("\\usage{bmp(filename = \"Rplot%03d.jpg\", width = 480)}", new RdTokenizer());
-            actualTokens.Should().HaveCount(5);
+            var actualTokens = Tokenize("\\usage{bmp(filename = \"Rplot%03d.jpg\", width = 480)}", new RdTokenizer(false));
+            actualTokens.Should().HaveCount(3);
             var expectedTokens = new[]
             {
                 new TokenData<RdTokenType>(RdTokenType.Keyword, 0, 6),
                 new TokenData<RdTokenType>(RdTokenType.OpenCurlyBrace, 6, 1),
-                new TokenData<RdTokenType>(RdTokenType.String, 22, 15),
-                new TokenData<RdTokenType>(RdTokenType.Number, 47, 3),
                 new TokenData<RdTokenType>(RdTokenType.CloseCurlyBrace, 51, 1)
             };
             TokensCompare<RdTokenType, RdToken>.Compare(expectedTokens, actualTokens);

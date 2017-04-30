@@ -19,7 +19,6 @@ namespace Microsoft.R.Editor.Signatures {
     /// </summary>
     public sealed class RFunctionSignatureEngine : IFunctionSignatureEngine {
         private readonly IServiceContainer _services;
-        private string _packageName;
 
         public RFunctionSignatureEngine(IServiceContainer services) {
             _services = services;
@@ -59,9 +58,6 @@ namespace Microsoft.R.Editor.Signatures {
 
             if (functionInfo == null) {
                 var functionIndex = _services.GetService<IFunctionIndex>();
-                // Then try package functions
-                packageName = packageName ?? _packageName;
-                _packageName = null;
                 // Get collection of function signatures from documentation (parsed RD file)
                 functionInfo = await functionIndex.GetFunctionInfoAsync(signatureInfo.FunctionName, packageName);
             }

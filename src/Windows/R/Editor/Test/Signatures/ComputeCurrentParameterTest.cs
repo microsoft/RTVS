@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
             var editorBuffer = textBuffer.ToEditorBuffer();
             var source = new RSignatureHelpSource(textBuffer, Services);
-            var session = new SignatureHelpSessionMock(textBuffer, 0);
+            var session = new SignatureHelpSessionMock(Services, textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 
@@ -75,7 +76,14 @@ namespace Microsoft.R.Editor.Test.Signatures {
             }
         }
 
-        private int GetCurrentParameterIndex(ISignature sh, IParameter parameter) => sh.Parameters.IndexOf(parameter);
+        private int GetCurrentParameterIndex(ISignature sh, IParameter parameter) {
+            for (var i = 0; i < sh.Parameters.Count; i++) {
+                if(sh.Parameters[i].Locus.Start == parameter.Locus.Start) {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter02() {
@@ -86,7 +94,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
             var source = new RSignatureHelpSource(textBuffer, Services);
-            var session = new SignatureHelpSessionMock(textBuffer, 0);
+            var session = new SignatureHelpSessionMock(Services, textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 
@@ -118,7 +126,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
             var source = new RSignatureHelpSource(textBuffer, Services);
-            var session = new SignatureHelpSessionMock(textBuffer, 0);
+            var session = new SignatureHelpSessionMock(Services, textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 
@@ -149,7 +157,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
             var source = new RSignatureHelpSource(textBuffer, Services);
-            var session = new SignatureHelpSessionMock(textBuffer, 0);
+            var session = new SignatureHelpSessionMock(Services, textBuffer, 0);
             var textView = session.TextView as TextViewMock;
             var signatures = new List<ISignature>();
 

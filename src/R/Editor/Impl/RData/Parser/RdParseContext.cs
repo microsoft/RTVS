@@ -7,11 +7,17 @@ using Microsoft.R.Editor.RData.Tokens;
 
 namespace Microsoft.R.Editor.RData.Parser {
     public sealed class RdParseContext {
-        public ITextProvider TextProvider { get; private set; }
+        /// <summary>
+        /// Package name of the function data being parsed
+        /// </summary>
+        public string PackageName { get; }
 
-        public TokenStream<RdToken> Tokens { get; private set; }
+        public ITextProvider TextProvider { get; }
 
-        public RdParseContext(IReadOnlyTextRangeCollection<RdToken> tokens, ITextProvider textProvider) {
+        public TokenStream<RdToken> Tokens { get; }
+
+        public RdParseContext(string packageName, IReadOnlyTextRangeCollection<RdToken> tokens, ITextProvider textProvider) {
+            PackageName = packageName;
             TextProvider = textProvider;
             Tokens = new TokenStream<RdToken>(tokens, RdToken.EndOfStreamToken);
         }

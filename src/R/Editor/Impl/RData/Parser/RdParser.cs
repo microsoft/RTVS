@@ -22,11 +22,11 @@ namespace Microsoft.R.Editor.RData.Parser {
         /// to avoid processing same data multiple times parser extracts information
         /// on all related functions.
         /// </summary>
-        public static IReadOnlyList<IFunctionInfo> GetFunctionInfos(string rdHelpData) {
-            var tokenizer = new RdTokenizer();
+        public static IReadOnlyList<IFunctionInfo> GetFunctionInfos(string packageName, string rdHelpData) {
+            var tokenizer = new RdTokenizer(false);
             var textProvider = new TextStream(rdHelpData);
             var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
-            var context = new RdParseContext(tokens, textProvider);
+            var context = new RdParseContext(packageName, tokens, textProvider);
 
             return ParseFunctions(context);
         }
@@ -93,11 +93,10 @@ namespace Microsoft.R.Editor.RData.Parser {
             if (signatureInfos != null) {
                 var functionSignatures = new Dictionary<string, List<ISignatureInfo>>();
                 foreach (var sigInfo in signatureInfos) {
-                    FunctionInfo functionInfo;
                     List<ISignatureInfo> sigList;
-                    if (!functionInfos.TryGetValue(sigInfo.FunctionName, out functionInfo)) {
+                    if (!functionInfos.TryGetValue(sigInfo.FunctionName, out FunctionInfo functionInfo)) {
                         // Create function info
-                        functionInfo = CreateFunctionInfo(sigInfo.FunctionName, functionDescription, returnValue, isInternal);
+                        functionInfo = CreateFunctionInfo(sigInfo.FunctionName, context.PackageName, functionDescription, returnValue, isInternal);
                         functionInfos[sigInfo.FunctionName] = functionInfo;
 
                         // Create list of signatures for this function
@@ -127,8 +126,8 @@ namespace Microsoft.R.Editor.RData.Parser {
             return functionInfos.Values.ToList();
         }
 
-        private static FunctionInfo CreateFunctionInfo(string functionName, string functionDescription, string returnValue, bool isInternal) {
-            var functionInfo = new FunctionInfo(functionName, functionDescription) {
+        private static FunctionInfo CreateFunctionInfo(string functionName, string packageName, string functionDescription, string returnValue, bool isInternal) {
+            var functionInfo = new FunctionInfo(functionName, packageName, functionDescription) {
                 IsInternal = isInternal,
                 ReturnValue = returnValue
             };

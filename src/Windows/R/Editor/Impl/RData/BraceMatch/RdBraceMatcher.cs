@@ -21,8 +21,8 @@ namespace Microsoft.R.Editor.RData.BraceMatch {
         }
 
         protected override IReadOnlyTextRangeCollection<RdToken> GetTokens(int start, int length) {
-            RdTokenizer tokenizer = new RdTokenizer();
-            ITextProvider tp = new TextProvider(TextBuffer.CurrentSnapshot);
+            var tokenizer = new RdTokenizer();
+            var tp = new TextProvider(TextBuffer.CurrentSnapshot);
             return tokenizer.Tokenize(tp, 0, tp.Length);
         }
 

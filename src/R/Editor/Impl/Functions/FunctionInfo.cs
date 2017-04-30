@@ -7,6 +7,11 @@ namespace Microsoft.R.Editor.Functions {
     public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo {
         #region IFunctionInfo
         /// <summary>
+        /// Package the function belongs to
+        /// </summary>
+        public string Package { get; }
+
+        /// <summary>
         /// Function signatures
         /// </summary>
         public IReadOnlyList<ISignatureInfo> Signatures { get; set; } = new List<ISignatureInfo>();
@@ -23,12 +28,15 @@ namespace Microsoft.R.Editor.Functions {
         public bool IsInternal { get; internal set; }
         #endregion
 
-        public FunctionInfo(string name, string description) :
-            base(name, description, NamedItemType.Function) { }
+        public FunctionInfo(string name, string package,  string description) :
+            base(name, description, NamedItemType.Function) {
+            Package = package;
+        }
 
-        public FunctionInfo(string name) : this(name, string.Empty) { }
+        public FunctionInfo(string name) : this(name, null, string.Empty) { }
 
-        public FunctionInfo(string alias, IFunctionInfo primary) : this(alias, primary.Description) {
+        public FunctionInfo(string alias, IFunctionInfo primary) : 
+            this(alias, primary .Package, primary.Description) {
             Signatures = primary.Signatures;
             ReturnValue = primary.ReturnValue;
             IsInternal = primary.IsInternal;

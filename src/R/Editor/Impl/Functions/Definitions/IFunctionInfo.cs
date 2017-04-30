@@ -6,6 +6,11 @@ using System.Collections.Generic;
 namespace Microsoft.R.Editor.Functions {
     public interface IFunctionInfo : INamedItemInfo {
         /// <summary>
+        /// Package the function belongs to
+        /// </summary>
+        string Package { get; }
+
+        /// <summary>
         /// Function signatures
         /// </summary>
         IReadOnlyList<ISignatureInfo> Signatures { get; }

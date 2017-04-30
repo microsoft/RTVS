@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Signatures {
         private readonly IREditorSettings _settings;
         private readonly ISignatureHelpBroker _broker;
         private readonly RFunctionSignatureEngine _engine;
-        private IEnumerable<IFunctionSignatureHelp> _signatures;
+        private IList<ISignature> _signatures;
 
         public RSignatureHelpSource(ITextBuffer textBuffer, IServiceContainer services) {
             _disposeToken = DisposeToken.Create<RSignatureHelpSource>();
@@ -66,10 +66,10 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
-        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<ITextView, IEnumerable<IFunctionSignatureHelp>> callback) {
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<ITextView, IList<ISignature>> callback) {
             if (_signatures != null) {
                 foreach (var s in _signatures) {
-                    signatures.Add(new RSignatureHelp(s));
+                    signatures.Add(s);
                 }
                 _signatures = null;
                 return true;
@@ -83,11 +83,19 @@ namespace Microsoft.R.Editor.Signatures {
 
                 _engine.GetSignaturesAsync(context).ContinueWith(async t => {
                     await _services.MainThread().SwitchToAsync();
-                    callback(session.TextView, t.Result);
+                    callback(session.TextView, MakeSignatures(t.Result));
                 }).DoNotWait();
             }
 
             return false;
+        }
+
+        private List<ISignature> MakeSignatures(IEnumerable<IFunctionSignatureHelp> functionHelp) {
+            var list = new List<ISignature>();
+            foreach (var f in functionHelp) {
+                list.Add(new RSignatureHelp(f));
+            }
+            return list;
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
