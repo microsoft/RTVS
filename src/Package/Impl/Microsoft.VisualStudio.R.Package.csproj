@@ -223,7 +223,6 @@
     </Compile>
     <Compile Include="Shell\CompositionCatalog.cs" />
     <Compile Include="Shell\Services\VsApplication.cs" />
-    <Compile Include="Shell\Services\VsContentTypeServiceLocator.cs" />
     <Compile Include="Shell\VsAppShell.Test.cs" />
     <Compile Include="Shell\VsAppShell.Lifetime.cs" />
     <Compile Include="Shell\Editor\VsEditorSupport.cs" />

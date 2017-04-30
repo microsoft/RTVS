@@ -49,11 +49,10 @@ namespace Microsoft.R.Editor.SmartIndent {
         public int? GetDesiredIndentation(IEditorLine line, IndentStyle indentStyle) {
             if (line != null) {
                 var editorBuffer = line.Snapshot.EditorBuffer;
-                var settings = editorBuffer.Services.GetService<IREditorSettings>();
                 if (indentStyle == IndentStyle.Block) {
-                    return GetBlockIndent(line, settings);
+                    return GetBlockIndent(line, _settings);
                 } else if (indentStyle == IndentStyle.Smart) {
-                    return GetSmartIndent(line, settings);
+                    return GetSmartIndent(line, _settings);
                 }
             }
             return null;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Utilities;
@@ -14,13 +15,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
     /// Assist in location of services specific to a particular file content type.
     /// </summary>
-    internal sealed class VsContentTypeServiceLocator: IContentTypeServiceLocator {
+    /// 
+    [Export(typeof(IContentTypeServiceLocator))]
+    internal sealed class ContentTypeServiceLocator: IContentTypeServiceLocator {
         private readonly IContentTypeRegistryService _ctrs;
         private readonly ICompositionService _compositionService;
 
-        public VsContentTypeServiceLocator(IServiceContainer services) {
-            _compositionService = services.GetService<ICompositionService>();
-            _ctrs = services.GetService<IContentTypeRegistryService>();
+        [ImportingConstructor]
+        public ContentTypeServiceLocator(ICoreShell coreShell) {
+            _compositionService = coreShell.GetService<ICompositionService>();
+            _ctrs = coreShell.GetService<IContentTypeRegistryService>();
         }
 
         /// <summary>

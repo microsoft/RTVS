@@ -71,7 +71,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
                 .AddService(new VsEditorViewLocator())
-                .AddService(new VsContentTypeServiceLocator(serviceManager))
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 // OLE and VS specifics

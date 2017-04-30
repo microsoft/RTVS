@@ -23,15 +23,15 @@ namespace Microsoft.R.Editor.Test.Tree {
             tc.IsEmpty.Should().BeTrue();
             tc.TextChangeType.Should().Be(TextChangeType.Trivial);
 
-            string content = "23456789";
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            ITextSnapshot oldSnapshot = textBuffer.CurrentSnapshot;
+            var content = "23456789";
+            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var oldSnapshot = textBuffer.CurrentSnapshot;
 
             textBuffer.Insert(0, "1");
-            ITextSnapshot newSnapshot1 = textBuffer.CurrentSnapshot;
+            var newSnapshot1 = textBuffer.CurrentSnapshot;
 
             textBuffer.Insert(0, "0");
-            ITextSnapshot newSnapshot2 = textBuffer.CurrentSnapshot;
+            var newSnapshot2 = textBuffer.CurrentSnapshot;
 
             tc.OldTextProvider = new TextProvider(oldSnapshot);
             tc.NewTextProvider = new TextProvider(newSnapshot1);
