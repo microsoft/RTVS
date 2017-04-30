@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
@@ -23,7 +24,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test]
         public async Task SignatureHelpSourceTest01() {
-            string content = @"x <- as.matrix(x)";
+            const string content = @"x <- as.matrix(x)";
 
             var ast = RParser.Parse(content);
             var caretPosition = 15;
@@ -44,14 +45,14 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test]
         public async Task SignatureHelpSourceTest02() {
-            var content = 
+            const string content =
 @"
 x <- function(a, b = TRUE, c = 12/7) { }
 x( )
 ";
 
             var ast = RParser.Parse(content);
-            var caretPosition = content.IndexOf("( )")+1;
+            var caretPosition = content.IndexOfOrdinal("( )") + 1;
             var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var signatureHelpSource = new RSignatureHelpSource(textBuffer, Services);
             var signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);

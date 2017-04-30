@@ -15,23 +15,7 @@ namespace Microsoft.R.Editor.RData.Tokens {
     /// https://developer.r-project.org/parseRd.pdf
     /// </summary>
     public class RdTokenizer : BaseTokenizer<RdToken> {
-        private readonly bool _tokenizeRContent;
         private BlockContentType _currentContentType = BlockContentType.Latex;
-
-        public RdTokenizer() : this(tokenizeRContent: true) { }
-
-        /// <summary>
-        /// Creates RD tokenizer.
-        /// </summary>
-        /// <param name="tokenizeRContent">
-        /// If true, RD tokenizer will use R rokenizer to process  content in R-like sections
-        /// such as \usage. This is the default behavior since it allows colorizer to properly
-        /// display strings and numbers. However, during processing of RD data for the function
-        /// signature help and quick info tooltips plain text is preferred.
-        /// </param>
-        public RdTokenizer(bool tokenizeRContent = true) {
-            _tokenizeRContent = tokenizeRContent;
-        }
 
         public override IReadOnlyTextRangeCollection<RdToken> Tokenize(ITextProvider textProvider, int start, int length, bool excludePartialTokens) {
             _currentContentType = BlockContentType.Latex;
@@ -105,11 +89,6 @@ namespace Microsoft.R.Editor.RData.Tokens {
                 if (_cs.CurrentChar == '{' || _cs.CurrentChar == '[') {
                     var keyword = _cs.Text.GetText(TextRange.FromBounds(start, _cs.Position)).Trim();
                     var contentType = RdBlockContentType.GetBlockContentType(keyword);
-
-                    if (!_tokenizeRContent && contentType == BlockContentType.R) {
-                        SkipToClosingBrace(GetMatchingBrace(_cs.CurrentChar));
-                        return true;
-                    }
 
                     if (_currentContentType != contentType) {
                         _currentContentType = contentType;
@@ -443,8 +422,8 @@ namespace Microsoft.R.Editor.RData.Tokens {
         internal void SkipKeyword() {
             Tokenizer.SkipIdentifier(
                 _cs,
-                (CharacterStream cs) => { return _cs.IsLetter(); },
-                (CharacterStream cs) => { return (_cs.IsLetter() || _cs.IsDecimal()); });
+                cs => _cs.IsLetter(),
+                cs => _cs.IsLetter() || _cs.IsDecimal());
         }
 
         /// <summary>

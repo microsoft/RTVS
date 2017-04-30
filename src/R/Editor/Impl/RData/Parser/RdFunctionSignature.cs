@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
@@ -15,7 +14,7 @@ using Microsoft.R.Editor.Functions;
 using Microsoft.R.Editor.RData.Tokens;
 
 namespace Microsoft.R.Editor.RData.Parser {
-    static class RdFunctionSignature {
+    internal static class RdFunctionSignature {
         public static IReadOnlyList<ISignatureInfo> ExtractSignatures(RdParseContext context) {
             // \usage{
             //    loglm1(formula, data, \dots)
@@ -34,8 +33,8 @@ namespace Microsoft.R.Editor.RData.Parser {
             //      unlockBinding(sym, env)
             //      bindingIsLocked(sym, env)
 
-            TokenStream<RdToken> tokens = context.Tokens;
-            List<ISignatureInfo> signatures = new List<ISignatureInfo>();
+            var tokens = context.Tokens;
+            var signatures = new List<ISignatureInfo>();
 
             // Must be at '\usage{'
             int startTokenIndex, endTokenIndex;
@@ -62,7 +61,7 @@ namespace Microsoft.R.Editor.RData.Parser {
         /// </summary>
         private static string GetRText(RdParseContext context, int startTokenIndex, int endTokenIndex) {
             var sb = new StringBuilder();
-            for (int i = startTokenIndex; i < endTokenIndex; i++) {
+            for (var i = startTokenIndex; i < endTokenIndex; i++) {
                 int fragmentStart;
                 int fragmentEnd;
 
@@ -81,7 +80,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                 Debug.Assert(fragmentStart <= fragmentEnd);
                 if (fragmentStart <= fragmentEnd) {
                     ITextRange range = TextRange.FromBounds(fragmentStart, fragmentEnd);
-                    string fragment = context.TextProvider.GetText(range);
+                    var fragment = context.TextProvider.GetText(range);
                     sb.Append(fragment);
                 }
                 else {
@@ -96,7 +95,7 @@ namespace Microsoft.R.Editor.RData.Parser {
             Debug.Assert(token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\method");
 
             index++;
-            for (int i = 0; i < 2; i++) {
+            for (var i = 0; i < 2; i++) {
                 if (context.Tokens[index].TokenType == RdTokenType.OpenCurlyBrace) {
                     index++;
                 }
@@ -182,7 +181,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                     var isEllipsis = false;
                     var isOptional = false;
 
-                    ExpressionArgument expArg = arg as ExpressionArgument;
+                    var expArg = arg as ExpressionArgument;
                     if (expArg != null) {
                         argName = context.TextProvider.GetText(expArg.ArgumentValue);
                     } else {
@@ -202,10 +201,12 @@ namespace Microsoft.R.Editor.RData.Parser {
                         }
                     }
 
-                    var argInfo = new ArgumentInfo(argName);
-                    argInfo.DefaultValue = argDefaultValue;
-                    argInfo.IsEllipsis = isEllipsis;
-                    argInfo.IsOptional = isOptional; // TODO: actually parse
+                    var argInfo = new ArgumentInfo(argName) {
+                        DefaultValue = argDefaultValue,
+                        IsEllipsis = isEllipsis,
+                        IsOptional = isOptional
+                    };
+                    // TODO: actually parse
 
                     signatureArguments.Add(argInfo);
                 }

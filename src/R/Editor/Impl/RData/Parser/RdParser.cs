@@ -23,8 +23,7 @@ namespace Microsoft.R.Editor.RData.Parser {
         /// on all related functions.
         /// </summary>
         public static IReadOnlyList<IFunctionInfo> GetFunctionInfos(string rdHelpData) {
-            var tokenizer = new RdTokenizer(tokenizeRContent: false);
-
+            var tokenizer = new RdTokenizer();
             var textProvider = new TextStream(rdHelpData);
             var tokens = tokenizer.Tokenize(textProvider, 0, textProvider.Length);
             var context = new RdParseContext(tokens, textProvider);

@@ -11,6 +11,7 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.RData.Test.Help {
     [ExcludeFromCodeCoverage]
+    [Category.R.Signatures]
     public class GetFunctionInfoTest {
         private readonly EditorTestFilesFixture _files;
 
@@ -19,16 +20,15 @@ namespace Microsoft.R.Editor.RData.Test.Help {
         }
 
         [Test]
-        [Category.R.Signatures]
         public void GetRdFunctionArgumentsTest01() {
-            string rdData = @"\alias{abind}
+            const string rdData = @"\alias{abind}
 \usage{
     abind(..., along=N, rev.along=NULL, new.names='abc', force.array=TRUE,
       make.names=use.anon.names, use.anon.names=1.75*(2/3),
       use.first.dimnames=FALSE, hier.names=FALSE, use.dnns=
       FALSE)
 }";
-            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos(rdData);
             functionInfos.Should().ContainSingle()
                 .Which.Signatures.Should().ContainSingle()
                 .Which.Arguments.ShouldBeEquivalentTo(new [] {
@@ -46,9 +46,8 @@ namespace Microsoft.R.Editor.RData.Test.Help {
         }
 
         [Test]
-        [Category.R.Signatures]
         public void GetRdFunctionArgumentsTest02() {
-            string rdData = @"
+            const string rdData = @"
 \usage{
 matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE,
        dimnames = NULL)
@@ -58,7 +57,7 @@ as.matrix(x, \dots)
 
 is.matrix(x)
 }";
-            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos(rdData);
             functionInfos.Should().Equal(new[] {"matrix", "as.matrix", "is.matrix"}, (a, e) => a.Name == e)
                 .And.OnlyContain(fi => fi.Signatures.Count == 1, "there should be only one signature");
 
@@ -69,9 +68,8 @@ is.matrix(x)
         }
 
         [Test]
-        [Category.R.Signatures]
         public void GetRdFunctionArgumentsDescriptionsTest01() {
-            string rdData = @"\alias{abind}
+            const string rdData = @"\alias{abind}
 \usage {
     abind(..., along=N, rev.along=NULL, new.names='abc')
 }
@@ -82,7 +80,7 @@ is.matrix(x)
   }
 }
 ";
-            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            var functionInfos = RdParser.GetFunctionInfos(rdData);
 
             functionInfos.Should().ContainSingle()
                 .Which.Signatures.Should().ContainSingle()
@@ -95,14 +93,13 @@ is.matrix(x)
         }
 
         [Test]
-        [Category.R.Signatures]
         public void GetRdFunctionInfoTest01() {
-            string rdData = _files.LoadDestinationFile(@"Help\01.rd");
-            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            var rdData = _files.LoadDestinationFile(@"Help\01.rd");
+            var functionInfos = RdParser.GetFunctionInfos(rdData);
 
             functionInfos.Should().HaveCount(2);
 
-            IFunctionInfo functionInfo = functionInfos[0];
+            var functionInfo = functionInfos[0];
             functionInfo.Name.Should().Be("abs");
             functionInfo.Description.Should().Be("abs(x) computes the absolute value of x, sqrt(x) computes the (principal) square root of x, x. The naming follows the standard for computer languages such as C or Fortran.");
             functionInfo.Signatures.Should().ContainSingle()
@@ -111,10 +108,9 @@ is.matrix(x)
         }
 
         [Test]
-        [Category.R.Signatures]
         public void GetRdFunctionInfoTest02() {
-            string rdData = _files.LoadDestinationFile(@"Help\02.rd");
-            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(rdData);
+            var rdData = _files.LoadDestinationFile(@"Help\02.rd");
+            var functionInfos = RdParser.GetFunctionInfos(rdData);
             functionInfos.Should().Equal(new[] {
                     "lockEnvironment",
                     "environmentIsLocked",
@@ -137,9 +133,8 @@ is.matrix(x)
         }
 
         [Test]
-        [Category.R.Signatures]
         public void GetRdFunctionArgumentsBadData01() {
-            IReadOnlyList<IFunctionInfo> functionInfos = RdParser.GetFunctionInfos(string.Empty);
+            var functionInfos = RdParser.GetFunctionInfos(string.Empty);
             functionInfos.Should().BeEmpty();
         }
     }
