@@ -98,8 +98,8 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="ContainedLanguage\RCodeSeparatorCollectionTest.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandlerTest.cs" />
-    <Compile Include="MarkdownEditorServicesFixture.cs" />
-    <Compile Include="MarkdownTestFiles.cs" />
+    <Compile Include="Fixtures\MarkdownEditorServicesFixture.cs" />
+    <Compile Include="Fixtures\MarkdownTestFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classification\MarkdownCodeTest.cs" />
     <Compile Include="Classification\MdClassifierTest.cs" />

@@ -45,7 +45,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             var crs = _coreShell.GetService<IClassificationTypeRegistryService>();
             var ctrs = _coreShell.GetService<IContentTypeRegistryService>();
-            var classifierProvider = new MdClassifierProvider(crs, ctrs, _coreShell);
+            var classifierProvider = new MdClassifierProvider(crs, ctrs);
             var cls = classifierProvider.GetClassifier(textBuffer);
 
             var spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));

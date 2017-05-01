@@ -20,7 +20,6 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
             base(textBuffer, new MdTokenizer(), new MarkdownClassificationNameProvider()) {
             ContentTypeRegistryService = contentTypeRegistryService;
             ClassificationRegistryService = classificationRegistryService;
-            textBuffer.AddService(this);
         }
 
 

@@ -8,6 +8,6 @@ namespace Microsoft.Markdown.Editor.Test {
     [ExcludeFromCodeCoverage]
     [AssemblyFixture]
     public class MarkdownTestFilesFixture : DeployFilesFixture {
-        public MarkdownTestFilesFixture() : base(@"Markdown\Editor\Test\Files", "Files") { }
+        public MarkdownTestFilesFixture() : base(@"Windows\Markdown\Editor\Test\Files", "Files") { }
     }
 }

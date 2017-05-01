@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
@@ -18,7 +17,8 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
-    public class MarkdownCodeTest {
+    [Category.Md.RCode]
+    public sealed class MarkdownCodeTest {
         private readonly ICoreShell _coreShell;
         private readonly ITextBufferFactoryService _tbfs;
         private readonly IClassificationTypeRegistryService _crs;
@@ -32,13 +32,11 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         }
 
         [Test]
-        [Category.Md.RCode]
         public void EditRCode01() {
-            string content = "```{r}\n#R\n```";
-            ITextBuffer textBuffer;
-            IClassifier cls = GetClassifier(content, out textBuffer);
+            const string content = "```{r}\n#R\n```";
+            var cls = GetClassifier(content, out ITextBuffer textBuffer);
 
-            string actual = GetSpans(cls, textBuffer);
+            var actual = GetSpans(cls, textBuffer);
             actual.TrimEnd().Should().Be(string.Empty);
 
             Typing.Type(textBuffer, 6, "\n");
@@ -55,11 +53,9 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         }
 
         [Test]
-        [Category.Md.RCode]
         public void EditRCode02() {
             string content = "```{r}\nx <- 1\n```";
-            ITextBuffer textBuffer;
-            IClassifier cls = GetClassifier(content, out textBuffer);
+            var cls = GetClassifier(content, out ITextBuffer textBuffer);
 
             Typing.Delete(textBuffer, 0, 1);
             var actual = GetSpans(cls, textBuffer);
@@ -74,12 +70,12 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             textBuffer = _tbfs.CreateTextBuffer(new ContentTypeMock(MdContentTypeDefinition.ContentType));
             textBuffer.Insert(0, content);
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _coreShell);
-           return classifierProvider.GetClassifier(textBuffer);
+            var classifierProvider = new MdClassifierProvider(_crs, _ctrs);
+            return classifierProvider.GetClassifier(textBuffer);
         }
 
         private string GetSpans(IClassifier cls, ITextBuffer textBuffer) {
-            IList<ClassificationSpan> spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));
+            var spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));
             return ClassificationWriter.WriteClassifications(spans);
         }
     }
