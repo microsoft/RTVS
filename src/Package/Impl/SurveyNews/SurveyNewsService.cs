@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
 
             try {
                 if (!string.IsNullOrEmpty(url)) {
-                    _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: !forceCheck);
+                    _browserServices.OpenBrowser(WebBrowserRole.News, url);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _coreShell.Services.Log.Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
