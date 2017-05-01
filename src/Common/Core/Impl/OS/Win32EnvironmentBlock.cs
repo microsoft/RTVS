@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -13,14 +14,16 @@ using static Microsoft.Common.Core.NativeMethods;
 
 
 namespace Microsoft.Common.Core.OS {
-    public class Win32EnvironmentBlock {
+    public class Win32EnvironmentBlock : IEnumerable<KeyValuePair<string, string>>{
 
         private ConcurrentDictionary<string, string> _environment;
 
-        public IEnumerable<string> EnvironmentVariableNames {
-            get {
-                return _environment.Keys;
-            }
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() {
+            return _environment.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return _environment.GetEnumerator();
         }
 
         public string this[string key] {
