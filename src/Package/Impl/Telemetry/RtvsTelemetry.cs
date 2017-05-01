@@ -89,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             // Report local R installations
             var engines = new RInstallation().GetCompatibleEngines();
             foreach (var e in engines) {
-                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, e.InstallPath);
+                TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, new TelemetryPiiProperty(e.InstallPath));
             }
 
             string rClientPath = SqlRClientInstallation.GetRClientPath();
@@ -126,7 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     Uri uri;
                     if (Uri.TryCreate(c.Path, UriKind.Absolute, out uri)) {
                         if (uri.IsFile) {
-                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, uri.ToString());
+                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, new TelemetryPiiProperty(uri.ToString()));
                         } else {
                             TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RemoteConnection, new TelemetryPiiProperty(uri.ToString()));
                         }
