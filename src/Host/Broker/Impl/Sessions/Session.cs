@@ -114,6 +114,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 string domain = domainBldr.ToString();
 
                 eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
+
+                // add globally set environment variables
+                AddGlobalREnvironmentVariables(eb);
             } else {
                 eb = Win32EnvironmentBlock.Create((useridentity ?? WindowsIdentity.GetCurrent()).Token);
             }
@@ -123,7 +126,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
             eb["PATH"] = Invariant($"{Interpreter.Info.BinPath};{Environment.GetEnvironmentVariable("PATH")}");
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
-
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, commandLine);
             using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
@@ -163,6 +165,16 @@ namespace Microsoft.R.Host.Broker.Sessions {
             HostToClientErrorWorker(stderror, _process.ProcessId, (int processid, string errdata) => {
                 outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata);
             }).DoNotWait();
+        }
+
+        private void AddGlobalREnvironmentVariables(Win32EnvironmentBlock eb) {
+            // Get the broker's environment block
+            var brokerEb = Win32EnvironmentBlock.Create(WindowsIdentity.GetCurrent().Token);
+            foreach(var e in brokerEb) {
+                if (e.Key.StartsWithOrdinal("R_")) {
+                    eb[e.Key] = e.Value;
+                }
+            }
         }
 
         private Win32EnvironmentBlock CreateEnvironmentBlockForUser(WindowsIdentity useridentity, string username, string profilePath) {
