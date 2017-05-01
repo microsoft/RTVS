@@ -182,7 +182,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
 
             // Create the test objects
             var browser = Substitute.For<IWebBrowserServices>();
-            browser.When(x => x.OpenBrowser(Arg.Any<WebBrowserRole>(), Arg.Any<string>(), Arg.Any<bool>())).Do(x => {
+            browser.When(x => x.OpenBrowser(Arg.Any<WebBrowserRole>(), Arg.Any<string>())).Do(x => {
                 ((WebBrowserRole)x.Args()[0]).Should().Be(WebBrowserRole.News);
                 navigatedUrl = (string)x.Args()[1];
             });

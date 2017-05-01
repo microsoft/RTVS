@@ -37,10 +37,6 @@ namespace Microsoft.R.Support.Settings {
         /// </summary>
         string WebHelpSearchString { get; set; }
 
-        BrowserType WebHelpSearchBrowserType { get; set; }
-        BrowserType HtmlBrowserType { get; set; }
-        BrowserType MarkdownBrowserType { get; set; }
-
         /// <summary>
         /// Controls visibility of R Toolbar
         /// </summary>
