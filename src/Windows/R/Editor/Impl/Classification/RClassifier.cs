@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Classification {
         public RClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
             base(textBuffer, new RTokenizer(), new RClassificationNameProvider()) {
             ClassificationRegistryService = classificationRegistryService;
-            textBuffer.AddService(this);
+            //textBuffer.AddService(this);
         }
 
         protected override void RemoveSensitiveTokens(int position, TextRangeCollection<RToken> tokens) {
@@ -24,9 +24,7 @@ namespace Microsoft.R.Editor.Classification {
                 return;
             }
 
-            bool foundSpace = false;
-
-            while (tokens.Count > 0 && !foundSpace) {
+            while (tokens.Count > 0) {
                 int count = tokens.Count;
                 var token = tokens[count - 1];
 
@@ -41,7 +39,6 @@ namespace Microsoft.R.Editor.Classification {
 
                 if (count > 1) {
                     if (token.Start != tokens[count - 2].End) {
-                        foundSpace = true;
                         break;
                     }
 

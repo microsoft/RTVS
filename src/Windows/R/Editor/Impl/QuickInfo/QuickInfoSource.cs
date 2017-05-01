@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.R.Editor.QuickInfo {
     internal sealed class QuickInfoSource : IQuickInfoSource {
         private readonly IServiceContainer _services;
+        private readonly ISignatureHelpBroker _signatureHelpBroker;
         private readonly IFunctionIndex _functionIndex;
         private readonly ITextBuffer _subjectBuffer;
         private int _lastPosition = -1;
@@ -24,6 +25,7 @@ namespace Microsoft.R.Editor.QuickInfo {
         public QuickInfoSource(ITextBuffer subjectBuffer, IServiceContainer services) {
             _services = services;
             _functionIndex = services.GetService<IFunctionIndex>();
+            _signatureHelpBroker = services.GetService<ISignatureHelpBroker>();
 
             _subjectBuffer = subjectBuffer;
             _subjectBuffer.Changed += OnTextBufferChanged;
@@ -34,6 +36,10 @@ namespace Microsoft.R.Editor.QuickInfo {
         #region IQuickInfoSource
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
+            if (_signatureHelpBroker.IsSignatureHelpActive(session.TextView)) {
+                return;
+            }
+
             var triggerPoint = session.GetTriggerPoint(_subjectBuffer.CurrentSnapshot);
             if (triggerPoint.HasValue) {
                 int position = triggerPoint.Value;

@@ -53,14 +53,12 @@ namespace Microsoft.R.Editor.Signatures {
             if (document != null) {
                 if (!document.EditorTree.IsReady) {
                     document.EditorTree.InvokeWhenReady((p) => {
-                        var broker = _services.GetService<ISignatureHelpBroker>();
-                        broker.DismissAllSessions((ITextView)p);
-                        broker.TriggerSignatureHelp((ITextView)p);
-                    }, session.TextView, this.GetType(), processNow: true);
+                        RetriggerSignatureHelp((ITextView)p);
+                   }, session.TextView, this.GetType(), processNow: true);
                 } else {
                     AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, (textView, sigs) => {
                         _signatures = sigs;
-                        _broker.TriggerSignatureHelp(textView);
+                        RetriggerSignatureHelp(textView);
                     });
                 }
             }
@@ -120,5 +118,11 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
         #endregion
+
+        private void RetriggerSignatureHelp(ITextView textView) {
+            var broker = _services.GetService<ISignatureHelpBroker>();
+            broker.DismissAllSessions(textView);
+            broker.TriggerSignatureHelp(textView);
+        }
     }
 }

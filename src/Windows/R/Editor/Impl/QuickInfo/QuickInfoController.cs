@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -12,14 +12,14 @@ namespace Microsoft.R.Editor.QuickInfo {
     internal sealed class QuickInfoController : IIntellisenseController {
         private readonly IList<ITextBuffer> _subjectBuffers;
         private readonly IQuickInfoBroker _quickInfoBroker;
-        private readonly ICoreShell _shell;
+        private readonly ISignatureHelpBroker _signatureHelpBroker;
         private ITextView _textView;
 
-        public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker, ICoreShell shell) {
-            _quickInfoBroker = quickInfoBroker;
+        public QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services) {
+            _quickInfoBroker = services.GetService<IQuickInfoBroker>();
+            _signatureHelpBroker = services.GetService<ISignatureHelpBroker>();
             _textView = textView;
             _subjectBuffers = subjectBuffers;
-            _shell = shell;
 
             _textView.MouseHover += OnViewMouseHover;
             _textView.TextBuffer.Changing += OnTextBufferChanging;
@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
         }
 
-        void OnViewMouseHover(object sender, MouseHoverEventArgs e) {
+        private void OnViewMouseHover(object sender, MouseHoverEventArgs e) {
             //find the mouse position by mapping down to the subject buffer
             var point = _textView.BufferGraph.MapDownToFirstMatch
                  (new SnapshotPoint(_textView.TextSnapshot, e.Position),
@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.QuickInfo {
 
             if (point != null) {
                 var triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
-                if (!_quickInfoBroker.IsQuickInfoActive(_textView)) {
+                if (!_quickInfoBroker.IsQuickInfoActive(_textView) && !_signatureHelpBroker.IsSignatureHelpActive(_textView)) {
                     _quickInfoBroker.TriggerQuickInfo(_textView, triggerPoint, true);
                 }
             }

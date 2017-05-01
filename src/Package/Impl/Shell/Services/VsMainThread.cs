@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
             if (_mainThreadDispatcher.HasShutdownStarted) {
-                throw new InvalidOperationException("Unable to transition to UI thread: dispatcher has started shutdown.");
+                return;
             }
 
             var awaiter = ThreadHelper.JoinableTaskFactory

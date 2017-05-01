@@ -27,8 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
         private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker(VsAppShell.Current.Services);
         private readonly IPackageIndex _packageIndex;
-        private IRSettings _settings;
-        private IREditorSettings _editorSettings;
+        private readonly IRSettings _settings;
+        private readonly IREditorSettings _editorSettings;
 
         public static IRtvsTelemetry Current { get; set; }
 
