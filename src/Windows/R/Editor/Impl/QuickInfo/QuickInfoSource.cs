@@ -36,32 +36,31 @@ namespace Microsoft.R.Editor.QuickInfo {
         #region IQuickInfoSource
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
-            if (_signatureHelpBroker.IsSignatureHelpActive(session.TextView)) {
+            var document = _subjectBuffer.GetEditorDocument<IREditorDocument>();
+            if (_signatureHelpBroker.IsSignatureHelpActive(session.TextView) || document == null) {
                 return;
             }
 
-            var triggerPoint = session.GetTriggerPoint(_subjectBuffer.CurrentSnapshot);
+            var textBuffer = document.EditorBuffer.As<ITextBuffer>();
+            var triggerPoint = session.GetTriggerPoint(textBuffer.CurrentSnapshot);
             if (triggerPoint.HasValue) {
                 int position = triggerPoint.Value;
                 if (_lastPosition != position) {
                     _lastPosition = position;
-                    var document = _subjectBuffer.GetEditorDocument<IREditorDocument>();
-                    if (document != null) {
-                        // Document may be null in REPL window as projections are not
-                        // getting set immediately or may change as user moves mouse over.
-                        AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
-                                                session, quickInfoContent, out applicableToSpan,
-                                                (o, p) => RetriggerQuickInfoSession(o as IQuickInfoSession, p), null);
-                    }
+                    // Document may be null in REPL window as projections are not
+                    // getting set immediately or may change as user moves mouse over.
+                    AugmentQuickInfoSession(document.EditorTree.AstRoot, textBuffer, position,
+                                            session, quickInfoContent, out applicableToSpan,
+                                            (o, p) => RetriggerQuickInfoSession(o as IQuickInfoSession, p), null);
                 }
             }
         }
 
-        internal bool AugmentQuickInfoSession(AstRoot ast, int position, IQuickInfoSession session,
+        internal bool AugmentQuickInfoSession(AstRoot ast, ITextBuffer textBuffer, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
                                               Action<object, string> retriggerAction, string packageName) {
             int signatureEnd = position;
-            var snapshot = session.TextView.TextBuffer.CurrentSnapshot;
+            var snapshot = textBuffer.CurrentSnapshot;
 
             position = Math.Min(signatureEnd, position);
             var start = Math.Min(position, snapshot.Length);
@@ -111,7 +110,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             if (session == null) {
                 return;
             }
-            if(!session.IsDismissed) {
+            if (!session.IsDismissed) {
                 session.Dismiss();
             }
 

@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System;
-using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;

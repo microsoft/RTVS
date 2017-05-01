@@ -19,8 +19,8 @@ namespace Microsoft.Languages.Editor.Controllers {
         /// <summary>
         /// Text view associated with the view controller
         /// </summary>
-        public ITextView TextView { get; private set; }
-        public ITextBuffer TextBuffer { get; private set; }
+        public ITextView TextView { get; }
+        public ITextBuffer TextBuffer { get; }
         protected IServiceContainer Services { get; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -47,7 +47,7 @@ namespace Microsoft.Languages.Editor.Controllers {
         protected override void Dispose(bool disposing) {
             base.Dispose(disposing);
 
-            foreach (ICommandTarget controller in _controllers) {
+            foreach (var controller in _controllers) {
                 var disposable = controller as IDisposable;
                 disposable?.Dispose();
             }
@@ -56,8 +56,6 @@ namespace Microsoft.Languages.Editor.Controllers {
                 TextViewListenerEvents.TextViewDisconnected -= OnTextViewDisconnected;
             }
 
-            TextView = null;
-            TextBuffer = null;
             _controllers.Clear();
         }
 

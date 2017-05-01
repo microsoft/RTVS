@@ -7,8 +7,6 @@ using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
@@ -17,13 +15,6 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     [Name("Visual Studio R Markdown Editor Contained Language Host Provider")]
     [Order(Before = "Default")]
     internal sealed class MdContainedLanguageHostProvider : IContainedLanguageHostProvider {
-        private readonly ICoreShell _coreShell;
-
-        [ImportingConstructor]
-        public MdContainedLanguageHostProvider(ICoreShell coreShell) {
-            _coreShell = coreShell;
-        }
-
         /// <summary>
         /// Retrieves contained language host for a given text buffer.
         /// </summary>

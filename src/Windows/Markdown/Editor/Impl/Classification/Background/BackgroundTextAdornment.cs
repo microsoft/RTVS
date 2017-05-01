@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
@@ -27,25 +26,22 @@ namespace Microsoft.Markdown.Editor.Classification {
         private readonly IWpfTextView _view;
         private readonly IClassificationFormatMap _classificationFormatMap;
         private readonly IClassificationTypeRegistryService _classificationTypeRegistry;
-        private readonly ICoreShell _coreShell;
+        private readonly IContainedLanguageHandler _contanedLanguageHandler;
 
-        private IContainedLanguageHandler _contanedLanguageHandler;
         private double _lastWidth = 0;
         private int _reprocessFrom = -1;
         private Brush _backgroudColorBrush;
 
         public CodeBackgroundTextAdornment(
-            IWpfTextView view, 
-            IClassificationFormatMapService classificationFormatMapService, 
-            IClassificationTypeRegistryService classificationTypeRegistry,
-            ICoreShell coreShell) {
+            IWpfTextView view,
+            IClassificationFormatMapService classificationFormatMapService,
+            IClassificationTypeRegistryService classificationTypeRegistry) {
 
             _view = view;
             _layer = view.GetAdornmentLayer("CodeBackgroundTextAdornment");
 
             _classificationTypeRegistry = classificationTypeRegistry;
             _classificationFormatMap = classificationFormatMapService.GetClassificationFormatMap(view);
-            _coreShell = coreShell;
 
             // Advise to events
             _classificationFormatMap.ClassificationFormatMappingChanged += OnClassificationFormatMappingChanged;
@@ -104,7 +100,7 @@ namespace Microsoft.Markdown.Editor.Classification {
             ReprocessEntireView();
         }
 
-        private void ReprocessEntireView() { 
+        private void ReprocessEntireView() {
             _layer.RemoveAllAdornments();
             foreach (var line in _view.TextViewLines) {
                 ProcessLine(line);

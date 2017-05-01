@@ -153,9 +153,7 @@ namespace Microsoft.Common.Core.UI.Commands {
         protected virtual void Dispose(bool disposing) {
             foreach (var kvp in CommandMap) {
                 var disposable = kvp.Value as IDisposable;
-                if (disposable != null) {
-                    disposable.Dispose();
-                }
+                disposable?.Dispose();
             }
 
             ChainedController = null;

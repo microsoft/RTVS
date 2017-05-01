@@ -122,18 +122,19 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             }
         }
 
-        private async Task<Session> TriggerSessionAsync(string content, int caretPosition) {
+        private async Task<Session> TriggerSessionAsync(string content, int position) {
             var s = new Session {
                 Ast = RParser.Parse(content),
                 EditorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer()
             };
 
-            var quickInfoSource = new QuickInfoSource(s.EditorBuffer.As<ITextBuffer>(), Services);
-            var quickInfoSession = new QuickInfoSessionMock(s.EditorBuffer.As<ITextBuffer>(), caretPosition);
+            var textBuffer = s.EditorBuffer.As<ITextBuffer>();
+            var quickInfoSource = new QuickInfoSource(textBuffer, Services);
+            var quickInfoSession = new QuickInfoSessionMock(textBuffer, position);
             s.QuickInfoContent = new List<object>();
 
-            quickInfoSession.TriggerPoint = new SnapshotPoint(s.EditorBuffer.TextSnapshot(), caretPosition);
-            s.ApplicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(s.Ast, caretPosition, quickInfoSession, s.QuickInfoContent);
+            quickInfoSession.TriggerPoint = new SnapshotPoint(s.EditorBuffer.TextSnapshot(), position);
+            s.ApplicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(s.Ast, textBuffer, position, quickInfoSession, s.QuickInfoContent);
 
             return s;
         }

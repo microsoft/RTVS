@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
