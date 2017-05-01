@@ -108,7 +108,10 @@ namespace Microsoft.R.Editor.QuickInfo {
         #endregion
 
         private void RetriggerQuickInfoSession(IQuickInfoSession session, string packageName) {
-            if (session != null && !session.IsDismissed) {
+            if (session == null) {
+                return;
+            }
+            if(!session.IsDismissed) {
                 session.Dismiss();
             }
 

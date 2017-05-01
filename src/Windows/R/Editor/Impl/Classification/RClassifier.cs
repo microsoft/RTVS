@@ -16,7 +16,6 @@ namespace Microsoft.R.Editor.Classification {
         public RClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
             base(textBuffer, new RTokenizer(), new RClassificationNameProvider()) {
             ClassificationRegistryService = classificationRegistryService;
-            //textBuffer.AddService(this);
         }
 
         protected override void RemoveSensitiveTokens(int position, TextRangeCollection<RToken> tokens) {

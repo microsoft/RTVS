@@ -4,7 +4,6 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -91,7 +90,7 @@ namespace Microsoft.R.Editor.Formatting {
                 int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
                 var line = snapshot.GetLineFromLineNumber(lineNumber + lineOffset);
 
-                var classifier = textBuffer.GetService<RClassifier>();
+                var classifier = RClassifierProvider.GetRClassifier(textBuffer);
                 var tokenIndex = classifier.Tokens.GetItemContaining(line.Start);
 
                 return tokenIndex < 0 || classifier.Tokens[tokenIndex].TokenType != RTokenType.String;
