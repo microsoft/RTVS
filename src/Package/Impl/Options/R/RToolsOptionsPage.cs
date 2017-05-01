@@ -162,36 +162,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { _holder.SetValue(value); }
         }
 
-        [LocCategory(nameof(Resources.Settings_HelpCategory))]
-        [CustomLocDisplayName(nameof(Resources.Settings_WebHelpSearchBrowserType))]
-        [LocDescription(nameof(Resources.Settings_WebHelpSearchBrowserType_Description))]
-        [TypeConverter(typeof(BrowserTypeConverter))]
-        [DefaultValue(BrowserType.Internal)]
-        public BrowserType WebHelpSearchBrowserType {
-            get { return _holder.GetValue(BrowserType.Internal); }
-            set { _holder.SetValue(value); }
-        }
-
-        [LocCategory(nameof(Resources.Settings_HtmlCategory))]
-        [CustomLocDisplayName(nameof(Resources.Settings_HtmlBrowserType))]
-        [LocDescription(nameof(Resources.Settings_HtmlBrowserType_Description))]
-        [TypeConverter(typeof(BrowserTypeConverter))]
-        [DefaultValue(BrowserType.External)]
-        public BrowserType HtmlBrowserType {
-            get { return _holder.GetValue(BrowserType.External); }
-            set { _holder.SetValue(value); }
-        }
-
-        [LocCategory(nameof(Resources.Settings_MarkdownCategory))]
-        [CustomLocDisplayName(nameof(Resources.Settings_MarkdownBrowserType))]
-        [LocDescription(nameof(Resources.Settings_MarkdownBrowserType_Description))]
-        [TypeConverter(typeof(BrowserTypeConverter))]
-        [DefaultValue(BrowserType.External)]
-        public BrowserType MarkdownBrowserType {
-            get { return _holder.GetValue(BrowserType.External); }
-            set { _holder.SetValue(value); }
-        }
-
         [LocCategory(nameof(Resources.Settings_GeneralCategory))]
         [CustomLocDisplayName(nameof(Resources.Settings_SurveyNewsCheck))]
         [LocDescription(nameof(Resources.Settings_SurveyNewsCheck_Description))]

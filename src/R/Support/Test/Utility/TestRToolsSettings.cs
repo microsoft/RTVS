@@ -135,21 +135,6 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public BrowserType WebHelpSearchBrowserType {
-            get { return BrowserType.Internal; }
-            set { }
-        }
-
-        public BrowserType HtmlBrowserType {
-            get { return BrowserType.External; }
-            set { }
-        }
-
-        public BrowserType MarkdownBrowserType {
-            get { return BrowserType.External; }
-            set { }
-        }
-
         public bool EvaluateActiveBindings { get; set; } = false;
 
         public LogVerbosity LogVerbosity {

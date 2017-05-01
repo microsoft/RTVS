@@ -51,9 +51,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string _surveyNewsIndexUrl = SurveyNewsUrls.Index;
         private bool _evaluateActiveBindings = true;
         private string _webHelpSearchString = "R site:stackoverflow.com";
-        private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
-        private BrowserType _htmlBrowserType = BrowserType.External;
-        private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
         [ImportingConstructor]
@@ -187,21 +184,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string WebHelpSearchString {
             get { return _webHelpSearchString; }
             set { SetProperty(ref _webHelpSearchString, value); }
-        }
-
-        public BrowserType WebHelpSearchBrowserType {
-            get { return _webHelpSearchBrowserType; }
-            set { SetProperty(ref _webHelpSearchBrowserType, value); }
-        }
-
-        public BrowserType HtmlBrowserType {
-            get { return _htmlBrowserType; }
-            set { SetProperty(ref _htmlBrowserType, value); }
-        }
-
-        public BrowserType MarkdownBrowserType {
-            get { return _markdownBrowserType; }
-            set { SetProperty(ref _markdownBrowserType, value); }
         }
 
         public LogVerbosity LogVerbosity {
