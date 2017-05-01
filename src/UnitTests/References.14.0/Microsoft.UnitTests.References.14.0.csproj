@@ -53,7 +53,7 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(PrivateAssembliesFolderPath)Microsoft.VisualStudio.Text.Internal.dll">
+    <Reference Include="$(LibDirectory)$(VisualStudioVersion)\Microsoft.VisualStudio.Text.Internal.dll">
       <Private>False</Private>
       <Private>True</Private>
     </Reference>
