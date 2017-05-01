@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -15,6 +16,12 @@ namespace Microsoft.Common.Core.OS {
     public class Win32EnvironmentBlock {
 
         private ConcurrentDictionary<string, string> _environment;
+
+        public IEnumerable<string> EnvironmentVariableNames {
+            get {
+                return _environment.Keys;
+            }
+        }
 
         public string this[string key] {
             get {
