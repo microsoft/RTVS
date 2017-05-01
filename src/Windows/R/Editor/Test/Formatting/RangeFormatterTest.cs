@@ -60,7 +60,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         public void FormatConditionalTest03() {
             const string original =
 @"if(true){
-  if(false){
+   if(false){
 x<-1
   }
 }";
@@ -70,8 +70,8 @@ x<-1
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
             const string expected =
 @"if(true){
-  if(false){
-    x <- 1
+   if(false){
+       x <- 1
   }
 }";
             actual.Should().Be(expected);
@@ -83,7 +83,7 @@ x<-1
             var editorView = TextViewTest.MakeTextView(original, out AstRoot ast);
             _formatter.FormatRange(editorView, editorView.EditorBuffer, new TextRange(original.IndexOf('y'), 0));
 
-            const string expected = "if (x > 1)\r\n  y <- 2";
+            const string expected = "if (x > 1)\r\n    y <- 2";
             var actual = editorView.EditorBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
@@ -139,7 +139,7 @@ foo(cache=TRUE)
         [InlineData("{}", 0, 1, "{ }")]
         [InlineData("{\n}", 0, 1, "{\n}")]
         [InlineData("{\n if(TRUE) {\n}}", 14, 16, "{\n if(TRUE) {\n }\n}")]
-        [InlineData("{\n    {\n  } }", 6, 13, "{\n  {\n  }\n}")]
+        [InlineData("{\n    {\n  } }", 6, 13, "{\n    {\n    }\n}")]
         public void FormatScope(string content, int start, int end, string expected) {
             var editorView = TextViewTest.MakeTextView(content, out AstRoot ast);
             _formatter.FormatRange(editorView, editorView.EditorBuffer, TextRange.FromBounds(start, end));
