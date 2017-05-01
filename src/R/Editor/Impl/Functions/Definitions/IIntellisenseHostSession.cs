@@ -35,7 +35,13 @@ namespace Microsoft.R.Editor.Functions {
 
         /// <summary>
         /// Retrieves names of packages loaded into the interactive session.
+        /// Cached list of packages may not be up to date.
         /// </summary>
         IEnumerable<string> LoadedPackageNames { get; }
+
+        /// <summary>
+        /// Retrieves names of packages loaded into the interactive session.
+        /// </summary>
+        Task<IEnumerable<string>> GetLoadedPackageNamesAsync();
     }
 }

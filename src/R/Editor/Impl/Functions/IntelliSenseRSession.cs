@@ -27,7 +27,8 @@ namespace Microsoft.R.Editor.Functions {
         private readonly IRInteractiveWorkflow _workflow;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
         private readonly bool _unitTests;
-        private IEnumerable<string> _loadedPackages;
+        private volatile IEnumerable<string> _loadedPackages;
+        private volatile Task _updateTask;
 
         public static IIntellisenseRSession CreateService(IServiceContainer services) => new IntelliSenseRSession(services);
 
@@ -63,7 +64,7 @@ namespace Microsoft.R.Editor.Functions {
         /// <param name="functionName">R function name</param>
         /// <returns>Function package or null if undefined</returns>
         public async Task<string> GetFunctionPackageNameAsync(string functionName) {
-            IRSession session = GetLoadedPackagesInspectionSession();
+            var session = GetLoadedPackagesInspectionSession();
             string packageName = null;
 
             if (session != null && session.IsHostRunning) {
@@ -99,6 +100,7 @@ namespace Microsoft.R.Editor.Functions {
                     int timeout = _unitTests ? 10000 : 3000;
                     var settings = Services.GetService<IRSettings>();
                     await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout);
+                    Session.Mutated += OnInteractiveSessionMutated;
                 }
             } finally {
                 token.Set();
@@ -107,29 +109,37 @@ namespace Microsoft.R.Editor.Functions {
 
         /// <summary>
         /// Retrieves names of packages loaded into the interactive session.
+        /// Cached list of packages may not be up to date.
         /// </summary>
         public IEnumerable<string> LoadedPackageNames {
             get {
-                if (_loadedPackages == null) {
-                    if (_workflow.RSession != null) {
-                        _workflow.RSession.Mutated += OnInteractiveSessionMutated;
-                        UpdateListOfLoadedPackagesAsync().DoNotWait();
-                    }
+                if (_loadedPackages == null && _workflow.RSession != null) {
+                    UpdateListOfLoadedPackagesAsync().DoNotWait();
                 }
                 return _loadedPackages ?? Enumerable.Empty<string>();
             }
         }
 
+        /// <summary>
+        /// Retrieves names of packages loaded into the interactive session.
+        /// </summary>
+        public async Task<IEnumerable<string>> GetLoadedPackageNamesAsync() {
+            if (_loadedPackages == null && _updateTask == null) {
+                _updateTask = UpdateListOfLoadedPackagesAsync();
+            }
+            await _updateTask;
+            return _loadedPackages ?? Enumerable.Empty<string>();
+        }
+
         private void OnInteractiveSessionMutated(object sender, EventArgs e)
-             => UpdateListOfLoadedPackagesAsync().DoNotWait();
+             => _updateTask = UpdateListOfLoadedPackagesAsync();
 
         private async Task UpdateListOfLoadedPackagesAsync() {
             try {
                 await StartSessionAsync();
                 var session = GetLoadedPackagesInspectionSession();
                 if (session != null) {
-                    var loadedPackages = await session.EvaluateAsync<string[]>("as.list(.packages())", REvaluationKind.Normal);
-                    Interlocked.Exchange(ref _loadedPackages, loadedPackages);
+                    _loadedPackages = await session.EvaluateAsync<string[]>("as.list(.packages())", REvaluationKind.Normal);
                 }
             } catch (RHostDisconnectedException) { } catch (RException) { }
         }

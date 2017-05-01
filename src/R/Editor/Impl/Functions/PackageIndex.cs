@@ -256,14 +256,6 @@ namespace Microsoft.R.Editor.Functions {
             return result.Select(p => p.ToObject<RPackage>());
         }
 
-        private async Task<IEnumerable<string>> GetLoadedPackagesAsync() {
-            try {
-                await _host.StartSessionAsync();
-                return _host.LoadedPackageNames;
-            } catch (OperationCanceledException) { }
-            return Enumerable.Empty<string>();
-        }
-
         public string CacheFolderPath {
             get {
                 var app = _host.Services.GetService<IApplication>();

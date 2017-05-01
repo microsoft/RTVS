@@ -160,6 +160,7 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         private async Task<IFunctionInfo> TryGetCachedFunctionInfoAsync(string functionName, string packageName) {
             packageName = packageName ?? await GetFunctionLoadedPackage(functionName);
+            await _host.GetLoadedPackageNamesAsync(); // Make sure the list is up to date
             return TryGetCachedFunctionInfo(functionName, ref packageName);
         }
 
@@ -213,7 +214,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private async Task<string> GetFunctionLoadedPackage(string functionName) {
             var packageName = await _host.GetFunctionPackageNameAsync(functionName);
-            if (!string.IsNullOrEmpty(packageName) && _host.LoadedPackageNames.Contains(packageName)) {
+            if (!string.IsNullOrEmpty(packageName) && (await _host.GetLoadedPackageNamesAsync()).Contains(packageName)) {
                 return packageName;
             }
             return null;
