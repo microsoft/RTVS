@@ -82,7 +82,6 @@
     <Compile Include="RBrokerServiceInstaller.Designer.cs">
       <DependentUpon>RBrokerServiceInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Services\ExitService.cs" />
     <Compile Include="Services\WindowsRHostProcessService.cs" />
     <Compile Include="Services\WindowsAuthenticationService.cs" />
     <Compile Include="Services\WindowsSystemInfoService.cs" />
@@ -93,14 +92,13 @@
       <DependentUpon>BrokerService.cs</DependentUpon>
     </Compile>
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="Startup\CommonStartup.cs" />
     <Compile Include="Startup\Program.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Startup\Startup.cs" />
+    <Compile Include="Startup\WindowsStartup.cs" />
     <Compile Include="UserProfile\ProfileController.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -120,9 +118,9 @@
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>

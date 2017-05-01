@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -18,9 +19,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [Category.Repl]
     [Collection(CollectionNames.NonParallel)]
     public class EncodingsTest {
-        private readonly ServiceManagerFixture _services;
+        private readonly IServiceContainer _services;
 
-        public EncodingsTest(ServiceManagerFixture services) {
+        public EncodingsTest(IServiceContainer services) {
             _services = services;
         }
 

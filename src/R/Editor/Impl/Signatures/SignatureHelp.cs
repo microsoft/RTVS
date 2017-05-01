@@ -64,7 +64,7 @@ namespace Microsoft.R.Editor.Signatures {
                     // their full names. Then the unnamed arguments are matched in positional order to 
                     // the remaining formal arguments.
 
-                    int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, REditorSettings.PartialArgumentNameMatch);
+                    int argumentIndexInSignature = _signatureInfo.GetArgumentIndex(parameterInfo.ParameterName, _shell.GetService<IREditorSettings>().PartialArgumentNameMatch);
                     if (argumentIndexInSignature >= 0) {
                         index = argumentIndexInSignature;
                     }

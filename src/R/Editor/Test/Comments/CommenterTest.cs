@@ -4,13 +4,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -21,8 +21,8 @@ namespace Microsoft.R.Editor.Test.Comments {
     public class CommenterTest {
         private readonly ICoreShell _shell;
 
-        public CommenterTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+        public CommenterTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]

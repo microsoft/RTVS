@@ -3,6 +3,7 @@
 
 namespace Microsoft.R.Host.Broker.Startup {
     public class StartupOptions {
+        public bool IsService { get; set; }
         public string Name { get; set; }
         public string WriteServerUrlsToPipe { get; set; }
     }

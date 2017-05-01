@@ -1,15 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 using Xunit;
@@ -18,10 +19,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.SmartIndent]
     public class SmartIndentTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly IServiceContainer _services;
 
-        public SmartIndentTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
+        public SmartIndentTest(IServiceContainer services) {
+            _services = services;
         }
 
         [CompositeTest]
@@ -66,7 +67,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
 
-            ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>("ContentTypes", RContentTypeDefinition.ContentType);
+            var cs = _services.GetService<ICompositionService>();
+            var composer = new ContentTypeImportComposer<ISmartIndentProvider>(cs);
+            var provider = composer.GetImport(RContentTypeDefinition.ContentType);
             ISmartIndent indenter = provider.CreateSmartIndent(textView);
             int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));
             indent.Should().HaveValue().And.Be(expectedIndent);

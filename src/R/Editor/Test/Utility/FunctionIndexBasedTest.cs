@@ -3,29 +3,27 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
     public abstract class FunctionIndexBasedTest : IAsyncLifetime {
-        protected IExportProvider ExportProvider { get; }
-        protected ICoreShell shell { get; }
+        protected ICoreShell Shell { get; }
         protected IPackageIndex PackageIndex { get; }
         protected IFunctionIndex FunctionIndex { get; }
         protected IRInteractiveWorkflow Workflow { get; }
 
-        protected FunctionIndexBasedTest(IExportProvider exportProvider) {
-            ExportProvider = exportProvider;
-            Workflow = UIThreadHelper.Instance.Invoke(() => ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate());
-            shell = ExportProvider.GetExportedValue<ICoreShell>();
-            FunctionIndex = ExportProvider.GetExportedValue<IFunctionIndex>();
-            PackageIndex = ExportProvider.GetExportedValue<IPackageIndex>();
+        protected FunctionIndexBasedTest(IServiceContainer services) {
+            Shell = services.GetService<ICoreShell>();
+            Workflow = UIThreadHelper.Instance.Invoke(() => Shell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate());
+            FunctionIndex = Shell.GetService<IFunctionIndex>();
+            PackageIndex = Shell.GetService<IPackageIndex>();
         }
 
         public async Task InitializeAsync() {
@@ -35,7 +33,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         }
 
         public async Task DisposeAsync() {
-            await PackageIndex.DisposeAsync(ExportProvider);
+            await PackageIndex.DisposeAsync(Shell);
         }
      }
 }

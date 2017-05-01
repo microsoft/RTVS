@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -15,12 +15,10 @@ namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
     public class RCompletionSourceTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
 
-        public RCompletionSourceTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _shell = _exportProvider.GetExportedValue<ICoreShell>();
+        public RCompletionSourceTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
 

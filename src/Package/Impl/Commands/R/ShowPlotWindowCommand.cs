@@ -16,12 +16,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     public class ShowPlotWindowCommand : IAsyncCommandRange {
-        private readonly IRPlotManager _plotManager;
+        private readonly IRPlotManagerVisual _plotManager;
         private readonly IVsUIShell4 _shell;
         private PlotWindowResult[] _windows;
 
         public ShowPlotWindowCommand(ICoreShell shell, IRInteractiveWorkflow workflow) {
-            _plotManager = workflow.Plots;
+            _plotManager = workflow.Plots as IRPlotManagerVisual;
             _shell = shell.GetService<IVsUIShell4>(typeof(SVsUIShell));
         }
 

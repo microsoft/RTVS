@@ -3,7 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Application.Packages {
@@ -12,7 +12,5 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [ContentType("text")]
     [Name("Generic Test settings")]
     [Order(Before = "Default")]
-    internal sealed class TextSettingsStorage : SettingsStorage
-    {
-    }
+    internal sealed class TextSettingsStorage : SettingsStorage { }
 }

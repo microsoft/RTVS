@@ -15,7 +15,8 @@ using Microsoft.R.Components.Plots;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
-    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider, IDisposable {
+    [Export(typeof(IRInteractiveWorkflowVisualProvider))]
+    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowVisualProvider, IRInteractiveWorkflowProvider, IDisposable {
         private readonly DisposableBag _disposableBag = DisposableBag.Create<VsRInteractiveWorkflowProvider>();
 
         private readonly IConnectionManagerProvider _connectionsProvider;
@@ -26,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly ICoreShell _shell;
 
-        private Lazy<IRInteractiveWorkflow> _instanceLazy;
+        private Lazy<IRInteractiveWorkflowVisual> _instanceLazy;
 
         [ImportingConstructor]
         public VsRInteractiveWorkflowProvider(ICoreShell shell) {
@@ -43,24 +44,20 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _shell.Terminating += OnApplicationTerminating;
         }
 
-        private void OnApplicationTerminating(object sender, EventArgs e) {
-            Dispose();
-        }
+        private void OnApplicationTerminating(object sender, EventArgs e) => Dispose();
+        public void Dispose() => _disposableBag.TryDispose();
 
-        public void Dispose() {
-            _disposableBag.TryDispose();
-        }
-
-        public IRInteractiveWorkflow GetOrCreate() {
+        IRInteractiveWorkflowVisual IRInteractiveWorkflowVisualProvider.GetOrCreate() { 
             _disposableBag.ThrowIfDisposed();
-
-            Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflow>(CreateRInteractiveWorkflow), null);
+            Interlocked.CompareExchange(ref _instanceLazy, new Lazy<IRInteractiveWorkflowVisual>(CreateRInteractiveWorkflow), null);
             return _instanceLazy.Value;
         }
 
+        IRInteractiveWorkflow IRInteractiveWorkflowProvider.GetOrCreate() => ((IRInteractiveWorkflowVisualProvider)this).GetOrCreate();
+
         public IRInteractiveWorkflow Active => (_instanceLazy != null && _instanceLazy.IsValueCreated) ? _instanceLazy.Value : null;
 
-        private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
+        private IRInteractiveWorkflowVisual CreateRInteractiveWorkflow() {
             _disposableBag.Add(DisposeInstance);
             return new RInteractiveWorkflow(_connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, _shell);
         }

@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
-using Microsoft.Languages.Editor.Imaging;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.R.Support.Help;
-using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
@@ -21,9 +20,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly IPackageIndex _packageIndex;
 
         [ImportingConstructor]
-        public PackagesCompletionProvider(IPackageIndex packageIndex, IGlyphService glyphService) {
+        public PackagesCompletionProvider(IPackageIndex packageIndex, IImageService imageService) {
             _packageIndex = packageIndex;
-            _glyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic);
+            _glyph = imageService.GetImage(ImageType.Library) as ImageSource;
         }
 
         #region IRCompletionListProvider

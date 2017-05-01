@@ -13,7 +13,6 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -26,6 +25,7 @@ namespace Microsoft.R.Editor.Completions {
     /// on what was typed and the current editor context.
     /// </summary>
     public sealed class RCompletionController : CompletionController {
+        private readonly IREditorSettings _settings;
         private ITextBuffer _textBuffer;
         private char _commitChar = '\0';
 
@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Completions {
             ICoreShell shell)
             : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell) {
             _textBuffer = subjectBuffers[0];
-
+            _settings = shell.GetService<IREditorSettings>();
             ServiceManager.AddService(this, TextView, shell);
         }
 
@@ -84,8 +84,8 @@ namespace Microsoft.R.Editor.Completions {
         public static RCompletionController FromTextView(ITextView textView)
             => ServiceManager.GetService<RCompletionController>(textView);
 
-        protected override bool AutoCompletionEnabled=> REditorSettings.CompletionEnabled;
-        protected override bool AutoSignatureHelpEnabled=> REditorSettings.SignatureHelpEnabled;
+        protected override bool AutoCompletionEnabled => _settings.CompletionEnabled;
+        protected override bool AutoSignatureHelpEnabled => _settings.SignatureHelpEnabled;
 
         /// <summary>
         /// Should this key commit a completion session?
@@ -125,7 +125,7 @@ namespace Microsoft.R.Editor.Completions {
                     return typedChar == '(' || typedChar == '\t' || (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique);
                 }
 
-                if(typedChar == '=') {
+                if (typedChar == '=') {
                     var rset = completionSet as RCompletionSet;
                     rset?.Filter(typedChar);
                     rset?.SelectBestMatch();
@@ -165,11 +165,11 @@ namespace Microsoft.R.Editor.Completions {
                         return unique;
                 }
 
-                if (typedChar == ' ' && !REditorSettings.CommitOnSpace) {
+                if (typedChar == ' ' && !_settings.CommitOnSpace) {
                     return false;
                 }
 
-                if(CharExtensions.IsLineBreak(typedChar)) {
+                if (CharExtensions.IsLineBreak(typedChar)) {
                     // Complete on Enter but only if selection does not exactly match
                     // applicable span. for example, if span is X and selection is X123
                     // then we do complete. However, if selection is X then text is already
@@ -211,7 +211,7 @@ namespace Microsoft.R.Editor.Completions {
                     if (!doc.IsPositionInComment(pos)) {
                         if (pos > 0 && pos <= position.Value.Snapshot.Length) {
                             bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
-                            bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
+                            bool showCompletion = endOfIdentifier && _settings.ShowCompletionOnTab;
                             if (!showCompletion) {
                                 var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
                                 string directory;
@@ -251,7 +251,7 @@ namespace Microsoft.R.Editor.Completions {
                         return RCompletionContext.IsCaretInLibraryStatement(TextView);
 
                     default:
-                        if (REditorSettings.ShowCompletionOnFirstChar) {
+                        if (_settings.ShowCompletionOnFirstChar) {
                             SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                             if (position.HasValue) {
                                 int pos = position.Value;

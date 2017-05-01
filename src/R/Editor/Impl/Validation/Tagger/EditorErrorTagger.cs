@@ -28,6 +28,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     public class EditorErrorTagger : ITagger<IErrorTag>, IEditorTaskListItemSource {
         private readonly IEditorTaskList _taskList;
         private readonly ICoreShell _shell;
+        private readonly IREditorSettings _settings;
 
         /// <summary>
         /// Tells the editor (or any listener) that syntax errors have changed
@@ -47,6 +48,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         public EditorErrorTagger(ITextBuffer textBuffer, IEditorTaskList taskList, ICoreShell shell) {
             _taskList = taskList;
             _shell = shell;
+            _settings = _shell.GetService<IREditorSettings>();
 
             _document = REditorDocument.FromTextBuffer(textBuffer);
             _document.DocumentClosing += OnDocumentClosing;
@@ -80,9 +82,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// Retriever error (squiggly) tagger associated with the text buffer
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
-        public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer) {
-            return ServiceManager.GetService<EditorErrorTagger>(textBuffer);
-        }
+        public static EditorErrorTagger FromTextBuffer(ITextBuffer textBuffer)
+            => ServiceManager.GetService<EditorErrorTagger>(textBuffer);
 
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
             foreach (IAstNode node in e.Nodes) {
@@ -96,9 +97,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             }
         }
 
-        private void OnCleared(object sender, EventArgs e) {
-            RemoveAllTags();
-        }
+        private void OnCleared(object sender, EventArgs e) => RemoveAllTags();
 
         private void RemoveAllTags() {
             _errorTags.Clear();
@@ -109,7 +108,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         }
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            if (REditorSettings.SyntaxCheck && e.Changes.Count > 0) {
+            if (_settings.SyntaxCheckEnabled && e.Changes.Count > 0) {
                 var changes = TextUtility.ConvertToRelative(e);
                 foreach (var change in changes) {
                     _errorTags.ReflectTextChange(change.Start, change.OldLength, change.NewLength,
@@ -173,7 +172,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// <param name="sender"></param>
         /// <param name="eventArgs"></param>
         private void OnIdle(object sender, EventArgs eventArgs) {
-            if (REditorSettings.SyntaxCheck && _textBuffer != null) {
+            if (_settings.SyntaxCheckEnabled && _textBuffer != null) {
                 if (ResultsQueue.Count > 0) {
                     _fireCodeMarkerUponCompletion = true;
 
@@ -273,7 +272,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             List<ITagSpan<IErrorTag>> tags = new List<ITagSpan<IErrorTag>>();
 
-            if (REditorSettings.SyntaxCheck && _errorTags != null) {
+            if (_settings.SyntaxCheckEnabled && _errorTags != null) {
                 foreach (var span in spans) {
                     // Force the input span to cover at least one character
                     // (this helps make tooltips work where the input span is empty)
@@ -305,12 +304,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 return tasks;
             }
         }
-
-        public ITextBuffer TextBuffer {
-            get {
-                return _textBuffer;
-            }
-        }
+        public object EditorBuffer => _textBuffer;
         #endregion
     }
 }

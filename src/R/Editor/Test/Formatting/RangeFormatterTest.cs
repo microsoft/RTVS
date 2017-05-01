@@ -4,13 +4,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 using Xunit;
@@ -19,12 +19,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class RangeFormatterTest {
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
 
-        public RangeFormatterTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _shell = _exportProvider.GetExportedValue<ICoreShell>();
+        public RangeFormatterTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]
@@ -114,9 +112,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             string original =
 @"if(true){
-    if(false){
+  if(false){
 x<-1
-    }
+  }
 }";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
@@ -125,9 +123,9 @@ x<-1
 
             string expected =
 @"if(true){
-    if(false){
-        x <- 1
-    }
+  if(false){
+    x <- 1
+  }
 }";
             actual.Should().Be(expected);
         }
@@ -140,7 +138,7 @@ x<-1
 
             RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf('y'), 0), new RFormatOptions(), _shell);
 
-            string expected = "if (x > 1)\r\n    y <- 2";
+            string expected = "if (x > 1)\r\n  y <- 2";
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             actual.Should().Be(expected);
@@ -200,7 +198,7 @@ foo(cache=TRUE)
         [InlineData("{}", 0, 1, "{ }")]
         [InlineData("{\n}", 0, 1, "{\n}")]
         [InlineData("{\n if(TRUE) {\n}}", 14, 16, "{\n if(TRUE) {\n }\n}")]
-        [InlineData("{\n    {\n  } }", 6, 13, "{\n    {\n    }\n}")]
+        [InlineData("{\n    {\n  } }", 6, 13, "{\n  {\n  }\n}")]
         public void FormatScope(string content, int start, int end, string expected) {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(content, out ast);

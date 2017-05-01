@@ -6,14 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Imaging;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help;
-using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
@@ -23,11 +21,13 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// </summary>
     public class ParameterNameCompletionProvider : IRCompletionListProvider {
         private readonly IFunctionIndex _functionIndex;
-        private readonly IGlyphService _glyphService;
+        private readonly IImageService _imageService;
+        private readonly IREditorSettings _settings;
 
-        public ParameterNameCompletionProvider(IFunctionIndex functionIndex, IGlyphService glyphService) {
+        public ParameterNameCompletionProvider(IFunctionIndex functionIndex, IImageService imageService, IREditorSettings settings) {
             _functionIndex = functionIndex;
-            _glyphService = glyphService;
+            _imageService = imageService;
+            _settings = settings;
         }
 
         #region IRCompletionListProvider
@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             FunctionCall funcCall;
-            ImageSource functionGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
+            var functionGlyph = _imageService.GetImage(ImageType.ValueType) as ImageSource;
 
             // Safety checks
             if (!ShouldProvideCompletions(context, out funcCall)) {
@@ -62,8 +62,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             foreach (var arg in possibleArguments) {
-                string displayText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " =" : "=");
-                string insertionText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " = " : "=");
+                string displayText = arg.Key + (_settings.FormatOptions.SpacesAroundEquals ? " =" : "=");
+                string insertionText = arg.Key + (_settings.FormatOptions.SpacesAroundEquals ? " = " : "=");
                 completions.Add(new RCompletion(displayText, insertionText, arg.Value.Description, functionGlyph));
             }
 

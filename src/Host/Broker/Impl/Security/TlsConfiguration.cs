@@ -5,23 +5,45 @@ using System;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.R.Host.Broker.Services;
+using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
-using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Security {
-    public sealed class TlsConfiguration {
-        private readonly ILogger _logger;
+    public sealed class TlsConfiguration : IConfigureOptions<KestrelServerOptions> {
+        private readonly IApplicationLifetime _lifetime;
+        private readonly ILogger<TlsConfiguration> _logger;
+        private readonly StartupOptions _startupOptions;
         private readonly SecurityOptions _securityOptions;
 
-        public TlsConfiguration(ILogger logger, SecurityOptions options) {
+        public TlsConfiguration(IApplicationLifetime lifetime, ILogger<TlsConfiguration> logger, IOptions<StartupOptions> startupOptions, IOptions<SecurityOptions> securityOptions) {
+            _lifetime = lifetime;
             _logger = logger;
-            _securityOptions = options;
+            _startupOptions = startupOptions.Value;
+            _securityOptions = securityOptions.Value;
         }
 
-        public HttpsConnectionFilterOptions GetHttpsOptions() {            
+        public void Configure(KestrelServerOptions options) {
+            var httpsOptions = GetHttpsOptions();
+            if (httpsOptions == null) {
+                _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
+                _lifetime.StopApplication();
+
+                if (!_startupOptions.IsService) {
+                    Environment.Exit((int)BrokerExitCodes.NoCertificate);
+                }
+            }
+
+            options.UseHttps(httpsOptions);
+        }
+
+        private HttpsConnectionFilterOptions GetHttpsOptions() {            
             var cert = GetCertificate();
             if (cert != null) {
                 return new HttpsConnectionFilterOptions {

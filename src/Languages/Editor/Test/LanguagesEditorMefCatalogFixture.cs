@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
@@ -36,10 +36,11 @@ namespace Microsoft.Languages.Editor.Test {
                 "Microsoft.VisualStudio.Text.UI.dll",
                 "Microsoft.VisualStudio.Text.UI.Wpf.dll",
                 "Microsoft.Languages.Editor.dll",
-                "Microsoft.R.Host.Client.dll",
+                "Microsoft.R.Host.Client.Windows.dll",
                 "Microsoft.R.Common.Core.dll",
                 "Microsoft.R.Common.Core.Test.dll",
                 "Microsoft.R.Components.dll",
+                "Microsoft.R.Components.Windows.dll",
                 "Microsoft.R.Components.Test.dll",
                 "Microsoft.VisualStudio.Editor.dll",
                 "Microsoft.VisualStudio.Language.Intellisense.dll",
@@ -47,7 +48,7 @@ namespace Microsoft.Languages.Editor.Test {
             };
         }
 
-        public virtual IExportProvider Create(ServiceManagerFixture services) => new LanguagesEditorTestExportProvider(CreateContainer(), services);
+        public virtual IExportProvider Create(IServiceContainer services) => new LanguagesEditorTestExportProvider(CreateContainer(), (IServiceManager)services);
 
         protected class LanguagesEditorTestExportProvider : TestExportProvider {
             private readonly ICoreShell _coreShell;

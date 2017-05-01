@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
     internal sealed class PreviewPdfCommand : PreviewCommand {
         public PreviewPdfCommand(
             ITextView textView,
-            IRInteractiveWorkflowProvider workflowProvider,
+            IRInteractiveWorkflowVisualProvider workflowProvider,
             IServiceContainer services)
             : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, services) { }
 

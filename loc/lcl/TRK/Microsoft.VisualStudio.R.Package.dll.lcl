@@ -3658,7 +3658,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Install Microsoft &R Client...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Microsoft &R Client'ı Yükle...]]></Val>
+              <Val><![CDATA[Microsoft R &Client'ı Yükle...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4033,7 +4033,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Editor Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Düzenleyici Seçenekleri...]]></Val>
+              <Val><![CDATA[Düzenle&yici Seçenekleri...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5650,7 +5650,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Düzenleyiciyi Yürütmek için Gönder]]></Val>
+              <Val><![CDATA[D&üzenleyiciyi Yürütmek için Gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

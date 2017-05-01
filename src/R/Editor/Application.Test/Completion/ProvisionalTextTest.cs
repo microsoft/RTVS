@@ -5,6 +5,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
@@ -14,25 +16,21 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public sealed class RProvisionalTextTest : IDisposable {
-        private readonly IExportProvider _exportProvider;
+    public sealed class RProvisionalTextTest {
+        private readonly ICoreShell _coreShell;
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly bool _autoFormat;
+        private readonly IWritableREditorSettings _settings;
 
-        public RProvisionalTextTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
-            _exportProvider = exportProvider;
+        public RProvisionalTextTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
+            _coreShell = services.GetService<ICoreShell>();
             _editorHost = editorHost;
-            _autoFormat = REditorSettings.AutoFormat;
-        }
-
-        public void Dispose() {
-            REditorSettings.AutoFormat = _autoFormat;
+            _settings = _coreShell.GetService<IWritableREditorSettings>();
         }
 
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalText01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
                 script.Type("{");
                 script.Type("(");
                 script.Type("[");
@@ -43,7 +41,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                 actual.Should().Be(expected);
 
-                REditorSettings.AutoFormat = false;
+                _settings.AutoFormat = false;
 
                 script.Type("\"");
                 script.Type("]");
@@ -61,7 +59,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalText02() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
                 script.Type("c(\"");
 
                 string expected = "c(\"\")";
@@ -90,8 +88,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Test]
         [Category.Interactive]
         public async Task R_ProvisionalCurlyBrace01() {
-            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                REditorSettings.FormatOptions.BracesOnNewLine = false;
+            using (var script = await _editorHost.StartScript(_coreShell, RContentTypeDefinition.ContentType)) {
+                _settings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(1)");
                 script.DoIdle(300);

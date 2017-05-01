@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
@@ -14,8 +15,6 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Packages;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -33,7 +32,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             public ITextBuffer TextBuffer;
         }
 
-        public FunctionIndexTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public FunctionIndexTest(IServiceContainer services) : base(services) { }
 
         [CompositeTest]
         [InlineData(true)]
@@ -128,7 +127,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             s.Ast = RParser.Parse(content);
             s.TextBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, shell);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(s.TextBuffer, Shell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(s.TextBuffer, caretPosition);
             s.QuickInfoContent = new List<object>();
 

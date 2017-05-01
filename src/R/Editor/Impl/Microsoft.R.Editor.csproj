@@ -98,7 +98,6 @@
     <Compile Include="Formatting\FormatOnPasteCommand.cs" />
     <Compile Include="Formatting\Data\IClipboardDataProvider.cs" />
     <Compile Include="Formatting\RangeFormatter.cs" />
-    <Compile Include="Imaging\IImagesProvider.cs" />
     <Compile Include="Navigation\CodeNavigator.cs" />
     <Compile Include="Navigation\Commands\PeekDefinitionCommand.cs" />
     <Compile Include="Navigation\Commands\GoToDefinitionCommand.cs" />
@@ -131,6 +130,8 @@
     </Compile>
     <Compile Include="Selection\RSelectionTracker.cs" />
     <Compile Include="Selection\SelectWordCommand.cs" />
+    <Compile Include="Settings\IWriteableREditorSettings.cs" />
+    <Compile Include="Settings\IREditorSettings.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\RSignatureHelpContext.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
@@ -154,6 +155,7 @@
     <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
     <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
+    <Compile Include="Tree\CancellableTask.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />
     <Compile Include="Tree\Definitions\IEditorTree.cs" />
@@ -202,7 +204,7 @@
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
@@ -217,12 +219,20 @@
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    <ProjectReference Include="..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">

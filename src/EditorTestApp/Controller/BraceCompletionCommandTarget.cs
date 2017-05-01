@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
@@ -142,10 +143,10 @@ namespace Microsoft.Languages.Editor.Application.Controller {
         #region Private Helpers
         private IBraceCompletionManager Manager {
             get {
-                if (_manager == null
-                    && !_textView.Properties.TryGetProperty("BraceCompletionManager", out _manager)) {
-                    _manager = null;
-                }
+                if (_manager == null) {
+                    _textView.Properties.TryGetProperty("BraceCompletionManager", out _manager);
+                    Debug.Assert(_manager != null);
+                 }
                 return _manager;
             }
         }

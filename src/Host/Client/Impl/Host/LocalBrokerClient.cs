@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal sealed class LocalBrokerClient : BrokerClient {
+    public sealed class LocalBrokerClient : BrokerClient {
         private const string RHostBrokerExe = "Microsoft.R.Host.Broker.Windows.exe";
         private const string RHostExe = "Microsoft.R.Host.exe";
         private const string InterpreterId = "local";
@@ -44,11 +45,10 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, string rhostDirectory = null)
-            : base(name, connectionInfo, _credentials, services.Log(), console) {
-
-            _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
+            : base(name, connectionInfo, _credentials, console, services) {
             _rHome = connectionInfo.Uri.LocalPath;
             _services = services;
+            _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
 
             IsVerified = true;
         }
@@ -100,7 +100,7 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --logging:logFolder \"{Log.Folder.TrimTrailingSlash()}\"" +
                             $" --logging:logHostOutput {Log.LogVerbosity >= LogVerbosity.Normal}" +
                             $" --logging:logPackets {Log.LogVerbosity == LogVerbosity.Traffic}" +
-                            $" --server.urls http://127.0.0.1:0" + // :0 means first available ephemeral port
+                            $" --urls http://127.0.0.1:0" + // :0 means first available ephemeral port
                             $" --startup:name \"{Name}\"" +
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +

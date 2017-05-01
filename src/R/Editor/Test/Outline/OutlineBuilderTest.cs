@@ -4,17 +4,14 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Outline;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
-using Microsoft.UnitTests.Core.Mef;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Xunit;
@@ -24,12 +21,10 @@ namespace Microsoft.R.Editor.Test.Outline {
     [Category.R.Outlining]
     public class ROutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
-        private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
 
-        public ROutlineBuilderTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
-            _exportProvider = exportProvider;
-            _shell = _exportProvider.GetExportedValue<ICoreShell>();
+        public ROutlineBuilderTest(IServiceContainer services, EditorTestFilesFixture testFiles) {
+            _shell = services.GetService<ICoreShell>();
             _testFiles = testFiles;
         }
 

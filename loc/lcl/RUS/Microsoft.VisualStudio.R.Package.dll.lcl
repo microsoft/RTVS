@@ -3616,7 +3616,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Microsoft R Products...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Продукты Microsoft R...]]></Val>
+              <Val><![CDATA[Продукты Microsoft &R...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4291,7 +4291,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Interrupt R]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Прервать R]]></Val>
+              <Val><![CDATA[П&рервать R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5419,7 +5419,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Working Director&y]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Раб&очий каталог]]></Val>
+              <Val><![CDATA[Ра&бочий каталог]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

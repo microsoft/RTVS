@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.IO;
@@ -24,12 +23,9 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
     public class TestCoreShell : ICoreShell, IIdleTimeSource {
         public IServiceManager ServiceManager { get; }
 
-        private TestCoreShell(IServiceManager serviceManager) {
-            ServiceManager = serviceManager;
+        public TestCoreShell(IServiceManager serviceManager) {
+             ServiceManager = serviceManager;
         }
-
-        public static ICoreShell CreateFromCompositionContainer(CompositionContainer compositionContainer, IServiceManager services) 
-            => new TestCoreShell(new TestServiceManager(compositionContainer, services));
 
         /// <summary>
         /// Creates an empty shell. Caller can add services as needed.
@@ -85,6 +81,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(ps ?? new ProcessServices())
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
+                .AddService(new TestImageService())
                 .AddService(new TestPlatformServices());
         }
 

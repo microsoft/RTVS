@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     public class SignatureHelpSourceTest : FunctionIndexBasedTest {
-        public SignatureHelpSourceTest(IExportProvider exportProvider) : base(exportProvider) { }
+        public SignatureHelpSourceTest(IServiceContainer services) : base(services) { }
 
         [Test]
         public async Task SignatureHelpSourceTest01() {
@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             AstRoot ast = RParser.Parse(content);
             int caretPosition = 15;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, shell);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, Shell);
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 
@@ -54,7 +54,7 @@ x( )
             AstRoot ast = RParser.Parse(content);
             int caretPosition = content.IndexOf("( )")+1;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, shell);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, Shell);
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 

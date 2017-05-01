@@ -4,11 +4,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
-using Microsoft.Languages.Editor.Imaging;
+using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
@@ -22,9 +22,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly ImageSource _variableGlyph;
 
         [ImportingConstructor]
-        public UserVariablesCompletionProvider(IGlyphService glyphService) {
-            _functionGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
-            _variableGlyph = glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
+        public UserVariablesCompletionProvider(ICoreShell coreShell) {
+            var imageService = coreShell.GetService<IImageService>();
+            _functionGlyph = imageService.GetImage(ImageType.Method) as ImageSource;
+            _variableGlyph = imageService.GetImage(ImageType.Variable) as ImageSource;
         }
 
         #region IRCompletionListProvider

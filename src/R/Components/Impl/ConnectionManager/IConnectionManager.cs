@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public interface IConnectionManager : IDisposable {
-        IConnectionManagerVisualComponent GetOrCreateVisualComponent(int id = 0);
-
         bool IsConnected { get; }
         bool IsRunning { get; }
         IConnection ActiveConnection { get; }

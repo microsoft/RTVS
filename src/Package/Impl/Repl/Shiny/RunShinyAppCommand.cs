@@ -7,9 +7,9 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Shiny {
     internal sealed class RunShinyAppCommand : PackageCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
 
-        public RunShinyAppCommand(IRInteractiveWorkflow interactiveWorkflow)
+        public RunShinyAppCommand(IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRunShinyApp) {
             _interactiveWorkflow = interactiveWorkflow;
         }

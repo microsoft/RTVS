@@ -11,8 +11,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public static class MethodFixtureTypes {
         private static readonly ConcurrentDictionary<Type, FixtureType> _fixtureTypes = new ConcurrentDictionary<Type, FixtureType>();
 
-        public static IDictionary<Type, IMethodFixture> CreateMethodFixtures(IList<Type> instanceTypes, IList<IMethodFixtureFactory<IMethodFixture>> factories) {
-            var fixtures = new Dictionary<Type, IMethodFixture>();
+        public static IDictionary<Type, object> CreateMethodFixtures(IList<Type> instanceTypes, IList<IMethodFixtureFactory<object>> factories) {
+            var fixtures = new Dictionary<Type, object>();
             if (instanceTypes.Count == 0) {
                 return fixtures;
             }
@@ -22,7 +22,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return fixtures;
         }
 
-        private static void UpdateFixtureTypes(IEnumerable<Type> types, IList<IMethodFixtureFactory<IMethodFixture>> factories) {
+        private static void UpdateFixtureTypes(IEnumerable<Type> types, IList<IMethodFixtureFactory<object>> factories) {
             var typesQueue = new Queue<Type>(types);
             while (typesQueue.Count > 0) {
                 var type = typesQueue.Dequeue();
@@ -38,7 +38,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private static void CreateMethodFixtures(IEnumerable<Type> instanceTypes, IList<IMethodFixtureFactory<IMethodFixture>> factories, IDictionary<Type, IMethodFixture> fixtures) {
+        private static void CreateMethodFixtures(IEnumerable<Type> instanceTypes, IList<IMethodFixtureFactory<object>> factories, IDictionary<Type, object> fixtures) {
             foreach (var type in instanceTypes.Where(t => !fixtures.ContainsKey(t))) {
                 var fixtureType = _fixtureTypes[type];
                 var factory = GetFactory(factories, type);
@@ -50,7 +50,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
         
-        private static IMethodFixtureFactory<IMethodFixture> GetFactory(IList<IMethodFixtureFactory<IMethodFixture>> factories, Type type) 
+        private static IMethodFixtureFactory<object> GetFactory(IList<IMethodFixtureFactory<object>> factories, Type type) 
             => factories.FirstOrDefault(f => type.IsInstanceOfType(f.Dummy));
 
 
@@ -101,8 +101,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return new FixtureType(type, factoryMethod, argumentTypes);
         }
 
-        private static Func<IMethodFixtureFactory<IMethodFixture>, object[], IMethodFixture> CompileFactory(Type factoryType, MethodInfo createMethodInfo, ParameterInfo[] createMethodParameters) {
-            var factoryInstanceParameter = Expression.Parameter(typeof(IMethodFixtureFactory<IMethodFixture>), "f");
+        private static Func<IMethodFixtureFactory<object>, object[], object> CompileFactory(Type factoryType, MethodInfo createMethodInfo, ParameterInfo[] createMethodParameters) {
+            var factoryInstanceParameter = Expression.Parameter(typeof(IMethodFixtureFactory<object>), "f");
             var callInstance = Expression.Convert(factoryInstanceParameter, factoryType);
             var argsParameter = Expression.Parameter(typeof(object[]), "args");
             var callArguments = createMethodParameters
@@ -110,24 +110,24 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 .ToList();
 
             var call = Expression.Call(callInstance, createMethodInfo, callArguments);
-            var lambda = Expression.Lambda<Func<IMethodFixtureFactory<IMethodFixture>, object[], IMethodFixture>>(call, factoryInstanceParameter, argsParameter);
+            var lambda = Expression.Lambda<Func<IMethodFixtureFactory<object>, object[], IMethodFixture>>(call, factoryInstanceParameter, argsParameter);
             return lambda.Compile();
         }
 
         private class FixtureType {
-            private readonly Func<IMethodFixtureFactory<IMethodFixture>, object[], IMethodFixture> _factoryMethod;
+            private readonly Func<IMethodFixtureFactory<object>, object[], object> _factoryMethod;
             private readonly Type _type;
             public Type[] ArgumentTypes { get; }
 
-            public FixtureType(Type type, Func<IMethodFixtureFactory<IMethodFixture>, object[], IMethodFixture> factoryMethod, Type[] argumentTypes) {
+            public FixtureType(Type type, Func<IMethodFixtureFactory<object>, object[], object> factoryMethod, Type[] argumentTypes) {
                 _type = type;
                 _factoryMethod = factoryMethod;
                 ArgumentTypes = argumentTypes;
             }
 
-            public IMethodFixture CreateInstance(IMethodFixtureFactory<IMethodFixture> factory, IDictionary<Type, IMethodFixture> fixtures) {
-                var args = ArgumentTypes.Select(ft => fixtures[ft]).ToArray<object>();
-                return _factoryMethod != null ? _factoryMethod(factory, args) : (IMethodFixture) Activator.CreateInstance(_type, args);
+            public object CreateInstance(IMethodFixtureFactory<object> factory, IDictionary<Type, object> fixtures) {
+                var args = ArgumentTypes.Select(ft => fixtures[ft]).ToArray();
+                return _factoryMethod != null ? _factoryMethod(factory, args) : Activator.CreateInstance(_type, args);
             }
         }
     }

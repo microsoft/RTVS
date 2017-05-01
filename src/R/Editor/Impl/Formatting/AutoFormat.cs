@@ -6,15 +6,12 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -24,11 +21,8 @@ namespace Microsoft.R.Editor.Formatting {
         public static bool IsPostProcessAutoformatTriggerCharacter(char ch) => ch.IsLineBreak() || ch == '}';
 
         public static void HandleAutoformat(ITextView textView, ICoreShell shell, char typedChar) {
-            if (!REditorSettings.AutoFormat) {
-                return;
-            }
-
-            if (!REditorSettings.FormatScope && typedChar == '}') {
+            var settings = shell.GetService<IREditorSettings>();
+            if (!settings.AutoFormat || (!settings.FormatScope && typedChar == '}')) {
                 return;
             }
 

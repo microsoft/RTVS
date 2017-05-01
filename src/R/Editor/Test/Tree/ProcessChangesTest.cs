@@ -1,25 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Core.Test.Utility;
-using Microsoft.R.Editor.Tree;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
     public class ProcessChangesTest {
-        private readonly IExportProvider _exportProvider;
-        private readonly ICoreShell _coreShell;
+        private readonly ICoreShell _shell;
 
-        public ProcessChangesTest(IExportProvider exportProvider, EditorTestFilesFixture testFiles) {
-            _exportProvider = exportProvider;
-            _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+        public ProcessChangesTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]
@@ -43,7 +39,7 @@ namespace Microsoft.R.Editor.Test.Tree {
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            using (var tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 3, 4, 5, "false"))
+            using (var tree = EditorTreeTest.ApplyTextChange(_shell, expression, 3, 4, 5, "false"))
             {
                 tree.IsDirty.Should().BeTrue();
                 tree.ProcessChanges();
@@ -98,7 +94,7 @@ namespace Microsoft.R.Editor.Test.Tree {
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            using (var tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 15, 0, 1, "\n"))
+            using (var tree = EditorTreeTest.ApplyTextChange(_shell, expression, 15, 0, 1, "\n"))
             {
                 tree.IsDirty.Should().BeTrue();
                 tree.ProcessChanges();
@@ -163,7 +159,7 @@ UnexpectedToken Token [17...21)
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            using (var tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 17, 0, 1, "\n")) { 
+            using (var tree = EditorTreeTest.ApplyTextChange(_shell, expression, 17, 0, 1, "\n")) { 
                 tree.IsDirty.Should().BeTrue();
                 tree.ProcessChanges();
 

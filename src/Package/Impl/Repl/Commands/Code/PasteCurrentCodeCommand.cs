@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     class PasteCurrentCodeCommand : RExecuteCommand {
 
-        public PasteCurrentCodeCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+        public PasteCurrentCodeCommand(ITextView textView, IRInteractiveWorkflowVisual interactiveWorkflow) :
             base(textView, interactiveWorkflow, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPasteReplCmd)) {
         }
 

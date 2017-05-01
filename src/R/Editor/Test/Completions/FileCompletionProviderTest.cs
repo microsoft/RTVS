@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Host.Client;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -23,11 +21,11 @@ namespace Microsoft.R.Editor.Test.Completions {
     public class FileCompletionProviderTest: IDisposable {
         private const string _testFolderName = "_Rtvs_FileCompletionTest_";
 
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly string _testFolder;
 
-        public FileCompletionProviderTest(IExportProvider exportProvider) {
-            _coreShell = exportProvider.GetExportedValue<ICoreShell>();
+        public FileCompletionProviderTest(IServiceContainer services) {
+            _services = services;
 
             var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _testFolder = Path.Combine(myDocs, _testFolderName);
@@ -53,11 +51,11 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public async Task RemoteFiles() {
-            using (var workflow = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(FileCompletionProviderTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
-                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _coreShell.Services, forceR: true);
+                var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), _services, forceR: true);
                 var entries = provider.GetEntries(null);
                 entries.Should().NotBeEmpty();
                 entries.Should().Contain(e => e.DisplayText == _testFolderName);

@@ -5251,7 +5251,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[P&ublish With Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[P&ublikovat s možnostmi...]]></Val>
+              <Val><![CDATA[Publiko&vat s možnostmi...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5335,7 +5335,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Plot &Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Okna &diagramů]]></Val>
+              <Val><![CDATA[Okna dia&gramů]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5419,7 +5419,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Working Director&y]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Prac&ovní adresář]]></Val>
+              <Val><![CDATA[Pracovní adresá&ř]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5746,7 +5746,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[R D&ocumentation]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[D&okumentace R]]></Val>
+              <Val><![CDATA[Do&kumentace R]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

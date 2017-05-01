@@ -8,13 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -39,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (!string.IsNullOrEmpty(content)) {
-                var formatter = new RFormatter(REditorSettings.FormatOptions);
+                var formatter = new RFormatter(_coreShell.GetService<IREditorSettings>().FormatOptions);
                 content = formatter.Format(content);
 
                 var fs = _coreShell.FileSystem();

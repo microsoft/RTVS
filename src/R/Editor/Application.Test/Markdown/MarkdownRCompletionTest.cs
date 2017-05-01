@@ -4,10 +4,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -17,13 +18,13 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class MarkdownRCompletionTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly EditorHostMethodFixture _editorHost;
 
-        public MarkdownRCompletionTest(IExportProvider exportProvider, EditorHostMethodFixture editorHost) {
-            _exportProvider = exportProvider;
-            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
+        public MarkdownRCompletionTest(IServiceContainer services, EditorHostMethodFixture editorHost) {
+            _coreShell = services.GetService<ICoreShell>();
+            _sessionProvider = UIThreadHelper.Instance.Invoke(() => _coreShell.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()).RSessions;
             _editorHost = editorHost;
         }
 
@@ -34,7 +35,7 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Test]
         [Category.Interactive]
         public async Task TypeRBlock() {
-            using (var script = await _editorHost.StartScript(_exportProvider, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_coreShell, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
                 var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("abbreviate");
                 info.Should().NotBeNull();
 
@@ -64,7 +65,7 @@ x <- function() {
         [Test]
         [Category.Interactive]
         public async Task RSignature() {
-            using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
+            using (var script = await _editorHost.StartScript(_coreShell, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
                 var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
                 info.Should().NotBeNull();
 

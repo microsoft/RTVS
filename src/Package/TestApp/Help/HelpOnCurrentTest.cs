@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Help;
@@ -24,12 +25,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class HelpOnCurrentTest : HostBasedInteractiveTest {
+        private readonly IServiceContainer _services;
+
+        public HelpOnCurrentTest(IServiceContainer services) {
+            _services = services;
+        }
 
         [Test]
         public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             await HostScript.InitializeAsync(clientApp);
-            using (new ControlTestScript(typeof(HelpVisualComponent))) {
+            using (new ControlTestScript(typeof(HelpVisualComponent), _services)) {
                 DoIdle(100);
 
                 var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);

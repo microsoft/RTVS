@@ -1,16 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal abstract class ReplCommandBase : PackageCommand {
-        protected IRInteractiveWorkflow Workflow { get; }
+        protected IRInteractiveWorkflowVisual Workflow { get; }
 
-        public ReplCommandBase(IRInteractiveWorkflow interactiveWorkflow, int id) :
+        public ReplCommandBase(IRInteractiveWorkflowVisual interactiveWorkflow, int id) :
             base(RGuidList.RCmdSetGuid, id) {
             Workflow = interactiveWorkflow;
         }

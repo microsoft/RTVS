@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5340191E-31E5-43A0-A485-B6678D391B10}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Languages.Editor.Test</RootNamespace>
+    <AssemblyName>Microsoft.Languages.Editor.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.targets" />
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)'=='14.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
+          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+          <Name>Microsoft.UnitTests.References.14.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ContainedLanguage\CommandTargetProxyTest.cs" />
+    <Compile Include="Helpers\HelpersTest.cs" />
+    <Compile Include="Idle\IdleTaskQueueTest.cs" />
+    <Compile Include="Settings\TestSettingsStorage.cs" />
+    <Compile Include="Shell\AssemblyLocations.cs" />
+    <Compile Include="Shell\TestAssemblyResolver.cs" />
+    <Compile Include="TestFilesFixture.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ServiceManagerTest.cs" />
+    <Compile Include="Shell\EditorTestCompositionCatalog.cs" />
+    <Compile Include="Text\TextProviderTest.cs" />
+    <Compile Include="Text\Typing.cs" />
+    <Compile Include="Utility\ClassificationWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+      <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
+      <Name>Microsoft.Common.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+      <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
+      <Name>Microsoft.Common.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5FCB86D5-4B25-4039-858C-B5A06EB702E1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
+      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
+      <Name>Microsoft.Languages.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
+      <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
+      <Name>Microsoft.Languages.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
+      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
+      <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.R.Common.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\UnitTests\app.config">
+      <Link>app.config</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="project.json" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

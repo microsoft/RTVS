@@ -14,26 +14,26 @@ namespace Microsoft.R.Editor.Test.Settings {
     public class SettingsTest {
         [Test]
         public void Settings_TestDefaults() {
-            REditorSettings.Initialize(new TestSettingsStorage());
+            var settings = new REditorSettings(new TestSettingsStorage());
 
-            REditorSettings.CommitOnSpace.Should().BeFalse();
-            REditorSettings.CompletionEnabled.Should().BeTrue();
-            REditorSettings.FormatOnPaste.Should().BeTrue();
-            REditorSettings.IndentSize.Should().Be(4);
-            REditorSettings.IndentStyle.Should().Be(IndentStyle.Smart);
-            REditorSettings.IndentType.Should().Be(IndentType.Spaces);
-            REditorSettings.TabSize.Should().Be(4);
-            REditorSettings.SyntaxCheck.Should().BeTrue();
-            REditorSettings.SignatureHelpEnabled.Should().BeTrue();
+            settings.CommitOnSpace.Should().BeFalse();
+            settings.CompletionEnabled.Should().BeTrue();
+            settings.FormatOnPaste.Should().BeTrue();
+            settings.IndentSize.Should().Be(4);
+            settings.IndentStyle.Should().Be(IndentStyle.Smart);
+            settings.IndentType.Should().Be(IndentType.Spaces);
+            settings.TabSize.Should().Be(4);
+            settings.SyntaxCheckEnabled.Should().BeTrue();
+            settings.SignatureHelpEnabled.Should().BeTrue();
             //REditorSettings.ShowTclFunctions.Should().BeFalse();
             //REditorSettings.ShowInternalFunctions.Should().BeFalse();
 
-            REditorSettings.FormatOptions.IndentSize.Should().Be(4);
-            REditorSettings.FormatOptions.TabSize.Should().Be(4);
-            REditorSettings.FormatOptions.IndentType.Should().Be(IndentType.Spaces);
-            REditorSettings.FormatOptions.SpaceAfterComma.Should().BeTrue();
-            REditorSettings.FormatOptions.SpaceAfterKeyword.Should().BeTrue();
-            REditorSettings.FormatOptions.BracesOnNewLine.Should().BeFalse();
+            settings.FormatOptions.IndentSize.Should().Be(4);
+            settings.FormatOptions.TabSize.Should().Be(4);
+            settings.FormatOptions.IndentType.Should().Be(IndentType.Spaces);
+            settings.FormatOptions.SpaceAfterComma.Should().BeTrue();
+            settings.FormatOptions.SpaceAfterKeyword.Should().BeTrue();
+            settings.FormatOptions.BracesOnNewLine.Should().BeFalse();
         }
     }
 }

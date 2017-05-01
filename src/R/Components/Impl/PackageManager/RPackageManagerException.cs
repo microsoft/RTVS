@@ -4,7 +4,6 @@
 using System;
 
 namespace Microsoft.R.Components.PackageManager {
-    [Serializable]
     public sealed class RPackageManagerException : Exception {
         public RPackageManagerException(string message, Exception innerException = null)
             : base(message, innerException) {

@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -18,8 +19,8 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
     public class GotoBraceCommandTest {
         private readonly ICoreShell _shell;
 
-        public GotoBraceCommandTest(IExportProvider exportProvider) {
-            _shell = exportProvider.GetExportedValue<ICoreShell>();
+        public GotoBraceCommandTest(IServiceContainer services) {
+            _shell = services.GetService<ICoreShell>();
         }
 
         [Test]

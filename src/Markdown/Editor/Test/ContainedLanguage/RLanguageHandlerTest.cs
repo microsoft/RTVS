@@ -4,11 +4,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text.Projection;
@@ -19,12 +19,10 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
     [ExcludeFromCodeCoverage]
     public class RLanguageHandlerTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
 
-        public RLanguageHandlerTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
-            _exportProvider.GetExportedValue<IProjectionBufferFactoryService>();
-            _exportProvider.GetExportedValue<IContentTypeRegistryService>();
+        public RLanguageHandlerTest(IServiceContainer services) {
+            _coreShell = services.GetService<ICoreShell>();
         }
 
         [CompositeTest]
@@ -46,7 +44,7 @@ namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
             });
 
             var expectedSecondaryBuffer = markdown.Replace("```", string.Empty) + Environment.NewLine;
-            var handler = new RLanguageHandler(tb, pbm, _exportProvider.GetExportedValue<ICoreShell>());
+            var handler = new RLanguageHandler(tb, pbm, _coreShell);
             secondaryBuffer.Should().Be(expectedSecondaryBuffer);
 
             mappings.Should().HaveCount(1);

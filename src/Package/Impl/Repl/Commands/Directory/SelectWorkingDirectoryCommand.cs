@@ -13,9 +13,9 @@ using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class SelectWorkingDirectoryCommand : PackageCommand {
-        private readonly IRInteractiveWorkflow _workflow;
+        private readonly IRInteractiveWorkflowVisual _workflow;
 
-        public SelectWorkingDirectoryCommand(IRInteractiveWorkflow workflow) :
+        public SelectWorkingDirectoryCommand(IRInteractiveWorkflowVisual workflow) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory) {
             _workflow = workflow;
         }

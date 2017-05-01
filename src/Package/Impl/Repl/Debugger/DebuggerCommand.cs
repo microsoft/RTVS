@@ -13,9 +13,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         protected readonly IRSession RSession;
         private readonly DebuggerCommandVisibility _visibility;
 
-        protected IRInteractiveWorkflow Workflow { get; }
+        protected IRInteractiveWorkflowVisual Workflow { get; }
 
-        protected DebuggerCommand(IRInteractiveWorkflow interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
+        protected DebuggerCommand(IRInteractiveWorkflowVisual interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
             : base(RGuidList.RCmdSetGuid, cmdId) {
             RSession = interactiveWorkflow.RSession;
             Workflow = interactiveWorkflow;

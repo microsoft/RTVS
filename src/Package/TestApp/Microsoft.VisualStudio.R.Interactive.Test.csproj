@@ -87,12 +87,8 @@
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
-      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
-      <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857E49-E586-4BAA-AE4D-1232093E7378}</Project>
@@ -103,12 +99,8 @@
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Components\Test\Microsoft.R.Components.Test.csproj">
-      <Project>{2aa8762f-3a84-4cd5-9aa0-77829a766769}</Project>
-      <Name>Microsoft.R.Components.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
@@ -134,13 +126,17 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
+    <ProjectReference Include="..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Test\Microsoft.Windows.Core.Test.csproj">
-      <Project>{1f89902f-853e-44b5-93a7-e237984c4fb7}</Project>
-      <Name>Microsoft.Windows.Core.Test</Name>
+    <ProjectReference Include="..\..\Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>

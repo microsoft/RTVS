@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -9,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -16,7 +16,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -28,10 +27,10 @@ namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
     [Category.R.Navigation]
     public class RPeekableItemSourceTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly IServiceContainer _services;
 
-        public RPeekableItemSourceTest(IExportProvider exportProvider) {
-            _exportProvider = exportProvider;
+        public RPeekableItemSourceTest(IServiceContainer services) {
+            _services = services;
         }
 
         [Test]
@@ -79,7 +78,7 @@ x <- function(a) {
 
         [Test]
         public async Task PeekInternalFunction01() {
-            using (var workflow = UIThreadHelper.Instance.Invoke(() => _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate())) {
+            using (var workflow = UIThreadHelper.Instance.Invoke(() => _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate())) {
                 await workflow.RSessions.TrySwitchBrokerAsync(nameof(RPeekableItemSourceTest));
                 await workflow.RSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
 
@@ -159,7 +158,7 @@ x <- function(a) {
 
             var peekSession = PeekSessionMock.Create(textView, position);
             var factory = PeekResultFactoryMock.Create();
-            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _exportProvider.GetExportedValue<ICoreShell>());
+            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _services.GetService<ICoreShell>());
 
             peekSource.AugmentPeekSession(peekSession, items);
         }

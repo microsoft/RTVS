@@ -95,7 +95,7 @@ namespace Microsoft.R.Editor.Document {
             var clh = ServiceManager.GetService<IContainedLanguageHost>(textBuffer);
 
             _editorTree = new EditorTree(textBuffer, shell, new ExpressionTermFilter(clh));
-            if (REditorSettings.SyntaxCheckInRepl) {
+            if (_shell.GetService<IREditorSettings>().SyntaxCheckInRepl) {
                 _validator = new TreeValidator(EditorTree, shell);
             }
 

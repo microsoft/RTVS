@@ -12,14 +12,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal class AttachDebuggerCommand : DebuggerCommand {
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
 
-        public AttachDebuggerCommand(IRInteractiveWorkflow interactiveWorkflow)
+        public AttachDebuggerCommand(IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(interactiveWorkflow, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
             _interactiveWorkflow = interactiveWorkflow;
         }
 
-        protected AttachDebuggerCommand(IRInteractiveWorkflow interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
+        protected AttachDebuggerCommand(IRInteractiveWorkflowVisual interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
             : base(interactiveWorkflow, cmdId, visibility) {
             _interactiveWorkflow = interactiveWorkflow;
         }

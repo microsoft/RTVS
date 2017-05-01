@@ -2,19 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Core.Classification;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -24,13 +20,13 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     public class MarkdownClassifierTest {
-        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
         private readonly MarkdownTestFilesFixture _files;
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public MarkdownClassifierTest(IExportProvider exportProvider, MarkdownTestFilesFixture files) {
-            _exportProvider = exportProvider;
+        public MarkdownClassifierTest(IServiceContainer serviceProvider, MarkdownTestFilesFixture files) {
+            _coreShell = serviceProvider.GetService<ICoreShell>();
             _files = files;
         }
 
@@ -47,16 +43,9 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             var textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            var crs = _exportProvider.GetExportedValue<IClassificationTypeRegistryService>();
-            var ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
-
-            var classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _exportProvider.GetExportedValue<ICoreShell>());
-
-            var shell = _exportProvider.GetExportedValue<ICoreShell>();
-            var cs = shell.GetService<ICompositionService>();
-            cs.SatisfyImportsOnce(classifierProvider);
-
+            var crs = _coreShell.GetService<IClassificationTypeRegistryService>();
+            var ctrs = _coreShell.GetService<IContentTypeRegistryService>();
+            var classifierProvider = new MdClassifierProvider(crs, ctrs, _coreShell);
             var cls = classifierProvider.GetClassifier(textBuffer);
 
             var spans = cls.GetClassificationSpans(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length)));

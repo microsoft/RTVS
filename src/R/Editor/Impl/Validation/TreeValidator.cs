@@ -47,6 +47,8 @@ namespace Microsoft.R.Editor.Validation {
 
         private IEditorTree _editorTree;
         private readonly ICoreShell _shell;
+        private readonly IREditorSettings _settings;
+
         private bool _syntaxCheckEnabled = false;
         private bool _validationStarted = false;
 
@@ -72,13 +74,14 @@ namespace Microsoft.R.Editor.Validation {
             _editorTree.Closing += OnTreeClose;
 
             _shell = shell;
+            _settings = _shell.GetService<IREditorSettings>();
 
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer);
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer, _settings);
 
             // Advise to settings changed *after* accessing the RSettings, 
             // since accessing the host application (VS) settings object may 
             // cause it fire Changed notification in some cases.
-            REditorSettings.Changed += OnSettingsChanged;
+            _settings.SettingsChanged += OnSettingsChanged;
 
             // We don't want to start validation right away since it may 
             // interfere with the editor perceived startup performance.
@@ -151,7 +154,7 @@ namespace Microsoft.R.Editor.Validation {
         private void OnSettingsChanged(object sender, EventArgs e) {
             bool syntaxCheckWasEnabled = _syntaxCheckEnabled;
 
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer);
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer, _settings);
 
             if (syntaxCheckWasEnabled && !_syntaxCheckEnabled) {
                 StopValidation();
@@ -163,11 +166,11 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        public static bool IsSyntaxCheckEnabled(ITextBuffer textBuffer) {
+        public static bool IsSyntaxCheckEnabled(ITextBuffer textBuffer, IREditorSettings settings) {
             var document = REditorDocument.FromTextBuffer(textBuffer);
             if (document != null) {
                 var view = document.GetFirstView();
-                return view != null && view.IsRepl() ? REditorSettings.SyntaxCheckInRepl : REditorSettings.SyntaxCheck;
+                return view != null && view.IsRepl() ? settings.SyntaxCheckInRepl : settings.SyntaxCheckEnabled;
             }
             return false;
         }
@@ -228,7 +231,7 @@ namespace Microsoft.R.Editor.Validation {
 
             _editorTree = null;
 
-            REditorSettings.Changed -= OnSettingsChanged;
+            _settings.SettingsChanged -= OnSettingsChanged;
         }
         #endregion
 
