@@ -1824,54 +1824,54 @@
       </Item>
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
+          <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Automatické ukládání pracovního prostoru do image '{0}'...]]></Val>
+            <Val><![CDATA[Automatické ukládání pracovního prostoru do image %s...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
+          <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Odstranit automaticky uloženou image pracovního prostoru '{0}'?]]></Val>
+            <Val><![CDATA[Odstranit automaticky uloženou image pracovního prostoru %s?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
+          <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Odstraňuje se automaticky uložená image pracovního prostoru '{0}'.]]></Val>
+            <Val><![CDATA[Odstraňuje se automaticky uložená image pracovního prostoru %s.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
+          <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nepovedlo se načíst pracovní prostor z automaticky uložené image '{0}'.]]></Val>
+            <Val><![CDATA[Nepovedlo se načíst pracovní prostor z automaticky uložené image %s.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
+          <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Načetl se pracovní prostor z automaticky uložené image '{0}'.]]></Val>
+            <Val><![CDATA[Načetl se pracovní prostor z automaticky uložené image %s.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
+          <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Předchozí relace jazyka R byla ukončena a její globální pracovní prostor byl uložen do image '{0}'. Chcete ho znovu načíst?]]></Val>
+            <Val><![CDATA[Předchozí relace jazyka R byla ukončena a její globální pracovní prostor byl uložen do image %s. Chcete ho znovu načíst?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
