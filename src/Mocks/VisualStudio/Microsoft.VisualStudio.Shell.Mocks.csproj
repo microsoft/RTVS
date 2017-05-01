@@ -112,6 +112,7 @@
     </Compile>
     <Compile Include="TextManagerMock.cs" />
     <Compile Include="ToolWindowPaneMock.cs" />
+    <Compile Include="UIHostLocaleMock.cs" />
     <Compile Include="VsCodeWindowMock.cs" />
     <Compile Include="VSConstants.cs" />
     <Compile Include="VsDebuggerMock.cs" />

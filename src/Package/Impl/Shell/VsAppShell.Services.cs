@@ -24,6 +24,7 @@ using VsPackage = Microsoft.VisualStudio.Shell.Package;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public partial class VsAppShell {
         private readonly VsServiceManager _services;
+        private VsApplication _application;
 
         public IServiceContainer Services => _services;
 
@@ -54,7 +55,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
                 .AddService(new VsEditorSupport(Services))
                 .AddService(new VsEditorViewLocator())
-                .AddService(_application)
                 .AddService(telemetry)
                 .AddService(new FileSystem())
                 .AddService(new ProcessServices())
@@ -64,6 +64,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddWindowsHostClientServices()
                 .AddEditorServices();
             // TODO: add more
+
+
+            _application = new VsApplication(this);
+            _services.AddService(_application);
 
             settings.LoadSettings();
         }

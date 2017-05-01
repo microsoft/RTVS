@@ -82,7 +82,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(VsImageServiceMock.Create(), typeof(SVsImageService))
                 .AddService(new VsUiShellMock(), typeof(SVsUIShell))
                 .AddService(OleComponentManagerMock.Create(), typeof(SOleComponentManager))
-                .AddService(VsSettingsManagerMock.Create(), typeof(SVsSettingsManager));
+                .AddService(VsSettingsManagerMock.Create(), typeof(SVsSettingsManager))
+                .AddService(new UIHostLocaleMock(), typeof(SUIHostLocale));
         }
     }
 }

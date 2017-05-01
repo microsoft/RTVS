@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Editor.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
@@ -12,7 +13,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
         private const string TelemetryId = "AEB4040B-001C-4D74-B2CF-FD46D6686E1E";
 
         public InstallPackageSuggestedAction(ITextView textView, ITextBuffer textBuffer, IRInteractiveWorkflow workflow, int position) :
-            base(textView, textBuffer, workflow, position, Resources.SmartTagName_InstallPackage) { }
+            base(textView, textBuffer, workflow, position, Windows_Resources.SmartTagName_InstallPackage) { }
 
         protected override string GetCommand(string libraryName) {
             return Invariant($"install.packages('{libraryName}')");

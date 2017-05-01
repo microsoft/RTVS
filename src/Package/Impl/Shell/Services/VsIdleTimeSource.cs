@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public sealed class VsIdleTimeService : IIdleTimeService, IIdleTimeSource, IOleComponent, IDisposable {
@@ -16,14 +17,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _componentID;
         private bool _startupComplete;
 
-        public VsIdleTimeService() {
+        public VsIdleTimeService(IServiceContainer services) {
             var crinfo = new OLECRINFO[1];
             crinfo[0].cbSize = (uint)Marshal.SizeOf(typeof(OLECRINFO));
             crinfo[0].grfcrf = (uint)_OLECRF.olecrfNeedIdleTime | (uint)_OLECRF.olecrfNeedPeriodicIdleTime;
             crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal | (uint)_OLECADVF.olecadvfRedrawOff | (uint)_OLECADVF.olecadvfWarningsOff;
             crinfo[0].uIdleTimeInterval = 200;
 
-            var oleComponentManager = VisualStudio.Shell.Package.GetGlobalService(typeof(SOleComponentManager)) as IOleComponentManager;
+            var oleComponentManager = services.GetService<IOleComponentManager>(typeof(SOleComponentManager));
             oleComponentManager.FRegisterComponent(this, crinfo, out _componentID);
         }
 

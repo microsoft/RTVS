@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Media;
+using Microsoft.R.Editor.Windows;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -24,7 +25,7 @@ namespace Microsoft.R.Editor.Classification {
         internal sealed class TypeFunctionClassificationFormat : ClassificationFormatDefinition {
             public TypeFunctionClassificationFormat() {
                 ForegroundColor = Colors.Teal;
-                DisplayName = Resources.ColorName_R_TypeFunction;
+                DisplayName = Windows_Resources.ColorName_R_TypeFunction;
             }
         }
 
@@ -42,7 +43,7 @@ namespace Microsoft.R.Editor.Classification {
         internal sealed class FunctionDefaultParameterClassificationFormat : ClassificationFormatDefinition {
             public FunctionDefaultParameterClassificationFormat() {
                 ForegroundColor = Colors.DarkGray;
-                DisplayName = Resources.ColorName_R_FunctionDefaultParameter;
+                DisplayName = Windows_Resources.ColorName_R_FunctionDefaultParameter;
             }
         }
 
@@ -60,7 +61,7 @@ namespace Microsoft.R.Editor.Classification {
         internal sealed class FunctionReferenceClassificationFormat : ClassificationFormatDefinition {
             public FunctionReferenceClassificationFormat() {
                 ForegroundColor = Colors.Maroon;
-                DisplayName = Resources.ColorName_R_FunctionReference;
+                DisplayName = Windows_Resources.ColorName_R_FunctionReference;
             }
         }
     }

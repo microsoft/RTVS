@@ -6,11 +6,10 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    internal sealed class VsApplication: IApplication {
+    internal sealed class VsApplication : IApplication {
         private readonly ICoreShell _coreShell;
 
         public string Name => _coreShell.IsUnitTestEnvironment ? "RTVS_Test" : "RTVS";
@@ -43,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public VsApplication(ICoreShell coreShell) {
             _coreShell = coreShell;
-            var hostLocale = ServiceProvider.GlobalProvider.GetService(typeof(SUIHostLocale)) as IUIHostLocale;
+            var hostLocale = coreShell.GetService<IUIHostLocale>(typeof(SUIHostLocale));
             hostLocale.GetUILocale(out var lcid);
             LocaleId = (int)lcid;
         }

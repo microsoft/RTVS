@@ -115,10 +115,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Markdown\Editor\Test\Microsoft.Markdown.Editor.Test.csproj">
-      <Project>{56534417-6C60-48A5-B355-12225C70431E}</Project>
-      <Name>Microsoft.Markdown.Editor.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
@@ -166,6 +162,14 @@
     <ProjectReference Include="..\..\Windows\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Markdown\Editor\Test\Microsoft.Markdown.Editor.Test.csproj">
+      <Project>{56534417-6c60-48a5-b355-12225c70431e}</Project>
+      <Name>Microsoft.Markdown.Editor.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>

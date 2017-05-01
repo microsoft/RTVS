@@ -105,10 +105,10 @@
     <Compile Include="RData\Classification\RdClassifier.cs" />
     <Compile Include="RData\Classification\RdClassifierProvider.cs" />
     <Compile Include="RData\ContentType\RdContentTypeDefinition.cs" />
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="Windows.Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>Windows.Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Selection\RSelectionTracker.cs" />
     <Compile Include="Selection\SelectWordCommand.cs" />
@@ -190,9 +190,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
+    <EmbeddedResource Include="Windows.Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <LastGenOutput>Windows.Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
       <CustomToolNamespace>Microsoft.R.Editor.Windows</CustomToolNamespace>
     </EmbeddedResource>

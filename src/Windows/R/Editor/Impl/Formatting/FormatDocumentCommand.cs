@@ -15,6 +15,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.Undo;
+using Microsoft.R.Editor.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -44,7 +45,7 @@ namespace Microsoft.R.Editor.Formatting {
                 selectionTracker.StartTracking(automaticTracking: false);
 
                 try {
-                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Services, Resources.FormatDocument)) {
+                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Services, Windows_Resources.FormatDocument)) {
                         var document = TargetBuffer.GetService<IREditorDocument>();
                         document?.EditorTree?.Invalidate();
 
@@ -72,7 +73,7 @@ namespace Microsoft.R.Editor.Formatting {
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker);
+                            Windows_Resources.FormatDocument, selectionTracker);
                     }
                 } finally {
                     selectionTracker.EndTracking();

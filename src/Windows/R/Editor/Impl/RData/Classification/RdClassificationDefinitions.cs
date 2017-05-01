@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Media;
+using Microsoft.R.Editor.Windows;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
@@ -21,7 +22,7 @@ namespace Microsoft.R.Editor.RData.Classification {
         internal sealed class RdBracesClassificationFormat : ClassificationFormatDefinition {
             public RdBracesClassificationFormat() {
                 ForegroundColor = Colors.Gray;
-                DisplayName = Microsoft.R.Editor.Windows.Resources.ColorName_RD_CurlyBraces;
+                DisplayName = Windows_Resources.ColorName_RD_CurlyBraces;
             }
         }
     }

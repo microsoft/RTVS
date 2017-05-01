@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         internal ExportProvider ExportProvider {
             get {
-                _exportProvider = _exportProvider ?? ComponentModel.DefaultExportProvider;
+                _exportProvider = _exportProvider ?? ComponentModel?.DefaultExportProvider;
                 return _exportProvider;
             }
             set {

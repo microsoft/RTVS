@@ -17,13 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     [Export(typeof(ICoreShell))]
     public sealed partial class VsAppShell : ICoreShell, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
-        private readonly VsApplication _application;
 
         public VsAppShell() {
             Debug.Assert(_instance == null, "VsAppShell is a singleton and cannot be created twice");
             _instance = this;
             _services = new VsServiceManager(this);
-            _application = new VsApplication(this);
         }
 
         /// <summary>
