@@ -19,7 +19,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Microsoft.R.Wpf;component/CommonResources.xaml " />
+                <rwpf:CommonResources />
                 <ResourceDictionary Source="DataGridStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
