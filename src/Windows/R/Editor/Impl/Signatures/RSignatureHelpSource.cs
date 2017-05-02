@@ -86,7 +86,7 @@ namespace Microsoft.R.Editor.Signatures {
             return false;
         }
 
-        private List<ISignature> MakeSignatures(IEnumerable<IFunctionSignatureHelp> functionHelp) {
+        private List<ISignature> MakeSignatures(IEnumerable<IRFunctionSignatureHelp> functionHelp) {
             var list = new List<ISignature>();
             foreach (var f in functionHelp) {
                 list.Add(new RSignatureHelp(f));

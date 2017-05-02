@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Completions;
 
-namespace Microsoft.Languages.Editor.Signatures {
-    public interface IFunctionSignatureEngine {
-        Task<IEnumerable<IFunctionSignatureHelp>> GetSignaturesAsync(IIntellisenseContext context);
+namespace Microsoft.R.Editor.Signatures {
+    public interface IRFunctionSignatureEngine {
+        Task<IEnumerable<IRFunctionSignatureHelp>> GetSignaturesAsync(IRIntellisenseContext context);
     }
 }

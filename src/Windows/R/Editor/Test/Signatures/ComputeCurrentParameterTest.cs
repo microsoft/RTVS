@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -108,7 +107,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0] as IRFunctionSignatureHelp;
+                    var sh = ((RSignatureHelp)signatures[0]).FunctionSignatureHelp;
                     var index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(11);
 
@@ -141,7 +140,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0] as IRFunctionSignatureHelp;
+                    var sh = ((RSignatureHelp)signatures[0]).FunctionSignatureHelp;
                     var index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(0);
                 }
@@ -172,7 +171,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                     signatures.Should().ContainSingle();
 
                     textView.Caret = new TextCaretMock(textView, 8);
-                    var sh = signatures[0] as IRFunctionSignatureHelp;
+                    var sh = ((RSignatureHelp)signatures[0]).FunctionSignatureHelp;
                     var index = sh.SignatureInfo.ComputeCurrentParameter(tree.BufferSnapshot, tree.AstRoot, 8, _settings);
                     index.Should().Be(9);
                 }

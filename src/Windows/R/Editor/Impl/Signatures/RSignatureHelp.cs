@@ -18,44 +18,44 @@ namespace Microsoft.R.Editor.Signatures {
     /// http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.language.intellisense.isignature.aspx
     /// </remarks>
     public sealed class RSignatureHelp : ISignature {
-        private readonly IFunctionSignatureHelp _signatureHelp;
+        public IRFunctionSignatureHelp FunctionSignatureHelp { get; }
 
-        public RSignatureHelp(IFunctionSignatureHelp signatureHelp) {
-            _signatureHelp = signatureHelp;
-            _signatureHelp.CurrentParameterChanged += OnCurrentParameterChanged;
+        public RSignatureHelp(IRFunctionSignatureHelp signatureHelp) {
+            FunctionSignatureHelp = signatureHelp;
+            FunctionSignatureHelp.CurrentParameterChanged += OnCurrentParameterChanged;
         }
 
-        public string FunctionName => _signatureHelp.FunctionName;
+        public string FunctionName => FunctionSignatureHelp.FunctionName;
 
         #region ISignature
         /// <summary>
         /// Content of the signature, including all the characters to be displayed.
         /// </summary>
-        public string Content => _signatureHelp.Content;
+        public string Content => FunctionSignatureHelp.Content;
 
         /// <summary>
         /// Documentation associated with this signature.
         /// </summary>
-        public string Documentation => _signatureHelp.Documentation;
+        public string Documentation => FunctionSignatureHelp.Documentation;
 
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
         public ITrackingSpan ApplicableToSpan {
-            get => _signatureHelp.ApplicableToRange.As<ITrackingSpan>();
-            set => _signatureHelp.ApplicableToRange = new TrackingTextRange(value);
+            get => FunctionSignatureHelp.ApplicableToRange.As<ITrackingSpan>();
+            set => FunctionSignatureHelp.ApplicableToRange = new TrackingTextRange(value);
         }
 
         /// <summary>
         /// List of parameters that this signature knows about.
         /// </summary>
         public ReadOnlyCollection<IParameter> Parameters
-            => new ReadOnlyCollection<IParameter>(_signatureHelp.Parameters.Select(p => new RSignatureHelpParameter(this, p) as IParameter).ToList());
+            => new ReadOnlyCollection<IParameter>(FunctionSignatureHelp.Parameters.Select(p => new RSignatureHelpParameter(this, p) as IParameter).ToList());
 
         /// <summary>
         /// Content of the signature, pretty-printed into a form suitable for display on-screen.
         /// </summary>
-        public string PrettyPrintedContent => _signatureHelp.PrettyPrintedContent;
+        public string PrettyPrintedContent => FunctionSignatureHelp.PrettyPrintedContent;
 
         /// <summary>
         /// Occurs when the currently-selected parameter changes.
@@ -66,8 +66,8 @@ namespace Microsoft.R.Editor.Signatures {
         /// Current parameter for this signature.
         /// </summary>
         public IParameter CurrentParameter {
-            get => new RSignatureHelpParameter(this, _signatureHelp.CurrentParameter);
-            set => _signatureHelp.CurrentParameter = (value as RSignatureHelpParameter)?.SignatureParameterHelp;
+            get => new RSignatureHelpParameter(this, FunctionSignatureHelp.CurrentParameter);
+            set => FunctionSignatureHelp.CurrentParameter = (value as RSignatureHelpParameter)?.SignatureParameterHelp;
         }
         #endregion
 

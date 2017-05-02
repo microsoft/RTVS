@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Signatures {
         private ITrackingTextRange _applicableToRange;
         private int _initialPosition;
 
-        public static IFunctionSignatureHelp Create(IRIntellisenseContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo, ITrackingTextRange applicableSpan) {
+        public static IRFunctionSignatureHelp Create(IRIntellisenseContext context, IFunctionInfo functionInfo, ISignatureInfo signatureInfo, ITrackingTextRange applicableSpan) {
             var sig = new RFunctionSignatureHelp(context.Session, context.EditorBuffer, functionInfo.Name, string.Empty, signatureInfo);
             var paramList = new List<ISignatureParameterHelp>();
 
