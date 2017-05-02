@@ -18,6 +18,9 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public int? ProcessId { get; set; }
         public bool IsHostRunning { get; set; }
         public bool IsRemote { get; set; }
+        public bool IsProcessing { get; set; }
+        public bool IsReadingUserInput { get; set; }
+
         public bool RestartOnBrokerSwitch { get; set; }
 
         public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
