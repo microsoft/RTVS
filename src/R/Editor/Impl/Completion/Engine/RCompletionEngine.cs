@@ -99,10 +99,8 @@ namespace Microsoft.R.Editor.Completion.Engine {
             if (IsPackageListCompletion(context.TextBuffer, context.Position)) {
                 providers.Add(new PackagesCompletionProvider(packageIndex, glyphService));
             } else {
-                if (IsInFunctionArgumentName<FunctionCall>(context.AstRoot, context.Position)) {
-                    var functionIndex = shell.ExportProvider.GetExportedValue<IFunctionIndex>();
-                    providers.Add(new ParameterNameCompletionProvider(functionIndex, glyphService));
-                }
+                var functionIndex = shell.ExportProvider.GetExportedValue<IFunctionIndex>();
+                providers.Add(new ParameterNameCompletionProvider(functionIndex, glyphService));
 
                 foreach (var p in GetCompletionProviders(shell)) {
                     providers.Add(p.Value);
