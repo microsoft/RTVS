@@ -66,6 +66,9 @@ namespace Microsoft.R.Host.Client.Session {
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _hostStartedTcs.Task;
         public bool IsRemote => BrokerClient.IsRemote;
+        public bool IsProcessing { get; private set; }
+        public bool IsReadingUserInput { get; private set; }
+
         public bool RestartOnBrokerSwitch { get; set; }
 
         internal IBrokerClient BrokerClient { get; }
@@ -561,7 +564,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             var callback = _callback;
             if (!addToHistory && callback != null) {
-                return await callback.ReadUserInput(prompt, len, ct);
+                try {
+                    IsReadingUserInput = true;
+                    return await callback.ReadUserInput(prompt, len, ct);
+                } finally {
+                    IsReadingUserInput = false;
+                }
             }
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -570,6 +578,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             Prompt = GetDefaultPrompt(prompt);
             MaxLength = len;
 
+            IsProcessing = contexts.Count != 1;
             var requestEventArgs = new RBeforeRequestEventArgs(contexts, Prompt, len, addToHistory);
             BeforeRequest?.Invoke(this, requestEventArgs);
 
@@ -601,6 +610,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             consoleInput = consoleInput.EnsureLineBreak();
             AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, Prompt, consoleInput, addToHistory, currentRequest?.IsVisible ?? false));
+            IsProcessing = true;
 
             return consoleInput;
         }

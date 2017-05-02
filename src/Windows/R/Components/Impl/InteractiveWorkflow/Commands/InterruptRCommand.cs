@@ -39,7 +39,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 var status = CommandStatus.Supported;
                 if (_interactiveWorkflow.ActiveWindow == null) {
                     status |= CommandStatus.Invisible;
-                } else if (_session.IsHostRunning && _enabled && !_debuggerModeTracker.IsInBreakMode) {
+                } else if (CanInterrupt()) {
                     status |= CommandStatus.Enabled;
                 }
                 return status;
@@ -47,11 +47,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         public async Task InvokeAsync() {
-            if (_enabled) {
-                _enabled = false;
+            if (CanInterrupt()) {
                 _interactiveWorkflow.Operations.ClearPendingInputs();
                 await _session.CancelAllAsync();
             }
         }
+
+        private bool CanInterrupt()
+            => _session.IsHostRunning && _session.IsProcessing && !_session.IsReadingUserInput && !_debuggerModeTracker.IsInBreakMode;
     }
 }
