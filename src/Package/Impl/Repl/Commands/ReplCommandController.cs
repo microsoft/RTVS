@@ -154,9 +154,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private void HandleCancel(RCompletionController controller) {
             if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(TextView)) {
-                Workflow.Operations.CancelAsync().DoNotWait();
-                // Post interrupt command which knows if it can interrupt R or not
-                VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+                // If session is reading user input, do not terminate it
+                if (!Workflow.RSession.IsReadingUserInput) {
+                    Workflow.Operations.CancelAsync().DoNotWait();
+                    // Post interrupt command which knows if it can interrupt R or not
+                    VsAppShell.Current.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+                }
             }
         }
 

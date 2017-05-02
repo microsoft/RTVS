@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
@@ -80,13 +81,24 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             await _workflow.Plots.DeviceDestroyedAsync(deviceId, ct);
         }
 
-        public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
+        public async Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
             _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
-            return Task.Run(() => {
+            var tcs = new TaskCompletionSource<string>();
+
+            Task.Run(() => {
                 using (var reader = _interactiveWindow.ReadStandardInput()) {
-                    return reader != null ? Task.FromResult(reader.ReadToEnd()) : Task.FromResult("\n");
+                    tcs.TrySetResult(reader?.ReadToEnd() ?? "\n");
                 }
-            }, ct);
+            }, ct).DoNotWait();
+
+            tcs.RegisterForCancellation(ct).UnregisterOnCompletion(tcs.Task);
+
+            try {
+                return await tcs.Task;
+            } catch (OperationCanceledException) {
+                _coreShell.DispatchOnUIThread(() => _interactiveWindow.Operations.TrySubmitStandardInput());
+                throw;
+            }
         }
 
         /// <summary>

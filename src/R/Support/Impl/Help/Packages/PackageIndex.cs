@@ -36,6 +36,7 @@ namespace Microsoft.R.Support.Help.Packages {
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
+        private volatile bool _updatePending;
 
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
@@ -52,7 +53,6 @@ namespace Microsoft.R.Support.Help.Packages {
             _interactiveSession = _workflow.RSession;
             _interactiveSession.Connected += OnSessionConnected;
             _interactiveSession.PackagesRemoved += OnPackagesRemoved;
-
             _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
             if (_workflow.RSession.IsHostRunning) {
@@ -71,13 +71,21 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         public Task BeforePackagesInstalledAsync(CancellationToken ct) {
+            // Package is about to be installed. Stop intellisense session
+            // so loaded packages are released and new one will not be locked.
+            // If update is pending, cancel it.
+            CancelPendingIndexUpdate();
             var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeoutCts.CancelAfter(5000);
             return _host.StopSessionAsync(timeoutCts.Token);
         }
 
         public Task AfterPackagesInstalledAsync(CancellationToken ct) {
-            UpdateInstalledPackagesAsync(ct).DoNotWait();
+            _updatePending = true;
+            // Create delayed action. There may be multiple install.packages
+            // commands pending and we want to update index when processing
+            // is fully completes.
+            IdleTimeAction.Create(() => UpdateInstalledPackagesAsync(CancellationToken.None).DoNotWait(), 1000, GetType(), _shell);
             return Task.CompletedTask;
         }
 
@@ -231,16 +239,18 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task UpdateInstalledPackagesAsync(CancellationToken ct) {
-            var token = await _buildIndexLock.ResetAsync(ct);
-            if (!token.IsSet) {
-                try {
-                    var installed = await GetInstalledPackagesAsync();
-                    var currentNames = _packages.Keys.ToArray();
+            if (_updatePending) {
+                var token = await _buildIndexLock.ResetAsync(ct);
+                if (!token.IsSet) {
+                    try {
+                        var installed = await GetInstalledPackagesAsync(ct);
+                        var currentNames = _packages.Keys.ToArray();
 
-                    var added = installed.Where(p => !currentNames.Contains(p.Package));
-                    await AddPackagesToIndexAsync(added);
-                } catch (RException) { } catch (OperationCanceledException) { } finally {
-                    token.Reset();
+                        var added = installed.Where(p => !currentNames.Contains(p.Package));
+                        await AddPackagesToIndexAsync(added);
+                    } catch (RException) { } catch (OperationCanceledException) { } finally {
+                        token.Reset();
+                    }
                 }
             }
         }
@@ -317,6 +327,11 @@ namespace Microsoft.R.Support.Help.Packages {
             packageName = packageName.TrimQuotes().Trim();
             _packages.TryGetValue(packageName, out package);
             return package;
+        }
+
+        private void CancelPendingIndexUpdate() {
+            _updatePending = false;
+            IdleTimeAction.Cancel(GetType());
         }
     }
 }

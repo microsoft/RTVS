@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
@@ -12,14 +13,14 @@ namespace Microsoft.Languages.Editor.Tasks {
     /// Action that should be executed on next idle after certain amount of milliseconds
     /// </summary>
     public class IdleTimeAction {
-        static Dictionary<object, IdleTimeAction> _idleActions = new Dictionary<object, IdleTimeAction>();
+        private static readonly ConcurrentDictionary<object, IdleTimeAction> _idleActions = new ConcurrentDictionary<object, IdleTimeAction>();
 
         private readonly Action _action;
         private readonly int _delay;
         private readonly ICoreShell _shell;
-        bool _connectedToIdle = false;
-        DateTime _idleConnectTime;
-        object _tag;
+        private readonly object _tag;
+        private volatile bool _connectedToIdle;
+        private DateTime _idleConnectTime;
 
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
             if (_idleActions.TryGetValue(tag, out idleTimeAction)) {
                 idleTimeAction.DisconnectFromIdle();
-                _idleActions.Remove(tag);
+                _idleActions.TryRemove(tag, out idleTimeAction);
             }
         }
 
@@ -65,7 +66,8 @@ namespace Microsoft.Languages.Editor.Tasks {
                 DisconnectFromIdle();
                 _action();
 
-                _idleActions.Remove(_tag);
+                IdleTimeAction idleTimeAction;
+                _idleActions.TryRemove(_tag, out idleTimeAction);
             }
         }
 
