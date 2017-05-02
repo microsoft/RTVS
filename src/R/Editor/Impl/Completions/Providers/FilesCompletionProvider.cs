@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completions;
@@ -23,28 +24,45 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// Provides list of files and folder in the current directory
     /// </summary>
     internal sealed class FilesCompletionProvider : IRCompletionListProvider {
+        enum Mode {
+            WorkingDirectory,
+            UserDirectory,
+            Other
+        }
+
+        private readonly IFileSystem _fs;
         private readonly IImageService _imageService;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSettings _settings;
-        private readonly Task<string> _userDirectoryFetchingTask;
-        private readonly string _directory;
+        private readonly string _enteredDirectory;
         private readonly bool _forceR; // for tests
-        private string _cachedUserDirectory;
+        private readonly Task<string> _task;
+
+        private Mode _mode = Mode.Other;
+        private volatile string _rootDirectory;
 
         public FilesCompletionProvider(string directoryCandidate, IServiceContainer services, bool forceR = false) {
             Check.ArgumentNull(nameof(directoryCandidate), directoryCandidate);
 
+            _fs = services.GetService<IFileSystem>();
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _imageService = services.GetService<IImageService>();
             _settings = services.GetService<IRSettings>();
             _forceR = forceR;
 
-            _directory = ExtractDirectory(directoryCandidate);
+            _enteredDirectory = ExtractDirectory(directoryCandidate);
+            _task = GetRootDirectoryAsync(_enteredDirectory);
+        }
 
-            if (_directory.Length == 0 || _directory.StartsWithOrdinal("~\\")) {
-                _directory = _directory.Length > 1 ? _directory.Substring(2) : _directory;
-                _userDirectoryFetchingTask = _workflow.RSession.GetRUserDirectoryAsync();
+        private Task<string> GetRootDirectoryAsync(string userProvidedDirectory) {
+            if (userProvidedDirectory.Length == 0 || userProvidedDirectory.StartsWithOrdinal(".")) {
+                _mode = Mode.WorkingDirectory;
+                return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetWorkingDirectoryAsync());
+            } else if (_enteredDirectory.StartsWithOrdinal("~\\")) {
+                _mode = Mode.UserDirectory;
+                return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetRUserDirectoryAsync());
             }
+            return Task.FromResult(string.Empty);
         }
 
         #region IRCompletionListProvider
@@ -52,24 +70,28 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-            string directory = null;
-            string userDirectory = null;
-
-            if (_userDirectoryFetchingTask != null) {
-                userDirectory = _userDirectoryFetchingTask.WaitTimeout(500);
-                userDirectory = userDirectory ?? _cachedUserDirectory;
-            }
+            string directory = _enteredDirectory;
 
             try {
-                if (!string.IsNullOrEmpty(userDirectory)) {
-                    _cachedUserDirectory = userDirectory;
-                    directory = Path.Combine(userDirectory, _directory);
-                } else {
-                    directory = _directory;
-                }
+                // If we are running async directory fetching, wait a bit
+                _task?.Wait(500);
+            } catch (OperationCanceledException) { }
 
+            try {
+                // If directory is set, then the async task did complete
+                if (!string.IsNullOrEmpty(_rootDirectory)) {
+                    if (_mode == Mode.WorkingDirectory) {
+                        directory = Path.Combine(_rootDirectory, _enteredDirectory);
+                    } else if (_mode == Mode.UserDirectory) {
+                        var subDirectory = _enteredDirectory.Length > 1 ? _enteredDirectory.Substring(2) : _enteredDirectory;
+                        directory = Path.Combine(_rootDirectory, subDirectory);
+                    }
+                }
+            } catch (ArgumentException) { }
+
+            try {
                 if (!string.IsNullOrEmpty(directory)) {
-                    IEnumerable<ICompletionEntry> entries = null;
+                    IEnumerable<ICompletionEntry> entries;
 
                     if (_forceR || _workflow.RSession.IsRemote) {
                         var t = GetRemoteDirectoryItemsAsync(directory);
@@ -79,7 +101,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     }
                     completions.AddRange(entries);
                 }
-            } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { } catch (TimeoutException) { }
 
             return completions;
         }
@@ -109,32 +131,23 @@ namespace Microsoft.R.Editor.Completions.Providers {
             });
         }
 
-        private IEnumerable<ICompletionEntry> GetLocalDirectoryItems(string userDirectory) {
-            string directory;
-
-            if (!string.IsNullOrEmpty(userDirectory)) {
-                _cachedUserDirectory = userDirectory;
-                directory = Path.Combine(userDirectory, _directory);
-            } else {
-                directory = Path.Combine(_settings.WorkingDirectory, _directory);
-            }
-
-            if (Directory.Exists(directory)) {
+        private IEnumerable<ICompletionEntry> GetLocalDirectoryItems(string directory) {
+            if (_fs.DirectoryExists(directory)) {
                 var folderGlyph = _imageService.GetImage(ImageType.ClosedFolder);
 
-                foreach (string dir in Directory.GetDirectories(directory)) {
-                    DirectoryInfo di = new DirectoryInfo(dir);
+                foreach (var dir in _fs.GetDirectories(directory)) {
+                    var di = new DirectoryInfo(dir);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                        string dirName = Path.GetFileName(dir);
+                        var dirName = Path.GetFileName(dir);
                         yield return new EditorCompletionEntry(dirName, dirName + "/", string.Empty, folderGlyph);
                     }
                 }
 
-                foreach (string file in Directory.GetFiles(directory)) {
-                    FileInfo di = new FileInfo(file);
+                foreach (string file in _fs.GetFiles(directory)) {
+                    var di = new FileInfo(file);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
                         var fileGlyph = _imageService.GetFileIcon(file);
-                        string fileName = Path.GetFileName(file);
+                        var fileName = Path.GetFileName(file);
                         yield return new EditorCompletionEntry(fileName, fileName, string.Empty, fileGlyph);
                     }
                 }

@@ -51,6 +51,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
         private void AddSubstiteServices() {
             ServiceManager
+                .AddService(this)
                 .AddService(Substitute.For<IMainThread>())
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(Substitute.For<ISecurityService>())
@@ -73,6 +74,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             , IRegistry registry = null
             , IProcessServices ps = null) {
             ServiceManager
+                .AddService(this)
                 .AddService(UIThreadHelper.Instance)
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())

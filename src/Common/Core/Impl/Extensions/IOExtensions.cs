@@ -62,6 +62,28 @@ namespace Microsoft.Common.Core {
             return files;
         }
 
+        /// <summary>
+        /// Returns subdirectories of a directory
+        /// </summary>
+        public static IEnumerable<string> GetDirectories(this IFileSystem fs, string directory) {
+            foreach (var fsi in fs.GetDirectoryInfo(directory).EnumerateFileSystemInfos()) {
+                if ((fsi.Attributes & FileAttributes.Directory) == FileAttributes.Directory) {
+                    yield return fsi.FullName;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns full paths of files within a directory
+        /// </summary>
+        public static IEnumerable<string> GetFiles(this IFileSystem fs, string directory) {
+            foreach (var fsi in fs.GetDirectoryInfo(directory).EnumerateFileSystemInfos()) {
+                if ((fsi.Attributes & (FileAttributes.Directory | FileAttributes.Device)) == 0) { 
+                    yield return fsi.FullName;
+                }
+            }
+        }
+
         public static string TrimTrailingSlash(this string path) {
             if (!string.IsNullOrEmpty(path) && (path.EndsWith(Path.DirectorySeparatorChar) || path.EndsWith(Path.AltDirectorySeparatorChar))) {
                 return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -103,7 +125,7 @@ namespace Microsoft.Common.Core {
                     Directory.GetFiles(path);
                     return true;
                 }
-            } catch(IOException) { } catch(UnauthorizedAccessException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
             return false;
         }
 

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Text;
@@ -48,6 +49,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 var locator = _services.GetService<IContentTypeServiceLocator>();
                 var provider = locator.GetService<ISmartIndentProvider>(RContentTypeDefinition.ContentType);
                 var tv = editorView.As<ITextView>();
+
+                var settings = _services.GetService<IWritableREditorSettings>();
+                settings.IndentStyle = IndentStyle.Block;
 
                 var indenter = provider.CreateSmartIndent(tv);
                 var indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1));

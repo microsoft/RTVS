@@ -69,7 +69,8 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
         private void RunThreads() {
             for (int i = 0; i < 10; i++) {
-                ((IIdleTimeSource)_shell).DoIdle();
+                var idle = _shell.GetService<IIdleTimeSource>();
+                idle.DoIdle();
                 Thread.Sleep(100);
             }
         }
