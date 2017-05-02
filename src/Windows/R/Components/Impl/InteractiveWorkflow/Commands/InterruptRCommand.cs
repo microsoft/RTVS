@@ -54,6 +54,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         private bool CanInterrupt()
-            => _session.IsHostRunning && _session.IsProcessing && !_session.IsReadingUserInput && !_debuggerModeTracker.IsInBreakMode;
+            => _session.IsHostRunning && _session.IsProcessing && !_debuggerModeTracker.IsInBreakMode;
     }
 }
