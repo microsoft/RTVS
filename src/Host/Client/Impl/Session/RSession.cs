@@ -555,11 +555,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             var callback = _callback;
             if (!addToHistory && callback != null) {
-                try {
-                    _readUserInputReentrancyCounter.Increment();
+                using (_readUserInputReentrancyCounter.Increment()) {
                     return await callback.ReadUserInput(prompt, len, ct);
-                } finally {
-                    _readUserInputReentrancyCounter.Decrement();
                 }
             }
 
