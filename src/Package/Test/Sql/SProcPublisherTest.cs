@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [CompositeTest(ThreadType.UI)]
         [InlineData("sqlcode1.r")]
         public void PublishDacpac(string rFile) {
-            var fs = new FileSystem();
+            var fs = new WindowsFileSystem();
             var settings = new SqlSProcPublishSettings();
             settings.TargetType = PublishTargetType.Dacpac;
 

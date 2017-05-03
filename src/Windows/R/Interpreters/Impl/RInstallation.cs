@@ -27,7 +27,7 @@ namespace Microsoft.R.Interpreters {
         private readonly IFileSystem _fileSystem;
 
         public RInstallation() :
-            this(new RegistryImpl(), new FileSystem()) { }
+            this(new RegistryImpl(), new WindowsFileSystem()) { }
 
         public RInstallation(IRegistry registry, IFileSystem fileSystem) {
             _registry = registry;

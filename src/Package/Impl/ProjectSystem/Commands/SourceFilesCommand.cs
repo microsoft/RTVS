@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         [ImportingConstructor]
         public SourceFilesCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider, ICoreShell shell) :
-            base(interactiveWorkflowProvider, shell.UI(), new FileSystem()) {
+            base(interactiveWorkflowProvider, shell.UI(), shell.FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _shell = shell;
@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             if (commandId == RPackageCommandId.icmdSourceSelectedFiles || commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho) {
                 bool echo = commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho;
                 
-                IFileSystem fs = new FileSystem();
+                IFileSystem fs = _shell.FileSystem();
                 IEnumerable<string> rFiles = Enumerable.Empty<string>();
 
                 var workflow = _interactiveWorkflowProvider.GetOrCreate();

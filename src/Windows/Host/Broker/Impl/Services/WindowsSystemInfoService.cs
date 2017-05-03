@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Broker.Services {
                     && x.Supports(NetworkInterfaceComponent.IPv4) 
                     && x.Supports(NetworkInterfaceComponent.IPv6) 
                     && x.OperationalStatus == OperationalStatus.Up 
-                    && x.Speed > 0 && IsCompatibleInterface(x.NetworkInterfaceType)).ToArray();
+                    && IsCompatibleInterface(x.NetworkInterfaceType)).ToArray();
 
             // Take initial measurement, wait 500ms, take another.
             var stats = interfaces.Select(s => s.GetIPStatistics()).ToArray();

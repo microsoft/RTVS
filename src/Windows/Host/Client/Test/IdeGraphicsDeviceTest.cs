@@ -591,7 +591,7 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 ", format, widthInPixels, heightInPixels, resolution);
             var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
 
-            using(DataTransferSession dts = new DataTransferSession(session, new FileSystem())) {
+            using(DataTransferSession dts = new DataTransferSession(session, new WindowsFileSystem())) {
                 await dts.FetchFileAsync(new RBlobInfo(blobid), filePath, true, null, CancellationToken.None);
             }
         }
@@ -641,7 +641,7 @@ device_id <- rtvs:::graphics.ide.getactivedeviceid()
 rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1})
 ", width, height);
                 var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
-                using (DataTransferSession dts = new DataTransferSession(session, new FileSystem())) {
+                using (DataTransferSession dts = new DataTransferSession(session, new WindowsFileSystem())) {
                     await dts.FetchFileAsync(new RBlobInfo(blobid), filePath, true, null, CancellationToken.None);
                 }
 

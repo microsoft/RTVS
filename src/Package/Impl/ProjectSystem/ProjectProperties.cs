@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package {
         [ImportingConstructor]
         public ProjectProperties(ConfiguredProject configuredProject)
             : base(configuredProject) {
-            _fileSystem = new FileSystem();
+            _fileSystem = new WindowsFileSystem();
         }
 
         /// <summary>
