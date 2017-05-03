@@ -15,10 +15,10 @@ namespace Microsoft.Languages.Editor.Text {
         private const int DefaultBlockLength = 16384;
         private const int DefaultPreBlockLength = 128;
 
+        private readonly int _partialBlockLength;
         private readonly bool _partial;
         private string _cachedBlock;
         private int _basePosition;
-        private int _partialBlockLength;
 
         public TextProvider(ITextSnapshot snapshot) : this(snapshot, 0) { }
 
@@ -117,8 +117,8 @@ namespace Microsoft.Languages.Editor.Text {
                     var ch2 = this[k];
 
                     if (ignoreCase) {
-                        ch1 = Char.ToLowerInvariant(ch1);
-                        ch2 = Char.ToLowerInvariant(ch2);
+                        ch1 = char.ToLowerInvariant(ch1);
+                        ch2 = char.ToLowerInvariant(ch2);
                     }
 
                     if (ch1 != ch2) {
@@ -152,6 +152,7 @@ namespace Microsoft.Languages.Editor.Text {
         #region ITextSnapshotProvider
         public ITextSnapshot Snapshot { get; }
         #endregion
+
 #pragma warning disable 0067
         public event System.EventHandler<TextChangeEventArgs> OnTextChange;
     }
