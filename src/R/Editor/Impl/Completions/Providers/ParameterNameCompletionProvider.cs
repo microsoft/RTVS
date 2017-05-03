@@ -32,11 +32,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-            FunctionCall funcCall;
             var functionGlyph = _imageService.GetImage(ImageType.ValueType);
 
-            // Safety checks
-            if (!ShouldProvideCompletions(context, out funcCall)) {
+            // Get AST function call for the parameter completion
+            var funcCall = GetFunctionCall(context);
+            if (funcCall == null) {
                 return completions;
             }
 
@@ -68,23 +68,27 @@ namespace Microsoft.R.Editor.Completions.Providers {
         }
         #endregion
 
-        private static bool ShouldProvideCompletions(IRIntellisenseContext context, out FunctionCall funcCall) {
+        private static FunctionCall GetFunctionCall(IRIntellisenseContext context) {
             // Safety checks
-            funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
+            var funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
             if (funcCall == null && context.Position > 0) {
-                // This may be the case when brace is not closed and position is at the very end.
-                // Try stepping back one character and retry. If we find function call, check that
-                // a) brace is not closed and b) position is indeed at the very end so we avoid
-                // false positive in case of func()|.
+                // This may be the case when brace is not closed and the position is at the very end.
+                // Try stepping back one character and retry. If we find the function call, check that
+                // indeed a) brace is not closed and b) position is  at the very end of the function
+                // signature in order to avoid false positive in case of func()|.
                 funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position - 1);
-                return funcCall != null && funcCall.CloseBrace == null && context.Position == funcCall.End;
+                if (funcCall == null || funcCall.CloseBrace != null || context.Position != funcCall.End) {
+                    return null;
+                }
+
+                return funcCall;
             }
 
             if (funcCall == null || context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
-                return false;
+                return null;
             }
 
-            return true;
+            return funcCall;
         }
 
         /// <summary>
