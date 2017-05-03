@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.R.Common.Core.Linux;
+using Microsoft.Common.Core.OS;
 
 namespace Microsoft.R.Interpreters { 
     public sealed class RInstallation : IRInstallationService {

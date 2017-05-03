@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Common.Core.Linux;
-using Microsoft.UnitTests.Core.Linux;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.Common.Core.OS;
+using Microsoft.UnitTests.Core.Linux;
 using Xunit;
 
 namespace Microsoft.Common.Core.Linux.Test {

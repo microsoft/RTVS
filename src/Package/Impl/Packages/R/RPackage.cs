@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             LogCleanup.Cancel();
             ProjectIconProvider.Close();
-            CsvAppFileIO.Close(new WindowsFileSystem());
+            CsvAppFileIO.Close(VsAppShell.Current.FileSystem());
 
             RtvsTelemetry.Current?.Dispose();
             VsAppShell.Terminate();

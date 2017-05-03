@@ -154,7 +154,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public string OpenInCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
-            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, VsAppShell.Current,  new WindowsFileSystem(), new ProcessServices()).DoNotWait();
+            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, VsAppShell.Current, VsAppShell.Current.FileSystem(), new ProcessServices()).DoNotWait();
         }
 
         /// <summary>

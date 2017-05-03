@@ -23,6 +23,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly IRSettings _settings;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly Dictionary<ITextBuffer, IRHistory> _histories;
+        private readonly IFileSystem _fs;
 
         [ImportingConstructor]
         public RHistoryProvider(ICoreShell coreShell) {
@@ -33,6 +34,7 @@ namespace Microsoft.R.Components.History.Implementation {
             _textSearchService = coreShell.GetService<ITextSearchService2>();
             _settings = coreShell.GetService<IRSettings>();
             _histories = new Dictionary<ITextBuffer, IRHistory>();
+            _fs = coreShell.FileSystem();
         }
 
         public IRHistory GetAssociatedRHistory(ITextBuffer textBuffer) {
@@ -53,7 +55,7 @@ namespace Microsoft.R.Components.History.Implementation {
         public IRHistory CreateRHistory(IRInteractiveWorkflowVisual interactiveWorkflow) {
             var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
             var textBuffer = _textBufferFactory.CreateTextBuffer(contentType);
-            var history = new RHistory(interactiveWorkflow, textBuffer, new WindowsFileSystem(), _settings, _editorOperationsFactory, _rtfBuilderService, () => RemoveRHistory(textBuffer));
+            var history = new RHistory(interactiveWorkflow, textBuffer, _fs, _settings, _editorOperationsFactory, _rtfBuilderService, () => RemoveRHistory(textBuffer));
             _histories[textBuffer] = history;
             return history;
         }

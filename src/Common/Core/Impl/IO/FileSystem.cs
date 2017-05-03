@@ -7,11 +7,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.FileSystemGlobbing;
 
-namespace Microsoft.Common.Core {
+namespace Microsoft.Common.Core.IO {
     public class FileSystem : IFileSystem {
         public virtual IFileSystemWatcher CreateFileSystemWatcher(string path, string filter) => new FileSystemWatcherProxy(path, filter);
 

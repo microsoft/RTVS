@@ -32,6 +32,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly IConsole _console;
         private readonly CountdownDisposable _evaluatorRequest;
+        private readonly IFileSystem _fs;
         private CarriageReturnProcessor _crProcessor;
         private int _terminalWidth = 80;
         private IInteractiveWindow _currentWindow;
@@ -50,6 +51,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _settings = settings;
             _console = console;
             _evaluatorRequest = new CountdownDisposable();
+            _fs = _coreShell.FileSystem();
 
             _disposableBag
                 .Add(() => Session.Output -= SessionOnOutput)
@@ -84,7 +86,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             try {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo(_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true, true);
-                    await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, new WindowsFileSystem()));
+                    await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, _fs));
                 }
                 return ExecutionResult.Success;
             } catch (ComponentBinaryMissingException cbmex) {

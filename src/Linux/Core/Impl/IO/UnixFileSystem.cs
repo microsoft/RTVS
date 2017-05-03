@@ -11,7 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.FileSystemGlobbing;
 
-namespace Microsoft.R.Common.Core.Linux {
+namespace Microsoft.Common.Core.IO {
     public sealed class UnixFileSystem : FileSystem {
         public override string GetDownloadsPath(string fileName) {
             return Path.Combine("~/Downloads", fileName);

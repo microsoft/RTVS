@@ -1,15 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Microsoft.Common.Core.IO;
 
-namespace Microsoft.R.Common.Core.Linux {
+namespace Microsoft.Common.Core.OS {
     public class InstalledPackageInfo {
         public string PackageName { get; }
         public string Version { get; }
@@ -18,7 +16,7 @@ namespace Microsoft.R.Common.Core.Linux {
         private readonly Version _parsedVersion;
         public Version GetVersion() => _parsedVersion;
 
-        public InstalledPackageInfo(string name, string version, string architecture) {
+        private InstalledPackageInfo(string name, string version, string architecture) {
             PackageName = name;
             Version = version;
             Architecture = architecture;

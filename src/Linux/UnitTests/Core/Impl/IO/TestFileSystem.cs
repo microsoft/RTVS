@@ -3,8 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Common.Core;
-using Microsoft.R.Common.Core.Linux;
+using Microsoft.Common.Core.IO;
 
 namespace Microsoft.UnitTests.Core.Linux {
     public class TestFileSystem : FileSystem {

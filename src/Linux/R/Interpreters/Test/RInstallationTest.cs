@@ -7,31 +7,27 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.UnitTests.Core.Linux;
 using Xunit;
+using Microsoft.Common.Core.IO;
 
 namespace Microsoft.R.Interpreters.Linux.Test {
     public class RInstallationTest {
         [Fact]
         public void RInstallationBasicTest() {
-            var fs = new TestFileSystem();
+            IFileSystem fs = new TestFileSystem();
             var rInstallation = new RInstallation(fs);
             var installs = rInstallation.GetCompatibleEngines();
             installs.Count().Should().Be(2);
 
             // test MRO
-            var mro = installs.Where(i => i.Name.StartsWithOrdinal("Microsoft"));
-            mro.Count().Should().Be(1);
-            var mroInterpreter = mro.First();
-            mroInterpreter.Version.Should().Be(new Version(3, 3, 3));
+            installs.Should().ContainSingle(i => i.Name.StartsWithOrdinal("Microsoft")).Which.Version.Should().Be(new Version(3, 3, 3));
 
             // test CRAN R
-            var cranR = installs.Where(i => i.Name.StartsWithOrdinal("R "));
-            cranR.Count().Should().Be(1);
-            var cranRInterpreter = cranR.First();
-            cranRInterpreter.Version.Should().Be(new Version(3, 2, 3, 4));
+            installs.Should().ContainSingle(i => i.Name.StartsWithOrdinal("R")).Which.Version.Should().Be(new Version(3, 2, 3, 4));
         }
 
         [Fact]
         public void CreateInterpreterInfoTest() {
+            // This test is valid only on Linux
             var fs = new TestFileSystem(false);
             var rInstallation = new RInstallation(fs);
             var mro = rInstallation.CreateInfo("MRO", "/usr/lib64/microsoft-r/3.3/lib64/R");

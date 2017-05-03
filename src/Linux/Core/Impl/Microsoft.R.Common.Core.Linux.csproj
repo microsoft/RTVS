@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Microsoft.R.Common.Core.Linux</AssemblyName>
+    <RootNamespace>Microsoft.Common.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
