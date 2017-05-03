@@ -29,7 +29,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
         IREditorDocument _document;
         IAstNode _lastNode;
 
-        public RSuggestedActionSource(ITextView textView, ITextBuffer textBuffer, IEnumerable<IRSuggestedActionProvider> suggestedActionProviders, ICoreShell shell) {
+        private RSuggestedActionSource(ITextView textView, ITextBuffer textBuffer, IEnumerable<IRSuggestedActionProvider> suggestedActionProviders, ICoreShell shell) {
             _textBuffer = textBuffer;
             _textView = textView;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
@@ -37,8 +37,6 @@ namespace Microsoft.R.Editor.SuggestedActions {
 
             _document = _textBuffer.GetEditorDocument<IREditorDocument>();
             _document.Closing += OnDocumentClosing;
-
-            _textView.AddService(this);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
@@ -125,7 +123,6 @@ namespace Microsoft.R.Editor.SuggestedActions {
 
         public void Dispose() {
             if (_textView != null) {
-                _textView.RemoveService(this);
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;
                 _textBuffer = null;
                 _textView = null;

@@ -21,8 +21,7 @@ namespace Microsoft.R.Editor.Commands {
             _shell = shell;
         }
 
-        public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) {
-            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new RMouseProcessor(wpfTextView, _shell));
-        }
+        public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) 
+            => wpfTextView.Properties.GetOrCreateSingletonProperty(() => new RMouseProcessor(wpfTextView, _shell));
     }
 }

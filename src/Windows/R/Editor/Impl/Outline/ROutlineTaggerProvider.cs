@@ -1,8 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿Add// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -29,14 +28,10 @@ namespace Microsoft.R.Editor.Outline {
 
         #region ITaggerProvider
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            var tagger = buffer.GetService<ROutliningTagger>();
-            if (tagger == null) {
-                var document = buffer.GetEditorDocument<IREditorDocument>();
-                if (document != null) {
-                    tagger = new ROutliningTagger(document, _shell.Services);
-                }
-            }
-            return tagger as ITagger<T>;
+            var document = buffer.GetEditorDocument<IREditorDocument>();
+            return document != null
+                ? buffer.Properties.GetOrCreateSingletonProperty(() => new ROutliningTagger(document, _shell.Services)) as ITagger<T>
+                : null;
         }
         #endregion
     }

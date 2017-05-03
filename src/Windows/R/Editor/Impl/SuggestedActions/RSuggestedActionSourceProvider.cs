@@ -21,8 +21,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
             _shell = shell;
         }
 
-        public ISuggestedActionsSource CreateSuggestedActionsSource(ITextView textView, ITextBuffer textBuffer) {
-            return RSuggestedActionSource.FromViewAndBuffer(textView, textBuffer, _shell);
-        }
+        public ISuggestedActionsSource CreateSuggestedActionsSource(ITextView textView, ITextBuffer textBuffer)
+            => textView.Properties.GetOrCreateSingletonProperty(() => RSuggestedActionSource.FromViewAndBuffer(textView, textBuffer, _shell));
     }
 }

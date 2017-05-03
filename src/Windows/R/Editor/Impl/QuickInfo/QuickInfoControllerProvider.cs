@@ -23,9 +23,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             _shell = shell;
         }
 
-        public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
-            var quickInfoController = textView.GetService<QuickInfoController>();
-            return quickInfoController ?? new QuickInfoController(textView, subjectBuffers, _shell.Services);
-        }
+        public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
+            => textView.Properties.GetOrCreateSingletonProperty(() => new QuickInfoController(textView, subjectBuffers, _shell.Services));
     }
 }

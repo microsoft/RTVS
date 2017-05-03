@@ -26,8 +26,7 @@ namespace Microsoft.R.Editor.DragDrop {
             _workflowProvider = workflowProvider;
         }
 
-        public IDropHandler GetAssociatedDropHandler(IWpfTextView wpfTextView) {
-            return new DropHandler(wpfTextView, _shell.Services, _workflowProvider);
-        }
+        public IDropHandler GetAssociatedDropHandler(IWpfTextView wpfTextView)
+        => wpfTextView.Properties.GetOrCreateSingletonProperty(() => new DropHandler(wpfTextView, _shell.Services, _workflowProvider));
     }
 }

@@ -19,8 +19,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             _settings = coreShell.GetService<IREditorSettings>();
         }
 
-        public ISmartIndent CreateSmartIndent(ITextView textView) {
-            return SmartIndent.FromView(textView, _settings);
-        }
+        public ISmartIndent CreateSmartIndent(ITextView textView)
+            => textView.Properties.GetOrCreateSingletonProperty(() => new SmartIndent(textView, _settings));
     }
 }

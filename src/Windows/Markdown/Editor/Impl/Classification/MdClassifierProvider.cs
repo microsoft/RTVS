@@ -21,6 +21,6 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
         }
 
         protected override IClassifier CreateClassifier(ITextBuffer textBuffer)
-            => new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService);
+            => textBuffer.Properties.GetOrCreateSingletonProperty(() => new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService));
     }
 }

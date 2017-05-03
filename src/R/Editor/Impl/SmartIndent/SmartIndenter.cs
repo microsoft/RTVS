@@ -22,13 +22,9 @@ namespace Microsoft.R.Editor.SmartIndent {
         private readonly IREditorSettings _settings;
         private readonly IEditorView _view;
 
-        public static ISmartIndenter FromView(IEditorView view, IREditorSettings settings)
-            => view.GetService<SmartIndenter>() ?? new SmartIndenter(view, settings);
-
-        private SmartIndenter(IEditorView view, IREditorSettings settings) {
+        public SmartIndenter(IEditorView view, IREditorSettings settings) {
             _view = view;
             _settings = settings;
-            _view.AddService(this);
         }
 
         #region ISmartIndenter

@@ -74,8 +74,6 @@ namespace Microsoft.R.Editor.Validation.Tagger {
 
             ResultsQueue = validator.ValidationResults;
             _idleTime.Idle += OnIdle;
-
-            textBuffer.AddService(this);
         }
 
         /// <summary>
@@ -152,7 +150,6 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 _errorTags.Clear();
                 _errorTags = null;
 
-                _textBuffer.RemoveService(this);
                 ResultsQueue = null;
 
                 _textBuffer.Changed -= OnTextBufferChanged;

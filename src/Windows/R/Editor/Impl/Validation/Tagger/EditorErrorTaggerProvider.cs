@@ -26,15 +26,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         }
 
         public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) where T : ITag {
-            IREditorDocument document = textBuffer.GetEditorDocument<IREditorDocument>();
-            EditorErrorTagger tagger = null;
-
-            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer.ToEditorBuffer(), _shell.GetService<IREditorSettings>())) {
-                tagger = textBuffer.GetService<EditorErrorTagger>();
-                tagger = tagger ?? new EditorErrorTagger(textBuffer, _taskList, _shell.Services);
+            var document = textBuffer.GetEditorDocument<IREditorDocument>();
+            if(document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer.ToEditorBuffer(), _shell.GetService<IREditorSettings>())) {
+                return textBuffer.Properties.GetOrCreateSingletonProperty(() => new EditorErrorTagger(textBuffer, _taskList, _shell.Services)) as ITagger<T>;
             }
-
-            return tagger as ITagger<T>;
+            return null;
         }
     }
 }

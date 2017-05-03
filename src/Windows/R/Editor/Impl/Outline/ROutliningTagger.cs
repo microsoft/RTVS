@@ -4,7 +4,6 @@
 using System;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Outline;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -15,13 +14,11 @@ namespace Microsoft.R.Editor.Outline {
         public ROutliningTagger(IREditorDocument document, IServiceContainer services)
             : base(document.EditorTree.TextBuffer(), new ROutlineRegionBuilder(document, services)) {
             document.Closing += OnDocumentClosing;
-            document.EditorTree.EditorBuffer.AddService(this);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
             var document = (IREditorDocument)sender;
             document.Closing -= OnDocumentClosing;
-            document.EditorTree.EditorBuffer.RemoveService(this);
         }
 
         public override OutliningRegionTag CreateTag(OutlineRegion region) => new ROutliningRegionTag(region);

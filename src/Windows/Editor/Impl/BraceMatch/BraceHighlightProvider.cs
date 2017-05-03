@@ -17,14 +17,10 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer) where T : ITag {
-            BraceHighlighter highlighter = textView.GetService<BraceHighlighter>();
-            if (highlighter == null) {
-                var document = textBuffer.GetService<IEditorDocument>();
-                if (document != null) {
-                    highlighter = new BraceHighlighter(textView, textBuffer, _shell);
-                }
-            }
-            return highlighter as ITagger<T>;
+            var document = textBuffer.GetService<IEditorDocument>();
+            return document != null
+                ? textView.Properties.GetOrCreateSingletonProperty(() => new BraceHighlighter(textView, textBuffer, _shell)) as ITagger<T>
+                : null;
         }
     }
 }

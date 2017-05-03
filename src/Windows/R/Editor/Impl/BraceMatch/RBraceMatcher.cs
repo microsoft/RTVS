@@ -22,15 +22,15 @@ namespace Microsoft.R.Editor.BraceMatch {
         }
 
         protected override IReadOnlyTextRangeCollection<RToken> GetTokens(int start, int length) {
-            RTokenizer tokenizer = new RTokenizer();
+            var tokenizer = new RTokenizer();
             ITextProvider tp = new TextProvider(TextBuffer.CurrentSnapshot);
-            IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(tp, 0, tp.Length);
+            var tokens = tokenizer.Tokenize(tp, 0, tp.Length);
 
             // In R there is [[ construct that comes as 'double square bracket' token.
             // Note that VS brace highlighter can only handle single-character braces.
             // Hence we'll massage token stream and replace double-bracket tokens but
             // a pair of square bracket tokens.
-            TextRangeCollection<RToken> updated = new TextRangeCollection<RToken>();
+            var updated = new TextRangeCollection<RToken>();
             foreach (var t in tokens) {
                 switch (t.TokenType) {
                     case RTokenType.OpenDoubleSquareBracket:
@@ -52,9 +52,7 @@ namespace Microsoft.R.Editor.BraceMatch {
         }
 
         class TokenComparer : IComparer<RTokenType> {
-            public int Compare(RTokenType x, RTokenType y) {
-                return x.CompareTo(y);
-            }
+            public int Compare(RTokenType x, RTokenType y) => x.CompareTo(y);
         }
     }
 }

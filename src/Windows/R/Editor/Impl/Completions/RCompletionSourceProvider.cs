@@ -24,8 +24,7 @@ namespace Microsoft.R.Editor.Completions {
             _shell = shell;
         }
 
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer) {
-            return new RCompletionSource(textBuffer, _shell.Services);
-        }
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
+            => textBuffer.Properties.GetOrCreateSingletonProperty(() => new RCompletionSource(textBuffer, _shell.Services));
     }
 }

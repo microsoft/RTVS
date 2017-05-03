@@ -12,11 +12,8 @@ namespace Microsoft.R.Editor.SmartIndent {
     internal sealed class SmartIndent : ISmartIndent {
         private readonly ISmartIndenter _indenter;
 
-        public static ISmartIndent FromView(ITextView textView, IREditorSettings settings)
-            => textView.GetService<ISmartIndent>() ?? new SmartIndent(textView, settings);
-
-        private SmartIndent(ITextView textView, IREditorSettings settings) {
-            _indenter = SmartIndenter.FromView(textView.ToEditorView(), settings);
+        public SmartIndent(ITextView textView, IREditorSettings settings) {
+            _indenter = new SmartIndenter(textView.ToEditorView(), settings);
         }
 
         public int? GetDesiredIndentation(ITextSnapshotLine line) => _indenter.GetDesiredIndentation(new EditorLine(line));

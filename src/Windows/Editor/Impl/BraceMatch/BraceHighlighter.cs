@@ -30,7 +30,6 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             _textView = view;
             _shell = shell;
             _idleTime = _shell.GetService<IIdleTimeService>();
-            _textView.AddService(this);
         }
 
         private IBraceMatcher BraceMatcher {
