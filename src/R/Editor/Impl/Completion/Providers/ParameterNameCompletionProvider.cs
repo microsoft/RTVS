@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
@@ -34,36 +33,36 @@ namespace Microsoft.R.Editor.Completion.Providers {
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            List<RCompletion> completions = new List<RCompletion>();
-            FunctionCall funcCall;
-            ImageSource functionGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
+            var completions = new List<RCompletion>();
+            var functionGlyph = _glyphService.GetGlyphThreadSafe(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
 
-            // Safety checks
-            if (!ShouldProvideCompletions(context, out funcCall)) {
+            // Get AST function call for the parameter completion
+            var funcCall = GetFunctionCall(context);
+            if (funcCall == null) {
                 return completions;
             }
 
             // Get collection of function signatures from documentation (parsed RD file)
-            IFunctionInfo functionInfo = GetFunctionInfo(context);
+            var functionInfo = GetFunctionInfo(context);
             if (functionInfo == null) {
                 return completions;
             }
 
             // Collect parameter names from all signatures
             IEnumerable<KeyValuePair<string, IArgumentInfo>> arguments = new Dictionary<string, IArgumentInfo>();
-            foreach (ISignatureInfo signature in functionInfo.Signatures) {
+            foreach (var signature in functionInfo.Signatures) {
                 var args = signature.Arguments.ToDictionary(x => x.Name);
                 arguments = arguments.Union(args);
             }
 
             // Add names of arguments that  are not yet specified to the completion
             // list with '=' sign so user can tell them from function names.
-            IEnumerable<string> declaredArguments = funcCall.Arguments.Where(x => x is NamedArgument).Select(x => ((NamedArgument)x).Name);
+            var declaredArguments = funcCall.Arguments.Where(x => x is NamedArgument).Select(x => ((NamedArgument)x).Name);
             var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             foreach (var arg in possibleArguments) {
-                string displayText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " =" : "=");
-                string insertionText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " = " : "=");
+                var displayText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " =" : "=");
+                var insertionText = arg.Key + (REditorSettings.FormatOptions.SpacesAroundEquals ? " = " : "=");
                 completions.Add(new RCompletion(displayText, insertionText, arg.Value.Description, functionGlyph));
             }
 
@@ -71,25 +70,25 @@ namespace Microsoft.R.Editor.Completion.Providers {
         }
         #endregion
 
-        private static bool ShouldProvideCompletions(RCompletionContext context, out FunctionCall funcCall) {
+        private static FunctionCall GetFunctionCall(RCompletionContext context) {
             // Safety checks
-            funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
+            var funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
             if (funcCall == null && context.Position > 0) {
-                // This may be the case when brace is not closed and position is at the very end.
-                // Try stepping back one character and retry. If we find function call, check that
-                // a) brace is not closed and b) position is indeed at the very end so we avoid
-                // false positive in case of func()|.
+                // This may be the case when brace is not closed and the position is at the very end.
+                // Try stepping back one character and retry. If we find the function call, check that
+                // indeed a) brace is not closed and b) position is  at the very end of the function
+                // signature in order to avoid false positive in case of func()|.
                 funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position - 1);
                 if (funcCall == null || funcCall.CloseBrace != null || context.Position != funcCall.End) {
-                    return false;
+                    return null;
                 }
-                return true;
+                return funcCall;
             }
 
             if (funcCall == null || context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
-                return false;
+                return null;
             }
-            return true;
+            return funcCall;
         }
 
         /// <summary>

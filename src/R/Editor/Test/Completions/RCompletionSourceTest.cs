@@ -298,5 +298,21 @@ aaa(a
             completionSets[0].Completions.Should().NotBeEmpty()
                 .And.Contain(c => c.DisplayText == "a =");
         }
+
+        [Test]
+        public void UserFunctionArguments02() {
+            var completionSets = new List<CompletionSet>();
+            string content =
+                @"
+aaa <- function(a, b, c) { }
+aaa(x, ";
+            RCompletionTestUtilities.GetCompletions(_editorShell, content, 2, 7, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "a =");
+        }
     }
 }
