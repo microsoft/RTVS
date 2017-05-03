@@ -70,14 +70,14 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        public async Task BeforePackagesInstalledAsync(CancellationToken ct) {
+        public Task BeforePackagesInstalledAsync(CancellationToken ct) {
             // Package is about to be installed. Stop intellisense session
             // so loaded packages are released and new one will not be locked.
             // If update is pending, cancel it.
             CancelPendingIndexUpdate();
             var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeoutCts.CancelAfter(5000);
-            await _host.StopSessionAsync(timeoutCts.Token);
+            return _host.StopSessionAsync(timeoutCts.Token);
         }
 
         public Task AfterPackagesInstalledAsync(CancellationToken ct) {

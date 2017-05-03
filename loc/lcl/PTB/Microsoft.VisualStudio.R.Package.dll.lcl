@@ -1270,12 +1270,18 @@
       <Item ItemId=";OpenCsvAppCommandAutomationHelpText" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open {0} variable in Microsoft Excel or another app registered for CSV files]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abra a variável {0} no Microsoft Excel ou outro aplicativo registrado para arquivos CSV]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";OpenCsvAppCommandAutomationName" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Export {0} variable into CSV]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Exportar variável {0} no CSV]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1346,7 +1352,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Histórico de R Plot]]></Val>
+            <Val><![CDATA[Histórico de Gráficos do R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1355,7 +1361,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Plotagem do R]]></Val>
+            <Val><![CDATA[Gráfico do R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1364,7 +1370,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - Device {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Plot do R – Dispositivo {0}]]></Val>
+            <Val><![CDATA[Gráfico do R – Dispositivo {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1373,7 +1379,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot - Device {0} - Active]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Plot do R – Dispositivo {0} – Ativo]]></Val>
+            <Val><![CDATA[Gráfico do R – Dispositivo {0} – Ativo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1382,7 +1388,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Plot]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Plotagem do R]]></Val>
+            <Val><![CDATA[Gráfico do R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1453,12 +1459,18 @@
       <Item ItemId=";RunPropertyPage_RemoteProjectPath" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Project Path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Caminho de Projeto Remoto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";RunPropertyPage_ResetReplOnRun" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[_Reset R Interactive on run]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[_Redefinir R Interativo na execução]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1474,12 +1486,18 @@
       <Item ItemId=";RunPropertyPage_TransferFilesFilter" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Files to transfer]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Arquivos para transferência]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";RunPropertyPage_TransferFilesOnRun" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[_Transfer files on run]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[_Transferir arquivos na execução]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2494,12 +2512,18 @@
       <Item ItemId=";ShowDetailCommandAutomationHelpText" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open {0} variable details in separate window]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abrir os detalhes da variável {0} em janela separada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ShowDetailCommandAutomationName" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show {0} variable details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mostrar detalhes da variável {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3331,7 +3355,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot History Context]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Plotar Contexto de Histórico]]></Val>
+              <Val><![CDATA[Contexto de Histórico de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4768,7 +4792,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Remove Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Remover Plotagem]]></Val>
+              <Val><![CDATA[Remover Gráfico]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4777,7 +4801,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Remove Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Remover Plotagem]]></Val>
+              <Val><![CDATA[&Remover Gráfico]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4789,7 +4813,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Next Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Próxima Plotagem]]></Val>
+              <Val><![CDATA[Próximo Gráfico]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4798,7 +4822,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Ne&xt Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Pr&óxima Plotagem]]></Val>
+              <Val><![CDATA[Pró&ximo Gráfico]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4810,7 +4834,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Previous Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Plotagem Anterior]]></Val>
+              <Val><![CDATA[Gráfico Anterior]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4819,7 +4843,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Pre&vious Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Plotagem Ante&rior]]></Val>
+              <Val><![CDATA[Gráfico Ante&rior]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4831,7 +4855,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Clear All Plots]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Limpar Todas as Plotagens]]></Val>
+              <Val><![CDATA[Limpar Todos os Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4840,7 +4864,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Clear &All Plots]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Limpar &Todas as Plotagens]]></Val>
+              <Val><![CDATA[Limpar &Todos os Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4957,7 +4981,7 @@
           <Str Cat="Button">
             <Val><![CDATA[New Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela Nova Plotagem]]></Val>
+              <Val><![CDATA[Nova Janela de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4966,7 +4990,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&New Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela &Nova Plotagem]]></Val>
+              <Val><![CDATA[&Nova Janela de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4978,7 +5002,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Activate Plot Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela Ativar Plotagem]]></Val>
+              <Val><![CDATA[Ativar Janela de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4987,7 +5011,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Activate Plot Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela &Ativar Plotagem]]></Val>
+              <Val><![CDATA[&Ativar Janela de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4999,7 +5023,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Plot History Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela de histórico de plotagem]]></Val>
+              <Val><![CDATA[Janela de Histórico de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5008,7 +5032,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Plot &History Window]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela Plotar &Histórico]]></Val>
+              <Val><![CDATA[Janela de &Histórico de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5083,7 +5107,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Plot]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Mostrar Plotagem]]></Val>
+              <Val><![CDATA[Mostrar Gráfico]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5092,7 +5116,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Show &Plot]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Mostrar &Plotagem]]></Val>
+              <Val><![CDATA[Mostrar &Gráfico]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5104,7 +5128,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Hide All Plot Windows]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Ocultar Todas as Janelas de Plotagem]]></Val>
+              <Val><![CDATA[Ocultar Todas as Janelas de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5113,7 +5137,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Hide All Plot Windows]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Ocultar Todas as Janelas de Plotagem]]></Val>
+              <Val><![CDATA[&Ocultar Todas as Janelas de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5125,7 +5149,7 @@
           <Str Cat="Button">
             <Val><![CDATA[R Plot - Device X]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Plot do R – Dispositivo X]]></Val>
+              <Val><![CDATA[Gráfico do R – Dispositivo X]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5314,7 +5338,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela de Plotagem]]></Val>
+              <Val><![CDATA[Janela de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5326,7 +5350,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[Plot History Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[Janela de histórico de plotagem]]></Val>
+              <Val><![CDATA[Janela de Histórico de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5374,7 +5398,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[&Plots]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Plotagens]]></Val>
+              <Val><![CDATA[&Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5386,7 +5410,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Plot &Windows]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Janelas de Plotagem]]></Val>
+              <Val><![CDATA[&Janelas de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5533,7 +5557,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Plots]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Plotagens]]></Val>
+              <Val><![CDATA[Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5542,7 +5566,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show Plot Windows]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Mostrar Janelas de Plotagem]]></Val>
+              <Val><![CDATA[Mostrar Janelas de Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5551,7 +5575,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Plots]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Plotagens]]></Val>
+              <Val><![CDATA[&Gráficos]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

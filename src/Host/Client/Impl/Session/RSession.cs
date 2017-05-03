@@ -59,6 +59,7 @@ namespace Microsoft.R.Host.Client.Session {
         private volatile bool _delayedMutatedOnReadConsole;
         private volatile IRSessionCallback _callback;
         private volatile RHostStartupInfo _startupInfo;
+        private readonly CountdownDisposable _readUserInputReentrancyCounter = new CountdownDisposable();
 
         public int Id { get; }
         public string Name { get; }
@@ -68,7 +69,7 @@ namespace Microsoft.R.Host.Client.Session {
         public Task HostStarted => _hostStartedTcs.Task;
         public bool IsRemote => BrokerClient.IsRemote;
         public bool IsProcessing { get; private set; }
-        public bool IsReadingUserInput { get; private set; }
+        public bool IsReadingUserInput => _readUserInputReentrancyCounter.Count > 0;
 
         public bool RestartOnBrokerSwitch { get; set; }
 
@@ -554,11 +555,8 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 
             var callback = _callback;
             if (!addToHistory && callback != null) {
-                try {
-                    IsReadingUserInput = true;
+                using (_readUserInputReentrancyCounter.Increment()) {
                     return await callback.ReadUserInput(prompt, len, ct);
-                } finally {
-                    IsReadingUserInput = false;
                 }
             }
 
