@@ -73,7 +73,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     if (_shell.IsUnitTestEnvironment) {
                         service = RPackage.Current != null ? RPackage.Current.GetService(type) as T : null;
                     } else {
-                        _shell.AssertIsOnMainThread();
                         service = VsPackage.GetGlobalService(type) as T;
                     }
                 }

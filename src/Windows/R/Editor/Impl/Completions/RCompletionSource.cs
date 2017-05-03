@@ -48,7 +48,7 @@ namespace Microsoft.R.Editor.Completions {
             if (!doc.EditorTree.IsReady) {
                 var textView = session.TextView;
                 doc.EditorTree.InvokeWhenReady((o) => {
-                    var controller = textView.GetService<RCompletionController>();
+                    var controller = RCompletionController.FromTextView(textView);
                     if (controller != null) {
                         controller.ShowCompletion(autoShownCompletion: true);
                         controller.FilterCompletionSession();

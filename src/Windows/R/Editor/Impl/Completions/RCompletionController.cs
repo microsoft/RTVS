@@ -32,12 +32,6 @@ namespace Microsoft.R.Editor.Completions {
             : base(textView, subjectBuffers, services) {
             _textBuffer = subjectBuffers[0];
             _settings = services.GetService<IREditorSettings>();
-            TextView.AddService(this);
-        }
-
-        public override void Detach(ITextView textView) {
-            TextView.RemoveService(this);
-            base.Detach(textView);
         }
 
         /// <summary>
@@ -55,14 +49,11 @@ namespace Microsoft.R.Editor.Completions {
         /// </summary>
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
-        public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services) {
-            var completionController = textView.GetService<RCompletionController>();
-            completionController = completionController ?? new RCompletionController(textView, subjectBuffers, services);
-            return completionController;
-        }
+        public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services)
+            => textView.Properties.GetOrCreateSingletonProperty(() => new RCompletionController(textView, subjectBuffers, services));
 
         public static RCompletionController FromTextView(ITextView textView)
-            => textView.GetService<RCompletionController>();
+            => textView.Properties.TryGetProperty(typeof(RCompletionController), out RCompletionController controller) ? controller : null;
 
         protected override bool AutoCompletionEnabled => _settings.CompletionEnabled;
         protected override bool AutoSignatureHelpEnabled => _settings.SignatureHelpEnabled;
