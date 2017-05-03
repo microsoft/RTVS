@@ -44,11 +44,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(compositionCatalog)
                 .AddService(new VsMainThread())
                 .AddService(new VsTaskService())
-                .AddService(_idleTimeService)
                 .AddService(new VsUIServices(this))
                 .AddService(new SecurityService(this))
                 .AddService(loggingPermissions)
-                .AddService(new Logger(_application.Name, Path.GetTempPath(), loggingPermissions))
                 .AddService(platformServices)
                 .AddService(settings)
                 .AddService(new REditorSettings(new LanguageSettingsStorage(this, RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, new string[] { RPackage.ProductName })))
@@ -63,11 +61,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddEditorServices();
-            // TODO: add more
-
+                // TODO: add more
 
             _application = new VsApplication(this);
-            _services.AddService(_application);
+
+            _services
+                .AddService(_application)
+                .AddService(new Logger(_application.Name, Path.GetTempPath(), loggingPermissions));
 
             settings.LoadSettings();
         }

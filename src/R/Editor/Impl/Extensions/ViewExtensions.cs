@@ -2,10 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor {
     public static class ViewExtensions {
@@ -154,5 +159,30 @@ namespace Microsoft.R.Editor {
         /// </summary>
         public static bool IsRepl(this IEditorView editorView)
             => editorView.EditorBuffer.ContentType.EqualsIgnoreCase(_replContentTypeName);
+
+        /// <summary>
+        /// Determines if current caret position is in the same function
+        /// argument list as before or is it a different one and signature 
+        /// help session should be dismissed and re-triggered. This is helpful
+        /// when user types nested function calls such as 'a(b(c(...), d(...)))'
+        /// </summary>
+        public static bool IsSameSignatureContext(this IEditorView editorView, IEditorBuffer editorBuffer, IServiceContainer services) {
+            var broker = services.GetService<IViewCompletionBroker>();
+            var sessions = broker.GetSessions(editorView);
+            Debug.Assert(sessions.Count < 2);
+            if (sessions.Count == 1) {
+                sessions[0].Properties.TryGetProperty("functionInfo", out IFunctionInfo sessionFunctionInfo);
+                if (sessionFunctionInfo != null) {
+                    try {
+                        var document = editorBuffer.GetEditorDocument<IREditorDocument>();
+                        document.EditorTree.EnsureTreeReady();
+
+                        var parametersInfo = document.EditorTree.AstRoot.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, editorView.Caret.Position.Position);
+                        return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
+                    } catch (ArgumentException) { }
+                }
+            }
+            return false;
+        }
     }
 }

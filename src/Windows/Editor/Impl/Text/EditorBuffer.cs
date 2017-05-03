@@ -69,19 +69,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <typeparam name="T">Type of the document to locate</typeparam>
         public T GetEditorDocument<T>() where T : class, IEditorDocument {
             var document = Services.GetService<T>();
-            if (document == null) {
-                document = FindInProjectedBuffers<T>(_textBuffer);
-                if (document == null) {
-                    var viewData = TextViewConnectionListener.GetTextViewDataForBuffer(_textBuffer);
-                    if (viewData != null && viewData.LastActiveView != null) {
-                        var controller = ViewController.FromTextView(viewData.LastActiveView);
-                        if (controller != null && controller.TextBuffer != null) {
-                            document = controller.TextBuffer.GetService<T>();
-                        }
-                    }
-                }
-            }
-            return document;
+            return document ?? _textBuffer.GetEditorDocument<T>();
         }
 
         public void Insert(int position, string text) => _textBuffer.Insert(position, text);
@@ -109,11 +97,6 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
         #endregion
-
-        private T FindInProjectedBuffers<T>(ITextBuffer textBuffer) where T : class, IEditorDocument {
-            var pb = textBuffer as IProjectionBuffer;
-            return pb?.SourceBuffers.Select((tb) => tb.GetService<T>()).FirstOrDefault(x => x != null);
-        }
 
         private void OnTextBufferChangedHighPriority(object sender, TextContentChangedEventArgs e) {
             var changes = e.ConvertToRelative();

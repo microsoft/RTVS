@@ -8,6 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void ConfigureIdleSource() {
             _idleTimeService = new VsIdleTimeService(_services);
             _idleTimeService.ApplicationClosing += (s, e) => _application.FireTerminating();
+            _services.AddService(_idleTimeService);
         }
     }
 }

@@ -19,20 +19,19 @@ namespace Microsoft.R.Editor.Signatures {
     /// </summary>
     public sealed class RFunctionSignatureEngine : IRFunctionSignatureEngine {
         private readonly IServiceContainer _services;
+        private readonly IFunctionIndex _functionIndex;
 
         public RFunctionSignatureEngine(IServiceContainer services) {
             _services = services;
+            _functionIndex = _services.GetService<IFunctionIndex>();
         }
 
         #region IFunctionSignatureEngine
-        public async Task<IEnumerable<IRFunctionSignatureHelp>> GetSignaturesAsync(IRIntellisenseContext ic) {
-            Check.Argument(nameof(ic), () => ic is IRIntellisenseContext);
-
-            if (!_services.GetService<IREditorSettings>().SignatureHelpEnabled || ic.Session.IsDismissed) {
+        public async Task<IEnumerable<IRFunctionSignatureHelp>> GetSignaturesAsync(IRIntellisenseContext context) {
+            if (!_services.GetService<IREditorSettings>().SignatureHelpEnabled || context.Session.IsDismissed) {
                 return Enumerable.Empty<IRFunctionSignatureHelp>();
             }
 
-            var context = (IRIntellisenseContext)ic;
             var snapshot = context.EditorBuffer.CurrentSnapshot;
             var position = context.Position;
             // Retrieve parameter positions from the current text buffer snapshot
@@ -57,9 +56,8 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             if (functionInfo == null) {
-                var functionIndex = _services.GetService<IFunctionIndex>();
                 // Get collection of function signatures from documentation (parsed RD file)
-                functionInfo = await functionIndex.GetFunctionInfoAsync(signatureInfo.FunctionName, packageName);
+                functionInfo = await _functionIndex.GetFunctionInfoAsync(signatureInfo.FunctionName, packageName);
             }
 
             var signatures = new List<IRFunctionSignatureHelp>();

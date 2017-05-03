@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.Controllers.Views;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -46,7 +47,25 @@ namespace Microsoft.Languages.Editor.Text {
         /// Attempts to locate associated editor document. Implementation depends on the platform.
         /// </summary>
         /// <typeparam name="T">Type of the document to locate</typeparam>
-        public static T GetEditorDocument<T>(this ITextBuffer textBuffer) where T : class, IEditorDocument => textBuffer.ToEditorBuffer()?.GetEditorDocument<T>();
+        public static T GetEditorDocument<T>(this ITextBuffer textBuffer) where T : class, IEditorDocument {
+            var editorBuffer = textBuffer.ToEditorBuffer();
+            if(editorBuffer != null) {
+                return editorBuffer.GetEditorDocument<T>();
+            }
+            // May be top-level projection buffer such as REPL or markdown
+            var pb = textBuffer as IProjectionBuffer;
+            var document = pb?.SourceBuffers.Select((tb) => tb.GetService<T>()).FirstOrDefault(x => x != null);
+            if (document == null) {
+                var viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
+                if (viewData != null && viewData.LastActiveView != null) {
+                    var controller = ViewController.FromTextView(viewData.LastActiveView);
+                    if (controller != null && controller.TextBuffer != null) {
+                        document = controller.TextBuffer.GetService<T>();
+                    }
+                }
+            }
+            return document;
+        }
 
         /// <summary>
         /// Retrieves last active view, if any, for the text buffer instance.

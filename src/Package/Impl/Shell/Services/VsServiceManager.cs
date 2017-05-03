@@ -50,7 +50,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public override T GetService<T>(Type type = null) {
             type = type ?? typeof(T);
 
-            if(type == typeof(ExportProvider)) {
+            if (type == typeof(ICoreShell)) {
+                return _shell as T;
+            }
+            if (type == typeof(ExportProvider)) {
                 return ExportProvider as T;
             }
             if (type == typeof(ICompositionService)) {

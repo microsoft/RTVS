@@ -8,7 +8,6 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Completions;
-using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completions;
@@ -71,7 +70,8 @@ namespace Microsoft.R.Editor.Signatures {
                 return true;
             }
 
-            if (callback != null) {
+            var ev = session.TextView.ToEditorView();
+            if (callback != null && !ev.IsSameSignatureContext(_textBuffer.ToEditorBuffer(), _services)) {
                 var editorBuffer = _textBuffer.ToEditorBuffer();
                 var eis = new EditorIntellisenseSession(session, _services);
                 var position = session.GetTriggerPoint(_textBuffer).GetCurrentPosition();

@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
@@ -160,7 +158,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         private void OnCaretPositionChanged(object sender, ViewCaretPositionChangedEventArgs e) {
             if (_view != null) {
-                if (IsSameSignatureContext(_view, _editorBuffer, _session.Services)) {
+                if (_view.IsSameSignatureContext(_editorBuffer, _session.Services)) {
                     UpdateCurrentParameter();
                 } else {
                     _completionBroker.DismissSignatureSession(_view);
@@ -223,31 +221,6 @@ namespace Microsoft.R.Editor.Signatures {
             if (_view != null) {
                 _view.Caret.PositionChanged -= OnCaretPositionChanged;
             }
-        }
-
-        /// <summary>
-        /// Determines if current caret position is in the same function
-        /// argument list as before or is it a different one and signature 
-        /// help session should be dismissed and re-triggered. This is helpful
-        /// when user types nested function calls such as 'a(b(c(...), d(...)))'
-        /// </summary>
-        public static bool IsSameSignatureContext(IEditorView editorView, IEditorBuffer editorBuffer, IServiceContainer services) {
-            var broker = services.GetService<IViewCompletionBroker>();
-            var sessions = broker.GetSessions(editorView);
-            Debug.Assert(sessions.Count < 2);
-            if (sessions.Count == 1) {
-                sessions[0].Properties.TryGetProperty("functionInfo", out IFunctionInfo sessionFunctionInfo);
-                if (sessionFunctionInfo != null) {
-                    try {
-                        var document = editorBuffer.GetEditorDocument<IREditorDocument>();
-                        document.EditorTree.EnsureTreeReady();
-
-                        var parametersInfo = document.EditorTree.AstRoot.GetSignatureInfoFromBuffer(editorBuffer.CurrentSnapshot, editorView.Caret.Position.Position);
-                        return parametersInfo != null && parametersInfo.FunctionName == sessionFunctionInfo.Name;
-                    } catch (ArgumentException) { }
-                }
-            }
-            return false;
         }
     }
 }

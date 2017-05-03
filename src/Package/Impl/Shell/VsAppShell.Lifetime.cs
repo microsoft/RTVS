@@ -26,10 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
-            CheckVsStarted();
-
             ConfigureServices();
             ConfigureIdleSource();
+            CheckVsStarted();
         }
 
         private void CheckVsStarted() {
