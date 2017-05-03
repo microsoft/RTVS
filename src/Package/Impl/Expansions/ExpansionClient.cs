@@ -54,9 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         internal IVsExpansionSession Session => _expansionSession;
 
-        public bool IsEditingExpansion() {
-            return _expansionSession != null;
-        }
+        public bool IsEditingExpansion() => _expansionSession != null;
 
         internal bool IsCaretInsideSnippetFields() {
             if (!IsEditingExpansion() || TextView.Caret.InVirtualSpace) {
@@ -75,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             if ((_expansionManager != null) && (TextView != null)) {
                 // Set the allowable snippet types and prompt text according to the current command.
                 string[] snippetTypes = null;
-                string promptText = "";
+                var promptText = "";
                 if (invokationCommand == (uint)VSConstants.VSStd2KCmdID.INSERTSNIPPET) {
                     snippetTypes = AllStandardSnippetTypes;
                     promptText = Resources.InsertSnippet;
@@ -101,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int GoToNextExpansionField() {
-            int hr = VSConstants.E_FAIL;
+            var hr = VSConstants.E_FAIL;
             if (!TextView.IsStatementCompletionWindowActive(_services)) {
                 hr = Session.GoToNextExpansionField(0);
                 if (VSConstants.S_OK != hr) {
@@ -113,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int GoToPreviousExpansionField() {
-            int hr = VSConstants.E_FAIL;
+            var hr = VSConstants.E_FAIL;
             if (!TextView.IsStatementCompletionWindowActive(_services)) {
                 hr = Session.GoToPreviousExpansionField();
                 if (VSConstants.S_OK != hr) {
@@ -130,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         /// Inserts a snippet based on a shortcut string.
         /// </summary>
         public int StartSnippetInsertion(out bool snippetInserted) {
-            int hr = VSConstants.E_FAIL;
+            var hr = VSConstants.E_FAIL;
             snippetInserted = false;
 
             // Get the text at the current caret position and
@@ -234,20 +232,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return TextView.TextBuffer;
         }
 
-        private Span? SpanFromViewSpan(Span span) {
-            var textBuffer = GetTargetBuffer();
-            if (TextView.IsRepl()) {
-                // Map it down to R buffer
-                var start = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.Start));
-                var end = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.End));
-                if (!start.HasValue || !end.HasValue) {
-                    return null;
-                }
-                return Span.FromBounds(start.Value, end.Value);
-            }
-            return span;
-        }
-
         /// <summary>
         /// Converts view span to TextSpan structure in the R buffer.
         /// TextSpan structure is used in legacy IVs* interfaces
@@ -305,22 +289,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             }
         }
 
-        private int GetCurrentFieldIndex() {
-            var rPosition = TextView.MapDownToR(TextView.Caret.Position.BufferPosition);
-            var markers = GetFieldMarkers();
-            var index = markers.GetItemAtPosition(rPosition.Value);
-            if (index < 0) {
-                index = markers.GetItemAtPosition(rPosition.Value);
-            }
-            return index;
-        }
-
         private TextRangeCollection<Marker> GetFieldMarkers() {
             var markers = new List<Marker>();
 
-            TextSpan[] pts = new TextSpan[1];
+            var pts = new TextSpan[1];
             ErrorHandler.ThrowOnFailure(Session.GetSnippetSpan(pts));
-            TextSpan snippetSpan = pts[0];
+            var snippetSpan = pts[0];
 
             // Convert text span to stream positions
             int snippetStart, snippetEnd;

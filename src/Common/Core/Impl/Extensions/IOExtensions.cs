@@ -21,9 +21,7 @@ namespace Microsoft.Common.Core {
             return path.StartsWithIgnoreCase(bp) ? path.Substring(bp.Length) : path;
         }
 
-        public static bool ExistsOnPath(string fileName) {
-            return GetFullPath(fileName) != null;
-        }
+        public static bool ExistsOnPath(string fileName) => GetFullPath(fileName) != null;
 
         public static string GetFullPath(string fileName) {
             if (File.Exists(fileName)) {
@@ -31,7 +29,7 @@ namespace Microsoft.Common.Core {
             }
 
             var values = Environment.GetEnvironmentVariable("PATH");
-            var paths = values.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var paths = values.Split(new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var path in paths) {
                 var fullPath = Path.Combine(path, fileName);
                 if (File.Exists(fullPath)) {
@@ -45,14 +43,13 @@ namespace Microsoft.Common.Core {
         /// Recursively enumerate sub-directories and gets all files for the given <paramref name="basedir"/>
         /// </summary>
         public static IEnumerable<IFileSystemInfo> GetAllFiles(this IDirectoryInfo basedir) {
-            List<IFileSystemInfo> files = new List<IFileSystemInfo>();
-            Queue<IDirectoryInfo> dirs = new Queue<IDirectoryInfo>();
+            var files = new List<IFileSystemInfo>();
+            var dirs = new Queue<IDirectoryInfo>();
             dirs.Enqueue(basedir);
             while (dirs.Count > 0) {
                 var dir = dirs.Dequeue();
                 foreach (var info in dir.EnumerateFileSystemInfos()) {
-                    var subdir = info as IDirectoryInfo;
-                    if (subdir != null) {
+                    if (info is IDirectoryInfo subdir) {
                         dirs.Enqueue(subdir);
                     } else {
                         files.Add(info);
@@ -113,41 +110,10 @@ namespace Microsoft.Common.Core {
                 if (path[path.Length - 1] == Path.DirectorySeparatorChar || path[path.Length - 1] == Path.AltDirectorySeparatorChar) {
                     return path;
                 }
-                char slash = path.IndexOf(Path.AltDirectorySeparatorChar) >= 0 ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar;
+                var slash = path.IndexOf(Path.AltDirectorySeparatorChar) >= 0 ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar;
                 return path + slash;
             }
             return Path.DirectorySeparatorChar.ToString();
-        }
-
-        public static bool HasReadPermissions(this string path) {
-            try {
-                if (Directory.Exists(path)) {
-                    Directory.GetFiles(path);
-                    return true;
-                }
-            } catch (IOException) { } catch (UnauthorizedAccessException) { }
-            return false;
-        }
-
-        public static bool HasWritePermission(this string path) {
-            var accessControlList = new DirectorySecurity(path, AccessControlSections.Access | AccessControlSections.Owner | AccessControlSections.Group);
-            var accessRules = accessControlList.GetAccessRules(true, true, typeof(SecurityIdentifier));
-
-            bool allowWrite = false;
-            bool denyWrite = false;
-            var currentUser = WindowsIdentity.GetCurrent();
-            var currentPrincipal = new WindowsPrincipal(currentUser);
-
-            foreach (FileSystemAccessRule rule in accessRules) {
-                if ((FileSystemRights.Write & rule.FileSystemRights) == FileSystemRights.Write) {
-                    if (currentUser.User.Equals(rule.IdentityReference) ||
-                        currentPrincipal.IsInRole((SecurityIdentifier)rule.IdentityReference)) {
-                        allowWrite = rule.AccessControlType == AccessControlType.Allow;
-                        denyWrite = rule.AccessControlType == AccessControlType.Deny;
-                    }
-                }
-            }
-            return allowWrite && !denyWrite;
         }
     }
 }

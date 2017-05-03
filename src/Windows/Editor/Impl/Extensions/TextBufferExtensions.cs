@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controllers;
@@ -49,7 +48,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <typeparam name="T">Type of the document to locate</typeparam>
         public static T GetEditorDocument<T>(this ITextBuffer textBuffer) where T : class, IEditorDocument {
             var editorBuffer = textBuffer.ToEditorBuffer();
-            if(editorBuffer != null) {
+            if (editorBuffer != null) {
                 return editorBuffer.GetEditorDocument<T>();
             }
             // May be top-level projection buffer such as REPL or markdown
@@ -57,7 +56,7 @@ namespace Microsoft.Languages.Editor.Text {
             var document = pb?.SourceBuffers.Select((tb) => tb.GetService<T>()).FirstOrDefault(x => x != null);
             if (document == null) {
                 var viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
-                if (viewData != null && viewData.LastActiveView != null) {
+                if (viewData?.LastActiveView != null) {
                     var controller = ViewController.FromTextView(viewData.LastActiveView);
                     if (controller != null && controller.TextBuffer != null) {
                         document = controller.TextBuffer.GetService<T>();
@@ -81,13 +80,11 @@ namespace Microsoft.Languages.Editor.Text {
         }
 
         public static IEnumerable<ITextBuffer> GetContributingBuffers(this ITextBuffer textBuffer) {
-            List<ITextBuffer> allBuffers = new List<ITextBuffer>();
+            var allBuffers = new List<ITextBuffer> { textBuffer };
 
-            allBuffers.Add(textBuffer);
-            for (int i = 0; i < allBuffers.Count; i++) {
-                var currentBuffer = allBuffers[i] as IProjectionBuffer;
-                if (currentBuffer != null) {
-                    foreach (ITextBuffer sourceBuffer in currentBuffer.SourceBuffers) {
+            for (var i = 0; i < allBuffers.Count; i++) {
+                if (allBuffers[i] is IProjectionBuffer currentBuffer) {
+                    foreach (var sourceBuffer in currentBuffer.SourceBuffers) {
                         if (!allBuffers.Contains(sourceBuffer)) {
                             allBuffers.Add(sourceBuffer);
                         }
@@ -103,9 +100,9 @@ namespace Microsoft.Languages.Editor.Text {
         /// Not all text buffers have files associated with them,
         /// </summary>
         public static string GetFileName(this ITextBuffer textBuffer) {
-            string path = string.Empty;
-            ITextDocument document = textBuffer.GetTextDocument();
-            if (document != null && document.FilePath != null) {
+            var path = string.Empty;
+            var document = textBuffer.GetTextDocument();
+            if (document?.FilePath != null) {
                 path = document.FilePath;
             }
             return path;
@@ -115,12 +112,10 @@ namespace Microsoft.Languages.Editor.Text {
             var searchBuffers = textBuffer.GetContributingBuffers();
             return searchBuffers
                 .Select(buffer => {
-                    ITextDocument document = null;
-                    buffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
+                    buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
                     return document;
                 })
-                .Where(d => d != null)
-                .FirstOrDefault();
+                .FirstOrDefault(d => d != null);
         }
 
         /// <summary>
@@ -170,19 +165,15 @@ namespace Microsoft.Languages.Editor.Text {
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
             if (shell != null) {
                 var textDocumentFactoryService = shell.GetService<ITextDocumentFactoryService>();
-                ITextDocument textDocument;
-
-                if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument)) {
-                    EventHandler<TextDocumentEventArgs> onDocumentDisposed = null;
-                    onDocumentDisposed = (object sender, TextDocumentEventArgs eventArgs) => {
+                if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out var textDocument)) {
+                    void OnDocumentDisposed(object sender, TextDocumentEventArgs eventArgs)
+                    {
                         if (eventArgs.TextDocument == textDocument) {
-                            textDocumentFactoryService.TextDocumentDisposed -= onDocumentDisposed;
-
+                            textDocumentFactoryService.TextDocumentDisposed -= OnDocumentDisposed;
                             callback(textBuffer, shell);
                         }
-                    };
-
-                    textDocumentFactoryService.TextDocumentDisposed += onDocumentDisposed;
+                    }
+                    textDocumentFactoryService.TextDocumentDisposed += OnDocumentDisposed;
                 }
             }
         }
@@ -198,15 +189,15 @@ namespace Microsoft.Languages.Editor.Text {
                 return false;
             }
 
-            int newEnd = Int32.MinValue;
-            int position = Int32.MaxValue;
-            int deltaLen = 0;
+            var newEnd = Int32.MinValue;
+            var position = Int32.MaxValue;
+            var deltaLen = 0;
             while (oldVersion != newVersion) {
                 var changes = oldVersion.Changes;
                 if (changes.Count > 0) {
                     var firstChange = changes[0];
                     var lastChange = changes[changes.Count - 1];
-                    int changeDeltaLen = lastChange.NewEnd - lastChange.OldEnd;
+                    var changeDeltaLen = lastChange.NewEnd - lastChange.OldEnd;
 
                     deltaLen += changeDeltaLen;
 
@@ -226,7 +217,7 @@ namespace Microsoft.Languages.Editor.Text {
                 return false;
             }
 
-            int oldEnd = newEnd - deltaLen;
+            var oldEnd = newEnd - deltaLen;
             oldSpan = Span.FromBounds(position, oldEnd);
             newSpan = Span.FromBounds(position, newEnd);
 
@@ -266,10 +257,9 @@ namespace Microsoft.Languages.Editor.Text {
         public static SnapshotPoint? MapUp(this ITextBuffer viewBuffer, SnapshotPoint sourcePoint, string contentTypeName) {
             if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
                 return sourcePoint;
-            } else {
-                var bg = viewBuffer.GetBufferGraph();
-                return bg?.MapUpToBuffer(sourcePoint, PointTrackingMode.Positive, PositionAffinity.Successor, viewBuffer);
             }
+            var bg = viewBuffer.GetBufferGraph();
+            return bg?.MapUpToBuffer(sourcePoint, PointTrackingMode.Positive, PositionAffinity.Successor, viewBuffer);
         }
 
         /// <summary>
@@ -280,12 +270,10 @@ namespace Microsoft.Languages.Editor.Text {
         public static SnapshotSpan? MapUp(this ITextBuffer viewBuffer, SnapshotSpan sourceSpan, string contentTypeName) {
             if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
                 return new SnapshotSpan(viewBuffer.CurrentSnapshot, sourceSpan);
-            } else {
-                var bg = viewBuffer.GetBufferGraph();
-                var sourceBuffer = (viewBuffer as IProjectionBuffer)?.SourceBuffers.FirstOrDefault(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName));
-                var spans = bg?.MapUpToBuffer(sourceSpan, SpanTrackingMode.EdgePositive, viewBuffer);
-                return spans?.FirstOrDefault();
             }
+            var bg = viewBuffer.GetBufferGraph();
+            var spans = bg?.MapUpToBuffer(sourceSpan, SpanTrackingMode.EdgePositive, viewBuffer);
+            return spans?.FirstOrDefault();
         }
 
         /// <summary>

@@ -5,11 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
-using Microsoft.Languages.Editor.Signatures;
 using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Signatures {

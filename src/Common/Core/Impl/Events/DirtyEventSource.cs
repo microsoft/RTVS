@@ -15,9 +15,7 @@ namespace Microsoft.Common.Core.Events {
             _source = source;
         }
 
-        public void Reset() {
-            Interlocked.Exchange(ref _dirty, 0);
-        }
+        public void Reset() => Interlocked.Exchange(ref _dirty, 0);
 
         public void FireOnce() {
             if (Interlocked.Exchange(ref _dirty, 1) == 0) {

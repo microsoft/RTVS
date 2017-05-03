@@ -22,15 +22,11 @@ namespace Microsoft.Common.Core.IO {
         public FileAttributes Attributes => _directoryInfo.Attributes;
         public IDirectoryInfo Parent => _directoryInfo.Parent != null ? new DirectoryInfoProxy(_directoryInfo.Parent) : null;
 
-        public void Delete() {
-            _directoryInfo.Delete();
-        }
+        public void Delete() => _directoryInfo.Delete();
 
-        public IEnumerable<IFileSystemInfo> EnumerateFileSystemInfos() {
-            return _directoryInfo
+        public IEnumerable<IFileSystemInfo> EnumerateFileSystemInfos() => _directoryInfo
                 .EnumerateFileSystemInfos()
                 .Select(CreateFileSystemInfoProxy);
-        }
 
         private static IFileSystemInfo CreateFileSystemInfoProxy(FileSystemInfo fileSystemInfo) {
             var directoryInfo = fileSystemInfo as DirectoryInfo;

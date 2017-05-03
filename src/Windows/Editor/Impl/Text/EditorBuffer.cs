@@ -2,16 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controllers;
-using Microsoft.Languages.Editor.Controllers.Views;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     /// <summary>

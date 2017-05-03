@@ -40,22 +40,16 @@ namespace Microsoft.Common.Core.UI.Commands {
         }
 
         #region ICommand
-        public virtual bool NeedCheckout(Guid group, int id) {
-            return _needCheckout;
-        }
+        public virtual bool NeedCheckout(Guid group, int id) => _needCheckout;
 
         public virtual IList<CommandId> CommandIds {
             get { return _commandIds; }
         }
 
-        public virtual CommandStatus Status(Guid group, int id) {
-            return CommandStatus.NotSupported;
-        }
+        public virtual CommandStatus Status(Guid group, int id) => CommandStatus.NotSupported;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
-        public virtual CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            return CommandResult.NotSupported;
-        }
+        public virtual CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) => CommandResult.NotSupported;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#")]
         public virtual void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {

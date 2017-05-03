@@ -197,8 +197,7 @@ namespace Microsoft.R.Editor.Completions {
                             var endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
                             var showCompletion = endOfIdentifier && _settings.ShowCompletionOnTab;
                             if (!showCompletion) {
-                                string directory;
-                                showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
+                                showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out string directory);
                             }
                             if (showCompletion) {
                                 ShowCompletion(autoShownCompletion: false);

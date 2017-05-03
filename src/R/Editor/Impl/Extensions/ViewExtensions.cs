@@ -51,7 +51,7 @@ namespace Microsoft.R.Editor {
             if (!view.Caret.InVirtualSpace) {
                 var position = view.Caret.Position;
                 var line = position.GetContainingLine();
-                tokenTypeCheck = tokenTypeCheck ?? new Func<RTokenType, bool>((x) => x == RTokenType.Identifier);
+                tokenTypeCheck = tokenTypeCheck ?? (x => x == RTokenType.Identifier);
                 if (position.Position > line.Start) {
                     return GetItemAtPosition(line, position.Position - 1, tokenTypeCheck, out span);
                 }
@@ -109,7 +109,7 @@ namespace Microsoft.R.Editor {
 
             // For performance reasons we won't be using AST here
             // since during completion it is most probably damaged.
-            string lineText = line.GetText();
+            var lineText = line.GetText();
             var tokenizer = new RTokenizer();
             var tokens = tokenizer.Tokenize(lineText);
 

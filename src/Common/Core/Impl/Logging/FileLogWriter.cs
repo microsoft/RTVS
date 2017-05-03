@@ -34,9 +34,7 @@ namespace Microsoft.Common.Core.Logging {
 #endif
         }
 
-        private void OnTimer(object state) {
-            StartWritingToFile();
-        }
+        private void OnTimer(object state) => StartWritingToFile();
 #if !NETSTANDARD1_6
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
             WriteToFileAsync().Wait(_maxTimeout);
@@ -88,9 +86,7 @@ namespace Microsoft.Common.Core.Logging {
             }
         }
 
-        public void Flush() {
-            WriteToFileAsync().Wait(_maxTimeout);
-        }
+        public void Flush() => WriteToFileAsync().Wait(_maxTimeout);
 
         private string GetStringToWrite(MessageCategory category, string message) {
             var categoryString = GetCategoryString(category);
@@ -105,13 +101,11 @@ namespace Microsoft.Common.Core.Logging {
             return string.Concat(lines);
         }
 
-        public static FileLogWriter InFolder(string folder, string fileName, int maxMessagesCount = 20, int autoFlushTimeout = 5000) {
-            return _writers.GetOrAdd(fileName, _ => {
-                Directory.CreateDirectory(folder);
-                var path = Path.Combine(folder, Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
-                return new FileLogWriter(path, maxMessagesCount, autoFlushTimeout);
-            });
-        }
+        public static FileLogWriter InFolder(string folder, string fileName, int maxMessagesCount = 20, int autoFlushTimeout = 5000) => _writers.GetOrAdd(fileName, _ => {
+            Directory.CreateDirectory(folder);
+            var path = Path.Combine(folder, Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
+            return new FileLogWriter(path, maxMessagesCount, autoFlushTimeout);
+        });
 
         private static string GetCategoryString(MessageCategory category) {
             switch (category) {

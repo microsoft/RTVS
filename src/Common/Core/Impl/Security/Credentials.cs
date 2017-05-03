@@ -18,12 +18,6 @@ namespace Microsoft.Common.Core.Security {
             return creds;
         }
 
-        public NetworkCredential GetCredential(Uri uri, string authType) {
-#if NETSTANDARD1_6
-            return new NetworkCredential(UserName, Password.ToUnsecureString());
-#else
-            return new NetworkCredential(UserName, Password);
-#endif            
-        }
+        public NetworkCredential GetCredential(Uri uri, string authType) => new NetworkCredential(UserName, Password.ToUnsecureString());
     }
 }
