@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Test.Utility;
@@ -299,20 +300,32 @@ aaa(a
                 .And.Contain(c => c.DisplayText == "a =");
         }
 
-        [Test]
-        public void UserFunctionArguments02() {
-            var completionSets = new List<CompletionSet>();
-            string content =
-                @"
+        [CompositeTest]
+        [InlineData(
+            @"
 aaa <- function(a, b, c) { }
-aaa(x, ";
-            RCompletionTestUtilities.GetCompletions(_editorShell, content, 2, 7, completionSets);
+aaa(x, ", "a =")]
+        [InlineData(
+            @"
+aaa <- function(a, b, c) { }
+aaa(x, aaa(y,", "a =")]
+        [InlineData(
+            @"
+aaa <- function(a, b, c) { }
+aaa(x, (1+2,", "a =")]
+        [InlineData(
+            @"
+aaa <- function(a, b, c) { } bbb <- function(x, y, z) { }
+aaa(x, bbb(y,", "x =")]
+        public void UserFunctionArgumentsNoBrace(string content, string expectedEntry) {
+            var completionSets = new List<CompletionSet>();
+            RCompletionTestUtilities.GetCompletions(_editorShell, content, 2, content.Length - content.IndexOfOrdinal("aaa("), completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
 
             completionSets[0].Completions.Should().NotBeEmpty()
-                .And.Contain(c => c.DisplayText == "a =");
+                .And.Contain(c => c.DisplayText == expectedEntry);
         }
     }
 }
