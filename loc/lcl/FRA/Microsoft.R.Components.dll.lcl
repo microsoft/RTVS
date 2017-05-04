@@ -1838,7 +1838,7 @@
             <Val><![CDATA[Enregistrement automatique de l'espace de travail dans l'image « {0} »...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1850,7 +1850,7 @@
             <Val><![CDATA[Supprimer l'image d'espace de travail enregistrée automatiquement « {0} » ?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1862,7 +1862,7 @@
             <Val><![CDATA[Suppression de l'image d'espace de travail enregistrée automatiquement « {0} ».]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1874,7 +1874,7 @@
             <Val><![CDATA[Échec du chargement de l'espace de travail à partir de l'image enregistrée automatiquement « {0} ».]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1886,7 +1886,7 @@
             <Val><![CDATA[L'espace de travail a été chargé à partir de l'image enregistrée automatiquement « {0} ».]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1898,7 +1898,7 @@
             <Val><![CDATA[La session précédente de R a été terminée et son espace de travail global a été enregistré dans l'image « {0} ». Voulez-vous le recharger ?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
