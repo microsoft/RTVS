@@ -63,10 +63,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// Attempts to locate associated editor document. Implementation depends on the platform.
         /// </summary>
         /// <typeparam name="T">Type of the document to locate</typeparam>
-        public T GetEditorDocument<T>() where T : class, IEditorDocument {
-            var document = Services.GetService<T>();
-            return document ?? _textBuffer.GetEditorDocument<T>();
-        }
+        public T GetEditorDocument<T>() where T : class, IEditorDocument  => Services.GetService<T>();
 
         public void Insert(int position, string text) => _textBuffer.Insert(position, text);
         public void Replace(ITextRange range, string text) => _textBuffer.Replace(range.ToSpan(), text);

@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Tree;
+using Microsoft.R.Editor.Validation;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Document {
@@ -26,6 +27,8 @@ namespace Microsoft.R.Editor.Document {
             var tree = new EditorTree(EditorBuffer, services, termFilter);
             tree.Build();
             EditorTree = tree;
+
+            TreeValidator.FromEditorBuffer(EditorTree, services);
         }
 
         #region IREditorDocument

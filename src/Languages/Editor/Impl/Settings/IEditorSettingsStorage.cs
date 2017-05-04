@@ -11,7 +11,6 @@ namespace Microsoft.Languages.Editor.Settings {
     /// </summary>
     public interface IEditorSettingsStorage {
         event EventHandler<EventArgs> SettingsChanged;
-        void LoadFromStorage();
         T Get<T>(string name, T defaultValue);
     }
 }

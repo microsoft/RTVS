@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 }
             }
 
-            var validator = TreeValidator.EnsureFromEditorBuffer(_document.EditorTree, services);
+            var validator = TreeValidator.FromEditorBuffer(_document.EditorTree, services);
             validator.Cleared += OnCleared;
 
             ResultsQueue = validator.ValidationResults;

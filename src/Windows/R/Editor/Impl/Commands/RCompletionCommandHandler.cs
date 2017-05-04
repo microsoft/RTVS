@@ -11,6 +11,7 @@ namespace Microsoft.R.Editor.Commands {
     /// </summary>
     internal sealed class RCompletionCommandHandler : CompletionCommandHandler {
         public RCompletionCommandHandler(ITextView textView) : base(textView) { }
-        public override CompletionController CompletionController => RCompletionController.FromTextView(TextView);
+        public override CompletionController CompletionController 
+            => CompletionController.FromTextView<RCompletionController>(TextView);
     }
 }

@@ -4,12 +4,11 @@
 using System;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completions {
     public abstract class TypingCommandHandler : ViewAndBufferCommand {
-        private static CommandId[] _commands = {
+        private static readonly CommandId[] _commands = {
             new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.F1Help),
             new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Delete),
             new CommandId(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Escape),
@@ -31,10 +30,10 @@ namespace Microsoft.Languages.Editor.Completions {
             : base(textView, _commands, needCheckout: false) { }
 
         public static char GetTypedChar(Guid group, int commandId, object variantIn) {
-            char typedChar = '\0';
+            var typedChar = '\0';
 
             if (group == VSConstants.GUID_VSStandardCommandSet97) {
-                VSConstants.VSStd97CmdID vsCmdID = (VSConstants.VSStd97CmdID)commandId;
+                var vsCmdID = (VSConstants.VSStd97CmdID)commandId;
 
                 switch (vsCmdID) {
                     case VSConstants.VSStd97CmdID.Delete:
@@ -47,7 +46,7 @@ namespace Microsoft.Languages.Editor.Completions {
                         break;
                 }
             } else if (group == VSConstants.VSStd2K) {
-                VSConstants.VSStd2KCmdID vsCmdID = (VSConstants.VSStd2KCmdID)commandId;
+                var vsCmdID = (VSConstants.VSStd2KCmdID)commandId;
 
                 switch (vsCmdID) {
                     case VSConstants.VSStd2KCmdID.DELETE:
@@ -86,9 +85,7 @@ namespace Microsoft.Languages.Editor.Completions {
 
         public override CommandStatus Status(Guid group, int id) {
             if (group == VSConstants.GUID_VSStandardCommandSet97) {
-                VSConstants.VSStd97CmdID vsCmdID = (VSConstants.VSStd97CmdID)id;
-
-                switch (vsCmdID) {
+                switch ((VSConstants.VSStd97CmdID)id) {
                     case VSConstants.VSStd97CmdID.F1Help:
                         if (!string.IsNullOrEmpty(GetHelpTopic())) {
                             return CommandStatus.Supported | CommandStatus.Enabled;
@@ -101,118 +98,72 @@ namespace Microsoft.Languages.Editor.Completions {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.GUID_VSStandardCommandSet97) {
-                VSConstants.VSStd97CmdID vsCmdID = (VSConstants.VSStd97CmdID)id;
-
-                switch (vsCmdID) {
-                    // If this list of commands gets large, then maybe there's a better way to know when to dismiss
-                    case VSConstants.VSStd97CmdID.Paste:
-                        DismissAllSessions();
-                        break;
+                if ((VSConstants.VSStd97CmdID)id == VSConstants.VSStd97CmdID.Paste) {
+                    DismissAllSessions();
                 }
             } else if (group == VSConstants.VSStd2K) {
-                VSConstants.VSStd2KCmdID vsCmdID = (VSConstants.VSStd2KCmdID)id;
-
-                switch (vsCmdID) {
-                    case VSConstants.VSStd2KCmdID.PASTE:
-                        DismissAllSessions();
-                        break;
-
-                    case VSConstants.VSStd2KCmdID.TAB:
-                        // Check if there is selection. If so, TAB will translate to 'indent lines' command
-                        // and hence we don't want to trigger intellisense on it.
-                        var typedChar = GetTypedChar(group, id, inputArg);
-                        if (TextView.Selection.SelectedSpans.Count > 0) {
-                            if (TextView.Selection.SelectedSpans[0].Length > 0) {
-                                typedChar = '\0';
-                            }
-                        }
-                        break;
+                if ((VSConstants.VSStd2KCmdID)id == VSConstants.VSStd2KCmdID.PASTE) {
+                    DismissAllSessions();
                 }
             }
 
             return HandleCompletion(group, id, inputArg);
         }
 
-        private string GetHelpTopic() {
-            // TODO: handle multiple controllers
+        private string GetHelpTopic() => CompletionController?.HelpTopicName ?? string.Empty;
 
-            var cc = TextView.GetService<CompletionController>();
-            // CompletionController might be null in weird "Open With <different editor>" or diff view scenarios.
-            return cc != null ? cc.HelpTopicName : String.Empty;
-        }
-
-        private void DismissAllSessions() {
-            var completionControllers = TextView.Services().GetServices<CompletionController>();
-            foreach (var cc in completionControllers) {
-                cc.DismissAllSessions();
-            }
-        }
+        private void DismissAllSessions() => CompletionController?.DismissAllSessions();
 
         private CommandResult HandleCompletion(Guid group, int id, object inputArg) {
-            var completionControllers = TextView.Services().GetServices<CompletionController>();
-            char typedChar = GetTypedChar(group, id, inputArg);
-            bool handled = false;
+            var cc = CompletionController;
+            if (cc == null) {
+                return CommandResult.NotSupported;
+            }
+
+            var typedChar = GetTypedChar(group, id, inputArg);
+            var handled = false;
 
             if (typedChar != '\0') {
-                foreach (var cc in completionControllers) {
-                    if (cc.OnPreTypeChar(typedChar)) {
-                        handled = true;
-                        break;
-                    }
-                }
+                handled = cc.OnPreTypeChar(typedChar);
             }
-
             if (!handled) {
-                foreach (var cc in completionControllers) {
-                    if (cc.HandleCommand(group, id, inputArg)) {
-                        handled = true;
-                        break;
-                    }
-                }
+                handled = cc.HandleCommand(group, id, inputArg);
             }
 
-            if (handled) {
-                // already handled, stop processing
-                return CommandResult.Executed;
-            }
-
-            return CommandResult.NotSupported;
+            return handled ? CommandResult.Executed : CommandResult.NotSupported;
         }
 
         public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
-            if (result.WasExecuted) {
-                char typedChar = '\0';
+            if (!result.WasExecuted) {
+                return;
+            }
 
-                if (group == VSConstants.VSStd2K) {
-                    // REVIEW: Is the TAB key a trigger for any languages? Maybe this code can be deleted.
+            var typedChar = '\0';
+            if (group == VSConstants.VSStd2K) {
+                // REVIEW: Is the TAB key a trigger for any languages? Maybe this code can be deleted.
+                var vsCmdID = (VSConstants.VSStd2KCmdID)id;
+                typedChar = GetTypedChar(group, id, inputArg);
 
-                    VSConstants.VSStd2KCmdID vsCmdID = (VSConstants.VSStd2KCmdID)id;
-                    typedChar = GetTypedChar(group, id, inputArg);
-
-                    if (vsCmdID == VSConstants.VSStd2KCmdID.TAB) {
-                        // Check if there is selection. If so, TAB will translate to 'indent lines' command
-                        // and hence we don't want to trigger intellisense on it.
-                        if (TextView.Selection.SelectedSpans.Count > 0) {
-                            if (TextView.Selection.SelectedSpans[0].Length > 0) {
-                                typedChar = '\0';
-                            }
+                if (vsCmdID == VSConstants.VSStd2KCmdID.TAB) {
+                    // Check if there is selection. If so, TAB will translate to 'indent lines' command
+                    // and hence we don't want to trigger intellisense on it.
+                    if (TextView.Selection.SelectedSpans.Count > 0) {
+                        if (TextView.Selection.SelectedSpans[0].Length > 0) {
+                            typedChar = '\0';
                         }
                     }
                 }
+            }
 
-                if (typedChar != '\0') {
-                    OnPostTypeChar(typedChar);
-                }
+            if (typedChar != '\0') {
+                OnPostTypeChar(typedChar);
             }
         }
 
         private void OnPostTypeChar(char typedChar) {
             if (typedChar != '\0') {
-                var completionController = this.CompletionController;
-                if (completionController != null) {
-                    completionController.OnPostTypeChar(typedChar);
-                    completionController.FilterCompletionSession();
-                }
+                CompletionController?.OnPostTypeChar(typedChar);
+                CompletionController?.FilterCompletionSession();
             }
         }
 

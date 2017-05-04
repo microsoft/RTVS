@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -25,7 +26,9 @@ namespace Microsoft.R.Editor.Completions {
         [ImportingConstructor]
         public RCompletionControllerProvider(ICoreShell shell) => _shell = shell;
 
-        public IIntellisenseController TryCreateIntellisenseController(ITextView view, IList<ITextBuffer> subjectBuffers)
-            => RCompletionController.Create(view, subjectBuffers, _shell.Services);
+        public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
+            var controller = CompletionController.FromTextView<RCompletionController>(textView);
+            return controller ?? new RCompletionController(textView, subjectBuffers, _shell.Services);
+        }
     }
 }

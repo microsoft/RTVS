@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Completions {
         private ITextBuffer _textBuffer;
         private char _commitChar = '\0';
 
-        private RCompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services)
+        public RCompletionController(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services)
             : base(textView, subjectBuffers, services) {
             _textBuffer = subjectBuffers[0];
             _settings = services.GetService<IREditorSettings>();
@@ -48,12 +48,6 @@ namespace Microsoft.R.Editor.Completions {
         /// is closed or buffer is removed from the view buffer graph.
         /// </summary>
         public override void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
-
-        public static RCompletionController Create(ITextView textView, IList<ITextBuffer> subjectBuffers, IServiceContainer services)
-            => textView.Properties.GetOrCreateSingletonProperty(() => new RCompletionController(textView, subjectBuffers, services));
-
-        public static RCompletionController FromTextView(ITextView textView)
-            => textView.Properties.TryGetProperty(typeof(RCompletionController), out RCompletionController controller) ? controller : null;
 
         protected override bool AutoCompletionEnabled => _settings.CompletionEnabled;
         protected override bool AutoSignatureHelpEnabled => _settings.SignatureHelpEnabled;

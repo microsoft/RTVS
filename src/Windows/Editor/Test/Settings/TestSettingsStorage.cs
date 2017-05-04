@@ -24,7 +24,6 @@ namespace Microsoft.Language.Editor.Test.Settings {
         public void Set<T>(string name, T value) => _settings[name] = value;
         #endregion
 
-        public void LoadFromStorage() { }
         public void ResetSettings() { }
 
 #pragma warning disable 67

@@ -91,7 +91,7 @@ namespace Microsoft.R.Editor.Validation {
         /// </summary>
         /// <param name="editorTree"></param>
         /// <param name="services"></param>
-        public static TreeValidator EnsureFromEditorBuffer(IREditorTree editorTree, IServiceContainer services)
+        public static TreeValidator FromEditorBuffer(IREditorTree editorTree, IServiceContainer services)
             => editorTree.EditorBuffer.GetService<TreeValidator>() ?? new TreeValidator(editorTree, services);
 
         /// <summary>

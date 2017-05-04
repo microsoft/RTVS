@@ -49,6 +49,7 @@ namespace Microsoft.R.Editor.Commands {
         }
         #endregion
 
-        protected override CompletionController CompletionController => TextView.GetService<RCompletionController>();
+        protected override CompletionController CompletionController 
+            => CompletionController.FromTextView<RCompletionController>(TextView);
     }
 }

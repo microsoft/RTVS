@@ -35,7 +35,12 @@ namespace Microsoft.Languages.Editor.Completions {
             CompletionBroker = Services.GetService<ICompletionBroker>();
             QuickInfoBroker = Services.GetService<IQuickInfoBroker>();
             SignatureBroker = Services.GetService<ISignatureHelpBroker>();
+
+            TextView.Properties[typeof(CompletionController)] = this;
         }
+
+        public static T FromTextView<T>(ITextView textView) where T: CompletionController
+            => textView.Properties.TryGetProperty(typeof(CompletionController), out object property) ? property as T : null;
 
         public abstract void ConnectSubjectBuffer(ITextBuffer subjectBuffer);
 

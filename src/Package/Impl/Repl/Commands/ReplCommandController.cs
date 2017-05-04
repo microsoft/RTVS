@@ -5,6 +5,7 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Controllers;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -68,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
-                var controller = RCompletionController.FromTextView(TextView);
+                var controller = CompletionController.FromTextView<RCompletionController>(TextView);
                 if (controller != null) {
                     if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
                         return HandleEnter(controller);
@@ -79,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 }
             } else if (group == VSConstants.GUID_VSStandardCommandSet97) {
                 if (id == (int)VSConstants.VSStd97CmdID.F1Help) {
-                    var controller = RCompletionController.FromTextView(TextView);
+                    var controller = CompletionController.FromTextView<RCompletionController>(TextView);
                     if (controller != null) {
                         // Translate to R help
                         HandleF1Help(controller);
