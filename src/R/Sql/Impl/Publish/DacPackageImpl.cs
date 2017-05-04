@@ -14,7 +14,15 @@ namespace Microsoft.VisualStudio.R.Sql.Publish {
 
         public void Deploy(string connectionString, string databaseName) {
             var services = new DacServices(connectionString);
-            services.Deploy(_dacpac, databaseName, upgradeExisting: true);
+            var options = new DacDeployOptions {
+                ScriptDatabaseOptions = false,
+                BlockOnPossibleDataLoss = true
+            };
+            services.Deploy(_dacpac, databaseName, upgradeExisting: true, options: options);
+        }
+
+        public void Dispose() {
+            _dacpac.Dispose();
         }
     }
 }
