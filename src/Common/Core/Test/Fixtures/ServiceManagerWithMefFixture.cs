@@ -55,8 +55,8 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
             public override Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
                 lock (_lock) {
-                    _compositionContainer.Dispose();
                     _disposed = true;
+                    _compositionContainer.Dispose();
                     return base.DisposeAsync(result, messageBus);
                 }
             }

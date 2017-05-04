@@ -34,6 +34,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new FileSystem())
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
+                .AddService(new TestTaskService())
                 .AddService(new TestUIServices())
                 .AddService(new TestPlatformServices())
                 .AddService(new TestApplication())

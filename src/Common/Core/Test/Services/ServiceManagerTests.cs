@@ -65,19 +65,19 @@ namespace Microsoft.Common.Core.Test.Services {
             a.ShouldThrow<ObjectDisposedException>();
 
             a = () => _serviceManager.GetService<I1>();
-            a.ShouldThrow<ObjectDisposedException>();
+            a.ShouldNotThrow<ObjectDisposedException>();
 
             a = () => _serviceManager.GetService<I2>();
-            a.ShouldThrow<ObjectDisposedException>();
+            a.ShouldNotThrow<ObjectDisposedException>();
 
             a = () => { var l = _serviceManager.GetServices<I1>().ToList(); };
-            a.ShouldThrow<ObjectDisposedException>();
+            a.ShouldNotThrow<ObjectDisposedException>();
 
             a = () => { var l = _serviceManager.GetServices<I2>().ToList(); };
-            a.ShouldThrow<ObjectDisposedException>();
+            a.ShouldNotThrow<ObjectDisposedException>();
 
             a = () => _serviceManager.RemoveService(instance);
-            a.ShouldThrow<ObjectDisposedException>();
+            a.ShouldNotThrow<ObjectDisposedException>();
         }
 
         private interface I1 {}
