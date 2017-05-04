@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <AssemblyName>Microsoft.R.Host.Broker.Linux</AssemblyName>
+    <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

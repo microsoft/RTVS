@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>Microsoft.R.Interpreters.Linux</AssemblyName>
+    <RootNamespace>Microsoft.R.Interpreters</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj" />
