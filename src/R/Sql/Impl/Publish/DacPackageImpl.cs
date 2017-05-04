@@ -17,8 +17,6 @@ namespace Microsoft.VisualStudio.R.Sql.Publish {
             var options = new DacDeployOptions {
                 ScriptDatabaseOptions = false,
                 BlockOnPossibleDataLoss = true
-
-
             };
             services.Deploy(_dacpac, databaseName, upgradeExisting: true, options: options);
         }
