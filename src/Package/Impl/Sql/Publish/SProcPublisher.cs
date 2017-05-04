@@ -75,17 +75,18 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var dacpacPath = Path.ChangeExtension(Path.GetTempFileName(), DacPacExtension);
 
             CreateDacPac(settings, sprocFiles, dacpacPath);
-            var package = _dacServices.Load(dacpacPath);
+            using (var package = _dacServices.Load(dacpacPath)) {
 
-            var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
-            var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
-            package.Deploy(connection, dbName);
+                var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
+                var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
+                package.Deploy(connection, dbName);
 
-            var message = Environment.NewLine + 
-                string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) + 
-                Environment.NewLine;
-            _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
-            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
+                var message = Environment.NewLine +
+                    string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) +
+                    Environment.NewLine;
+                _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
+                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
+            }
         }
 
         /// <summary>
