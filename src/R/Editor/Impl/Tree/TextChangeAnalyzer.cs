@@ -10,21 +10,26 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Editor.Tree {
     internal static class TextChangeAnalyzer {
-        private static char[] _stringSensitiveCharacters = new char[] { '\\', '\'', '\"' };
+        private static readonly char[] _stringSensitiveCharacters = { '\\', '\'', '\"' };
 
         public static void DetermineChangeType(TextChangeContext change) {
-            change.PendingChanges.TextChangeType |= CheckChangeInsideComment(change);
+            var changeType = CheckChangeInsideComment(change);
+            change.PendingChanges.TextChangeType = MathExtensions.Max(changeType, change.PendingChanges.TextChangeType);
             if (change.PendingChanges.TextChangeType == TextChangeType.Comment) {
                 return;
-            } else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
-                IAstNode node;
-                PositionType positionType;
+            }
 
-                change.PendingChanges.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
+            if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
+
+                changeType = CheckChangeInsideString(change, out var node, out var positionType);
+                change.PendingChanges.TextChangeType = MathExtensions.Max(changeType, change.PendingChanges.TextChangeType);
                 if (change.PendingChanges.TextChangeType == TextChangeType.Token) {
                     return;
-                } else if (node != null && change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
-                    change.PendingChanges.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
+                }
+
+                if (node != null && change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
+                    changeType = CheckWhiteSpaceChange(change, node, positionType);
+                    change.PendingChanges.TextChangeType = MathExtensions.Max(changeType, change.PendingChanges.TextChangeType);
                     if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
                         return;
                     }
@@ -57,17 +62,16 @@ namespace Microsoft.R.Editor.Tree {
         }
 
         private static bool IsChangeDestructiveForChildNodes(IAstNode node, ITextRange changedRange) {
-            if(changedRange.End <= node.Start || changedRange.Start >= node.End) {
+            if (changedRange.End <= node.Start || changedRange.Start >= node.End) {
                 return false;
-            }
-            else if(node.Children.Count == 0) {
+            } else if (node.Children.Count == 0) {
                 return true;
             }
 
             var result = false;
             foreach (var child in node.Children) {
                 result |= IsChangeDestructiveForChildNodes(child, changedRange);
-                if(result) {
+                if (result) {
                     break;
                 }
             }

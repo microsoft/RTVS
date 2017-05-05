@@ -23,12 +23,8 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         public void ChangeContentType(IContentType newContentType, object editTag) {
             var before = ContentType;
-
             ContentType = newContentType;
-
-            if (ContentTypeChanged != null) {
-                ContentTypeChanged(this, new ContentTypeChangedEventArgs(CurrentSnapshot, CurrentSnapshot, before, newContentType, new object()));
-            }
+            ContentTypeChanged?.Invoke(this, new ContentTypeChangedEventArgs(CurrentSnapshot, CurrentSnapshot, before, newContentType, new object()));
         }
 
         public event EventHandler<TextContentChangedEventArgs> BeforeChanged; // unit tests only, for internal mock use
@@ -44,23 +40,11 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
         public event EventHandler<SnapshotSpanEventArgs> ReadOnlyRegionsChanged;
 #pragma warning restore 0067
 
-        public bool CheckEditAccess() {
-            return true;
-        }
-
+        public bool CheckEditAccess() => true;
         public IContentType ContentType { get; private set; }
-
-        public ITextEdit CreateEdit() {
-            return new TextEditMock(this);
-        }
-
-        public ITextEdit CreateEdit(EditOptions options, int? reiteratedVersionNumber, object editTag) {
-            return new TextEditMock(this);
-        }
-
-        public IReadOnlyRegionEdit CreateReadOnlyRegionEdit() {
-            throw new NotImplementedException();
-        }
+        public ITextEdit CreateEdit() => new TextEditMock(this);
+        public ITextEdit CreateEdit(EditOptions options, int? reiteratedVersionNumber, object editTag) => new TextEditMock(this);
+        public IReadOnlyRegionEdit CreateReadOnlyRegionEdit() => throw new NotImplementedException();
 
         public ITextSnapshot CurrentSnapshot { get; private set; }
 
@@ -79,13 +63,8 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             return CurrentSnapshot;
         }
 
-        public bool EditInProgress {
-            get { return false; }
-        }
-
-        public NormalizedSpanCollection GetReadOnlyExtents(Span span) {
-            return new NormalizedSpanCollection(new Span(0, 0));
-        }
+        public bool EditInProgress => false;
+        public NormalizedSpanCollection GetReadOnlyExtents(Span span) => new NormalizedSpanCollection(new Span(0, 0));
 
         public ITextSnapshot Insert(int position, string text) {
             var sb = new StringBuilder();
@@ -94,29 +73,18 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             sb.Append(text);
             sb.Append(CurrentSnapshot.GetText(position, CurrentSnapshot.Length - position));
 
-            TextChangeMock change = new TextChangeMock(position, 0, String.Empty, text);
-            TextSnapshotMock nextSnapshot = ((TextSnapshotMock)CurrentSnapshot).CreateNextSnapshot(sb.ToString(), change);
+            var change = new TextChangeMock(position, 0, String.Empty, text);
+            var nextSnapshot = ((TextSnapshotMock)CurrentSnapshot).CreateNextSnapshot(sb.ToString(), change);
 
             ApplyChange(nextSnapshot);
 
             return CurrentSnapshot;
         }
 
-        public bool IsReadOnly(Span span, bool isEdit) {
-            return false;
-        }
-
-        public bool IsReadOnly(Span span) {
-            return false;
-        }
-
-        public bool IsReadOnly(int position, bool isEdit) {
-            return false;
-        }
-
-        public bool IsReadOnly(int position) {
-            return false;
-        }
+        public bool IsReadOnly(Span span, bool isEdit) => false;
+        public bool IsReadOnly(Span span) => false;
+        public bool IsReadOnly(int position, bool isEdit) => false;
+        public bool IsReadOnly(int position) => false;
 
         public ITextSnapshot Replace(Span replaceSpan, string replaceWith) {
             var sb = new StringBuilder();
@@ -126,9 +94,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             sb.Append(replaceWith);
             sb.Append(CurrentSnapshot.GetText(replaceSpan.End, CurrentSnapshot.Length - replaceSpan.End));
 
-            TextChangeMock change = new TextChangeMock(replaceSpan.Start, replaceSpan.Length, oldText, replaceWith);
+            var change = new TextChangeMock(replaceSpan.Start, replaceSpan.Length, oldText, replaceWith);
 
-            TextSnapshotMock nextSnapshot = ((TextSnapshotMock)CurrentSnapshot).CreateNextSnapshot(sb.ToString(), change);
+            var nextSnapshot = ((TextSnapshotMock)CurrentSnapshot).CreateNextSnapshot(sb.ToString(), change);
             ApplyChange(nextSnapshot);
 
             return CurrentSnapshot;

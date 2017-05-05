@@ -221,7 +221,7 @@ namespace Microsoft.R.Editor.Tree {
         }
         #endregion
 
-        private void OnTextBufferChanged(object sender, TextChangeEventArgs e) => TreeUpdateTask.OnTextChanges(e);
+        private void OnTextBufferChanged(object sender, TextChangeEventArgs e) => TreeUpdateTask.OnTextChange(e);
 
         internal void NotifyTextChange(int start, int oldLength, int newLength) {
             var change = new TextChangeEventArgs(start, start, oldLength, newLength);

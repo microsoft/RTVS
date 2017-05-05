@@ -68,9 +68,7 @@ namespace Microsoft.R.Host.Client.Session {
             return _sessions.GetOrAdd(sessionId, CreateRSession);
         }
 
-        public IEnumerable<IRSession> GetSessions() {
-            return _sessions.Values;
-        }
+        public IEnumerable<IRSession> GetSessions() => _sessions.Values;
 
         public void Dispose() {
             if (!_disposeToken.TryMarkDisposed()) {
@@ -117,9 +115,8 @@ namespace Microsoft.R.Host.Client.Session {
             Task.Run(() => HostLoadChanged?.Invoke(this, args)).DoNotWait();
         }
 
-        private void OnBrokerChanged() {
-            Task.Run(() => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
-        }
+        private void OnBrokerChanged() => Task.Run(() 
+            => BrokerChanged?.Invoke(this, new EventArgs())).DoNotWait();
 
         public async Task TestBrokerConnectionAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {

@@ -63,7 +63,7 @@ namespace Microsoft.R.Editor.Tree {
         private string _oldText;
         private string _newText;
 
-        public TextChangeContext(EditorTree editorTree, TextChangeEventArgs change, TextChange pendingChanges) {
+        public TextChangeContext(IREditorTree editorTree, TextChangeEventArgs change, TextChange pendingChanges) {
             EditorTree = editorTree;
             NewStart = change.Start;
             OldStart = change.OldStart;
@@ -75,9 +75,10 @@ namespace Microsoft.R.Editor.Tree {
             PendingChanges = pendingChanges;
 
             var textChange = new TextChange {
-                OldRange = this.OldRange,
+                Start = this.OldRange.Start,
+                OldEnd = this.OldRange.End,
                 OldTextProvider = this.OldTextProvider,
-                NewRange = this.NewRange,
+                NewEnd = this.NewRange.End,
                 NewTextProvider = this.NewTextProvider,
                 Version = this.NewTextProvider.Version
             };

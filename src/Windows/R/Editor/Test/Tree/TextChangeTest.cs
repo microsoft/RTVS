@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Windows.Controls;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
@@ -10,76 +9,50 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Tree;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.Text;
+using Xunit;
 using TextChange = Microsoft.R.Editor.Tree.TextChange;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
     public class TextChangesTest {
-        [Test]
-        public void TextChange_Test() {
-            TextChange tc = new TextChange();
-            tc.IsEmpty.Should().BeTrue();
-            tc.TextChangeType.Should().Be(TextChangeType.Trivial);
+        [CompositeTest]
+        [InlineData(0, 0, 0, 0, 0, 0, 0, 0, 0)]
+        // Changed range here is bigger than necessary but
+        // in reality it will be limited by the tet buffer length.
+        [InlineData(0, 1, 0, 0, 0, 1, 0, 1, 2)] 
+        [InlineData(0, 0, 1, 0, 1, 0, 0, 0, 1)]
+        [InlineData(5, 10, 15, 0, 1, 0, 0, 10, 15)]
+        [InlineData(0, 1, 0, 5, 10, 15, 0, 11, 16)]
+        [InlineData(4, 6, 5, 5, 10, 15, 4, 11, 16)]
+        public void TextChangeCombine(
+            int prevStart, int prevOldEnd, int prevNewEnd,
+            int nextStart, int nextOldEnd, int nextNewEnd,
+            int expectedStart, int expectedOldEnd, int expectedNewEnd) {
 
-            var content = "23456789";
-            var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var oldSnapshot = textBuffer.CurrentSnapshot;
+            var tc1 = new TextChange {
+                Start = prevStart,
+                OldEnd = prevOldEnd,
+                NewEnd = prevNewEnd
+            };
 
-            textBuffer.Insert(0, "1");
-            var newSnapshot1 = textBuffer.CurrentSnapshot;
+            var tc2 = new TextChange {
+                Start = nextStart,
+                OldEnd = nextOldEnd,
+                NewEnd = nextNewEnd
+            };
 
-            textBuffer.Insert(0, "0");
-            var newSnapshot2 = textBuffer.CurrentSnapshot;
+            tc1.OldLength.Should().Be(prevOldEnd - prevStart);
+            tc1.NewLength.Should().Be(prevNewEnd - prevStart);
+            tc1.OldRange.Start.Should().Be(prevStart);
+            tc1.OldRange.End.Should().Be(prevOldEnd);
+            tc1.NewRange.Start.Should().Be(prevStart);
+            tc1.NewRange.End.Should().Be(prevNewEnd);
 
-            tc.OldTextProvider = new TextProvider(oldSnapshot);
-            tc.NewTextProvider = new TextProvider(newSnapshot1);
-
-            tc.OldRange = new TextRange(0, 0);
-            tc.NewRange = new TextRange(0, 1);
-
-            var tc1 = new TextChange(tc, new TextProvider(newSnapshot2));
-
-            tc1.ShouldBeEquivalentTo(new {
-                OldRange = new { Length = 0 },
-                NewRange = new { Length = 2 },
-                Version = 2,
-                FullParseRequired = false,
-                IsEmpty = false,
-                IsSimpleChange = true
-            }, o => o.ExcludingMissingMembers());
-
-            var tc2 = tc1.Clone() as TextChange;
-
-            tc2.ShouldBeEquivalentTo(new {
-                OldRange = new { Length = 0 },
-                NewRange = new { Length = 2 },
-                Version = 2,
-                FullParseRequired = false,
-                IsEmpty = false,
-                IsSimpleChange = true
-            }, o => o.ExcludingMissingMembers());
-
-            tc1.Clear();
-
-            tc1.ShouldBeEquivalentTo(new {
-                OldRange = new { Length = 0 },
-                NewRange = new { Length = 0 },
-                OldTextProvider = (ITextProvider)null,
-                NewTextProvider = (ITextProvider)null,
-                IsEmpty = true,
-                IsSimpleChange = true
-            }, o => o.ExcludingMissingMembers());
-
-            tc2.ShouldBeEquivalentTo(new {
-                OldRange = new { Length = 0 },
-                NewRange = new { Length = 2 },
-                Version = 2,
-                FullParseRequired = false,
-                IsEmpty = false,
-                IsSimpleChange = true
-            }, o => o.ExcludingMissingMembers());
+            tc1.Combine(tc2);
+            tc1.Start.Should().Be(expectedStart);
+            tc1.OldEnd.Should().Be(expectedOldEnd);
+            tc1.NewEnd.Should().Be(expectedNewEnd);
         }
     }
 }

@@ -189,20 +189,10 @@ namespace Microsoft.R.Core.AST {
                                 out IAstNode endNode, out PositionType endPositionType) {
             var end = start + length;
 
-            startPositionType = PositionType.Undefined;
-            endPositionType = PositionType.Undefined;
-
-            startNode = null;
-            endNode = null;
-
             startPositionType = GetPositionNode(start, out startNode);
             endPositionType = GetPositionNode(end, out endNode);
 
-            if (startNode == endNode) {
-                return startNode;
-            }
-
-            return this;
+            return startNode == endNode ? startNode : this;
         }
 
         #endregion

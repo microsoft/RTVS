@@ -2,8 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
+using System.Diagnostics;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Languages.Core.Text;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
     public sealed class TextChange {
@@ -18,14 +21,39 @@ namespace Microsoft.R.Editor.Tree {
         public TextChangeType TextChangeType { get; set; }
 
         /// <summary>
+        /// Start position of the change
+        /// </summary>
+        public int Start { get; set; }
+
+        /// <summary>
+        ///  End of the affected segment in the original snapshot.
+        /// </summary>
+        public int OldEnd { get; set; }
+
+        /// <summary>
+        /// End of the replacement segment in the new snapshot.
+        /// </summary>
+        public int NewEnd { get; set; }
+
+        /// <summary>
+        ///  Length of the affected segment in the original snapshot.
+        /// </summary>
+        public int OldLength => OldEnd - Start;
+
+        /// <summary>
+        /// Length of the replacement segment in the new snapshot.
+        /// </summary>
+        public int NewLength => NewEnd - Start;
+
+        /// <summary>
         /// Changed range in the old snapshot.
         /// </summary>
-        public ITextRange OldRange { get; set; }
+        public ITextRange OldRange => new TextRange(Start, OldLength);
 
         /// <summary>
         /// Changed range in the current snapshot.
         /// </summary>
-        public ITextRange NewRange { get; set; }
+        public ITextRange NewRange => new TextRange(Start, NewLength);
 
         /// <summary>
         /// True if full parse required.
@@ -42,17 +70,19 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         public ITextProvider NewTextProvider { get; set; }
 
-        public TextChange() => Clear();
+        public TextChange() : this(0, 0, 0, null, null) { }
 
-        public TextChange(TextChange change, ITextProvider newTextProvider) : this() => Combine(change);
+        public TextChange(int start, int oldLength, int newLength, ITextProvider oldTextProvider, ITextProvider newTextProvider) {
+            Start = start;
+            OldEnd = start + oldLength;
+            NewEnd = start + newLength;
+            OldTextProvider = oldTextProvider;
+            NewTextProvider = newTextProvider;
+        }
 
         public void Clear() {
-            TextChangeType = TextChangeType.Trivial;
-            OldRange = TextRange.EmptyRange;
-            NewRange = TextRange.EmptyRange;
-            FullParseRequired = false;
-            OldTextProvider = null;
-            NewTextProvider = null;
+            Start = OldEnd = NewEnd = 0;
+            OldTextProvider = NewTextProvider = null;
         }
 
         /// <summary>
@@ -64,27 +94,57 @@ namespace Microsoft.R.Editor.Tree {
         /// Combines one text change with another
         /// </summary>
         public void Combine(TextChange other) {
-            FullParseRequired |= other.FullParseRequired;
-            TextChangeType |= other.TextChangeType;
+            TextChangeType = MathExtensions.Max(TextChangeType, other.TextChangeType);
+            FullParseRequired |= other.FullParseRequired || TextChangeType == TextChangeType.Structure;
 
-            if (!other.IsEmpty) {
-                OldRange = TextRange.Union(OldRange, other.OldRange);
-                NewRange = TextRange.Union(NewRange, other.NewRange);
+            // Combine two sequential changes into one. Note that damaged regions
+            // typically don't shrink. There are some exceptions such as when
+            // text was added and then deleted making the change effectively a no-op,
+            // but this is not a typical case. For simplicity and fidelity
+            // we'd rather parse more than less.
 
-                if (OldTextProvider == null) {
-                    OldTextProvider = other.OldTextProvider;
-                } else {
-                    OldTextProvider = other.OldTextProvider.Version < OldTextProvider.Version ? other.OldTextProvider : OldTextProvider;
-                }
-
-                if (NewTextProvider == null) {
-                    NewTextProvider = other.NewTextProvider;
-                } else {
-                    NewTextProvider = other.NewTextProvider.Version > NewTextProvider.Version ? other.NewTextProvider : NewTextProvider;
-                }
-                Version = NewTextProvider.Version;
+            if (FullParseRequired) {
+                Start = 0;
+                OldEnd = OldTextProvider?.Length ?? 0;
+                NewEnd = NewTextProvider?.Length ?? 0;
+                return;
             }
+
+            // Start point is always the lowest of the two. We need to detemine new largest extent of the change.
+            // Translate new change's oldEnd and newEnd to the current change coordinates.
+            var oldEnd = TranslatePosition(other.OldEnd, Start, OldEnd, NewEnd);
+            var newEnd = TranslatePosition(other.NewEnd, Start, OldEnd, NewEnd);
+
+            // Damaged region never shrinks
+            oldEnd = Math.Max(this.OldEnd, oldEnd);
+            newEnd = Math.Max(this.NewEnd, newEnd);
+
+            Start = Math.Min(this.Start, other.Start);
+            NewEnd = Math.Min(newEnd, NewTextProvider?.Length ?? newEnd);
+            OldEnd = Math.Min(oldEnd, OldTextProvider?.Length ?? oldEnd);
+
+            Debug.Assert(Start <= OldEnd);
+            Debug.Assert(OldEnd <= NewEnd);
+
+            if (OldTextProvider == null) {
+                OldTextProvider = other.OldTextProvider;
+            } else {
+                OldTextProvider = other.OldTextProvider.Version < OldTextProvider.Version ? other.OldTextProvider : OldTextProvider;
+            }
+
+            if (NewTextProvider == null) {
+                NewTextProvider = other.NewTextProvider;
+            } else {
+                NewTextProvider = other.NewTextProvider.Version > NewTextProvider.Version ? other.NewTextProvider : NewTextProvider;
+            }
+
+            Version = NewTextProvider?.Version ?? Version;
         }
+
+        private static int TranslatePosition(int point, int start, int oldLength, int newLength)
+            // Note that length is reversed: if current change DELETED character, translation
+            // must compensate and INCREASE size of the region.
+            => point < start + oldLength ? point : point + (oldLength - newLength);
 
         /// <summary>
         /// True if pending change does not require background parsing
@@ -92,17 +152,6 @@ namespace Microsoft.R.Editor.Tree {
         public bool IsSimpleChange => !FullParseRequired && TextChangeType != TextChangeType.Structure;
 
         public override string ToString()
-            => string.Format(CultureInfo.InvariantCulture,
-                "Version:{0}, TextChangeType:{1}, OldRange:{2}, NewRange:{3}, FullParseRequired:{4}",
-                Version, TextChangeType, OldRange, NewRange, FullParseRequired);
-
-        public TextChange Clone() => new TextChange() {
-            TextChangeType = this.TextChangeType,
-            OldRange = this.OldRange,
-            NewRange = this.NewRange,
-            FullParseRequired = this.FullParseRequired,
-            OldTextProvider = this.OldTextProvider.Clone(),
-            NewTextProvider = this.NewTextProvider.Clone()
-        };
+            => Invariant($"Version:{Version}, TextChangeType:{TextChangeType}, OldRange:{OldRange}, NewRange:{NewRange}, FullParseRequired:{FullParseRequired}");
     }
 }
