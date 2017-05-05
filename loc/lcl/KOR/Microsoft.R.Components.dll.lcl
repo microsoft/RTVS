@@ -475,6 +475,9 @@
       <Item ItemId=";ConnectionManager_LocalConnections_Tooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local R installations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로컬 R 설치]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -535,6 +538,9 @@
       <Item ItemId=";ConnectionManager_RemoteConnections_Tooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote R installations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[원격 R 설치]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -748,6 +754,9 @@
       <Item ItemId=";Error_CannotEditExpression" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Expression does not evaluate to function.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[식이 함수로 계산되지 않습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -781,6 +790,9 @@
       <Item ItemId=";Error_OdbcDriver" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure에서 SQL Database에 연결하려면 SQL ODBC 드라이버 13.1 이상이 필요합니다. {0}에서 최신 Microsoft ODBC 드라이버를 설치하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1822,11 +1834,11 @@
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[작업 영역을 '{0}' 이미지로 자동 저장하는 중...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1834,11 +1846,11 @@
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[자동 저장된 작업 영역 이미지 '{0}'을(를) 삭제하시겠습니까?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1846,11 +1858,11 @@
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[자동 저장된 작업 영역 이미지 '{0}'을(를) 삭제하는 중입니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1858,11 +1870,11 @@
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[자동 저장된 이미지 '{0}'에서 작업 영역을 로드하지 못했습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1870,11 +1882,11 @@
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[자동 저장된 이미지 '{0}'에서 작업 영역을 로드했습니다.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1882,11 +1894,11 @@
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[이전 R 세션이 종료되고 해당 전역 작업 영역이 '{0}' 이미지로 저장되었습니다. 다시 로드하시겠습니까?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
