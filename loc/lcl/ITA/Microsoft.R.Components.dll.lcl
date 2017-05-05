@@ -475,6 +475,9 @@
       <Item ItemId=";ConnectionManager_LocalConnections_Tooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local R installations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installazioni di R locali]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -535,6 +538,9 @@
       <Item ItemId=";ConnectionManager_RemoteConnections_Tooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote R installations]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installazioni di R remote]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -748,6 +754,9 @@
       <Item ItemId=";Error_CannotEditExpression" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Expression does not evaluate to function.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'espressione non restituisce una funzione.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -781,6 +790,9 @@
       <Item ItemId=";Error_OdbcDriver" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La connessione al database SQL in Azure richiede un driver ODBC SQL 13.1 o superiore. Installare la versione più recente di Microsoft ODBC Driver da {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1822,11 +1834,11 @@
       <Item ItemId=";rtvs_AutosavingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Salvataggio automatico dell'area di lavoro nell'immagine '{0}'...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image '{0}' ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1834,11 +1846,11 @@
       <Item ItemId=";rtvs_ConfirmDeleteWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Eliminare l'immagine dell'area di lavoro '{0}' salvata automaticamente?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eliminare l'immagine '{0}' dell'area di lavoro salvata automaticamente?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image '{0}'?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1846,11 +1858,11 @@
       <Item ItemId=";rtvs_DeletingWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Eliminazione dell'immagine dell'area di lavoro '{0}' salvata automaticamente.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eliminazione dell'immagine '{0}' dell'area di lavoro salvata automaticamente.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image '{0}'.]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1858,11 +1870,11 @@
       <Item ItemId=";rtvs_FailedToLoadWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Non è stato possibile caricare l'area di lavoro dall'immagine '{0}' salvata automaticamente.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image '{0}'.]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1870,11 +1882,11 @@
       <Item ItemId=";rtvs_LoadedWorkspace" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[L'area di lavoro è stata caricata dall'immagine '{0}' salvata automaticamente.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image '{0}'.]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1882,11 +1894,11 @@
       <Item ItemId=";rtvs_SessionTerminatedUnexpectedly" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[La sessione precedente di R è stata terminata e la relativa area di lavoro globale è stata salvata nell'immagine '{0}'. Ricaricarla?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image '{0}'. Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
