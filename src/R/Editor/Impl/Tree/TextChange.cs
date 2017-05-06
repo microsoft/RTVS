@@ -83,6 +83,8 @@ namespace Microsoft.R.Editor.Tree {
         public void Clear() {
             Start = OldEnd = NewEnd = 0;
             OldTextProvider = NewTextProvider = null;
+            TextChangeType = TextChangeType.Trivial;
+            FullParseRequired = false;
         }
 
         /// <summary>
@@ -119,12 +121,12 @@ namespace Microsoft.R.Editor.Tree {
             oldEnd = Math.Max(this.OldEnd, oldEnd);
             newEnd = Math.Max(this.NewEnd, newEnd);
 
-            Start = Math.Min(this.Start, other.Start);
+            Start = OldTextProvider != null ? Math.Min(this.Start, other.Start) : other.Start;
             NewEnd = Math.Min(newEnd, NewTextProvider?.Length ?? newEnd);
             OldEnd = Math.Min(oldEnd, OldTextProvider?.Length ?? oldEnd);
 
             Debug.Assert(Start <= OldEnd);
-            Debug.Assert(OldEnd <= NewEnd);
+            Debug.Assert(Start <= NewEnd);
 
             if (OldTextProvider == null) {
                 OldTextProvider = other.OldTextProvider;

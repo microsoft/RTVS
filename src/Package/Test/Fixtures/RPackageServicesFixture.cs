@@ -22,7 +22,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
         protected override IEnumerable<string> GetAssemblyNames() => base.GetAssemblyNames().Concat(new[] {
             "Microsoft.VisualStudio.Shell.Mocks.dll",
             "Microsoft.VisualStudio.R.Package.dll",
-            "Microsoft.VisualStudio.R.Package.Test.dll"
+            "Microsoft.VisualStudio.R.Package.Test.dll",
+            "Microsoft.VisualStudio.ProjectSystem.dll",
+            "Microsoft.VisualStudio.ProjectSystem.VS.dll",
+            "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
+            "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
         });
 
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {

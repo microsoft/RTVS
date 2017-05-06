@@ -29,7 +29,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// Instance of the compostion catalog to use in editor tests.
         /// It should not be used in the app/package level tests.
         /// </summary>
-        private static Lazy<EditorTestCompositionCatalog> _instance = Lazy.Create(() => new EditorTestCompositionCatalog());
+        private static readonly Lazy<EditorTestCompositionCatalog> _instance = Lazy.Create(() => new EditorTestCompositionCatalog());
         private static readonly object _containerLock = new object();
 
         /// <summary>
@@ -39,14 +39,14 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// exported from the package. Package tests use bigger container
         /// that also includes objects exported from package-level assemblies.
         /// </summary>
-        private CompositionContainer _container;
+        private readonly CompositionContainer _container;
 
         private static bool _traceExportImports = false;
 
         /// <summary>
         /// Assemblies used at the R editor level
         /// </summary>
-        private static string[] _rtvsEditorAssemblies = {
+        private static readonly string[] _rtvsEditorAssemblies = {
             "Microsoft.Markdown.Editor.Windows.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Windows.dll",
@@ -65,7 +65,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// <summary>
         /// Assemblies of the VS core text editor
         /// </summary>
-        private static string[] _coreEditorAssemblies = {
+        private static readonly string[] _coreEditorAssemblies = {
             "Microsoft.VisualStudio.CoreUtility.dll",
             "Microsoft.VisualStudio.Editor.dll",
             "Microsoft.VisualStudio.Language.Intellisense.dll",
@@ -76,19 +76,9 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.Text.UI.Wpf.dll",
         };
 
-        private static string[] _privateEditorAssemblies = {
+        private static readonly string[] _privateEditorAssemblies = {
             "Microsoft.VisualStudio.Platform.VSEditor.Interop.dll"
         };
-
-        /// <summary>
-        /// VS project system assemblies
-        /// </summary>
-        private static string[] _projectAssemblies = {
-            "Microsoft.VisualStudio.ProjectSystem.dll",
-            "Microsoft.VisualStudio.ProjectSystem.VS.dll",
-            "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
-            "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
-         };
 
         /// <summary>
         /// Additional assemblies supplied by the creator class
@@ -124,7 +114,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
                 var assemblies = new List<string>();
                 assemblies.AddRange(_coreEditorAssemblies);
-                assemblies.AddRange(_projectAssemblies);
                 assemblies.AddRange(_privateEditorAssemblies);
                 assemblies.AddRange(_rtvsEditorAssemblies);
                 assemblies.AddRange(_additionalAssemblies);
@@ -155,7 +144,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             var exports = new StringBuilder();
 
             foreach (object o in container.Catalog.Parts) {
-                ComposablePartDefinition part = o as ComposablePartDefinition;
+                var part = o as ComposablePartDefinition;
                 if (part == null) {
                     parts.AppendLine("PART MISSING: " + o.ToString());
                     exports.AppendLine("PART MISSING: " + o.ToString());
@@ -174,12 +163,12 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                     parts.AppendLine("\t --- EXPORTS --");
                     exports.AppendLine("\t --- EXPORTS --");
 
-                    foreach (ExportDefinition exportDefinition in part.ExportDefinitions) {
+                    foreach (var exportDefinition in part.ExportDefinitions) {
                         parts.AppendLine("\t" + exportDefinition.ContractName);
                         exports.AppendLine("\t" + exportDefinition.ContractName);
 
-                        foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata) {
-                            string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
+                        foreach (var kvp in exportDefinition.Metadata) {
+                            string valueString = kvp.Value?.ToString() ?? string.Empty;
 
                             parts.AppendLine("\t" + kvp.Key + " : " + valueString);
                             exports.AppendLine("\t" + kvp.Key + " : " + valueString);

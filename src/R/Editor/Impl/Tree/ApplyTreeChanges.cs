@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Tree {
             FireOnUpdatesPending();
             FireOnUpdateBegin();
 
-            foreach (var a in _actionsToInvokeOnReady.Values) {
+            foreach (var a in _actionsToInvokeOnReady.Values.ToList()) {
                 a.Action(a.Parameter);
             }
             _actionsToInvokeOnReady.Clear();
