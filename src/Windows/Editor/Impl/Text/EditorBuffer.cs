@@ -91,12 +91,8 @@ namespace Microsoft.Languages.Editor.Text {
         }
         #endregion
 
-        private void OnTextBufferChangedHighPriority(object sender, TextContentChangedEventArgs e) {
-            var changes = e.ConvertToRelative();
-            foreach (var ch in changes) {
-                ChangedHighPriority?.Invoke(this, ch);
-            }
-        }
+        private void OnTextBufferChangedHighPriority(object sender, TextContentChangedEventArgs e) 
+            => ChangedHighPriority?.Invoke(this, new TextChangeEventArgs(e.ToTextChange()));
 
         private void OnTextDocumentDisposed(object sender, TextDocumentEventArgs e) {
             if (e.TextDocument.TextBuffer == _textBuffer) {
@@ -104,11 +100,7 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            var changes = e.ConvertToRelative();
-            foreach (var ch in changes) {
-                Changed?.Invoke(this, ch);
-            }
-        }
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
+            => Changed?.Invoke(this, new TextChangeEventArgs(e.ToTextChange()));
     }
 }

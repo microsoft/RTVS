@@ -11,8 +11,7 @@ namespace Microsoft.Languages.Core.Text {
     public class TextStream : ITextProvider {
         private readonly string _text;
 
-        // Array access (i.e. converting string to an array)
-        // is faster, but takes more memory.
+        public static ITextProvider Empty { get; } = new TextStream(string.Empty);
 
         [DebuggerStepThrough]
         public TextStream(string text) {
@@ -61,7 +60,7 @@ namespace Microsoft.Languages.Core.Text {
         /// Retrieves the complete text
         /// </summary>
         [DebuggerStepThrough]
-        public string GetText() => GetText(0, Length);
+        public string GetText() => _text;
 
         /// <summary>
         /// Searches text for a given character starting at specified position

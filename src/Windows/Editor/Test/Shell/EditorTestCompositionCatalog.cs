@@ -74,6 +74,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.Text.Logic.dll",
             "Microsoft.VisualStudio.Text.UI.dll",
             "Microsoft.VisualStudio.Text.UI.Wpf.dll",
+            "Microsoft.VisualStudio.Text.Internal.dll",
         };
 
         private static readonly string[] _privateEditorAssemblies = {
@@ -107,11 +108,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private CompositionContainer CreateContainer() {
             lock (_containerLock) {
-                CompositionContainer container;
-
-                string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                string assemblyLoc = Path.GetDirectoryName(thisAssembly);
-
                 var assemblies = new List<string>();
                 assemblies.AddRange(_coreEditorAssemblies);
                 assemblies.AddRange(_privateEditorAssemblies);
@@ -119,17 +115,17 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 assemblies.AddRange(_additionalAssemblies);
 
                 var aggregateCatalog = CatalogFactory.CreateAssembliesCatalog(assemblies);
-                AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
+                var thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
                 aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
 
                 var filteredCatalog = aggregateCatalog.Filter(cpd => !cpd.ContainsPartMetadataWithKey(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog));
-                container = BuildCatalog(filteredCatalog);
+                var container = BuildCatalog(filteredCatalog);
                 return container;
             }
         }
 
         private CompositionContainer BuildCatalog(ComposablePartCatalog aggregateCatalog) {
-            CompositionContainer container = new CompositionContainer(aggregateCatalog, isThreadSafe: true);
+            var container = new CompositionContainer(aggregateCatalog, isThreadSafe: true);
             container.ComposeParts(container.Catalog.Parts.AsEnumerable());
 
             TraceExportImports(container);
@@ -143,13 +139,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             var parts = new StringBuilder();
             var exports = new StringBuilder();
 
-            foreach (object o in container.Catalog.Parts) {
-                var part = o as ComposablePartDefinition;
-                if (part == null) {
-                    parts.AppendLine("PART MISSING: " + o.ToString());
-                    exports.AppendLine("PART MISSING: " + o.ToString());
-                    continue;
-                }
+            foreach (var part in container.Catalog.Parts) {
 
                 parts.AppendLine("===============================================================");
                 parts.AppendLine(part.ToString());
@@ -157,7 +147,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 exports.AppendLine("===============================================================");
                 exports.AppendLine(part.ToString());
 
-                bool first = true;
+                var first = true;
 
                 if (part.ExportDefinitions.Any()) {
                     parts.AppendLine("\t --- EXPORTS --");
@@ -186,7 +176,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 if (part.ImportDefinitions.Any()) {
                     parts.AppendLine("\t --- IMPORTS ---");
 
-                    foreach (ImportDefinition importDefinition in part.ImportDefinitions) {
+                    foreach (var importDefinition in part.ImportDefinitions) {
                         parts.AppendLine("\t" + importDefinition.ContractName);
                         parts.AppendLine("\t" + importDefinition.Constraint.ToString());
                         parts.AppendLine("\t" + importDefinition.Cardinality.ToString());

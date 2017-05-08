@@ -218,7 +218,7 @@
     <Compile Include="Tree\InvalidateTest.cs" />
     <Compile Include="Tree\ProcessChangesTest.cs" />
     <Compile Include="Tree\TreeChangeTypeTest.cs" />
-    <Compile Include="Tree\TextChangeTest.cs" />
+    <Compile Include="Tree\TreeTextChangeTest.cs" />
     <Compile Include="Utility\FunctionIndexBasedTest.cs" />
     <Compile Include="Utility\QuickInfoSourceUtility.cs" />
     <Compile Include="Utility\SignatureHelpSourceUtility.cs" />

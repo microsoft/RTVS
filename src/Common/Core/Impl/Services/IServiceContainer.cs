@@ -21,15 +21,5 @@ namespace Microsoft.Common.Core.Services {
         /// </summary>
         /// <typeparam name="T">Service type</typeparam>
         IEnumerable<T> GetServices<T>() where T : class;
-
-        /// <summary>
-        /// Fire when service is added
-        /// </summary>
-        event EventHandler<ServiceContainerEventArgs> ServiceAdded;
-
-        /// <summary>
-        /// Fires when service is removed
-        /// </summary>
-        event EventHandler<ServiceContainerEventArgs> ServiceRemoved;
     }
 }

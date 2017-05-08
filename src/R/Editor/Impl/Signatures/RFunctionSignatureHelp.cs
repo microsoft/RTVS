@@ -147,7 +147,7 @@ namespace Microsoft.R.Editor.Signatures {
         #region Event handlers
         private void OnTextBufferChanged(object sender, TextChangeEventArgs e) {
             if (_session != null) {
-                var position = e.Start + e.NewLength;
+                var position = e.Change.Start + e.Change.NewLength;
                 if (position < _initialPosition) {
                     _completionBroker.DismissSignatureSession(_view);
                 } else {

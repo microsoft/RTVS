@@ -107,15 +107,13 @@ namespace Microsoft.R.Editor.Validation.Tagger {
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             if (_settings.SyntaxCheckEnabled && e.Changes.Count > 0) {
-                var changes = TextUtility.ConvertToRelative(e);
-                foreach (var change in changes) {
-                    _errorTags.ReflectTextChange(change.Start, change.OldLength, change.NewLength,
-                                                 trivialChange: !_document.EditorTree.IsReady);
-                }
+                var change = e.ToTextChange();
+                _errorTags.ReflectTextChange(change.Start, change.OldLength, change.NewLength,
+                                             trivialChange: !_document.EditorTree.IsReady);
 
                 if (_errorTags.RemovedTags.Count > 0 && TagsChanged != null) {
-                    var start = Int32.MaxValue;
-                    var end = Int32.MinValue;
+                    var start = int.MaxValue;
+                    var end = int.MinValue;
 
                     foreach (var errorTag in _errorTags.RemovedTags) {
                         start = Math.Min(start, errorTag.Start);
@@ -180,8 +178,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                     timer.Reset();
 
                     while (timer.ElapsedMilliseconds < 100) {
-                        IValidationError error;
-                        if (!ResultsQueue.TryDequeue(out error)) {
+                        if (!ResultsQueue.TryDequeue(out var error)) {
                             break;
                         }
 
@@ -194,7 +191,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                                 if (changedRange.End == 0) {
                                     changedRange = removedRange;
                                 } else {
-                                    changedRange = TextRange.Union(changedRange, removedRange);
+                                    changedRange = changedRange.Union(removedRange);
                                 }
                             }
                         } else {
@@ -203,7 +200,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                                 if (changedRange.End == 0) {
                                     changedRange = tag;
                                 } else {
-                                    changedRange = TextRange.Union(changedRange, tag);
+                                    changedRange = changedRange.Union(tag);
                                 }
 
                                 _errorTags.Add(tag);
@@ -229,17 +226,14 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                         if (addedTags.Count > 0) {
                             TasksAdded?.Invoke(this, new TasksListItemsChangedEventArgs(addedTags));
                         }
-
                         if (_errorTags.RemovedTags.Count > 0) {
+
                             var removedTags = new List<IEditorTaskListItem>();
                             while (_errorTags.RemovedTags.Count > 0) {
-                                EditorErrorTag tag;
-
-                                if (_errorTags.RemovedTags.TryDequeue(out tag)) {
+                                if (_errorTags.RemovedTags.TryDequeue(out var tag)) {
                                     removedTags.Add(tag);
                                 }
                             }
-
                             if (removedTags.Count > 0) {
                                 TasksRemoved?.Invoke(this, new TasksListItemsChangedEventArgs(removedTags));
                             }
@@ -272,7 +266,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 foreach (var span in spans) {
                     // Force the input span to cover at least one character
                     // (this helps make tooltips work where the input span is empty)
-                    int spanAfterEnd = (span.Length == 0) ? span.Start.Position + 1 : span.End.Position;
+                    var spanAfterEnd = (span.Length == 0) ? span.Start.Position + 1 : span.End.Position;
                     tags.AddRange(_errorTags.ItemsInRange(TextRange.FromBounds(span.Start, spanAfterEnd)));
                 }
             }

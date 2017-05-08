@@ -60,21 +60,21 @@ namespace Microsoft.Languages.Editor.Classification {
         }
 
         protected virtual void OnTextChanged(object sender, TextContentChangedEventArgs e) {
-            int start, oldLength, newLength;
-            TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
+            var c = e.ToTextChange();
+            var start = c.Start;
+            var newLength = c.NewLength;
 
             // check if change is still within current snapshot. the problem is that
             // change could have been calculated against projected buffer and then
-            // host (HTML editor) could have dropped projections effectively
-            // shortening buffer to nothing.
+            // host could have dropped projections effectively shortening buffer to nothing.
 
             var snapshot = TextBuffer.CurrentSnapshot;
-            if (start > snapshot.Length || start + newLength > snapshot.Length) {
+            if (c.Start > snapshot.Length || c.NewEnd > snapshot.Length) {
                 start = 0;
                 newLength = snapshot.Length;
             }
 
-            OnTextChanged(start, oldLength, newLength);
+            OnTextChanged(start, c.OldLength, newLength);
         }
 
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "oldLength", Justification = "It may be used in derived class and/or unit tests")]
@@ -89,7 +89,6 @@ namespace Microsoft.Languages.Editor.Classification {
             // lingering on.
 
             var initialIndex = -1;
-            var changeStart = start;
 
             var touchingTokens = Tokens.GetItemsContainingInclusiveEnd(start);
 

@@ -62,8 +62,9 @@ namespace Microsoft.R.Editor.Test.Formatting {
         private ITextView TestAutoFormat(int position, string initialContent = "") {
             var editorView = TextViewTest.MakeTextView(initialContent, position, out AstRoot ast);
             var textView = editorView.As<ITextView>();
-            textView.TextBuffer.Changed += (object sender, TextContentChangedEventArgs e) => {
-                ast.ReflectTextChanges(e.ConvertToRelative(), new TextProvider(textView.TextBuffer.CurrentSnapshot));
+            textView.TextBuffer.Changed += (s, e) => {
+                var tc = e.ToTextChange();
+                ast.ReflectTextChange(tc.Start, tc.OldLength, tc.NewLength, tc.NewTextProvider);
 
                 if (e.Changes[0].NewText.Length == 1) {
                     var ch = e.Changes[0].NewText[0];

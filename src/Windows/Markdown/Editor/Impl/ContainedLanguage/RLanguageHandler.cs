@@ -20,12 +20,12 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         private readonly RCodeSeparatorCollection _separators = new RCodeSeparatorCollection();
         private readonly IBufferGenerator _generator = new BufferGenerator();
         private readonly IProjectionBufferManager _projectionBufferManager;
-        private readonly IServiceContainer _services;
+        private readonly IIdleTimeService idleTime;
 
         public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager, IServiceContainer services) :
             base(textBuffer) {
             _projectionBufferManager = projectionBufferManager;
-            _services = services;
+            idleTime = services.GetService<IIdleTimeService>();
             UpdateProjections();
         }
 
@@ -37,44 +37,35 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         public override ITextRange GetCodeBlockOfLocation(int bufferPosition) => GetLanguageBlockOfLocation(bufferPosition);
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            var changes = e.ConvertToRelative();
-            foreach (var c in changes) {
-                var destructive = _separators.IsDestructiveChange(c.OldStart, c.OldLength, c.NewLength, c.OldText, c.NewText);
-                if (destructive) {
-                    // Allow existing command call to complete so we don't yank projections
-                    // from underneath code that expects text buffer to exist, such as formatter.
-                    IdleTimeAction.Cancel(GetType());
-                    IdleTimeAction.Create(UpdateProjections, 0, GetType(), _services.GetService<IIdleTimeService>());
-                    break;
-                } else {
-                    Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);
-                    _separators.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);
-                }
+            var c = e.ToTextChange();
+            var destructive = _separators.IsDestructiveChange(c.Start, c.OldLength, c.NewLength, c.OldTextProvider, c.NewTextProvider);
+            if (destructive) {
+                // Allow existing command call to complete so we don't yank projections
+                // from underneath code that expects text buffer to exist, such as formatter.
+                IdleTimeAction.Cancel(GetType());
+                IdleTimeAction.Create(UpdateProjections, 0, GetType(), idleTime);
+            } else {
+                Blocks.ReflectTextChange(c.Start, c.OldLength, c.NewLength);
+                _separators.ReflectTextChange(c.Start, c.OldLength, c.NewLength);
             }
         }
 
         private void UpdateProjections() {
-            ProjectionMapping[] mappings;
-
             BuildLanguageBlockCollection();
-            var content = _generator.GenerateContent(TextBuffer.CurrentSnapshot, Blocks, out mappings);
+            var content = _generator.GenerateContent(TextBuffer.CurrentSnapshot, Blocks, out var mappings);
             _projectionBufferManager.SetProjectionMappings(content, mappings);
         }
 
         private void BuildLanguageBlockCollection() {
             var tokenizer = new MdTokenizer();
             var tokens = tokenizer.Tokenize(TextBuffer.CurrentSnapshot.GetText());
-
-            var rCodeTokens = tokens.Where(t => {
-                var mct = t as MarkdownCodeToken;
-                return mct != null && mct.LeadingSeparatorLength > 1;
-            });
+            var rCodeTokens = tokens.OfType<MarkdownCodeToken>().Where(t => t.LeadingSeparatorLength > 1);
 
             // TODO: incremental updates
             Blocks.Clear();
             _separators.Clear();
 
-            foreach (MarkdownCodeToken t in rCodeTokens) {
+            foreach (var t in rCodeTokens) {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
                 _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```r{ or `r

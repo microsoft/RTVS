@@ -40,7 +40,7 @@ namespace Microsoft.R.Editor.Outline {
         internal IREditorTree EditorTree { get; }
 
         public ROutlineRegionBuilder(IREditorDocument document, IServiceContainer services)
-            : base(document.EditorTree.TextBuffer(), services) {
+            : base(document.EditorTree.TextBuffer(), services, services.GetService<IREditorSettings>().EnableOutlining) {
             EditorDocument = document;
             EditorDocument.Closing += OnDocumentClosing;
 

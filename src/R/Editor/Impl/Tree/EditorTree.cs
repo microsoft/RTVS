@@ -215,7 +215,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Initiates processing of pending changes synchronously.
         /// </summary>
         internal void ProcessChanges() {
-            if (this.IsDirty) {
+            if (IsDirty) {
                 TreeUpdateTask.ProcessPendingTextBufferChanges(false);
             }
         }
@@ -223,13 +223,10 @@ namespace Microsoft.R.Editor.Tree {
 
         private void OnTextBufferChanged(object sender, TextChangeEventArgs e) => TreeUpdateTask.OnTextChange(e);
 
-        internal void NotifyTextChange(int start, int oldLength, int newLength) {
-            var change = new TextChangeEventArgs(start, start, oldLength, newLength);
-            var changes = new List<TextChangeEventArgs>() { change };
-            _astRoot.ReflectTextChanges(changes, EditorBuffer.CurrentSnapshot);
-        }
+        internal void NotifyTextChange(int start, int oldLength, int newLength) 
+            => _astRoot.ReflectTextChange(start, oldLength, newLength, EditorBuffer.CurrentSnapshot);
 
-        public TextChange PendingChanges => TreeUpdateTask.Changes;
+        public TreeTextChange PendingChanges => TreeUpdateTask.Changes;
 
         /// <summary>
         /// Removes nodes from the tree collection if node range is partially or entirely 
@@ -257,7 +254,7 @@ namespace Microsoft.R.Editor.Tree {
 
             for (var i = 0; i < scope.Children.Count; i++) {
                 var child = scope.Children[i];
-                if (TextRange.Intersect(range, child)) {
+                if (range.Intersect(child)) {
                     if (firstToRemove < 0) {
                         firstToRemove = i;
                     } else {

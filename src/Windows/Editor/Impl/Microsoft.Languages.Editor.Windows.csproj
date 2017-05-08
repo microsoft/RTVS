@@ -64,6 +64,7 @@
     <Compile Include="Extensions\EditorBufferExtensions.cs" />
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="Composition\ContentTypeServiceLocator.cs" />
+    <Compile Include="Extensions\TextChangeExtensions.cs" />
     <Compile Include="Text\EditorSnapshotPoint.cs" />
     <Compile Include="Text\TrackingTextRange.cs" />
     <Compile Include="ViewModel\IEditorViewModelFactory.cs" />
@@ -121,7 +122,6 @@
     <Compile Include="Text\TextBufferListenerEvents.cs" />
     <Compile Include="Text\TextProvider.cs" />
     <Compile Include="Text\TextRangeExtensions.cs" />
-    <Compile Include="Text\TextUtility.cs" />
     <Compile Include="Text\TextViewListenerEventArgs.cs" />
     <Compile Include="Text\TextViewListenerEvents.cs" />
     <Compile Include="Text\ViewCaret.cs" />

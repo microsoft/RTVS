@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Tree {
         /// so text snapshot attached to the tree is no longer the same as ITextBuffer.CurrentSnapshot
         /// </summary>
         internal bool ChangesPending => !Changes.IsEmpty;
-        internal TextChange Changes { get; } = new TextChange();
+        internal TreeTextChange Changes { get; } = new TreeTextChange(0, 0, 0, TextStream.Empty, TextStream.Empty);
 
         #endregion
 
@@ -145,16 +145,16 @@ namespace Microsoft.R.Editor.Tree {
         /// Methond must be called on a main thread only, typically from an event 
         /// handler that receives text buffer change events. 
         /// </summary>
-        internal void OnTextChange(TextChangeEventArgs change) {
+        internal void OnTextChange(TextChangeEventArgs e) {
             Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
             _editorTree.FireOnUpdatesPending();
             if (UpdatesSuspended) {
-                this.TextBufferChangedSinceSuspend = true;
+                TextBufferChangedSinceSuspend = true;
                 Changes.FullParseRequired = true;
             } else {
                 _lastChangeTime = DateTime.UtcNow;
-                var context = new TextChangeContext(_editorTree, change, Changes);
+                var context = new TextChangeContext(_editorTree, new TreeTextChange(e.Change), Changes);
 
                 // No need to analyze changes if full parse is already pending
                 if (!Changes.FullParseRequired) {
@@ -179,13 +179,13 @@ namespace Microsoft.R.Editor.Tree {
         /// Handles simple (safe) changes.
         /// </summary>
         private void ProcessSimpleChange(TextChangeContext context) {
-            var elementsRemoved = false;
+            bool elementsRemoved;
 
             try {
                 _editorTree.AcquireWriteLock();
 
                 elementsRemoved = DeleteAndShiftElements(context);
-                UpdateTreeTextSnapshot();
+                _editorTree.BufferSnapshot = EditorBuffer.CurrentSnapshot;
 
                 // If no elements were invalidated and full parse is not required, clear pending changes
                 if (!elementsRemoved) {
@@ -217,11 +217,7 @@ namespace Microsoft.R.Editor.Tree {
         private void ProcessComplexChange(TextChangeContext context) {
             // Cancel background parse if it is running
             Cancel();
-
-            var textChange = new TextChange {
-                OldTextProvider = context.OldTextProvider,
-                NewTextProvider = context.NewTextProvider
-            };
+            var c = context.PendingChanges;
 
             try {
                 // Get write lock since there may be concurrent readers 
@@ -229,30 +225,32 @@ namespace Microsoft.R.Editor.Tree {
                 // since changes can only come from a background parser
                 // and are always applied from the main thread.
                 _editorTree.AcquireWriteLock();
+                int start, oldLength, newLength;
 
                 if (Changes.FullParseRequired) {
                     // When full parse is required, change is like replace the entire file
-                    textChange.Start = 0;
-                    textChange.OldEnd = context.OldText.Length;
-                    textChange.NewEnd = context.NewText.Length;
+                    start = 0;
+                    oldLength = c.OldTextProvider.Length;
+                    newLength = c.NewTextProvider.Length;
 
                     // Remove damaged elements if any and reflect text change.
                     // the tree remains usable outside of the damaged scope.
-                    _editorTree.InvalidateInRange(context.OldRange);
-                    _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
+                    _editorTree.InvalidateInRange(c.OldRange);
+                    _editorTree.NotifyTextChange(c.Start, c.OldLength, c.NewLength);
                 } else {
-                    textChange.Start = context.OldRange.Start;
-                    textChange.OldEnd = context.OldRange.End;
-                    textChange.NewEnd = context.NewRange.End;
+                    start = c.Start;
+                    oldLength = c.OldLength;
+                    newLength = c.NewLength;
 
                     DeleteAndShiftElements(context);
                     Debug.Assert(_editorTree.AstRoot.Children.Count > 0);
                 }
 
-                Changes.Combine(textChange);
-                Changes.Version = EditorBuffer?.CurrentSnapshot.Version ?? 1;
+                var ttc = new TreeTextChange(start, oldLength, newLength, _editorTree.BufferSnapshot, EditorBuffer.CurrentSnapshot);
+                Changes.Combine(ttc);
+                Changes.Version = EditorBuffer?.CurrentSnapshot?.Version ?? 1;
 
-                UpdateTreeTextSnapshot();
+                _editorTree.BufferSnapshot = EditorBuffer.CurrentSnapshot;
             } finally {
                 // Lock must be released before firing events otherwise we may hang
                 _editorTree.ReleaseWriteLock();
@@ -261,21 +259,12 @@ namespace Microsoft.R.Editor.Tree {
             _editorTree.FireOnUpdateCompleted(TreeUpdateType.NodesRemoved);
         }
 
-        private void UpdateTreeTextSnapshot() {
-            if (EditorBuffer != null) {
-                if (Changes.OldTextProvider == null) {
-                    Changes.OldTextProvider = _editorTree.BufferSnapshot;
-                }
-                _editorTree.BufferSnapshot = EditorBuffer.CurrentSnapshot;
-            }
-        }
-
         // internal for unit tests
         internal bool DeleteAndShiftElements(TextChangeContext context) {
             Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
 
-            var textChange = context.PendingChanges;
-            var changeType = textChange.TextChangeType;
+            var change = context.PendingChanges;
+            var changeType = context.PendingChanges.TextChangeType;
             var elementsChanged = false;
 
             if (changeType == TextChangeType.Structure) {
@@ -286,21 +275,21 @@ namespace Microsoft.R.Editor.Tree {
                 var positionType = PositionType.Undefined;
 
                 if (changedElement != null) {
-                    positionType = changedElement.GetPositionNode(context.NewStart, out IAstNode node);
+                    positionType = changedElement.GetPositionNode(change.Start, out IAstNode node);
                 }
 
-                var deleteElements = context.OldLength > 0 || positionType != PositionType.Token;
+                var deleteElements = change.OldLength > 0 || positionType != PositionType.Token;
 
                 // In case of delete or replace we need to invalidate elements that were 
                 // damaged by the delete operation. We need to remove elements so they 
                 // won't be found by validator and it won't be looking at zombies.
                 if (deleteElements) {
                     Changes.FullParseRequired = true;
-                    elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
+                    elementsChanged = _editorTree.InvalidateInRange(change.OldRange);
                 }
             }
 
-            _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
+            _editorTree.NotifyTextChange(change.Start, change.OldLength, change.NewLength);
             return elementsChanged;
         }
 
