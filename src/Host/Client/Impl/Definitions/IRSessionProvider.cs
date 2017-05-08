@@ -14,6 +14,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler BrokerChanged;
         event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
+        event EventHandler BeforeDisposed;
 
         bool HasBroker { get; }
         bool IsConnected { get; }

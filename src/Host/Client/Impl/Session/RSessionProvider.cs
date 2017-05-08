@@ -46,6 +46,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public IBrokerClient Broker => _brokerProxy;
 
+        public event EventHandler BeforeDisposed;
         public event EventHandler BrokerChanging;
         public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
@@ -71,6 +72,10 @@ namespace Microsoft.R.Host.Client.Session {
             if (!_disposeToken.TryMarkDisposed()) {
                 return;
             }
+
+            try {
+                BeforeDisposed?.Invoke(this, EventArgs.Empty);
+            } catch (Exception ex) when (!ex.IsCriticalException()) { }
 
             var sessions = GetSessions().ToList();
             var stopHostTasks = sessions.Select(session => session.StopHostAsync(false));
