@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions;
@@ -76,6 +75,7 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// needs to know how to indent freshly formatted lines of code.
         /// </summary>
         /// <param name="line">Line to find the indent for</param>
+        /// <param name="settings">Editor settings</param>
         /// <param name="ast">Optional AST</param>
         /// <param name="formatting">
         /// Indicates if current call is from formatter or 
@@ -138,12 +138,10 @@ namespace Microsoft.R.Editor.SmartIndent {
                                         fcIndentSize += settings.IndentSize;
                                     }
                                     return fcIndentSize;
-                                } else {
-                                    return GetBlockIndent(line, settings);
                                 }
-                            } else {
-                                return originalIndentSizeInSpaces;
+                                return GetBlockIndent(line, settings);
                             }
+                            return originalIndentSizeInSpaces;
                         }
                     }
                 }
@@ -151,7 +149,7 @@ namespace Microsoft.R.Editor.SmartIndent {
 
             // Candidate position #1 is first non-whitespace character
             // in the the previous line
-            int startOfNoWsOnPreviousLine = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+            var startOfNoWsOnPreviousLine = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
             // Try current new line so in case of 'if () { } else { | }' we find
             // the 'else' which defines the scope and not the parent 'if'.
@@ -174,9 +172,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 }
             }
 
-            IAstNodeWithScope scopeStatement;
             var scopeStatement2 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(startOfNoWsOnPreviousLine);
-
             // Locate standalone scope which is not a statement, if any
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(prevLine.End);
 
@@ -187,9 +183,9 @@ namespace Microsoft.R.Editor.SmartIndent {
             //  }
             // we will use the 'if' and not the function definition
             var scopeCandidates = new List<IAstNode>() { scopeStatement1, scopeStatement2, scope };
-            var smallestScope = scopeCandidates.OrderBy(x => x != null ? x.Length : Int32.MaxValue).FirstOrDefault();
+            var smallestScope = scopeCandidates.OrderBy(x => x?.Length ?? int.MaxValue).FirstOrDefault();
 
-            scopeStatement = smallestScope as IAstNodeWithScope;
+            var scopeStatement = smallestScope as IAstNodeWithScope;
             scope = smallestScope as IScope;
 
             // If IScope is a scope defined by the parent statement, use
@@ -245,7 +241,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             }
 
             // Try locate the scope itself, if any
-            if (scope != null && scope.OpenCurlyBrace != null) {
+            if (scope?.OpenCurlyBrace != null) {
                 if (scope.CloseCurlyBrace != null) {
                     var endOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scope.CloseCurlyBrace.Start);
                     if (endOfScopeLine == line.LineNumber) {
@@ -258,11 +254,6 @@ namespace Microsoft.R.Editor.SmartIndent {
             return 0;
         }
 
-        private static int GetFirstArgumentIndent(IEditorBufferSnapshot snapshot, IFunction fc) {
-            var line = snapshot.GetLineFromPosition(fc.OpenBrace.End);
-            return fc.OpenBrace.End - line.Start;
-        }
-
         public static int InnerIndentSizeFromNode(IEditorBuffer editorBuffer, IAstNode node, RFormatOptions options) {
             if (node != null) {
                 // Scope indentation is based on the scope defining node i.e.
@@ -273,8 +264,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // on the position of the opening {
                 var scope = node as IScope;
                 if (scope != null) {
-                    var scopeDefiningNode = node.Parent as IAstNodeWithScope;
-                    if (scopeDefiningNode != null && scopeDefiningNode.Scope == scope) {
+                    if (node.Parent is IAstNodeWithScope scopeDefiningNode && scopeDefiningNode.Scope == scope) {
                         node = scopeDefiningNode;
                     }
                 }

@@ -11,6 +11,7 @@ namespace Microsoft.Languages.Editor.Text {
     /// Text provider that implements ITextProvider over Visual Studio 
     /// core editor's ITextBuffer or ITextSnapshot 
     /// </summary>
+    [DebuggerDisplay("{" + nameof(GetText) + "()}")]
     public class TextProvider : ITextProvider, ITextSnapshotProvider {
         private const int DefaultBlockLength = 16384;
         private const int DefaultPreBlockLength = 128;
@@ -20,8 +21,10 @@ namespace Microsoft.Languages.Editor.Text {
         private string _cachedBlock;
         private int _basePosition;
 
+        [DebuggerStepThrough]
         public TextProvider(ITextSnapshot snapshot) : this(snapshot, 0) { }
 
+        [DebuggerStepThrough]
         public TextProvider(ITextSnapshot snapshot, bool partial)
             : this(snapshot, partial ? DefaultBlockLength : 0) { }
 

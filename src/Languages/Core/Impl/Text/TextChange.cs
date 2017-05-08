@@ -51,12 +51,12 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         ///Text before the change
         /// </summary>
-        public string OldText => OldTextProvider?.GetText() ?? string.Empty;
+        public string OldText => OldTextProvider?.GetText(OldRange) ?? string.Empty;
 
         /// <summary>
         /// Snapshot after the change
         /// </summary>
-        public string NewText => NewTextProvider?.GetText() ?? string.Empty;
+        public string NewText => NewTextProvider?.GetText(NewRange) ?? string.Empty;
 
         /// <summary>
         /// Changed range in the old snapshot.

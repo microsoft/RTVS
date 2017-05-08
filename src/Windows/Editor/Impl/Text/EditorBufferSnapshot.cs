@@ -1,12 +1,16 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿using System.Diagnostics;
+using Microsoft.Languages.Core.Text;
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Text {
+    [DebuggerDisplay("{" + nameof(GetText) + "()}")]
     public sealed class EditorBufferSnapshot: TextProvider, IEditorBufferSnapshot {
         private readonly ITextSnapshot _snapshot;
+
+        [DebuggerStepThrough]
         public EditorBufferSnapshot(ITextSnapshot snapshot): base(snapshot) {
             _snapshot = snapshot;
         }

@@ -23,11 +23,10 @@ namespace Microsoft.Languages.Core.Text {
 
         private static readonly IList<T> _emptyList = new T[0];
         private static readonly IReadOnlyList<T> _emptyReadOnlyList = new T[0];
-        private List<T> _items = new List<T>();
+        private readonly List<T> _items = new List<T>();
 
         #region Construction
-        public TextRangeCollection() {
-        }
+        public TextRangeCollection() { }
 
         public TextRangeCollection(IEnumerable<T> ranges) {
             Add(ranges);
@@ -42,9 +41,7 @@ namespace Microsoft.Languages.Core.Text {
 
         public int Length { get; private set; }
 
-        public virtual bool Contains(int position) {
-            return Count > 0 && TextRange.Contains(this, position);
-        }
+        public virtual bool Contains(int position) => Count > 0 && TextRange.Contains(this, position);
 
         public void Shift(int offset) {
             foreach (var ct in _items) {
@@ -65,19 +62,17 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Number of comments in the collection.
         /// </summary>
-        public int Count { get { return _items.Count; } }
+        public int Count => _items.Count;
 
         /// <summary>
         /// Sorted list of comment tokens in the document.
         /// </summary>
-        public IList<T> Items {
-            get { return _items; }
-        }
+        public IList<T> Items => _items;
 
         /// <summary>
         /// Retrieves Nth item in the collection
         /// </summary>
-        public T this[int index] { get { return _items[index]; } }
+        public T this[int index] => _items[index];
 
         /// <summary>
         /// Appends text range to the collection. 
@@ -512,9 +507,7 @@ namespace Microsoft.Languages.Core.Text {
                             composite.ShiftStartingFrom(position, offset);
                         } else {
                             var expandable = this[mid] as IExpandableTextRange;
-                            if (expandable != null) {
-                                expandable.Expand(0, offset);
-                            }
+                            expandable?.Expand(0, offset);
                         }
 
                         // Now shift all remaining siblings that are below this one
@@ -585,9 +578,7 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         /// <param name="range">Range to remove items in</param>
         /// <returns>Collection of removed items</returns>
-        public ICollection<T> RemoveInRange(ITextRange range) {
-            return RemoveInRange(range, false);
-        }
+        public ICollection<T> RemoveInRange(ITextRange range) => RemoveInRange(range, false);
 
         /// <summary>
         /// Removes items that overlap given text range
@@ -652,9 +643,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="oldLength">Length of the changed fragment before the change.</param>
         /// <param name="newLength">Length of text fragment after the change.</param>
         /// <returns>Collection or removed blocks</returns>
-        public ICollection<T> ReflectTextChange(int start, int oldLength, int newLength) {
-            return ReflectTextChange(start, oldLength, newLength, false);
-        }
+        public ICollection<T> ReflectTextChange(int start, int oldLength, int newLength) => ReflectTextChange(start, oldLength, newLength, false);
 
         /// <summary>
         /// Reflects changes in text to the collection. Items are expanded and/or
@@ -780,9 +769,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Returns collection of items in an array
         /// </summary>
-        public T[] ToArray() {
-            return _items.ToArray();
-        }
+        public T[] ToArray() => _items.ToArray();
 
         /// <summary>
         /// Compares two collections and calculates 'changed' range. In case this collection
@@ -861,22 +848,16 @@ namespace Microsoft.Languages.Core.Text {
 
         class RangeItemComparer : IComparer<T> {
             #region IComparer<T> Members
-            public int Compare(T x, T y) {
-                return x.Start - y.Start;
-            }
+            public int Compare(T x, T y) => x.Start - y.Start;
             #endregion
         }
 
         #region IEnumerable<T> Members
-        public IEnumerator<T> GetEnumerator() {
-            return _items.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
         #endregion
 
         #region IEnumerable Members
-        IEnumerator IEnumerable.GetEnumerator() {
-            return _items.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
         #endregion
     }
 }

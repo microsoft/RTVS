@@ -16,29 +16,39 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
-    internal static class AutoFormat {
-        public static bool IsPreProcessAutoformatTriggerCharacter(char ch) => ch == ';';
-        public static bool IsPostProcessAutoformatTriggerCharacter(char ch) => ch.IsLineBreak() || ch == '}';
+    internal sealed class AutoFormat {
+        private readonly IServiceContainer _services;
+        private readonly IREditorSettings _settings;
+        private readonly ITextView _textView;
 
-        public static void HandleAutoformat(ITextView textView, IServiceContainer services, char typedChar) {
-            var settings = services.GetService<IREditorSettings>();
-            if (!settings.AutoFormat || (!settings.FormatScope && typedChar == '}')) {
+        public AutoFormat(ITextView textView, IServiceContainer services) {
+            _textView = textView;
+            _services = services;
+            _settings = services.GetService<IREditorSettings>();
+        }
+
+        public bool IsPreProcessAutoformatTriggerCharacter(char ch) => ch == ';';
+        public bool IsPostProcessAutoformatTriggerCharacter(char ch) => ch.IsLineBreak() || ch == '}';
+        
+        public void HandleAutoformat(char typedChar) {
+            if (!_settings.AutoFormat || (!_settings.FormatScope && typedChar == '}')) {
                 return;
             }
 
-            SnapshotPoint? rPoint = GetCaretPointInBuffer(textView);
+            var rPoint = GetCaretPointInBuffer(_textView);
             if (!rPoint.HasValue) {
                 return;
             }
 
-            var document = textView.TextBuffer.GetEditorDocument<IREditorDocument>();
+            var document = _textView.TextBuffer.GetEditorDocument<IREditorDocument>();
             var ast = document.EditorTree.AstRoot;
+            var editorView = _textView.ToEditorView();
 
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
             var textBuffer = document.EditorBuffer.As<ITextBuffer>();
-            var host = ContainedLanguageHost.GetHost(textView, textBuffer, services);
-            if (host != null && !host.CanFormatLine(textView.ToEditorView(), textBuffer.ToEditorBuffer(), textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
+            var host = ContainedLanguageHost.GetHost(_textView, textBuffer, _services);
+            if (host != null && !host.CanFormatLine(editorView, textBuffer.ToEditorBuffer(), textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
 
@@ -48,7 +58,6 @@ namespace Microsoft.R.Editor.Formatting {
             }
 
             var subjectBuffer = rPoint.Value.Snapshot.TextBuffer;
-            var editorView = textView.ToEditorView();
             var editorBuffer = subjectBuffer.ToEditorBuffer();
 
             if (typedChar.IsLineBreak()) {
@@ -58,12 +67,12 @@ namespace Microsoft.R.Editor.Formatting {
                 // autoformatting in this specific case. User can always format either the document
                 // or select the block and reformat it.
                 if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
-                    var scopeStatement = GetFormatScope(textView, subjectBuffer, ast);
+                    var scopeStatement = GetFormatScope(_textView, subjectBuffer, ast);
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
-                        FormatOperations.FormatNode(editorView, editorBuffer, services, scopeStatement);
-                    } else if (CanFormatLine(textView, subjectBuffer, -1)) {
-                        FormatOperations.FormatViewLine(editorView, editorBuffer, -1, services);
+                        FormatOperations.FormatNode(editorView, editorBuffer, _services, scopeStatement);
+                    } else if (CanFormatLine(subjectBuffer, -1)) {
+                        FormatOperations.FormatViewLine(editorView, editorBuffer, -1, _services);
                     }
                 }
             } else if (typedChar == ';') {
@@ -73,18 +82,18 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatViewLine(editorView, editorBuffer, 0, services);
+                    FormatOperations.FormatViewLine(editorView, editorBuffer, 0, _services);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(editorView, editorBuffer, services, limitAtCaret: true, caretOffset: -1);
+                FormatOperations.FormatCurrentStatement(editorView, editorBuffer, _services, limitAtCaret: true, caretOffset: -1);
             }
         }
 
-        private static bool CanFormatLine(ITextView textView, ITextBuffer textBuffer, int lineOffset) {
+        private bool CanFormatLine(ITextBuffer textBuffer, int lineOffset) {
             // Do not format inside strings. At this point AST may be empty due to the nature 
             // of [destructive] changes made to the document. We have to resort to tokenizer. 
             // In order to keep performance good during typing we'll use token stream from the classifier.
-            var caretPoint = textView.GetCaretPosition(textBuffer);
+            var caretPoint = _textView.GetCaretPosition(textBuffer);
             if (caretPoint.HasValue) {
                 var snapshot = textBuffer.CurrentSnapshot;
                 int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
@@ -141,7 +150,7 @@ namespace Microsoft.R.Editor.Formatting {
                         var scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
                         return scopeStatement;
                     }
-                } catch (Exception) { }
+                } catch (Exception ex)  when (!ex.IsCriticalException()) { }
             }
             return null;
         }

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Microsoft.Common.Core.Diagnostics;
@@ -449,19 +448,16 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Applies queued changes to the tree. Must only be called in a main thread context.
         /// </summary>
-        /// <param name="o"></param>
         internal void ApplyBackgroundProcessingResults() {
             Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThreadId, _threadCheckMessage);
             if (_disposed) {
                 return;
             }
 
-            EditorTreeChangeCollection treeChanges;
             var changed = false;
-            var fullParse = false;
             var staleChanges = false;
 
-            while (_backgroundParsingResults.TryDequeue(out treeChanges)) {
+            while (_backgroundParsingResults.TryDequeue(out var treeChanges)) {
                 // If no changes are pending, then main thread already processes
                 // everything in EnsureProcessingComplete call. Changes are pending
                 // until they are applied to the tree. If queue is not empty
@@ -478,7 +474,6 @@ namespace Microsoft.R.Editor.Tree {
                         // hols write lock.
 
                         ApplyTreeChanges(treeChanges.Changes);
-                        fullParse = Changes.FullParseRequired;
 
                         // Queue must be empty by now since only most recent changes are not stale
                         // Added local variable as I hit this assert, but _backgroundParsingResults.Count was zero

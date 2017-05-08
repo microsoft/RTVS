@@ -3,10 +3,8 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Completions;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text.Editor;
@@ -19,10 +17,12 @@ namespace Microsoft.R.Editor.Commands {
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler {
         private readonly IServiceContainer _services;
+        private readonly AutoFormat _autoFormat;
 
         public RTypingCommandHandler(ITextView textView, IServiceContainer services)
             : base(textView) {
             _services = services;
+            _autoFormat = new AutoFormat(textView, services);
         }
 
         #region ICommand
@@ -30,8 +30,8 @@ namespace Microsoft.R.Editor.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
-                if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
-                    AutoFormat.HandleAutoformat(TextView, _services, typedChar);
+                if (_autoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
+                    _autoFormat.HandleAutoformat(typedChar);
                 }
             }
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -40,8 +40,8 @@ namespace Microsoft.R.Editor.Commands {
         public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
-                if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
-                    AutoFormat.HandleAutoformat(TextView, _services, typedChar);
+                if (_autoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
+                    _autoFormat.HandleAutoformat(typedChar);
                 }
 
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);

@@ -18,9 +18,10 @@ namespace Microsoft.Common.Core.Idle {
     // from background thread directly rather than making Dispatcher.Invoke call
     // that will try transitioning data to the main thread.
     public abstract class CancellableTask : IDisposable {
-        private Task _task = null;
-        private ManualResetEventSlim _taskCompleted = new ManualResetEventSlim(true);
-        private long _canceled = 0;
+        // TODO: clean old code, use cancellation token, etc
+        private Task _task;
+        private readonly ManualResetEventSlim _taskCompleted = new ManualResetEventSlim(true);
+        private long _canceled;
         private long _taskId = 1;
 
         /// <summary>
@@ -64,16 +65,14 @@ namespace Microsoft.Common.Core.Idle {
 
             SignalTaskBegins();
 
-            _task = new Task((taskId) => {
+            _task = new Task(taskId => {
                 try {
-                    Func<bool> isCancelledCallback = () => { return IsCancellationRequested() || (TaskId != (long)taskId); };
-                    runAction(isCancelledCallback);
-                } catch (Exception) { } finally { }
+                    runAction(() => IsCancellationRequested() || TaskId != (long)taskId);
+                } catch (Exception ex) when (!ex.IsCriticalException()) { }
             }, TaskId);
 
             if (!async) {
                 _task.RunSynchronously();
-                DisposeTask();
             } else {
                 _task.Start();
             }
@@ -92,7 +91,6 @@ namespace Microsoft.Common.Core.Idle {
             if (_task != null && _taskCompleted != null && IsTaskRunning()) {
                 _taskCompleted.Wait(milliseconds);
             }
-            DisposeTask();
         }
 
         /// <summary>
@@ -132,22 +130,15 @@ namespace Microsoft.Common.Core.Idle {
         /// mean task completed successfully. It could as well be canceled.
         /// </summary>
         /// <returns></returns>
-        public bool IsTaskCompleted() => _taskCompleted != null ? _taskCompleted.IsSet : true;
+        public bool IsTaskCompleted() => _taskCompleted == null || _taskCompleted.IsSet;
 
         public bool IsTaskRunning() => !IsTaskCompleted();
 
         #region Dispose
-        protected void DisposeTask() => _task = null;
-
         [SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_task")]
         protected virtual void Dispose(bool disposing) {
             if (disposing) {
                 Cancel();
-
-                if (_taskCompleted != null) {
-                    _taskCompleted.Dispose();
-                    _taskCompleted = null;
-                }
             }
         }
 
