@@ -1,18 +1,24 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class LinuxSystemInfoService : ISystemInfoService {
         private readonly IFileSystem _fs;
+        private readonly IProcessServices _ps;
         private static char[] _memInfoSplitter = new char[] { ' ', ':', '\t' };
         private static Dictionary<string, long> _sizeLUT = new Dictionary<string, long> {
             {"KB", 1000L},
@@ -21,8 +27,9 @@ namespace Microsoft.R.Host.Broker.Services {
             {"TB", 1000L * 1000L * 1000L * 1000L},
         };
 
-        public LinuxSystemInfoService(IFileSystem fs) {
+        public LinuxSystemInfoService(IFileSystem fs, IProcessServices ps) {
             _fs = fs;
+            _ps = ps;
         }
 
         public double GetCpuLoad() {
@@ -111,8 +118,103 @@ namespace Microsoft.R.Host.Broker.Services {
             }
         }
 
-        public (string VideoCardName, long VideoRAM, string VideoProcessor) GetVideoControllerInformation() {
-            return ("", 0, "");
+
+        private static object _videoCardInfoLock = new object();
+        private static List<VideoCardInfo> _videoCardInfo;
+        public IEnumerable<VideoCardInfo> GetVideoControllerInformation() {
+            lock (_videoCardInfoLock) {
+                if(_videoCardInfo != null) {
+                    return _videoCardInfo;
+                }
+
+                InitializeVideoCardInfo();
+                return _videoCardInfo;
+            }
+        }
+
+        private void InitializeVideoCardInfo() {
+            _videoCardInfo = new List<VideoCardInfo>();
+            const string vramPart = "VRAM:";
+            var lshwDisplayData = ExecuteAndGetOutput("/usr/bin/lshw", "-class display").Select(s => s.Trim()).ToArray();
+            var dmesgData = ExecuteAndGetOutput("dmesg", null).Where(s => s.ContainsIgnoreCase(vramPart)).ToArray();
+
+            string productPart = "product: ";
+            string vendorPart = "vendor: ";
+            string busPart = "bus info: ";
+
+            // Match anything that looks like 1024M or 1024MB
+            Regex pattern = new Regex("[0-9]+[GM][B]?", RegexOptions.IgnoreCase);
+
+            int count = 1;
+            for (int i=0;  i < lshwDisplayData.Length; ++i) {
+                // find the line that starts with "*-" 
+                if (lshwDisplayData[i].StartsWithIgnoreCase("*-")) {
+                    string productName = GetPart(lshwDisplayData, productPart, ref i);
+                    string vendorName = GetPart(lshwDisplayData, vendorPart, ref i);
+                    string busInfo = GetPart(lshwDisplayData, busPart, ref i);
+                    long vram = 0;
+                    if (!string.IsNullOrEmpty(busInfo)) {
+                        int index = busInfo.IndexOf('@');
+                        if (index >= 0 && index < busInfo.Length) {
+                            string busvalue = busInfo.Substring(index + 1);
+                            for (int j = 0; j < dmesgData.Length; ++j) {
+                                if (dmesgData[i].ContainsIgnoreCase(busvalue)) {
+                                    var match = pattern.Match(dmesgData[i]);
+                                    if (match.Success) {
+                                        vram = GetRamValueMB(match.Value);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    _videoCardInfo.Add(new VideoCardInfo() { VideoCardName = productName, VideoRAM = vram, VideoProcessor = vendorName });
+                    ++count;
+                }
+            }
+        }
+
+        private static long GetRamValueMB(string vramStr) {
+            long ram = 0;
+            Regex numPattern = new Regex("[0-9]+");
+            var match = numPattern.Match(vramStr);
+            
+            if (match.Success) {
+                long.TryParse(match.Value, out ram);
+            }
+
+            if (vramStr.ContainsIgnoreCase("G")) {
+                ram *= 1024;
+            }
+
+            return ram;
+        }
+
+        private IEnumerable<string> ExecuteAndGetOutput(string command, string arguments) {
+            Process proc = null;
+            List<string> standardOutData = new List<string>();
+            try {
+                ProcessStartInfo psi = new ProcessStartInfo();
+                psi.Arguments = arguments;
+                psi.FileName = command;
+                psi.RedirectStandardInput = true;
+                psi.RedirectStandardOutput = true;
+                psi.RedirectStandardError = true;
+                proc = _ps.Start(psi);
+
+                using (StreamReader reader = new StreamReader(proc.StandardOutput.BaseStream)) {
+                    while (!reader.EndOfStream) {
+                        standardOutData.Add(reader.ReadLine());
+                    }
+                }
+            } catch (Exception) {
+            } finally {
+                if (proc != null && !proc.HasExited) {
+                    proc?.Kill();
+                }
+            }
+            return standardOutData;
         }
 
         private static char[] _cpuInfoSplitter = new char[] { ' ', ':', '\t' };
@@ -169,6 +271,20 @@ namespace Microsoft.R.Host.Broker.Services {
                 default:
                     return true;
             }
+        }
+
+        private static string GetPart(string[] lines, string part, ref int index) {
+            if (index < lines.Length) {
+                string line = lines[index];
+                while (!line.StartsWithOrdinal(part)) {
+                    if (++index >= lines.Length) {
+                        return null;
+                    }
+                    line = lines[index];
+                }
+                return line.Substring(part.Length).Trim();
+            }
+            return null;
         }
     }
 }

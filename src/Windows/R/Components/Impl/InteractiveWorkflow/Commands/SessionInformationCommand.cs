@@ -88,16 +88,21 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             sb.AppendLine("\t" + Resources.PhysicalMemory.FormatInvariant(aboutHost.TotalPhysicalMemory, aboutHost.FreePhysicalMemory));
             sb.AppendLine("\t" + Resources.VirtualMemory.FormatInvariant(aboutHost.TotalVirtualMemory, aboutHost.FreeVirtualMemory));
 
-            if (!string.IsNullOrEmpty(aboutHost.VideoCardName)) {
-                sb.AppendLine("\t" + Resources.VideoCardName.FormatInvariant(aboutHost.VideoCardName));
-            }
+            int count = 1;
+            foreach(var cardInfo in aboutHost.VideoCards) {
+                if (!string.IsNullOrEmpty(cardInfo.VideoCardName)) {
+                    sb.AppendLine("\t" + Resources.VideoCardName.FormatInvariant(count, cardInfo.VideoCardName));
+                }
 
-            if (!string.IsNullOrEmpty(aboutHost.VideoProcessor)) {
-                sb.AppendLine("\t" + Resources.VideoProcessor.FormatInvariant(aboutHost.VideoProcessor));
-            }
+                if (!string.IsNullOrEmpty(cardInfo.VideoProcessor)) {
+                    sb.AppendLine("\t" + Resources.VideoProcessor.FormatInvariant(count, cardInfo.VideoProcessor));
+                }
 
-            if (aboutHost.VideoRAM > 0) {
-                sb.AppendLine("\t" + Resources.VideoRAM.FormatInvariant(aboutHost.VideoRAM));
+                if (cardInfo.VideoRAM > 0) {
+                    sb.AppendLine("\t" + Resources.VideoRAM.FormatInvariant(count, cardInfo.VideoRAM));
+                }
+
+                ++count;
             }
 
             sb.AppendLine("\t" + Resources.ConnectedUserCount.FormatInvariant(aboutHost.ConnectedUserCount));
@@ -106,7 +111,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             if (_interactiveWorkflow.RSession.IsRemote) {
                 sb.AppendLine(Resources.InstalledInterpreters);
 
-                int count = 0;
+                count = 0;
                 foreach (var interpreter in aboutHost.Interpreters) {
                     sb.AppendLine("\t" + interpreter);
                     count++;
@@ -126,8 +131,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.Version);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", aboutHost.VideoCardName);
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote GPU", aboutHost.VideoProcessor);
+
+                    foreach(var cardInfo in aboutHost.VideoCards) {
+                        telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", cardInfo.VideoCardName);
+                        telemetry.ReportEvent(TelemetryArea.Configuration, "Remote GPU", cardInfo.VideoProcessor);
+                    }
                 }
             }
         }

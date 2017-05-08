@@ -1688,7 +1688,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Video controller: {0}.
+        ///   Looks up a localized string similar to Video controller[{0}]: {1}.
         /// </summary>
         public static string VideoCardName {
             get {
@@ -1697,7 +1697,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GPU: {0}.
+        ///   Looks up a localized string similar to GPU[{0}]: {1}.
         /// </summary>
         public static string VideoProcessor {
             get {
@@ -1706,7 +1706,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Video memory: {0} MB.
+        ///   Looks up a localized string similar to Video memory[{0}]: {1} MB.
         /// </summary>
         public static string VideoRAM {
             get {

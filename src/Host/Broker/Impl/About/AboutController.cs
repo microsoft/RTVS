@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -50,9 +51,16 @@ namespace Microsoft.R.Host.Broker.About {
             a.FreePhysicalMemory = memoryInfo.FreePhysicalMemory;
 
             var videoInfo = _systemInfo.GetVideoControllerInformation();
-            a.VideoCardName = videoInfo.VideoCardName;
-            a.VideoRAM = videoInfo.VideoRAM;
-            a.VideoProcessor = videoInfo.VideoProcessor;
+            List<VideoCardInfo> videoCards = new List<VideoCardInfo>();
+            foreach(var cardInfo in videoInfo) {
+                var card = new VideoCardInfo() {
+                    VideoCardName = cardInfo.VideoCardName,
+                    VideoRAM = cardInfo.VideoRAM,
+                    VideoProcessor = cardInfo.VideoProcessor
+                };
+                videoCards.Add(card);
+            }
+            a.VideoCards = videoCards.ToArray();
 
             a.Interpreters = _interpManager.Interpreters.Select(x => Invariant($"[{x.Id}] {x.Name}")).ToArray();
             if(a.Interpreters.Length > 0) {
