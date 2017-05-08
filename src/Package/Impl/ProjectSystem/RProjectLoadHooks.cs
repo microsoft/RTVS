@@ -91,7 +91,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriter;
-            unconfiguredProject.ProjectUnloading += ProjectUnloading;
+            unconfiguredProject.ProjectUnloading += ProjectUnloadingAsync;
+
             _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.Services.FileSystem, new RMsBuildFileSystemFilter(), coreShell.Services.Log);
             _fileWatcher.Error += FileWatcherError;
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Services.Log);
@@ -130,6 +131,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             } catch (Exception) {
                 return;
             }
+
+            _workflow.RSessions.BeforeDisposed += BeforeRSessionsDisposed;
 
             // TODO: need to compute the proper paths for remote, but they might not even exist if the project hasn't been deployed.
             // https://github.com/Microsoft/RTVS/issues/2223
@@ -199,11 +202,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
-        private async Task ProjectUnloading(object sender, EventArgs args) {
-            _coreShell.AssertIsOnMainThread();
+        private void BeforeRSessionsDisposed(object sender, EventArgs args) {
+            _coreShell.Services.Tasks.Wait(ProjectUnloadingAsync(sender, args));
+        }
+
+        private async Task ProjectUnloadingAsync(object sender, EventArgs args) {
+            await _coreShell.SwitchToMainThreadAsync(new CancellationTokenSource(10000).Token);
 
             _unconfiguredProject.ProjectRenamedOnWriter -= ProjectRenamedOnWriter;
-            _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
+            _unconfiguredProject.ProjectUnloading -= ProjectUnloadingAsync;
+            _workflow.RSessions.BeforeDisposed -= BeforeRSessionsDisposed;
+
             _fileWatcher.Dispose();
 
             if (!_coreShell.Services.FileSystem.DirectoryExists(_projectDirectory)) {
