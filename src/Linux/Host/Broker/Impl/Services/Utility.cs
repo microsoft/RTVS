@@ -60,10 +60,10 @@ namespace Microsoft.R.Host.Broker.Services {
 
         private static Process CreateRLaunchProcess(IProcessServices ps, bool authenticateOnly) {
             // usage:
-            // R.Launch.out <-a|-r>
+            // Microsoft.R.Host.RunAsUser.out <-a|-r>
             //    -a : authenticate only
             //    -r : authenticate and run command
-            const string rLaunchBinary = "R.Launch.out";
+            const string rLaunchBinary = "Microsoft.R.Host.RunAsUser.out";
 
             string brokerDir = Path.GetDirectoryName(typeof(Program).GetTypeInfo().Assembly.Location);
             string rLaunchPath = Path.Combine(brokerDir, rLaunchBinary);
