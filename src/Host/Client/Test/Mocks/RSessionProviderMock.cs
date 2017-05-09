@@ -12,7 +12,7 @@ namespace Microsoft.R.Host.Client.Mocks {
     public sealed class RSessionProviderMock : IRSessionProvider {
         private readonly Dictionary<string, IRSession> _sessions = new Dictionary<string, IRSession>();
 
-        public void Dispose() { }
+        public void Dispose() => BeforeDisposed?.Invoke(this, EventArgs.Empty);
         public bool HasBroker { get; } = true;
         public bool IsConnected { get; } = true;
         public IBrokerClient Broker { get; } = new NullBrokerClient();
@@ -35,6 +35,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
 #pragma warning disable 67
+        public event EventHandler BeforeDisposed;
         public event EventHandler BrokerChanging;
         public event EventHandler BrokerChangeFailed;
         public event EventHandler BrokerChanged;
