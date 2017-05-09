@@ -1,8 +1,8 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.16.0",
+    "FluentAssertions": "4.19.2",
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.SqlServer.DacFx.x86": "130.3485.1",
+    "Microsoft.SqlServer.DacFx.x86": "140.3652.3",
     "Microsoft.VisualStudio.ComponentModelHost": "15.0.26201",
     "Microsoft.VisualStudio.Editor": "15.0.26201",
     "Microsoft.VisualStudio.ImageCatalog": "15.0.26201",
@@ -17,7 +17,7 @@
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.26507.55",
     "Microsoft.VisualStudio.TextManager.Interop.12.0": "12.0.30110",
     "Microsoft.VisualStudio.VsInteractiveWindow": "2.0.0-rc3-61319-01",
-    "NSubstitute": "1.10.0",
+    "NSubstitute": "2.0.3",
     "System.IO.Compression.ZipFile": "4.3.0",
     "VSSDK.DTE.8": "8.0.4",
     "xunit": "2.2.0-beta1-build3239",

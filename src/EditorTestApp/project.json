@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.16.0",
+    "FluentAssertions": "4.19.2",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.Editor": "15.0.26201",
     "Microsoft.VisualStudio.Text.Data": "15.0.26507.55",

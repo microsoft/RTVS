@@ -9,7 +9,7 @@
     "Microsoft.VisualStudio.Text.Logic": "15.0.26507.55",
     "Microsoft.VisualStudio.Text.UI": "15.0.26507.55",
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.26507.55",
-    "NSubstitute": "1.10.0",
+    "NSubstitute": "2.0.3",
     "xunit": "2.2.0-beta1-build3239",
     "xunit.runner.visualstudio": "2.2.0-beta1-build1144"
   },
