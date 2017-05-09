@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Core.Composition;
 
 namespace Microsoft.Languages.Editor.Composition {
     public class ImportComposer<TInterface, TMetadata>

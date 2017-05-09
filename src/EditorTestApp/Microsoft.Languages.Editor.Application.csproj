@@ -82,8 +82,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Text.Internal.dll">
-      <Private>False</Private>
+    <Reference Include="Microsoft.VisualStudio.Text.Internal.dll">
+      <Private>True</Private>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor">
+      <Private>True</Private>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

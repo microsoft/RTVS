@@ -69,16 +69,11 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.CoreUtility.dll",
             "Microsoft.VisualStudio.Editor.dll",
             "Microsoft.VisualStudio.Language.Intellisense.dll",
-            "Microsoft.VisualStudio.Platform.VSEditor.dll",
             "Microsoft.VisualStudio.Text.Data.dll",
             "Microsoft.VisualStudio.Text.Logic.dll",
             "Microsoft.VisualStudio.Text.UI.dll",
             "Microsoft.VisualStudio.Text.UI.Wpf.dll",
             "Microsoft.VisualStudio.Text.Internal.dll",
-        };
-
-        private static readonly string[] _privateEditorAssemblies = {
-            "Microsoft.VisualStudio.Platform.VSEditor.Interop.dll"
         };
 
         /// <summary>
@@ -110,7 +105,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             lock (_containerLock) {
                 var assemblies = new List<string>();
                 assemblies.AddRange(_coreEditorAssemblies);
-                assemblies.AddRange(_privateEditorAssemblies);
                 assemblies.AddRange(_rtvsEditorAssemblies);
                 assemblies.AddRange(_additionalAssemblies);
 

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Languages.Core.Composition;
 
 namespace Microsoft.Languages.Editor.Composition {
     /// <summary>
