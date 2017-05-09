@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.R.Host.Broker.Linux {
+namespace Microsoft.R.Host.Broker {
     using System;
     using System.Reflection;
     
@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Broker.Linux {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Broker.Linux.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Broker.Resources", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -58,6 +58,51 @@ namespace Microsoft.R.Host.Broker.Linux {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username or password is invalid..
+        /// </summary>
+        internal static string Error_AuthBadInput {
+            get {
+                return ResourceManager.GetString("Error_AuthBadInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication failed with Error: {0}.
+        /// </summary>
+        internal static string Error_AuthFailed {
+            get {
+                return ResourceManager.GetString("Error_AuthFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication initialization failed..
+        /// </summary>
+        internal static string Error_AuthInitFailed {
+            get {
+                return ResourceManager.GetString("Error_AuthInitFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No input to authenticate..
+        /// </summary>
+        internal static string Error_AuthNoInput {
+            get {
+                return ResourceManager.GetString("Error_AuthNoInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profile dirctory could not be found..
+        /// </summary>
+        internal static string Error_NoProfileDir {
+            get {
+                return ResourceManager.GetString("Error_NoProfileDir", resourceCulture);
             }
         }
     }

@@ -117,4 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Error_AuthBadInput" xml:space="preserve">
+    <value>Username or password is invalid.</value>
+  </data>
+  <data name="Error_AuthFailed" xml:space="preserve">
+    <value>Authentication failed with Error: {0}</value>
+  </data>
+  <data name="Error_AuthInitFailed" xml:space="preserve">
+    <value>Authentication initialization failed.</value>
+  </data>
+  <data name="Error_AuthNoInput" xml:space="preserve">
+    <value>No input to authenticate.</value>
+  </data>
+  <data name="Error_NoProfileDir" xml:space="preserve">
+    <value>Profile dirctory could not be found.</value>
+  </data>
 </root>
