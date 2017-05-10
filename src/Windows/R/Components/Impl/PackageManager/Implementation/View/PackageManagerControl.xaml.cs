@@ -45,13 +45,5 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         private void ListPackages_Loaded(object sender, RoutedEventArgs e) {
             TabInstalled.IsChecked = true;
         }
-
-        private void ButtonDismiss_Click(object sender, RoutedEventArgs e) {
-            Model?.DismissErrorMessage();
-        }
-
-        private void ButtonDismissAll_Click(object sender, RoutedEventArgs e) {
-            Model?.DismissAllErrorMessages();
-        }
     }
 }

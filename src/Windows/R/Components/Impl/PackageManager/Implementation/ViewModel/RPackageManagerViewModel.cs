@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
+using Microsoft.R.Components.InfoBar;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
@@ -23,6 +24,7 @@ using Microsoft.R.Host.Client.Host;
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageManagerViewModel : BindableBase, IRPackageManagerViewModel {
         private readonly IRPackageManager _packageManager;
+        private readonly IInfoBar _infoBar;
         private readonly IServiceContainer _services;
         private readonly IRSettings _settings;
         private readonly IMainThread _mainThread;
@@ -38,12 +40,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private Tab _selectedTab;
         private bool _isLoading;
-        private string _firstError;
-        private bool _hasMultipleErrors;
+        private bool _hasErrors;
         private IRPackageViewModel _selectedPackage;
 
-        public RPackageManagerViewModel(IRPackageManager packageManager, IServiceContainer services) {
+        public RPackageManagerViewModel(IRPackageManager packageManager, IInfoBar infoBar, IServiceContainer services) {
             _packageManager = packageManager;
+            _infoBar = infoBar;
             _services = services;
             _settings = services.GetService<IRSettings>();
             _mainThread = services.MainThread();
@@ -77,14 +79,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             private set { SetProperty(ref _isLoading, value); }
         }
 
-        public string FirstError {
-            get { return _firstError; }
-            private set { SetProperty(ref _firstError, value); }
-        }
-
-        public bool HasMultipleErrors {
-            get { return _hasMultipleErrors; }
-            private set { SetProperty(ref _hasMultipleErrors, value); }
+        public bool HasErrors {
+            get { return _hasErrors; }
+            private set { SetProperty(ref _hasErrors, value); }
         }
 
         public bool ShowPackageManagerDisclaimer {
@@ -321,16 +318,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             package.IsChanging = false;
         }
 
-        public void DismissErrorMessage() {
-            _mainThread.Assert();
-            _errorMessages.RemoveCurrent();
-        }
-        
-        public void DismissAllErrorMessages() {
-            _mainThread.Assert();
-            _errorMessages.Clear();
-        }
-        
         private void ShowPackageLockedMessage(PackageLockState packageLockState, string packageName) {
             switch (packageLockState) {
                 case PackageLockState.LockedByRSession:
@@ -704,10 +691,18 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private class ErrorMessageCollection {
             private readonly RPackageManagerViewModel _viewModel;
             private readonly List<ErrorMessage> _errorMessages;
+            private readonly IMainThread _mainThread;
+            private readonly Dictionary<string, Action> _actions;
+            private IDisposable _currentInfoBarItem;
 
             public ErrorMessageCollection(RPackageManagerViewModel viewModel) {
                 _viewModel = viewModel;
+                _mainThread = viewModel._services.MainThread();
                 _errorMessages = new List<ErrorMessage>();
+                _actions = new Dictionary<string, Action> {
+                    [Resources.Dismiss] = RemoveCurrent,
+                    [Resources.DismissAll] = Clear
+                };
             }
 
             public void Add(string message, ErrorMessageType type) {
@@ -715,36 +710,48 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 lock (_errorMessages) {
                     _errorMessages.Add(new ErrorMessage(message, type));
                     if (_errorMessages.Count == 1) {
-                        _viewModel.FirstError = message;
+                        UpdateInfoBarItem(message);
                     }
-                    _viewModel.HasMultipleErrors = _errorMessages.Count > 1;
-                }
-            }
-
-            public void RemoveCurrent() {
-                lock (_errorMessages) {
-                    if (_errorMessages.Count > 0) {
-                        _errorMessages.RemoveAt(0);
-                        _viewModel.FirstError = _errorMessages.Count > 0 ? _errorMessages[0].Message : null;
-                    }
-
-                    _viewModel.HasMultipleErrors = _errorMessages.Count > 1;
                 }
             }
 
             public void Remove(ErrorMessageType type) {
                 lock (_errorMessages) {
                     _errorMessages.RemoveWhere(e => e.Type == type);
-                    _viewModel.FirstError = _errorMessages.Count > 0 ? _errorMessages[0].Message : null;
-                    _viewModel.HasMultipleErrors = _errorMessages.Count > 1;
+                    UpdateInfoBarItem(_errorMessages.Count > 0 ? _errorMessages[0].Message : null);
                 }
             }
 
-            public void Clear() {
+            private void RemoveCurrent() {
+                lock (_errorMessages) {
+                    if (_errorMessages.Count > 0) {
+                        _errorMessages.RemoveAt(0);
+                    }
+
+                    UpdateInfoBarItem(_errorMessages.Count > 0 ? _errorMessages[0].Message : null);
+                }
+            }
+
+            private void Clear() {
                 lock (_errorMessages) {
                     _errorMessages.Clear();
-                    _viewModel.FirstError = null;
-                    _viewModel.HasMultipleErrors = false;
+                    UpdateInfoBarItem(null);
+                }
+            }
+
+            private void UpdateInfoBarItem(string message) {
+                if (!_mainThread.CheckAccess()) {
+                    _mainThread.Post(() => UpdateInfoBarItem(message));
+                    return;
+                }
+
+                _currentInfoBarItem?.Dispose();
+                if (message != null) {
+                    _viewModel.HasErrors = true;
+                    _currentInfoBarItem = _viewModel._infoBar.Add(new InfoBarItem(message, _actions, showCloseButton: false));
+                } else {
+                    _viewModel.HasErrors = false;
+                    _currentInfoBarItem = null;
                 }
             }
         }
