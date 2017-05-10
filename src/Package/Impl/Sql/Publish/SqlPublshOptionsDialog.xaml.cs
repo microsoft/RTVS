@@ -27,16 +27,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private SqlPublishOptionsDialogViewModel _model;
 
         public static async Task<SqlPublshOptionsDialog> CreateAsync(
-            ICoreShell shell, IProjectSystemServices pss, IFileSystem fs, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
-            var dialog = new SqlPublshOptionsDialog(shell, pss, fs, pcsp, settings);
-            await dialog.InitializeModelAsync();
-            return dialog;
-        }
-
-        public static async Task<SqlPublshOptionsDialog> CreateAsync(
             ICoreShell shell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
-            var dialog = await CreateAsync(shell, pss, new FileSystem(), pcsp, settings);
-
+            var dialog = new SqlPublshOptionsDialog(shell, pss, shell.FileSystem(), pcsp, settings);
+            await dialog.InitializeModelAsync();
             await shell.SwitchToMainThreadAsync();
             dialog.InitializeComponent();
             dialog.InitializeUI();

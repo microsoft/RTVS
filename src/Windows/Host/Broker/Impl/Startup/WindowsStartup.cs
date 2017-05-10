@@ -15,7 +15,7 @@ namespace Microsoft.R.Host.Broker.Startup {
         public override void ConfigureServices(IServiceCollection services) {
             base.ConfigureServices(services);
 
-            services.AddSingleton<IFileSystem>(new FileSystem())
+            services.AddSingleton<IFileSystem>(new WindowsFileSystem())
                 .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
                 .AddSingleton<IRHostProcessService, WindowsRHostProcessService>()
                 .AddSingleton<IRInstallationService, RInstallation>()

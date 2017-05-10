@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         [ImportingConstructor]
         public SendToRemoteCommand(ConfiguredProject configuredProject, IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider, ICoreShell shell) :
-            base(interactiveWorkflowProvider, shell.UI(), new FileSystem()) {
+            base(interactiveWorkflowProvider, shell.UI(), shell.FileSystem()) {
             _configuredProject = configuredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _shell = shell;

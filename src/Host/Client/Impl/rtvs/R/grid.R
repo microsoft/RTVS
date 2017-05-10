@@ -32,7 +32,8 @@ grid_data <- function(x, rows, cols, row_selector) {
     # If it's a 1D vector, turn it into a single-column 2D matrix, then process as such.
     d <- dim(x);
     if (is.null(d) || length(d) == 1) {
-        vp <- grid_data(matrix(x), rows, cols, row_selector)
+        dim(x) <- c(NROW(x), 1)
+        vp <- grid_data(x, rows, cols, row_selector)
         vp$is_1d <- TRUE;
         return(vp);
     }
@@ -44,6 +45,33 @@ grid_data <- function(x, rows, cols, row_selector) {
         cols <- 1:d[[2]];
     }
 
+    # Row names must be retrieved before slicing the data, because slicing can change the type -
+    # for example, a sliced timeseries is just a vector or matrix, and so time() no longer works.
+    rn <- row.names(x);
+    if (is.null(rn)) {
+        # If there are no explicit row names, try some alternatives
+        if (is.ts(x)) {
+            # For time series, use time().
+            rn <- tryCatch(time(x), error = function(e) NULL);
+        } else {
+            # For zoo objects, use zoo::index. Note that this package might not be installed,
+            # so both the type check and the index call are inside a try.
+            rn <- tryCatch(if (zoo::is.zoo(x)) zoo::index(x) else NULL, error = function(e) NULL);
+        }
+
+        # Make sure the length actually matches the number of rows.
+        if (length(rn) != nrow(x)) {
+            rn <- NULL;
+        } 
+    }
+
+    # Slice the row names to match the data.
+    if (!missing(row_selector)) {
+        rn <- rn[row_selector(x), drop = FALSE]
+    }
+    rn <- rn[rows, drop = FALSE]
+
+    # Slice the data.
     if (!missing(row_selector)) {
         x <- x[row_selector(x),, drop = FALSE]
     }
@@ -99,12 +127,17 @@ grid_data <- function(x, rows, cols, row_selector) {
     # Any names in the original data will flow through, but we don't want them.
     names(data) <- NULL;
 
-    rn <- row.names(x);
     cn <- colnames(x);
 
     # Format row names
     x.rownames <- NULL;
     if (length(rn) > 0) {
+        if (is.atomic(rn)) {
+            # For atomic vectors, we want to apply format() to the whole thing at once,
+            # so that it can determine the number of decimal places accordingly - e.g.
+            # for c(1.5, 2, 3.04), we want the output to be "1.50 2.00 3.04".
+            rn <- format(rn, trim = TRUE, justify = "none")
+        }
         x.rownames <- sapply(rn, grid_header_format, USE.NAMES = FALSE);
     }
 
