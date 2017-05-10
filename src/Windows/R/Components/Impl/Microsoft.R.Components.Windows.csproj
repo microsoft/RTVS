@@ -18,6 +18,10 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.targets" />
   <ItemGroup>
+    <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(LibDirectory)$(VisualStudioVersion)\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
