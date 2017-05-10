@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
@@ -25,6 +26,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             var containedLanguageHost = editorBuffer.GetService<IContainedLanguageHost>();
             if (containedLanguageHost == null) {
                 var document = editorView.EditorBuffer.GetEditorDocument<IMdEditorDocument>();
+                Debug.Assert(document != null);
                 containedLanguageHost = new MdContainedLanguageHost(document, editorBuffer);
             }
             return containedLanguageHost;

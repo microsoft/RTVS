@@ -48,12 +48,14 @@ namespace Microsoft.Languages.Editor.Text {
         /// <typeparam name="T">Type of the document to locate</typeparam>
         public static T GetEditorDocument<T>(this ITextBuffer textBuffer) where T : class, IEditorDocument {
             var editorBuffer = textBuffer.ToEditorBuffer();
-            if (editorBuffer != null) {
-                return editorBuffer.GetEditorDocument<T>();
+            var document = editorBuffer?.GetService<T>();
+            if (document != null) {
+                return document;
             }
+
             // May be top-level projection buffer such as REPL or markdown
             var pb = textBuffer as IProjectionBuffer;
-            var document = pb?.SourceBuffers.Select((tb) => tb.GetService<T>()).FirstOrDefault(x => x != null);
+            document = pb?.SourceBuffers.Select((tb) => tb.GetService<T>()).FirstOrDefault(x => x != null);
             if (document == null) {
                 var viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
                 if (viewData?.LastActiveView != null) {
@@ -166,8 +168,7 @@ namespace Microsoft.Languages.Editor.Text {
             if (shell != null) {
                 var textDocumentFactoryService = shell.GetService<ITextDocumentFactoryService>();
                 if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out var textDocument)) {
-                    void OnDocumentDisposed(object sender, TextDocumentEventArgs eventArgs)
-                    {
+                    void OnDocumentDisposed(object sender, TextDocumentEventArgs eventArgs) {
                         if (eventArgs.TextDocument == textDocument) {
                             textDocumentFactoryService.TextDocumentDisposed -= OnDocumentDisposed;
                             callback(textBuffer, shell);
