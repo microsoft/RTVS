@@ -1,6 +1,4 @@
-﻿using Microsoft.Common.Core.OS;
-using Microsoft.Extensions.Logging;
-using Microsoft.R.Host.Broker.Startup;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +6,10 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using Microsoft.Common.Core.OS;
+using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Broker.Startup;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class Utility {
@@ -19,13 +21,16 @@ namespace Microsoft.R.Host.Broker.Services {
                 proc = CreateRLaunchProcess(ps, true);
                 using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream))
                 using (BinaryReader reader = new BinaryReader(proc.StandardOutput.BaseStream)) {
-                    byte[] userBytes = Encoding.UTF8.GetBytes(username);
-                    byte[] passBytes = Encoding.UTF8.GetBytes(password);
+                    AuthenticationOnlyMessage message = new AuthenticationOnlyMessage();
+                    message.Username = username;
+                    message.Password = password;
 
-                    writer.Write(userBytes.Length);
-                    writer.Write(userBytes);
-                    writer.Write(passBytes.Length);
-                    writer.Write(passBytes);
+                    string json = JsonConvert.SerializeObject(message);
+                    byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+
+                    writer.Write(jsonBytes.Length);
+                    writer.Write(jsonBytes);
+                    writer.Flush();
 
                     // wait for the process to exit;
                     while (!proc.HasExited) {

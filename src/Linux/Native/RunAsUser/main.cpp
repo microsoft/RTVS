@@ -150,8 +150,8 @@ std::string get_user_home(std::string &username) {
 }
 
 int authenticate_only(picojson::object& json) {
-    std::string username(json["username"].get<std::string>());
-    std::string password(json["password"].get<std::string>());
+    std::string username(json["Username"].get<std::string>());
+    std::string password(json["Password"].get<std::string>());
 
     if (username.empty() || password.empty()) {
         return RTVS_AUTH_NO_INPUT;
@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
         return RTVS_AUTH_BAD_INPUT;
     }
 
-    std::string msg_name = json["name"].get<std::string>();
+    std::string msg_name = json["Name"].get<std::string>();
 
     if (msg_name == "AuthOnly") {
         return authenticate_only(json);
