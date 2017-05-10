@@ -24,7 +24,9 @@ namespace Microsoft.R.Editor.Completions {
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public RCompletionControllerProvider(ICoreShell shell) => _shell = shell;
+        public RCompletionControllerProvider(ICoreShell shell) {
+            _shell = shell;
+        }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             var controller = CompletionController.FromTextView<RCompletionController>(textView);

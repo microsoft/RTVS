@@ -45,7 +45,7 @@ namespace Microsoft.Languages.Editor.Composition {
             var contentType = _contentTypeRegistryService.GetContentType(contentTypeName);
             Debug.Assert(contentType != null);
 
-            return this.GetAll(contentType);
+            return GetAll(contentType);
         }
 
         public override T GetImport(string contentTypeName) {
@@ -56,7 +56,7 @@ namespace Microsoft.Languages.Editor.Composition {
             var contentType = _contentTypeRegistryService.GetContentType(contentTypeName);
             Debug.Assert(contentType != null);
 
-            return this.GetImport(contentType);
+            return GetImport(contentType);
         }
 
         public T GetImport(IContentType contentType) {

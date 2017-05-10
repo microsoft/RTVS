@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Services;
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
     /// <summary>
     /// Base editor factory for all Web editors
     /// </summary>
-    public class BaseEditorFactory : IVsEditorFactory, IDisposable {
+    public abstract class BaseEditorFactory : IVsEditorFactory, IDisposable {
         private readonly IServiceContainer _services;
         private readonly IVsEditorAdaptersFactoryService _adaptersFactory;
         private readonly Guid _editorFactoryId;
@@ -40,8 +41,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             _openWithEncoding = openWithEncoding;
             LanguageServiceId = languageServiceId;
         }
-
-        internal IObjectInstanceFactory InstanceFactory { get; set; }
 
         public void SetEncoding(bool value) => _openWithEncoding = value;
 
@@ -91,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             var textLines = GetTextBuffer(docDataExisting, languageServiceId);
             if (IsIncompatibleContentType(textLines)) {
                 // Unknown docData type then, so we have to force VS to close the other editor.
-                return (int)VSConstants.VS_E_INCOMPATIBLEDOCDATA;
+                return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
             }
 
             if (_openWithEncoding) {
@@ -101,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                     docData = IntPtr.Zero;
                     commandUIGuid = Guid.Empty;
                     createDocumentWindowFlags = 0;
-                    return (int)VSConstants.VS_E_INCOMPATIBLEDOCDATA;
+                    return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
                 }
 
                 var userData = textLines as IVsUserData;
@@ -156,9 +155,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
             if (docDataExisting == IntPtr.Zero) {
                 // Create a new IVsTextLines buffer.
-                var textLinesType = typeof(IVsTextLines);
                 var clsid = typeof(VsTextBufferClass).GUID;
-                textLines = CreateInstance<IVsTextLines>(ref clsid);
+                var riid = typeof(IVsTextLines).GUID;
+                textLines = Package.CreateInstance(ref clsid, ref riid, typeof(IVsTextLines)) as IVsTextLines;
+                Debug.Assert(textLines != null);
 
                 // set the buffer's site
                 ((IObjectWithSite)textLines).SetSite(VsServiceProvider);
@@ -265,14 +265,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
             // E_NOTIMPL must be returned for any unrecognized rguidLogicalView values
             return VSConstants.E_NOTIMPL;
-        }
-
-        protected T CreateInstance<T>(ref Guid clsid) where T : class {
-            var riid = typeof(T).GUID;
-            if (InstanceFactory != null) {
-                return InstanceFactory.CreateInstance(ref clsid, ref riid, typeof(T)) as T;
-            }
-            return Package.CreateInstance(ref clsid, ref riid, typeof(T)) as T;
         }
 
         #region IDisposable

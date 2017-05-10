@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         /// <summary>
         /// Loads settings via language (editor) tools options page
         /// </summary>
-        private void LoadFromStorage() {
+        public void LoadFromStorage() {
             var vsShell = _shell.GetService<IVsShell>(typeof(SVsShell));
             if (vsShell != null) {
                 vsShell.LoadPackage(ref _packageGuid, out IVsPackage package);

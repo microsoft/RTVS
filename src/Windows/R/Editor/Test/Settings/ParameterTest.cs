@@ -25,8 +25,6 @@ namespace Microsoft.R.Editor.Test.Settings {
             settings.TabSize.Should().Be(4);
             settings.SyntaxCheckEnabled.Should().BeTrue();
             settings.SignatureHelpEnabled.Should().BeTrue();
-            //REditorSettings.ShowTclFunctions.Should().BeFalse();
-            //REditorSettings.ShowInternalFunctions.Should().BeFalse();
 
             settings.FormatOptions.IndentSize.Should().Be(4);
             settings.FormatOptions.TabSize.Should().Be(4);

@@ -48,7 +48,7 @@ namespace Microsoft.Markdown.Editor.Classification {
             _view.LayoutChanged += OnLayoutChanged;
             _view.Closed += OnClosed;
 
-            var projectionBufferManager = view.TextBuffer.GetService<IProjectionBufferManager>();
+            var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(view.TextBuffer);
             if (projectionBufferManager != null) {
                 projectionBufferManager.MappingsChanged += OnMappingsChanged;
                 _contanedLanguageHandler = projectionBufferManager.DiskBuffer.GetService<IContainedLanguageHandler>();

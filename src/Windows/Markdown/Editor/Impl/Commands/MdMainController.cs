@@ -54,9 +54,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var containedCommandTarget = GetContainedCommandTarget();
             if (containedCommandTarget != null) {
-                if (_workaround == null) {
-                    _workaround = new BraceCompletionWorkaround223902(TextView);
-                }
+                _workaround = _workaround ?? new BraceCompletionWorkaround223902(TextView);
                 var result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
                 if (result.WasExecuted) {
                     return result;

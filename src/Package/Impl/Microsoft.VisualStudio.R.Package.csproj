@@ -198,6 +198,7 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\R\Editor\REditorSettingsStorageProvider.cs" />
     <Compile Include="Options\R\Tools\BrowserForFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\LogVerbosityTypeConverter.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
@@ -411,7 +412,6 @@
     <Compile Include="DataInspect\VariableView.xaml.cs">
       <DependentUpon>VariableView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
@@ -1485,6 +1485,8 @@
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Caching.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Caching.Memory.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Configuration.Abstractions.dll" />

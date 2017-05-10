@@ -92,7 +92,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 return 0;
             }
 
-            ast = ast ?? editorBuffer.GetService<IREditorDocument>()?.EditorTree?.AstRoot;
+            ast = ast ?? editorBuffer.GetEditorDocument<IREditorDocument>()?.EditorTree?.AstRoot;
             if (ast == null) {
                 return 0;
             }

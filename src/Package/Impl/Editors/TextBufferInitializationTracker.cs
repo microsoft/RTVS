@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
@@ -22,10 +20,10 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private readonly IServiceContainer _services;
         private readonly List<TextBufferInitializationTracker> _trackers;
 
+        private readonly IConnectionPoint cp;
         private Guid _languageServiceGuid;
         private IVsTextLines _textLines;
         private uint cookie;
-        private IConnectionPoint cp;
 
         #region Constructors
         public TextBufferInitializationTracker(IServiceContainer services, IVsTextLines textLines, Guid languageServiceId, List<TextBufferInitializationTracker> trackers) {

@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Formatting {
             if (caretPoint == null) {
                 return;
             }
-            var document = textBuffer.GetService<IREditorDocument>();
+            var document = textBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 var ast = document.EditorTree.AstRoot;
                 var node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Position + caretOffset)) as IAstNode;
@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.Formatting {
 
         public static void FormatCurrentScope(IEditorView editorView, IEditorBuffer textBuffer, IServiceContainer services, bool indentCaret) {
             // Figure out caret position in the document text buffer
-            var document = textBuffer.GetService<IREditorDocument>();
+            var document = textBuffer.GetEditorDocument<IREditorDocument>();
             if (document == null) {
                 return;
             }

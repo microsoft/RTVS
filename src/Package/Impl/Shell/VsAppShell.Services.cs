@@ -13,12 +13,10 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
-using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -49,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(loggingPermissions)
                 .AddService(platformServices)
                 .AddService(settings)
-                .AddService(new REditorSettings(new LanguageSettingsStorage(this, RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, new string[] { RPackage.ProductName })))
+                .AddService(new REditorSettings(this))
                 .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
                 .AddService(new VsEditorSupport(Services))
                 .AddService(new VsEditorViewLocator())
@@ -61,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddEditorServices();
-                // TODO: add more
+            // TODO: add more
 
             _application = new VsApplication(this);
 

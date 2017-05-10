@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             : base(GetErrorType(error), error.Message) {
             _textBuffer = editorTree.EditorBuffer.As<ITextBuffer>();
 
-            var document = _textBuffer.GetService<IREditorDocument>();
+            var document = _textBuffer.GetEditorDocument<IREditorDocument>();
             FileName = document?.FilePath;
 
             Description = error.Message;

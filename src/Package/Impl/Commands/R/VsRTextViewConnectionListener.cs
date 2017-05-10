@@ -21,12 +21,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Name("Visual Studio R Editor Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsRTextViewConnectionListener : RTextViewConnectionListener {
-         private readonly IVsEditorAdaptersFactoryService _adapterService;
+        private readonly IVsEditorAdaptersFactoryService _adapterService;
         private CommandTargetToOleShim _oleController;
 
         [ImportingConstructor]
-        public VsRTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) {
-            _adapterService = coreShell.GetService< IVsEditorAdaptersFactoryService>();
+        public VsRTextViewConnectionListener(ICoreShell coreShell) : base(coreShell.Services) {
+            _adapterService = coreShell.GetService<IVsEditorAdaptersFactoryService>();
         }
 
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
                 // Check if another buffer already attached a command controller to the view.
                 // Don't allow two to be attached, or commands could be run twice.
                 // This currently can only happen with inline diff views.
-                RMainController mainController = RMainController.FromTextView(textView);
+                var mainController = RMainController.FromTextView(textView);
                 if (textBuffer == mainController?.TextBuffer) {
                     // Connect main controller to VS text view filter chain.
                     OleControllerChain.ConnectController(Services, textView, mainController);

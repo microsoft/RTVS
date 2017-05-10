@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Settings;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Formatting;
 
 namespace Microsoft.R.Editor.Settings {
@@ -20,8 +23,9 @@ namespace Microsoft.R.Editor.Settings {
         public const string ShowTclFunctionsKey = "ShowTclFunctions";
 
         private RFormatOptions _formatOptions = new RFormatOptions();
-
-        public REditorSettings(IEditorSettingsStorage storage): base(storage) { }
+        
+        public REditorSettings(ICoreShell coreShell): base(coreShell, RContentTypeDefinition.ContentType) { }
+        public REditorSettings(IEditorSettingsStorage storage) : base(storage) { }
 
         public override void ResetSettings() {
             _formatOptions = new RFormatOptions();
@@ -29,53 +33,53 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public bool FormatOnPaste {
-            get { return Storage.Get(FormatOnPasteKey, true); }
-            set { WritableStorage?.Set(FormatOnPasteKey, value); }
+            get => Storage.Get(FormatOnPasteKey, true);
+            set => WritableStorage?.Set(FormatOnPasteKey, value);
         }
 
         public bool FormatScope {
-            get { return Storage.Get(FormatScopeKey, true); }
-            set { WritableStorage?.Set(FormatScopeKey, value); }
+            get => Storage.Get(FormatScopeKey, true);
+            set => WritableStorage?.Set(FormatScopeKey, value);
         }
 
         public bool CommitOnSpace {
-            get { return Storage.Get(CommitOnSpaceKey, false); }
-            set { WritableStorage?.Set(CommitOnSpaceKey, value); }
+            get => Storage.Get(CommitOnSpaceKey, false);
+            set => WritableStorage?.Set(CommitOnSpaceKey, value);
         }
 
         public bool CommitOnEnter {
-            get { return Storage.Get(CommitOnEnterKey, false); }
-            set { WritableStorage?.Set(CommitOnEnterKey, value); }
+            get => Storage.Get(CommitOnEnterKey, false);
+            set => WritableStorage?.Set(CommitOnEnterKey, value);
         }
 
         public bool ShowCompletionOnFirstChar {
-            get { return Storage.Get(CompletionOnFirstCharKey, true); }
-            set { WritableStorage?.Set(CompletionOnFirstCharKey, value); }
+            get => Storage.Get(CompletionOnFirstCharKey, true);
+            set => WritableStorage?.Set(CompletionOnFirstCharKey, value);
         }
 
         public bool ShowCompletionOnTab {
-            get { return Storage.Get(CompletionOnTabKey, false); }
-            set { WritableStorage?.Set(CompletionOnTabKey, value); }
+            get => Storage.Get(CompletionOnTabKey, false);
+            set => WritableStorage?.Set(CompletionOnTabKey, value);
         }
 
         public bool SendToReplOnCtrlEnter {
-            get { return Storage.Get(SendToReplOnCtrlEnterKey, true); }
-            set { WritableStorage?.Set(SendToReplOnCtrlEnterKey, value); }
+            get => Storage.Get(SendToReplOnCtrlEnterKey, true);
+            set => WritableStorage?.Set(SendToReplOnCtrlEnterKey, value);
         }
 
         public bool SyntaxCheckInRepl {
-            get { return Storage.Get(SyntaxCheckInReplKey, false); }
-            set { WritableStorage?.Set(SyntaxCheckInReplKey, value); }
+            get => Storage.Get(SyntaxCheckInReplKey, false);
+            set => WritableStorage?.Set(SyntaxCheckInReplKey, value);
         }
 
         public bool PartialArgumentNameMatch {
-            get { return Storage.Get(PartialArgumentNameMatchKey, false); }
-            set { WritableStorage?.Set(PartialArgumentNameMatchKey, value); }
+            get => Storage.Get(PartialArgumentNameMatchKey, false);
+            set => WritableStorage?.Set(PartialArgumentNameMatchKey, value);
         }
 
         public bool EnableOutlining {
-            get { return Storage.Get(EnableOutliningKey, true); }
-            set { WritableStorage?.Set(EnableOutliningKey, value); }
+            get => Storage.Get(EnableOutliningKey, true);
+            set => WritableStorage?.Set(EnableOutliningKey, value);
         }
 
         public RFormatOptions FormatOptions {

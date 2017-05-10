@@ -12,10 +12,10 @@ namespace Microsoft.Markdown.Editor.Classification.Background {
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class RCodeBackgroundTextAdornmentFactory : IWpfTextViewCreationListener {
+    internal sealed class CodeBackgroundTextAdornmentFactory : IWpfTextViewCreationListener {
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "MEF")]
         [Export(typeof(AdornmentLayerDefinition))]
-        [Name("CodeBackgroundTextAdornment")]
+        [Name("CodeBackgroundTextAdornmentFactory")]
         [Order(Before = PredefinedAdornmentLayers.Outlining)]
         [TextViewRole(PredefinedTextViewRoles.Document)]
         public AdornmentLayerDefinition EditorAdornmentLayer { get; set; }
@@ -24,7 +24,7 @@ namespace Microsoft.Markdown.Editor.Classification.Background {
         private readonly IClassificationFormatMapService _classificationFormatMap;
 
         [ImportingConstructor]
-        public RCodeBackgroundTextAdornmentFactory(IClassificationTypeRegistryService ctrs, IClassificationFormatMapService cfm) {
+        public CodeBackgroundTextAdornmentFactory(IClassificationTypeRegistryService ctrs, IClassificationFormatMapService cfm) {
             _classificationTypeRegistry = ctrs;
             _classificationFormatMap = cfm;
         }

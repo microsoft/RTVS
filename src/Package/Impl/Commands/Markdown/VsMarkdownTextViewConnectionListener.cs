@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
                 // Check if another buffer already attached a command controller to the view.
                 // Don't allow two to be attached, or commands could be run twice.
                 // This currently can only happen with inline diff views.
-                MdMainController mainController = MdMainController.FromTextView(textView);
+                var mainController = MdMainController.FromTextView(textView);
                 if (textBuffer == mainController.TextBuffer) {
                     // Connect main controller to VS text view filter chain. The chain looks like
                     // VS IDE -> HTML main controller -> Core editor

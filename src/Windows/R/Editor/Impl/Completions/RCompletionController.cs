@@ -176,7 +176,7 @@ namespace Microsoft.R.Editor.Completions {
                 var position = TextView.GetCaretPosition(_textBuffer);
                 if (position.HasValue) {
                     int pos = position.Value;
-                    var document = position.Value.Snapshot.TextBuffer.GetService<IREditorDocument>();
+                    var document = position.Value.Snapshot.TextBuffer.GetEditorDocument<IREditorDocument>();
                     if (!document.IsPositionInComment(pos)) {
                         if (pos > 0 && pos <= position.Value.Snapshot.Length) {
                             var endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
@@ -375,7 +375,7 @@ namespace Microsoft.R.Editor.Completions {
                 var line = snapshot.GetLineFromPosition(point.Value);
                 if (line.LineNumber < snapshot.LineCount - 1 && point.Value == line.End && line.GetText().EqualsOrdinal("##")) {
                     var nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
-                    var document = _textBuffer.GetService<IREditorDocument>();
+                    var document = _textBuffer.GetEditorDocument<IREditorDocument>();
                     document.EditorTree.EnsureTreeReady();
                     return RoxygenBlock.TryInsertBlock(_textBuffer.ToEditorBuffer(), document.EditorTree.AstRoot, nextLine.Start);
                 }

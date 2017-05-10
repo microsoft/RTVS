@@ -257,7 +257,6 @@
     <Compile Include="Utility\TestPackage.cs" />
     <Compile Include="Utility\TestServiceProvider.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
-    <Compile Include="Utility\TestInstanceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">

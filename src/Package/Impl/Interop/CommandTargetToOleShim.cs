@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         #region IOleCommandTarget
 
         public int QueryStatus(ref Guid guidCommandGroup, uint commandCount, OLECMD[] commandArray, IntPtr commandText) {
-            CommandStatus status = _commandTarget.Status(guidCommandGroup, (int)commandArray[0].cmdID);
+            var status = _commandTarget.Status(guidCommandGroup, (int)commandArray[0].cmdID);
             return OleCommand.MakeOleCommandStatus(status, commandArray);
         }
 
@@ -39,13 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             CommandResult result;
 
             try {
-                if (_variantStacks != null) {
-                    _variantStacks.Push(variantIn, variantOut, false);
-                }
+                _variantStacks?.Push(variantIn, variantOut, false);
 
-                object inputArg = TranslateInputArg(ref guidCommandGroup, commandID, variantIn);
+                var inputArg = TranslateInputArg(ref guidCommandGroup, commandID, variantIn);
+
                 object outputArg = null;
-
                 result = _commandTarget.Invoke(guidCommandGroup, (int)commandID, inputArg, ref outputArg);
 
                 if (outputArg != null && variantOut != IntPtr.Zero) {
@@ -60,9 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
                 throw;
             } finally {
-                if (_variantStacks != null) {
-                    _variantStacks.Pop();
-                }
+                _variantStacks?.Pop();
             }
 
             return OleCommand.MakeOleResult(result);
@@ -90,10 +86,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
             //the coordinates are passed as variants containing short values. The y coordinate is an offset sizeof(variant)
             //from pvaIn (which is 16 bytes)
-            object xCoordinateVariant = Marshal.GetObjectForNativeVariant(location);
-            object yCoordinateVariant = Marshal.GetObjectForNativeVariant(new IntPtr(location.ToInt32() + 16));
-            short? xCoordinate = xCoordinateVariant as short?;
-            short? yCoordinate = yCoordinateVariant as short?;
+            var xCoordinateVariant = Marshal.GetObjectForNativeVariant(location);
+            var yCoordinateVariant = Marshal.GetObjectForNativeVariant(new IntPtr(location.ToInt32() + 16));
+            var xCoordinate = xCoordinateVariant as short?;
+            var yCoordinate = yCoordinateVariant as short?;
             Debug.Assert(xCoordinate.HasValue, "Couldn't parse the provided x coordinate for show context command");
             Debug.Assert(yCoordinate.HasValue, "Couldn't parse the provided y coordinate for show context command");
             if (xCoordinate.HasValue && yCoordinate.HasValue) {

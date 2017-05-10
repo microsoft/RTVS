@@ -8,7 +8,7 @@ using Microsoft.Languages.Editor.Settings;
 
 namespace Microsoft.Languages.Editor.Application.Packages {
     [ExcludeFromCodeCoverage]
-    internal class SettingsStorage : IWritableEditorSettingsStorage {
+    internal abstract class SettingsStorage : IWritableEditorSettingsStorage {
         private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
 
         #region IEditorSettingsStorage Members
@@ -22,6 +22,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
         #region IWritableEditorSettingsStorage Members
         public void Set<T>(string name, T value) => _settings[name] = value;
         public void ResetSettings() { }
+        public void Dispose() { }
         #endregion
     }
 }

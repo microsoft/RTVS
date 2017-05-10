@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Commands {
         public RTextViewConnectionListener(IServiceContainer services) : base(services) { }
 
         protected override void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            RMainController.Attach(textView, textBuffer, Services);
+            var mainController = RMainController.Attach(textView, textBuffer, Services);
 
             if (textBuffer != textView.TextBuffer) {
                 // Projected scenario
@@ -29,7 +29,6 @@ namespace Microsoft.R.Editor.Commands {
                     _containedLanguageHost.Closing += OnContainedLanguageHostClosing;
                     _textBuffer = textBuffer;
 
-                    var mainController = RMainController.FromTextView(textView);
                     var nextTarget = _containedLanguageHost.SetContainedCommandTarget(textView.ToEditorView(), mainController);
                     // Convert chained target to ICommandTarget (chained target might be IOleCommandTarget and host will create a shim then).
                     mainController.ChainedController = nextTarget;
@@ -64,7 +63,7 @@ namespace Microsoft.R.Editor.Commands {
             if (viewModel != null) {
                 viewModel.Dispose();
             } else {
-                var document = textBuffer.GetService<IREditorDocument>();
+                var document = textBuffer.GetEditorDocument<IREditorDocument>();
                 document?.Dispose();
             }
             base.OnTextBufferDisposing(textBuffer);

@@ -5,10 +5,10 @@ using System;
 
 namespace Microsoft.Languages.Editor.Settings {
     /// <summary>
-    /// Editor settings storage.
+    /// Provides language specific (editor) settings storage. 
+    /// Exported via MEF for a particular content type.
     /// </summary>
-    public interface IEditorSettingsStorage: IDisposable {
-        event EventHandler<EventArgs> SettingsChanged;
-        T Get<T>(string name, T defaultValue);
+    public interface IEditorSettingsStorageProvider {
+        IEditorSettingsStorage GetSettingsStorage();
     }
 }

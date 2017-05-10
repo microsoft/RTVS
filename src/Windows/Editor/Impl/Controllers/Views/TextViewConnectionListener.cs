@@ -158,9 +158,8 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// Called when text view is connected to the subject buffer
         /// </summary>
         protected virtual void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
-            void GotFocus(object sender, EventArgs eventArgs)
-            {
-                this.OnTextViewGotAggregateFocus(textView, textBuffer);
+            void GotFocus(object sender, EventArgs eventArgs) {
+                OnTextViewGotAggregateFocus(textView, textBuffer);
                 textView.GotAggregateFocus -= GotFocus;
             }
 
@@ -285,7 +284,7 @@ namespace Microsoft.Languages.Editor.Controllers.Views {
         /// </summary>
         public static void StaticFlushPendingAction() {
             if (_allInstances != null) {
-                foreach (TextViewConnectionListener instance in _allInstances) {
+                foreach (var instance in _allInstances) {
                     instance.FlushPendingAction();
                 }
             }

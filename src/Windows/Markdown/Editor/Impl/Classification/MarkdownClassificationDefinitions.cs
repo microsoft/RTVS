@@ -27,7 +27,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdHeadingClassificationFormat : ClassificationFormatDefinition {
             public MdHeadingClassificationFormat() {
-                this.DisplayName = Resources.ColorName_MD_Heading;
+                DisplayName = Resources.ColorName_MD_Heading;
             }
         }
 
@@ -46,7 +46,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         internal sealed class MdBlockquoteClassificationFormat : ClassificationFormatDefinition {
             public MdBlockquoteClassificationFormat() {
                 ForegroundColor = Colors.DarkGreen;
-                this.DisplayName = Resources.ColorName_MD_Blockquote;
+                DisplayName = Resources.ColorName_MD_Blockquote;
             }
         }
 
@@ -65,8 +65,8 @@ namespace Microsoft.Markdown.Editor.Classification {
         internal sealed class MdBoldClassificationFormat : ClassificationFormatDefinition {
             public MdBoldClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
-                this.IsBold = true;
-                this.DisplayName = Resources.ColorName_MD_Bold;
+                IsBold = true;
+                DisplayName = Resources.ColorName_MD_Bold;
             }
         }
 
@@ -85,8 +85,8 @@ namespace Microsoft.Markdown.Editor.Classification {
         internal sealed class MdItalicClassificationFormat : ClassificationFormatDefinition {
             public MdItalicClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
-                this.IsItalic = true;
-                this.DisplayName = Resources.ColorName_MD_Italic;
+                IsItalic = true;
+                DisplayName = Resources.ColorName_MD_Italic;
             }
         }
 
@@ -102,9 +102,9 @@ namespace Microsoft.Markdown.Editor.Classification {
         internal sealed class MdBoldItalicClassificationFormat : ClassificationFormatDefinition {
             public MdBoldItalicClassificationFormat() {
                 ForegroundColor = Colors.Magenta;
-                this.IsItalic = true;
-                this.IsBold = true;
-                this.DisplayName = Resources.ColorName_MD_BoldItalic;
+                IsItalic = true;
+                IsBold = true;
+                DisplayName = Resources.ColorName_MD_BoldItalic;
             }
         }
 
@@ -125,7 +125,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         internal sealed class MdListItemClassificationFormat : ClassificationFormatDefinition {
             public MdListItemClassificationFormat() {
                 ForegroundColor = Colors.YellowGreen;
-                this.DisplayName = Resources.ColorName_MD_ListItem;
+                DisplayName = Resources.ColorName_MD_ListItem;
             }
         }
 
@@ -143,7 +143,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdMonospaceClassificationFormat : ClassificationFormatDefinition {
             public MdMonospaceClassificationFormat() {
-                 this.DisplayName = Resources.ColorName_MD_Monospace;
+                 DisplayName = Resources.ColorName_MD_Monospace;
             }
         }
 
@@ -161,7 +161,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdAltTextClassificationFormat : ClassificationFormatDefinition {
             public MdAltTextClassificationFormat() {
-                this.DisplayName = Resources.ColorName_MD_AltText;
+                DisplayName = Resources.ColorName_MD_AltText;
             }
         }
 
@@ -179,7 +179,8 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdCodeBackgroundClassificationFormat : ClassificationFormatDefinition {
             public MdCodeBackgroundClassificationFormat() {
-                this.DisplayName = Resources.ColorName_MD_CodeBackground;
+                BackgroundColor = Colors.WhiteSmoke;
+                DisplayName = Resources.ColorName_MD_CodeBackground;
             }
         }
     }

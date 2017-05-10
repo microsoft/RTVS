@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Formatting {
 
                 try {
                     using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Services, Windows_Resources.FormatDocument)) {
-                        var document = TargetBuffer.GetService<IREditorDocument>();
+                        var document = TargetBuffer.GetEditorDocument<IREditorDocument>();
                         document?.EditorTree?.Invalidate();
 
                         var tokenizer = new RTokenizer();

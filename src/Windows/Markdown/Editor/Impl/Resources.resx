@@ -147,7 +147,4 @@
   <data name="ColorName_MD_Monospace" xml:space="preserve">
     <value>Markdown Monospace Text</value>
   </data>
-  <data name="Error_RScriptLaunchFailed" xml:space="preserve">
-    <value>Unable to run RScript.exe. Exception: {0}</value>
-  </data>
 </root>

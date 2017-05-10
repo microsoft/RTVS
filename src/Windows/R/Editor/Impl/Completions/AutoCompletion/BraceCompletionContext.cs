@@ -78,7 +78,7 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
         public bool AllowOverType(IBraceCompletionSession session) => true;
 
         private void EnsureTreeReady(ITextBuffer subjectBuffer) {
-            var document = subjectBuffer.GetService<IREditorDocument>();
+            var document = subjectBuffer.GetEditorDocument<IREditorDocument>();
             document?.EditorTree?.EnsureTreeReady();
         }
     }

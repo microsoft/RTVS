@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
@@ -35,7 +36,14 @@ namespace Microsoft.Languages.Editor.Projection {
             ViewBuffer.AddService(this);
         }
 
-        public static IProjectionBufferManager FromTextBuffer(ITextBuffer textBuffer) => textBuffer.GetService<IProjectionBufferManager>();
+        public static IProjectionBufferManager FromTextBuffer(ITextBuffer textBuffer) {
+            var pbm = textBuffer.GetService<IProjectionBufferManager>();
+            if(pbm == null) {
+                var pb = textBuffer as IProjectionBuffer;
+                pbm = pb?.SourceBuffers?.Select(b => b.GetService<IProjectionBufferManager>())?.FirstOrDefault(b => b != null);
+            }
+            return pbm;
+        }
 
         #region IProjectionBufferManager
         //  Graph:

@@ -7,7 +7,6 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -29,13 +28,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 // Create OLE shim that wraps main controller ICommandTarget and represents
                 // it as IOleCommandTarget that is accepted by VS IDE.
                 oleControllerShim = new CommandTargetToOleShim(textView, controller);
-
-                IOleCommandTarget nextOleTarget;
-                viewAdapter.AddCommandFilter(oleControllerShim, out nextOleTarget);
+                viewAdapter.AddCommandFilter(oleControllerShim, out var nextOleTarget);
 
                 // nextOleTarget is typically a core editor wrapped into OLE layer.
                 // Create a wrapper that will present OLE target as ICommandTarget to
-                // HTML main controller so controller can operate in platform-agnostic way.
+                // the main controller so controller can operate in platform-agnostic way.
                 var es = services.GetService<IEditorSupport>();
                 var nextCommandTarget = es.TranslateCommandTarget(textView.ToEditorView(), nextOleTarget);
                 controller.ChainedController = nextCommandTarget;
