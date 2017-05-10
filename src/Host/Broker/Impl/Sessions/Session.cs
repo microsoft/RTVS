@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
+using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
@@ -24,6 +26,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private readonly bool _isInteractive;
         private readonly ILogger _sessionLogger;
         private readonly MessagePipe _pipe;
+        private readonly ClaimsPrincipal _principal;
         private volatile IMessagePipeEnd _hostEnd;
         private IProcess _process;
 
@@ -68,15 +71,15 @@ namespace Microsoft.R.Host.Broker.Sessions {
             , IApplicationLifetime applicationLifetime
             , ILogger sessionLogger
             , ILogger messageLogger
-            , IIdentity user
+            , ClaimsPrincipal principal
             , Interpreter interpreter
             , string id
             , string commandLineArguments
             , bool isInteractive) {
-
+            _principal = principal;
             Manager = manager;
             Interpreter = interpreter;
-            User = user;
+            User = principal.Identity;
             Id = id;
             CommandLineArguments = commandLineArguments;
             _processService = processService;
@@ -87,11 +90,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _pipe = new MessagePipe(messageLogger);
         }
 
-        public void StartHost(string profilePath, string logFolder, ILogger outputLogger, LogVerbosity verbosity) {
+        public void StartHost(string logFolder, ILogger outputLogger, LogVerbosity verbosity) {
             if (_hostEnd != null) {
                 throw new InvalidOperationException("Host process is already running");
             }
 
+            string profilePath = _principal.FindFirst(Claims.RUserProfileDir)?.Value;
             var useridentity = User as WindowsIdentity;
             // In remote broker User Identity type is always WindowsIdentity
             string suppressUI = useridentity == null ? string.Empty : "--rhost-suppress-ui ";
