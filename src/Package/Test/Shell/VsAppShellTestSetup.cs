@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
-                .AddService(new FileSystem())
+                .AddService(new WindowsFileSystem())
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
                 .AddService(new TestUIServices())

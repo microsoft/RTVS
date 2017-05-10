@@ -16,13 +16,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly bool _echo;
-        private readonly FileSystem _fs;
+        private readonly IFileSystem _fs;
 
         public SourceRScriptCommand(IRInteractiveWorkflowVisual interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker, bool echo) {
             _interactiveWorkflow = interactiveWorkflow;
             _activeTextViewTracker = activeTextViewTracker;
             _echo = echo;
-            _fs = new FileSystem();
+            _fs = _interactiveWorkflow.Shell.FileSystem();
         }
 
         public CommandStatus Status {
@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             var session = _interactiveWorkflow.RSession;
             if (session.IsRemote) {
-                using (DataTransferSession dts = new DataTransferSession(_interactiveWorkflow.RSession, new FileSystem())) {
+                using (DataTransferSession dts = new DataTransferSession(_interactiveWorkflow.RSession, _fs)) {
                     // TODO: add progress indication and cancellation
                     string remotePath = await dts.CopyFileToRemoteTempAsync(filePath, true, null, CancellationToken.None);
                     await _interactiveWorkflow.Operations.SourceFileAsync(remotePath, _echo, textView.TextBuffer.GetEncoding());

@@ -79,7 +79,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
-                .AddService(fs ?? new FileSystem())
+                .AddService(fs ?? new WindowsFileSystem())
                 .AddService(registry ?? new RegistryImpl())
                 .AddService(ps ?? new ProcessServices())
                 .AddService(new TestTaskService())

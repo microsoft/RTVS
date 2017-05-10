@@ -5215,7 +5215,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Add Data So&urce...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Ajouter une so&urce de données...]]></Val>
+              <Val><![CDATA[Ajouter u&ne source de données...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5419,7 +5419,7 @@
           <Str Cat="Menu Item" IgnoreHK="true">
             <Val><![CDATA[Working Director&y]]></Val>
             <Tgt Cat="Menu Item" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Réperto&ire de travail]]></Val>
+              <Val><![CDATA[Répertoire de travai&l]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

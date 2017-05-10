@@ -38,6 +38,11 @@ namespace Microsoft.Common.Core.IO {
         string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options);
         void CreateDirectory(string path);
 
+        string[] GetFiles(string path);
+        string[] GetFiles(string path, string pattern);
+        string[] GetFiles(string path, string pattern, SearchOption option);
+        string[] GetDirectories(string path);
+
         string GetDownloadsPath(string fileName = "");
 
         string CompressFile(string path, string relativeTodir = null);

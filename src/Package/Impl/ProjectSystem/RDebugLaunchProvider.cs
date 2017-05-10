@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
@@ -20,6 +21,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Debug;
 using Microsoft.VisualStudio.ProjectSystem.VS.Debug;
 
+
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     // ExportDebugger must match rule name in ..\Rules\Debugger.xaml.
     [ExportDebugger("RDebugger")]
@@ -28,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly ProjectProperties _properties;
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IProjectSystemServices _pss;
+        private readonly IFileSystem _fs;
 
         [ImportingConstructor]
         public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider, IProjectSystemServices pss)
@@ -35,9 +38,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _properties = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
             _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             _pss = pss;
+            _fs = _interactiveWorkflow.Shell.FileSystem();
         }
 
-        internal IFileSystem FileSystem { get; set; } = new FileSystem();
+        private IFileSystem FileSystem => _fs;
 
         private IRSession Session => _interactiveWorkflow.RSession;
 

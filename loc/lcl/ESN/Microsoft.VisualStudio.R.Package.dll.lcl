@@ -4033,7 +4033,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Editor Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[Op&ciones del editor...]]></Val>
+              <Val><![CDATA[Opc&iones del editor...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5251,7 +5251,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[P&ublish With Options...]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[P&ublicar con opciones...]]></Val>
+              <Val><![CDATA[Pub&licar con opciones...]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />

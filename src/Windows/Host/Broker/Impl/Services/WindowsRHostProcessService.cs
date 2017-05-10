@@ -48,6 +48,9 @@ namespace Microsoft.R.Host.Broker.Services {
                 string domain = domainBldr.ToString();
 
                 eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
+
+                // add globally set environment variables
+                AddGlobalREnvironmentVariables(eb);
             } else {
                 eb = Win32EnvironmentBlock.Create((useridentity ?? WindowsIdentity.GetCurrent()).Token);
             }
@@ -77,6 +80,16 @@ namespace Microsoft.R.Host.Broker.Services {
             }
 
             return win32Process;
+        }
+
+        private void AddGlobalREnvironmentVariables(Win32EnvironmentBlock eb) {
+            // Get the broker's environment block
+            var brokerEb = Win32EnvironmentBlock.Create(WindowsIdentity.GetCurrent().Token);
+            foreach (var e in brokerEb) {
+                if (e.Key.StartsWithOrdinal("R_")) {
+                    eb[e.Key] = e.Value;
+                }
+            }
         }
 
         private Win32EnvironmentBlock CreateEnvironmentBlockForUser(WindowsIdentity useridentity, string username, string profilePath) {
