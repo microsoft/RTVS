@@ -30,13 +30,49 @@
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <boost/endian/buffers.hpp>
+
+#include "picojson.h"
 #include "util.h"
+
+FILE *input = nullptr, *output = nullptr, *error = nullptr;
 
 #define RTVS_AUTH_OK          0
 #define RTVS_AUTH_INIT_FAILED 200
 #define RTVS_AUTH_BAD_INPUT   201
 #define RTVS_AUTH_NO_INPUT    202
 
+std::string read_string(FILE* stream) {
+    boost::endian::little_uint32_buf_t data_size;
+    if (fread(&data_size, sizeof data_size, 1, stream) != 1) {
+        return std::string();
+    }
+
+    std::string str(data_size.value(), '\0');
+    if (!str.empty()) {
+        if (fread(&str[0], str.size(), 1, stream) != 1) {
+            return std::string();
+        }
+    }
+
+    return str;
+}
+
+std::mutex output_lock;
+void write_string(FILE* stream, std::string &data) {
+    boost::endian::little_uint32_buf_t data_size(static_cast<uint32_t>(data.size()));
+
+    std::lock_guard<std::mutex> lock(output_lock);
+    if (fwrite(&data_size, sizeof data_size, 1, stream) == 1) {
+        if (fwrite(data.data(), data.size(), 1, stream) == 1) {
+            fflush(stream);
+        }
+    }
+}
+
+void write_string(FILE* stream, const char *data) {
+    std::string str_data(data);
+    return write_string(stream, str_data);
+}
 
 int rtvs_conv(int num_msg, const struct pam_message **msgm, struct pam_response **response, void *appdata_ptr)
 {
@@ -56,21 +92,16 @@ int rtvs_conv(int num_msg, const struct pam_message **msgm, struct pam_response 
         char *str = nullptr;
         switch (msgm[count]->msg_style) {
         case PAM_PROMPT_ECHO_OFF:
-            printf("Prompt ECHO OFF \n");
             str = strdup((char*)appdata_ptr);
             break;
         case PAM_PROMPT_ECHO_ON:
-            printf("Prompt ECHO ON \n");
+            str = strdup((char*)appdata_ptr);
             break;
         case PAM_ERROR_MSG:
-            printf("Error: %s \n", msgm[count]->msg);
+            write_string(error, msgm[count]->msg);
             break;
         case PAM_TEXT_INFO:
-            printf("Info: %s \n", msgm[count]->msg);
-            break;
-        case PAM_BINARY_PROMPT:
-            printf("Prompt ECHO OFF \n");
-            str = strdup((char*)appdata_ptr);
+            write_string(output, msgm[count]->msg);
             break;
         }
 
@@ -89,55 +120,25 @@ int rtvs_conv(int num_msg, const struct pam_message **msgm, struct pam_response 
 
 int rtvs_authenticate(const char *user, const char* password) {
     pam_handle_t *pamh = nullptr;
-    int retval = 0;
+    int pam_err = 0;
     struct pam_conv conv = {
         rtvs_conv,
         (void*)password
     };
 
     SCOPE_WARDEN(pam_end, {
-        pam_end(pamh, retval);
+        pam_end(pamh, pam_err);
     });
 
-    retval = pam_start("rtvs_auth", user, &conv, &pamh);
-
-    if (retval != PAM_SUCCESS || pamh == nullptr) {
+    if ((pam_err = pam_start("rtvs_auth", user, &conv, &pamh)) != PAM_SUCCESS || pamh == nullptr) {
         return RTVS_AUTH_INIT_FAILED;
     }
 
-    if (retval == PAM_SUCCESS) {
-        retval = pam_authenticate(pamh, 0);
+    if ((pam_err = pam_authenticate(pamh, 0)) != PAM_SUCCESS) {
+        return RTVS_AUTH_BAD_INPUT;
     }
 
-    return (retval == PAM_SUCCESS) ? RTVS_AUTH_OK : RTVS_AUTH_BAD_INPUT;
-}
-
-std::string read_string(FILE* input) {
-    boost::endian::little_uint32_buf_t data_size;
-    if (fread(&data_size, sizeof data_size, 1, input) != 1) {
-        return std::string();
-    }
-
-    std::string str(data_size.value(), '\0');
-    if (!str.empty()) {
-        if (fread(&str[0], str.size(), 1, input) != 1) {
-            return std::string();
-        }
-    }
-
-    return str;
-}
-
-std::mutex output_lock;
-void write_string(FILE* output, std::string &data) {
-    boost::endian::little_uint32_buf_t data_size(static_cast<uint32_t>(data.size()));
-
-    std::lock_guard<std::mutex> lock(output_lock);
-    if (fwrite(&data_size, sizeof data_size, 1, output) == 1) {
-        if (fwrite(data.data(), data.size(), 1, output) == 1) {
-            fflush(output);
-        }
-    }
+    return RTVS_AUTH_OK;
 }
 
 std::string get_user_home(std::string &username) {
@@ -148,55 +149,61 @@ std::string get_user_home(std::string &username) {
     return std::string();
 }
 
-int main(int argc, char **argv) {
-    bool auth_flag = false;
-    bool run_flag = false;
-    int opt = 0;
+int authenticate_only(picojson::object& json) {
+    std::string username(json["username"].get<std::string>());
+    std::string password(json["password"].get<std::string>());
 
-    while ((opt = getopt(argc, argv, "ar")) != -1) {
-        switch (opt) {
-        case 'a':
-            auth_flag = true;
-            break;
-        case 'r':
-            run_flag = true;
-            break;
-        }
+    if (username.empty() || password.empty()) {
+        return RTVS_AUTH_NO_INPUT;
     }
 
-    FILE *input = nullptr, *output = nullptr;
+    int auth_result = rtvs_authenticate(username.c_str(), password.c_str());
 
-    int auth_result = -2;
-    if (auth_flag || run_flag) {
-        input = fdopen(dup(fileno(stdin)), "rb");
-        setvbuf(input, NULL, _IONBF, 0);
-        output = fdopen(dup(fileno(stdout)), "wb");
-        setvbuf(output, NULL, _IONBF, 0);
-
-        freopen("/dev/null", "rb", stdin);
-        freopen("/dev/null", "wb", stdout);
-
-        std::string username = read_string(input);
-        std::string password = read_string(input);
-
-        if (username.empty() || password.empty()) {
-            return RTVS_AUTH_NO_INPUT;
-        }
-
-        auth_result = rtvs_authenticate(username.c_str(), password.c_str());
-
-        if (!run_flag) {
-            if (auth_result == PAM_SUCCESS) {
-                std::string user_home = get_user_home(username);
-                write_string(output, user_home);
-            }
-            return auth_result;
-        }
+    if (auth_result == PAM_SUCCESS) {
+        std::string user_home = get_user_home(username);
+        write_string(output, user_home);
     }
-
-    if (run_flag) {
-        // TODO: fork and exec here
-    }
-
-    return 0;
+    return auth_result;
 }
+
+int main(int argc, char **argv) {
+    input = fdopen(dup(fileno(stdin)), "rb");
+    setvbuf(input, NULL, _IONBF, 0);
+    output = fdopen(dup(fileno(stdout)), "wb");
+    setvbuf(output, NULL, _IONBF, 0);
+    error = fdopen(dup(fileno(stderr)), "wb");
+    setvbuf(error, NULL, _IONBF, 0);
+
+    freopen("/dev/null", "rb", stdin);
+    freopen("/dev/null", "wb", stdout);
+
+    picojson::value json_value;
+    std::string json_err = picojson::parse(json_value, read_string(input));
+    if (!json_value.is<picojson::object>()) {
+        write_string(error, "Input format is invalid.");
+        return RTVS_AUTH_BAD_INPUT;
+    }
+
+    picojson::object json = json_value.get<picojson::object>();
+
+    if (!json_err.empty()) {
+        write_string(error, json_err);
+        return RTVS_AUTH_BAD_INPUT;
+    }
+
+    std::string msg_name = json["name"].get<std::string>();
+
+    if (msg_name == "AuthOnly") {
+        return authenticate_only(json);
+    }
+    else if (msg_name == "AuthAndRun") {
+        return 0; //TODO : authenticate and run
+    }
+    else {
+        write_string(error, "Input format is invalid.");
+        return RTVS_AUTH_BAD_INPUT;
+    }
+}
+
+// g++ -std=c++14 -fexceptions -fpermissive -O0 -ggdb -I../src -I../lib/picojson -c ../src/*.c*
+// g++ -g -o Microsoft.R.Host.RunAsUser.out ./*.o -lpthread -L/usr/lib/x86_64-linux-gnu -lpam
