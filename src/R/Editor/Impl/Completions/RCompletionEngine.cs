@@ -108,7 +108,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 providers.Add(new KeywordCompletionProvider(_services));
                 providers.Add(new PackageFunctionCompletionProvider(_services));
                 providers.Add(new UserVariablesCompletionProvider(_imageService));
-                providers.Add(new KeywordCompletionProvider(_services));
+                providers.Add(new SnippetCompletionProvider(_services));
 
                 if (!context.IsCaretInNameSpace()) {
                     providers.Add(new PackagesCompletionProvider(packageIndex, _imageService));

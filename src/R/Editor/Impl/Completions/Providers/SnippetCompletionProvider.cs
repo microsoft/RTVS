@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Editor.Snippets;
 
@@ -12,11 +13,13 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// </summary>
     public class SnippetCompletionProvider : IRCompletionListProvider {
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
+        private readonly IImageService _imageService;
         private readonly object _snippetGlyph;
 
-        public SnippetCompletionProvider(ISnippetInformationSourceProvider snippetInformationSource, IImageService imageService) {
-            _snippetInformationSource = snippetInformationSource;
-            _snippetGlyph = imageService.GetImage(ImageType.Snippet);
+        public SnippetCompletionProvider(IServiceContainer serviceContainer) {
+            _snippetInformationSource = serviceContainer.GetService<ISnippetInformationSourceProvider>();
+            _imageService = serviceContainer.GetService<IImageService>();
+            _snippetGlyph = _imageService.GetImage(ImageType.Snippet);
         }
 
         #region IRCompletionListProvider
@@ -24,10 +27,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-            var infoSource = _snippetInformationSource?.InformationSource;
-
-            if (!context.IsCaretInNameSpace() && infoSource != null) {
-                foreach (ISnippetInfo info in infoSource.Snippets) {
+            if (_snippetInformationSource?.InformationSource != null && !context.IsCaretInNameSpace()) {
+                foreach (ISnippetInfo info in _snippetInformationSource.InformationSource.Snippets) {
                     completions.Add(new EditorCompletionEntry(info.Name, info.Name, info.Description, _snippetGlyph));
                 }
             }

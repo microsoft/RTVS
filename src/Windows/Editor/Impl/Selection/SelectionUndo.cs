@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Selection {
@@ -20,19 +21,19 @@ namespace Microsoft.Languages.Editor.Selection {
 
         public SelectionUndo(ISelectionTracker selectionTracker, ITextBufferUndoManagerProvider undoManagerProvider, string transactionName, bool automaticTracking) {
             _selectionTracker = selectionTracker;
-            _textBuffer = selectionTracker.EditorView.EditorBuffer.As<ITextBuffer>();
+            _textBuffer = selectionTracker.EditorView.As<ITextView>().TextBuffer;
             var undoManager = undoManagerProvider.GetTextBufferUndoManager(_textBuffer);
 
             var innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
             _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
-            _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
+            _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker, _textBuffer));
 
             _selectionTracker.StartTracking(automaticTracking);
         }
 
         public void Dispose() {
             _selectionTracker.EndTracking();
-            _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
+            _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker, _textBuffer));
             _transaction.Complete();
             _transaction.Dispose();
         }
@@ -44,8 +45,8 @@ namespace Microsoft.Languages.Editor.Selection {
     internal class StartSelectionTrackingUndoUnit : TextUndoPrimitiveBase {
         private readonly ISelectionTracker _selectionTracker;
 
-        public StartSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
-            : base(selectionTracker.EditorView.EditorBuffer.As<ITextBuffer>()) {
+        public StartSelectionTrackingUndoUnit(ISelectionTracker selectionTracker, ITextBuffer textBuffer)
+            : base(textBuffer) {
             _selectionTracker = selectionTracker;
         }
 
@@ -58,8 +59,8 @@ namespace Microsoft.Languages.Editor.Selection {
     internal class EndSelectionTrackingUndoUnit : TextUndoPrimitiveBase {
         private readonly ISelectionTracker _selectionTracker;
 
-        public EndSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
-            : base(selectionTracker.EditorView.EditorBuffer.As<ITextBuffer>()) {
+        public EndSelectionTrackingUndoUnit(ISelectionTracker selectionTracker, ITextBuffer textBuffer)
+            : base(textBuffer) {
             _selectionTracker = selectionTracker;
         }
 
