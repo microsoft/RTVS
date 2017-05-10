@@ -55,6 +55,8 @@
     <Compile Include="ConnectionManager\ConnectionStatusBarViewModelTest.cs" />
     <Compile Include="ConnectionManager\ConnectionViewModelTest.cs" />
     <Compile Include="EventTaskSources.cs" />
+    <Compile Include="Fakes\InfoBar\TestInfoBar.cs" />
+    <Compile Include="Fakes\InfoBar\TestInfoBarProvider.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestWaitIndicator.cs" />

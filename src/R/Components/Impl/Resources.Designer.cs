@@ -958,7 +958,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Can&apos;t get list of available packages because connection to workspace failed..
+        ///   Looks up a localized string similar to Error: Can&apos;t get list of available packages because your R session is not running right now. Use the Workspaces window (R Tools | Windows | Workspaces) to start a new R session..
         /// </summary>
         public static string PackageManager_CantLoadAvailablePackages_NoConnection {
             get {
@@ -967,7 +967,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Can&apos;t get list of installed packages because connection to workspace failed..
+        ///   Looks up a localized string similar to Error: Can&apos;t get list of installed packages because your R session is not running right now. Use the Workspaces window (R Tools | Windows | Workspaces) to start a new R session..
         /// </summary>
         public static string PackageManager_CantLoadInstalledPackages_NoConnection {
             get {
@@ -976,7 +976,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error: Can&apos;t get list of loaded packages because connection to workspace failed..
+        ///   Looks up a localized string similar to Error: Can&apos;t get list of loaded packages because your R session is not running right now. Use the Workspaces window (R Tools | Windows | Workspaces) to start a new R session..
         /// </summary>
         public static string PackageManager_CantLoadLoadedPackages_NoConnection {
             get {

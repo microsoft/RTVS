@@ -7,8 +7,6 @@ using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager.ViewModel;
-using Microsoft.R.Wpf;
-using Microsoft.R.Wpf.Themes;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
     /// <summary>
@@ -46,14 +44,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void ListPackages_Loaded(object sender, RoutedEventArgs e) {
             TabInstalled.IsChecked = true;
-        }
-
-        private void ButtonDismiss_Click(object sender, RoutedEventArgs e) {
-            Model?.DismissErrorMessage();
-        }
-
-        private void ButtonDismissAll_Click(object sender, RoutedEventArgs e) {
-            Model?.DismissAllErrorMessages();
         }
     }
 }

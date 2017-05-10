@@ -287,6 +287,7 @@
     </Compile>
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
+    <Compile Include="InfoBar\IInfoBarProvider.cs" />
     <Compile Include="Search\ISearchControl.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
     <Compile Include="Search\ISearchHandler.cs" />
