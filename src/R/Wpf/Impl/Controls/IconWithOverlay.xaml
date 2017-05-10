@@ -19,13 +19,13 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <imaging:CrispImage Grid.RowSpan="2" Grid.ColumnSpan="2" 
+        <imaging:CrispImage x:Name="MainImage" 
+                            Grid.RowSpan="2" Grid.ColumnSpan="2" 
                             SnapsToDevicePixels="True" 
                             Moniker="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:IconWithOverlay}}, Path=Moniker}"/>
-        <imaging:CrispImage Grid.Row="1" Grid.Column="1" 
+        <imaging:CrispImage x:Name="OverlayImage" 
+                            Grid.Row="1" Grid.Column="1" 
                             SnapsToDevicePixels="True" 
-                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:IconWithOverlay}}, Path=Width, Converter={x:Static wpf:Converters.Scale055}}"
-                            Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:IconWithOverlay}}, Path=Height, Converter={x:Static wpf:Converters.Scale055}}"
                             Moniker="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:IconWithOverlay}}, Path=OverlayMoniker}" 
                             Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type controls:IconWithOverlay}}, Path=OverlayVisibility}"/>
     </Grid>

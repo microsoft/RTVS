@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -34,5 +35,11 @@ namespace Microsoft.R.Wpf.Controls {
             = DependencyProperty.Register("OverlayMoniker", typeof(object), typeof(IconWithOverlay), new PropertyMetadata(null));
         public static readonly DependencyProperty OverlayVisibilityProperty
             = DependencyProperty.Register("OverlayVisibility", typeof(Visibility), typeof(IconWithOverlay), new PropertyMetadata(Visibility.Collapsed));
+
+        protected override void OnInitialized(EventArgs e) {
+            OverlayImage.Width = 0.55 * MainImage.Width;
+            OverlayImage.Height = 0.55 * MainImage.Height;
+            base.OnInitialized(e);
+        }
     }
 }
