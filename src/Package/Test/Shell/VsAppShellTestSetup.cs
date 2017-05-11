@@ -58,6 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 // IMainThread and basic services
                 .AddService(UIThreadHelper.Instance)
                 .AddService(Substitute.For<IActionLog>())
+                .AddService(Substitute.For<IIdleTimeService>())
+                .AddService(new VsApplicationMock())
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new WindowsFileSystem())

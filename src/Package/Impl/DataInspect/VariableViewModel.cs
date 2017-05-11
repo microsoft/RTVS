@@ -155,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
-                var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 var session = workflow.RSession;
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {

@@ -25,18 +25,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class HelpWindowTest : HostBasedInteractiveTest {
-        private readonly IServiceContainer _services;
         private const string darkThemeCssColor = "rgb(36,36,36)";
 
-        public HelpWindowTest(IServiceContainer services) : base(true) {
-            _services = services;
-        }
+        public HelpWindowTest(IServiceContainer services) : base(services, true) { }
 
         [Test]
         public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             await HostScript.InitializeAsync(clientApp);
-            using (new ControlTestScript(typeof(HelpVisualComponent), _services)) {
+            using (new ControlTestScript(typeof(HelpVisualComponent), Services)) {
                 DoIdle(100);
 
                 var component = ControlWindow.Component as IHelpVisualComponent;
@@ -83,11 +80,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         }
 
         private async Task<string> GetBackgroundColorAsync(IHelpVisualComponent component, RHostClientHelpTestApp clientApp) {
-            string color = "red";
+            var color = "red";
 
             await clientApp.WaitForReadyAndRenderedAsync(DoIdle, nameof(HelpTest));
             await UIThreadHelper.Instance.InvokeAsync(() => {
-                IHTMLElement2 body = component.Browser.Document.Body.DomElement as IHTMLElement2;
+                var body = component.Browser.Document.Body.DomElement as IHTMLElement2;
                 color = body.currentStyle.backgroundColor as string;
             });
 

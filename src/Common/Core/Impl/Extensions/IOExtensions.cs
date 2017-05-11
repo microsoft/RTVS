@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using Microsoft.Common.Core.IO;
@@ -62,24 +63,18 @@ namespace Microsoft.Common.Core {
         /// <summary>
         /// Returns subdirectories of a directory
         /// </summary>
-        public static IEnumerable<string> GetDirectories(this IFileSystem fs, string directory) {
-            foreach (var fsi in fs.GetDirectoryInfo(directory).EnumerateFileSystemInfos()) {
-                if ((fsi.Attributes & FileAttributes.Directory) == FileAttributes.Directory) {
-                    yield return fsi.FullName;
-                }
-            }
-        }
+        public static IEnumerable<string> GetDirectories(this IFileSystem fs, string directory)
+            => fs.GetDirectoryInfo(directory).EnumerateFileSystemInfos()
+                 .Where(fsi => (fsi.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+                 .Select(f => f.FullName);
 
         /// <summary>
         /// Returns full paths of files within a directory
         /// </summary>
-        public static IEnumerable<string> GetFiles(this IFileSystem fs, string directory) {
-            foreach (var fsi in fs.GetDirectoryInfo(directory).EnumerateFileSystemInfos()) {
-                if ((fsi.Attributes & (FileAttributes.Directory | FileAttributes.Device)) == 0) { 
-                    yield return fsi.FullName;
-                }
-            }
-        }
+        public static IEnumerable<string> GetFiles(this IFileSystem fs, string directory)
+            => fs.GetDirectoryInfo(directory).EnumerateFileSystemInfos()
+                 .Where(fsi => (fsi.Attributes & (FileAttributes.Directory | FileAttributes.Device)) == 0)
+                 .Select(f => f.FullName);
 
         public static string TrimTrailingSlash(this string path) {
             if (!string.IsNullOrEmpty(path) && (path.EndsWith(Path.DirectorySeparatorChar) || path.EndsWith(Path.AltDirectorySeparatorChar))) {

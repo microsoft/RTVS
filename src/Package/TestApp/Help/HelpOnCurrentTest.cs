@@ -23,17 +23,13 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class HelpOnCurrentTest : HostBasedInteractiveTest {
-        private readonly IServiceContainer _services;
-
-        public HelpOnCurrentTest(IServiceContainer services) {
-            _services = services;
-        }
+        public HelpOnCurrentTest(IServiceContainer services): base(services) { }
 
         [Test]
         public async Task HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             await HostScript.InitializeAsync(clientApp);
-            using (new ControlTestScript(typeof(HelpVisualComponent), _services)) {
+            using (new ControlTestScript(typeof(HelpVisualComponent), Services)) {
                 DoIdle(100);
 
                 var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);

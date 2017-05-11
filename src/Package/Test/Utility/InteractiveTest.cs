@@ -3,19 +3,20 @@
 
 using System;
 using System.Threading;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Test {
     public class InteractiveTest: IDisposable {
         protected IRSessionProvider SessionProvider { get; }
+        protected IServiceContainer Services { get; }
 
-        public InteractiveTest() {
-            var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+        public InteractiveTest(IServiceContainer services) {
+            Services = services;
+            var workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             SessionProvider = workflow.RSessions;
         }
 

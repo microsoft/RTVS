@@ -11,7 +11,6 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
@@ -22,6 +21,7 @@ using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Commands {
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             _coreShell.ServiceManager.AddService(new RSettingsStub());
 
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(
-                connectionsProvider: new ConnectionManagerProvider(new TestStatusBar(), _coreShell),
+                connectionsProvider: new ConnectionManagerProvider(_coreShell),
                 debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }

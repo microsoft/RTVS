@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         private readonly TestFilesFixture _files;
         private readonly VariableRHostScript _hostScript;
 
-        public VariableGridTest(TestFilesFixture files) {
+        public VariableGridTest(IServiceContainer services, TestFilesFixture files): base(services) {
             _files = files;
             _hostScript = new VariableRHostScript(SessionProvider);
         }

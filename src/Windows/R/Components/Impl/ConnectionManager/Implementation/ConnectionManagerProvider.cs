@@ -14,8 +14,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRSettings _settings;
 
         [ImportingConstructor]
-        public ConnectionManagerProvider(IStatusBar statusBar, ICoreShell coreShell) {
-            _statusBar = statusBar;
+        public ConnectionManagerProvider(ICoreShell coreShell) {
+            _statusBar = coreShell.GetService<IStatusBar>();
             _settings = coreShell.GetService<IRSettings>();
         }
 

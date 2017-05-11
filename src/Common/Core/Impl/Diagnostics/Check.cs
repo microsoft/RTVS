@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Diagnostics {
     public static class Check {
@@ -39,7 +40,7 @@ namespace Microsoft.Common.Core.Diagnostics {
         [DebuggerStepThrough]
         public static void Argument(string argumentName, Func<bool> predicate) {
             if (!predicate()) {
-                throw new ArgumentException();
+                throw new ArgumentException(Invariant($"{argumentName} is not valid"));
             }
         }
     }

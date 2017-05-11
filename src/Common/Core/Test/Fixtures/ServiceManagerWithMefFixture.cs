@@ -54,11 +54,9 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             }
 
             public override Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
-                if (_disposeToken.IsDisposed) {
+                if (!_disposeToken.TryMarkDisposed()) {
                     return Task.CompletedTask;
                 }
-
-                _disposeToken.TryMarkDisposed();
                 _compositionContainer.Dispose();
                 return base.DisposeAsync(result, messageBus);
             }

@@ -201,6 +201,7 @@
     <Compile Include="Feedback\FeedbackCommandTest.cs" />
     <Compile Include="Fixtures\DisposeRInteractiveWorkflowFixture.cs" />
     <Compile Include="Fixtures\RPackageServicesFixture.cs" />
+    <Compile Include="Mocks\VsApplicationMock.cs" />
     <Compile Include="Options\LogVerbosityTest.cs" />
     <Compile Include="Package\RToolbarTest.cs" />
     <Compile Include="Project\SettingsTest.cs" />
