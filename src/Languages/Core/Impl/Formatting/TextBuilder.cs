@@ -69,8 +69,9 @@ namespace Microsoft.Languages.Core.Formatting {
         }
 
         private void AppendNewLine(bool collapseWhitespace = true, bool forceAdd = false) {
-            if (collapseWhitespace)
+            if (collapseWhitespace) {
                 TrimTrailingSpaces();
+            }
 
             // Do not insert new line if it is there already
             if (!IsAtNewLine || forceAdd) {
@@ -90,8 +91,9 @@ namespace Microsoft.Languages.Core.Formatting {
             for (i = _formattedText.Length - 1; i >= 0; i--) {
                 char ch = _formattedText[i];
 
-                if (ch != ' ' && ch != '\t' && ch != 0x200B)
+                if (ch != ' ' && ch != '\t' && ch != 0x200B) {
                     break;
+                }
             }
 
             int count = _formattedText.Length - i - 1;
@@ -112,8 +114,9 @@ namespace Microsoft.Languages.Core.Formatting {
                 for (i = _formattedText.Length - 1; i >= 0; i--) {
                     char ch = _formattedText[i];
 
-                    if (ch.IsLineBreak())
+                    if (ch.IsLineBreak()) {
                         break;
+                    }
 
                     if (!Char.IsWhiteSpace(ch)) {
                         allWhitespace = false;
@@ -138,8 +141,9 @@ namespace Microsoft.Languages.Core.Formatting {
         }
 
         public void AppendTextWithWrap(string text, int wrapLength) {
-            if (text.Length == 0)
+            if (text.Length == 0) {
                 return;
+            }
 
             SoftIndent();
 
@@ -157,8 +161,9 @@ namespace Microsoft.Languages.Core.Formatting {
 
                     AppendText(word);
 
-                    if (i < words.Length - 1)
+                    if (i < words.Length - 1) {
                         AppendSpace();
+                    }
                 } else if (!Char.IsWhiteSpace(LastCharacter)) {
                     AppendSpace();
                 }

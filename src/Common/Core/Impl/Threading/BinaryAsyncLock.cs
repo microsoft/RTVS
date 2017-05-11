@@ -91,13 +91,11 @@ namespace Microsoft.Common.Core.Threading {
             }
         }
 
-        public void EnqueueReset() {
-            ResetAsync().ContinueWith(t => {
-                if (t.Status == TaskStatus.RanToCompletion) {
-                    t.Result.Reset();
-                }
-            });
-        }
+        public void EnqueueReset() => ResetAsync().ContinueWith(t => {
+            if (t.Status == TaskStatus.RanToCompletion) {
+                t.Result.Reset();
+            }
+        });
 
         private void TokenSet(TokenSource tokenSource) {
             while (tokenSource != null) {
@@ -179,9 +177,7 @@ namespace Microsoft.Common.Core.Threading {
             public TokenSource CompareExchangeNext(TokenSource value, TokenSource comparand)
                 => Interlocked.CompareExchange(ref _next, value, comparand);
 
-            public void RegisterCancellation(CancellationToken cancellationToken) {
-                cancellationToken.Register(CancelTcs, cancellationToken);
-            }
+            public void RegisterCancellation(CancellationToken cancellationToken) => cancellationToken.Register(CancelTcs, cancellationToken);
 
             private void CancelTcs(object state) {
                 CancellationToken ct = (CancellationToken) state;

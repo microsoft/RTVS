@@ -86,6 +86,14 @@
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
+      <Project>{62857E49-E586-4BAA-AE4D-1232093E7378}</Project>
+      <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{D1895FA9-65F5-4048-A364-F6AB8D1DC981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">

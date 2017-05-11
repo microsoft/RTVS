@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -12,14 +13,6 @@ namespace Microsoft.Languages.Editor.Test.Helpers {
     [ExcludeFromCodeCoverage]
     [Category.Languages.Core]
     public class HelpersTest {
-        [Test]
-        public void TextChangeExtentTest() {
-            var actual = new TextChangeExtent(1, 2, 3);
-            actual.Start.Should().Be(1);
-            actual.OldEnd.Should().Be(2);
-            actual.NewEnd.Should().Be(3);
-        }
-
         [Test]
         public void GetTextDocumentTest() {
             var tb = new TextBufferMock(string.Empty, "R");

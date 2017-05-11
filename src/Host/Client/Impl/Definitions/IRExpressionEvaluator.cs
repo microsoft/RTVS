@@ -3,8 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host;
+using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {

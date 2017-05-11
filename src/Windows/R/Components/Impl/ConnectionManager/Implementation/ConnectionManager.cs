@@ -96,9 +96,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _disposableBag.Add(_statusBar.AddItem(element));
         }
 
-        public void Dispose() {
-            _disposableBag.TryDispose();
-        }
+        public void Dispose() => _disposableBag.TryDispose();
 
         public IConnectionManagerVisualComponent GetOrCreateVisualComponent(int instanceId = 0) {
             if (VisualComponent != null) {

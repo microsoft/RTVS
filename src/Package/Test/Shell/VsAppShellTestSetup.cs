@@ -16,9 +16,9 @@ using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Interpreters;
 using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     [ExcludeFromCodeCoverage]
     static class VsAppShellTestSetup {
         public static void Setup(VsAppShell instance) {
-            var serviceManager = instance.Services as VsServiceManager;
+            var serviceManager = (VsServiceManager)instance.Services;
             Debug.Assert(!serviceManager.AllServices.Any(), "Test VsAppShell service container must be empty at init time");
 
             var catalog = VsTestCompositionCatalog.Current;
@@ -66,9 +66,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new TestUIServices())
                 .AddService(new TestTaskService())
                 .AddService(new TestPlatformServices())
-                .AddService(new TestRToolsSettings())
+                .AddService(new RSettingsStub())
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService(new TestImageService())
+                .AddService(new VsEditorSupport(serviceManager))
+                .AddService(new VsEditorViewLocator())
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 // OLE and VS specifics
@@ -80,7 +82,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(VsImageServiceMock.Create(), typeof(SVsImageService))
                 .AddService(new VsUiShellMock(), typeof(SVsUIShell))
                 .AddService(OleComponentManagerMock.Create(), typeof(SOleComponentManager))
-                .AddService(VsSettingsManagerMock.Create(), typeof(SVsSettingsManager));
+                .AddService(VsSettingsManagerMock.Create(), typeof(SVsSettingsManager))
+                .AddService(new UIHostLocaleMock(), typeof(SUIHostLocale));
         }
     }
 }

@@ -12,48 +12,6 @@ namespace Microsoft.Languages.Core.Text {
     /// </summary>
     public static class TextHelper {
         /// <summary>
-        /// Determines if there is nothing but whitespace between
-        /// given position and the next line break or end of file.
-        /// </summary>
-        /// <param name="textProvider">Text provider</param>
-        /// <param name="position">Position to check</param>
-        public static bool IsNewLineAfterPosition(ITextProvider textProvider, int position) {
-
-            // Walk backwards from the artifact position
-            for (int i = position; i < textProvider.Length; i++) {
-                char ch = textProvider[i];
-
-                if (ch.IsLineBreak())
-                    return true;
-
-                if (!Char.IsWhiteSpace(ch))
-                    break;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines if there is nothing but whitespace between
-        /// given positions (end is non-inclusive).
-        /// </summary>
-        /// <param name="textProvider">Text provider</param>
-        /// <param name="position">Start position (inclusive)</param>
-        /// <param name="position">End position (non-inclusive)</param>
-        public static bool IsWhitespaceOnlyBetweenPositions(ITextProvider textProvider, int start, int end) {
-            end = Math.Min(textProvider.Length, end);
-            for (int i = start; i < end; i++) {
-                char ch = textProvider[i];
-
-                if (!Char.IsWhiteSpace(ch)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Splits string into lines based on line breaks
         /// </summary>
         public static IList<string> SplitTextIntoLines(string text) {

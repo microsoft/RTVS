@@ -20,23 +20,19 @@ namespace Microsoft.R.Components.Information {
         private string _tooltip;
 
         public double CpuLoad {
-            get { return _cpuLoad; }
-            set { SetProperty(ref _cpuLoad, value); }
+            get => _cpuLoad; set => SetProperty(ref _cpuLoad, value);
         }
 
         public double MemoryLoad {
-            get { return _memoryLoad; }
-            set { SetProperty(ref _memoryLoad, value); }
+            get => _memoryLoad; set => SetProperty(ref _memoryLoad, value);
         }
 
         public double NetworkLoad {
-            get { return _networkLoad; }
-            set { SetProperty(ref _networkLoad, value); }
+            get => _networkLoad; set => SetProperty(ref _networkLoad, value);
         }
 
         public string Tooltip {
-            get { return _tooltip; }
-            set { SetProperty(ref _tooltip, value); }
+            get => _tooltip; set => SetProperty(ref _tooltip, value);
         }
 
         public HostLoadIndicatorViewModel(IRSessionProvider sessionProvider, IMainThread mainThread) {

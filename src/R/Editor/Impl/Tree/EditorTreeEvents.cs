@@ -5,14 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.Languages.Core.Text;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Core.AST;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
     public partial class EditorTree {
-        private const string _threadContextInvalidMessage =
-            "Editor tree events must be fired on a main thread.";
+        private const string _threadCheckMessage = "Editor tree events must be fired on a main thread.";
 
         #region IEditorTree Events
         /// <summary>
@@ -21,7 +20,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Fires when user made changes to the text buffer and before initial
         /// tree nodes position updates.
         /// </summary>
-        public event EventHandler<TreeUpdatePendingEventArgs> UpdatesPending;
+        public event EventHandler<EventArgs> UpdatesPending;
 
         /// <summary>
         /// Signals that editor tree is about to be updated with the results
@@ -69,14 +68,10 @@ namespace Microsoft.R.Editor.Tree {
         /// Fires 'tree updates pending' event on the main thread context
         /// </summary>
         /// <param name="textChanges">List of pending changes</param>
-        internal void FireOnUpdatesPending(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
-
+        internal void FireOnUpdatesPending() {
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThread, _threadCheckMessage);
             try {
-                UpdatesPending?.Invoke(this, new TreeUpdatePendingEventArgs(textChanges));
+                UpdatesPending?.Invoke(this, EventArgs.Empty);
             } catch (Exception ex) {
                 Debug.Assert(false, Invariant($"Exception thrown in a tree.UpdatesPending event handler: {ex.Message}"));
             }
@@ -87,11 +82,7 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         /// <param name="element">Element</param>
         internal void FireOnPositionsOnlyChanged() {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
-
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThread, _threadCheckMessage);
             try {
                 PositionsOnlyChanged?.Invoke(this, new TreePositionsOnlyChangedEventArgs());
             } catch (Exception ex) {
@@ -104,11 +95,7 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         /// <param name="nodes">Collection of removed nodes</param>
         internal void FireOnNodesRemoved(IReadOnlyCollection<IAstNode> nodes) {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
-
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThread, _threadCheckMessage);
             try {
                 // Don't bother if list is empty
                 if (nodes.Count > 0) {
@@ -123,11 +110,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Fires 'update begin' event on the main thread context
         /// </summary>
         internal void FireOnUpdateBegin() {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
-
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThread, _threadCheckMessage);
             try {
                 UpdateBegin?.Invoke(this, EventArgs.Empty);
             } catch (Exception ex) {
@@ -139,10 +122,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Fires 'update end' event on the main thread context
         /// </summary>
         internal void FireOnUpdateCompleted(TreeUpdateType updateType) {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
-                Debug.Fail(_threadContextInvalidMessage);
-                return;
-            }
+            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == _ownerThread, _threadCheckMessage);
             try {
                 UpdateCompleted?.Invoke(this, new TreeUpdatedEventArgs(updateType));
             } catch (Exception ex) {

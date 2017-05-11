@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.IO;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {

@@ -30,8 +30,9 @@ namespace Microsoft.Languages.Editor.Application.Controller
         /// <returns>A valid key processor</returns>
         public KeyProcessor GetAssociatedProcessor(IWpfTextView wpfTextView)
         {
-            if (wpfTextView == null)
+            if (wpfTextView == null) {
                 throw new ArgumentNullException(nameof(wpfTextView));
+            }
 
             return new DefaultKeyProcessor(wpfTextView, _editorOperationsProvider.GetEditorOperations(wpfTextView), _undoHistoryRegistry);
         }

@@ -3,29 +3,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completions;
-using Microsoft.R.Editor.Data;
+using Microsoft.R.Editor.Functions;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
-using Microsoft.R.Support.Help;
-using Microsoft.VisualStudio.Utilities;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect {
+namespace Microsoft.R.Editor.Data {
     /// <summary>
     /// Provides name of variables and members declared in REPL workspace
     /// </summary>
-    [Export(typeof(IVariablesProvider))]
-    [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class WorkspaceVariableProvider : RSessionChangeWatcher, IVariablesProvider {
         private static readonly char[] _selectors = { '$', '@' };
         private const int _maxWaitTime = 2000;
@@ -35,13 +31,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Collection of top-level variables
         /// </summary>
         private readonly Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
-        private readonly ICoreShell _coreShell;
         private bool _updating;
 
-        [ImportingConstructor]
-        public WorkspaceVariableProvider(ICoreShell coreShell) : base(coreShell.GetService<IRInteractiveWorkflowProvider>()) {
-            _coreShell = coreShell;
-        }
+        public static IVariablesProvider CreateService(IServiceContainer services)
+            => new WorkspaceVariableProvider(services.GetService<IRInteractiveWorkflowProvider>());
+
+        public WorkspaceVariableProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
 
         #region IVariablesProvider
         /// <summary>
@@ -89,17 +84,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 // May be a package object line mtcars$
-                var rootVariableName = TrimToFirstSelector(variableName);
-                var memberName = TrimToLastSelector(variableName);
+                variableName = TrimToTrailingSelector(variableName);
                 var session = Workflow.RSession;
 
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 Task.Run(async () => {
                     try {
-                        var result = await session.TryEvaluateAndDescribeAsync(memberName, REvaluationResultProperties.None, null);
-                        if (!(result is IRErrorInfo)) {
+                        var exists = await session.EvaluateAsync<bool>(Invariant($"exists('{variableName}')"), REvaluationKind.Normal);
+                        if (exists) {
                             infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
-                                memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
+                                           variableName, HasChildrenProperty | AccessorKindProperty,
+                                           null, _maxResults);
                         }
                     } catch (Exception) { }
                 }).Wait(_maxWaitTime);
@@ -119,14 +114,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        private static string TrimToFirstSelector(string name) {
-            var index = name.IndexOfAny(_selectors);
-            return index >= 0 ? name.Substring(0, index) : name;
-        }
-
-        private static string TrimToLastSelector(string name) {
-            var index = name.LastIndexOfAny(_selectors);
-            return index >= 0 ? name.Substring(0, index) : name;
+        private static string TrimToTrailingSelector(string name) {
+            int i = name.Length - 1;
+            for (; i >= 0; i--) {
+                if (_selectors.Contains(name[i])) {
+                    return name.Substring(0, i);
+                }
+            }
+            return string.Empty;
         }
 
         private static string TrimLeadingSelector(string name) {
@@ -165,7 +160,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             DimProperty |
                             FlagsProperty;
                         var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
-                        var e = new RSessionDataObject(evaluation, _coreShell.Services);  // root level doesn't truncate children and return every variables
+                        var settings = Workflow.Shell.GetService<IRSettings>();
+                        var e = new RSessionDataObject(evaluation, settings.EvaluateActiveBindings);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();
 
@@ -196,7 +192,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             public string Description { get; } = string.Empty;
+
             public NamedItemType ItemType { get; }
+
             public string Name { get; }
         }
     }

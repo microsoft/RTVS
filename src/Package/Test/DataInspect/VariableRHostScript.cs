@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;

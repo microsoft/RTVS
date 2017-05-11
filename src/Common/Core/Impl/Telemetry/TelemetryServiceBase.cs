@@ -75,9 +75,7 @@ namespace Microsoft.Common.Core.Telemetry {
         }
         #endregion
 
-        private string MakeEventName(TelemetryArea area, string eventName) {
-            return this.EventNamePrefix + area.ToString() + "/" + eventName;
-        }
+        private string MakeEventName(TelemetryArea area, string eventName) => this.EventNamePrefix + area.ToString() + "/" + eventName;
 
         protected virtual void Dispose(bool disposing) { }
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
@@ -10,10 +11,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public PlotHistoryCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
             base(interactiveWorkflow) {
-            if (visualComponent == null) {
-                throw new ArgumentNullException(nameof(visualComponent));
-            }
-
+            Check.ArgumentNull(nameof(visualComponent), visualComponent);
             VisualComponent = visualComponent;
         }
     }

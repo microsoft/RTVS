@@ -348,12 +348,10 @@ namespace Microsoft.R.DataInspection.Test {
             }
 
             public void Add(string name, string expression, string deparse) {
-                Children = Children.Append(new object[] { name, expression, deparse }).ToArray();
+                Children = Children.Concat(new[] { new object[] { name, expression, deparse } }).ToArray();
             }
 
-            public void Add(string name, string deparse) {
-                Add(name, "PARENT" + name, deparse);
-            }
+            public void Add(string name, string deparse) => Add(name, "PARENT" + name, deparse);
 
             public static implicit operator object[] (ChildrenDataRow row) =>
                 new object[] { row };

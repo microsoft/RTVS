@@ -9,20 +9,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Services {
     public class ServiceManager : IServiceManager {
         private readonly DisposeToken _disposeToken = DisposeToken.Create<ServiceManager>();
         private readonly ConcurrentDictionary<Type, object> _s = new ConcurrentDictionary<Type, object>();
-
-        /// <summary>
-        /// Fire when service is added
-        /// </summary>
-        public event EventHandler<ServiceContainerEventArgs> ServiceAdded;
-        /// <summary>
-        /// Fires when service is removed
-        /// </summary>
-        public event EventHandler<ServiceContainerEventArgs> ServiceRemoved;
+        private IMainThread _mainThread;
 
         /// <summary>
         /// Add service to the service manager container
@@ -40,24 +33,36 @@ namespace Microsoft.Common.Core.Services {
             type = type ?? typeof(T);
             Check.ArgumentNull(nameof(service), service);
             Check.InvalidOperation(() => _s.TryAdd(type, service), "Service already exists");
-            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(type));
+
+            var mainThread = service as IMainThread;
+            if (mainThread != null) {
+                _mainThread = _mainThread ?? mainThread;
+            }
+
             return this;
         }
 
         /// <summary>
         /// Adds on-demand created service
         /// </summary>
-        /// <param name="factory">Optional creator function. If not provided, reflection with default constructor will be used.</param>
-        public virtual IServiceManager AddService<T>(Func<T> factory) where T: class {
+        /// <param name="factory">Service factory</param>
+        public virtual IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class {
             _disposeToken.ThrowIfDisposed();
 
-            var type = typeof(T);
-            var lazy = factory != null 
-                ? new Lazy<object>(() => factory()) 
-                : new Lazy<object>(() => Activator.CreateInstance(type));
+            var lazy = new Lazy<object>(() => factory(this));
+            Check.InvalidOperation(() => _s.TryAdd(typeof(T), lazy), "Service already exists");
+            return this;
+        }
 
+        /// <summary>
+        /// Adds on-demand created service
+        /// </summary>
+        /// <param name="type">Type to instantiate with reflection.</param>
+        public virtual IServiceManager AddService(Type type) {
+            _disposeToken.ThrowIfDisposed();
+
+            var lazy = new Lazy<object>(() => Activator.CreateInstance(type));
             Check.InvalidOperation(() => _s.TryAdd(type, lazy), "Service already exists");
-            ServiceAdded?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
             return this;
         }
 
@@ -67,7 +72,17 @@ namespace Microsoft.Common.Core.Services {
         /// <typeparam name="T">Service type</typeparam>
         /// <returns>Service instance or null if it doesn't exist</returns>
         public virtual T GetService<T>(Type type = null) where T : class {
-            _disposeToken.ThrowIfDisposed();
+            if(typeof(T) == typeof(IMainThread)) {
+                return _mainThread as T;
+            }
+
+            if (_disposeToken.IsDisposed) {
+                // Do not throw. When editor text buffer is closed, the associated service manager
+                // is disposed. However, some actions may still hold on the text buffer reference
+                // and actually determine if buffer is closed by checking if editor document 
+                // is still attached as a service.
+                return null;
+            }
 
             type = type ?? typeof(T);
             if (!_s.TryGetValue(type, out object value)) {
@@ -77,25 +92,21 @@ namespace Microsoft.Common.Core.Services {
             return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);
         }
 
-        public virtual void RemoveService<T>() where T : class {
-            _disposeToken.ThrowIfDisposed();
-
-            if (_s.TryRemove(typeof(T), out object dummy)) {
-                ServiceRemoved?.Invoke(this, new ServiceContainerEventArgs(typeof(T)));
+        public virtual void RemoveService(object service) {
+            var key = AllServices.FirstOrDefault(x => _s.TryGetValue(x, out object value));
+            if (key != null) {
+                _s.TryRemove(key, out object dummy);
             }
         }
 
-        public virtual IEnumerable<Type> AllServices {
-            get {
-                _disposeToken.ThrowIfDisposed();
-                return _s.Keys.ToList();
-            }
-        }
+        public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
 
         public virtual IEnumerable<T> GetServices<T>() where T : class {
-            _disposeToken.ThrowIfDisposed();
+            if (_disposeToken.IsDisposed) {
+                yield break;
+            }
 
-            var type = typeof(T);
+                var type = typeof(T);
             foreach (var value in _s.Values.OfType<T>()) {
                 CheckDisposed(value);
                 yield return value;
@@ -114,7 +125,6 @@ namespace Microsoft.Common.Core.Services {
                 (service as IDisposable)?.Dispose();
                 _disposeToken.ThrowIfDisposed();
             }
-
             return service;
         }
 

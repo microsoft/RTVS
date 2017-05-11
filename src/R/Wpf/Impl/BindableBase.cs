@@ -29,7 +29,9 @@ namespace Microsoft.R.Wpf {
         /// <returns>True if the value was changed, false if the existing value matched the
         /// desired value.</returns>
         protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null) {
-            if (EqualityComparer<T>.Default.Equals(storage, value)) return false;
+            if (EqualityComparer<T>.Default.Equals(storage, value)) {
+                return false;
+            }
 
             storage = value;
             OnPropertyChanged(propertyName);

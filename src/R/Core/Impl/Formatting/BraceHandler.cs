@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;

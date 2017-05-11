@@ -21,10 +21,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
 
         public static void DoIdle(int ms) {
             UIThreadHelper.Instance.Invoke(() => {
+                var idle = VsAppShell.Current.GetService<IIdleTimeSource>();
                 int time = 0;
                 while (time < ms) {
                     TestScript.DoEvents();
-                    ((IIdleTimeSource)VsAppShell.Current).DoIdle();
+                    idle.DoIdle();
 
                     Thread.Sleep(20);
                     time += 20;

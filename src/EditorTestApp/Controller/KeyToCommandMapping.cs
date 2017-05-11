@@ -7,37 +7,30 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Windows.Input;
-using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Common.Core.UI.Commands;
 
-namespace Microsoft.Languages.Editor.Application.Controller
-{
+namespace Microsoft.Languages.Editor.Application.Controller {
     [ExcludeFromCodeCoverage]
-    internal class KeyToVS2KCommandMapping
-    {
+    internal class KeyToVS2KCommandMapping {
         static private KeyToVS2KCommandMapping _instance;
-
         private const char DividerChar = ';';
 
         private Dictionary<Tuple<ModifierKeys, Key>, VSConstants.VSStd2KCmdID> _map;
 
-        private KeyToVS2KCommandMapping()
-        {
+        private KeyToVS2KCommandMapping() {
             _map = new Dictionary<Tuple<ModifierKeys, Key>, VSConstants.VSStd2KCmdID>();
             InstantiateDefaultValues();
         }
 
-        public static KeyToVS2KCommandMapping GetInstance()
-        {
+        public static KeyToVS2KCommandMapping GetInstance() {
             _instance = new KeyToVS2KCommandMapping();
             return _instance;
         }
 
-        public string PersistToString()
-        {
+        public string PersistToString() {
             var bldr = new StringBuilder();
 
-            foreach (var kvp in _map)
-            {
+            foreach (var kvp in _map) {
                 string modifier = kvp.Key.Item1.ToString();
                 string Key = kvp.Key.Item2.ToString();
                 string id = kvp.Value.ToString();
@@ -48,22 +41,17 @@ namespace Microsoft.Languages.Editor.Application.Controller
             return bldr.ToString();
         }
 
-        private Dictionary<Tuple<ModifierKeys, Key>, VSConstants.VSStd2KCmdID> FromString(string text)
-        {
+        private Dictionary<Tuple<ModifierKeys, Key>, VSConstants.VSStd2KCmdID> FromString(string text) {
             var newMap = new Dictionary<Tuple<ModifierKeys, Key>, VSConstants.VSStd2KCmdID>();
 
-            using (StringReader reader = new StringReader(text))
-            {
+            using (StringReader reader = new StringReader(text)) {
                 string line;
 
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (line.Length > 0)
-                    {
+                while ((line = reader.ReadLine()) != null) {
+                    if (line.Length > 0) {
                         var splitted = line.Split(new char[] { DividerChar }, StringSplitOptions.RemoveEmptyEntries);
 
-                        if (splitted.Length != 3)
-                        {
+                        if (splitted.Length != 3) {
                             throw new ApplicationException();
                         }
 
@@ -71,18 +59,15 @@ namespace Microsoft.Languages.Editor.Application.Controller
                         Key key;
                         VSConstants.VSStd2KCmdID cmdId;
 
-                        if (!Enum.TryParse<ModifierKeys>(splitted[0], true, out mkeys))
-                        {
+                        if (!Enum.TryParse<ModifierKeys>(splitted[0], true, out mkeys)) {
                             throw new ApplicationException();
                         }
 
-                        if (!Enum.TryParse<Key>(splitted[1], true, out key))
-                        {
+                        if (!Enum.TryParse<Key>(splitted[1], true, out key)) {
                             throw new ApplicationException();
                         }
 
-                        if (!Enum.TryParse<VSConstants.VSStd2KCmdID>(splitted[2], true, out cmdId))
-                        {
+                        if (!Enum.TryParse<VSConstants.VSStd2KCmdID>(splitted[2], true, out cmdId)) {
                             throw new ApplicationException();
                         }
 
@@ -91,21 +76,18 @@ namespace Microsoft.Languages.Editor.Application.Controller
                 }
             }
 
-            if (newMap.Count == 0)
-            {
+            if (newMap.Count == 0) {
                 return null;
             }
 
             return newMap;
         }
 
-        public bool TryGetValue(ModifierKeys modifier, Key key, out VSConstants.VSStd2KCmdID commandId)
-        {
+        public bool TryGetValue(ModifierKeys modifier, Key key, out VSConstants.VSStd2KCmdID commandId) {
             return _map.TryGetValue(new Tuple<ModifierKeys, Key>(modifier, key), out commandId);
         }
 
-        private void InstantiateDefaultValues()
-        {
+        private void InstantiateDefaultValues() {
             // No modifiers
             AddCommand(Key.Right, VSConstants.VSStd2KCmdID.RIGHT);
             AddCommand(Key.Left, VSConstants.VSStd2KCmdID.LEFT);
@@ -163,29 +145,10 @@ namespace Microsoft.Languages.Editor.Application.Controller
             AddControlCommand(Key.Y, VSConstants.VSStd2KCmdID.REDO);
         }
 
-        private void AddCommand(Key key, VSConstants.VSStd2KCmdID id)
-        {
-            AddCommmand(ModifierKeys.None, key, id);
-        }
-
-        private void AddShiftCommand(Key key, VSConstants.VSStd2KCmdID id)
-        {
-            AddCommmand(ModifierKeys.Shift, key, id);
-        }
-
-        private void AddControlCommand(Key key, VSConstants.VSStd2KCmdID id)
-        {
-            AddCommmand(ModifierKeys.Control, key, id);
-        }
-
-        private void AddControlShiftCommand(Key key, VSConstants.VSStd2KCmdID id)
-        {
-            AddCommmand(ModifierKeys.Control | ModifierKeys.Shift, key, id);
-        }
-
-        private void AddCommmand(ModifierKeys modifiers, Key key, VSConstants.VSStd2KCmdID id)
-        {
-            _map.Add(new Tuple<ModifierKeys, Key>(modifiers, key), id);
-        }
+        private void AddCommand(Key key, VSConstants.VSStd2KCmdID id) => AddCommmand(ModifierKeys.None, key, id);
+        private void AddShiftCommand(Key key, VSConstants.VSStd2KCmdID id) => AddCommmand(ModifierKeys.Shift, key, id);
+        private void AddControlCommand(Key key, VSConstants.VSStd2KCmdID id) => AddCommmand(ModifierKeys.Control, key, id);
+        private void AddControlShiftCommand(Key key, VSConstants.VSStd2KCmdID id) => AddCommmand(ModifierKeys.Control | ModifierKeys.Shift, key, id);
+        private void AddCommmand(ModifierKeys modifiers, Key key, VSConstants.VSStd2KCmdID id) => _map.Add(new Tuple<ModifierKeys, Key>(modifiers, key), id);
     }
 }

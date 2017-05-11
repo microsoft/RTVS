@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9066522E-780E-4409-B410-2525E6A621FC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.R.Editor.Test</RootNamespace>
+    <AssemblyName>Microsoft.R.Editor.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\R.Settings.targets" />
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)'=='14.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
+          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+          <Name>Microsoft.UnitTests.References.14.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
+  </Choose>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
+      <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
+      <Name>Microsoft.Common.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
+      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
+      <Name>Microsoft.Languages.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
+      <Project>{EE2504A4-4666-460B-8552-5B342718CB02}</Project>
+      <Name>Microsoft.Languages.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
+      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
+      <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\Test\Microsoft.R.Components.Test.csproj">
+      <Project>{2AA8762F-3A84-4CD5-9AA0-77829A766769}</Project>
+      <Name>Microsoft.R.Components.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
+      <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
+      <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
+      <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
+      <Name>Microsoft.R.Host.Client.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Interpreters.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.Windows.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
+      <Name>Microsoft.R.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Core\Test\Microsoft.R.Core.Test.csproj">
+      <Project>{58D86BE4-FA8B-4F59-91FE-A9B348C70ED2}</Project>
+      <Name>Microsoft.R.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Impl\Microsoft.R.Editor.Windows.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor.Windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\query.sql" />
+    <None Include="Files\Help\01.rd" />
+    <None Include="Files\Help\02.rd" />
+    <None Include="Files\Tokenization\01.rd" />
+    <None Include="Files\Tokenization\01.rd.tokens" />
+    <None Include="Files\Tokenization\02.rd" />
+    <None Include="Files\Tokenization\02.rd.tokens" />
+    <None Include="Files\Tokenization\03.rd" />
+    <None Include="Files\Tokenization\03.rd.tokens" />
+    <None Include="Files\Tokenization\04.rd" />
+    <None Include="Files\Tokenization\04.rd.tokens" />
+    <None Include="Files\Tokenization\05.rd" />
+    <None Include="Files\Tokenization\05.rd.tokens" />
+    <None Include="Files\Tokenization\06.rd" />
+    <None Include="Files\Tokenization\06.rd.tokens" />
+    <None Include="Files\Tokenization\07.rd" />
+    <None Include="Files\Tokenization\07.rd.tokens" />
+    <None Include="Files\Tokenization\08.rd" />
+    <None Include="Files\Tokenization\08.rd.tokens" />
+    <None Include="Files\Tokenization\09.rd" />
+    <None Include="Files\Tokenization\09.rd.tokens" />
+    <None Include="Files\Tokenization\10.rd" />
+    <None Include="Files\Tokenization\10.rd.tokens" />
+    <None Include="Files\Tokenization\11.rd" />
+    <None Include="Files\Tokenization\11.rd.tokens" />
+    <None Include="Files\Tokenization\12.rd" />
+    <None Include="Files\Tokenization\12.rd.tokens" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\UnitTests\app.config">
+      <Link>app.config</Link>
+    </None>
+    <None Include="Files\02.r" />
+    <None Include="Files\01.r" />
+    <None Include="Files\01.r.outline" />
+    <None Include="Files\02.r.outline" />
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
+    <Compile Include="Completions\FunctionInfoTest.cs" />
+    <Compile Include="Completions\PackageIndexTest.cs" />
+    <Compile Include="Completions\PackageInstallTest.cs" />
+    <Compile Include="Completions\FileCompletionProviderTest.cs" />
+    <Compile Include="Completions\RFunctionCompletionSourceTest.cs" />
+    <Compile Include="Completions\RCompletionTestUtilities.cs" />
+    <Compile Include="Documentation\RoxygenTest.cs" />
+    <Compile Include="DragDrop\DragDropTest.cs" />
+    <Compile Include="Extensions\AssertionExtensions.cs" />
+    <Compile Include="Extensions\RdAssertionExtensions.cs" />
+    <Compile Include="Extensions\TextViewExtensionsTest.cs" />
+    <Compile Include="Fixtures\REditorServicesFixture.cs" />
+    <Compile Include="Formatting\FormatCommandTest.cs" />
+    <Compile Include="Mocks\EditorUndoActionMock.cs" />
+    <Compile Include="Navigation\TextStructureTest.cs" />
+    <Compile Include="Navigation\GotoDefinitionTest.cs" />
+    <Compile Include="Navigation\RPeekableItemSourceTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BraceMatch\BraceMatchTest.cs" />
+    <Compile Include="Fixtures\EditorTestFilesFixture.cs" />
+    <Compile Include="Comments\CommenterTest.cs" />
+    <Compile Include="Completions\RCompletionSourceTest.cs" />
+    <Compile Include="Formatting\SmartIndentTest.cs" />
+    <Compile Include="Formatting\AutoFormatTest.cs" />
+    <Compile Include="Formatting\RangeFormatterTest.cs" />
+    <Compile Include="Mocks\EditorDocumentMock.cs" />
+    <Compile Include="Mocks\EditorTreeMock.cs" />
+    <Compile Include="Outline\OutlineBuilderTest.cs" />
+    <Compile Include="Outline\OutlineTest.cs" />
+    <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
+    <Compile Include="RData%27\BraceMatch\BraceMatchTest.cs" />
+    <Compile Include="RData%27\Classification\RdClassifierTest.cs" />
+    <Compile Include="RData%27\Help\GetFunctionInfoTest.cs" />
+    <Compile Include="RData%27\Tokens\TokenizeSampleFilesTest.cs" />
+    <Compile Include="RData%27\Tokens\TokenizeTest.cs" />
+    <Compile Include="RData%27\Tokens\VerifySortedTables.cs" />
+    <Compile Include="Script\RHostScript.cs" />
+    <Compile Include="Mocks\EditorSupportMock.cs" />
+    <Compile Include="Settings\ParameterTest.cs" />
+    <Compile Include="Assertions\FunctionSignatureAssertion.cs" />
+    <Compile Include="Signatures\ComputeCurrentParameterTest.cs" />
+    <Compile Include="Signatures\ParameterTest.cs" />
+    <Compile Include="Signatures\SignatureHelpSourceTest.cs" />
+    <Compile Include="Signatures\SignatureTest.cs" />
+    <Compile Include="Tree\EditorTreeTest.cs" />
+    <Compile Include="Tree\InvalidateTest.cs" />
+    <Compile Include="Tree\ProcessChangesTest.cs" />
+    <Compile Include="Tree\TreeChangeTypeTest.cs" />
+    <Compile Include="Tree\TreeTextChangeTest.cs" />
+    <Compile Include="Utility\FunctionIndexBasedTest.cs" />
+    <Compile Include="Utility\QuickInfoSourceUtility.cs" />
+    <Compile Include="Utility\SignatureHelpSourceUtility.cs" />
+    <Compile Include="Utility\TestRSettings.cs" />
+    <Compile Include="Utility\TextViewTest.cs" />
+    <Compile Include="Utility\TextBufferUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

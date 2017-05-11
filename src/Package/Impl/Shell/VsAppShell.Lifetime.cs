@@ -26,11 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
-            CheckVsStarted();
-
-            ConfigureCore();
             ConfigureServices();
             ConfigureIdleSource();
+            CheckVsStarted();
         }
 
         private void CheckVsStarted() {
@@ -39,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
             if (value is bool) {
                 if ((bool)value) {
-                    Started?.Invoke(this, EventArgs.Empty);
+                    _application.FireStarted();
                 } else {
                     _vsShell.AdviseShellPropertyChanges(this, out _vsShellEventsCookie);
                 }
@@ -69,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public int OnShellPropertyChange(int propid, object var) {
             if (propid == (int)__VSSPROPID4.VSSPROPID_ShellInitialized) {
-                Started?.Invoke(this, EventArgs.Empty);
+                _application.FireStarted();
             }
             return VSConstants.S_OK;
         }

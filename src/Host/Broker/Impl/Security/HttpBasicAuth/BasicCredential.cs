@@ -1,11 +1,5 @@
 ﻿// From https://github.com/Kukkimonsuta/Odachi/tree/master/src/Odachi.AspNetCore.Authentication.Basic
 
-using Microsoft.AspNetCore.Authentication;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-
 namespace Odachi.AspNetCore.Authentication.Basic
 {
 	public class BasicCredential

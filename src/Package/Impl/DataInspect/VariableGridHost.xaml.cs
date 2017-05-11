@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Languages.Core.Composition;
 
 namespace Microsoft.Languages.Editor.Composition {
     /// <summary>
@@ -31,42 +30,47 @@ namespace Microsoft.Languages.Editor.Composition {
             imports.AddRange(base.GetAll(contentType.TypeName));
 
             var baseTypes = contentType.BaseTypes;
-            foreach (var baseType in baseTypes)
+            foreach (var baseType in baseTypes) {
                 imports.AddRange(GetAll(baseType.TypeName));
+            }
 
             return imports;
         }
 
         public override ICollection<T> GetAll(string contentTypeName) {
-            if (contentTypeName[0] == '*')
+            if (contentTypeName[0] == '*') {
                 return base.GetAll(contentTypeName);
+            }
 
             var contentType = _contentTypeRegistryService.GetContentType(contentTypeName);
             Debug.Assert(contentType != null);
 
-            return this.GetAll(contentType);
+            return GetAll(contentType);
         }
 
         public override T GetImport(string contentTypeName) {
-            if (contentTypeName[0] == '*')
+            if (contentTypeName[0] == '*') {
                 return base.GetImport(contentTypeName);
+            }
 
             var contentType = _contentTypeRegistryService.GetContentType(contentTypeName);
             Debug.Assert(contentType != null);
 
-            return this.GetImport(contentType);
+            return GetImport(contentType);
         }
 
         public T GetImport(IContentType contentType) {
             var import = base.GetImport(contentType.TypeName);
-            if (import != null)
+            if (import != null) {
                 return import;
+            }
 
             var baseTypes = contentType.BaseTypes;
             foreach (var baseType in baseTypes) {
                 import = GetImport(baseType.TypeName);
-                if (import != null)
+                if (import != null) {
                     break;
+                }
             }
 
             return import;
@@ -80,8 +84,9 @@ namespace Microsoft.Languages.Editor.Composition {
             imports.AddRange(base.GetAllLazy(contentType.TypeName));
 
             var baseTypes = contentType.BaseTypes;
-            foreach (var baseType in baseTypes)
+            foreach (var baseType in baseTypes) {
                 imports.AddRange(GetAllLazy(baseType.TypeName));
+            }
 
             return imports;
         }

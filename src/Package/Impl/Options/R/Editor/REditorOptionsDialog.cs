@@ -4,9 +4,7 @@
 using System;
 using System.ComponentModel;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Editor;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;

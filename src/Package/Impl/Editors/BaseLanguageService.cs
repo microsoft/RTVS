@@ -48,22 +48,13 @@ namespace Microsoft.VisualStudio.R.Editors {
         #endregion
 
         #region IVsLanguageTextOps
-        public virtual int Format(IVsTextLayer textLayer, TextSpan[] span) {
-            return VSConstants.E_NOTIMPL;
-        }
-
+        public virtual int Format(IVsTextLayer textLayer, TextSpan[] span) => VSConstants.E_NOTIMPL;
         public virtual int GetDataTip(IVsTextLayer textLayer, TextSpan[] span, TextSpan[] tipSpan, out string text) {
             text = null;
             return VSConstants.E_NOTIMPL;
         }
-
-        public virtual int GetPairExtent(IVsTextLayer textLayer, TextAddress textAddress, TextSpan[] span) {
-            return VSConstants.E_NOTIMPL;
-        }
-
-        public virtual int GetWordExtent(IVsTextLayer textLayer, TextAddress textAddress, WORDEXTFLAGS flags, TextSpan[] span) {
-            return VSConstants.E_NOTIMPL;
-        }
+        public virtual int GetPairExtent(IVsTextLayer textLayer, TextAddress textAddress, TextSpan[] span) => VSConstants.E_NOTIMPL;
+        public virtual int GetWordExtent(IVsTextLayer textLayer, TextAddress textAddress, WORDEXTFLAGS flags, TextSpan[] span) => VSConstants.E_NOTIMPL;
         #endregion
 
         #region IVsLanguageDebugInfo
@@ -104,36 +95,28 @@ namespace Microsoft.VisualStudio.R.Editors {
 
         public int CurFileExtensionFormat(string fileName, out uint extensionIndex) {
             extensionIndex = 0;
-
             string desiredFileext = "*" + Path.GetExtension(fileName);
 
-            string[] filters = SaveAsFilter.Split('|');
+            var filters = SaveAsFilter.Split('|');
             for (uint i = 0; i < filters.Length - 1; i += 2) {
-                string[] filterExtensions = filters[i + 1].Split(';');
+                var filterExtensions = filters[i + 1].Split(';');
                 if (filterExtensions.Contains(desiredFileext, StringComparer.OrdinalIgnoreCase)) {
                     extensionIndex = i / 2;
                 }
             }
-
             return VSConstants.S_OK;
         }
 
         public int GetFormatFilterList(out string filterList) {
             filterList = SaveAsFilter.Replace('|', '\n');
-
             return VSConstants.S_OK;
         }
 
         public int QueryInvalidEncoding(uint Format, out string message) {
             message = null;
-
             return VSConstants.S_FALSE;
         }
 
-        protected virtual string SaveAsFilter {
-            get {
-                return string.Empty;
-            }
-        }
+        protected virtual string SaveAsFilter => string.Empty;
     }
 }

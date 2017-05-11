@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -15,10 +15,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class VariableNode : ITreeNode {
         #region member/ctor
 
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private VariableViewModel _evaluation;
 
-        public VariableNode(IRToolsSettings settings, VariableViewModel evaluation) {
+        public VariableNode(IRSettings settings, VariableViewModel evaluation) {
             _settings = settings;
             _evaluation = evaluation;
         }

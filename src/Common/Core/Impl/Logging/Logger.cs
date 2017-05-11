@@ -63,18 +63,14 @@ namespace Microsoft.Common.Core.Logging {
         }
 
         #region IActionLog
-        public void Write(LogVerbosity verbosity, MessageCategory category, string message) {
-            _logs.Value[(int)verbosity].Write(category, message);
-        }
+        public void Write(LogVerbosity verbosity, MessageCategory category, string message) => _logs.Value[(int)verbosity].Write(category, message);
 
         public void WriteFormat(LogVerbosity verbosity, MessageCategory category, string format, params object[] arguments) {
             string message = string.Format(CultureInfo.InvariantCulture, format, arguments);
             _logs.Value[(int)verbosity].Write(category, message);
         }
 
-        public void WriteLine(LogVerbosity verbosity, MessageCategory category, string message) {
-            _logs.Value[(int)verbosity].Write(category, message + Environment.NewLine);
-        }
+        public void WriteLine(LogVerbosity verbosity, MessageCategory category, string message) => _logs.Value[(int)verbosity].Write(category, message + Environment.NewLine);
 
         public void Flush() {
             foreach (var l in _logs.Value) {

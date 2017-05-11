@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using FluentAssertions;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Security;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {

@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Microsoft.Languages.Core.Text {
@@ -12,11 +11,9 @@ namespace Microsoft.Languages.Core.Text {
     /// </summary>
     [DebuggerDisplay("[{Text} {CurrentChar}]")]
     public class CharacterStream {
-        private char _currentChar;
-        private ITextProvider _text;
-        private TextRange _range;
-        private int _position = 0;
-        private bool _isEndOfStream = false;
+        private readonly TextRange _range;
+        private int _position;
+        private bool _isEndOfStream;
 
         #region Constructors
 
@@ -26,14 +23,13 @@ namespace Microsoft.Languages.Core.Text {
         }
 
         public CharacterStream(ITextProvider textProvider, ITextRange range) {
-            _text = textProvider;
+            Text = textProvider;
 
-            int end = Math.Min(_text.Length, range.End);
-
+            var end = Math.Min(Text.Length, range.End);
             _range = TextRange.FromBounds(range.Start, end);
 
             Position = _range.Start;
-            _currentChar = _text[_range.Start];
+            CurrentChar = Text[_range.Start];
         }
 
         [DebuggerStepThrough]
@@ -45,57 +41,34 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Text provider that supplies underlying text. May be a string, a text buffer or a buffer snapshot.
         /// </summary>
-        public ITextProvider Text {
-            get { return _text; }
-        }
+        public ITextProvider Text { get; }
 
         /// <summary>
         /// Determines if current position is at the end of text
         /// </summary>
         /// <returns>True if position is at the end of stream</returns>
-        public bool IsEndOfStream() {
-            return _isEndOfStream;
-        }
+        public bool IsEndOfStream() => _isEndOfStream;
 
-        public int DistanceFromEnd {
-            get { return _range.End - Position; }
-        }
+        public int DistanceFromEnd => _range.End - Position;
 
         /// <summary>
         /// Returns character at a given position. If position is beyond text limits, returns '\0'
         /// </summary>
         /// <param name="position">Stream position</param>
-        public char this[int position] {
-            get {
-                return _text[position];
-            }
-        }
+        public char this[int position] => Text[position];
 
-        public string GetSubstringAt(int position, int length) {
-            return _text.GetText(new TextRange(position, length));
-        }
+        public string GetSubstringAt(int position, int length) => Text.GetText(new TextRange(position, length));
+        public int IndexOf(string text, int start, bool ignoreCase) => Text.IndexOf(text, start, ignoreCase);
+        public int IndexOf(char ch, int start) => Text.IndexOf(ch, start);
 
-        public int IndexOf(string text, int start, bool ignoreCase) {
-            return _text.IndexOf(text, start, ignoreCase);
-        }
+        public bool CompareTo(int position, int length, string text, bool ignoreCase) 
+            => Text.CompareTo(position, length, text, ignoreCase);
 
-        public int IndexOf(char ch, int start) {
-            return _text.IndexOf(ch, start);
-        }
+        public char CurrentChar { get; private set; }
 
-        public bool CompareTo(int position, int length, string text, bool ignoreCase) {
-            return _text.CompareTo(position, length, text, ignoreCase);
-        }
+        public char NextChar => Position + 1 < _range.End ? Text[Position + 1] : '\0';
 
-        public char CurrentChar { get { return _currentChar; } }
-
-        public char NextChar {
-            get { return Position + 1 < _range.End ? _text[Position + 1] : '\0'; }
-        }
-
-        public char PrevChar {
-            get { return Position > _range.Start ? _text[Position - 1] : '\0'; }
-        }
+        public char PrevChar => Position > _range.Start ? Text[Position - 1] : '\0';
 
         /// <summary>
         /// Returns characters at an offset from the current position
@@ -105,19 +78,18 @@ namespace Microsoft.Languages.Core.Text {
         public char LookAhead(int offset) {
             int pos = Position + offset;
 
-            if (pos < 0 || pos >= _text.Length)
+            if (pos < 0 || pos >= Text.Length) {
                 return '\0';
+            }
 
-            return _text[pos];
+            return Text[pos];
         }
 
         /// <summary>
         /// Current stream position
         /// </summary>
         public int Position {
-            get {
-                return _position;
-            }
+            get => _position;
             set {
                 _position = value;
                 CheckBounds();
@@ -127,9 +99,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Length of the stream
         /// </summary>
-        public int Length {
-            get { return _range.Length; }
-        }
+        public int Length => _range.Length;
 
         /// <summary>
         /// Moves current position forward or backward
@@ -147,7 +117,7 @@ namespace Microsoft.Languages.Core.Text {
             if (_position < _range.End - 1) {
                 // Most common case, no need to check bounds extensively
                 _position++;
-                _currentChar = _text[_position];
+                CurrentChar = Text[_position];
                 return true;
             }
 
@@ -158,17 +128,12 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Detemines if current character is a whitespace
         /// </summary>
-        public bool IsWhiteSpace() {
-            // Char.IsWhiteSpace is slow
-            return _currentChar <= ' ' || _currentChar == 0x200B;
-        }
+        public bool IsWhiteSpace() => CurrentChar <= ' ' || CurrentChar == 0x200B;
 
         /// <summary>
         /// Determines if current character is a new line character
         /// </summary>
-        public bool IsAtNewLine() {
-            return IsNewLine(_currentChar);
-        }
+        public bool IsAtNewLine() => IsNewLine(CurrentChar);
 
         public static bool IsNewLine(char currentCharacter) {
             return (currentCharacter == '\n' || currentCharacter == '\r');
@@ -177,12 +142,14 @@ namespace Microsoft.Languages.Core.Text {
         public void SkipLineBreak() {
             if (CurrentChar == '\n') {
                 MoveToNextChar();
-                if (CurrentChar == '\r')
+                if (CurrentChar == '\r') {
                     MoveToNextChar();
+                }
             } else if (CurrentChar == '\r') {
                 MoveToNextChar();
-                if (CurrentChar == '\n')
+                if (CurrentChar == '\n') {
                     MoveToNextChar();
+                }
             }
         }
 
@@ -207,79 +174,65 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Determines if current character is a letter
         /// </summary>
-        public bool IsLetter() {
-            return IsLetter(_currentChar);
-        }
+        public bool IsLetter() => IsLetter(CurrentChar);
 
         /// <summary>
         /// Determines if current character is a letter
         /// </summary>
-        public static bool IsLetter(char character) {
-            return char.IsLetter(character);
-        }
+        public static bool IsLetter(char character) => char.IsLetter(character);
 
         /// <summary>
         /// Determines if character is a hexadecimal digit
         /// </summary>
-        public bool IsHex() {
-            return IsDecimal() || (_currentChar >= 'A' && _currentChar <= 'F') || (_currentChar >= 'a' && _currentChar <= 'f');
-        }
+        public bool IsHex() 
+            => IsDecimal() || (CurrentChar >= 'A' && CurrentChar <= 'F') || (CurrentChar >= 'a' && CurrentChar <= 'f');
 
-        public static bool IsHex(char character) {
-            return IsDecimal(character) || (character >= 'A' && character <= 'F') || (character >= 'a' && character <= 'f');
-        }
+        public static bool IsHex(char character) 
+            => IsDecimal(character) || (character >= 'A' && character <= 'F') || (character >= 'a' && character <= 'f');
 
         /// <summary>
         /// Determines if character is a decimal digit
         /// </summary>
-        public bool IsDecimal() {
-            return IsDecimal(_currentChar);
-        }
+        public bool IsDecimal() => IsDecimal(CurrentChar);
 
         private void CheckBounds() {
-            if (_position < 0)
+            if (_position < 0) {
                 _position = 0;
+            }
 
-            int maxPosition = Math.Min(_text.Length, _range.End);
+            int maxPosition = Math.Min(Text.Length, _range.End);
 
             _isEndOfStream = _position >= maxPosition;
-            if (_isEndOfStream)
+            if (_isEndOfStream) {
                 _position = maxPosition;
+            }
 
-            _currentChar = _isEndOfStream ? '\0' : _text[Position];
+            CurrentChar = _isEndOfStream ? '\0' : Text[Position];
         }
 
         /// <summary>
         /// Determines if character is a decimal digit
         /// </summary>
-        public static bool IsDecimal(char character) {
-            return (character >= '0' && character <= '9');
-        }
+        public static bool IsDecimal(char character) => (character >= '0' && character <= '9');
 
         /// <summary>
         /// Determines if current character is an ANSI letter
         /// </summary>
-        public bool IsAnsiLetter() {
-            return IsAnsiLetter(_currentChar);
-        }
+        public bool IsAnsiLetter() => IsAnsiLetter(CurrentChar);
 
         /// <summary>
         /// Determines if current character is an ANSI letter
         /// </summary>
-        public static bool IsAnsiLetter(char character) {
-            return (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
-        }
+        public static bool IsAnsiLetter(char character) 
+            => (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
 
         /// <summary>
         /// Determines if current character starts a string (i.e. current character is a single or double quote).
         /// </summary>
-        public bool IsAtString() {
-            return (_currentChar == '\'' || _currentChar == '\"');
-        }
-  
+        public bool IsAtString() => (CurrentChar == '\'' || CurrentChar == '\"');
+
         [DebuggerStepThrough]
-        public override string ToString() {
-            return string.Format(CultureInfo.InvariantCulture, "@{0} ({1})", Position, _text[Position]);
-        }
+        public override string ToString() 
+            => string.Format(CultureInfo.InvariantCulture, "@{0} ({1})", Position, Text[Position]);
     }
 }

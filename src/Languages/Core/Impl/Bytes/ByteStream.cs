@@ -68,11 +68,13 @@ namespace Microsoft.Languages.Core.Bytes {
         public bool IsAnsiLetter() => (CurrentChar >= 'A' && CurrentChar <= 'z');
 
         public bool CurrentStringEqualsTo(string s, int length) {
-            if (length > (_text.Length - Position))
+            if (length > (_text.Length - Position)) {
                 return false;
+            }
 
-            if (s.Length < length && length < (_text.Length - Position))
+            if (s.Length < length && length < (_text.Length - Position)) {
                 return false;
+            }
 
             for (int i = 0; i < s.Length && i + Position < _text.Length; i++) {
                 if (s[i] != _text[i + Position]) {

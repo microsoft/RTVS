@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Formatting;
@@ -19,21 +20,22 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class ReplCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var shell = VsAppShell.Current;
-            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowVisualProvider>();
+            var services = shell.Services;
+            var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowVisualProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
-            var completionBroker = shell.GetService<ICompletionBroker>();
-            var editorFactory = shell.GetService<IEditorOperationsFactoryService>();
+            var completionBroker = services.GetService<ICompletionBroker>();
+            var editorFactory = services.GetService<IEditorOperationsFactoryService>();
 
             return new ICommand[] {
-                new GotoBraceCommand(textView, textBuffer, shell),
+                new GotoBraceCommand(textView, textBuffer, services),
                 new WorkingDirectoryCommand(interactiveWorkflow),
                 new HistoryNavigationCommand(textView, interactiveWorkflow, completionBroker, editorFactory),
-                new ReplFormatDocumentCommand(textView, textBuffer, shell),
-                new FormatSelectionCommand(textView, textBuffer, shell),
-                new FormatOnPasteCommand(textView, textBuffer, shell),
+                new ReplFormatDocumentCommand(textView, textBuffer, services),
+                new FormatSelectionCommand(textView, textBuffer, services),
+                new FormatOnPasteCommand(textView, textBuffer, services),
                 new SendToReplCommand(textView, interactiveWorkflow),
                 new ClearReplCommand(textView, interactiveWorkflow),
-                new RTypingCommandHandler(textView, shell),
+                new RTypingCommandHandler(textView, services),
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),
                 new PasteCurrentCodeCommand(textView, interactiveWorkflow),

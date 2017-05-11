@@ -30,7 +30,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private ConnectionPointCookie _textManagerEventsCookie;
         private LANGPREFERENCES3? _langPrefs;
 
-
         public LanguageSettingsStorage(ICoreShell coreShell, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
             _shell = coreShell;
             _languageServiceId = languageServiceId;
@@ -39,6 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
             _textManager = _shell.GetService<IVsTextManager4>(typeof(SVsTextManager));
             _textManagerEventsCookie = new ConnectionPointCookie(_textManager, this, typeof(IVsTextManagerEvents4));
+
+            LoadFromStorage();
         }
 
         public event EventHandler<EventArgs> SettingsChanged;
@@ -46,37 +47,13 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         /// <summary>
         /// VS language preferences: tab size, indent size, spaces or tabs.
         /// </summary>
-        private LANGPREFERENCES3 LangPrefs {
-            get {
-                if (!_langPrefs.HasValue) {
-                    // Get the language preferences, like "is intellisense turned on?"
-                    var langPrefs = new LANGPREFERENCES3[1];
-                    langPrefs[0].guidLang = _languageServiceId;
-
-                    int hr = _textManager.GetUserPreferences4(null, langPrefs, null);
-                    if (hr == VSConstants.S_OK) {
-                        _langPrefs = langPrefs[0];
-                    }
-
-                    if (!_langPrefs.HasValue) {
-                        Debug.Fail("Invalid language service when fetching lang prefs: " + _languageServiceId.ToString());
-                        _langPrefs = new LANGPREFERENCES3 {
-                            guidLang = _languageServiceId
-                        };
-                    }
-                }
-                return _langPrefs.Value;
-            }
-        }
+        private LANGPREFERENCES3 LangPrefs => _langPrefs.Value;
 
         private void SetLangPrefs(LANGPREFERENCES3 newPreferences)
-            => _textManager.SetUserPreferences4(null, new LANGPREFERENCES3[] { newPreferences }, null);
+            => _textManager.SetUserPreferences4(null, new[] { newPreferences }, null);
 
         #region IVsTextManagerEvents4
-        public int OnUserPreferencesChanged4(
-            VIEWPREFERENCES3[] viewPrefs,
-            LANGPREFERENCES3[] langPrefs,
-            FONTCOLORPREFERENCES2[] colorPrefs) {
+        public int OnUserPreferencesChanged4(VIEWPREFERENCES3[] viewPrefs, LANGPREFERENCES3[] langPrefs, FONTCOLORPREFERENCES2[] colorPrefs) {
             if (langPrefs != null && langPrefs[0].guidLang == _languageServiceId) {
                 _langPrefs = langPrefs[0];
                 SettingsChanged?.Invoke(this, EventArgs.Empty);
@@ -92,17 +69,25 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public void LoadFromStorage() {
             var vsShell = _shell.GetService<IVsShell>(typeof(SVsShell));
             if (vsShell != null) {
-                IVsPackage package;
-                vsShell.LoadPackage(ref _packageGuid, out package);
-                Debug.Assert(package != null);
-
+                vsShell.LoadPackage(ref _packageGuid, out IVsPackage package);
                 if (package != null) {
-                    foreach (string curAutomationObjectName in _automationObjectNames) {
-                        object automationObject = null;
-                        package.GetAutomationObject(curAutomationObjectName, out automationObject);
+                    foreach (var curAutomationObjectName in _automationObjectNames) {
+                        package.GetAutomationObject(curAutomationObjectName, out object automationObject);
                     }
                 }
+                LoadLanguagePreferences();
             }
+        }
+
+        private void LoadLanguagePreferences() {
+            var langPrefs = new LANGPREFERENCES3[1];
+            langPrefs[0].guidLang = _languageServiceId;
+
+            var hr = _textManager.GetUserPreferences4(null, langPrefs, null);
+            if (hr == VSConstants.S_OK) {
+                _langPrefs = langPrefs[0];
+            }
+            Debug.Assert(_langPrefs != null);
         }
 
         /// <summary>

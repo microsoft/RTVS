@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.UI;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;

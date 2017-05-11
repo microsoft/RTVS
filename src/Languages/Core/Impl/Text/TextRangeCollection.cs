@@ -13,21 +13,20 @@ namespace Microsoft.Languages.Core.Text {
     /// Ranges must not overlap. Can be sorted by range start positions. Can be searched 
     /// in order to locate range that contains given position or range that starts 
     /// at a given position. The search is a binary search. Collection implements 
-    /// <seealso cref="ITextRangeCollection"/>
+    /// ITextRangeCollection
     /// </summary>
     /// <typeparam name="T">A class or an interface that derives from <seealso cref="ITextRange"/></typeparam>
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class TextRangeCollection<T> : ITextRangeCollection<T> where T : ITextRange {
         [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly IReadOnlyTextRangeCollection<T> EmptyCollection = new TextRangeCollection<T>();
 
         private static readonly IList<T> _emptyList = new T[0];
         private static readonly IReadOnlyList<T> _emptyReadOnlyList = new T[0];
-        private List<T> _items = new List<T>();
+        private readonly List<T> _items = new List<T>();
 
         #region Construction
-        public TextRangeCollection() {
-        }
+        public TextRangeCollection() { }
 
         public TextRangeCollection(IEnumerable<T> ranges) {
             Add(ranges);
@@ -42,9 +41,7 @@ namespace Microsoft.Languages.Core.Text {
 
         public int Length { get; private set; }
 
-        public virtual bool Contains(int position) {
-            return Count > 0 && TextRange.Contains(this, position);
-        }
+        public virtual bool Contains(int position) => Count > 0 && TextRange.Contains(this, position);
 
         public void Shift(int offset) {
             foreach (var ct in _items) {
@@ -65,19 +62,17 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Number of comments in the collection.
         /// </summary>
-        public int Count { get { return _items.Count; } }
+        public int Count => _items.Count;
 
         /// <summary>
         /// Sorted list of comment tokens in the document.
         /// </summary>
-        public IList<T> Items {
-            get { return _items; }
-        }
+        public IList<T> Items => _items;
 
         /// <summary>
         /// Retrieves Nth item in the collection
         /// </summary>
-        public T this[int index] { get { return _items[index]; } }
+        public T this[int index] => _items[index];
 
         /// <summary>
         /// Appends text range to the collection. 
@@ -130,7 +125,7 @@ namespace Microsoft.Languages.Core.Text {
                 return;
             }
 
-            int nextItemIndex = GetFirstItemAfterOrAtPosition(item.End);
+            var nextItemIndex = GetFirstItemAfterOrAtPosition(item.End);
             if (nextItemIndex < 0) {
                 if (!CheckSorted()) {
                     Debug.Assert(false, "Children collection must be sorted");
@@ -148,24 +143,28 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         public virtual int GetItemAtPosition(int position) {
-            if (Count == 0)
+            if (Count == 0) {
                 return -1;
+            }
 
-            if (position < this[0].Start)
+            if (position < this[0].Start) {
                 return -1;
+            }
 
-            if (position >= this[Count - 1].End)
+            if (position >= this[Count - 1].End) {
                 return -1;
+            }
 
-            int min = 0;
-            int max = Count - 1;
+            var min = 0;
+            var max = Count - 1;
 
             while (min <= max) {
-                int mid = min + (max - min) / 2;
+                var mid = min + (max - min) / 2;
                 var item = this[mid];
 
-                if (item.Start == position)
+                if (item.Start == position) {
                     return mid;
+                }
 
                 if (position < item.Start) {
                     max = mid - 1;
@@ -183,27 +182,32 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         public virtual int GetItemContaining(int position) {
-            if (Count == 0)
+            if (Count == 0) {
                 return -1;
+            }
 
-            if (position < this[0].Start)
+            if (position < this[0].Start) {
                 return -1;
+            }
 
-            if (position > this[Count - 1].End)
+            if (position > this[Count - 1].End) {
                 return -1;
+            }
 
-            int min = 0;
-            int max = Count - 1;
+            var min = 0;
+            var max = Count - 1;
 
             while (min <= max) {
-                int mid = min + (max - min) / 2;
+                var mid = min + (max - min) / 2;
                 var item = this[mid];
 
-                if (item.Contains(position))
+                if (item.Contains(position)) {
                     return mid;
+                }
 
-                if (mid < Count - 1 && item.End <= position && position < this[mid + 1].Start)
+                if (mid < Count - 1 && item.End <= position && position < this[mid + 1].Start) {
                     return -1;
+                }
 
                 if (position < item.Start) {
                     max = mid - 1;
@@ -221,17 +225,19 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         public virtual int GetFirstItemAfterPosition(int position) {
-            if (Count == 0 || position > this[Count - 1].End)
+            if (Count == 0 || position > this[Count - 1].End) {
                 return -1;
+            }
 
-            if (position < this[0].Start)
+            if (position < this[0].Start) {
                 return 0;
+            }
 
-            int min = 0;
-            int max = Count - 1;
+            var min = 0;
+            var max = Count - 1;
 
             while (min <= max) {
-                int mid = min + (max - min) / 2;
+                var mid = min + (max - min) / 2;
                 var item = this[mid];
 
                 if (item.Contains(position)) {
@@ -256,7 +262,7 @@ namespace Microsoft.Languages.Core.Text {
         }
 
         private int GetFirstElementContainingPosition(int index, int position) {
-            for (int i = index - 1; i >= 0; i--) {
+            for (var i = index - 1; i >= 0; i--) {
                 var item = this[i];
 
                 if (!item.Contains(position)) {
@@ -272,7 +278,7 @@ namespace Microsoft.Languages.Core.Text {
 
         // assuming the item at index already contains the position
         private int GetLastElementContainingPosition(int index, int position) {
-            for (int i = index; i < Count; i++) {
+            for (var i = index; i < Count; i++) {
                 var item = this[i];
 
                 if (!item.Contains(position)) {
@@ -289,17 +295,19 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         private int GetLastItemBeforeOrAtPosition(int position) {
-            if (Count == 0 || position < this[0].Start)
+            if (Count == 0 || position < this[0].Start) {
                 return -1;
+            }
 
-            if (position >= this[Count - 1].End)
+            if (position >= this[Count - 1].End) {
                 return Count - 1;
+            }
 
-            int min = 0;
-            int max = Count - 1;
+            var min = 0;
+            var max = Count - 1;
 
             while (min <= max) {
-                int mid = min + (max - min) / 2;
+                var mid = min + (max - min) / 2;
                 var item = this[mid];
 
                 if (item.Contains(position)) {
@@ -329,18 +337,20 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         public virtual int GetFirstItemBeforePosition(int position) {
-            if (Count == 0 || position < this[0].End)
+            if (Count == 0 || position < this[0].End) {
                 return -1;
+            }
 
-            int min = 0;
-            int lastIndex = Count - 1;
-            int max = Count - 1;
+            var min = 0;
+            var lastIndex = Count - 1;
+            var max = Count - 1;
 
-            if (position >= this[lastIndex].End)
+            if (position >= this[lastIndex].End) {
                 return max;
+            }
 
             while (min <= max) {
-                int mid = min + (max - min) / 2;
+                var mid = min + (max - min) / 2;
                 var item = this[mid];
 
                 if (item.Contains(position)) // guaranteed not to be negative by the first if in this method
@@ -368,17 +378,19 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         public virtual int GetFirstItemAfterOrAtPosition(int position) {
-            if (Count == 0 || position > this[Count - 1].End)
+            if (Count == 0 || position > this[Count - 1].End) {
                 return -1;
+            }
 
-            if (position < this[0].Start)
+            if (position < this[0].Start) {
                 return 0;
+            }
 
-            int min = 0;
-            int max = Count - 1;
+            var min = 0;
+            var max = Count - 1;
 
             while (min <= max) {
-                int mid = min + (max - min) / 2;
+                var mid = min + (max - min) / 2;
                 var item = this[mid];
 
                 if (item.Contains(position)) {
@@ -407,16 +419,16 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position in a text buffer</param>
         /// <returns>Item index or -1 if not found</returns>
         public virtual IReadOnlyList<int> GetItemsContainingInclusiveEnd(int position) {
-            List<int> list = new List<int>();
+            var list = new List<int>();
 
             if (Count > 0 &&
                 position >= this[0].Start &&
                 position <= this[Count - 1].End) {
-                int min = 0;
-                int max = Count - 1;
+                var min = 0;
+                var max = Count - 1;
 
                 while (min <= max) {
-                    int mid = min + (max - min) / 2;
+                    var mid = min + (max - min) / 2;
                     var item = this[mid];
 
                     if (item.Contains(position) || item.End == position) {
@@ -424,8 +436,9 @@ namespace Microsoft.Languages.Core.Text {
                         break;
                     }
 
-                    if (mid < Count - 1 && item.End <= position && position < this[mid + 1].Start)
+                    if (mid < Count - 1 && item.End <= position && position < this[mid + 1].Start) {
                         break;
+                    }
 
                     if (position < item.Start) {
                         max = mid - 1;
@@ -443,7 +456,7 @@ namespace Microsoft.Languages.Core.Text {
 
             var list = new List<int>();
 
-            for (int i = startingPoint; i >= 0; i--) {
+            for (var i = startingPoint; i >= 0; i--) {
                 var item = this[i];
 
                 if (item.Contains(position) || item.End == position) {
@@ -454,7 +467,7 @@ namespace Microsoft.Languages.Core.Text {
             }
 
             if (startingPoint + 1 < Count) {
-                for (int i = startingPoint + 1; i < Count; i++) {
+                for (var i = startingPoint + 1; i < Count; i++) {
                     var item = this[i];
 
                     if (item.Contains(position) || item.End == position) {
@@ -473,18 +486,19 @@ namespace Microsoft.Languages.Core.Text {
         /// Shifts all tokens at of below given position by the specified offset.
         /// </summary>
         public virtual void ShiftStartingFrom(int position, int offset) {
-            int min = 0;
-            int max = Count - 1;
+            var min = 0;
+            var max = Count - 1;
 
-            if (Count == 0)
+            if (Count == 0) {
                 return;
+            }
 
             if (position <= this[0].Start) {
                 // all children are below the shifting point
                 Shift(offset);
             } else {
                 while (min <= max) {
-                    int mid = min + (max - min) / 2;
+                    var mid = min + (max - min) / 2;
 
                     if (this[mid].Contains(position)) {
                         // Found: item contains start position
@@ -493,19 +507,18 @@ namespace Microsoft.Languages.Core.Text {
                             composite.ShiftStartingFrom(position, offset);
                         } else {
                             var expandable = this[mid] as IExpandableTextRange;
-                            if (expandable != null)
-                                expandable.Expand(0, offset);
+                            expandable?.Expand(0, offset);
                         }
 
                         // Now shift all remaining siblings that are below this one
-                        for (int i = mid + 1; i < Count; i++) {
+                        for (var i = mid + 1; i < Count; i++) {
                             this[i].Shift(offset);
                         }
 
                         break;
                     } else if (mid < Count - 1 && this[mid].End <= position && position <= this[mid + 1].Start) {
                         // Between this item and the next sibling. Shift siblings
-                        for (int i = mid + 1; i < Count; i++) {
+                        for (var i = mid + 1; i < Count; i++) {
                             this[i].Shift(offset);
                         }
 
@@ -536,26 +549,28 @@ namespace Microsoft.Languages.Core.Text {
         public virtual IReadOnlyList<T> ItemsInRange(ITextRange range) {
             List<T> list = null;
 
-            int first = GetItemContaining(range.Start);
+            var first = GetItemContaining(range.Start);
             if (first < 0) {
                 first = GetFirstItemAfterPosition(range.Start);
             }
 
             if (first >= 0) {
-                for (int i = first; i < Count; i++) {
-                    if (_items[i].Start >= range.End)
+                for (var i = first; i < Count; i++) {
+                    if (_items[i].Start >= range.End) {
                         break;
+                    }
 
                     if (TextRange.Intersect(_items[i], range)) {
-                        if (list == null)
+                        if (list == null) {
                             list = new List<T>();
+                        }
 
                         list.Add(_items[i]);
                     }
                 }
             }
 
-            return list == null ? _emptyReadOnlyList : list;
+            return list ?? _emptyReadOnlyList;
         }
 
         /// <summary>
@@ -563,9 +578,7 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         /// <param name="range">Range to remove items in</param>
         /// <returns>Collection of removed items</returns>
-        public ICollection<T> RemoveInRange(ITextRange range) {
-            return RemoveInRange(range, false);
-        }
+        public ICollection<T> RemoveInRange(ITextRange range) => RemoveInRange(range, false);
 
         /// <summary>
         /// Removes items that overlap given text range
@@ -574,23 +587,23 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="inclusiveEnds">True if range end is inclusive</param>
         /// <returns>Collection of removed items</returns>
         public virtual ICollection<T> RemoveInRange(ITextRange range, bool inclusiveEnds) {
-            IList<T> removed = _emptyList;
+            var removed = _emptyList;
 
-            int first = GetFirstItemAfterPosition(range.Start);
+            var first = GetFirstItemAfterPosition(range.Start);
 
             if (first < 0 || (!inclusiveEnds && this[first].Start >= range.End) || (inclusiveEnds && this[first].Start > range.End)) {
                 return removed;
             }
 
-            int lastCandidate = GetLastItemBeforeOrAtPosition(range.End);
-            int last = -1;
+            var lastCandidate = GetLastItemBeforeOrAtPosition(range.End);
+            var last = -1;
 
             if (lastCandidate < first) {
                 lastCandidate = first;
             }
 
             if (!inclusiveEnds && first >= 0) {
-                for (int i = lastCandidate; i >= first; i--) {
+                for (var i = lastCandidate; i >= first; i--) {
                     var item = _items[i];
 
                     if (item.Start < range.End) {
@@ -603,10 +616,11 @@ namespace Microsoft.Languages.Core.Text {
             }
 
             if (first >= 0 && last >= 0) {
-                if (removed == _emptyList)
+                if (removed == _emptyList) {
                     removed = new List<T>();
+                }
 
-                for (int i = first; i <= last; i++) {
+                for (var i = first; i <= last; i++) {
                     removed.Add(_items[i]);
                 }
 
@@ -629,9 +643,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="oldLength">Length of the changed fragment before the change.</param>
         /// <param name="newLength">Length of text fragment after the change.</param>
         /// <returns>Collection or removed blocks</returns>
-        public ICollection<T> ReflectTextChange(int start, int oldLength, int newLength) {
-            return ReflectTextChange(start, oldLength, newLength, false);
-        }
+        public ICollection<T> ReflectTextChange(int start, int oldLength, int newLength) => ReflectTextChange(start, oldLength, newLength, false);
 
         /// <summary>
         /// Reflects changes in text to the collection. Items are expanded and/or
@@ -644,8 +656,8 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="startInclusive">True if insertion at range start falls inside the range rather than outside.</param>
         /// <returns>Collection or removed blocks</returns>
         public virtual ICollection<T> ReflectTextChange(int start, int oldLength, int newLength, bool startInclusive) {
-            int indexStart = GetItemContaining(start);
-            int indexEnd = oldLength > 0 ? GetItemContaining(start + oldLength) : indexStart;
+            var indexStart = GetItemContaining(start);
+            var indexEnd = oldLength > 0 ? GetItemContaining(start + oldLength) : indexStart;
             ICollection<T> removed = _emptyList;
 
             if (indexStart >= 0 && indexEnd < 0 && start + oldLength == this[indexStart].End) {
@@ -659,8 +671,9 @@ namespace Microsoft.Languages.Core.Text {
             // range does not invalidate the existing range: |__r1__|deleted|__r2__|
 
             if (indexEnd > indexStart && indexStart >= 0) {
-                if (this[indexEnd].Start == start + oldLength)
+                if (this[indexEnd].Start == start + oldLength) {
                     indexEnd--;
+                }
             }
 
             if (indexStart != indexEnd ||
@@ -670,10 +683,11 @@ namespace Microsoft.Languages.Core.Text {
             }
 
             if (this.Count > 0) {
-                int offset = newLength - oldLength;
+                var offset = newLength - oldLength;
 
-                if (removed != _emptyList && removed.Count > 0)
+                if (removed != _emptyList && removed.Count > 0) {
                     indexStart = GetItemContaining(start);
+                }
 
                 if (indexStart >= 0) {
                     // If range length is 0 it still contains the position.
@@ -707,15 +721,16 @@ namespace Microsoft.Languages.Core.Text {
                                 RemoveAt(indexStart);
                                 indexStart--;
 
-                                if (removed == _emptyList)
+                                if (removed == _emptyList) {
                                     removed = new List<T>();
+                                }
 
                                 removed.Add(range);
                             }
                         }
                     }
 
-                    for (int i = indexStart + 1; i < this.Count; i++) {
+                    for (var i = indexStart + 1; i < this.Count; i++) {
                         this[i].Shift(offset);
                     }
                 } else {
@@ -754,9 +769,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Returns collection of items in an array
         /// </summary>
-        public T[] ToArray() {
-            return _items.ToArray();
-        }
+        public T[] ToArray() => _items.ToArray();
 
         /// <summary>
         /// Compares two collections and calculates 'changed' range. In case this collection
@@ -765,57 +778,66 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         /// <param name="otherCollection">Collection to compare to</param>
         public virtual ITextRange RangeDifference(IEnumerable<ITextRange> otherCollection, int lowerBound, int upperBound) {
-            if (otherCollection == null)
+            if (otherCollection == null) {
                 return TextRange.FromBounds(lowerBound, upperBound);
+            }
 
             var other = new TextRangeCollection<ITextRange>(otherCollection);
 
-            if (this.Count == 0 && other.Count == 0)
+            if (this.Count == 0 && other.Count == 0) {
                 return TextRange.EmptyRange;
+            }
 
-            if (this.Count == 0)
+            if (this.Count == 0) {
                 return TextRange.FromBounds(lowerBound, upperBound);
+            }
 
-            if (other.Count == 0)
+            if (other.Count == 0) {
                 return TextRange.FromBounds(lowerBound, upperBound);
+            }
 
-            int minCount = Math.Min(this.Count, other.Count);
-            int start = 0;
-            int end = 0;
+            var minCount = Math.Min(this.Count, other.Count);
+            var start = 0;
+            var end = 0;
             int i, j;
 
             for (i = 0; i < minCount; i++) {
                 start = Math.Min(this[i].Start, other[i].Start);
 
-                if (this[i].Start != other[i].Start || this[i].Length != other[i].Length)
+                if (this[i].Start != other[i].Start || this[i].Length != other[i].Length) {
                     break;
+                }
             }
 
             if (i == minCount) {
-                if (this.Count == other.Count)
+                if (this.Count == other.Count) {
                     return TextRange.EmptyRange;
+                }
 
-                if (this.Count > other.Count)
+                if (this.Count > other.Count) {
                     return TextRange.FromBounds(Math.Min(upperBound, other[minCount - 1].Start), upperBound);
-                else
+                } else {
                     return TextRange.FromBounds(Math.Min(this[minCount - 1].Start, upperBound), upperBound);
+                }
             }
 
             for (i = this.Count - 1, j = other.Count - 1; i >= 0 && j >= 0; i--, j--) {
                 end = Math.Max(this[i].End, other[j].End);
 
-                if (this[i].Start != other[j].Start || this[i].Length != other[j].Length)
+                if (this[i].Start != other[j].Start || this[i].Length != other[j].Length) {
                     break;
+                }
             }
 
-            if (start < end)
+            if (start < end) {
                 return TextRange.FromBounds(start, end);
+            }
 
             return TextRange.FromBounds(lowerBound, upperBound);
         }
 
         private bool CheckSorted() {
-            for (int i = 0; i < Count - 1; i++) {
+            for (var i = 0; i < Count - 1; i++) {
                 if (_items[i].End > _items[i + 1].Start) {
                     return false;
                 }
@@ -826,22 +848,16 @@ namespace Microsoft.Languages.Core.Text {
 
         class RangeItemComparer : IComparer<T> {
             #region IComparer<T> Members
-            public int Compare(T x, T y) {
-                return x.Start - y.Start;
-            }
+            public int Compare(T x, T y) => x.Start - y.Start;
             #endregion
         }
 
         #region IEnumerable<T> Members
-        public IEnumerator<T> GetEnumerator() {
-            return _items.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
         #endregion
 
         #region IEnumerable Members
-        IEnumerator IEnumerable.GetEnumerator() {
-            return _items.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
         #endregion
     }
 }

@@ -29,9 +29,7 @@ namespace Microsoft.Common.Core.Tasks {
             _handlerConverter = handlerConverter;
         }
 
-        public Task<TEventArgs> Create(T instance, CancellationToken cancellationToken = default(CancellationToken)) {
-            return Create(instance, null, cancellationToken);
-        }
+        public Task<TEventArgs> Create(T instance, CancellationToken cancellationToken = default(CancellationToken)) => Create(instance, null, cancellationToken);
 
         public Task<TEventArgs> Create(T instance, Action<TEventArgs> callback, CancellationToken cancellationToken = default(CancellationToken)) {
             var tcs = new TaskCompletionSource<TEventArgs>();

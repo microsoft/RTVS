@@ -3,9 +3,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Odachi.AspNetCore.Authentication.Basic
 {
@@ -14,10 +11,11 @@ namespace Odachi.AspNetCore.Authentication.Basic
 		public BaseBasicContext(HttpContext context, BasicOptions options)
 			: base(context)
 		{
-			if (options == null)
-				throw new ArgumentNullException(nameof(options));
+			if (options == null) {
+                throw new ArgumentNullException(nameof(options));
+            }
 
-			Options = options;
+            Options = options;
 		}
 
 		public BasicOptions Options { get; }

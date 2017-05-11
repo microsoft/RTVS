@@ -64,7 +64,7 @@ namespace Microsoft.R.Components.History.Implementation {
             } else {
                 _entries = new SinglelineRHistoryEntries();
             }
-             
+
             _nextEntrySelector = new SingleEntrySelector(this, false);
             _previousEntrySelector = new SingleEntrySelector(this, true);
             _rangeUpEntrySelector = new RangeEntrySelector(this, true);
@@ -89,7 +89,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 } else {
                     _entries = new SinglelineRHistoryEntries(_entries);
                 }
-                
+
                 if (_currentEntry != null) {
                     var currentEntryStart = _currentEntry.Span.GetStartPoint(snapshot);
                     _currentEntry = _entries.FindEntryContainingPoint(currentEntryStart, snapshot);
@@ -101,7 +101,7 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
 
-        public IRHistoryWindowVisualComponent GetOrCreateVisualComponent(IRHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) { 
+        public IRHistoryWindowVisualComponent GetOrCreateVisualComponent(IRHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
             if (VisualComponent != null) {
                 return VisualComponent;
             }
@@ -156,7 +156,7 @@ namespace Microsoft.R.Components.History.Implementation {
             }
 
             var selectedText = GetSelectedText();
-            _interactiveWorkflow.ActiveWindow.Container.Show(focus: true, immediate:false);
+            _interactiveWorkflow.ActiveWindow.Container.Show(focus: true, immediate: false);
             _interactiveWorkflow.Operations.ReplaceCurrentExpression(selectedText);
             _interactiveWorkflow.Operations.PositionCaretAtPrompt();
         }
@@ -181,10 +181,12 @@ namespace Microsoft.R.Components.History.Implementation {
 
             if (_currentEntry == null) {
                 _currentEntry = _entries.Last();
-            } else while (_currentEntry.Previous != null) {
-                _currentEntry = _currentEntry.Previous;
-                if (!_historyTextBuffer.IsContentEqualsOrdinal(_currentEntry.Next.Span, _currentEntry.Span)) {
-                    break;
+            } else {
+                while (_currentEntry.Previous != null) {
+                    _currentEntry = _currentEntry.Previous;
+                    if (!_historyTextBuffer.IsContentEqualsOrdinal(_currentEntry.Next.Span, _currentEntry.Span)) {
+                        break;
+                    }
                 }
             }
 
@@ -343,14 +345,14 @@ namespace Microsoft.R.Components.History.Implementation {
         public void ToggleTextSelectionRight() => MoveSelectionActivePoint(true);
 
         private void MoveSelectionActivePoint(bool moveForward) {
-            if (!HasEntries || HasSelectedEntries){
+            if (!HasEntries || HasSelectedEntries) {
                 return;
             }
 
             var selection = VisualComponent.TextView.Selection;
             var anchorPoint = selection.AnchorPoint;
             var caret = VisualComponent.TextView.Caret;
-             if (moveForward) {
+            if (moveForward) {
                 caret.MoveToNextCaretPosition();
             } else {
                 caret.MoveToPreviousCaretPosition();
@@ -378,7 +380,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private void SelectAndDisplayEntry(IRHistoryEntry entryToSelect, ViewRelativePosition relativeTo) {
             entryToSelect.IsSelected = true;
 
-            var snapshotPoint = relativeTo == ViewRelativePosition.Top 
+            var snapshotPoint = relativeTo == ViewRelativePosition.Top
                 ? entryToSelect.Span.GetStartPoint(_historyTextBuffer.CurrentSnapshot)
                 : entryToSelect.Span.GetEndPoint(_historyTextBuffer.CurrentSnapshot);
 

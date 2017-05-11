@@ -2,11 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.R.Package.Definitions;
-using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Mocks;
 

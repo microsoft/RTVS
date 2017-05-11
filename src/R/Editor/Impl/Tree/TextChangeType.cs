@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-
-namespace Microsoft.R.Editor.Tree
-{
+namespace Microsoft.R.Editor.Tree {
     /// <summary>
     /// Type of text change in the editor document
     /// </summary>
-    public enum TextChangeType
-    {
+    public enum TextChangeType {
         /// <summary>
         /// Trivial change like whitespace change
         /// </summary>

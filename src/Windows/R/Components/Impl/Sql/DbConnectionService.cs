@@ -82,7 +82,8 @@ namespace Microsoft.R.Components.Sql {
                     }
                 }
             }
-            var link = FormatLocalizedLink(_coreShell.LocaleId, "https://www.microsoft.com/{0}/download/details.aspx?id=53339");
+            var app = _coreShell.GetService<IApplication>();
+            var link = FormatLocalizedLink(app.LocaleId, "https://www.microsoft.com/{0}/download/details.aspx?id=53339");
             _coreShell.ShowErrorMessage(Resources.Error_OdbcDriver.FormatInvariant(link));
             _coreShell.Process().Start(link);
             return false;

@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -11,31 +10,12 @@ namespace Microsoft.Common.Core.Shell {
     /// composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
-    public interface ICoreShell: IIdleTimeService {
-        /// <summary>
-        /// Application name to use in log, system events, etc.
-        /// </summary>
-        string ApplicationName { get; }
-
-        /// <summary>
-        /// Application locale ID (LCID)
-        /// </summary>
-        int LocaleId { get; }
-
+    public interface ICoreShell {
         /// <summary>
         /// Application-global services access
         /// </summary>
         IServiceContainer Services { get; }
 
-        /// <summary>
-        /// Fires when host application has completed it's startup sequence
-        /// </summary>
-        event EventHandler<EventArgs> Started;
-
-        /// <summary>
-        /// Fires when host application is terminating
-        /// </summary>
-        event EventHandler<EventArgs> Terminating;
 
         /// <summary>
         /// Tells if code runs in unit test environment

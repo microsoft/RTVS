@@ -10,7 +10,9 @@ namespace Microsoft.Languages.Core.Text {
     /// over Visual Studio ITextBuffer (see Microsoft.R.Editor implementation)
     /// </summary>
     public interface ITextProvider: ITextIterator {
-        /// <summary>Retrieves a substring from text rangen</summary>
+        /// <summary>Retrieves complete text</summary>
+        string GetText();
+        /// <summary>Retrieves a substring from text range</summary>
         string GetText(ITextRange range);
 
         /// <summary>Finds first index of a text sequence. Returns -1 if not found.</summary>

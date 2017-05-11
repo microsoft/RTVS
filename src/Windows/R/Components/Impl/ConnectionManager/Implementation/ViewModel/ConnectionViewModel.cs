@@ -5,7 +5,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using static System.FormattableString;

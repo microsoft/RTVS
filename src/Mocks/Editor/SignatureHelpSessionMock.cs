@@ -4,19 +4,19 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.Editor.Mocks
-{
+namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class SignatureHelpSessionMock : ISignatureHelpSession
-    {
-        public SignatureHelpSessionMock(ITextBuffer textBuffer, int caretPosition)
-        {
-            this.TextView = new TextViewMock(textBuffer, caretPosition);
+    public sealed class SignatureHelpSessionMock : ISignatureHelpSession {
+        public SignatureHelpSessionMock(IServiceContainer services, ITextBuffer textBuffer, int caretPosition) {
+            TextView = new TextViewMock(textBuffer, caretPosition);
         }
 
         public SnapshotPoint SnapshotPoint { get; set; }
@@ -38,28 +38,15 @@ namespace Microsoft.VisualStudio.Editor.Mocks
 
         public void Dismiss() { }
 
-        public SnapshotPoint? GetTriggerPoint(ITextSnapshot textSnapshot)
-        {
-            return SnapshotPoint;
-        }
+        public SnapshotPoint? GetTriggerPoint(ITextSnapshot textSnapshot) => SnapshotPoint;
 
-        public ITrackingPoint GetTriggerPoint(ITextBuffer textBuffer)
-        {
-            return TrackingPoint;
-        }
+        public ITrackingPoint GetTriggerPoint(ITextBuffer textBuffer) => TrackingPoint;
 
-        public bool Match()
-        {
-            return true;
-        }
+        public bool Match() => true;
 
-        public void Recalculate()
-        {
-        }
+        public void Recalculate() { }
 
-        public void Start()
-        {
-        }
+        public void Start() { }
 
 #pragma warning disable 67
         public event EventHandler Dismissed;

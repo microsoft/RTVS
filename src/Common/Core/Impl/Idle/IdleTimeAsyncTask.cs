@@ -6,14 +6,19 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Idle {
     /// <summary>
     /// Asynchronous task that start on next idle slot
     /// </summary>
-    public sealed class IdleTimeAsyncTask : IDisposable {
-        private readonly ICoreShell _shell;
+    public sealed class IdleTimeAsyncTask : CancellableTask {
+        private readonly IIdleTimeService _idleTime;
+        private readonly IMainThread _mainThread;
+        private readonly bool _testEnvironment;
         private Func<object> _taskAction;
         private Action<object> _callbackAction;
         private Action<object> _cancelAction;
@@ -26,8 +31,10 @@ namespace Microsoft.Common.Core.Idle {
 
         public object Tag { get; private set; }
 
-        public IdleTimeAsyncTask(ICoreShell shell) {
-            _shell = shell;
+        public IdleTimeAsyncTask(IServiceContainer services) {
+            _idleTime = services.GetService<IIdleTimeService>();
+            _mainThread = services.GetService<IMainThread>();
+            _testEnvironment = services.GetService<ICoreShell>().IsUnitTestEnvironment;
         }
 
         /// <summary>
@@ -36,13 +43,10 @@ namespace Microsoft.Common.Core.Idle {
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         /// <param name="cancelAction">Callback to invoke if task is canceled</param>
-        /// <param name="shell"></param>
-        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, ICoreShell shell)
-            : this(shell) {
-            Debug.Assert(taskAction != null);
-
-            if (taskAction == null)
-                throw new ArgumentNullException(nameof(taskAction));
+        /// <param name="services">Services container</param>
+        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, IServiceContainer services)
+            : this(services) {
+            Check.ArgumentNull(nameof(taskAction), taskAction);
 
             _taskAction = taskAction;
             _callbackAction = callbackAction;
@@ -54,17 +58,17 @@ namespace Microsoft.Common.Core.Idle {
         /// </summary>
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
-        /// <param name="shell"></param>
-        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, ICoreShell shell)
-            : this(taskAction, callbackAction, null, shell) { }
+        /// <param name="services">Services container</param>
+        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, IServiceContainer services)
+            : this(taskAction, callbackAction, null, services) { }
 
         /// <summary>
         /// Asynchronous idle time task constructor
         /// </summary>
         /// <param name="taskAction">Task to perform in a background thread</param>
-        /// <param name="shell"></param>
-        public IdleTimeAsyncTask(Func<object> taskAction, ICoreShell shell)
-            : this(taskAction, null, null, shell) { }
+        /// <param name="services">Services container</param>
+        public IdleTimeAsyncTask(Func<object> taskAction, IServiceContainer services)
+            : this(taskAction, null, null, services) { }
 
         /// <summary>
         /// Run task on next idle slot
@@ -76,13 +80,8 @@ namespace Microsoft.Common.Core.Idle {
         /// </summary>
         public void DoTaskOnIdle(int msDelay) {
             AssertIsOnMainThread();
-            Debug.Assert(!IsDisposed);
-
-            if (_taskAction == null)
-                throw new InvalidOperationException("Task action is null");
-
+            Check.InvalidOperation(() => !IsDisposed && _taskAction != null);
             _delay = msDelay;
-
             ConnectToIdle();
         }
 
@@ -94,15 +93,10 @@ namespace Microsoft.Common.Core.Idle {
         /// <param name="cancelAction">Callback to invoke if task is canceled</param>
         public void DoTaskOnIdle(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, object tag = null) {
             AssertIsOnMainThread();
-
-            if (TaskRunning)
-                throw new InvalidOperationException("Task is running");
-
-            if (taskAction == null)
-                throw new ArgumentNullException(nameof(taskAction));
+            Check.InvalidOperation(() => !TaskRunning);
+            Check.ArgumentNull(nameof(taskAction), taskAction);
 
             Tag = tag;
-
             _taskAction = taskAction;
             _callbackAction = callbackAction;
             _cancelAction = cancelAction;
@@ -110,9 +104,7 @@ namespace Microsoft.Common.Core.Idle {
             DoTaskOnIdle();
         }
 
-        public bool TaskRunning {
-            get { return _connectedToIdle || _taskRunning; }
-        }
+        public bool TaskRunning => _connectedToIdle || _taskRunning;
 
         private void DoTaskInternal() {
             Debug.Assert(_taskDoneEvent != null);
@@ -139,17 +131,14 @@ namespace Microsoft.Common.Core.Idle {
             }
 
             _taskDoneEvent.Set();
-
-            _shell.MainThread().Post(finalAction);
+            _mainThread.Post(finalAction);
         }
 
         private void UIThreadCompletedCallback(object result) {
             AssertIsOnMainThread();
 
             try {
-                if (_callbackAction != null) {
-                    _callbackAction(result);
-                }
+                _callbackAction?.Invoke(result);
             } catch (Exception ex) {
                 Debug.Fail(String.Format(CultureInfo.CurrentCulture,
                     "Background task UI thread callback exception {0}. Inner exception: {1}",
@@ -164,10 +153,7 @@ namespace Microsoft.Common.Core.Idle {
         private void UIThreadCanceledCallback(object result) {
             AssertIsOnMainThread();
 
-            if (_cancelAction != null) {
-                _cancelAction(result);
-            }
-
+            _cancelAction?.Invoke(result);
             _taskRunning = false;
             _taskDoneEvent.Dispose();
             _taskDoneEvent = null;
@@ -193,10 +179,7 @@ namespace Microsoft.Common.Core.Idle {
             AssertIsOnMainThread();
 
             // Don't let the app teminate while the background thread is doing work
-            if (_taskDoneEvent != null) {
-                _taskDoneEvent.WaitOne();
-            }
-
+            _taskDoneEvent?.WaitOne();
             Dispose();
         }
 
@@ -207,8 +190,8 @@ namespace Microsoft.Common.Core.Idle {
                 _connectedToIdle = true;
                 _idleConnectTime = DateTime.UtcNow;
 
-                _shell.Idle += OnIdle;
-                _shell.Terminating += OnTerminate;
+                _idleTime.Idle += OnIdle;
+                _idleTime.Closing += OnTerminate;
             }
         }
 
@@ -218,27 +201,30 @@ namespace Microsoft.Common.Core.Idle {
             if (_connectedToIdle) {
                 _connectedToIdle = false;
 
-                _shell.Idle -= OnIdle;
-                _shell.Terminating -= OnTerminate;
+                _idleTime.Idle -= OnIdle;
+                _idleTime.Closing -= OnTerminate;
             }
         }
 
         [Conditional("DEBUG")]
         private void AssertIsOnMainThread() {
-            if (!_shell.IsUnitTestEnvironment) {
-                _shell.AssertIsOnMainThread();
+            if (!_testEnvironment) {
+                _mainThread.Assert();
             }
         }
 
-        private bool IsDisposed=> Interlocked.Read(ref _disposed) != 0;
+        #region IDisposable
+        private bool IsDisposed => Interlocked.Read(ref _disposed) != 0;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed",
             MessageId = "_taskDoneEvent",
             Justification = "The task event is always disposed after the task runs")]
-        public void Dispose() {
+        protected override void Dispose(bool disposing) {
             AssertIsOnMainThread();
             Interlocked.Exchange(ref _disposed, 1);
             DisconnectFromIdle();
+            base.Dispose(disposing);
         }
+        #endregion 
     }
 }

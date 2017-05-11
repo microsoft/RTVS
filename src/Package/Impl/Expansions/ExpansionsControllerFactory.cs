@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Controllers;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -19,14 +19,19 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     [Name("R Expansions Command Controller")]
     [Order(Before = "Default")]
     internal class ExpansionsControllerFactory : IControllerFactory {
+        private readonly ICoreShell _coreShell;
+
+        [ImportingConstructor]
+        public ExpansionsControllerFactory(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
+
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
             var textManager = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            textManager.GetExpansionManager(out IVsExpansionManager expansionManager);
 
-            IVsExpansionManager expansionManager;
-            textManager.GetExpansionManager(out expansionManager);
-
-            return new List<ICommandTarget>() {
-                new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current)
+            return new List<ICommandTarget> {
+                new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current, _coreShell.Services)
             };
         }
     }

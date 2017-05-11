@@ -4,11 +4,13 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
+    [Category.R.Tokenizer]
     public class TokenizeIdentifierTest : TokenizeTestBase<RToken, RTokenType> {
         private readonly CoreTestFilesFixture _files;
 
@@ -17,7 +19,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIdentifierTest01() {
             var tokens = Tokenize("`_data_`", new RTokenizer());
 
@@ -28,7 +29,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIdentifierTest02() {
             var tokens = Tokenize("\"odd name\" <- 1", new RTokenizer());
 
@@ -39,7 +39,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIdentifierTest03() {
             var tokens = Tokenize("1 -> \"odd name\"", new RTokenizer());
 
@@ -50,7 +49,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIdentifierLogicalTest01() {
             var tokens = this.Tokenize("1 <- F(~x)", new RTokenizer());
 
@@ -66,7 +64,6 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void TokenizeIdentifierLogicalTest02() {
             var tokens = Tokenize("1 <- F", new RTokenizer());
 
@@ -78,9 +75,7 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
-        public void Tokenize_IdentifiersFile() {
-            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Identifiers.r");
-        }
+        public void Tokenize_IdentifiersFile() 
+            => TokenizeFiles.TokenizeFile<RToken, RTokenType, RTokenizer>(_files, @"Tokenization\Identifiers.r", "R");
     }
 }

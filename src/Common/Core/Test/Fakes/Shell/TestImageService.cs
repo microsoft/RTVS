@@ -12,7 +12,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public TestImageService() {
             _image = new DrawingImage(new GeometryDrawing(
                 Brushes.Blue,
-                new Pen(),
+                new Pen(Brushes.Transparent, 0),
                 new RectangleGeometry(new Rect(0, 0, 16, 16))
             ));
         }

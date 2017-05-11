@@ -121,9 +121,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
         /// <param name="description">A string description for the transaction.</param>
         /// <returns></returns>
         public ITextUndoTransaction CreateTransaction(string description) {
-            if (string.IsNullOrEmpty(description)) {
-                throw new ArgumentException("description", string.Format(CultureInfo.CurrentUICulture, "Strings.ArgumentCannotBeNull {0} {1}", "CreateTransaction", "description"));
-            }
+            description = description ?? string.Empty;
 
             // If there is a pending transaction that has already been completed, we should not be permitted
             // to open a new transaction, since it cannot later be added to its parent.

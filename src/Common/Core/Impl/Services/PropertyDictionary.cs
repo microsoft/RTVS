@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Common.Core.Diagnostics;
@@ -54,8 +53,7 @@ namespace Microsoft.Common.Core.Services {
             Check.ArgumentNull(nameof(factory), factory);
 
             lock (_lock) {
-                object property;
-                if (_properties.Value.TryGetValue(key, out property)) {
+                if (_properties.Value.TryGetValue(key, out object property)) {
                     return property as T;
                 }
 
@@ -85,9 +83,7 @@ namespace Microsoft.Common.Core.Services {
         /// <param name="creator">The delegate used to create the property (if needed).</param>
         /// <returns>An instance of the property.</returns>
         /// <remarks>The key used in the property collection will be typeof(T).</remarks>
-        public T GetOrCreateSingletonProperty<T>(Func<T> creator) where T : class {
-            return GetOrCreateSingletonProperty<T>(typeof(T), creator);
-        }
+        public T GetOrCreateSingletonProperty<T>(Func<T> creator) where T : class => GetOrCreateSingletonProperty<T>(typeof(T), creator);
 
         /// <summary>
         /// Gets the property associated with the specified key.
@@ -96,9 +92,7 @@ namespace Microsoft.Common.Core.Services {
         /// <returns>The property value, or null if the property is not set.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="key"/> is null.</exception>
         /// <exception cref="KeyNotFoundException"><paramref name="key"/> does not exist in the property collection.</exception>
-        public TProperty GetProperty<TProperty>(object key) {
-            return (TProperty)this.GetProperty(key);
-        }
+        public TProperty GetProperty<TProperty>(object key) => (TProperty)this.GetProperty(key);
 
         /// <summary>
         /// Gets the property associated with the specified key.
@@ -113,8 +107,7 @@ namespace Microsoft.Common.Core.Services {
                     throw new KeyNotFoundException(nameof(key));
                 }
 
-                object item;
-                if (!_properties.Value.TryGetValue(key, out item)) {
+                if (!_properties.Value.TryGetValue(key, out object item)) {
                     throw new KeyNotFoundException(nameof(key));
                 }
                 return item;
@@ -159,8 +152,8 @@ namespace Microsoft.Common.Core.Services {
         /// Gets or sets the <see cref="System.Object"/> with the specified key.
         /// </summary>
         public object this[object key] {
-            get { return GetProperty(key); }
-            set { SetProperty(key, value); }
+            get => GetProperty(key);
+            set => SetProperty(key, value);
         }
 
         /// <summary>

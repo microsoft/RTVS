@@ -3,8 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+using Microsoft.Common.Core.Diagnostics;
+using static System.FormattableString;
 
 namespace Microsoft.Languages.Core.Text {
     /// <summary>
@@ -14,9 +14,6 @@ namespace Microsoft.Languages.Core.Text {
     /// </summary>
     [DebuggerDisplay("[{Start}...{End}), Length = {Length}")]
     public class TextRange : IExpandableTextRange {
-        private int _start;
-        private int _end;
-
         /// <summary>
         /// Returns an empty, invalid range.
         /// </summary>
@@ -35,8 +32,8 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         /// <param name="position">Start position</param>
         public TextRange(int position) {
-            _start = position;
-            _end = position < Int32.MaxValue ? position + 1 : position;
+            Start = position;
+            End = position < int.MaxValue ? position + 1 : position;
         }
 
         /// <summary>
@@ -47,12 +44,9 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         [DebuggerStepThrough]
         public TextRange(int start, int length) {
-            if (length < 0) {
-                throw new ArgumentException("length");
-            }
-
-            _start = start;
-            _end = start + length;
+            Check.Argument(nameof(length), () => length >= 0);
+            Start = start;
+            End = start + length;
         }
 
         /// <summary>
@@ -68,8 +62,8 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         [DebuggerStepThrough]
         public void Empty() {
-            _start = 0;
-            _end = 0;
+            Start = 0;
+            End = 0;
         }
 
         /// <summary>
@@ -79,9 +73,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="start"></param>
         /// <param name="end"></param>
         [DebuggerStepThrough]
-        public static TextRange FromBounds(int start, int end) {
-            return new TextRange(start, end - start);
-        }
+        public static TextRange FromBounds(int start, int end) => new TextRange(start, end - start);
 
         /// <summary>
         /// Finds out of range intersects another range
@@ -89,74 +81,64 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="start">Start of another range</param>
         /// <param name="length">Length of another range</param>
         /// <returns>True if ranges intersect</returns>
-        public virtual bool Intersect(int start, int length) {
-            return TextRange.Intersect(this, start, length);
-        }
+        public virtual bool Intersect(int start, int length) => TextRange.Intersect(this, start, length);
 
         /// <summary>
         /// Finds out of range intersects another range
         /// </summary>
-        /// <param name="start">Text range</param>
+        /// <param name="range">Text range</param>
         /// <returns>True if ranges intersect</returns>
-        public virtual bool Intersect(ITextRange range) {
-            return TextRange.Intersect(this, range.Start, range.Length);
-        }
+        public virtual bool Intersect(ITextRange range) => TextRange.Intersect(this, range.Start, range.Length);
+
         /// <summary>
         /// Finds out if range represents valid text range (it's length is greater than zero)
         /// </summary>
         /// <returns>True if range is valid</returns>
-        public virtual bool IsValid() {
-            return TextRange.IsValid(this);
-        }
+        public virtual bool IsValid() => TextRange.IsValid(this);
 
         #region ITextRange
         /// <summary>
         /// Text range start position
         /// </summary>
-        public int Start { get { return _start; } }
+        public int Start { get; private set; }
 
         /// <summary>
         /// Text range end position (excluded)
         /// </summary>
-        public int End { get { return _end; } }
+        public int End { get; private set; }
 
         /// <summary>
         /// Text range length
         /// </summary>
-        public int Length {
-            get { return _end - _start; }
-        }
+        public int Length => End - Start;
 
         /// <summary>
         /// Determines if range contains given position
         /// </summary>
-        public virtual bool Contains(int position) {
-            return TextRange.Contains(this, position);
-        }
+        public virtual bool Contains(int position) => TextRange.Contains(this, position);
 
         /// <summary>
         /// Determines if text range fully contains another range
         /// </summary>
         /// <param name="range"></param>
-        public virtual bool Contains(ITextRange range) {
-            return Contains(range.Start) && Contains(range.End);
-        }
+        public virtual bool Contains(ITextRange range) => Contains(range.Start) && Contains(range.End);
 
         /// <summary>
         /// Shifts text range by a given offset
         /// </summary>
         [DebuggerStepThrough]
         public virtual void Shift(int offset) {
-            _start += offset;
-            _end += offset;
-        }
+            Start += offset;
+            End += offset;
+         }
 
         public virtual void Expand(int startOffset, int endOffset) {
-            if (_start + startOffset > _end + endOffset)
+            if (Start + startOffset > End + endOffset) {
                 throw new ArgumentException("Combination of start and end offsets should not be making range invalid");
+            }
 
-            _start += startOffset;
-            _end += endOffset;
+            Start += startOffset;
+            End += endOffset;
         }
 
         public virtual bool AllowZeroLength => false;
@@ -168,19 +150,21 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         public virtual bool ContainsUsingInclusion(int position) {
             if ((position >= Start) && (position <= End)) {
-                if (position == Start)
+                if (position == Start) {
                     return IsStartInclusive || ((position == End) && IsEndInclusive);
-                if (position == End)
+                }
+
+                if (position == End) {
                     return IsEndInclusive;
+                }
+
                 return true;
             }
             return false;
         }
         #endregion
 
-        public override string ToString() {
-            return String.Format(CultureInfo.InvariantCulture, "[{0}...{1}]", Start, End);
-        }
+        public override string ToString() => Invariant($"[{Start}...{End}]");
 
         /// <summary>
         /// Determines if ranges are equal. Ranges are equal when they are either both null
@@ -190,12 +174,14 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="right">Second range</param>
         /// <returns>True if ranges are equal</returns>
         public static bool AreEqual(ITextRange left, ITextRange right) {
-            if (Object.ReferenceEquals(left, right))
+            if (object.ReferenceEquals(left, right)) {
                 return true;
+            }
 
             // If one is null, but not both, return false.
-            if (((object)left == null) || ((object)right == null))
+            if (((object)left == null) || ((object)right == null)) {
                 return false;
+            }
 
             return (left.Start == right.Start) && (left.End == right.End);
         }
@@ -206,34 +192,28 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="range">Text range</param>
         /// <param name="position">Position</param>
         /// <returns>True if position is inside the range</returns>
-        public static bool Contains(ITextRange range, int position) {
-            return Contains(range.Start, range.Length, position);
-        }
+        public static bool Contains(ITextRange range, int position) => Contains(range.Start, range.Length, position);
 
         /// <summary>
         /// Determines if range contains another range
         /// </summary>
-        public static bool Contains(ITextRange range, ITextRange other) {
-            return range.Contains(other.Start) && range.Contains(other.End);
-        }
+        public static bool Contains(ITextRange range, ITextRange other) => range.Contains(other.Start) && range.Contains(other.End);
 
         /// <summary>
         /// Determines if range contains another range
         /// </summary>
         public static bool Contains(ITextRange range, ITextRange other, bool inclusiveEnd) {
-            if (inclusiveEnd)
+            if (inclusiveEnd) {
                 return ContainsInclusiveEnd(range, other);
-            else
-                return range.Contains(other.Start) && range.Contains(other.End);
+            }
+            return range.Contains(other.Start) && range.Contains(other.End);
         }
 
         /// <summary>
         /// Determines if range contains another range or it contains start point
         /// of the other range and their end points are the same.
         /// </summary>
-        public static bool ContainsInclusiveEnd(ITextRange range, ITextRange other) {
-            return range.Contains(other.Start) && (range.Contains(other.End) || range.End == other.End);
-        }
+        public static bool ContainsInclusiveEnd(ITextRange range, ITextRange other) => range.Contains(other.Start) && (range.Contains(other.End) || range.End == other.End);
 
         /// <summary>
         /// Determines if range contains given position
@@ -243,8 +223,9 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="position">Position</param>
         /// <returns>Tru if position is inside the range</returns>
         public static bool Contains(int rangeStart, int rangeLength, int position) {
-            if (rangeLength == 0 && position == rangeStart)
+            if (rangeLength == 0 && position == rangeStart) {
                 return true;
+            }
 
             return position >= rangeStart && position < rangeStart + rangeLength;
         }
@@ -255,9 +236,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="range1">First text range</param>
         /// <param name="range2">Second text range</param>
         /// <returns>True if ranges intersect</returns>
-        public static bool Intersect(ITextRange range1, ITextRange range2) {
-            return Intersect(range1, range2.Start, range2.Length);
-        }
+        public static bool Intersect(ITextRange range1, ITextRange range2) => Intersect(range1, range2.Start, range2.Length);
 
         /// <summary>
         /// Finds out if range intersects another range
@@ -266,9 +245,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="rangeStart2">Start of the second range</param>
         /// <param name="rangeLength2">Length of the second range</param>
         /// <returns>True if ranges intersect</returns>
-        public static bool Intersect(ITextRange range1, int rangeStart2, int rangeLength2) {
-            return Intersect(range1.Start, range1.Length, rangeStart2, rangeLength2);
-        }
+        public static bool Intersect(ITextRange range1, int rangeStart2, int rangeLength2) => Intersect(range1.Start, range1.Length, rangeStart2, rangeLength2);
 
         /// <summary>
         /// Finds out if range intersects another range
@@ -283,14 +260,17 @@ namespace Microsoft.Languages.Core.Text {
 
             // Support intersection with empty ranges
 
-            if (rangeLength1 == 0 && rangeLength2 == 0)
+            if (rangeLength1 == 0 && rangeLength2 == 0) {
                 return rangeStart1 == rangeStart2;
+            }
 
-            if (rangeLength1 == 0)
+            if (rangeLength1 == 0) {
                 return Contains(rangeStart2, rangeLength2, rangeStart1);
+            }
 
-            if (rangeLength2 == 0)
+            if (rangeLength2 == 0) {
                 return Contains(rangeStart1, rangeLength1, rangeStart2);
+            }
 
             return rangeStart2 + rangeLength2 > rangeStart1 && rangeStart2 < rangeStart1 + rangeLength1;
         }
@@ -299,9 +279,7 @@ namespace Microsoft.Languages.Core.Text {
         /// Finds out if range represents valid text range (when range is not null and it's length is greater than zero)
         /// </summary>
         /// <returns>True if range is valid</returns>
-        public static bool IsValid(ITextRange range) {
-            return range != null && range.Length > 0;
-        }
+        public static bool IsValid(ITextRange range) => range != null && range.Length > 0;
 
         /// <summary>
         /// Calculates range that includes both supplied ranges.
@@ -348,8 +326,6 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Creates copy of the text range object via memberwise cloning
         /// </summary>
-        public TextRange Clone() {
-            return (TextRange)MemberwiseClone();
-        }
+        public TextRange Clone() => (TextRange)MemberwiseClone();
     }
 }

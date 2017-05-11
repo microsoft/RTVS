@@ -4,7 +4,7 @@
 using System;
 using System.Threading;
 using Microsoft.Common.Core.Idle;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
@@ -24,20 +24,20 @@ namespace Microsoft.Languages.Editor.Outline {
         protected IdleTimeAsyncTask BackgroundTask { get; set; }
         protected ITextBuffer TextBuffer { get; set; }
         protected virtual bool IsEnabled { get; } = true;
-        protected ICoreShell Shell { get; }
+        protected IServiceContainer Services { get; }
 
         private long _disposed = 0;
         private readonly object _regionsLock = new object();
 
-        protected OutlineRegionBuilder(ITextBuffer textBuffer, ICoreShell shell) {
-            Shell = shell;
+        protected OutlineRegionBuilder(ITextBuffer textBuffer, IServiceContainer services, bool isEnabled) {
+            Services = services;
             CurrentRegions = new OutlineRegionCollection(0);
 
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
 
-            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, shell);
-            if (IsEnabled) {
+            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction, services);
+            if (isEnabled) {
                 BackgroundTask.DoTaskOnIdle(300);
             }
         }
@@ -51,27 +51,26 @@ namespace Microsoft.Languages.Editor.Outline {
             // async or idle processing. Idle/async is still going to hit later.
 
             if (IsEnabled && e.Changes.Count > 0) {
-                int start, oldLength, newLength;
-                TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
+                var change = e.ToTextChange();
 
-                int changeStart = Int32.MaxValue;
-                int changeEnd = 0;
+                var changeStart = Int32.MaxValue;
+                var changeEnd = 0;
 
                 lock (_regionsLock) {
                     // Remove affected regions and shift the remaining ones. Outlining 
                     // regions are not sorted and can overlap. Hence linear search.
 
-                    for (int i = 0; i < CurrentRegions.Count; i++) {
+                    for (var i = 0; i < CurrentRegions.Count; i++) {
                         var region = CurrentRegions[i];
 
-                        if (region.End <= start) {
+                        if (region.End <= change.Start) {
                             continue;
                         }
 
-                        if (region.Contains(start) && region.Contains(start + oldLength)) {
-                            region.Expand(0, newLength - oldLength);
-                        } else if (region.Start >= start + oldLength) {
-                            region.Shift(newLength - oldLength);
+                        if (region.Contains(change.Start) && region.Contains(change.OldEnd)) {
+                            region.Expand(0, change.NewLength - change.OldLength);
+                        } else if (region.Start >= change.OldEnd) {
+                            region.Shift(change.NewLength - change.OldLength);
                         } else {
                             changeStart = Math.Min(changeStart, region.Start);
                             changeEnd = Math.Max(changeEnd, region.End);
@@ -89,10 +88,10 @@ namespace Microsoft.Languages.Editor.Outline {
                 }
 
                 // If there were previously any regions, make sure we notify our listeners of the changes
-                if ((CurrentRegions.Count > 0) || (changeStart < Int32.MaxValue)) {
+                if ((CurrentRegions.Count > 0) || (changeStart < int.MaxValue)) {
                     CurrentRegions.TextBufferVersion = TextBuffer.CurrentSnapshot.Version.VersionNumber;
                     if (RegionsChanged != null) {
-                        changeEnd = (changeStart == Int32.MaxValue ? changeStart : changeEnd);
+                        changeEnd = (changeStart == int.MaxValue ? changeStart : changeEnd);
                         RegionsChanged(this, new OutlineRegionsChangedEventArgs(CurrentRegions, TextRange.FromBounds(changeStart, changeEnd)));
                     }
                 }
@@ -101,16 +100,14 @@ namespace Microsoft.Languages.Editor.Outline {
 
         public abstract bool BuildRegions(OutlineRegionCollection newRegions);
 
-        protected bool IsDisposed {
-            get { return Interlocked.Read(ref _disposed) > 0; }
-        }
+        protected bool IsDisposed => Interlocked.Read(ref _disposed) > 0;
 
         protected virtual object TaskAction() {
             if (!IsDisposed) {
                 var snapshot = TextBuffer.CurrentSnapshot;
                 var newRegions = new OutlineRegionCollection(snapshot.Version.VersionNumber);
 
-                bool regionsBuilt = BuildRegions(newRegions);
+                var regionsBuilt = BuildRegions(newRegions);
                 if (regionsBuilt) {
                     lock (_regionsLock) {
                         var changedRange = CompareRegions(newRegions, CurrentRegions, snapshot.Length);
@@ -118,7 +115,6 @@ namespace Microsoft.Languages.Editor.Outline {
                     }
                 }
             }
-
             return null;
         }
 

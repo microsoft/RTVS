@@ -5,12 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {
-    [ExcludeFromCodeCoverage]
-    internal class DebugTree
-    {
+    internal class DebugTree {
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "editorTree")]
-        public static void VerifyTree(EditorTree editorTree)
-        {
+        public static void VerifyTree(EditorTree editorTree) {
 #if ___DEBUG
             if (editorTree.TextBuffer != null)
             {
@@ -22,8 +19,7 @@ namespace Microsoft.R.Editor.Tree {
 #endif
         }
 
-        public static void CompareTrees(EditorTree editorTree, AstRoot tree2)
-        {
+        public static void CompareTrees(EditorTree editorTree, AstRoot tree2) {
 #if ___DEBUG
             var cc1 = editorTree.ParseTree.CommentCollection;
             var cc2 = tree2.CommentCollection;
@@ -39,8 +35,7 @@ namespace Microsoft.R.Editor.Tree {
 #endif
         }
 
-        public static void CompareNodes(EditorTree editorTree, IAstNode node1, IAstNode node2)
-        {
+        public static void CompareNodes(EditorTree editorTree, IAstNode node1, IAstNode node2) {
 #if ___DEBUG
             Debug.Assert(node1 is RootNode || editorTree.ParseTree.ContainsElement(node1.Key));
 

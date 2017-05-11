@@ -3,7 +3,6 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
@@ -16,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// services and so on.
     /// </summary>
     [Export(typeof(ICoreShell))]
-    public sealed partial class VsAppShell : ICoreShell, IIdleTimeSource, IVsShellPropertyEvents, IDisposable {
+    public sealed partial class VsAppShell : ICoreShell, IVsShellPropertyEvents, IDisposable {
         private static VsAppShell _instance;
 
         public VsAppShell() {
@@ -32,8 +31,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static ICoreShell Current {
             get {
-                _instance  = _instance ?? new VsAppShell();
-                if(!_instance.Services.AllServices.Any()) {
+                _instance = _instance ?? new VsAppShell();
+                if (!_instance.Services.AllServices.Any()) {
                     // Assuming test mode since otherwise VS package 
                     // would have called Initialize() by now.
                     _instance.IsUnitTestEnvironment = true;
@@ -43,5 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return _instance.IsUnitTestEnvironment ? _instance : GetInstance();
             }
         }
+
+        public bool IsUnitTestEnvironment { get; private set; }
     }
 }

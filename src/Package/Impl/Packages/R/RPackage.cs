@@ -9,12 +9,12 @@ using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Editor;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -122,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages(VsAppShell.Current.Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            var settings = VsAppShell.Current.GetService<IRToolsSettings>();
+            var settings = VsAppShell.Current.GetService<IRSettings>();
             var editorSettings = VsAppShell.Current.GetService<IREditorSettings>();
             RtvsTelemetry.Initialize(_packageIndex, settings, editorSettings);
 
@@ -132,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current.GetService<IIdleTimeService>());
         }
 
         protected override void Dispose(bool disposing) {
@@ -148,26 +148,21 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             base.Dispose(disposing);
         }
 
-        protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() {
-            return new List<IVsEditorFactory>() {
-                new REditorFactory(this)
+        protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() => new List<IVsEditorFactory> {
+                new REditorFactory(this, VsAppShell.Current.Services)
             };
-        }
 
         protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {
             yield return new RProjectFileGenerator();
         }
 
-        protected override IEnumerable<MenuCommand> CreateMenuCommands() {
-            return PackageCommands.GetCommands(VsAppShell.Current);
-        }
+        protected override IEnumerable<MenuCommand> CreateMenuCommands() => PackageCommands.GetCommands(VsAppShell.Current);
 
         protected override object GetAutomationObject(string name) {
             if (name == RPackage.ProductName) {
-                DialogPage page = GetDialogPage(typeof(REditorOptionsDialog));
+                var page = GetDialogPage(typeof(REditorOptionsDialog));
                 return page.AutomationObject;
             }
-
             return base.GetAutomationObject(name);
         }
 
@@ -190,16 +185,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private bool IsCommandLineMode() {
             var shell = VsAppShell.Current.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
-                object value;
-                shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);
+                shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out object value);
                 return value is bool && (bool)value;
             }
             return false;
         }
 
-        private void BuildFunctionIndex() {
-            _packageIndex = VsAppShell.Current.GetService<IPackageIndex>();
-        }
+        private void BuildFunctionIndex() => _packageIndex = VsAppShell.Current.GetService<IPackageIndex>();
 
         private void SavePackageIndex() {
             _packageIndex?.WriteToDisk();

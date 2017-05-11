@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Packages.R;

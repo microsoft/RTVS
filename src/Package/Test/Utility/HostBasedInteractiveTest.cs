@@ -17,9 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Test {
             HostScript = new VsRHostScript(SessionProvider, async, callback);
         }
 
-        protected Task InitializeAsync() {
-            return HostScript.InitializeAsync();
-        }
+        protected Task InitializeAsync() => HostScript.InitializeAsync();
 
         protected override void Dispose(bool disposing) {
             HostScript.Dispose();

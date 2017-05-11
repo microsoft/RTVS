@@ -3,52 +3,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.VisualStudio.Composition;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Document;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
     public sealed class TextBufferInitializationTracker : IVsTextBufferDataEvents {
-        private IVsTextLines _textLines;
-        private uint cookie = 0;
-        private IConnectionPoint cp = null;
-        private List<TextBufferInitializationTracker> _trackers;
-        private string _documentName;
-        private IVsHierarchy _hierarchy;
-        private VSConstants.VSITEMID _itemid;
+        private readonly IServiceContainer _services;
+        private readonly List<TextBufferInitializationTracker> _trackers;
+
+        private readonly IConnectionPoint cp;
         private Guid _languageServiceGuid;
+        private IVsTextLines _textLines;
+        private uint cookie;
 
         #region Constructors
-        public TextBufferInitializationTracker(
-            string documentName,
-            IVsHierarchy hierarchy,
-            VSConstants.VSITEMID itemid,
-            IVsTextLines textLines,
-            Guid languageServiceId,
-            List<TextBufferInitializationTracker> trackers) {
-            var cs = VsAppShell.Current.GetService<ICompositionService>();
-            cs.SatisfyImportsOnce(this);
-
-            _documentName = documentName;
-            _hierarchy = hierarchy;
-            _itemid = itemid;
+        public TextBufferInitializationTracker(IServiceContainer services, IVsTextLines textLines, Guid languageServiceId, List<TextBufferInitializationTracker> trackers) {
+            _services = services;
             _textLines = textLines;
             _languageServiceGuid = languageServiceId;
             _trackers = trackers;
 
-            IConnectionPointContainer cpc = textLines as IConnectionPointContainer;
-            Guid g = typeof(IVsTextBufferDataEvents).GUID;
+            var cpc = textLines as IConnectionPointContainer;
+            var g = typeof(IVsTextBufferDataEvents).GUID;
             cpc.FindConnectionPoint(g, out cp);
             cp.Advise(this, out cookie);
 
@@ -70,33 +55,23 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(diskBuffer != null);
 
             try {
-                var editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
+                var editorInstance = diskBuffer.GetService<IEditorViewModel>();
                 if (editorInstance == null) {
-                    var cs = VsAppShell.Current.GetService<ICompositionService>();
-                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
-                    var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
-                    Debug.Assert(instancefactory != null);
+                    var locator = _services.GetService<IContentTypeServiceLocator>();
+                    var instancefactory = locator.GetService<IEditorViewModelFactory>(diskBuffer.ContentType.TypeName);
 
-                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(cs);
-                    var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
-                    Debug.Assert(documentFactory != null);
-
-                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer, documentFactory);
+                    Debug.Assert(instancefactory != null, "No editor factory found for the provided text buffer");
+                    editorInstance = instancefactory.CreateEditorViewModel(diskBuffer);
                 }
 
                 Debug.Assert(editorInstance != null);
-                adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer);
+                adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer.As<ITextBuffer>());
             } finally {
                 cp.Unadvise(cookie);
                 cookie = 0;
-
                 _textLines = null;
-                _hierarchy = null;
-
                 _trackers.Remove(this);
-                _trackers = null;
             }
-
             return VSConstants.S_OK;
         }
         #endregion

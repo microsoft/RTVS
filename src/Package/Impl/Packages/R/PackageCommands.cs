@@ -11,8 +11,8 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Plots.Commands;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Sql;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var pss = shell.GetService<IProjectSystemServices>();
             var pcsp = shell.GetService<IProjectConfigurationSettingsProvider>();
             var dbcs = shell.GetService<IDbConnectionService>();
-            var settings = shell.GetService<IRToolsSettings>();
+            var settings = shell.GetService<IRSettings>();
             var ui = shell.UI();
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 

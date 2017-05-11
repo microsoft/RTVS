@@ -5,10 +5,9 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Input;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -23,31 +22,22 @@ namespace Microsoft.Languages.Editor.Application.Controller {
 
         private ICommandTarget Controller {
             get {
-                if (_controller == null)
-                    _controller = ServiceManager.GetService<ICommandTarget>(_textView.TextBuffer);
-
+                _controller = _controller ?? _textView.GetService<ICommandTarget>();
                 return _controller;
             }
         }
 
         private KeyToVS2KCommandMapping CommandMapping {
             get {
-                if (_commandMapping == null)
-                    _commandMapping = KeyToVS2KCommandMapping.GetInstance();
-
+                _commandMapping = _commandMapping ?? KeyToVS2KCommandMapping.GetInstance();
                 return _commandMapping;
             }
         }
 
         internal DefaultKeyProcessor(IWpfTextView textView, IEditorOperations editorOperations, ITextUndoHistoryRegistry undoHistoryRegistry) {
-            if (textView == null)
-                throw new ArgumentNullException(nameof(textView));
-
-            if (editorOperations == null)
-                throw new ArgumentNullException(nameof(editorOperations));
-
-            if (undoHistoryRegistry == null)
-                throw new ArgumentNullException(nameof(undoHistoryRegistry));
+            Check.ArgumentNull(nameof(textView), textView);
+            Check.ArgumentNull(nameof(editorOperations), editorOperations);
+            Check.ArgumentNull(nameof(undoHistoryRegistry), undoHistoryRegistry);
 
             _textView = textView;
             _editorOperations = editorOperations;
@@ -165,27 +155,21 @@ namespace Microsoft.Languages.Editor.Application.Controller {
 
         private bool CanExecute(Guid group, int id) {
             Debug.Assert(id >= 0, "Id must be positive");
-
-            CommandStatus status = CommandStatus.NotSupported;
+            var status = CommandStatus.NotSupported;
 
             if (Controller != null && id > 0) {
                 status = Controller.Status(group, id);
             }
-
             return ((status & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled);
         }
 
-        private CommandResult TryExecute2KCommand(VSConstants.VSStd2KCmdID id, object args) {
-            return TryExecute(VSConstants.VSStd2K, (int)id, args);
-        }
+        private CommandResult TryExecute2KCommand(VSConstants.VSStd2KCmdID id, object args) => TryExecute(VSConstants.VSStd2K, (int)id, args);
 
         private CommandResult TryExecute(Guid group, int id, object args) {
-
             if (Controller != null && (Controller.Status(group, id) & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled) {
-                object outargs = new object();
+                var outargs = new object();
                 return Controller.Invoke(group, id, args, ref outargs);
             }
-
             return CommandResult.NotSupported;
         }
 
@@ -211,13 +195,13 @@ namespace Microsoft.Languages.Editor.Application.Controller {
                 //This TextInputStart message is part of an IME event and needs to be treated like provisional text input
                 //(if the cast failed, then an IME is not the source of the text input and we can rely on getting an identical
                 //TextInput event as soon as we exit).
-                this.HandleProvisionalImeInput(args);
+                HandleProvisionalImeInput(args);
             }
         }
 
         public override void TextInputUpdate(TextCompositionEventArgs args) {
             if (args.TextComposition is ImeTextComposition) {
-                this.HandleProvisionalImeInput(args);
+                HandleProvisionalImeInput(args);
             } else {
                 args.Handled = false;
             }
@@ -242,14 +226,9 @@ namespace Microsoft.Languages.Editor.Application.Controller {
                 editAction.Invoke();
                 return true;
             }
-
             return false;
         }
 
-        private ITextUndoHistory UndoHistory {
-            get {
-                return _undoHistoryRegistry.GetHistory(_textView.TextBuffer);
-            }
-        }
+        private ITextUndoHistory UndoHistor => _undoHistoryRegistry.GetHistory(_textView.TextBuffer);
     }
 }

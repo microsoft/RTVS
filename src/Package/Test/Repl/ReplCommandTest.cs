@@ -12,7 +12,7 @@ using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
-using Microsoft.R.Support.Test.Utility;
+using Microsoft.R.Components.Test.Stubs;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         public ReplCommandTest() {
             _debuggerModeTracker = new VsDebuggerModeTracker(_coreShell);
-            _coreShell.ServiceManager.AddService(new TestRToolsSettings());
+            _coreShell.ServiceManager.AddService(new RSettingsStub());
 
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(
                 connectionsProvider: new ConnectionManagerProvider(new TestStatusBar(), _coreShell),

@@ -14,13 +14,10 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Wpf;
 using static System.FormattableString;
 

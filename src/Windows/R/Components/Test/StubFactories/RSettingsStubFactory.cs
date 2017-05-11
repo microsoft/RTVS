@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.ConnectionManager.Implementation;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Interpreters;
 

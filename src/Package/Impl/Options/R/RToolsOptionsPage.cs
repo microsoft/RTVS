@@ -12,7 +12,6 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -247,7 +246,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);
 
             public void SetValue(object value, [CallerMemberName] string name = null) {
-                Debug.Assert(_dict.ContainsKey(name), Invariant($"Unknown setting {name}. RToolsOptionsPage property name does not match IRToolsSettings"));
+                Debug.Assert(_dict.ContainsKey(name), Invariant($"Unknown setting {name}. RToolsOptionsPage property name does not match IRSettings"));
                 _dict[name] = value;
             }
 

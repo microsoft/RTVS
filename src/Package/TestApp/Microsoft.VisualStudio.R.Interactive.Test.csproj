@@ -107,20 +107,12 @@
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>
       <Name>Microsoft.R.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
-      <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
-      <Name>Microsoft.R.Editor.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
@@ -137,6 +129,10 @@
     <ProjectReference Include="..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
+      <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
+      <Name>Microsoft.R.Editor.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>

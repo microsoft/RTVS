@@ -15,9 +15,9 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
@@ -39,19 +39,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
-        private readonly IRToolsSettings _toolsSettings;
+        private readonly IRSettings _settings;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IProjectLockService _projectLockService;
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
-        private readonly IProjectItemDependencyProvider _dependencyProvider;
         private readonly ICoreShell _coreShell;
+        private readonly ISurveyNewsService _surveyNews;
 
         private IRInteractiveWorkflowVisual _workflow;
         private IRSession _session;
         private IRHistory _history;
-        private ISurveyNewsService _surveyNews;
 
         /// <summary>
         /// Backing field for the similarly named property.
@@ -62,21 +61,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IProjectLockService projectLockService
             , IRInteractiveWorkflowVisualProvider workflowProvider
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
-            , IRToolsSettings toolsSettings
+            , IRSettings settings
             , IThreadHandling threadHandling
             , ISurveyNewsService surveyNews
             , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider
             , ICoreShell coreShell) {
-
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
             _projectLockService = projectLockService;
             _workflowProvider = workflowProvider;
 
-            _toolsSettings = toolsSettings;
+            _settings = settings;
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
-            _dependencyProvider = dependencyProvider;
             _coreShell = coreShell;
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
@@ -85,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
             _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.FileSystem(), new RMsBuildFileSystemFilter(), coreShell.Log());
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider, coreShell.Log());
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, dependencyProvider, coreShell.Log());
         }
 
         [AppliesTo(ProjectConstants.RtvsProjectCapability)]
@@ -128,12 +125,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     await _session.LoadWorkspaceAsync(rdataPath);
                 }
                 await _session.SetWorkingDirectoryAsync(_projectDirectory);
-
-                _toolsSettings.WorkingDirectory = _projectDirectory;
+                _settings.WorkingDirectory = _projectDirectory;
             }
 
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-
             CheckSurveyNews();
         }
 
@@ -197,7 +192,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return;
             }
 
-            if (_toolsSettings.AlwaysSaveHistory) {
+            if (_settings.AlwaysSaveHistory) {
                 _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
             }
 
@@ -216,7 +211,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {
-            switch (_toolsSettings.LoadRDataOnProjectLoad) {
+            switch (_settings.LoadRDataOnProjectLoad) {
                 case YesNoAsk.Yes:
                     return true;
                 case YesNoAsk.Ask:
@@ -230,7 +225,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task<bool> GetSaveDefaultWorkspace(string rdataPath) {
-            switch (_toolsSettings.SaveRDataOnProjectUnload) {
+            switch (_settings.SaveRDataOnProjectUnload) {
                 case YesNoAsk.Yes:
                     return true;
                 case YesNoAsk.Ask:

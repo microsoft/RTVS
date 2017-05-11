@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
@@ -20,7 +18,7 @@ using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private IRSession _session;
 
         public Task InitializationTask { get; }
@@ -32,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }, false) {
 
             _interactiveWorkflow = interactiveWorkflow;
-            _settings = _interactiveWorkflow.Shell.GetService<IRToolsSettings>();
+            _settings = _interactiveWorkflow.Shell.GetService<IRSettings>();
 
             _session = interactiveWorkflow.RSession;
             _session.Connected += OnSessionConnected;

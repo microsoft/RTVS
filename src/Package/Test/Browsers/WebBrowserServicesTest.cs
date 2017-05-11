@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Browsers;
@@ -32,10 +32,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         public void WebHelpBrowser() {
-            var externalSettings = Substitute.For<IRToolsSettings>();
+            var externalSettings = Substitute.For<IRSettings>();
             externalSettings.WebHelpSearchBrowserType.Returns(BrowserType.External);
 
-            var internalSettings = Substitute.For<IRToolsSettings>();
+            var internalSettings = Substitute.For<IRSettings>();
             internalSettings.WebHelpSearchBrowserType.Returns(BrowserType.Internal);
 
             RunBrowserTest(WebBrowserRole.Help, RGuidList.WebHelpWindowGuid, Resources.WebHelpWindowTitle, externalSettings, internalSettings);
@@ -43,16 +43,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         [Test]
         public void ShinyBrowser() {
-            var externalSettings = Substitute.For<IRToolsSettings>();
+            var externalSettings = Substitute.For<IRSettings>();
             externalSettings.HtmlBrowserType.Returns(BrowserType.External);
 
-            var internalSettings = Substitute.For<IRToolsSettings>();
+            var internalSettings = Substitute.For<IRSettings>();
             internalSettings.HtmlBrowserType.Returns(BrowserType.Internal);
 
             RunBrowserTest(WebBrowserRole.Shiny, RGuidList.ShinyWindowGuid, Resources.ShinyWindowTitle, externalSettings, internalSettings);
         }
 
-        public void RunBrowserTest(WebBrowserRole role, Guid guid, string title, IRToolsSettings externalSettings, IRToolsSettings internalSettings) {
+        public void RunBrowserTest(WebBrowserRole role, Guid guid, string title, IRSettings externalSettings, IRSettings internalSettings) {
             var shell = Substitute.For<ICoreShell>();
             var ps = Substitute.For<IProcessServices>();
             var vswbs = Substitute.For<IVsWebBrowsingService>();

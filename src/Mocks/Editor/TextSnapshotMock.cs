@@ -13,10 +13,11 @@ using Microsoft.Common.Core;
 namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class TextSnapshotMock : ITextSnapshot {
-        public ITextProvider TextProvider { get; private set; }
+        private readonly TextVersionMock _version;
+        private readonly ITextSnapshotLine[] _lines;
+
+        public ITextProvider TextProvider { get; }
         public TextChangeMock Change { get; private set; }
-        private TextVersionMock _version;
-        private ITextSnapshotLine[] _lines;
 
         public TextSnapshotMock(string content, ITextBuffer textBuffer, TextVersionMock version) {
             TextProvider = new TextStream(content);
@@ -29,17 +30,13 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         public TextSnapshotMock CreateNextSnapshot(string content, TextChangeMock change) {
             Change = change;
-            TextVersionMock nextVersion = _version.CreateNextVersion(change);
-            TextSnapshotMock nextSnapshot = new TextSnapshotMock(content, TextBuffer, nextVersion);
-
-            return nextSnapshot;
+            var nextVersion = _version.CreateNextVersion(change);
+            return new TextSnapshotMock(content, TextBuffer, nextVersion);
         }
 
         #region ITextSnapshot Members
 
-        public IContentType ContentType {
-            get { return TextBuffer.ContentType; }
-        }
+        public IContentType ContentType => TextBuffer.ContentType;
 
         public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count) {
             var text = TextProvider.GetText(new TextRange(sourceIndex, count));
@@ -49,33 +46,25 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             }
         }
 
-        public ITrackingPoint CreateTrackingPoint(int position, PointTrackingMode trackingMode, TrackingFidelityMode trackingFidelity) {
-            return new TrackingPointMock(TextBuffer, position, trackingMode, trackingFidelity);
-        }
+        public ITrackingPoint CreateTrackingPoint(int position, PointTrackingMode trackingMode, TrackingFidelityMode trackingFidelity)
+            => new TrackingPointMock(TextBuffer, position, trackingMode, trackingFidelity);
 
-        public ITrackingPoint CreateTrackingPoint(int position, PointTrackingMode trackingMode) {
-            return CreateTrackingPoint(position, trackingMode, TrackingFidelityMode.Forward);
-        }
+        public ITrackingPoint CreateTrackingPoint(int position, PointTrackingMode trackingMode)
+            => CreateTrackingPoint(position, trackingMode, TrackingFidelityMode.Forward);
 
-        public ITrackingSpan CreateTrackingSpan(int start, int length, SpanTrackingMode trackingMode, TrackingFidelityMode trackingFidelity) {
-            return new TrackingSpanMock(TextBuffer, new Span(start, length), trackingMode, trackingFidelity);
-        }
+        public ITrackingSpan CreateTrackingSpan(int start, int length, SpanTrackingMode trackingMode, TrackingFidelityMode trackingFidelity)
+            => new TrackingSpanMock(TextBuffer, new Span(start, length), trackingMode, trackingFidelity);
 
-        public ITrackingSpan CreateTrackingSpan(int start, int length, SpanTrackingMode trackingMode) {
-            return CreateTrackingSpan(start, length, trackingMode, TrackingFidelityMode.Forward);
-        }
+        public ITrackingSpan CreateTrackingSpan(int start, int length, SpanTrackingMode trackingMode)
+            => CreateTrackingSpan(start, length, trackingMode, TrackingFidelityMode.Forward);
 
-        public ITrackingSpan CreateTrackingSpan(Span span, SpanTrackingMode trackingMode, TrackingFidelityMode trackingFidelity) {
-            return new TrackingSpanMock(TextBuffer, span, trackingMode, trackingFidelity);
-        }
+        public ITrackingSpan CreateTrackingSpan(Span span, SpanTrackingMode trackingMode, TrackingFidelityMode trackingFidelity)
+            => new TrackingSpanMock(TextBuffer, span, trackingMode, trackingFidelity);
 
-        public ITrackingSpan CreateTrackingSpan(Span span, SpanTrackingMode trackingMode) {
-            return CreateTrackingSpan(span, trackingMode, TrackingFidelityMode.Forward);
-        }
+        public ITrackingSpan CreateTrackingSpan(Span span, SpanTrackingMode trackingMode)
+            => CreateTrackingSpan(span, trackingMode, TrackingFidelityMode.Forward);
 
-        public ITextSnapshotLine GetLineFromLineNumber(int lineNumber) {
-            return _lines[lineNumber];
-        }
+        public ITextSnapshotLine GetLineFromLineNumber(int lineNumber) => _lines[lineNumber];
 
         public ITextSnapshotLine GetLineFromPosition(int position) {
             for (int i = 0; i < _lines.Length; i++) {
@@ -83,74 +72,49 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 int length = _lines[i].Length;
 
                 if (length == _lines[i].Length) {
-                    if ((start <= position && position <= start + length) || start == position + 1)
+                    if ((start <= position && position <= start + length) || start == position + 1) {
                         return _lines[i];
+                    }
                 } else {
-                    if (start <= position && position < start + length)
+                    if (start <= position && position < start + length) {
                         return _lines[i];
+                    }
                 }
             }
 
-            if (position == 0)
+            if (position == 0) {
                 return _lines[0];
+            }
 
-            if (position >= _lines[_lines.Length - 1].Length)
+            if (position >= _lines[_lines.Length - 1].Length) {
                 return _lines[_lines.Length - 1];
+            }
 
             return null;
         }
 
-        public int GetLineNumberFromPosition(int position) {
-            return GetLineFromPosition(position).LineNumber;
-        }
+        public int GetLineNumberFromPosition(int position) => GetLineFromPosition(position).LineNumber;
+        public string GetText() => TextProvider.GetText(new TextRange(0, TextProvider.Length));
+        public string GetText(int startIndex, int length) => TextProvider.GetText(new TextRange(startIndex, length));
+        public string GetText(Span span) => TextProvider.GetText(new TextRange(span.Start, span.Length));
 
-        public string GetText() {
-            return TextProvider.GetText(new TextRange(0, TextProvider.Length));
-        }
+        public int Length => TextProvider.Length;
 
-        public string GetText(int startIndex, int length) {
-            return TextProvider.GetText(new TextRange(startIndex, length));
-        }
+        public int LineCount => _lines.Length;
 
-        public string GetText(Span span) {
-            return TextProvider.GetText(new TextRange(span.Start, span.Length));
-        }
-
-        public int Length {
-            get { return TextProvider.Length; }
-        }
-
-        public int LineCount {
-            get { return _lines.Length; }
-        }
-
-        public IEnumerable<ITextSnapshotLine> Lines {
-            get { return _lines; }
-        }
+        public IEnumerable<ITextSnapshotLine> Lines => _lines;
 
         public ITextBuffer TextBuffer { get; private set; }
 
-        public char[] ToCharArray(int startIndex, int length) {
-            return GetText(startIndex, length).ToArray();
-        }
+        public char[] ToCharArray(int startIndex, int length) => GetText(startIndex, length).ToArray();
 
-        public ITextVersion Version {
-            get {
-                return _version;
-            }
-        }
+        public ITextVersion Version => _version;
 
-        public void Write(TextWriter writer) {
-            writer.Write(GetText());
-        }
+        public void Write(TextWriter writer) => writer.Write(GetText());
 
-        public void Write(TextWriter writer, Span span) {
-            writer.Write(GetText(span));
-        }
+        public void Write(TextWriter writer, Span span) => writer.Write(GetText(span));
 
-        public char this[int position] {
-            get { return TextProvider[position]; }
-        }
+        public char this[int position] => TextProvider[position];
 
         #endregion
 
@@ -177,8 +141,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
                 if (start < text.Length && text[start].IsLineBreak()) {
                     start++;
 
-                    if (text[start - 1] == '\r' && start < text.Length && text[start] == '\n')
+                    if (text[start - 1] == '\r' && start < text.Length && text[start] == '\n') {
                         start++;
+                    }
                 }
 
                 list.Add(new TextLineMock(this, start, text.Length - start, list.Count));

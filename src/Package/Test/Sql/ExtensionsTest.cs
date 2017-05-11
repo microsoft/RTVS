@@ -7,7 +7,6 @@ using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Sql;
-using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using NSubstitute;
 using Xunit;
 

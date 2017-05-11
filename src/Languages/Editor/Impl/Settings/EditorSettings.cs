@@ -2,7 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Editor.Services;
 
 namespace Microsoft.Languages.Editor.Settings {
     public abstract class EditorSettings : IWritableEditorSettings, IEditorSettings {
@@ -16,13 +19,33 @@ namespace Microsoft.Languages.Editor.Settings {
         public const string InsertMatchingBracesKey = "InsertMatchingBraces";
         public const string SignatureHelpEnabledKey = "SignatureHelpEnabled";
 
-        protected IEditorSettingsStorage Storage { get; }
-        protected IWritableEditorSettingsStorage WritableStorage { get; }
+        private readonly ICoreShell _coreShell;
+        private readonly string _language;
+        private IEditorSettingsStorage _storage;
+
+        protected IEditorSettingsStorage Storage => GetStorage();
+        protected IWritableEditorSettingsStorage WritableStorage => Storage as IWritableEditorSettingsStorage;
+
+        protected EditorSettings(ICoreShell coreShell, string language) {
+            _coreShell = coreShell;
+            _language = language;
+        }
 
         protected EditorSettings(IEditorSettingsStorage storage) {
-            Storage = storage;
-            WritableStorage = storage as IWritableEditorSettingsStorage;
+            _storage = storage;
         }
+
+        private IEditorSettingsStorage GetStorage() {
+            if (_storage == null) {
+                var locator = _coreShell.GetService<IContentTypeServiceLocator>();
+                var provider = locator.GetService<IEditorSettingsStorageProvider>(_language);
+                Debug.Assert(provider != null, "No editor storage found for language " + _language);
+                _storage = provider.GetSettingsStorage();
+            }
+            return _storage;
+        }
+
+        public void Dispose() => _storage?.Dispose();
 
         public event EventHandler<EventArgs> SettingsChanged {
             add => Storage.SettingsChanged += value;

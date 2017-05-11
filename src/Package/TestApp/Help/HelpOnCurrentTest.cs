@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,7 +13,6 @@ using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Test;
-using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Text;
 using NSubstitute;

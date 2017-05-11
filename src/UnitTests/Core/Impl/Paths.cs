@@ -5,8 +5,6 @@ using System;
 using System.IO;
 using System.Text;
 using Microsoft.Common.Core;
-using Microsoft.Win32;
-using static System.FormattableString;
 
 namespace Microsoft.UnitTests.Core {
     public static class Paths {

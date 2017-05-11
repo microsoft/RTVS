@@ -6,23 +6,20 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.Editor.Mocks
-{
+namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class TextDataModelMock : ITextDataModel
-    {
-        public TextDataModelMock(ITextBuffer textBuffer)
-        {
+    public sealed class TextDataModelMock : ITextDataModel {
+        public TextDataModelMock(ITextBuffer textBuffer) {
             ContentType = textBuffer.ContentType;
             DataBuffer = textBuffer;
             DocumentBuffer = textBuffer;
         }
 
-        public IContentType ContentType { get; private set; }
+        public IContentType ContentType { get; }
 
-        public ITextBuffer DataBuffer { get; private set; }
+        public ITextBuffer DataBuffer { get; }
 
-        public ITextBuffer DocumentBuffer { get; private set; }
+        public ITextBuffer DocumentBuffer { get; }
 
 #pragma warning disable 67
         public event EventHandler<TextDataModelContentTypeChangedEventArgs> ContentTypeChanged;

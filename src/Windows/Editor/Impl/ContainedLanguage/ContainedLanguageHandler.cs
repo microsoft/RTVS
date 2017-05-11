@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -16,9 +15,8 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         private int _cachedPosition = -1;
         private ITextRange _cachedLanguageBlock;
 
-        protected ContainedLanguageHandler(ITextBuffer textBuffer, ICoreShell coreShell) {
-            ServiceManager.AddService<IContainedLanguageHandler>(this, textBuffer, coreShell);
-
+        protected ContainedLanguageHandler(ITextBuffer textBuffer) {
+            textBuffer.AddService<IContainedLanguageHandler>(this);
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
         }
@@ -29,7 +27,8 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// <summary>
         /// Retrieves contained command target for a given location in the buffer.
         /// </summary>
-        /// <param name="position">Position in the document buffer</param>
+        /// <param name="textView">Text view</param>
+        /// <param name="bufferPosition">Position in the document buffer</param>
         /// <returns>Command target or null if location appears to be primary</returns>
         public abstract ICommandTarget GetCommandTargetOfLocation(ITextView textView, int bufferPosition);
         /// <summary>

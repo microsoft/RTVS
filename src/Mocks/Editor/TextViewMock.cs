@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -30,6 +31,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
             TextViewLines = new TextViewLineCollectionMock(TextBuffer);
             BufferGraph = new BufferGraphMock(TextBuffer);
+
+            var view = new EditorView(this);
+            Properties.AddProperty(typeof(IEditorView), view);
         }
 
         public IBufferGraph BufferGraph { get; }

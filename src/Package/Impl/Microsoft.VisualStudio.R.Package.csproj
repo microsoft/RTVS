@@ -198,6 +198,7 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\R\Editor\REditorSettingsStorageProvider.cs" />
     <Compile Include="Options\R\Tools\BrowserForFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\LogVerbosityTypeConverter.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
@@ -222,20 +223,21 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Shell\CompositionCatalog.cs" />
+    <Compile Include="Shell\Services\VsApplication.cs" />
     <Compile Include="Shell\VsAppShell.Test.cs" />
-    <Compile Include="Shell\VsAppShell.Core.cs" />
     <Compile Include="Shell\VsAppShell.Lifetime.cs" />
-    <Compile Include="Shell\VsEditorSupport.cs" />
-    <Compile Include="Shell\VsIdleTimeService.cs" />
-    <Compile Include="Shell\VsMainThread.cs" />
-    <Compile Include="Shell\VsPlatformServices.cs" />
-    <Compile Include="Shell\VsUIServices.cs" />
+    <Compile Include="Shell\Editor\VsEditorSupport.cs" />
+    <Compile Include="Shell\Services\VsMainThread.cs" />
+    <Compile Include="Shell\Services\VsPlatformServices.cs" />
+    <Compile Include="Shell\Services\VsUIServices.cs" />
     <Compile Include="Shell\VsAppShell.Idle.cs" />
     <Compile Include="Shell\VsAppShell.Services.cs" />
-    <Compile Include="Shell\VsFileDialog.cs" />
-    <Compile Include="Shell\VsProgressDialog.cs" />
-    <Compile Include="Shell\VsServiceManager.cs" />
-    <Compile Include="Shell\VsTaskService.cs" />
+    <Compile Include="Shell\Services\VsFileDialog.cs" />
+    <Compile Include="Shell\Services\VsProgressDialog.cs" />
+    <Compile Include="Shell\Services\VsServiceManager.cs" />
+    <Compile Include="Shell\Services\VsTaskService.cs" />
+    <Compile Include="Shell\Editor\VsEditorUndoAction.cs" />
+    <Compile Include="Shell\VsEditorViewLocator.cs" />
     <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
@@ -309,7 +311,7 @@
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Shell\AppShellExtensions.cs" />
     <Compile Include="Sql\Commands\PublishSProcOptionsCommand.cs" />
-    <Compile Include="Shell\VsSettingsStorage.cs" />
+    <Compile Include="Shell\Services\VsSettingsStorage.cs" />
     <Compile Include="Sql\Commands\PublishSProcCommand.cs" />
     <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
@@ -410,12 +412,6 @@
     <Compile Include="DataInspect\VariableView.xaml.cs">
       <DependentUpon>VariableView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Document\IVsEditorDocumentFactory.cs" />
-    <Compile Include="Document\Markdown\VsMdEditorDocument.cs" />
-    <Compile Include="Document\Markdown\VsMdEditorDocumentFactory.cs" />
-    <Compile Include="Document\R\VsREditorDocument.cs" />
-    <Compile Include="Document\R\VsREditorDocumentFactory.cs" />
-    <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
@@ -424,8 +420,7 @@
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
-    <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
-    <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
+    <Compile Include="Options\R\Tools\RSettingsImplementation.cs" />
     <Compile Include="Packages\Attributes\ProvideDebugEngineAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideDebugExceptionAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideDebugLanguageAttribute.cs" />
@@ -470,8 +465,8 @@
     <Compile Include="Search\VsSearchControl.cs" />
     <Compile Include="Search\VsSearchControlProvider.cs" />
     <Compile Include="Search\VsSearchTask.cs" />
-    <Compile Include="Shell\VisualComponentToolWindow.cs" />
-    <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
+    <Compile Include="Shell\ToolWindows\VisualComponentToolWindow.cs" />
+    <Compile Include="Shell\ToolWindows\VisualComponentToolWindowAdapter.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
     <Compile Include="Packages\R\RGuidList.cs" />
@@ -481,7 +476,7 @@
     <Compile Include="Packages\BasePackage.cs" />
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shell\IdleTimeSource.cs" />
+    <Compile Include="Shell\Services\VsIdleTimeSource.cs" />
     <Compile Include="Expansions\IExpansionsCache.cs" />
     <Compile Include="Expansions\ExpansionBuffer.cs" />
     <Compile Include="Expansions\ExpansionClient.cs" />
@@ -1048,16 +1043,6 @@
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
-    </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -1098,6 +1083,10 @@
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.R.Common.Core.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
       <Name>Microsoft.R.Host.Broker.Windows</Name>
@@ -1124,10 +1113,6 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Name>Microsoft.Markdown.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41AA8769-0FBC-4A80-8498-21C833F0C2AC}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
@@ -1145,10 +1130,8 @@
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
       <Name>Microsoft.R.Editor</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
       <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
@@ -1158,23 +1141,23 @@
       <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
       <Name>Microsoft.VisualStudio.R.Sql</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{F951311C-D665-4987-95A4-72A2DE37E263}</Project>
       <Name>Microsoft.R.Wpf</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>

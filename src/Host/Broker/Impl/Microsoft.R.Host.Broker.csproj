@@ -47,6 +47,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />

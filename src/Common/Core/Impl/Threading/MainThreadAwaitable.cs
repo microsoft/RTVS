@@ -13,8 +13,6 @@ namespace Microsoft.Common.Core.Threading {
             _cancellationToken = cancellationToken;
         }
 
-        public MainThreadAwaiter GetAwaiter() {
-            return new MainThreadAwaiter(_mainThread, _cancellationToken);
-        }
+        public MainThreadAwaiter GetAwaiter() => new MainThreadAwaiter(_mainThread, _cancellationToken);
     }
 }

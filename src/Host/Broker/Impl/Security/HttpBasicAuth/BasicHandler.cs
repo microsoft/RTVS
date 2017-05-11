@@ -29,14 +29,16 @@ namespace Odachi.AspNetCore.Authentication.Basic
 				var feat = Context.Features.OfType<HttpRequestFeature>();
 
                 var headers = Request.Headers[RequestHeader];
-                if (headers.Count <= 0)
-					return AuthenticateResult.Fail("No authorization header.");
+                if (headers.Count <= 0) {
+                    return AuthenticateResult.Fail("No authorization header.");
+                }
 
-				var header = headers.Where(h => h.StartsWith(RequestHeaderPrefix, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                if (header == null)
-					return AuthenticateResult.Fail("Not basic authentication header.");
+                var header = headers.Where(h => h.StartsWith(RequestHeaderPrefix, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                if (header == null) {
+                    return AuthenticateResult.Fail("Not basic authentication header.");
+                }
 
-				var encoded = header.Substring(RequestHeaderPrefix.Length);
+                var encoded = header.Substring(RequestHeaderPrefix.Length);
 				var decoded = default(string);
 				try
 				{
@@ -48,10 +50,11 @@ namespace Odachi.AspNetCore.Authentication.Basic
 				}
 
                 var index = decoded.IndexOf(':');
-                if (index == -1)
-					return AuthenticateResult.Fail("Invalid basic authentication header format.");
+                if (index == -1) {
+                    return AuthenticateResult.Fail("Invalid basic authentication header format.");
+                }
 
-				var username = decoded.Substring(0, index);
+                var username = decoded.Substring(0, index);
                 var password = decoded.Substring(index + 1);
 
                 var signInContext = new BasicSignInContext(Context, Options, username, password);
@@ -59,24 +62,28 @@ namespace Odachi.AspNetCore.Authentication.Basic
 
 				if (signInContext.HandledResponse)
 				{
-					if (signInContext.Ticket != null)
-						return AuthenticateResult.Success(signInContext.Ticket);
-					else
-						return AuthenticateResult.Fail("Invalid basic authentication credentials.");
-				}
+					if (signInContext.Ticket != null) {
+                        return AuthenticateResult.Success(signInContext.Ticket);
+                    } else {
+                        return AuthenticateResult.Fail("Invalid basic authentication credentials.");
+                    }
+                }
 
-				if (signInContext.Skipped)
-					return AuthenticateResult.Success(null);
+				if (signInContext.Skipped) {
+                    return AuthenticateResult.Success(null);
+                }
 
-				var credentials = Options.Credentials.Where(c => c.Username == username && c.Password == password).FirstOrDefault();
-				if (credentials == null)
-					return AuthenticateResult.Fail("Invalid basic authentication credentials.");
+                var credentials = Options.Credentials.Where(c => c.Username == username && c.Password == password).FirstOrDefault();
+				if (credentials == null) {
+                    return AuthenticateResult.Fail("Invalid basic authentication credentials.");
+                }
 
-				var claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
-				if (!claims.Any(c => c.Type == ClaimTypes.Name))
-					claims.Add(new Claim(ClaimTypes.Name, username));
+                var claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+				if (!claims.Any(c => c.Type == ClaimTypes.Name)) {
+                    claims.Add(new Claim(ClaimTypes.Name, username));
+                }
 
-				var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Options.AuthenticationScheme));
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Options.AuthenticationScheme));
 
 				var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), Options.AuthenticationScheme);
 
@@ -88,13 +95,15 @@ namespace Odachi.AspNetCore.Authentication.Basic
 
 				await Options.Events.Exception(exceptionContext);
 
-				if (exceptionContext.HandledResponse)
-					return AuthenticateResult.Success(exceptionContext.Ticket);
+				if (exceptionContext.HandledResponse) {
+                    return AuthenticateResult.Success(exceptionContext.Ticket);
+                }
 
-				if (exceptionContext.Skipped)
-					return AuthenticateResult.Success(null);
+                if (exceptionContext.Skipped) {
+                    return AuthenticateResult.Success(null);
+                }
 
-				throw;
+                throw;
             }
         }
 

@@ -5,8 +5,6 @@ namespace Microsoft.Common.Core {
     public static class CharExtensions {
         public static char[] LineBreakChars { get; } = new char[] { '\n', '\r' };
 
-        public static bool IsLineBreak(this char ch) {
-            return ch == '\r' || ch == '\n';
-        }
+        public static bool IsLineBreak(this char ch) => ch == '\r' || ch == '\n';
     }
 }

@@ -41,9 +41,10 @@ namespace Microsoft.R.Components.Documentation.Commands {
         }
 
         private void OpenUrl(string url) {
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.UseShellExecute = true;
-            psi.FileName = url;
+            ProcessStartInfo psi = new ProcessStartInfo {
+                UseShellExecute = true,
+                FileName = url
+            };
             Process.Start(psi);
         }
     }

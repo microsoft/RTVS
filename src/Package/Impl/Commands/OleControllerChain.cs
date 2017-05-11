@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Text;
+using Microsoft.Languages.Editor.ViewModel;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Document;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -31,15 +28,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                 // Create OLE shim that wraps main controller ICommandTarget and represents
                 // it as IOleCommandTarget that is accepted by VS IDE.
                 oleControllerShim = new CommandTargetToOleShim(textView, controller);
-
-                IOleCommandTarget nextOleTarget;
-                viewAdapter.AddCommandFilter(oleControllerShim, out nextOleTarget);
+                viewAdapter.AddCommandFilter(oleControllerShim, out var nextOleTarget);
 
                 // nextOleTarget is typically a core editor wrapped into OLE layer.
                 // Create a wrapper that will present OLE target as ICommandTarget to
-                // HTML main controller so controller can operate in platform-agnostic way.
-                var es = services.GetService<IApplicationEditorSupport>();
-                var nextCommandTarget = es.TranslateCommandTarget(textView, nextOleTarget);
+                // the main controller so controller can operate in platform-agnostic way.
+                var es = services.GetService<IEditorSupport>();
+                var nextCommandTarget = es.TranslateCommandTarget(textView.ToEditorView(), nextOleTarget);
                 controller.ChainedController = nextCommandTarget;
             }
             return oleControllerShim;
@@ -51,15 +46,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         public static void InitEditorInstance(ITextBuffer textBuffer, IServiceContainer services) {
-            if (Languages.Editor.Services.ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                var cs = services.GetService<ICompositionService>();
-                var importComposer1 = new ContentTypeImportComposer<IEditorFactory>(cs);
-                var editorInstanceFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
-
-                var importComposer2 = new ContentTypeImportComposer<IVsEditorDocumentFactory>(cs);
-                var documentFactory = importComposer2.GetImport(textBuffer.ContentType.TypeName);
-
-                var editorInstance = editorInstanceFactory.CreateEditorInstance(textBuffer, documentFactory);
+            if (textBuffer.GetService<IEditorViewModel>() == null) {
+                var locator = services.GetService<IContentTypeServiceLocator>();
+                var viewModelFactory = locator.GetService<IEditorViewModelFactory>(textBuffer.ContentType.TypeName);
+                viewModelFactory.CreateEditorViewModel(textBuffer);
             }
         }
     }

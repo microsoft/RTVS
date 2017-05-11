@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Sql;
