@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.InfoBar;
 using Microsoft.R.Components.PackageManager.Implementation.ViewModel;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Search;
@@ -17,19 +18,28 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly Guid SearchCategory = new Guid("B3A0CF4D-FC8A-47AB-8604-5D2EEF73872F");
         private readonly ISearchControl _searchControl;
 
-        public RPackageManagerVisualComponent(IRPackageManager packageManager, IVisualComponentContainer<IRPackageManagerVisualComponent> container, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
-            _viewModel = new RPackageManagerViewModel(packageManager, settings, coreShell);
+        public RPackageManagerVisualComponent(IRPackageManager packageManager
+            , IVisualComponentContainer<IRPackageManagerVisualComponent> container
+            , ISearchControlProvider searchControlProvider
+            , IInfoBarProvider infoBarProvider
+            , IRSettings settings
+            , ICoreShell coreShell) {
+
             Container = container;
-            var control = new PackageManagerControl(coreShell) {
-                DataContext = _viewModel,
-            };
+            var control = new PackageManagerControl(coreShell);
             Control = control;
+
+            var infoBar = infoBarProvider.Create(control.InfoBarControlHost);
+            _viewModel = new RPackageManagerViewModel(packageManager, infoBar, settings, coreShell);
+
             var searchControlSettings = new SearchControlSettings {
                 SearchCategory = SearchCategory,
                 MinWidth = (uint)control.SearchControlHost.MinWidth,
                 MaxWidth = uint.MaxValue
             };
             _searchControl = searchControlProvider.Create(control.SearchControlHost, _viewModel, searchControlSettings);
+
+            control.DataContext = _viewModel;
         }
 
         public void Dispose() {

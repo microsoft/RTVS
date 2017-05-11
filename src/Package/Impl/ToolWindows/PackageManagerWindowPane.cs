@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.InfoBar;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.Search;
@@ -19,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     internal class PackageManagerWindowPane : VisualComponentToolWindow<IRPackageManagerVisualComponent>, IOleCommandTarget {
         private readonly IRPackageManager _packageManager;
         private readonly ISearchControlProvider _searchControlProvider;
+        private readonly IInfoBarProvider _infoBarProvider;
         private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
         public const string WindowGuidString = "363F84AD-3397-4FDE-97EA-1ABD73C64BB3";
@@ -26,9 +28,10 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
+        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, IInfoBarProvider infoBarProvider, IRSettings settings, ICoreShell coreShell) {
             _packageManager = packageManager;
             _searchControlProvider = searchControlProvider;
+            _infoBarProvider = infoBarProvider;
             _settings = settings;
             _coreShell = coreShell;
             BitmapImageMoniker = KnownMonikers.Package;
@@ -36,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         protected override void OnCreate() {
-            Component = new RPackageManagerVisualComponent(_packageManager, this, _searchControlProvider, _settings, _coreShell);
+            Component = new RPackageManagerVisualComponent(_packageManager, this, _searchControlProvider, _infoBarProvider, _settings, _coreShell);
             base.OnCreate();
         }
 

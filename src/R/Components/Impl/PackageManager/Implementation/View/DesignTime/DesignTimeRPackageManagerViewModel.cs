@@ -19,8 +19,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool IsLoading => false;
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
-        public string FirstError => null;
-        public bool HasMultipleErrors => false;
+        public bool HasErrors => false;
         public bool IsRemoteSession => false;
 
         public Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken) => Task.CompletedTask;
@@ -34,12 +33,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public Task LoadAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task UnloadAsync(IRPackageViewModel package, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task DefaultActionAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
-
-        public void DismissErrorMessage() {
-        }
-
-        public void DismissAllErrorMessages() {
-        }
 
         public Task<int> Search(string searchString, CancellationToken cancellationToken) {
             return Task.FromResult(0);
