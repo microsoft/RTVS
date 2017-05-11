@@ -33,7 +33,7 @@ namespace Microsoft.Common.Core.Idle {
 
         public IdleTimeAsyncTask(IServiceContainer services) {
             _idleTime = services.GetService<IIdleTimeService>();
-            _mainThread = services.GetService<IMainThread>();
+            _mainThread = services.MainThread();
             _testEnvironment = services.GetService<ICoreShell>().IsUnitTestEnvironment;
         }
 

@@ -35,8 +35,8 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
                 var svc = _services.GetService<ISuggestedActionCategoryRegistryService>();
 
                 script.Invoke(() => {
-                    var broker = _services.GetService<ILightBulbBroker2>();
-                    broker.CreateSession(svc.AllCodeFixes, script.View, svc.AllCodeFixes);
+                    var broker = _services.GetService<ILightBulbBroker>();
+                    broker.CreateSession(svc.AllCodeFixes, script.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();
                     session.Expand();
@@ -53,9 +53,9 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
 
                 sets = null;
                 script.Invoke(() => {
-                    var broker = _services.GetService<ILightBulbBroker2>();
+                    var broker = _services.GetService<ILightBulbBroker>();
                     broker.DismissSession(script.View);
-                    broker.CreateSession(svc.Any, script.View, svc.AllCodeFixes);
+                    broker.CreateSession(svc.Any, script.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();
                     session.Expand();

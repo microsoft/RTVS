@@ -72,7 +72,7 @@ namespace Microsoft.Common.Core.Services {
         /// <typeparam name="T">Service type</typeparam>
         /// <returns>Service instance or null if it doesn't exist</returns>
         public virtual T GetService<T>(Type type = null) where T : class {
-            if(typeof(T) == typeof(IMainThread)) {
+            if (typeof(T) == typeof(IMainThread)) {
                 return _mainThread as T;
             }
 
@@ -92,12 +92,7 @@ namespace Microsoft.Common.Core.Services {
             return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);
         }
 
-        public virtual void RemoveService(object service) {
-            var key = AllServices.FirstOrDefault(x => _s.TryGetValue(x, out object value));
-            if (key != null) {
-                _s.TryRemove(key, out object dummy);
-            }
-        }
+        public virtual void RemoveService(object service) => _s.TryRemove(service.GetType(), out object dummy);
 
         public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
 
@@ -106,7 +101,7 @@ namespace Microsoft.Common.Core.Services {
                 yield break;
             }
 
-                var type = typeof(T);
+            var type = typeof(T);
             foreach (var value in _s.Values.OfType<T>()) {
                 CheckDisposed(value);
                 yield return value;

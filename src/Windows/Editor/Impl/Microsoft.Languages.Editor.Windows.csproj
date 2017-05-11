@@ -48,6 +48,7 @@
     <Compile Include="Completions\CompletionList.cs" />
     <Compile Include="Completions\EditorIntellisenseSession.cs" />
     <Compile Include="Completions\ViewCompletionBroker.cs" />
+    <Compile Include="Composition\IContentTypeMetadata.cs" />
     <Compile Include="ContainedLanguage\BufferGenerator.cs" />
     <Compile Include="ContainedLanguage\CommandTargetProxy.cs" />
     <Compile Include="ContainedLanguage\ContainedLanguageHandler.cs" />

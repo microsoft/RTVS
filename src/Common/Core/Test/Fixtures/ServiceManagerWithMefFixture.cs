@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -33,7 +34,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         private sealed class TestServiceManagerWithMef : TestServiceManager {
             private readonly CompositionContainer _compositionContainer;
-            private volatile bool _disposed;
+            private readonly DisposeToken _disposeToken = DisposeToken.Create< TestServiceManagerWithMef>();
 
             public TestServiceManagerWithMef(ComposablePartCatalog catalog, Action<IServiceManager, ITestInput> addServices) : base(addServices) {
                 _compositionContainer = new CompositionContainer(catalog, CompositionOptions.DisableSilentRejection);
@@ -53,17 +54,17 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             }
 
             public override Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
-                if (_disposed) {
+                if (_disposeToken.IsDisposed) {
                     return Task.CompletedTask;
                 }
 
-                _disposed = true;
+                _disposeToken.TryMarkDisposed();
                 _compositionContainer.Dispose();
                 return base.DisposeAsync(result, messageBus);
             }
 
             public override T GetService<T>(Type type = null) {
-                if (_disposed) {
+                if (_disposeToken.IsDisposed) {
                     return null;
                 }
                 return base.GetService<T>(type) ?? _compositionContainer.GetExportedValueOrDefault<T>();
