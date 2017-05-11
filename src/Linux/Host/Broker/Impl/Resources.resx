@@ -129,7 +129,31 @@
   <data name="Error_AuthNoInput" xml:space="preserve">
     <value>No input to authenticate.</value>
   </data>
+  <data name="Error_AuthTimedOut" xml:space="preserve">
+    <value>Authentication time out.</value>
+  </data>
+  <data name="Error_FailedToRun" xml:space="preserve">
+    <value>Command "{0}" failed to run with error: {1}</value>
+  </data>
+  <data name="Error_InvalidRunAsUserResponse" xml:space="preserve">
+    <value>Invalid response received from RunAsUser</value>
+  </data>
   <data name="Error_NoProfileDir" xml:space="preserve">
     <value>Profile dirctory could not be found.</value>
+  </data>
+  <data name="Error_PAMAuthenticationError" xml:space="preserve">
+    <value>PAM authentication failed with error: {0}</value>
+  </data>
+  <data name="Error_RunAsUserFailed" xml:space="preserve">
+    <value>RunAsUser failed with error: {0}</value>
+  </data>
+  <data name="Error_RunAsUserJsonError" xml:space="preserve">
+    <value>Error in run as user protocol: {0}</value>
+  </data>
+  <data name="Error_RunAsUser_InputFormatInvalid" xml:space="preserve">
+    <value>Invalid input to RunAsUser</value>
+  </data>
+  <data name="Error_RunAsUser_MessageTypeInvalid" xml:space="preserve">
+    <value>Invalid message type used for RunAsUser</value>
   </data>
 </root>

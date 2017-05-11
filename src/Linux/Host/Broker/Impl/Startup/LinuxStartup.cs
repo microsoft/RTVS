@@ -17,14 +17,12 @@ namespace Microsoft.R.Host.Broker.Startup
         public override void ConfigureServices(IServiceCollection services) {
             base.ConfigureServices(services);
 
-            var fs = new UnixFileSystem();
-            var ps = new UnixProcessServices();
-            services.AddSingleton<IFileSystem>(fs)
-                .AddSingleton<IProcessServices>(ps)
+            services.AddSingleton<IFileSystem, UnixFileSystem>()
+                .AddSingleton<IProcessServices, UnixProcessServices>()
                 .AddSingleton<IAuthenticationService, LinuxAuthenticationService>()
                 .AddSingleton<IRHostProcessService, LinuxRHostProcessService>()
                 .AddSingleton<IRInstallationService, RInstallation>()
-                .AddSingleton<ISystemInfoService>(new LinuxSystemInfoService(fs, ps));
+                .AddSingleton<ISystemInfoService, LinuxSystemInfoService>();
         }
     }
 }

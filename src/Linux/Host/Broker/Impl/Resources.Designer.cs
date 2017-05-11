@@ -98,11 +98,83 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Authentication time out..
+        /// </summary>
+        internal static string Error_AuthTimedOut {
+            get {
+                return ResourceManager.GetString("Error_AuthTimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command &quot;{0}&quot; failed to run with error: {1}.
+        /// </summary>
+        internal static string Error_FailedToRun {
+            get {
+                return ResourceManager.GetString("Error_FailedToRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid response received from RunAsUser.
+        /// </summary>
+        internal static string Error_InvalidRunAsUserResponse {
+            get {
+                return ResourceManager.GetString("Error_InvalidRunAsUserResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Profile dirctory could not be found..
         /// </summary>
         internal static string Error_NoProfileDir {
             get {
                 return ResourceManager.GetString("Error_NoProfileDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PAM authentication failed with error: {0}.
+        /// </summary>
+        internal static string Error_PAMAuthenticationError {
+            get {
+                return ResourceManager.GetString("Error_PAMAuthenticationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid input to RunAsUser.
+        /// </summary>
+        internal static string Error_RunAsUser_InputFormatInvalid {
+            get {
+                return ResourceManager.GetString("Error_RunAsUser_InputFormatInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid message type used for RunAsUser.
+        /// </summary>
+        internal static string Error_RunAsUser_MessageTypeInvalid {
+            get {
+                return ResourceManager.GetString("Error_RunAsUser_MessageTypeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RunAsUser failed with error: {0}.
+        /// </summary>
+        internal static string Error_RunAsUserFailed {
+            get {
+                return ResourceManager.GetString("Error_RunAsUserFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error in run as user protocol: {0}.
+        /// </summary>
+        internal static string Error_RunAsUserJsonError {
+            get {
+                return ResourceManager.GetString("Error_RunAsUserJsonError", resourceCulture);
             }
         }
     }
