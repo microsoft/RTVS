@@ -9,13 +9,11 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Services {
     public class ServiceManager : IServiceManager {
         private readonly DisposeToken _disposeToken = DisposeToken.Create<ServiceManager>();
         private readonly ConcurrentDictionary<Type, object> _s = new ConcurrentDictionary<Type, object>();
-        private IMainThread _mainThread;
 
         /// <summary>
         /// Add service to the service manager container
@@ -33,11 +31,6 @@ namespace Microsoft.Common.Core.Services {
             type = type ?? typeof(T);
             Check.ArgumentNull(nameof(service), service);
             Check.InvalidOperation(() => _s.TryAdd(type, service), "Service already exists");
-
-            var mainThread = service as IMainThread;
-            if (mainThread != null) {
-                _mainThread = _mainThread ?? mainThread;
-            }
 
             return this;
         }
@@ -72,10 +65,6 @@ namespace Microsoft.Common.Core.Services {
         /// <typeparam name="T">Service type</typeparam>
         /// <returns>Service instance or null if it doesn't exist</returns>
         public virtual T GetService<T>(Type type = null) where T : class {
-            if (typeof(T) == typeof(IMainThread)) {
-                return _mainThread as T;
-            }
-
             if (_disposeToken.IsDisposed) {
                 // Do not throw. When editor text buffer is closed, the associated service manager
                 // is disposed. However, some actions may still hold on the text buffer reference

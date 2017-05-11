@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client;
 
@@ -13,21 +14,19 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class InteractiveWindowConsole : IConsole {
         private readonly IRInteractiveWorkflowVisual _workflow;
         private IInteractiveWindowVisualComponent _component;
+        private IMainThread _mainThread;
 
         public InteractiveWindowConsole(IRInteractiveWorkflowVisual workflow) {
             _workflow = workflow;
+            _mainThread = _workflow.Shell.MainThread();
         }
 
-        public void WriteError(string text) {
-            WriteAsync(text, true).DoNotWait();
-        }
+        public void WriteError(string text) => WriteAsync(text, true).DoNotWait();
 
-        public void Write(string text) {
-            WriteAsync(text, false).DoNotWait();
-        }
+        public void Write(string text) => WriteAsync(text, false).DoNotWait();
 
         private async Task WriteAsync(string text, bool isError) {
-            await _workflow.Shell.SwitchToMainThreadAsync();
+            await _mainThread.SwitchToAsync();
             if (_component == null) {
                 _component = await _workflow.GetOrCreateVisualComponentAsync();
                 _component.Container.Show(focus: false, immediate: false);
