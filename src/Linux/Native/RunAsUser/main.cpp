@@ -26,7 +26,6 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <string>
-#include <mutex>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <boost/endian/buffers.hpp>
@@ -40,6 +39,16 @@ FILE *input = nullptr, *output = nullptr, *error = nullptr;
 #define RTVS_AUTH_INIT_FAILED 200
 #define RTVS_AUTH_BAD_INPUT   201
 #define RTVS_AUTH_NO_INPUT    202
+
+#define RTVS_JSON_MSG_NAME      "name"
+#define RTVS_JSON_MSG_USERNAME  "username"
+#define RTVS_JSON_MSG_PASSWORD  "password"
+
+#define RTVS_RESPONSE_TYPE_PAM_INFO    "pam-info"
+#define RTVS_RESPONSE_TYPE_PAM_ERROR   "pam-error"
+#define RTVS_RESPONSE_TYPE_JSON_ERROR  "json-error"
+#define RTVS_RESPONSE_TYPE_RTVS_RESULT "rtvs-result"
+#define RTVS_RESPONSE_TYPE_RTVS_ERROR  "rtvs-error"
 
 std::string read_string(FILE* stream) {
     boost::endian::little_uint32_buf_t data_size;
@@ -57,33 +66,38 @@ std::string read_string(FILE* stream) {
     return str;
 }
 
-std::mutex output_lock;
-void write_string(FILE* stream, std::string &data) {
+
+void write_string(FILE* stream, const std::string &data) {
     boost::endian::little_uint32_buf_t data_size(static_cast<uint32_t>(data.size()));
 
-    std::lock_guard<std::mutex> lock(output_lock);
     if (fwrite(&data_size, sizeof data_size, 1, stream) == 1) {
         if (fwrite(data.data(), data.size(), 1, stream) == 1) {
             fflush(stream);
+        } else {
+            std::terminate();
         }
+    } else {
+        std::terminate();
     }
 }
 
-void write_string(FILE* stream, const char *data) {
-    std::string str_data(data);
-    return write_string(stream, str_data);
+template<class Arg, class... Args>
+inline void write_json(Arg&& arg, Args&&... args) {
+    picojson::array msg;
+    msg.push_back(picojson::value(std::forward<Arg>(arg)));
+    append_json(msg, std::forward<Args>(args)...);
+    write_string(output, picojson::value(msg).serialize());
 }
 
-int rtvs_conv(int num_msg, const struct pam_message **msgm, struct pam_response **response, void *appdata_ptr)
-{
+int rtvs_conv(int num_msg, const pam_message **msgm, pam_response **response, void *appdata_ptr) {
     int count = 0;
-    struct pam_response *reply;
+    pam_response *reply;
 
     if (num_msg < 0) {
         return PAM_CONV_ERR;
     }
 
-    reply = (struct pam_response*) calloc(num_msg, sizeof(struct pam_response));
+    reply = (pam_response*) calloc(num_msg, sizeof(pam_response));
     if (reply == nullptr) {
         return PAM_CONV_ERR;
     }
@@ -98,17 +112,16 @@ int rtvs_conv(int num_msg, const struct pam_message **msgm, struct pam_response 
             str = strdup((char*)appdata_ptr);
             break;
         case PAM_ERROR_MSG:
-            write_string(error, msgm[count]->msg);
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, msgm[count]->msg);
             break;
         case PAM_TEXT_INFO:
-            write_string(output, msgm[count]->msg);
+            write_json(RTVS_RESPONSE_TYPE_PAM_INFO, msgm[count]->msg);
             break;
         }
 
         if (str) {
             reply[count].resp_retcode = 0;
             reply[count].resp = str;
-            str = nullptr;
         }
     }
 
@@ -131,17 +144,24 @@ int rtvs_authenticate(const char *user, const char* password) {
     });
 
     if ((pam_err = pam_start("rtvs_auth", user, &conv, &pamh)) != PAM_SUCCESS || pamh == nullptr) {
+        write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pam_err));
         return RTVS_AUTH_INIT_FAILED;
     }
 
     if ((pam_err = pam_authenticate(pamh, 0)) != PAM_SUCCESS) {
+        write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pam_err));
         return RTVS_AUTH_BAD_INPUT;
     }
 
+    if ((pam_err = pam_acct_mgmt(pamh, 0)) != PAM_SUCCESS) {
+        // This can fail if the user's password has expired
+        write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pam_err));
+        return RTVS_AUTH_BAD_INPUT;
+    }
     return RTVS_AUTH_OK;
 }
 
-std::string get_user_home(std::string &username) {
+std::string get_user_home(const std::string &username) {
     struct passwd *pw = getpwnam(username.c_str());
     if (pw && pw->pw_dir && pw->pw_dir[0] != '\0') {
         return std::string(strdup(pw->pw_dir));
@@ -149,9 +169,9 @@ std::string get_user_home(std::string &username) {
     return std::string();
 }
 
-int authenticate_only(picojson::object& json) {
-    std::string username(json["Username"].get<std::string>());
-    std::string password(json["Password"].get<std::string>());
+int authenticate_only(const picojson::object& json) {
+    std::string username(json[RTVS_JSON_MSG_USERNAME].get<std::string>());
+    std::string password(json[RTVS_JSON_MSG_PASSWORD].get<std::string>());
 
     if (username.empty() || password.empty()) {
         return RTVS_AUTH_NO_INPUT;
@@ -161,7 +181,7 @@ int authenticate_only(picojson::object& json) {
 
     if (auth_result == PAM_SUCCESS) {
         std::string user_home = get_user_home(username);
-        write_string(output, user_home);
+        write_json(RTVS_RESPONSE_TYPE_RTVS_RESULT, user_home);
     }
     return auth_result;
 }
@@ -179,28 +199,27 @@ int main(int argc, char **argv) {
 
     picojson::value json_value;
     std::string json_err = picojson::parse(json_value, read_string(input));
+
+    if (!json_err.empty()) {
+        write_json(RTVS_RESPONSE_TYPE_JSON_ERROR, json_err);
+        return RTVS_AUTH_BAD_INPUT;
+    }
+
     if (!json_value.is<picojson::object>()) {
-        write_string(error, "Input format is invalid.");
+        write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, "Error_RunAsUser_InputFormatInvalid");
         return RTVS_AUTH_BAD_INPUT;
     }
 
     picojson::object json = json_value.get<picojson::object>();
+    std::string msg_name = json[RTVS_JSON_MSG_NAME].get<std::string>();
 
-    if (!json_err.empty()) {
-        write_string(error, json_err);
-        return RTVS_AUTH_BAD_INPUT;
-    }
-
-    std::string msg_name = json["Name"].get<std::string>();
-
+    
     if (msg_name == "AuthOnly") {
         return authenticate_only(json);
-    }
-    else if (msg_name == "AuthAndRun") {
+    } else if (msg_name == "AuthAndRun") {
         return 0; //TODO : authenticate and run
-    }
-    else {
-        write_string(error, "Input format is invalid.");
+    } else {
+        write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, "Error_RunAsUser_MessageTypeInvalid");
         return RTVS_AUTH_BAD_INPUT;
     }
 }

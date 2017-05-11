@@ -58,3 +58,19 @@ private:
     scope_warden(const scope_warden&) = delete;
     scope_warden& operator=(const scope_warden&) = delete;
 };
+
+
+inline void append_json(picojson::array& msg) {
+}
+
+template<class Arg>
+inline void append_json(picojson::array& msg, Arg&& arg) {
+    msg.push_back(picojson::value(std::forward<Arg>(arg)));
+}
+
+template<class Arg, class... Args>
+inline void append_json(picojson::array& msg, Arg&& arg, Args&&... args) {
+    msg.push_back(picojson::value(std::forward<Arg>(arg)));
+    append_json(msg, std::forward<Args>(args)...);
+}
+
