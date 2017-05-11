@@ -55,7 +55,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         /// Full path to the primary document. Typically used by the contained
         /// language syntax check to output correct path in the task list.
         /// </summary>
-        public string DocumentPath => _document != null ? _document.FilePath : string.Empty;
+        public string DocumentPath => _document?.FilePath ?? string.Empty;
 
         /// <summary>
         /// Sets command target of the contained language editor.
