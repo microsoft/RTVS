@@ -50,17 +50,12 @@ namespace Microsoft.R.Host.Broker.About {
             a.TotalPhysicalMemory = memoryInfo.TotalPhysicalMemory;
             a.FreePhysicalMemory = memoryInfo.FreePhysicalMemory;
 
-            var videoInfo = _systemInfo.GetVideoControllerInformation();
-            List<VideoCardInfo> videoCards = new List<VideoCardInfo>();
-            foreach(var cardInfo in videoInfo) {
-                var card = new VideoCardInfo() {
-                    VideoCardName = cardInfo.VideoCardName,
-                    VideoRAM = cardInfo.VideoRAM,
-                    VideoProcessor = cardInfo.VideoProcessor
-                };
-                videoCards.Add(card);
-            }
-            a.VideoCards = videoCards.ToArray();
+            a.VideoCards = _systemInfo.GetVideoControllerInformation().Select(ci => 
+                new VideoCardInfo() {
+                    VideoCardName = ci.VideoCardName,
+                    VideoRAM = ci.VideoRAM,
+                    VideoProcessor = ci.VideoProcessor
+                }).ToArray();
 
             a.Interpreters = _interpManager.Interpreters.Select(x => Invariant($"[{x.Id}] {x.Name}")).ToArray();
             if(a.Interpreters.Length > 0) {

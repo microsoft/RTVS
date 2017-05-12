@@ -35,20 +35,20 @@
 
 FILE *input = nullptr, *output = nullptr, *error = nullptr;
 
-#define RTVS_AUTH_OK          0
-#define RTVS_AUTH_INIT_FAILED 200
-#define RTVS_AUTH_BAD_INPUT   201
-#define RTVS_AUTH_NO_INPUT    202
+static constexpr int RTVS_AUTH_OK           = 0;
+static constexpr int  RTVS_AUTH_INIT_FAILED = 200;
+static constexpr int  RTVS_AUTH_BAD_INPUT   = 201;
+static constexpr int  RTVS_AUTH_NO_INPUT    = 202;
 
-#define RTVS_JSON_MSG_NAME      "name"
-#define RTVS_JSON_MSG_USERNAME  "username"
-#define RTVS_JSON_MSG_PASSWORD  "password"
+static constexpr char RTVS_JSON_MSG_NAME[] = "name";
+static constexpr char  RTVS_JSON_MSG_USERNAME[] = "username";
+static constexpr char  RTVS_JSON_MSG_PASSWORD[] = "password";
 
-#define RTVS_RESPONSE_TYPE_PAM_INFO    "pam-info"
-#define RTVS_RESPONSE_TYPE_PAM_ERROR   "pam-error"
-#define RTVS_RESPONSE_TYPE_JSON_ERROR  "json-error"
-#define RTVS_RESPONSE_TYPE_RTVS_RESULT "rtvs-result"
-#define RTVS_RESPONSE_TYPE_RTVS_ERROR  "rtvs-error"
+static constexpr char  RTVS_RESPONSE_TYPE_PAM_INFO[] = "pam-info";
+static constexpr char  RTVS_RESPONSE_TYPE_PAM_ERROR[] = "pam-error";
+static constexpr char  RTVS_RESPONSE_TYPE_JSON_ERROR[] = "json-error";
+static constexpr char  RTVS_RESPONSE_TYPE_RTVS_RESULT[] = "rtvs-result";
+static constexpr char  RTVS_RESPONSE_TYPE_RTVS_ERROR[] = "rtvs-error";
 
 std::string read_string(FILE* stream) {
     boost::endian::little_uint32_buf_t data_size;
@@ -65,7 +65,6 @@ std::string read_string(FILE* stream) {
 
     return str;
 }
-
 
 void write_string(FILE* stream, const std::string &data) {
     boost::endian::little_uint32_buf_t data_size(static_cast<uint32_t>(data.size()));
@@ -122,6 +121,7 @@ int rtvs_conv(int num_msg, const pam_message **msgm, pam_response **response, vo
         if (str) {
             reply[count].resp_retcode = 0;
             reply[count].resp = str;
+            str = nullptr;
         }
     }
 

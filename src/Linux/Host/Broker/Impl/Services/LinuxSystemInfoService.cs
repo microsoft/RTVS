@@ -174,10 +174,9 @@ namespace Microsoft.R.Host.Broker.Services {
             }
         }
 
-        private static IEnumerable<IDictionary<string, string>> ParseDisplayData(IEnumerable<string> lines) {
-            List<Dictionary<string, string>> parsedData = new List<Dictionary<string, string>>();
+        private static IEnumerable<IDictionary<string,string>> ParseDisplayData(IEnumerable<string> lines) {
             if (lines.Count() == 0) {
-                return parsedData;
+                yield break;
             }
 
             var seperatorMatch = _indentPattern.Match(lines.First());
@@ -185,7 +184,7 @@ namespace Microsoft.R.Host.Broker.Services {
             if (seperatorMatch.Success) {
                 separatorIndentation = seperatorMatch.Groups["indent"].Length;
             } else {
-                return parsedData;
+                yield break;
             }
 
             Dictionary<string, string> data = null;
@@ -193,7 +192,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 var match = _indentPattern.Match(line);
                 if (match.Success && match.Groups["indent"].Length == separatorIndentation) {
                     if (data != null) {
-                        parsedData.Add(data);
+                        yield return data;
                     }
                     data = new Dictionary<string, string>();
                     continue;
@@ -201,7 +200,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
                 if (data == null) {
                     // input does not contain separators
-                    return parsedData;
+                    yield break;
                 }
 
                 match = _keyValuePairsPattern.Match(line);
@@ -212,11 +211,9 @@ namespace Microsoft.R.Host.Broker.Services {
                 }
             }
 
-            if (data != null && !parsedData.Contains(data)) {
-                parsedData.Add(data);
+            if (data != null && data.Count() > 0) {
+                yield return data;
             }
-
-            return parsedData;
         }
 
         private static long GetRamValueMB(string vramStr) {
