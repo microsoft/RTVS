@@ -11,6 +11,6 @@ namespace Microsoft.Languages.Editor.Completions {
     public interface IIntellisenseContext {
         IEditorIntellisenseSession Session { get; }
         IEditorBuffer EditorBuffer { get; }
-        int Position { get; }
+        int Position { get; set; }
     }
 }

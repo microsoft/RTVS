@@ -50,7 +50,6 @@
     <Compile Include="Completions\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completions\AutoCompletion\BraceCompletionContextProvider.cs" />
     <Compile Include="Completions\RCompletion.cs" />
-    <Compile Include="Completions\RFunctionCompletion.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Completions\RCompletionControllerProvider.cs" />
     <Compile Include="Completions\RCompletionSourceProvider.cs" />

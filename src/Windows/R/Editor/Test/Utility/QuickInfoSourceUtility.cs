@@ -22,12 +22,10 @@ namespace Microsoft.R.Editor.Test.Utility {
 
             var tcs = new TaskCompletionSource<ITrackingSpan>();
 
-            ITrackingSpan applicableSpan;
-            var ready = quickInfoSource.AugmentQuickInfoSession(ast, textBuffer, position, quickInfoSession, quickInfoContent, out applicableSpan, (o, p) => {
-                ITrackingSpan result;
-                quickInfoSource.AugmentQuickInfoSession(ast, textBuffer, position, quickInfoSession, quickInfoContent, out result, null, p);
+            var ready = quickInfoSource.AugmentQuickInfoSession(ast, textBuffer, position, quickInfoSession, quickInfoContent, out ITrackingSpan applicableSpan, (infos, o) => {
+                quickInfoSource.AugmentQuickInfoSession(quickInfoSession, quickInfoContent, out ITrackingSpan result);
                 tcs.TrySetResult(result);
-            }, null);
+            });
 
             if (ready) {
                 tcs.TrySetResult(applicableSpan);

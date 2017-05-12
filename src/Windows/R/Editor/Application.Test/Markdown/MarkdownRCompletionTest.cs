@@ -34,8 +34,8 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Category.Interactive]
         public async Task TypeRBlock() {
             using (var script = await _editorHost.StartScript(_services, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
-                var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("abbreviate");
-                info.Should().NotBeNull();
+                var packageName = await _editorHost.FunctionIndex.GetPackageNameAsync("abbreviate");
+                packageName.Should().NotBeNull();
 
                 script.Type("```{r}{ENTER}{ENTER}```");
                 script.MoveUp();
@@ -64,8 +64,8 @@ x <- function() {
         [Category.Interactive]
         public async Task RSignature() {
             using (var script = await _editorHost.StartScript(_services, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
-                var info = await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
-                info.Should().NotBeNull();
+                var packageName = await _editorHost.FunctionIndex.GetPackageNameAsync("lm");
+                packageName.Should().NotBeNull();
 
                 script.DoIdle(500);
                 script.MoveDown();

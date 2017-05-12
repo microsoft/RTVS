@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
-                await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
+                await _editorHost.FunctionIndex.GetPackageNameAsync("lm");
 
                 script.Type("x <- lm(");
                 script.DoIdle(2000);
@@ -63,7 +63,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Test]
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
-                await _editorHost.FunctionIndex.GetFunctionInfoAsync("lm");
+                await _editorHost.FunctionIndex.GetPackageNameAsync("lm");
 
                 script.Type("x <- lm(subset = a, sing");
                 script.DoIdle(1000);
@@ -93,7 +93,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Test]
         public async Task R_EqualsCompletion01() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
-                await _editorHost.FunctionIndex.GetFunctionInfoAsync("addmargins");
+                await _editorHost.FunctionIndex.GetPackageNameAsync("addmargins");
 
                 script.DoIdle(100);
                 script.Type("addmargins(Fu");

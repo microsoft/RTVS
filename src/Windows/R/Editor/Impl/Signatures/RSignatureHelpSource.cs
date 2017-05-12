@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
@@ -27,7 +28,7 @@ namespace Microsoft.R.Editor.Signatures {
         private readonly IServiceContainer _services;
         private readonly IREditorSettings _settings;
         private readonly ISignatureHelpBroker _broker;
-        private readonly RFunctionSignatureEngine _engine;
+        private readonly IRFunctionSignatureEngine _engine;
         private IList<ISignature> _signatures;
 
         public RSignatureHelpSource(ITextBuffer textBuffer, IServiceContainer services) {
@@ -47,26 +48,25 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             var document = _textBuffer.GetEditorDocument<IREditorDocument>();
-            if (document != null) {
-                if (!document.EditorTree.IsReady) {
-                    document.EditorTree.InvokeWhenReady((p) => {
-                        RetriggerSignatureHelp((ITextView)p);
-                   }, session.TextView, this.GetType(), processNow: true);
-                } else {
-                    AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, (textView, sigs) => {
-                        _signatures = sigs;
-                        RetriggerSignatureHelp(textView);
-                    });
-                }
+            if (document == null) {
+                return;
+            }
+            // If document is not ready, let it parse and call us back when ready.
+            // The parsing is asyncronous so we'll need to re-trigger the session.
+            if (!document.EditorTree.IsReady) {
+                document.EditorTree.InvokeWhenReady(p => RetriggerSignatureHelp((ITextView)p), session.TextView, GetType(), processNow: true);
+            } else {
+                // Try get signatures. If there is no cached data, there will be async call to R
+                // and when it is done, we will re-trigger the session.
+                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, (textView, sigs) => {
+                    _signatures = sigs;
+                    RetriggerSignatureHelp(textView);
+                });
             }
         }
 
         public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<ITextView, IList<ISignature>> callback) {
-            if (_signatures != null) {
-                foreach (var s in _signatures) {
-                    signatures.Add(s);
-                }
-                _signatures = null;
+            if(GetCachedSignatures(signatures)) { 
                 return true;
             }
 
@@ -77,21 +77,21 @@ namespace Microsoft.R.Editor.Signatures {
                 var position = session.GetTriggerPoint(_textBuffer).GetCurrentPosition();
                 var context = new RIntellisenseContext(eis, editorBuffer, ast, position);
 
-                _engine.GetSignaturesAsync(context).ContinueWith(async t => {
-                    await _services.MainThread().SwitchToAsync();
-                    callback(session.TextView, MakeSignatures(t.Result));
-                }).DoNotWait();
+                _engine.GetSignaturesAsync(context, s =>
+                    callback(session.TextView, s.Select(x => new RSignatureHelp(x)).Cast<ISignature>().ToList()));
             }
-
             return false;
         }
 
-        private List<ISignature> MakeSignatures(IEnumerable<IRFunctionSignatureHelp> functionHelp) {
-            var list = new List<ISignature>();
-            foreach (var f in functionHelp) {
-                list.Add(new RSignatureHelp(f));
+        private bool GetCachedSignatures(IList<ISignature> signatures) {
+            if (_signatures != null) {
+                foreach (var s in _signatures) {
+                    signatures.Add(s);
+                }
+                _signatures = null;
+                return true;
             }
-            return list;
+            return false;
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {

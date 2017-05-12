@@ -20,7 +20,6 @@ namespace Microsoft.R.Editor.Functions {
     /// Provides information on functions in packages for intellisense.
     /// </summary>
     public sealed class FunctionIndex : IFunctionIndex {
-        private readonly IServiceContainer _services;
         private readonly IIntellisenseRSession _host;
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
 
@@ -51,13 +50,23 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         public FunctionIndex(IServiceContainer services, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
-            _services = services;
+            Services = services;
             _functionRdDataProvider = rdDataProfider;
             _host = host;
         }
 
+        /// <summary>
+        /// Provides access to services in extension methods
+        /// </summary>
+        public IServiceContainer Services { get; }
+
+        /// <summary>
+        /// Builds function index
+        /// </summary>
+        /// <param name="packageIndex">Package index, if available. If not available, 
+        /// index builder will attempt to obtain it from the service container</param>
         public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
-            packageIndex = packageIndex ?? _services.GetService<IPackageIndex>();
+            packageIndex = packageIndex ?? Services.GetService<IPackageIndex>();
             var lockToken = await _buildIndexLock.WaitAsync();
             try {
                 if (!lockToken.IsSet) {
@@ -88,32 +97,27 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         /// <summary>
-        /// Retrieves function information by name. If information is not
-        /// available, starts asynchronous retrieval of the function info
-        /// from R and when the data becomes available invokes specified
-        /// callback passing the parameter. This is used for async
-        /// intellisense or function signature/parameter help.
+        /// Attempts to retrieve cached information.
         /// </summary>
-        public IFunctionInfo GetFunctionInfo(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
-            var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
-            if (functionInfo != null) {
-                return functionInfo;
-            }
-            GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter).DoNotWait();
-            return null;
-        }
+        /// <param name="functionName">Function name</param>
+        /// <param name="packageName">Package name if available</param>
+        /// <returns>Function information or null if not found.</returns>
+        /// </returns>
+        public IFunctionInfo GetFunctionInfo(string functionName, string packageName = null)
+            => TryGetCachedFunctionInfo(functionName, ref packageName);
 
-        public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName, string packageName = null) {
-            if (!string.IsNullOrEmpty(packageName)) {
-                // Specific package
-                var functionInfo = TryGetCachedFunctionInfo(functionName, ref packageName);
-                if (functionInfo != null) {
-                    return functionInfo;
-                }
-            }
-
-            packageName = await GetFunctionInfoFromEngineAsync(functionName, packageName);
-            return await TryGetCachedFunctionInfoAsync(functionName, packageName);
+        /// <summary>
+        /// Attempts to determine package the function belongs to. Package name depends on the order of loading.
+        /// For example, 'select' may be from 'MASS' or from 'dplyr' depending which package was loaded last.
+        /// The function also retrieves and caches function information so it is possible to call
+        /// <see cref="GetFunctionInfo"/> right away and get the function information.
+        /// </summary>
+        /// <param name="functionName">Name of the function</param>
+        /// <returns>Name of the package</returns>
+        public async Task<string> GetPackageNameAsync(string functionName) {
+            var packageName = await GetFunctionInfoFromEngineAsync(functionName, null);
+            await TryGetCachedFunctionInfoAsync(functionName, packageName);
+            return packageName;
         }
 
         /// <summary>
@@ -125,8 +129,7 @@ namespace Microsoft.R.Editor.Functions {
             IFunctionInfo functionInfo = null;
             if (string.IsNullOrEmpty(packageName)) {
                 // Find packages that the function may belong to. There may be more than one.
-                List<string> packages;
-                if (!_functionToPackageMap.TryGetValue(functionName, out packages) || packages.Count == 0) {
+                if (!_functionToPackageMap.TryGetValue(functionName, out var packages) || packages.Count == 0) {
                     // Not in the cache
                     return null;
                 }
@@ -174,42 +177,27 @@ namespace Microsoft.R.Editor.Functions {
         /// callback passing the specified parameter. Callback method can now
         /// fetch function information from the index.
         /// </summary>
-        private async Task<string> GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object, string> infoReadyCallback = null, object parameter = null) {
-            var tokens = new RTokenizer().Tokenize(functionName);
-            var validName = tokens.Count == 1 && tokens[0].TokenType == RTokenType.Identifier;
-            if (validName) {
-                packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
-            }
-
-            if (!validName && string.IsNullOrEmpty(packageName)) {
-                // Even if nothing is found, still notify the callback
-                if (infoReadyCallback != null) {
-                    _services.MainThread().Post(() => {
-                        infoReadyCallback(null, null);
-                    });
-                }
+        private async Task<string> GetFunctionInfoFromEngineAsync(string functionName, string packageName) {
+            if (!IsValidFunctionName(functionName)) {
                 return packageName;
             }
 
-            if (infoReadyCallback == null) {
-                // regular async call
-                var rdData = await _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName);
-                if (!string.IsNullOrEmpty(rdData)) {
-                    // If package is found update data in the index
-                    UpdateIndex(functionName, packageName, rdData);
-                }
+            packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
+            if (string.IsNullOrEmpty(packageName)) {
                 return packageName;
             }
 
-            _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
-                rdData => {
-                    if (!string.IsNullOrEmpty(packageName) && !string.IsNullOrEmpty(rdData)) {
-                        // If package is found update data in the index
-                        UpdateIndex(functionName, packageName, rdData);
-                    }
-                    _services.MainThread().Post(() => infoReadyCallback(parameter, packageName));
-                });
+            var rdData = await _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName);
+            if (!string.IsNullOrEmpty(rdData)) {
+                // If package is found update data in the index
+                UpdateIndex(functionName, packageName, rdData);
+            }
             return packageName;
+        }
+
+        private static bool IsValidFunctionName(string functionName) {
+            var tokens = new RTokenizer().Tokenize(functionName);
+            return tokens.Count == 1 && tokens[0].TokenType == RTokenType.Identifier;
         }
 
         private async Task<string> GetFunctionLoadedPackage(string functionName) {

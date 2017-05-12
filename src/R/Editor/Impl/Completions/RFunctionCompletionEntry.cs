@@ -26,22 +26,16 @@ namespace Microsoft.R.Editor.Completions {
         public override string Description {
             get {
                 if (string.IsNullOrEmpty(base.Description) && !_session.IsDismissed) {
-                    TryFetchDescription();
+                    _functionIndex.GetFunctionInfoAsync(DisplayText, null, (fi, o) => SetDescription(fi), null);
                 }
                 return base.Description;
             }
         }
 
-        private void TryFetchDescription() {
-            Task.Run(async () => {
-                SetDescription(await _functionIndex.GetFunctionInfoAsync(this.DisplayText));
-            }).Wait(500);
-        }
-
         private void SetDescription(IFunctionInfo fi) {
-            if (fi != null) {
+            if (fi != null && !_session.IsDismissed) {
                 string sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
-                this.Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
+                Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
             }
         }
     }

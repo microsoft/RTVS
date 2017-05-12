@@ -94,11 +94,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var parametersInfo = context.AstRoot.GetSignatureInfoFromBuffer(context.EditorBuffer.CurrentSnapshot, context.Position);
             if (parametersInfo != null) {
                 // User-declared functions take priority
-                functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);
-                if (functionInfo == null) {
-                    // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = _functionIndex.GetFunctionInfo(parametersInfo.FunctionName, null, (o, p) => { }, context.Session.View);
-                }
+                functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position)
+                               ?? _functionIndex.GetFunctionInfo(parametersInfo.FunctionName, null);
             }
             return functionInfo;
         }

@@ -52,21 +52,22 @@ namespace Microsoft.R.Editor {
             return null;
         }
 
-        public static string GetFunctionName(this AstRoot ast, int position) {
-            IAstNode node;
-            ast.GetPositionNode(position, out node);
+        public static string GetFunctionName(this AstRoot ast, int position, out ITextRange nameRange, out FunctionCall fc) {
+            nameRange = TextRange.EmptyRange;
+            fc = null;
+
+            ast.GetPositionNode(position, out var node);
             if (node == null) {
                 return null;
             }
 
             // In abc(de|f(x)) first find inner function, then outer.
-            FunctionCall fc;
             if (node is TokenNode && node.Parent is FunctionCall) {
                 fc = (FunctionCall)node.Parent;
             } else {
                 fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
             }
-            var nameRange = fc?.RightOperand as TokenNode;
+            nameRange = fc?.RightOperand as TokenNode;
             return nameRange != null ? ast.TextProvider.GetText(nameRange) : null;
         }
 

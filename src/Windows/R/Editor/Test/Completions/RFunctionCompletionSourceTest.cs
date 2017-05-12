@@ -72,8 +72,8 @@ namespace Microsoft.R.Editor.Test.Completions {
         public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription, bool realHost) {
             var hostScript = realHost ? new RHostScript(Workflow.RSessions) : null;
             try {
-                var info = await FunctionIndex.GetFunctionInfoAsync(expectedEntry);
-                info.Should().NotBeNull();
+                var packageName = await FunctionIndex.GetPackageNameAsync(expectedEntry);
+                packageName.Should().NotBeNull();
 
                 var completionSets = new List<CompletionSet>();
                 RCompletionTestUtilities.GetCompletions(Services, content, position, completionSets);

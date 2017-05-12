@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                 using (var document = new EditorDocumentMock(tree)) {
 
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-                    await FunctionIndex.GetFunctionInfoAsync("aov");
+                    await FunctionIndex.GetPackageNameAsync("aov");
 
                     tree.TakeThreadOwnerShip();
                     await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
@@ -86,7 +86,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter02() {
-            await FunctionIndex.GetFunctionInfoAsync("legend");
+            await FunctionIndex.GetPackageNameAsync("legend");
 
             _settings.PartialArgumentNameMatch.Returns(true);
 
@@ -120,7 +120,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter03() {
-            await FunctionIndex.GetFunctionInfoAsync("legend");
+            await FunctionIndex.GetPackageNameAsync("legend");
 
             var textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
             var eb = textBuffer.ToEditorBuffer();
@@ -149,7 +149,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test(ThreadType = ThreadType.UI)]
         public async Task ParameterTest_ComputeCurrentParameter04() {
-            await FunctionIndex.GetFunctionInfoAsync("legend");
+            await FunctionIndex.GetPackageNameAsync("legend");
 
             _settings.PartialArgumentNameMatch.Returns(true);
 

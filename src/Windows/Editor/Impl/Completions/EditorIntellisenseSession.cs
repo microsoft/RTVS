@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -21,14 +22,18 @@ namespace Microsoft.Languages.Editor.Completions {
         public IEditorView View => _session.TextView.ToEditorView();
         public bool IsDismissed => _session.IsDismissed;
 
-        public event EventHandler Dismissed {
-            add => _session.Dismissed += value;
-            remove => _session.Dismissed -= value;
-        }
+        public event EventHandler Dismissed;
 
         public EditorIntellisenseSession(IIntellisenseSession session, IServiceContainer services) {
+            Check.InvalidOperation(() => !session.IsDismissed, "Session is already dismissed");
             _session = session;
+            _session.Dismissed += OnSessionDismissed;
             Services = services;
+        }
+
+        private void OnSessionDismissed(object sender, EventArgs e) {
+            _session.Dismissed -= OnSessionDismissed;
+            Dismissed?.Invoke(this, EventArgs.Empty);
         }
     }
 }
