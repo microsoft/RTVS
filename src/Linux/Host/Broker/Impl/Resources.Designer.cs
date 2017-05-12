@@ -98,15 +98,6 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Authentication time out..
-        /// </summary>
-        internal static string Error_AuthTimedOut {
-            get {
-                return ResourceManager.GetString("Error_AuthTimedOut", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Command &quot;{0}&quot; failed to run with error: {1}.
         /// </summary>
         internal static string Error_FailedToRun {

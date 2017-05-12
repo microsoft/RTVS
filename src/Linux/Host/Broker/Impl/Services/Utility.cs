@@ -32,58 +32,51 @@ namespace Microsoft.R.Host.Broker.Services {
                 proc = CreateRLaunchProcess(ps, true);
                 using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true))
                 using (BinaryReader reader = new BinaryReader(proc.StandardOutput.BaseStream, Encoding.UTF8, true)) {
-                    AuthenticationOnlyMessage message = new AuthenticationOnlyMessage() { Username = username, Password = password };
+                    var message = new AuthenticationOnlyMessage() { Username = username, Password = password };
                     string json = JsonConvert.SerializeObject(message, GetJsonSettings());
                     var jsonBytes = Encoding.UTF8.GetBytes(json);
                     writer.Write(jsonBytes.Length);
                     writer.Write(jsonBytes);
                     writer.Flush();
 
-                    var waitForExit = Task.Run(() => {
-                        while (!proc.HasExited) {
-                            Thread.Sleep(100);
-                        }
-                    });
+                    proc.WaitForExit(3000);
 
-                    if (waitForExit.Wait(3000)) {
-                        if (proc.ExitCode == 0 && !proc.StandardOutput.EndOfStream) {
-                            int size = reader.ReadInt32();
-                            var bytes = reader.ReadBytes(size);
-                            var arr = JsonConvert.DeserializeObject<JArray>(Encoding.UTF8.GetString(bytes));
-                            if(arr.Count > 1) {
-                                var respType = arr[0].Value<string>();
-                                switch (respType) {
-                                    case PamInfo:
-                                    case PamError:
-                                        var pam = arr[1].Value<string>();
-                                        logger.LogCritical(Resources.Error_PAMAuthenticationError.FormatInvariant(pam));
-                                        break;
-                                    case JsonError:
-                                        var jerror = arr[1].Value<string>();
-                                        logger.LogCritical(Resources.Error_RunAsUserJsonError.FormatInvariant(jerror));
-                                        break;
-                                    case RtvsResult:
-                                        userDir = arr[1].Value<string>();
-                                        retval = true;
-                                        if (userDir.Length == 0) {
-                                            logger.LogError(Resources.Error_NoProfileDir);
-                                        }
-                                        break;
-                                    case RtvsError:
-                                        var resource = arr[1].Value<string>();
-                                        logger.LogCritical(Resources.Error_RunAsUserFailed.FormatInvariant(Resources.ResourceManager.GetString(resource)));
-                                        break;
-                                }
-                            } else {
-                                logger.LogCritical(Resources.Error_InvalidRunAsUserResponse);
+                    if (proc.ExitCode == 0 && !proc.StandardOutput.EndOfStream) {
+                        int size = reader.ReadInt32();
+                        var bytes = reader.ReadBytes(size);
+                        var arr = JsonConvert.DeserializeObject<JArray>(Encoding.UTF8.GetString(bytes));
+                        if(arr.Count > 1) {
+                            var respType = arr[0].Value<string>();
+                            switch (respType) {
+                                case PamInfo:
+                                case PamError:
+                                    var pam = arr[1].Value<string>();
+                                    logger.LogCritical(Resources.Error_PAMAuthenticationError.FormatInvariant(pam));
+                                    break;
+                                case JsonError:
+                                    var jerror = arr[1].Value<string>();
+                                    logger.LogCritical(Resources.Error_RunAsUserJsonError.FormatInvariant(jerror));
+                                    break;
+                                case RtvsResult:
+                                    userDir = arr[1].Value<string>();
+                                    retval = true;
+                                    if (userDir.Length == 0) {
+                                        logger.LogError(Resources.Error_NoProfileDir);
+                                    }
+                                    break;
+                                case RtvsError:
+                                    var resource = arr[1].Value<string>();
+                                    logger.LogCritical(Resources.Error_RunAsUserFailed.FormatInvariant(Resources.ResourceManager.GetString(resource)));
+                                    break;
                             }
-                            
                         } else {
-                            logger.LogCritical(Resources.Error_AuthFailed, GetRLaunchExitCodeMessage(proc.ExitCode));
+                            logger.LogCritical(Resources.Error_InvalidRunAsUserResponse);
                         }
+                            
                     } else {
-                        logger.LogCritical(Resources.Error_AuthTimedOut);
+                        logger.LogCritical(Resources.Error_AuthFailed, GetRLaunchExitCodeMessage(proc.ExitCode));
                     }
+
                 }
             } catch (Exception ex) {
                 logger.LogCritical(Resources.Error_AuthFailed, ex.Message);
