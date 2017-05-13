@@ -2,12 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 
-namespace Microsoft.Languages.Editor.Completions {
-    public interface IViewCompletionBroker {
+namespace Microsoft.Languages.Editor.QuickInfo {
+    public interface IViewQuickInfoBroker {
         IReadOnlyList<IEditorIntellisenseSession> GetSessions(IEditorView view);
-         void TriggerCompletionSession(IEditorView view);
-        void DismissCompletionSession(IEditorView view);
+        void TriggerQuickInfoSession(IEditorView view);
+        void DismissQuickInfoSession(IEditorView view);
     }
 }

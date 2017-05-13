@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
@@ -167,7 +167,7 @@ namespace Microsoft.R.Editor {
         /// when user types nested function calls such as 'a(b(c(...), d(...)))'
         /// </summary>
         public static bool IsSameSignatureContext(this IEditorView editorView, IEditorBuffer editorBuffer, IServiceContainer services) {
-            var broker = services.GetService<IViewCompletionBroker>();
+            var broker = services.GetService<IViewSignatureBroker>();
             var sessions = broker.GetSessions(editorView);
             Debug.Assert(sessions.Count < 2);
             if (sessions.Count == 1) {

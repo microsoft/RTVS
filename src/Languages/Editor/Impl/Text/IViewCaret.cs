@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Editor.Text {
         bool InVirtualSpace { get; }
         IViewCaretPosition Position { get; }
 
-        event EventHandler<ViewCaretPositionChangedEventArgs> PositionChanged;
+        event EventHandler PositionChanged;
         void MoveTo(int point, int virtualSpaces);
     }
 }

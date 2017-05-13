@@ -65,7 +65,10 @@
     <Compile Include="Extensions\EditorBufferExtensions.cs" />
     <Compile Include="Extensions\EditorExtensions.cs" />
     <Compile Include="Composition\ContentTypeServiceLocator.cs" />
+    <Compile Include="Completions\IntellisenseSessionExtensions.cs" />
     <Compile Include="Extensions\TextChangeExtensions.cs" />
+    <Compile Include="QuickInfo\ViewQuickInfoBroker.cs" />
+    <Compile Include="Signatures\ViewSignatureBroker.cs" />
     <Compile Include="Text\EditorSnapshotPoint.cs" />
     <Compile Include="Text\TrackingTextRange.cs" />
     <Compile Include="ViewModel\IEditorViewModelFactory.cs" />

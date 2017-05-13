@@ -7,7 +7,6 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
@@ -29,7 +28,7 @@ namespace Microsoft.R.Editor.Signatures {
         private readonly IREditorSettings _settings;
         private readonly ISignatureHelpBroker _broker;
         private readonly IRFunctionSignatureEngine _engine;
-        private IList<ISignature> _signatures;
+        private IEnumerable<IRFunctionSignatureHelp> _signatures;
 
         public RSignatureHelpSource(ITextBuffer textBuffer, IServiceContainer services) {
             _disposeToken = DisposeToken.Create<RSignatureHelpSource>();
@@ -65,34 +64,51 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
-        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<ITextView, IList<ISignature>> callback) {
-            if(GetCachedSignatures(signatures)) { 
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, 
+                                                Action<ITextView, IEnumerable<IRFunctionSignatureHelp>> callback) {
+            // Try cached if this was a re-trigger on async information retrieval
+            var eis = new EditorIntellisenseSession(session, _services);
+            if (GetCachedSignatures(signatures, eis)) {
                 return true;
             }
 
-            var ev = session.TextView.ToEditorView();
-            if (callback != null && !ev.IsSameSignatureContext(_textBuffer.ToEditorBuffer(), _services)) {
-                var editorBuffer = _textBuffer.ToEditorBuffer();
-                var eis = new EditorIntellisenseSession(session, _services);
-                var position = session.GetTriggerPoint(_textBuffer).GetCurrentPosition();
-                var context = new RIntellisenseContext(eis, editorBuffer, ast, position);
+            var editorBuffer = _textBuffer.ToEditorBuffer();
+            var position = session.GetTriggerPoint(_textBuffer).GetCurrentPosition();
+            var context = new RIntellisenseContext(eis, editorBuffer, ast, position);
 
-                _engine.GetSignaturesAsync(context, s =>
-                    callback(session.TextView, s.Select(x => new RSignatureHelp(x)).Cast<ISignature>().ToList()));
+            // See if information is immediately available
+            var sigs = _engine.GetSignaturesAsync(context, null);
+            if (sigs != null) {
+                AddSignatures(signatures, ToVsEditorSignatures(sigs));
+                return true;
             }
+
+            // If not available, start async retrieval. Session wil be re-triggered 
+            // when information becomes available.
+            _engine.GetSignaturesAsync(context, s => callback(session.TextView, s));
             return false;
         }
 
-        private bool GetCachedSignatures(IList<ISignature> signatures) {
+        private bool GetCachedSignatures(IList<ISignature> signatures, IEditorIntellisenseSession session) {
             if (_signatures != null) {
-                foreach (var s in _signatures) {
-                    signatures.Add(s);
+                foreach(var s in _signatures) {
+                    s.Session = session;
                 }
+                AddSignatures(signatures, ToVsEditorSignatures(_signatures));
                 _signatures = null;
                 return true;
             }
             return false;
         }
+
+        private static void AddSignatures(IList<ISignature> signatures, IEnumerable<ISignature> signaturesToAdd) {
+            foreach (var s in signaturesToAdd) {
+                signatures.Add(s);
+            }
+        }
+
+        public static IList<ISignature> ToVsEditorSignatures(IEnumerable<IRFunctionSignatureHelp> signatures)
+            => signatures.Select(x => new RSignatureHelp(x)).Cast<ISignature>().ToList();
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
             if (session.Signatures.Count > 0) {

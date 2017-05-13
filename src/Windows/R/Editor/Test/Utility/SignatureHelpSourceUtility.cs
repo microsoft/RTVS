@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Test.Utility {
             var tcs = new TaskCompletionSource<object>();
 
             var ready = signatureHelpSource.AugmentSignatureHelpSession(session, signatures, ast, (tv, sigs) => {
-                foreach (var s in sigs) {
+                foreach (var s in RSignatureHelpSource.ToVsEditorSignatures(sigs)) {
                     signatures.Add(s);
                 }
                 tcs.TrySetResult(null);

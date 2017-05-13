@@ -4,9 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
@@ -64,15 +63,23 @@ namespace Microsoft.R.Editor.QuickInfo {
         internal bool AugmentQuickInfoSession(AstRoot ast, ITextBuffer textBuffer, int position, IQuickInfoSession session,
                                               IList<object> quickInfoContent, out ITrackingSpan applicableToSpan,
                                               Action<IEnumerable<IRFunctionQuickInfo>, IQuickInfoSession> callback) {
+            // Try cached if this was a re-trigger on async information retrieval
+            var eis = new EditorIntellisenseSession(session, _services);
             if (GetCachedSignatures(quickInfoContent, textBuffer, position, out applicableToSpan)) {
                 return true;
             }
 
-            var eis = new EditorIntellisenseSession(session, _services);
             var context = new RIntellisenseContext(eis, textBuffer.ToEditorBuffer(), ast, position);
-            var idle = _services.GetService<IIdleTimeService>();
+            // See if information is immediately available
+            var infos = _engine.GetQuickInfosAsync(context, null);
+            if (infos != null) {
+                AddQuickInfos(quickInfoContent, MakeQuickInfos(infos));
+                return true;
+            }
 
-            IdleTimeAction.Create(() => _engine.GetQuickInfosAsync(context, infos => callback(infos, session)), 0, GetType(), idle);
+            // If not available, start async retrieval. Session wil be re-triggered 
+            // when information becomes available.
+            _engine.GetQuickInfosAsync(context, x => callback(x, session));
             return false;
         }
         #endregion
@@ -84,16 +91,22 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
 
             applicableSpan = _infos.First().ApplicableToRange.As<ITrackingSpan>();
-
-            var span = applicableSpan.GetSpan(textBuffer.CurrentSnapshot);
-            if (span.Contains(position)) {
-                foreach (var s in _infos) {
-                    quickInfos.Add(s.Content);
-                }
+            var content = MakeQuickInfos(_infos);
+            foreach (var s in content) {
+                quickInfos.Add(s);
             }
             _infos = null;
             return true;
         }
+
+        private static void AddQuickInfos(IList<object> quickInfos, IEnumerable<string> infosToAdd) {
+            foreach (var x in infosToAdd) {
+                quickInfos.Add(x);
+            }
+        }
+
+        private IEnumerable<string> MakeQuickInfos(IEnumerable<IRFunctionQuickInfo> infos)
+            => infos.Select(x => x.Content.FirstOrDefault()).ExcludeDefault();
 
         private void RetriggerQuickInfoSession(IEnumerable<IRFunctionQuickInfo> infos, IQuickInfoSession session) {
             if (session == null) {
@@ -101,14 +114,13 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
 
             var broker = _services.GetService<IQuickInfoBroker>();
-            if (broker.IsQuickInfoActive(session.TextView)) {
-                foreach(var s in broker.GetSessions(session.TextView)) {
-                    s.Dismiss();
-                }
+            if (!session.IsDismissed) {
+                session.Dismiss();
             }
 
             _infos = infos;
             _lastPosition = -1;
+
             broker.TriggerQuickInfo(session.TextView);
         }
 

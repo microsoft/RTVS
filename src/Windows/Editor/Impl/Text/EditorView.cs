@@ -21,13 +21,16 @@ namespace Microsoft.Languages.Editor.Text {
         public EditorView(ITextView textView) {
             _textView = textView;
             Selection = new EditorSelection(textView);
+            Caret = new ViewCaret(_textView);
 
             _textView.Properties[Key] = this;
             _textView.Closed += OnClosed;
+
+            EditorBuffer = _textView.TextBuffer.ToEditorBuffer() ?? new EditorBuffer(_textView.TextBuffer);
         }
 
-        public IViewCaret Caret => new ViewCaret(_textView);
-        public IEditorBuffer EditorBuffer => _textView.TextBuffer.ToEditorBuffer();
+        public IViewCaret Caret { get; }
+        public IEditorBuffer EditorBuffer { get; }
         public PropertyDictionary Properties => _properties.Value;
         public IServiceManager Services => _services.Value;
         public IEditorSelection Selection { get; }

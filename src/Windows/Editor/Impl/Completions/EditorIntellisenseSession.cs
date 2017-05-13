@@ -13,6 +13,8 @@ namespace Microsoft.Languages.Editor.Completions {
     /// Wraps VS editor completion session in a portable way.
     /// </summary>
     public sealed class EditorIntellisenseSession : IEditorIntellisenseSession {
+        public const string SessionKey = "XIntellisenseSession";
+
         private readonly IIntellisenseSession _session;
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
 
@@ -26,8 +28,11 @@ namespace Microsoft.Languages.Editor.Completions {
 
         public EditorIntellisenseSession(IIntellisenseSession session, IServiceContainer services) {
             Check.InvalidOperation(() => !session.IsDismissed, "Session is already dismissed");
+
             _session = session;
             _session.Dismissed += OnSessionDismissed;
+            session.Properties[SessionKey] = this;
+
             Services = services;
         }
 

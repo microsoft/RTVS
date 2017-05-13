@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
+using Microsoft.Languages.Editor.QuickInfo;
 using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Utility;
@@ -21,11 +22,12 @@ namespace Microsoft.R.Editor.Signatures {
     public sealed class RFunctionSignatureHelp : IRFunctionSignatureHelp {
         private const int MaxSignatureLength = Functions.SignatureInfo.MaxSignatureLength;
 
-        private readonly IEditorIntellisenseSession _session;
         private readonly IEditorView _view;
         private readonly IEditorBuffer _editorBuffer;
-        private readonly IViewCompletionBroker _completionBroker;
+        private readonly IViewSignatureBroker _signatureBroker;
+        private readonly IViewQuickInfoBroker _quickInfoBroker;
 
+        private IEditorIntellisenseSession _session;
         private ISignatureParameterHelp _currentParameter;
         private ITrackingTextRange _applicableToRange;
         private int _initialPosition;
@@ -73,20 +75,27 @@ namespace Microsoft.R.Editor.Signatures {
             Documentation = documentation;
             Parameters = null;
 
-            _session = session;
-            _session.Dismissed += OnSessionDismissed;
-
-            _view = session.View;
-            _view.Caret.PositionChanged += OnCaretPositionChanged;
-
-            _completionBroker = session.Services.GetService<IViewCompletionBroker>();
-            Debug.Assert(_completionBroker != null);
-
             _editorBuffer = textBuffer;
-            _editorBuffer.Changed += OnTextBufferChanged;
+            _view = session.View;
+
+            Session = session;
+
+            _signatureBroker = session.Services.GetService<IViewSignatureBroker>();
+            Debug.Assert(_signatureBroker != null);
+            _quickInfoBroker = session.Services.GetService<IViewQuickInfoBroker>();
+            Debug.Assert(_quickInfoBroker != null);
         }
 
         #region IRFunctionSignatureHelp
+        public IEditorIntellisenseSession Session {
+            get => _session;
+            set {
+                SessionDetached();
+                _session = value;
+                SessionAttached();
+            }
+        }
+
         public ISignatureInfo SignatureInfo { get; }
 
         public string FunctionName { get; }
@@ -149,24 +158,18 @@ namespace Microsoft.R.Editor.Signatures {
             if (_session != null) {
                 var position = e.Change.Start + e.Change.NewLength;
                 if (position < _initialPosition) {
-                    _completionBroker.DismissSignatureSession(_view);
+                    _signatureBroker.DismissSignatureSession(_view);
                 } else {
                     UpdateCurrentParameter();
                 }
             }
         }
 
-        private void OnCaretPositionChanged(object sender, ViewCaretPositionChangedEventArgs e) {
-            if (_view != null) {
-                if (_view.IsSameSignatureContext(_editorBuffer, _session.Services)) {
-                    UpdateCurrentParameter();
-                } else {
-                    _completionBroker.DismissSignatureSession(_view);
-                    _completionBroker.DismissQuickInfoSession(_view);
-                    _completionBroker.TriggerSignatureSession(_view);
-                }
+        private void OnCaretPositionChanged(object sender, EventArgs e) {
+            if (_view != null && !_session.IsDismissed) {
+                UpdateCurrentParameter();
             } else {
-                e.View.Caret.PositionChanged -= OnCaretPositionChanged;
+                _view.Caret.PositionChanged -= OnCaretPositionChanged;
             }
         }
         #endregion
@@ -187,7 +190,7 @@ namespace Microsoft.R.Editor.Signatures {
                             }
                         }, null, GetType());
                     } else {
-                        _completionBroker.DismissSignatureSession(_view);
+                        _signatureBroker.DismissSignatureSession(_view);
                     }
                 }
             }
@@ -209,16 +212,18 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
-        private void OnSessionDismissed(object sender, EventArgs e) {
+        private void OnSessionDismissed(object sender, EventArgs e) => SessionDetached();
+
+        private void SessionAttached() {
+            _session.Dismissed += OnSessionDismissed;
+            _editorBuffer.Changed += OnTextBufferChanged;
+            _view.Caret.PositionChanged += OnCaretPositionChanged;
+        }
+
+        private void SessionDetached() {
             if (_session != null) {
                 _session.Dismissed -= OnSessionDismissed;
-            }
-
-            if (_editorBuffer != null) {
                 _editorBuffer.Changed -= OnTextBufferChanged;
-            }
-
-            if (_view != null) {
                 _view.Caret.PositionChanged -= OnCaretPositionChanged;
             }
         }

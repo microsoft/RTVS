@@ -45,16 +45,19 @@ namespace Microsoft.R.Editor {
         /// </summary>
         public static string GetFunctionNameFromBuffer(this AstRoot astRoot, ref int position, out int signatureEnd) {
             signatureEnd = -1;
-            if (GetFunction(astRoot, ref position, out var functionCall, out var functionVariable)) {
+            if (GetOuterFunction(astRoot, ref position, out var functionCall, out var functionVariable)) {
                 signatureEnd = functionCall.End;
                 return functionVariable.Name;
             }
             return null;
         }
 
-        public static string GetFunctionName(this AstRoot ast, int position, out ITextRange nameRange, out FunctionCall fc) {
-            nameRange = TextRange.EmptyRange;
-            fc = null;
+        /// <summary>
+        /// Given position over function name retrieves name range and the function call.
+        /// </summary>
+        public static string GetFunctionName(this AstRoot ast, int position, out FunctionCall functionCall, out Variable functionVariable) {
+            functionVariable = null;
+            functionCall = null;
 
             ast.GetPositionNode(position, out var node);
             if (node == null) {
@@ -63,18 +66,19 @@ namespace Microsoft.R.Editor {
 
             // In abc(de|f(x)) first find inner function, then outer.
             if (node is TokenNode && node.Parent is FunctionCall) {
-                fc = (FunctionCall)node.Parent;
+                functionCall = (FunctionCall)node.Parent;
             } else {
-                fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+                functionCall = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
             }
-            nameRange = fc?.RightOperand as TokenNode;
-            return nameRange != null ? ast.TextProvider.GetText(nameRange) : null;
+            functionVariable = functionCall?.RightOperand as Variable;
+            return functionVariable?.Name;
         }
 
-        public static bool GetFunction(this AstRoot astRoot, ref int position, out FunctionCall functionCall, out Variable functionVariable) {
-            // Note that we do not want just the deepest call since in abc(def()) 
-            // when position is over 'def' we actually want signature help for 'abc' 
-            // while simple depth search will find 'def'.            
+        /// <summary>
+        /// Finds the outermost function call from given position.
+        /// In abc(def()) when position is over 'def' finds 'abc' 
+        /// </summary>
+        public static bool GetOuterFunction(this AstRoot astRoot, ref int position, out FunctionCall functionCall, out Variable functionVariable) {
             functionVariable = null;
             var p = position;
             functionCall = astRoot.GetSpecificNodeFromPosition<FunctionCall>(p, x => {
@@ -124,10 +128,18 @@ namespace Microsoft.R.Editor {
         /// parameter index as well as where the method signature ends.
         /// </summary>
         public static RFunctionSignatureInfo GetSignatureInfoFromBuffer(this AstRoot ast, IEditorBufferSnapshot snapshot, int position) {
-            if (!ast.GetFunction(ref position, out FunctionCall functionCall, out Variable functionVariable)) {
+            // For signatures we want outer function so in abc(d|ef()) helps shows signature for the 'abc'.
+            if (!ast.GetOuterFunction(ref position, out FunctionCall functionCall, out Variable functionVariable)) {
                 return null;
             }
+            return GetSignatureInfo(ast, functionCall, functionVariable, position);
+        }
 
+        /// <summary>
+        /// Given position in a text buffer and the function call, 
+        /// parameter index as well as where the method signature ends.
+        /// </summary>
+        public static RFunctionSignatureInfo GetSignatureInfo(this AstRoot ast, FunctionCall functionCall, Variable functionVariable, int position) {
             var parameterIndex = functionCall.GetParameterIndex(position);
             var parameterName = functionCall.GetParameterName(parameterIndex, out bool namedParameter);
 

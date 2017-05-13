@@ -78,7 +78,7 @@ namespace Microsoft.Languages.Editor.Text {
         public void Dispose() {
             _textBuffer.ChangedHighPriority -= OnTextBufferChangedHighPriority;
             _textBuffer.Changed -= OnTextBufferChanged;
-            _textBuffer.Properties.RemoveProperty(typeof(IEditorBuffer));
+            _textBuffer.Properties.RemoveProperty(Key);
 
             if (_textDocumentFactoryService != null) {
                 _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;

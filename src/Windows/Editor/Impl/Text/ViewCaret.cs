@@ -23,13 +23,13 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
-        public event EventHandler<ViewCaretPositionChangedEventArgs> PositionChanged;
+        public event EventHandler PositionChanged;
 
         public void MoveTo(int point, int virtualSpaces)
             => _textView.Caret.MoveTo(new VirtualSnapshotPoint(new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, point), virtualSpaces));
         #endregion
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) 
-            => PositionChanged?.Invoke(this, new ViewCaretPositionChangedEventArgs(_textView.ToEditorView()));
+            => PositionChanged?.Invoke(this, EventArgs.Empty);
     }
 }
