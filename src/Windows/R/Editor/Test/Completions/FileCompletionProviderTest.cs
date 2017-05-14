@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -42,8 +44,11 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void LocalFiles() {
-            var shell = Substitute.For<ICoreShell>();
-            var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Substitute.For<IServiceContainer>());
+            var services = new ServiceManager();
+            services.AddService(new FileSystem());
+            services.AddService(Substitute.For<IRInteractiveWorkflowProvider>());
+            services.AddService(Substitute.For<IImageService>());
+            var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), services);
             var entries = provider.GetEntries(null);
             entries.Should().NotBeEmpty();
             entries.Should().Contain(e => e.DisplayText == _testFolderName);

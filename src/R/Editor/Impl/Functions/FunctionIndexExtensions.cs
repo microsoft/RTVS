@@ -12,7 +12,6 @@ namespace Microsoft.R.Editor.Functions {
         public static void GetFunctionInfoAsync(this IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter = null) {
             var fi = functionIndex.GetFunctionInfo(functionName, packageName);
             if (fi != null) {
-                functionIndex.Services.MainThread().Assert();
                 callback(fi, parameter);
                 return;
             }

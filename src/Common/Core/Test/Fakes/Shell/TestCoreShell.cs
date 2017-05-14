@@ -52,7 +52,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         private void AddSubstiteServices() {
             ServiceManager
                 .AddService(this)
-                .AddService(Substitute.For<IMainThread>())
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(Substitute.For<ISecurityService>())
                 .AddService(Substitute.For<ILoggingPermissions>())
