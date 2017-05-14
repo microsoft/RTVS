@@ -30,6 +30,7 @@ namespace Microsoft.R.Editor.Application.Test.Validation {
                 var tagSpans = script.GetErrorTagSpans();
 
                 script.Type("x <- {");
+                script.Delete(); // two delete b/c of autoformat to { }
                 script.Delete();
                 script.DoIdle(500);
 
