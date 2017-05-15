@@ -157,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 CompletionEnabled = _editorSettings.CompletionEnabled,
                                 SyntaxCheckInRepl = _editorSettings.SyntaxCheckInRepl,
                                 PartialArgumentNameMatch = _editorSettings.PartialArgumentNameMatch,
-                                RCommandLineArguments = _settings.LastActiveConnection.RCommandLineArguments
+                                RCommandLineArguments = _settings.LastActiveConnection?.RCommandLineArguments ?? string.Empty
                             });
                 } catch (Exception ex) {
                     Trace.Fail("Telemetry exception: " + ex.Message);

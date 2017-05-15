@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.QuickInfo {
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
             var document = _subjectBuffer.GetEditorDocument<IREditorDocument>();
-            if (_signatureHelpBroker.IsSignatureHelpActive(session.TextView) || document == null) {
+            if (document == null) {
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                                               Action<IEnumerable<IRFunctionQuickInfo>, IQuickInfoSession> callback) {
             // Try cached if this was a re-trigger on async information retrieval
             var eis = new EditorIntellisenseSession(session, _services);
-            if (GetCachedSignatures(quickInfoContent, textBuffer, position, out applicableToSpan)) {
+            if (GetCachedSignatures(quickInfoContent, textBuffer, position, _infos, out applicableToSpan)) {
                 return true;
             }
 
@@ -84,18 +84,17 @@ namespace Microsoft.R.Editor.QuickInfo {
         }
         #endregion
 
-        private bool GetCachedSignatures(IList<object> quickInfos, ITextBuffer textBuffer, int position, out ITrackingSpan applicableSpan) {
+        internal static bool GetCachedSignatures(IList<object> quickInfos, ITextBuffer textBuffer, int position, IEnumerable<IRFunctionQuickInfo> infos, out ITrackingSpan applicableSpan) {
             applicableSpan = null;
-            if (_infos == null || !_infos.Any()) {
+            if (infos == null || !infos.Any()) {
                 return false;
             }
 
-            applicableSpan = _infos.First().ApplicableToRange.As<ITrackingSpan>();
-            var content = MakeQuickInfos(_infos);
+            applicableSpan = infos.First().ApplicableToRange.As<ITrackingSpan>();
+            var content = MakeQuickInfos(infos);
             foreach (var s in content) {
                 quickInfos.Add(s);
             }
-            _infos = null;
             return true;
         }
 
@@ -105,7 +104,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
         }
 
-        private IEnumerable<string> MakeQuickInfos(IEnumerable<IRFunctionQuickInfo> infos)
+        private static IEnumerable<string> MakeQuickInfos(IEnumerable<IRFunctionQuickInfo> infos)
             => infos.Select(x => x.Content.FirstOrDefault()).ExcludeDefault();
 
         private void RetriggerQuickInfoSession(IEnumerable<IRFunctionQuickInfo> infos, IQuickInfoSession session) {

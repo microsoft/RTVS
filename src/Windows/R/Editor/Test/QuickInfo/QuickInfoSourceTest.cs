@@ -12,6 +12,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.QuickInfo;
+using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
@@ -58,7 +59,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             var content = @"x <- as.Date.character(x)";
 
             var session = await TriggerSessionAsync(content, 23);
-            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
+            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 23);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
@@ -128,6 +129,8 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 EditorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType).ToEditorBuffer()
             };
 
+            var tree = new EditorTreeMock(s.EditorBuffer, s.Ast);
+            var document = new EditorDocumentMock(tree);
             var textBuffer = s.EditorBuffer.As<ITextBuffer>();
             var quickInfoSource = new QuickInfoSource(textBuffer, Services);
             var quickInfoSession = new QuickInfoSessionMock(textBuffer, position);

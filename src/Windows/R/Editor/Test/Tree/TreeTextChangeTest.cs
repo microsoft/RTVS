@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor.Tree;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -15,18 +17,21 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData(0, 0, 0, 0, 0, 0, 0, 0, 0)]
         // Changed range here is bigger than necessary but
         // in reality it will be limited by the tet buffer length.
-        [InlineData(0, 1, 0, 0, 0, 1, 0, 1, 2)]
-        [InlineData(0, 0, 1, 0, 1, 0, 0, 0, 1)]
+        [InlineData(0, 1, 0, 0, 0, 1, 0, 1, 1)]
+        [InlineData(0, 0, 1, 0, 1, 0, 0, 1, 1)]
         [InlineData(5, 10, 15, 0, 1, 0, 0, 10, 15)]
-        [InlineData(0, 1, 0, 5, 10, 15, 0, 11, 16)]
-        [InlineData(4, 6, 5, 5, 10, 15, 4, 11, 16)]
+        [InlineData(0, 1, 0, 5, 10, 15, 0, 0, 16)]
+        [InlineData(4, 6, 5, 5, 10, 15, 4, 6, 6)]
         public void Combine(
             int prevStart, int prevOldEnd, int prevNewEnd,
             int nextStart, int nextOldEnd, int nextNewEnd,
             int expectedStart, int expectedOldEnd, int expectedNewEnd) {
 
-            var tc1 = new TreeTextChange(prevStart, prevOldEnd, prevNewEnd, null, null);
-            var tc2 = new TreeTextChange(nextStart, nextOldEnd, nextNewEnd, null, null);
+            var oldText = new TextStream(new string('a', Math.Max(prevOldEnd, prevNewEnd)));
+            var newText = new TextStream(new string('b', Math.Max(nextOldEnd, nextNewEnd)));
+
+            var tc1 = new TreeTextChange(prevStart, prevOldEnd - prevStart, prevNewEnd - prevStart, oldText, oldText);
+            var tc2 = new TreeTextChange(nextStart, nextOldEnd - nextStart, nextNewEnd - nextStart, newText, newText);
 
             tc1.OldLength.Should().Be(prevOldEnd - prevStart);
             tc1.NewLength.Should().Be(prevNewEnd - prevStart);

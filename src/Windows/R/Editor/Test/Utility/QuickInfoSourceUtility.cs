@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Utility {
             var tcs = new TaskCompletionSource<ITrackingSpan>();
 
             var ready = quickInfoSource.AugmentQuickInfoSession(ast, textBuffer, position, quickInfoSession, quickInfoContent, out ITrackingSpan applicableSpan, (infos, o) => {
-                quickInfoSource.AugmentQuickInfoSession(quickInfoSession, quickInfoContent, out ITrackingSpan result);
+                QuickInfoSource.GetCachedSignatures(quickInfoContent, textBuffer, position, infos, out ITrackingSpan result);
                 tcs.TrySetResult(result);
             });
 
