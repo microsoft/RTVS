@@ -35,6 +35,7 @@ namespace Microsoft.R.Editor.Functions {
         public IntelliSenseRSession(IServiceContainer services) {
             Services = services;
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _workflow.RSession.Mutated += OnInteractiveSessionMutated;
             _sessionProvider = _workflow.RSessions;
             _unitTests = Services.GetService<ICoreShell>().IsUnitTestEnvironment;
         }
@@ -100,7 +101,6 @@ namespace Microsoft.R.Editor.Functions {
                     int timeout = _unitTests ? 10000 : 3000;
                     var settings = Services.GetService<IRSettings>();
                     await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout);
-                    Session.Mutated += OnInteractiveSessionMutated;
                 }
             } finally {
                 token.Set();
