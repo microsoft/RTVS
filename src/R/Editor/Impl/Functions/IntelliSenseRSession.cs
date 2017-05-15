@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -113,7 +114,7 @@ namespace Microsoft.R.Editor.Functions {
         public IEnumerable<string> LoadedPackageNames {
             get {
                 if (_loadedPackages == null && _workflow.RSession != null) {
-                    UpdateListOfLoadedPackagesAsync().DoNotWait();
+                    _updateTask = UpdateListOfLoadedPackagesAsync();
                 }
                 return _loadedPackages ?? Enumerable.Empty<string>();
             }
@@ -126,7 +127,10 @@ namespace Microsoft.R.Editor.Functions {
             if (_loadedPackages == null && _updateTask == null) {
                 _updateTask = UpdateListOfLoadedPackagesAsync();
             }
+
+            Debug.Assert(_updateTask != null);
             await _updateTask;
+
             return _loadedPackages ?? Enumerable.Empty<string>();
         }
 

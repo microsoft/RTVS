@@ -65,8 +65,8 @@ namespace Microsoft.R.Editor.Tree {
             var newEnd = Math.Max(NewEnd, other.NewEnd);
 
             Start = OldTextProvider != null ? Math.Min(this.Start, other.Start) : other.Start;
-            NewLength = Math.Min(newEnd, NewTextProvider?.Length ?? newEnd) - Start;
-            OldLength = Math.Min(oldEnd, OldTextProvider?.Length ?? oldEnd) - Start;
+            NewLength = Math.Max(newEnd, other.NewEnd) - Start;
+            OldLength = Math.Max(oldEnd, other.OldEnd) - Start;
 
             Debug.Assert(OldLength >= 0);
             Debug.Assert(NewLength >= 0);
@@ -85,7 +85,10 @@ namespace Microsoft.R.Editor.Tree {
                 NewTextProvider = other.NewTextProvider.Version > NewTextProvider.Version ? other.NewTextProvider : NewTextProvider;
             }
 
-            Version = NewTextProvider?.Version ?? Version;
+            NewLength = Math.Min(NewLength, NewTextProvider.Length);
+            OldLength = Math.Min(OldLength, OldTextProvider.Length);
+
+            Version = NewTextProvider.Version;
         }
 
         /// <summary>

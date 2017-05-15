@@ -20,15 +20,15 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData(0, 1, 0, 0, 0, 1, 0, 1, 1)]
         [InlineData(0, 0, 1, 0, 1, 0, 0, 1, 1)]
         [InlineData(5, 10, 15, 0, 1, 0, 0, 10, 15)]
-        [InlineData(0, 1, 0, 5, 10, 15, 0, 0, 16)]
-        [InlineData(4, 6, 5, 5, 10, 15, 4, 6, 6)]
+        [InlineData(0, 1, 0, 5, 10, 15, 0, 10, 15)]
+        [InlineData(4, 6, 5, 5, 10, 15, 4, 10, 15)]
         public void Combine(
             int prevStart, int prevOldEnd, int prevNewEnd,
             int nextStart, int nextOldEnd, int nextNewEnd,
             int expectedStart, int expectedOldEnd, int expectedNewEnd) {
 
-            var oldText = new TextStream(new string('a', Math.Max(prevOldEnd, prevNewEnd)));
-            var newText = new TextStream(new string('b', Math.Max(nextOldEnd, nextNewEnd)));
+            var oldText = new TextStream(new string('a', 20), 0);
+            var newText = new TextStream(new string('b', 20), 1);
 
             var tc1 = new TreeTextChange(prevStart, prevOldEnd - prevStart, prevNewEnd - prevStart, oldText, oldText);
             var tc2 = new TreeTextChange(nextStart, nextOldEnd - nextStart, nextNewEnd - nextStart, newText, newText);

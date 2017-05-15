@@ -14,8 +14,12 @@ namespace Microsoft.Languages.Core.Text {
         public static ITextProvider Empty { get; } = new TextStream(string.Empty);
 
         [DebuggerStepThrough]
-        public TextStream(string text) {
+        public TextStream(string text): this(text, 0) { }
+
+        [DebuggerStepThrough]
+        public TextStream(string text, int version) {
             _text = text;
+            Version = version;
         }
 
         [DebuggerStepThrough]
@@ -44,7 +48,7 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         public string GetText(int position, int length) {
             if (length == 0) {
-                return String.Empty;
+                return string.Empty;
             }
             Debug.Assert(position >= 0 && length >= 0 && position + length <= _text.Length);
             return _text.Substring(position, length);
@@ -112,12 +116,12 @@ namespace Microsoft.Languages.Core.Text {
 
         public bool CompareTo(int position, int length, string compareTo, bool ignoreCase) {
             var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-            return String.Compare(_text, position, compareTo, 0, length, comparison) == 0;
+            return string.Compare(_text, position, compareTo, 0, length, comparison) == 0;
         }
 
         public ITextProvider Clone() => new TextStream(_text);
 
-        public int Version => 0;
+        public int Version { get; }
         // static string text provider does not fire text change event
 #pragma warning disable 0067
         public event EventHandler<TextChangeEventArgs> OnTextChange;
