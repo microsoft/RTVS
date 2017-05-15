@@ -918,13 +918,13 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button" Condition="!Defined(VS15)">
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Check for Updates...</ButtonText>
           <MenuText>Check for &amp;Updates...</MenuText>
-          <CommandName>Check For Package Updates</CommandName>
+          <CommandName>Check For Updates</CommandName>
         </Strings>
       </Button>
       <!-- End Packages flyout -->
