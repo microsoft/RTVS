@@ -32,6 +32,6 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Removes service from container by instance
         /// </summary>
-        void RemoveService(object service);
+        void RemoveService<T>(T service);
     }
 }

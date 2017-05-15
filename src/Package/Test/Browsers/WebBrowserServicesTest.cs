@@ -4,7 +4,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -53,26 +55,28 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         }
 
         public void RunBrowserTest(WebBrowserRole role, Guid guid, string title, IRSettings externalSettings, IRSettings internalSettings) {
-            var shell = Substitute.For<ICoreShell>();
-            var ps = Substitute.For<IProcessServices>();
+            var shell = TestCoreShell.CreateSubstitute();
             var vswbs = Substitute.For<IVsWebBrowsingService>();
-            shell.Process().Returns(ps);
-            shell.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService)).Returns(vswbs);
+            shell.ServiceManager
+                .AddService(vswbs, typeof(SVsWebBrowsingService))
+                .AddService(externalSettings);
+            var ps = shell.GetService<IProcessServices>();
 
             var wbs = new WebBrowserServices(shell);
             wbs.OpenBrowser(role, _url);
-            shell.Process().Received().Start(_url);
+            ps.Received().Start(_url);
 
             ps.ClearReceivedCalls();
+            shell.ServiceManager.RemoveService(externalSettings);
+            shell.ServiceManager.AddService(internalSettings);
+
             wbs = new WebBrowserServices(shell);
             wbs.OpenBrowser(role, _url);
 
             UIThreadHelper.Instance.DoEvents();
-            shell.Process().DidNotReceive().Start(_url);
+            ps.DidNotReceive().Start(_url);
 
-            IVsWebBrowser vswb;
-            IVsWindowFrame frame;
-            vswbs.Received().CreateWebBrowser(Arg.Any<uint>(), guid, title, _url, null, out vswb, out frame);
+            vswbs.Received().CreateWebBrowser(Arg.Any<uint>(), guid, title, _url, null, out var vswb, out var frame);
         }
     }
 }

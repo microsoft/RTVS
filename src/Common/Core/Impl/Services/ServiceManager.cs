@@ -81,7 +81,7 @@ namespace Microsoft.Common.Core.Services {
             return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);
         }
 
-        public virtual void RemoveService(object service) => _s.TryRemove(service.GetType(), out object dummy);
+        public virtual void RemoveService<T>(T service) => _s.TryRemove(typeof(T), out object dummy);
 
         public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
 

@@ -52,13 +52,13 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         private void AddSubstiteServices() {
             ServiceManager
                 .AddService(this)
+                .AddService(UIThreadHelper.Instance)
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(Substitute.For<ISecurityService>())
                 .AddService(Substitute.For<ILoggingPermissions>())
                 .AddService(Substitute.For<IFileSystem>())
                 .AddService(Substitute.For<IRegistry>())
                 .AddService(Substitute.For<IProcessServices>())
-                .AddService(Substitute.For<IMainThread>())
                 .AddService(Substitute.For<ITaskService>())
                 .AddService(Substitute.For<IUIService>())
                 .AddService(Substitute.For<IPlatformServices>())
