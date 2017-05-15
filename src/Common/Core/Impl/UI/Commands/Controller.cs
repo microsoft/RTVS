@@ -20,8 +20,8 @@ namespace Microsoft.Common.Core.UI.Commands {
         /// contained language typing/command controller.
         /// </summary>
         public virtual ICommandTarget ChainedController {
-            get { return _chainedController; }
-            set { _chainedController = value; }
+            get => _chainedController;
+            set => _chainedController = value;
         }
 
         private ICommandTarget _chainedController;
@@ -36,8 +36,8 @@ namespace Microsoft.Common.Core.UI.Commands {
 
         #region ICommandTarget
         public virtual CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            CommandResult result = CommandResult.NotSupported;
-            ICommand cmd = Find(group, id);
+            var result = CommandResult.NotSupported;
+            var cmd = Find(group, id);
 
             // Pre-process the command
             if (cmd != null) {
@@ -67,7 +67,7 @@ namespace Microsoft.Common.Core.UI.Commands {
         /// the regular chain. Other status stops Status request routing and returns
         /// status immediately to the caller.</returns>
         public virtual CommandStatus NonRoutedStatus(Guid group, int id, object inputArg) {
-            ICommand cmd = Find(group, id);
+            var cmd = Find(group, id);
 
             if (cmd != null) {
                 return cmd.Status(group, id);
@@ -91,7 +91,7 @@ namespace Microsoft.Common.Core.UI.Commands {
         }
 
         public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
-            ICommand cmd = Find(group, id);
+            var cmd = Find(group, id);
 
             if (cmd != null && ChainedController == null) {
                 cmd.PostProcessInvoke(result, group, id, inputArg, ref outputArg);

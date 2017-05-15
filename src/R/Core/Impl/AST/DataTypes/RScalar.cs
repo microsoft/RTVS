@@ -20,7 +20,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
         #endregion
 
         #region IRScalar
-        public T Value { get; set; }
+        public T Value { get; }
         #endregion
 
         public RScalar(T value) {

@@ -46,16 +46,14 @@ namespace Microsoft.Common.Core.Security {
 
         public void DeleteCredentials(string authority) {
             if(!NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0)) {
-                int err = Marshal.GetLastWin32Error();
+                var err = Marshal.GetLastWin32Error();
                 if(err != NativeMethods.ERROR_NOT_FOUND) {
                     throw new Win32Exception(err);
                 }
             }
         }
 
-        public bool DeleteUserCredentials(string authority) {
-            return NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0);
-        }
+        public bool DeleteUserCredentials(string authority) => NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0);
 
         public string GetUserName(string authority) {
             using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
@@ -85,31 +83,30 @@ namespace Microsoft.Common.Core.Security {
             };
 
             uint authPkg = 0;
-            IntPtr credStorage = IntPtr.Zero;
-            bool save = true;
+            var credStorage = IntPtr.Zero;
+            var save = true;
             var flags = NativeMethods.CredUIWinFlags.CREDUIWIN_CHECKBOX;
             // For password, use native memory so it can be securely freed.
-            IntPtr passwordStorage = CreatePasswordBuffer();
-            int inCredSize = 1024;
-            IntPtr inCredBuffer = Marshal.AllocCoTaskMem(inCredSize);
+            var passwordStorage = CreatePasswordBuffer();
+            var inCredSize = 1024;
+            var inCredBuffer = Marshal.AllocCoTaskMem(inCredSize);
 
             try {
                 if (!NativeMethods.CredPackAuthenticationBuffer(0, WindowsIdentity.GetCurrent().Name, "", inCredBuffer, ref inCredSize)) {
-                    int error = Marshal.GetLastWin32Error();
+                    var error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(error);
                 }
 
-                uint credSize;
-                var err = NativeMethods.CredUIPromptForWindowsCredentials(ref credui, 0, ref authPkg, inCredBuffer, (uint)inCredSize, out credStorage, out credSize, ref save, flags);
+                var err = NativeMethods.CredUIPromptForWindowsCredentials(ref credui, 0, ref authPkg, inCredBuffer, (uint)inCredSize, out credStorage, out var credSize, ref save, flags);
                 if (err != 0) {
                     throw new OperationCanceledException();
                 }
 
-                StringBuilder userNameBuilder = new StringBuilder(NativeMethods.CRED_MAX_USERNAME_LENGTH);
-                int userNameLen = NativeMethods.CRED_MAX_USERNAME_LENGTH;
-                StringBuilder domainBuilder = new StringBuilder(NativeMethods.CRED_MAX_USERNAME_LENGTH);
-                int domainLen = NativeMethods.CRED_MAX_USERNAME_LENGTH;
-                int passLen = NativeMethods.CREDUI_MAX_PASSWORD_LENGTH;
+                var userNameBuilder = new StringBuilder(NativeMethods.CRED_MAX_USERNAME_LENGTH);
+                var userNameLen = NativeMethods.CRED_MAX_USERNAME_LENGTH;
+                var domainBuilder = new StringBuilder(NativeMethods.CRED_MAX_USERNAME_LENGTH);
+                var domainLen = NativeMethods.CRED_MAX_USERNAME_LENGTH;
+                var passLen = NativeMethods.CREDUI_MAX_PASSWORD_LENGTH;
                 if (!NativeMethods.CredUnPackAuthenticationBuffer(NativeMethods.CRED_PACK_PROTECTED_CREDENTIALS, credStorage, credSize, userNameBuilder, ref userNameLen, domainBuilder, ref domainLen, passwordStorage, ref passLen)) {
                     throw new Win32Exception(Marshal.GetLastWin32Error());
                 }

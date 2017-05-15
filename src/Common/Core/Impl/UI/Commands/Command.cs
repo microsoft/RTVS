@@ -41,11 +41,7 @@ namespace Microsoft.Common.Core.UI.Commands {
 
         #region ICommand
         public virtual bool NeedCheckout(Guid group, int id) => _needCheckout;
-
-        public virtual IList<CommandId> CommandIds {
-            get { return _commandIds; }
-        }
-
+        public virtual IList<CommandId> CommandIds => _commandIds;
         public virtual CommandStatus Status(Guid group, int id) => CommandStatus.NotSupported;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]

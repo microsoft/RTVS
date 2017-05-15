@@ -13,12 +13,7 @@ namespace Microsoft.R.Host.Client {
             Y = y;
         }
 
-        public static LocatorResult CreateClicked(int x, int y) {
-            return new LocatorResult(true, x, y);
-        }
-
-        public static LocatorResult CreateNotClicked() {
-            return new LocatorResult(false, 0, 0);
-        }
+        public static LocatorResult CreateClicked(int x, int y) => new LocatorResult(true, x, y);
+        public static LocatorResult CreateNotClicked() => new LocatorResult(false, 0, 0);
     }
 }

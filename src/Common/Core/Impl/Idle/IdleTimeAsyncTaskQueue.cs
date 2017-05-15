@@ -121,9 +121,8 @@ namespace Microsoft.Common.Core.Idle {
         private void OnIdle(object sender, EventArgs e) {
             for (var i = 0; i < _taskQueue.Count; i++) {
                 var taskEntry = _taskQueue[i];
-                IdleTimeAsyncTask worker;
 
-                if (!GetAvailableTask(taskEntry.Tag, out worker)) {
+                if (!GetAvailableTask(taskEntry.Tag, out var worker)) {
                     return; // all worker threads are busy
                 }
 

@@ -26,87 +26,61 @@ namespace Microsoft.Common.Wpf {
             this.lambda = (arg) => multiLambda(new[] { arg });
         }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            return lambda(value);
-        }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => lambda(value);
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) => multiLambda(values);
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
+        public static LambdaConverter Create(Func<dynamic, object> lambda) => Create<dynamic>(lambda);
 
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            return multiLambda(values);
-        }
+        public static LambdaConverter Create<T1>(Func<T1, object> lambda) => new LambdaConverter(arg => {
+            if (arg == DependencyProperty.UnsetValue) {
+                return DependencyProperty.UnsetValue;
+            }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-            throw new NotImplementedException();
-        }
+            return lambda((T1)arg);
+        });
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) {
-            throw new NotImplementedException();
-        }
+        public static LambdaConverter Create(Func<dynamic, dynamic, object> lambda) => Create<dynamic, dynamic>(lambda);
 
-        public static LambdaConverter Create(Func<dynamic, object> lambda) {
-            return Create<dynamic>(lambda);
-        }
+        public static LambdaConverter Create<T1, T2>(Func<T1, T2, object> lambda) => new LambdaConverter(
+            (args) => {
+                Debug.Assert(args.Length == 2);
 
-        public static LambdaConverter Create<T1>(Func<T1, object> lambda) {
-            return new LambdaConverter(arg => {
-                    if (arg == DependencyProperty.UnsetValue) {
-                        return DependencyProperty.UnsetValue;
-                    }
-
-                    return lambda((T1)arg);
-                });
-        }
-
-        public static LambdaConverter Create(Func<dynamic, dynamic, object> lambda) {
-            return Create<dynamic, dynamic>(lambda);
-        }
-
-        public static LambdaConverter Create<T1, T2>(Func<T1, T2, object> lambda) {
-            return new LambdaConverter(
-                (args) => {
-                    Debug.Assert(args.Length == 2);
-
-                    if (args[0] == DependencyProperty.UnsetValue) {
-                        return DependencyProperty.UnsetValue;
-                    }
-                    if (args[1] == DependencyProperty.UnsetValue) {
-                        return DependencyProperty.UnsetValue;
-                    }
-
-                    return lambda((T1)args[0], (T2)args[1]);
-                });
-        }
-
-        public static LambdaConverter Create(Func<dynamic, dynamic, dynamic, object> lambda) {
-            return Create<dynamic, dynamic, dynamic>(lambda);
-        }
-
-        public static LambdaConverter Create<T1, T2, T3>(Func<T1, T2, T3, object> lambda) {
-            return new LambdaConverter(
-                (args) => {
-                    Debug.Assert(args.Length == 3);
-
-                    if (args[0] == DependencyProperty.UnsetValue) {
-                        return DependencyProperty.UnsetValue;
-                    }
-                    if (args[1] == DependencyProperty.UnsetValue) {
-                        return DependencyProperty.UnsetValue;
-                    }
-                    if (args[2] == DependencyProperty.UnsetValue) {
-                        return DependencyProperty.UnsetValue;
-                    }
-
-                    return lambda((T1)args[0], (T2)args[1], (T3)args[2]);
-                });
-        }
-
-        public static LambdaConverter CreateMulti<T>(Func<T[], object> lambda) {
-            return new LambdaConverter(args => {
-                if (args.Any(t => t == DependencyProperty.UnsetValue)) {
+                if (args[0] == DependencyProperty.UnsetValue) {
+                    return DependencyProperty.UnsetValue;
+                }
+                if (args[1] == DependencyProperty.UnsetValue) {
                     return DependencyProperty.UnsetValue;
                 }
 
-                return lambda(args.Cast<T>().ToArray());
+                return lambda((T1)args[0], (T2)args[1]);
             });
-        }
+
+        public static LambdaConverter Create(Func<dynamic, dynamic, dynamic, object> lambda) => Create<dynamic, dynamic, dynamic>(lambda);
+
+        public static LambdaConverter Create<T1, T2, T3>(Func<T1, T2, T3, object> lambda) => new LambdaConverter(
+            (args) => {
+                Debug.Assert(args.Length == 3);
+
+                if (args[0] == DependencyProperty.UnsetValue) {
+                    return DependencyProperty.UnsetValue;
+                }
+                if (args[1] == DependencyProperty.UnsetValue) {
+                    return DependencyProperty.UnsetValue;
+                }
+                if (args[2] == DependencyProperty.UnsetValue) {
+                    return DependencyProperty.UnsetValue;
+                }
+
+                return lambda((T1)args[0], (T2)args[1], (T3)args[2]);
+            });
+
+        public static LambdaConverter CreateMulti<T>(Func<T[], object> lambda) => new LambdaConverter(args => {
+            if (args.Any(t => t == DependencyProperty.UnsetValue)) {
+                return DependencyProperty.UnsetValue;
+            }
+
+            return lambda(args.Cast<T>().ToArray());
+        });
     }
 }

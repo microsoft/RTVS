@@ -32,17 +32,10 @@ namespace Microsoft.Common.Core.Telemetry {
         /// <summary>
         /// True of user opted in and telemetry is being collected
         /// </summary>
-        public bool IsEnabled {
-            get {
-                return this.TelemetryRecorder?.IsEnabled == true;
-            }
-        }
+        public bool IsEnabled => TelemetryRecorder?.IsEnabled == true;
 
-        public bool CanCollectPrivateInformation {
-            get {
-                return (this.TelemetryRecorder?.IsEnabled == true && this.TelemetryRecorder?.CanCollectPrivateInformation == true);
-            }
-        }
+        public bool CanCollectPrivateInformation 
+            => (TelemetryRecorder?.IsEnabled == true && TelemetryRecorder?.CanCollectPrivateInformation == true);
 
         /// <summary>
         /// Records event with parameters
@@ -53,7 +46,6 @@ namespace Microsoft.Common.Core.Telemetry {
         /// Either string/object dictionary or anonymous
         /// collection of string/object pairs.
         /// </param>
-        /// <summary>
         public void ReportEvent(TelemetryArea area, string eventName, object parameters = null) {
             Check.ArgumentStringNullOrEmpty("eventName", eventName);
 

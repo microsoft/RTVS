@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
@@ -26,6 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
+            VsWpfOverrides.Apply();
+
             ConfigureServices();
             ConfigureIdleSource();
             CheckVsStarted();
@@ -33,8 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private void CheckVsStarted() {
             _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
-            object value;
-            _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out value);
+            _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out var value);
             if (value is bool) {
                 if ((bool)value) {
                     _application.FireStarted();
@@ -44,7 +46,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        /// <summary>
         private static VsAppShell GetInstance() {
             if (_instance != null) {
                 return _instance;

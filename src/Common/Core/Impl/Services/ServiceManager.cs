@@ -116,8 +116,7 @@ namespace Microsoft.Common.Core.Services {
         public void Dispose() {
             if (_disposeToken.TryMarkDisposed()) {
                 foreach (var service in _s.Values) {
-                    var lazy = service as Lazy<object>;
-                    if (lazy != null && lazy.IsValueCreated) {
+                    if (service is Lazy<object> lazy && lazy.IsValueCreated) {
                         (lazy.Value as IDisposable)?.Dispose();
                     } else {
                         (service as IDisposable)?.Dispose();

@@ -12,8 +12,8 @@ namespace Microsoft.R.Core.Formatting {
         private readonly Stack<FormattingScope> _formattingScopes = new Stack<FormattingScope>();
 
         public int SuppressLineBreakCount {
-            get { return _formattingScopes.Peek().SuppressLineBreakCount; }
-            set { _formattingScopes.Peek().SuppressLineBreakCount = value; }
+            get => _formattingScopes.Peek().SuppressLineBreakCount;
+            set => _formattingScopes.Peek().SuppressLineBreakCount = value;
         }
 
         public FormattingScopeStack() {
@@ -26,7 +26,7 @@ namespace Microsoft.R.Core.Formatting {
         public void TryCloseScope(int tokenIndex) {
             if (_formattingScopes.Count > 1) {
                 if (_formattingScopes.Peek().CloseCurlyBraceTokenIndex == tokenIndex) {
-                    FormattingScope scope = _formattingScopes.Pop();
+                    var scope = _formattingScopes.Pop();
                     scope.Dispose();
                 }
             }

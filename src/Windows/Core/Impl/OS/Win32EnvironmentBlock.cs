@@ -8,32 +8,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-
 using static System.FormattableString;
 using static Microsoft.Common.Core.NativeMethods;
 
 
 namespace Microsoft.Common.Core.OS {
     public class Win32EnvironmentBlock : IEnumerable<KeyValuePair<string, string>> {
+        private readonly ConcurrentDictionary<string, string> _environment;
 
-        private ConcurrentDictionary<string, string> _environment;
-
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() {
-            return _environment.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return _environment.GetEnumerator();
-        }
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => _environment.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _environment.GetEnumerator();
 
         public string this[string key] {
-            get {
-                return _environment[key];
-            }
-
-            set {
-                _environment[key] = value;
-            }
+            get => _environment[key];
+            set => _environment[key] = value;
         }
 
         private Win32EnvironmentBlock() {
@@ -41,23 +29,23 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public static Win32EnvironmentBlock Create(IntPtr token, bool inherit = false) {
-            IntPtr env = IntPtr.Zero;
-            Win32EnvironmentBlock eb = new Win32EnvironmentBlock();
+            var env = IntPtr.Zero;
+            var eb = new Win32EnvironmentBlock();
             string[] delimiter = { "=" };
             try {
                 if (CreateEnvironmentBlock(out env, token, inherit)) {
-                    IntPtr ptr = env;
+                    var ptr = env;
                     while (true) {
-                        string envVar = Marshal.PtrToStringUni(ptr);
-                        byte[] data = Encoding.Unicode.GetBytes(envVar);
+                        var envVar = Marshal.PtrToStringUni(ptr);
+                        var data = Encoding.Unicode.GetBytes(envVar);
                         if (data.Length <= 2) {
                             // detected double null
                             break;
                         } else {
-                            string[] envVarParts = envVar.Split(delimiter, 2, StringSplitOptions.RemoveEmptyEntries);
+                            var envVarParts = envVar.Split(delimiter, 2, StringSplitOptions.RemoveEmptyEntries);
                             if (envVarParts.Length == 2 && !string.IsNullOrWhiteSpace(envVarParts[0])) {
-                                string key = envVarParts[0];
-                                string value = envVarParts[1];
+                                var key = envVarParts[0];
+                                var value = envVarParts[1];
                                 eb._environment.AddOrUpdate(key, value, (k, v) => value);
                             }
                         }
@@ -72,11 +60,11 @@ namespace Microsoft.Common.Core.OS {
         }
 
         private byte[] ToByteArray() {
-            using (MemoryStream ms = new MemoryStream()) {
+            using (var ms = new MemoryStream()) {
                 byte[] nulls = { 0, 0 };
                 foreach (var p in _environment.ToArray()) {
-                    string envData = Invariant($"{p.Key}={p.Value}");
-                    byte[] data = Encoding.Unicode.GetBytes(envData);
+                    var envData = Invariant($"{p.Key}={p.Value}");
+                    var data = Encoding.Unicode.GetBytes(envData);
                     ms.Write(data, 0, data.Length);
                     ms.Write(nulls, 0, nulls.Length);
                 }
@@ -85,8 +73,6 @@ namespace Microsoft.Common.Core.OS {
             }
         }
 
-        public Win32NativeEnvironmentBlock GetNativeEnvironmentBlock() {
-            return Win32NativeEnvironmentBlock.Create(ToByteArray());
-        }
+        public Win32NativeEnvironmentBlock GetNativeEnvironmentBlock() => Win32NativeEnvironmentBlock.Create(ToByteArray());
     }
 }

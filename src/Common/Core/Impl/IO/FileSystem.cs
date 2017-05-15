@@ -64,10 +64,10 @@ namespace Microsoft.Common.Core.IO {
         public virtual string[] GetDirectories(string path) => Directory.GetDirectories(path);
 
         public virtual string CompressFile(string path, string relativeTodir) {
-            string zipFilePath = Path.GetTempFileName();
-            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create))
-            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
-                string entryName = Path.GetFileName(path);
+            var zipFilePath = Path.GetTempFileName();
+            using (var zipStream = new FileStream(zipFilePath, FileMode.Create))
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
+                var entryName = Path.GetFileName(path);
                 if (!string.IsNullOrWhiteSpace(relativeTodir)) {
                     entryName = path.MakeRelativePath(relativeTodir).Replace('\\', '/');
                 }
@@ -77,10 +77,10 @@ namespace Microsoft.Common.Core.IO {
         }
 
         public virtual string CompressFiles(IEnumerable<string> paths, string relativeTodir, IProgress<string> progress, CancellationToken ct) {
-            string zipFilePath = Path.GetTempFileName();
-            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create))
-            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
-                foreach (string path in paths) {
+            var zipFilePath = Path.GetTempFileName();
+            using (var zipStream = new FileStream(zipFilePath, FileMode.Create))
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
+                foreach (var path in paths) {
                     if (ct.IsCancellationRequested) {
                         break;
                     }
@@ -99,16 +99,16 @@ namespace Microsoft.Common.Core.IO {
         }
 
         public virtual string CompressDirectory(string path) {
-            Matcher matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
+            var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
             matcher.AddInclude("*.*");
             return CompressDirectory(path, matcher, new Progress<string>((p) => { }), CancellationToken.None);
         }
 
         public virtual string CompressDirectory(string path, Matcher matcher, IProgress<string> progress, CancellationToken ct) {
-            string zipFilePath = Path.GetTempFileName();
-            using (FileStream zipStream = new FileStream(zipFilePath, FileMode.Create))
-            using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
-                Queue<string> dirs = new Queue<string>();
+            var zipFilePath = Path.GetTempFileName();
+            using (var zipStream = new FileStream(zipFilePath, FileMode.Create))
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
+                var dirs = new Queue<string>();
                 dirs.Enqueue(path);
                 while (dirs.Count > 0) {
                     var dir = dirs.Dequeue();
@@ -123,7 +123,7 @@ namespace Microsoft.Common.Core.IO {
                             return string.Empty;
                         }
                         progress?.Report(file);
-                        string entryName = file.MakeRelativePath(dir).Replace('\\', '/');
+                        var entryName = file.MakeRelativePath(dir).Replace('\\', '/');
                         archive.CreateEntryFromFile(file, entryName);
                     }
                 }
@@ -131,8 +131,6 @@ namespace Microsoft.Common.Core.IO {
             return zipFilePath;
         }
 
-        public virtual string GetDownloadsPath(string fileName) {
-            throw new NotImplementedException();
-        }
+        public virtual string GetDownloadsPath(string fileName) => throw new NotImplementedException();
     }
 }

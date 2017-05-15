@@ -126,8 +126,7 @@ namespace Microsoft.Common.Core.Services {
         public bool TryGetProperty<T>(object key, out T property) {
             lock (_lock) {
                 if (_properties.IsValueCreated) {
-                    object item;
-                    if (_properties.Value.TryGetValue(key, out item)) {
+                    if (_properties.Value.TryGetValue(key, out var item)) {
                         property = (T)item;
                         return true;
                     }

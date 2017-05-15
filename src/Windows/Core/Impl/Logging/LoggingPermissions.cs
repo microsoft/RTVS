@@ -48,8 +48,8 @@ namespace Microsoft.Common.Core.Logging {
         }
 
         public LogVerbosity CurrentVerbosity {
-            get { return _currentVerbosity; }
-            set { _currentVerbosity = MathExtensions.Min(value, MaxVerbosity); }
+            get => _currentVerbosity;
+            set => _currentVerbosity = MathExtensions.Min(value, MaxVerbosity);
         }
 
         public LogVerbosity MaxVerbosity => GetEffectiveVerbosity();
@@ -78,13 +78,10 @@ namespace Microsoft.Common.Core.Logging {
             return MathExtensions.Max(adminSetValue, 0) == 1;
         }
 
-        private LogVerbosity? GetLogLevelFromRegistry() {
-            return (LogVerbosity?)GetValueFromRegistry(LogVerbosityValueName, (int)LogVerbosity.None, (int)LogVerbosity.Traffic);
-        }
+        private LogVerbosity? GetLogLevelFromRegistry() 
+            => (LogVerbosity?)GetValueFromRegistry(LogVerbosityValueName, (int)LogVerbosity.None, (int)LogVerbosity.Traffic);
 
-        private int? GetFeedbackFromRegistry() {
-            return GetValueFromRegistry(FeedbackValueName, 0, 1);
-        }
+        private int? GetFeedbackFromRegistry() => GetValueFromRegistry(FeedbackValueName, 0, 1);
 
         private int? GetValueFromRegistry(string name, int minValue, int maxValue) {
             if(_platform.LocalMachineHive == null) {

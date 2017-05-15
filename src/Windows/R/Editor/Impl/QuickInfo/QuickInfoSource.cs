@@ -56,7 +56,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                 // getting set immediately or may change as user moves mouse over.
                 AugmentQuickInfoSession(document.EditorTree.AstRoot, textBuffer, position,
                                         session, quickInfoContent, out applicableToSpan,
-                                        (infos, o) => RetriggerQuickInfoSession(infos, o));
+                                        RetriggerQuickInfoSession);
             }
         }
 

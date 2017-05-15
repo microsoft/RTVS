@@ -9,47 +9,23 @@ namespace Microsoft.R.Core.AST.DataTypes {
     /// Represents R integer value. Integers are scalars
     /// which are one element vectors of 'numeric' mode.
     /// </summary>
-    [DebuggerDisplay("[{Value}]")]
+    [DebuggerDisplay("[{" + nameof(Value) + "}]")]
     public class RInteger : RScalar<int> {
-        public override RMode Mode {
-            get { return RMode.Numeric; }
-        }
+        public override RMode Mode => RMode.Numeric;
 
         public RInteger(int value) :
             base(value) {
         }
 
-        public static implicit operator RInteger(int x) {
-            return new RInteger(x);
-        }
+        public static implicit operator RInteger(int x) => new RInteger(x);
+        public static explicit operator int (RInteger ri) => ri.Value;
 
-        public static explicit operator int (RInteger ri) {
-            return ri.Value;
-        }
-
-        public static bool operator ==(RInteger x, RInteger y) {
-            return x.Value == y.Value;
-        }
-
-        public static bool operator !=(RInteger x, RInteger y) {
-            return x.Value != y.Value;
-        }
-
-        public static RInteger operator +(RInteger x, RInteger y) {
-            return new RInteger(x.Value + y.Value);
-        }
-
-        public static RInteger operator -(RInteger x, RInteger y) {
-            return new RInteger(x.Value - y.Value);
-        }
-
-        public static RInteger operator *(RInteger x, RInteger y) {
-            return new RInteger(x.Value * y.Value);
-        }
-
-        public static RInteger operator /(RInteger x, RInteger y) {
-            return new RInteger(x.Value / y.Value);
-        }
+        public static bool operator ==(RInteger x, RInteger y) => x.Value == y.Value;
+        public static bool operator !=(RInteger x, RInteger y) => x.Value != y.Value;
+        public static RInteger operator +(RInteger x, RInteger y) => new RInteger(x.Value + y.Value);
+        public static RInteger operator -(RInteger x, RInteger y) => new RInteger(x.Value - y.Value);
+        public static RInteger operator *(RInteger x, RInteger y) => new RInteger(x.Value * y.Value);
+        public static RInteger operator /(RInteger x, RInteger y) => new RInteger(x.Value / y.Value);
 
         public override bool Equals(object obj) {
             try {
@@ -59,11 +35,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
             }
         }
 
-        public override int GetHashCode() {
-            return this.Value.GetHashCode();
-        }
-        public override string ToString() {
-            return Value.ToString(CultureInfo.CurrentCulture);
-        }
+        public override int GetHashCode() => this.Value.GetHashCode();
+        public override string ToString() => Value.ToString(CultureInfo.CurrentCulture);
     }
 }

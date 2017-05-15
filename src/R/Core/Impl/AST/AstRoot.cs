@@ -49,17 +49,9 @@ namespace Microsoft.R.Core.AST {
         #endregion
 
         #region ITextRange
-        public override int Start {
-            get { return 0; }
-        }
-
-        public override int End {
-            get { return TextProvider.Length; }
-        }
-
-        public override bool Contains(int position) {
-            return position >= Start && position <= End;
-        }
+        public override int Start => 0;
+        public override int End => TextProvider.Length;
+        public override bool Contains(int position) => position >= Start && position <= End;
         #endregion
 
         public override bool Parse(ParseContext context, IAstNode parent = null) {

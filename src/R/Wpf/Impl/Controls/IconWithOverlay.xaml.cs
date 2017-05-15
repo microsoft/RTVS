@@ -15,18 +15,18 @@ namespace Microsoft.R.Wpf.Controls {
         }
 
         public object Moniker {
-            get { return GetValue(MonikerProperty); }
-            set { SetValue(MonikerProperty, value); }
+            get => GetValue(MonikerProperty);
+            set => SetValue(MonikerProperty, value);
         }
 
         public object OverlayMoniker {
-            get { return GetValue(OverlayMonikerProperty); }
-            set { SetValue(OverlayMonikerProperty, value); }
+            get => GetValue(OverlayMonikerProperty);
+            set => SetValue(OverlayMonikerProperty, value);
         }
 
         public Visibility OverlayVisibility {
-            get { return (Visibility)GetValue(OverlayVisibilityProperty); }
-            set { SetValue(OverlayVisibilityProperty, value); }
+            get => (Visibility)GetValue(OverlayVisibilityProperty);
+            set => SetValue(OverlayVisibilityProperty, value);
         }
 
         public static readonly DependencyProperty MonikerProperty

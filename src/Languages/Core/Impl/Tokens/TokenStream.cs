@@ -86,9 +86,7 @@ namespace Microsoft.Languages.Core.Tokens {
         /// </summary>
         /// <param name="count">Nunber of tokens to look ahead</param>
         /// <returns></returns>
-        public T LookAhead(int count) {
-            return GetTokenAt(_index + count);
-        }
+        public T LookAhead(int count) => GetTokenAt(_index + count);
 
         /// <summary>
         /// Token at a specific position or end of stream token
@@ -104,13 +102,8 @@ namespace Microsoft.Languages.Core.Tokens {
             return _endOfStreamToken;
         }
 
-        public T this[int index] {
-            get { return GetTokenAt(index); }
-        }
-
-        public bool IsEndOfStream() {
-            return _isEndOfStream;
-        }
+        public T this[int index] => GetTokenAt(index);
+        public bool IsEndOfStream() => _isEndOfStream;
 
         /// <summary>
         /// Advances stream position to the next token.
@@ -208,13 +201,8 @@ namespace Microsoft.Languages.Core.Tokens {
         }
 
         #region IEnumerable
-        public IEnumerator<T> GetEnumerator() {
-            return _tokens.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return _tokens.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => _tokens.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _tokens.GetEnumerator();
         #endregion
     }
 }

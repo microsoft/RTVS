@@ -10,16 +10,14 @@ namespace Microsoft.Languages.Core.Tokens {
         protected CharacterStream _cs;
 
         #region ITokenizer
-        public IReadOnlyTextRangeCollection<T> Tokenize(string text) {
-            return Tokenize(new TextStream(text), 0, text.Length);
-        }
+        public IReadOnlyTextRangeCollection<T> Tokenize(string text) 
+            => Tokenize(new TextStream(text), 0, text.Length);
 
-        public IReadOnlyTextRangeCollection<T> Tokenize(ITextProvider textProvider, int start, int length) {
-            return Tokenize(textProvider, start, length, false);
-        }
+        public IReadOnlyTextRangeCollection<T> Tokenize(ITextProvider textProvider, int start, int length) 
+            => Tokenize(textProvider, start, length, false);
 
         public virtual IReadOnlyTextRangeCollection<T> Tokenize(ITextProvider textProvider, int start, int length, bool excludePartialTokens) {
-            int end = start + length;
+            var end = start + length;
 
             InitializeTokenizer(textProvider, start, length);
 
@@ -54,9 +52,7 @@ namespace Microsoft.Languages.Core.Tokens {
         internal virtual void InitializeTokenizer(ITextProvider textProvider, int start, int length) {
             Debug.Assert(start >= 0 && length >= 0 && start + length <= textProvider.Length);
 
-            _cs = new CharacterStream(textProvider);
-            _cs.Position = start;
-
+            _cs = new CharacterStream(textProvider) {Position = start};
             _tokens = new TextRangeCollection<T>();
         }
 

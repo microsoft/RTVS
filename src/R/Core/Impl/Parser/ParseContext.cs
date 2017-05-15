@@ -47,9 +47,7 @@ namespace Microsoft.R.Core.Parser {
         /// <summary>
         /// Collection of parsing errors encountered so far
         /// </summary>
-        public IReadOnlyCollection<IParseError> Errors {
-            get { return _errors; }
-        }
+        public IReadOnlyCollection<IParseError> Errors => _errors;
 
         /// <summary>
         /// Collection of comments in the file

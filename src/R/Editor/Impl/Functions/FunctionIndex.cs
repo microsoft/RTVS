@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.RData.Parser;
 using static System.FormattableString;

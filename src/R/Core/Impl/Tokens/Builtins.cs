@@ -5,16 +5,11 @@ using System;
 
 namespace Microsoft.R.Core.Tokens {
     public static class Builtins {
-        public static bool IsBuiltin(string candidate) {
+        public static bool IsBuiltin(string candidate) =>
             // R is case sensitive language
-            return Array.BinarySearch<string>(_builtins, candidate) >= 0;
-        }
+            Array.BinarySearch(BuiltinList, candidate) >= 0;
 
-        public static string[] BuiltinList {
-            get { return _builtins; }
-        }
-
-        internal static string[] _builtins = {
+        public static string[] BuiltinList { get; } = new[] {
             "library",
             "require",
             "return",

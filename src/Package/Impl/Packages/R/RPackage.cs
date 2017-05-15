@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Idle;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings;
@@ -37,7 +36,6 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -114,9 +112,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            VsWpfOverrides.Apply();
             CranMirrorList.Download();
-
             base.Initialize();
 
             ProjectIconProvider.LoadProjectImages(VsAppShell.Current.Services);
