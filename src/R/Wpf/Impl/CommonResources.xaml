@@ -44,9 +44,9 @@
             <DrawingGroup>
                 <DrawingGroup.Children>
                     <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                    <GeometryDrawing Geometry="F1M6,3 L11,8 L6,13 z">
+                    <GeometryDrawing Geometry="F1M6.5,4 L10.5,8 L6.5,12 z">
                         <GeometryDrawing.Pen>
-                            <Pen Brush="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" Thickness="1" />
+                            <Pen Brush="{DynamicResource {x:Static wpf:Brushes.TreeViewSelectedItemActiveBrushKey}}" Thickness="1" />
                         </GeometryDrawing.Pen>
                     </GeometryDrawing>
                 </DrawingGroup.Children>
@@ -59,7 +59,7 @@
             <DrawingGroup>
                 <DrawingGroup.Children>
                     <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                    <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" Geometry="F1M5,11 L11,11 L11,5 z" />
+                    <GeometryDrawing Brush="{DynamicResource {x:Static wpf:Brushes.ToolWindowTextBrushKey}}" Geometry="F1M5,11 L11,11 L11,5 z" />
                 </DrawingGroup.Children>
             </DrawingGroup>
         </DrawingBrush.Drawing>

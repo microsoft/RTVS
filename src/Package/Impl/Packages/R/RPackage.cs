@@ -35,7 +35,6 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -112,7 +111,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
-            VsWpfOverrides.Apply();
             CranMirrorList.Download();
 
             base.Initialize();
