@@ -36,23 +36,15 @@ namespace Microsoft.R.Host.Client.Test {
             _testMethod = testMethod.MethodInfo;
         }
 
-        private double X(double percentX) {
-            return DefaultWidth * percentX;
-        }
+        private double X(double percentX) => DefaultWidth * percentX;
 
-        private double Y(double percentY) {
-            return DefaultHeight - DefaultHeight * percentY;
-        }
+        private double Y(double percentY) => DefaultHeight - DefaultHeight * percentY;
 
-        private double W(double percentX) {
-            return DefaultWidth * percentX;
-        }
+        private double W(double percentX) => DefaultWidth * percentX;
 
-        private double H(double percentY) {
-            return DefaultHeight * percentY;
-        }
+        private double H(double percentY) => DefaultHeight * percentY;
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
@@ -66,7 +58,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
@@ -79,7 +71,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], "4 8 1 2");
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
@@ -92,7 +84,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
@@ -105,7 +97,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], "4 4");
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
@@ -118,7 +110,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
@@ -129,7 +121,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.2), Y(0.5) - W(0.2));
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
@@ -140,7 +132,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
@@ -160,7 +152,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
         [Category.Plots]
         public async Task TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
@@ -204,17 +196,14 @@ namespace Microsoft.R.Host.Client.Test {
             CheckDoubleAttr(element, "Canvas.Top", top);
         }
 
-        private void CheckStrokeThickness(XElement element, double expected) {
-            CheckDoubleAttr(element, "StrokeThickness", expected);
-        }
+        private void CheckStrokeThickness(XElement element, double expected) 
+            => CheckDoubleAttr(element, "StrokeThickness", expected);
 
-        private void CheckStroke(XElement element, string expected) {
-            CheckStringAttr(element, "Stroke", expected);
-        }
+        private void CheckStroke(XElement element, string expected) 
+            => CheckStringAttr(element, "Stroke", expected);
 
-        private void CheckStrokeDashArray(XElement element, string expected) {
-            CheckStringAttr(element, "StrokeDashArray", expected);
-        }
+        private void CheckStrokeDashArray(XElement element, string expected) 
+            => CheckStringAttr(element, "StrokeDashArray", expected);
 
         private void CheckStringAttr(XElement element, string attributeName, string expected) {
             var attrs = element.Attributes(attributeName);
@@ -228,7 +217,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private void CheckDoubleAttr(XElement element, string attributeName, double? expected) {
             var attrs = element.Attributes(attributeName);
-            
+
             if (expected != null) {
                 attrs.Should().ContainSingle().Which.Should().HaveValue(expected.ToString());
             } else {
@@ -240,7 +229,7 @@ namespace Microsoft.R.Host.Client.Test {
             using (var sessionProvider = new RSessionProvider(_services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(XamlGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(_testMethod.Name);
-                await session.StartHostAsync(new RHostStartupInfo (), new RHostClientTestApp(), 50000);
+                await session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
 
                 using (var interaction = await session.BeginInteractionAsync()) {
                     await interaction.RespondAsync(code);

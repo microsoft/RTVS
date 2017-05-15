@@ -1509,8 +1509,9 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.Console.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.Debug.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.EventLog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.EventLog.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.TraceSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.ObjectPool.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Options.dll" />
@@ -1549,6 +1550,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Mvc.ViewFeatures.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Razor.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Razor.Runtime.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.ResponseCaching.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Routing.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Routing.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.AspNetCore.Server.WebListener.dll" />
