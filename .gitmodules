@@ -1,3 +1,6 @@
 [submodule "src/Host/Process"]
 	path = src/Host/Process
 	url = https://github.com/Microsoft/R-Host
+[submodule "src/Linux/Lib/picojson"]
+	path = src/Linux/Lib/picojson
+	url = https://github.com/kazuho/picojson

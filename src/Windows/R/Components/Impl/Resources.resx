@@ -585,13 +585,13 @@ Are you sure you want to terminate R session?</value>
     <value>Machine utilization: {0}% CPU, {1}% Memory, {2}% Network.</value>
   </data>
   <data name="VideoCardName" xml:space="preserve">
-    <value>Video controller: {0}</value>
+    <value>Video controller[{0}]: {1}</value>
   </data>
   <data name="VideoProcessor" xml:space="preserve">
-    <value>GPU: {0}</value>
+    <value>GPU[{0}]: {1}</value>
   </data>
   <data name="VideoRAM" xml:space="preserve">
-    <value>Video memory: {0} MB</value>
+    <value>Video memory[{0}]: {1} MB</value>
   </data>
   <data name="DeleteProfile_DeletionWarning" xml:space="preserve">
     <value>WARNING
