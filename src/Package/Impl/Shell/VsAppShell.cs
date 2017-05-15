@@ -22,6 +22,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -106,6 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _settings = _exportProvider.GetExportedValue<IRSettings>();
             _settings.LoadSettings();
 
+            VsWpfOverrides.Apply();
             EditorShell.Current = this;
         }
 
