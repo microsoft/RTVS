@@ -56,7 +56,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
                 var keys = new List<RString>();
 
                 if (properties.IsValueCreated) {
-                    foreach (var key in properties.Value.Keys) {
+                    foreach (RString key in properties.Value.Keys) {
                         keys.Add(key);
                     }
                 }
@@ -70,7 +70,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
                 var values = new List<RObject>();
 
                 if (properties.IsValueCreated) {
-                    foreach (var value in properties.Value.Values) {
+                    foreach (RObject value in properties.Value.Values) {
                         values.Add(value);
                     }
                 }
@@ -100,7 +100,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
 
         public void CopyTo(KeyValuePair<RString, RObject>[] array, int arrayIndex) {
             if (properties.IsValueCreated) {
-                foreach (var de in properties.Value) {
+                foreach (DictionaryEntry de in properties.Value) {
                     array[arrayIndex++] = new KeyValuePair<RString, RObject>((RString)de.Key, (RObject)de.Value);
                 }
             }

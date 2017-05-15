@@ -20,15 +20,13 @@ namespace Microsoft.R.Core.AST.DataTypes {
         #endregion
 
         #region IRScalar
-        public T Value { get; }
+        public T Value { get; set; }
         #endregion
 
-        public RScalar(T value) {
-            this.Value = value;
+        protected RScalar(T value) {
+            Value = value;
         }
 
-        public override string ToString() {
-            return this.Value.ToString();
-        }
+        public override string ToString() => this.Value.ToString();
     }
 }
