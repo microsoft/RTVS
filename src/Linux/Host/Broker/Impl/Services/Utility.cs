@@ -20,6 +20,7 @@ namespace Microsoft.R.Host.Broker.Services {
     public class Utility {
         private const string PamInfo = "pam-info";
         private const string PamError = "pam-error";
+        private const string SysError = "unix-error";
         private const string JsonError = "json-error";
         private const string RtvsResult = "rtvs-result";
         private const string RtvsError = "rtvs-error";
