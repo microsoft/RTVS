@@ -45,30 +45,26 @@ namespace Microsoft.R.Editor.Completions.Providers {
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
             var infoSource = _snippetInformationSource?.InformationSource;
-
-            // TODO: this is different in the console window where 
-            // packages may have been loaded from the command line. 
-            // We need an extensibility point here.
-            IEnumerable<IPackageInfo> packages = GetPackages(context);
+            var packages = GetPackages(context);
 
             // Get list of functions in the package
-            foreach (IPackageInfo pkg in packages) {
+            foreach (var pkg in packages) {
                 Debug.Assert(pkg != null);
+                var functions = pkg.Functions;
+                if (functions == null) {
+                    continue;
+                }
 
-                IEnumerable<INamedItemInfo> functions = pkg.Functions;
-                if (functions != null) {
-                    foreach (INamedItemInfo function in functions) {
-                        bool isSnippet = false;
-                        // Snippets are suppressed if user typed namespace
-                        if (!context.IsCaretInNameSpace() && infoSource != null) {
-                            isSnippet = infoSource.IsSnippet(function.Name);
-                        }
-                        if (!isSnippet) {
-                            var glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
-                            var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, _functionIndex, context.Session);
-                            completions.Add(completion);
+                foreach (var function in functions) {
+                    // Snippets are suppressed if user typed namespace
+                    if (!context.IsCaretInNameSpace() && infoSource != null) {
+                        if (infoSource.IsSnippet(function.Name)) {
+                            continue;
                         }
                     }
+                    var glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
+                    var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, _functionIndex, context.Session);
+                    completions.Add(completion);
                 }
             }
 
@@ -79,7 +75,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRHelpSearchTermProvider
         public IReadOnlyCollection<string> GetEntries() {
             var list = new List<string>();
-            foreach (IPackageInfo pkg in _packageIndex.Packages) {
+            foreach (var pkg in _packageIndex.Packages) {
                 list.AddRange(pkg.Functions.Select(x => x.Name));
             }
             return list;
@@ -104,22 +100,22 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private IEnumerable<IPackageInfo> GetSpecificPackage(IRIntellisenseContext context) {
             var packages = new List<IPackageInfo>();
             var snapshot = context.EditorBuffer.CurrentSnapshot;
-            int colons = 0;
+            var colons = 0;
 
-            for (int i = context.Position - 1; i >= 0; i--, colons++) {
-                char ch = snapshot[i];
+            for (var i = context.Position - 1; i >= 0; i--, colons++) {
+                var ch = snapshot[i];
                 if (ch != ':') {
                     break;
                 }
             }
 
             if (colons > 1 && colons < 4) {
-                string packageName = string.Empty;
-                int start = 0;
-                int end = context.Position - colons;
+                var packageName = string.Empty;
+                var start = 0;
+                var end = context.Position - colons;
 
-                for (int i = end - 1; i >= 0; i--) {
-                    char ch = snapshot[i];
+                for (var i = end - 1; i >= 0; i--) {
+                    var ch = snapshot[i];
                     if (!RTokenizer.IsIdentifierCharacter(ch)) {
                         start = i + 1;
                         break;

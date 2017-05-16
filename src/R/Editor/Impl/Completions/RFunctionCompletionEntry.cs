@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion function entry in the R intellisense completion set
     /// </summary>
-    [DebuggerDisplay("{DisplayText}")]
+    [DebuggerDisplay("{" + nameof(DisplayText) + "}")]
     public class RFunctionCompletionEntry : EditorCompletionEntry {
         private readonly IFunctionIndex _functionIndex;
         private readonly IEditorIntellisenseSession _session;
@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Completions {
 
         private void SetDescription(IFunctionInfo fi) {
             if (fi != null && !_session.IsDismissed) {
-                string sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
+                var sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
                 Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
             }
         }

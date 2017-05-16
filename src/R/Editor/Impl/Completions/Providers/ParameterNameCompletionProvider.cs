@@ -72,7 +72,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private static bool ShouldProvideCompletions(IRIntellisenseContext context, out FunctionCall funcCall) {
             // Safety checks
             funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
-            if (funcCall == null || funcCall.OpenBrace == null || funcCall.Arguments == null) {
+            if (funcCall?.OpenBrace == null || funcCall.Arguments == null) {
                 return false;
             }
 

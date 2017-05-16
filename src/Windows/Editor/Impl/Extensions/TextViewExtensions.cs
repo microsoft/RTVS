@@ -59,8 +59,7 @@ namespace Microsoft.Languages.Editor.Text {
                     return caretPosition;
                 }
 
-                var pb = textView.TextBuffer as IProjectionBuffer;
-                if (pb != null) {
+                if (textView.TextBuffer is IProjectionBuffer pb) {
                     return pb.MapDown(caretPosition, contentType);
                 }
             } catch (ArgumentException) { }

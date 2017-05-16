@@ -36,9 +36,10 @@ namespace Microsoft.Languages.Editor.Text {
         public IEditorSelection Selection { get; }
         public T As<T>() where T : class => _textView as T;
 
-        public ISnapshotPoint GetCaretPosition(IEditorBuffer editorBuffer) {
-            var point = _textView.GetCaretPosition(editorBuffer);
-            return point.HasValue ? new EditorSnapshotPoint(_textView.TextBuffer.CurrentSnapshot, point.Value) : null;
+        public ISnapshotPoint GetCaretPosition(IEditorBuffer editorBuffer = null) {
+            var textBuffer = editorBuffer?.As<ITextBuffer>() ?? _textView.TextBuffer;
+            var point = _textView.GetCaretPosition(editorBuffer ?? _textView.TextBuffer.ToEditorBuffer());
+            return point.HasValue ? new EditorSnapshotPoint(textBuffer.CurrentSnapshot, point.Value) : null;
         }
 
         public ISnapshotPoint MapToView(IEditorBufferSnapshot snapshot, int position) {

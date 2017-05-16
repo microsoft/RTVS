@@ -181,6 +181,8 @@ namespace Microsoft.R.Editor.Functions {
                 return packageName;
             }
 
+            TryGetCachedFunctionInfo(functionName, ref packageName);
+
             packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
             if (string.IsNullOrEmpty(packageName)) {
                 return packageName;
