@@ -11,8 +11,6 @@ using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.StatusBar {
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IStatusBar))]
-    [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
     public class TestStatusBar : IStatusBar {
         public IDisposable AddItem(UIElement item) => Disposable.Empty;
     }

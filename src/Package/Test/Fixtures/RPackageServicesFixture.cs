@@ -2,11 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Test;
+using Microsoft.R.Components.Test.Fakes.StatusBar;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -29,9 +33,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
             "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
         });
 
+        protected override ComposablePartCatalog FilterCatalog(ComposablePartCatalog catalog)
+            => catalog.Filter(cpd => !cpd.ContainsPartMetadataWithKey(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog));
+
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
+                .AddService(new TestStatusBar())
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))
                 .AddService(new MenuCommandServiceMock(), typeof(IMenuCommandService))
