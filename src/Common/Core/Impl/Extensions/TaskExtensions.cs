@@ -64,8 +64,7 @@ namespace Microsoft.Common.Core {
                 return;
             }
 
-            if (TestEnvironment.Current != null) {
-                TestEnvironment.Current.AddTaskToWait(task);
+            if (TestEnvironment.Current != null && TestEnvironment.Current.TryAddTaskToWait(task)) {
                 return;
             }
 
