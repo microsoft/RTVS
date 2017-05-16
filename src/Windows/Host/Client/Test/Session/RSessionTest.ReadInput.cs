@@ -1,8 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -32,7 +36,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo (isInteractive:true), _callback, 50000);
-                TestEnvironment.Current.AddTaskToWait(_session.RHost.GetRHostRunTask());
+                TestEnvironment.Current.TryAddTaskToWait(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
@@ -60,13 +64,13 @@ paste(h, name)
 
             [Test]
             public async Task ConcurrentRequests() {
-                var responds = new List<string>();
-                var input = new List<string>();
-                var output = new List<string>();
-                void OutputHandler(object o, ROutputEventArgs e) => output.Add(e.Message);
+                var responds = new ConcurrentQueue<int>();
+                var input = new ConcurrentQueue<string>();
+                var output = new ConcurrentQueue<string>();
+                void OutputHandler(object o, ROutputEventArgs e) => output.Enqueue(e.Message);
 
                 Task<string> InputHandler(string prompt, int maximumLength, CancellationToken ct) {
-                    input.Add(prompt);
+                    input.Enqueue(prompt);
                     return Task.FromResult($"{prompt}\n");
                 }
 
@@ -74,14 +78,15 @@ paste(h, name)
                 _session.Output += OutputHandler;
                 await ParallelTools.InvokeAsync(10, async i => {
                     using (var interaction = await _session.BeginInteractionAsync()) {
-                        responds.Add(i.ToString());
+                        responds.Enqueue(i);
                         await interaction.RespondAsync($"readline('{i}')");
                     }
-                });
+                }, 20000);
                 _session.Output -= OutputHandler;
 
-                input.Should().Equal(responds);
-                output.Should().Contain(Enumerable.Range(0, 10).Select(i => $" \"{i}\""));
+                responds.Should().BeEquivalentTo(Enumerable.Range(0, 10));
+                input.Should().Equal(responds.Select(i => i.ToString()));
+                output.Should().Contain(responds.Select(i => $" \"{i}\""));
             }
         }
     }

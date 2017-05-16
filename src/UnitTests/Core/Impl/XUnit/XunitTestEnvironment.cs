@@ -8,19 +8,27 @@ using Microsoft.Common.Core.Testing;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class XunitTestEnvironment : ITestEnvironment {
-        private readonly AsyncLocal<TaskObserver> _taskWaitingContext = new AsyncLocal<TaskObserver>();
-        public void AddTaskToWait(Task task) => _taskWaitingContext.Value.Add(task);
+        private readonly AsyncLocal<TaskObserver> _taskObserver = new AsyncLocal<TaskObserver>();
+
+        public bool TryAddTaskToWait(Task task) {
+            var taskObserver = _taskObserver.Value;
+            if (taskObserver == null) {
+                return false;
+            }
+            taskObserver.Add(task);
+            return true;
+        }
 
         internal TaskObserver UseTaskObserver() {
-            if (_taskWaitingContext.Value != null) {
+            if (_taskObserver.Value != null) {
                 throw new InvalidOperationException("AsyncLocal<TaskObserver> reentrancy");
             }
 
             var context = new TaskObserver(RemoveTaskObserver);
-            _taskWaitingContext.Value = context;
+            _taskObserver.Value = context;
             return context;
         }
 
-        private void RemoveTaskObserver() => _taskWaitingContext.Value = null;
+        private void RemoveTaskObserver() => _taskObserver.Value = null;
     }
 }
