@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
@@ -12,6 +14,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         private readonly Action _onDispose;
         private readonly Action<Task> _afterTaskCompleted;
         private readonly TaskCompletionSource<Exception> _tcs;
+        private readonly ConcurrentDictionary<int, string> _stackTraces;
         private int _count;
         private bool _isTestCompleted;
 
@@ -21,10 +24,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _onDispose = onDispose;
             _afterTaskCompleted = AfterTaskCompleted;
             _tcs = new TaskCompletionSource<Exception>();
+            _stackTraces = new ConcurrentDictionary<int, string>();
         }
 
         public void Add(Task task) {
             Interlocked.Increment(ref _count);
+            _stackTraces.TryAdd(task.Id, new StackTrace(2).ToString());
             task.ContinueWith(_afterTaskCompleted, TaskContinuationOptions.ExecuteSynchronously);
         }
 
@@ -37,9 +42,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         private void AfterTaskCompleted(Task task) {
             var count = Interlocked.Decrement(ref _count);
+            _stackTraces.TryRemove(task.Id, out _);
+
             if (task.IsFaulted) {
                 _tcs.TrySetException(task.Exception);
-            } else if (task.Status == TaskStatus.RanToCompletion && count == 0 && Volatile.Read(ref _isTestCompleted)) {
+            } else if (task.IsCompleted && count == 0 && Volatile.Read(ref _isTestCompleted)) {
                 _tcs.TrySetResult(null);
             }
         }

@@ -5,6 +5,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Testing {
     public interface ITestEnvironment {
-        void AddTaskToWait(Task task);
+        bool TryAddTaskToWait(Task task);
     }
 }
