@@ -7,5 +7,8 @@ namespace Microsoft.Common.Core.Threading {
     public static class MainThreadExtensions {
         public static MainThreadAwaitable SwitchToAsync(this IMainThread mainThread, CancellationToken cancellationToken = default(CancellationToken))
             => new MainThreadAwaitable(mainThread, cancellationToken);
+
+        public static bool CheckAccess(this IMainThread mainThread)
+            => Thread.CurrentThread.ManagedThreadId == mainThread.ThreadId;
     }
 }

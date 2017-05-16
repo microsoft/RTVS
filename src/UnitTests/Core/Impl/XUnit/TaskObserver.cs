@@ -4,15 +4,17 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
+using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class TaskObserver : IDisposable {
         private readonly Action _onDispose;
-        private readonly Action<Task> _afterTaskCompleted;
+        private readonly Action<Task, object> _afterTaskCompleted;
         private readonly TaskCompletionSource<Exception> _tcs;
         private readonly ConcurrentDictionary<int, string> _stackTraces;
         private int _count;
@@ -30,7 +32,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public void Add(Task task) {
             Interlocked.Increment(ref _count);
             _stackTraces.TryAdd(task.Id, new StackTrace(2).ToString());
-            task.ContinueWith(_afterTaskCompleted, TaskContinuationOptions.ExecuteSynchronously);
+
+            var postToMainThread = UIThreadHelper.Instance.CheckAccess();
+            task.ContinueWith(_afterTaskCompleted, postToMainThread, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
         public void TestCompleted() {
@@ -40,16 +44,28 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private void AfterTaskCompleted(Task task) {
+        private void AfterTaskCompleted(Task task, object state) {
             var count = Interlocked.Decrement(ref _count);
             _stackTraces.TryRemove(task.Id, out _);
 
             if (task.IsFaulted) {
-                _tcs.TrySetException(task.Exception);
+                var aggregateException = task.Exception.Flatten();
+                var exception = aggregateException.InnerExceptions.Count == 1
+                    ? aggregateException.InnerException
+                    : aggregateException;
+
+                var postToMainThread = (bool)state;
+                if (postToMainThread) {
+                    UIThreadHelper.Instance.SyncContext.Post(ReThrowTaskException, exception);
+                } else {
+                    _tcs.TrySetException(exception);
+                }
             } else if (task.IsCompleted && count == 0 && Volatile.Read(ref _isTestCompleted)) {
                 _tcs.TrySetResult(null);
             }
         }
+
+        private static void ReThrowTaskException(object state) => ExceptionDispatchInfo.Capture((Exception)state).Throw();
 
         public void Dispose() => _onDispose();
     }
