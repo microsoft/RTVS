@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.StatusBar;
+using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Interpreters;
@@ -32,6 +34,7 @@ namespace Microsoft.R.Components.Test.Fixtures {
             serviceManager
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
+                .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
         }
     }
