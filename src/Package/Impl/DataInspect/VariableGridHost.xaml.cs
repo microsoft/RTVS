@@ -72,7 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             // Otherwise, need to refresh the whole thing from scratch.
-            VariableGrid.Initialize(new GridDataProvider(wrapper));
+            var session = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
+            VariableGrid.Initialize(new GridDataProvider(session, wrapper));
             _evaluation = wrapper;
         }
 

@@ -159,7 +159,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                 var expression = BuildCommandLine(preview: true);
                 if (expression != null) {
                     try {
-                        var grid = await GridDataSource.GetGridDataAsync(expression, null);
+                        var session = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
+                        var grid = await session.GetGridDataAsync(expression, null);
                         PopulateDataFramePreview(grid);
                         DataFramePreview.Visibility = Visibility.Visible;
                     } catch (Exception ex) {

@@ -4,17 +4,24 @@
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Test {
     public class HostBasedInteractiveTest : InteractiveTest {
         private readonly IRSessionCallback _callback;
 
-        protected VsRHostScript HostScript { get; }
+        protected RHostScript HostScript { get; }
+        protected T GetScript<T>() where T : RHostScript => HostScript as T;
 
-        public HostBasedInteractiveTest(IServiceContainer services, IRSessionCallback callback = null): base(services) {
+        public HostBasedInteractiveTest(IServiceContainer services, IRSessionCallback callback = null) : base(services) {
             _callback = callback;
             HostScript = new VsRHostScript(services, callback);
+        }
+
+        public HostBasedInteractiveTest(RHostScript script, IServiceContainer services, IRSessionCallback callback = null): base(services) {
+            _callback = callback;
+            HostScript = script;
         }
 
         public HostBasedInteractiveTest(IServiceContainer services, bool async, IRSessionCallback callback = null): base(services) {

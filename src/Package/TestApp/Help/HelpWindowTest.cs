@@ -27,18 +27,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     public class HelpWindowTest : HostBasedInteractiveTest {
         private const string darkThemeCssColor = "rgb(36,36,36)";
         private RHostClientHelpTestApp _clientApp;
-        private IRInteractiveWorkflow _workflow;
+        private VsRHostScript _hostScript;
 
-        public HelpWindowTest(IServiceContainer services) : base(services, true) { }
+        public HelpWindowTest(IServiceContainer services) : base(services, true) {
+            _hostScript = GetScript<VsRHostScript>();
+        }
 
         public override async Task InitializeAsync() {
             _clientApp = new RHostClientHelpTestApp();
-            await HostScript.InitializeAsync(_clientApp);
-        }
-
-        public override Task DisposeAsync() {
-            _workflow?.Dispose();
-            return base.DisposeAsync();
+            await _hostScript.InitializeAsync(_clientApp);
         }
 
         [Test]
@@ -54,14 +51,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     _clientApp.Component = component;
                 });
 
-                await ShowHelpAsync("plot", HostScript, _clientApp);
+                await ShowHelpAsync("plot", _hostScript, _clientApp);
 
                 _clientApp.Uri.IsLoopback.Should().Be(true);
                 _clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
                 (await GetBackgroundColorAsync(component, _clientApp)).Should().Be(darkThemeCssColor);
 
                 component.VisualTheme = "Light.css";
-                await ShowHelpAsync("lm", HostScript, _clientApp);
+                await ShowHelpAsync("lm", _hostScript, _clientApp);
                 _clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
                 (await GetBackgroundColorAsync(component, _clientApp)).Should().Be("white");
