@@ -18,11 +18,11 @@ namespace Microsoft.VisualStudio.R.Package.Test {
             HostScript = new VsRHostScript(SessionProvider, async, callback);
         }
 
-        protected Task InitializeAsync() => HostScript.InitializeAsync();
+        public override Task InitializeAsync() => HostScript.InitializeAsync();
 
-        protected override void Dispose(bool disposing) {
+        public override Task DisposeAsync() {
             HostScript.Dispose();
-            base.Dispose(disposing);
+            return base.DisposeAsync();
         }
     }
 }

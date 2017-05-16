@@ -42,7 +42,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var textViewTracker = shell.GetService<IActiveWpfTextViewTracker>();
             var replTracker = shell.GetService<IActiveRInteractiveWindowTracker>();
             var debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
-            var contentTypeRegistryService = shell.GetService<IContentTypeRegistryService>();
             var pss = shell.GetService<IProjectSystemServices>();
             var pcsp = shell.GetService<IProjectConfigurationSettingsProvider>();
             var dbcs = shell.GetService<IDbConnectionService>();
@@ -121,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
-                new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
+                new GotoEditorWindowCommand(textViewTracker, shell.Services),
                 new GotoSolutionExplorerCommand(shell),
 
                 // Plot commands

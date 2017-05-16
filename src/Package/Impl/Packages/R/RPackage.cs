@@ -103,6 +103,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private IPackageIndex _packageIndex;
 
         public static IRPackage Current { get; private set; }
+        public static Microsoft.Common.Core.Services.IServiceContainer Services => VsAppShell.Current.Services;
 
         protected override void Initialize() {
             Current = this;
@@ -118,8 +119,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages(VsAppShell.Current.Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            var settings = VsAppShell.Current.GetService<IRSettings>();
-            var editorSettings = VsAppShell.Current.GetService<IREditorSettings>();
+            var settings = Services.GetService<IRSettings>();
+            var editorSettings = Services.GetService<IREditorSettings>();
             RtvsTelemetry.Initialize(_packageIndex, settings, editorSettings);
 
             BuildFunctionIndex();
@@ -128,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current.GetService<IIdleTimeService>());
+            IdleTimeAction.Create(() => ExpansionsCache.Load(Services), 200, typeof(ExpansionsCache), VsAppShell.Current.GetService<IIdleTimeService>());
         }
 
         protected override void Dispose(bool disposing) {
@@ -145,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() => new List<IVsEditorFactory> {
-                new REditorFactory(this, VsAppShell.Current.Services)
+                new REditorFactory(this, Services)
             };
 
         protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {

@@ -3,14 +3,16 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test {
-    public class InteractiveTest: IDisposable {
+    public class InteractiveTest: IAsyncLifetime {
         protected IRSessionProvider SessionProvider { get; }
         protected IServiceContainer Services { get; }
 
@@ -19,10 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.Test {
             var workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             SessionProvider = workflow.RSessions;
         }
-
-        public void Dispose() => Dispose(true);
-
-        protected virtual void Dispose(bool disposing) { }
 
         public static void DoIdle(int ms) {
             UIThreadHelper.Instance.Invoke(() => {
@@ -34,5 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Test {
                 }
             });
         }
+
+        public virtual Task InitializeAsync() => Task.CompletedTask;
+        public virtual Task DisposeAsync() => Task.CompletedTask;
     }
 }

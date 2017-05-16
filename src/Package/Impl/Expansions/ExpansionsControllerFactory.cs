@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
-            var textManager = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            var textManager = _coreShell.GetService<IVsTextManager2>(typeof(SVsTextManager));
             textManager.GetExpansionManager(out IVsExpansionManager expansionManager);
 
             return new List<ICommandTarget> {

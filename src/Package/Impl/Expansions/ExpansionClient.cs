@@ -172,7 +172,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 // Do not format standalone operators
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
                 if (CanFormat(text)) {
-                    var formatter = new RangeFormatter(VsAppShell.Current.Services);
+                    var formatter = new RangeFormatter(_services);
                     formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
                 }
             }

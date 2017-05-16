@@ -19,9 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 }
                 return _adaptersFactoryService;
             }
-            internal set {
-                _adaptersFactoryService = value;
-            }
+            internal set => _adaptersFactoryService = value;
         }
 
         public static T GetBufferAdapter<T>(this ITextBuffer textBuffer) where T : class {

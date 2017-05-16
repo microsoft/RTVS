@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
@@ -31,12 +32,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private readonly IRInteractiveWorkflow _workflow;
+        private readonly IServiceContainer _services;
 
-        public ViewersTest(TestMethodFixture testMethod) {
-
+        public ViewersTest(TestMethodFixture testMethod, IServiceContainer services) {
+            _services = services;
             _testMethod = testMethod;
-            _aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
-            _workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _aggregator = _services.GetService<IObjectDetailsViewerAggregator>();
+            _workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _sessionProvider = _workflow.RSessions;
         }
 
@@ -134,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("as.complex")]
         public async Task GridViewerDimLengthTest(string cast) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new GridViewer(VsAppShell.Current, e);
+            var viewer = new GridViewer(_services.GetService<ICoreShell>(), e);
             viewer.CanView(null).Should().BeFalse();
 
             using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -191,7 +193,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("setClass('X', representation(x = 'logical'))()")]
         public async Task GridViewerExcludeTest(string expr) {
             var e = Substitute.For<IDataObjectEvaluator>();
-            var viewer = new GridViewer(VsAppShell.Current, e);
+            var viewer = new GridViewer(_services.GetService<ICoreShell>(), e);
             viewer.CanView(null).Should().BeFalse();
 
             using (var hostScript = new RHostScript(_sessionProvider)) {

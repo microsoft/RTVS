@@ -28,25 +28,23 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             _hostScript = new VariableRHostScript(SessionProvider);
         }
 
-        protected override void Dispose(bool disposing) {
+        public override Task DisposeAsync() {
             _hostScript.Dispose();
-            base.Dispose(disposing);
+            return base.DisposeAsync();
         }
 
         [Test]
         public async Task ConstructorTest() {
-            VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
                 await PrepareControl(_hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
-                actual = VisualTreeObject.Create(script.Control);
+                var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
             }
         }
 
         [Test]
         public async Task SortTest01() {
-            VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
                 await PrepareControl(_hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
                 var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control);
                 var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
@@ -57,15 +55,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     grid.ToggleSort(header, false);
                 });
                 DoIdle(200);
-                actual = VisualTreeObject.Create(script.Control);
+                var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted01");
             }
         }
 
         [Test]
         public async Task SortTest02() {
-            VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
                 await PrepareControl(_hostScript, script, "grid.test <- mtcars");
                 UIThreadHelper.Instance.Invoke(() => {
                     var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
@@ -85,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(200);
                 });
 
-                actual = VisualTreeObject.Create(script.Control);
+                var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted02");
             }
         }

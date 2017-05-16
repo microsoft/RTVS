@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         public void ConstructorTest02() {
-            using (var script = new ControlTestScript(typeof(VariableView))) {
+            using (var script = new ControlTestScript(typeof(VariableView), Services)) {
                 var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
             }
@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         public async Task SimpleDataTest() {
             VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableView))) {
+            using (var script = new ControlTestScript(typeof(VariableView), Services)) {
                 DoIdle(100);
                 await HostScript.Session.ExecuteAsync("x <- c(1:10)");
                 DoIdle(1000);
@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         public async Task SimpleFunctionTest() {
             VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableView))) {
+            using (var script = new ControlTestScript(typeof(VariableView), Services)) {
                 DoIdle(100);
                 await HostScript.Session.ExecuteAsync("x <- lm");
                 DoIdle(1000);

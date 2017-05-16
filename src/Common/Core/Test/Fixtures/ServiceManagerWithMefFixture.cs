@@ -21,8 +21,13 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         private readonly Lazy<ComposablePartCatalog> _catalogLazy;
 
         protected ServiceManagerWithMefFixture() {
-            _catalogLazy = new Lazy<ComposablePartCatalog>(() => CatalogFactory.CreateAssembliesCatalog(GetAssemblyNames()));
+            _catalogLazy = new Lazy<ComposablePartCatalog>(() => {
+                var catalog = CatalogFactory.CreateAssembliesCatalog(GetAssemblyNames());
+                return FilterCatalog(catalog);
+            });
         }
+
+        protected virtual ComposablePartCatalog FilterCatalog(ComposablePartCatalog catalog) => catalog;
 
         protected abstract IEnumerable<string> GetAssemblyNames();
 

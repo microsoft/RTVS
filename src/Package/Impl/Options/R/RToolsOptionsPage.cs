@@ -21,12 +21,11 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     public class RToolsOptionsPage : DialogPage {
-        private readonly IRSettings _settings;
         private readonly SettingsHolder _holder;
 
         public RToolsOptionsPage() {
-            _settings = VsAppShell.Current.GetService<IRSettings>();
-            _holder = new SettingsHolder(_settings);
+            var settings = VsAppShell.Current.GetService<IRSettings>();
+            _holder = new SettingsHolder(settings);
         }
 
         [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -16,10 +17,14 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
     internal sealed class GotoEditorWindowCommand : PackageCommand {
         private readonly IActiveWpfTextViewTracker _viewTracker;
         private readonly IContentType _rContentType;
+        private readonly IServiceContainer _services;
 
-        public GotoEditorWindowCommand(IActiveWpfTextViewTracker viewTracker, IContentTypeRegistryService svc) :
+        public GotoEditorWindowCommand(IActiveWpfTextViewTracker viewTracker, IServiceContainer services) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowEditorWindow) {
             _viewTracker = viewTracker;
+            _services = services;
+
+            var svc = services.GetService<IContentTypeRegistryService>();
             _rContentType = svc.GetContentType(RContentTypeDefinition.ContentType);
         }
 
@@ -38,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
         }
 
         private IVsWindowFrame FindDocumentFrame(string filePath) {
-            var uiShell = VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var uiShell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
             var frames = new IVsWindowFrame[1];
             IEnumWindowFrames windowEnum;
             uiShell.GetDocumentWindowEnum(out windowEnum);

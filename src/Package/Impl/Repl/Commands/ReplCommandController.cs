@@ -135,12 +135,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return CommandResult.Executed;
         }
 
-        private static void FormatReplDocument(ITextView textView, ITextBuffer textBuffer, int position) {
+        private void FormatReplDocument(ITextView textView, ITextBuffer textBuffer, int position) {
             var document = textBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
-                FormatOperations.FormatCurrentStatement(textView.ToEditorView(), textBuffer.ToEditorBuffer(), VsAppShell.Current.Services);
+                FormatOperations.FormatCurrentStatement(textView.ToEditorView(), textBuffer.ToEditorBuffer(), Services);
             }
         }
 

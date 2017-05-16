@@ -63,18 +63,16 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public static bool NavigateToTextView(IVsTextView vsTextView, int start, int length) {
             var adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.GetService<ICompositionService>());
-            if (adapterService != null) {
-                var textView = adapterService.GetWpfTextView(vsTextView);
-                if (textView != null) {
-                    return NavigateToTextView(textView, start, length);
-                }
+            var textView = adapterService?.GetWpfTextView(vsTextView);
+            if (textView != null) {
+                return NavigateToTextView(textView, start, length);
             }
 
             return false;
         }
 
         public static bool NavigateToFrame(IVsWindowFrame frame, int start, int length) {
-            int hr = frame.Show();
+            var hr = frame.Show();
             if (ErrorHandler.Succeeded(hr)) {
                 var vsTextView = VsShellUtilities.GetTextView(frame);
                 if (vsTextView != null) {

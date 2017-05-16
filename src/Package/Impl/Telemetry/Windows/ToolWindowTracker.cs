@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
 
         private void ReportWindowLayout() {
             if (_reportCount < 4) {
-                RtvsTelemetry.Current.ReportWindowLayout(VsAppShell.Current.GetService<IVsUIShell>(typeof(SVsUIShell)));
+                RtvsTelemetry.Current.ReportWindowLayout(_services.GetService<IVsUIShell>(typeof(SVsUIShell)));
                 _reportCount++;
                 if (_reportCount > 4) {
                     _timer?.Stop();
