@@ -14,9 +14,7 @@ using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
-    /// Provides list of installed packages for completion inside 
-    /// library(...) statement. List of packages is  obtained from 
-    /// ~\Program Files\R and from ~\Documents\R folders
+    /// Provides completion for variables in the current workspace.
     /// </summary>
     public sealed class WorkspaceVariableCompletionProvider : IRCompletionListProvider {
         private readonly IVariablesProvider _variablesProvider;
@@ -34,16 +32,13 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-
             var start = DateTime.Now;
 
             _variablesProvider.Initialize();
             var names = GetFieldProvidingVariableNames(context);
 
             foreach (var variableName in names) {
-                int memberCount = _variablesProvider.GetMemberCount(variableName);
-                IReadOnlyCollection<INamedItemInfo> members = _variablesProvider.GetMembers(variableName, 200);
-
+                var members = _variablesProvider.GetMembers(variableName, 200);
                 foreach (var v in members) {
                     Debug.Assert(v != null);
                     if (v.Name.Length > 0 && v.Name[0] != '[') {
@@ -75,8 +70,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
             var indexer = context.AstRoot.GetNodeOfTypeFromPosition<Indexer>(context.Position, includeEnd: true);
             while (indexer != null) {
-                var variable = indexer.RightOperand as Variable;
-                if (variable != null) {
+                if (indexer.RightOperand is Variable variable) {
                     list.Add(variable.Name + "$");
                 } else {
                     break;
@@ -95,7 +89,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             }
 
             var name = context.Session.View.GetVariableNameBeforeCaret();
-            return !string.IsNullOrEmpty(name) ? new string[] { name } : Enumerable.Empty<string>();
+            return !string.IsNullOrEmpty(name) ? new [] { name } : Enumerable.Empty<string>();
         }
     }
 }

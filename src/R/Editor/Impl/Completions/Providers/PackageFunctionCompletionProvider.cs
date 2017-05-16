@@ -73,13 +73,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #endregion
 
         #region IRHelpSearchTermProvider
-        public IReadOnlyCollection<string> GetEntries() {
-            var list = new List<string>();
-            foreach (var pkg in _packageIndex.Packages) {
-                list.AddRange(pkg.Functions.Select(x => x.Name));
-            }
-            return list;
-        }
+        public IReadOnlyCollection<string> GetEntries()
+            => _packageIndex.Packages.SelectMany(pkg => pkg.Functions.Select(x => x.Name)).ToList();
         #endregion
 
         private IEnumerable<IPackageInfo> GetPackages(IRIntellisenseContext context) {
