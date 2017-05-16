@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
@@ -12,7 +10,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
-using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
