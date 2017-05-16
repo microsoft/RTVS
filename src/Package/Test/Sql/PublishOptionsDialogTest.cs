@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
@@ -18,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     public class PublishOptionsDialogTest {
         [Test(ThreadType.UI)]
         public async Task Constructor() {
-            var shell = Substitute.For<ICoreShell>();
+            var shell = TestCoreShell.CreateSubstitute();
             var pss = Substitute.For<IProjectSystemServices>();
             var pcsp = Substitute.For<IProjectConfigurationSettingsProvider>();
             var s = Substitute.For<ISettingsStorage>();

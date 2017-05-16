@@ -22,7 +22,7 @@ namespace Microsoft.R.Interpreters {
 
         public IRInterpreterInfo CreateInfo(string name, string path) {
             var packagesInfo = InstalledPackageInfo.GetPackages(_fileSystem);
-            string libRsoPath = Path.Combine(path, "lib/libR.so");
+            string libRsoPath = Path.Combine(path, "lib/libR.so").Replace('\\', '/');
 
             // In linux there is no direct way to get version from binary. So, try and find a package that 
             // has this file in the package files list. 

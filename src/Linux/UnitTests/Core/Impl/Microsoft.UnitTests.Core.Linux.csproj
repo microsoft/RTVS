@@ -14,6 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.ComponentModel.Primitives">
+      <HintPath>..\..\..\..\..\..\Users\mikhaila\.nuget\packages\system.componentmodel.primitives\4.3.0\ref\netstandard1.0\System.ComponentModel.Primitives.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="TestData\microsoft-r-open-mro-3.3.list">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
