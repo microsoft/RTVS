@@ -34,14 +34,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             _aggregator = Services.GetService<IObjectDetailsViewerAggregator>();
         }
 
-        public override async Task InitializeAsync() {
-            await HostScript.InitializeAsync(_callback);
-            await base.InitializeAsync();
-        }
-
         [Test]
         public async Task ViewLibraryTest() {
             _callback.ViewLibraryAsync().Returns(Task.CompletedTask);
+            await HostScript.InitializeAsync(_callback);
+
             using (var inter = await HostScript.Session.BeginInteractionAsync()) {
                 await inter.RespondAsync("library()" + Environment.NewLine);
             }
@@ -51,6 +48,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         public async Task ViewDataTest01() {
             _callback.When(x => x.ViewObjectAsync(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
+            await HostScript.InitializeAsync(_callback);
+
             using (var inter = await HostScript.Session.BeginInteractionAsync()) {
                 await inter.RespondAsync("View(mtcars)" + Environment.NewLine);
             }
@@ -59,6 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         public async Task ViewerExportTest() {
+            await HostScript.InitializeAsync();
             var session = HostScript.Session;
 
             var funcViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "lm");
@@ -87,6 +87,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("`?` <- function(a, b, c) { }", "`?`", "function(a, b, c)")]
         [InlineData("`?` <- function(a, b, c) { }; x <- `?`", "x", "function(a, b, c)")]
         public async Task FunctionViewerTest(string expression, string functionName, string expected) {
+            await HostScript.InitializeAsync();
+
             if (!string.IsNullOrEmpty(expression)) {
                 await HostScript.Session.ExecuteAsync(expression);
             }
@@ -101,6 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task FormulaViewerTest() {
             var formula = "1 ~ 2";
 
+            await HostScript.InitializeAsync();
             var funcViewer = await _aggregator.GetViewer(HostScript.Session, REnvironments.GlobalEnv, formula) as CodeViewer;
             funcViewer.Should().NotBeNull();
 
@@ -120,6 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var viewer = new GridViewer(Services.GetService<ICoreShell>(), e);
             viewer.CanView(null).Should().BeFalse();
 
+            await HostScript.InitializeAsync();
             var session = HostScript.Session;
 
             await session.ExecuteAsync($"x <- {cast}(c())");
@@ -171,6 +175,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("1 ~ 2")]
         [InlineData("setClass('X', representation(x = 'logical'))()")]
         public async Task GridViewerExcludeTest(string expr) {
+            await HostScript.InitializeAsync();
+
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new GridViewer(Services.GetService<ICoreShell>(), e);
             viewer.CanView(null).Should().BeFalse();
@@ -184,6 +190,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         public async Task ViewDataTest02() {
             _callback.When(x => x.ViewFile(Arg.Any<string>(), "R data sets", true)).Do(x => { });
+            await HostScript.InitializeAsync(_callback);
+
             using (var inter = await HostScript.Session.BeginInteractionAsync()) {
                 await inter.RespondAsync("data()" + Environment.NewLine);
             }
