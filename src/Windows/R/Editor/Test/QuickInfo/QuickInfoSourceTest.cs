@@ -71,13 +71,12 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         public async Task NonUniqueNameTest() {
             var content = @"x <- select()";
 
-            using (var hostScript = new RHostScript(Workflow.RSessions)) {
+            using (new RHostScript(Workflow.RSessions)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 12);
-                var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
-                session.ApplicableSpan.Should().NotBeNull();
+                session.ApplicableSpan.Should().BeNull();
                 session.QuickInfoContent.Should().BeEmpty();
 
                 await Workflow.RSession.ExecuteAsync("library(MASS)");
@@ -100,13 +99,12 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         public async Task LoadUnloadPackageTest() {
             var content = @"do()";
 
-            using (var hostScript = new RHostScript(Workflow.RSessions)) {
+            using (new RHostScript(Workflow.RSessions)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 3);
-                var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
-                session.ApplicableSpan.Should().NotBeNull();
+                session.ApplicableSpan.Should().BeNull();
                 session.QuickInfoContent.Should().BeEmpty();
 
                 await Workflow.RSession.ExecuteAsync("library(dplyr)");

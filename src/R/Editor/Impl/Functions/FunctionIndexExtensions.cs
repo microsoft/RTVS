@@ -20,11 +20,9 @@ namespace Microsoft.R.Editor.Functions {
                 packageName = t.Result;
                 if (!string.IsNullOrEmpty(packageName)) {
                     fi = functionIndex.GetFunctionInfo(functionName, packageName);
-                    if (fi != null) {
-                        await functionIndex.Services.MainThread().SwitchToAsync();
-                        callback(fi, parameter);
-                    }
                 }
+                await functionIndex.Services.MainThread().SwitchToAsync();
+                callback(fi, parameter);
             }).DoNotWait();
         }
 

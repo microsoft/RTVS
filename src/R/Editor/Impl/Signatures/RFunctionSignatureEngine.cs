@@ -98,9 +98,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         private static void InvokeSignaturesCallback(IFunctionInfo functionInfo, ITrackingTextRange applicableToSpan, IRIntellisenseContext context, Action<IEnumerable<IRFunctionSignatureHelp>> callback) {
             var signatures = MakeSignatures(functionInfo, applicableToSpan, context);
-            if (signatures.Any()) {
-                callback(signatures);
-            }
+            callback(signatures);
         }
         private static IEnumerable<IRFunctionSignatureHelp> MakeSignatures(IFunctionInfo functionInfo, ITrackingTextRange applicableToSpan, IRIntellisenseContext context) {
             var signatures = new List<IRFunctionSignatureHelp>();
