@@ -13,17 +13,18 @@ namespace Microsoft.R.Editor.Functions {
             var fi = functionIndex.GetFunctionInfo(functionName, packageName);
             if (fi != null) {
                 callback(fi, parameter);
-                return;
+            } else {
+                GetFunctionInfoFromPackageAsync(functionIndex, functionName, packageName, callback, parameter).DoNotWait();
             }
+        }
 
-            functionIndex.GetPackageNameAsync(functionName).ContinueWith(async t => {
-                packageName = t.Result;
-                if (!string.IsNullOrEmpty(packageName)) {
-                    fi = functionIndex.GetFunctionInfo(functionName, packageName);
-                }
-                await functionIndex.Services.MainThread().SwitchToAsync();
-                callback(fi, parameter);
-            }).DoNotWait();
+        private static async Task GetFunctionInfoFromPackageAsync(IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter) {
+            IFunctionInfo fi = null;
+            if (!string.IsNullOrEmpty(packageName)) {
+                fi = functionIndex.GetFunctionInfo(functionName, packageName);
+            }
+            await functionIndex.Services.MainThread().SwitchToAsync();
+            callback(fi, parameter);
         }
 
         public static async Task<IFunctionInfo> GetFunctionInfoAsync(this IFunctionIndex functionIndex, string functionName, string packageName = null) {
