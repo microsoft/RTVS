@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Testing;
 
 namespace Microsoft.Common.Core {
     public static class TaskExtensions {
@@ -60,6 +61,11 @@ namespace Microsoft.Common.Core {
         public static void DoNotWait(this Task task) {
             if (task.IsCompleted) {
                 ReThrowTaskException(task);
+                return;
+            }
+
+            if (TestEnvironment.Current != null) {
+                TestEnvironment.Current.AddTaskToWait(task);
                 return;
             }
 

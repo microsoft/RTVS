@@ -13,16 +13,18 @@ namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     internal sealed class CollectionRunner : XunitTestCollectionRunner {
         private readonly IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
+        private readonly XunitTestEnvironment _testEnvironment;
         private readonly IMessageSink _diagnosticMessageSink;
 
-        public CollectionRunner(ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ITestCaseOrderer testCaseOrderer, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, IReadOnlyDictionary<Type, object> assemblyFixtureMappings)
+        public CollectionRunner(ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ITestCaseOrderer testCaseOrderer, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, IReadOnlyDictionary<Type, object> assemblyFixtureMappings, XunitTestEnvironment testEnvironment)
             : base(testCollection, testCases, diagnosticMessageSink, messageBus, testCaseOrderer, aggregator, cancellationTokenSource) {
             _diagnosticMessageSink = diagnosticMessageSink;
             _assemblyFixtureMappings = assemblyFixtureMappings;
+            _testEnvironment = testEnvironment;
         }
 
         protected override Task<RunSummary> RunTestClassAsync(ITestClass testClass, IReflectionTypeInfo typeInfo, IEnumerable<IXunitTestCase> testCases) {
-            return new ClassRunner(testClass, typeInfo, testCases, _diagnosticMessageSink, MessageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), CancellationTokenSource, CollectionFixtureMappings, _assemblyFixtureMappings).RunAsync();
+            return new ClassRunner(testClass, typeInfo, testCases, _diagnosticMessageSink, MessageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), CancellationTokenSource, CollectionFixtureMappings, _assemblyFixtureMappings, _testEnvironment).RunAsync();
         }
     }
 }

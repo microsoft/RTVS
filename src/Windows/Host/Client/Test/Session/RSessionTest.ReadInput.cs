@@ -3,9 +3,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Testing;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -18,13 +20,11 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class ReadInput : IAsyncLifetime {
-            private readonly TaskObserverMethodFixture _taskObserver;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public ReadInput(IServiceContainer services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
-                _taskObserver = taskObserver;
+            public ReadInput(IServiceContainer services, TestMethodFixture testMethod) {
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(ReadInput));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 _callback = new RSessionCallbackStub();
@@ -32,8 +32,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo (isInteractive:true), _callback, 50000);
-
-                _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
+                TestEnvironment.Current.AddTaskToWait(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
@@ -61,18 +60,27 @@ paste(h, name)
 
             [Test]
             public async Task ConcurrentRequests() {
+                var responds = new List<string>();
+                var input = new List<string>();
                 var output = new List<string>();
                 void OutputHandler(object o, ROutputEventArgs e) => output.Add(e.Message);
 
-                _callback.ReadUserInputHandler = (m, l, c) => Task.FromResult($"{m}\n");
+                Task<string> InputHandler(string prompt, int maximumLength, CancellationToken ct) {
+                    input.Add(prompt);
+                    return Task.FromResult($"{prompt}\n");
+                }
+
+                _callback.ReadUserInputHandler = InputHandler;
                 _session.Output += OutputHandler;
                 await ParallelTools.InvokeAsync(10, async i => {
                     using (var interaction = await _session.BeginInteractionAsync()) {
+                        responds.Add(i.ToString());
                         await interaction.RespondAsync($"readline('{i}')");
                     }
                 });
                 _session.Output -= OutputHandler;
 
+                input.Should().Equal(responds);
                 output.Should().Contain(Enumerable.Range(0, 10).Select(i => $" \"{i}\""));
             }
         }

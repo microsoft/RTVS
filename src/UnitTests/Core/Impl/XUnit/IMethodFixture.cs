@@ -13,15 +13,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public interface IMethodFixture {
         /// <summary>
         /// Initializes method fixture.
-        /// This method should never fail with exception.
         /// </summary>
         /// <param name="testInput">Test method input data (constructor and method arguments, fixtures, etc.)</param>
         /// <param name="messageBus"></param>
-        /// <returns>
-        /// A task that represents the asynchronous initialization. The value of the task contains a task that will be observed by test runner. 
-        /// If this task returns before test case is compeleted, it's <see cref="T:Xunit.Sdk.RunSummary"/> will be used instead.
-        /// </returns>
-        Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus);
+        Task InitializeAsync(ITestInput testInput, IMessageBus messageBus);
 
         Task DisposeAsync(RunSummary result, IMessageBus messageBus);
     }

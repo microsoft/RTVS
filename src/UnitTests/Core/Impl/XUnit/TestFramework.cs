@@ -3,12 +3,20 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Microsoft.Common.Core.Testing;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     internal class TestFramework : XunitTestFramework {
+        private static readonly XunitTestEnvironment _testEnvironment;
+
+        static TestFramework() {
+            _testEnvironment = new XunitTestEnvironment();
+            TestEnvironment.Current = _testEnvironment;
+        }
+
         public TestFramework(IMessageSink messageSink) : base(messageSink) {}
 
         protected override ITestFrameworkDiscoverer CreateDiscoverer(IAssemblyInfo assemblyInfo) {
@@ -16,7 +24,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName) {
-            return new TestFrameworkExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
+            return new TestFrameworkExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink, _testEnvironment);
         }
     }
 }

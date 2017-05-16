@@ -55,17 +55,13 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 return this;
             }
 
-            public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                try {
-                    var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
-                    Directory.CreateDirectory(logsFolder);
-                    _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
-                    _addServices(this, testInput);
-                } catch (Exception) {
-                    return Task.FromResult(Task.FromResult(new RunSummary { Failed = 1 }));
-                }
+            public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
+                Directory.CreateDirectory(logsFolder);
+                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
+                _addServices(this, testInput);
 
-                return MethodFixtureBase.DefaultInitializeTask;
+                return Task.CompletedTask;
             }
 
             public virtual Task DisposeAsync(RunSummary result, IMessageBus messageBus) {

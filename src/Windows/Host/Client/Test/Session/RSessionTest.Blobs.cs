@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Testing;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -18,13 +19,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         [Category.R.Session]
         public class Blobs : IAsyncLifetime {
-            private readonly TaskObserverMethodFixture _taskObserver;
             private readonly TestMethodFixture _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
 
-            public Blobs(IServiceContainer services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
-                _taskObserver = taskObserver;
+            public Blobs(IServiceContainer services, TestMethodFixture testMethod) {
                 _testMethod = testMethod;
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(Blobs));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
@@ -32,8 +31,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo(), null, 50000);
-
-                _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
+                TestEnvironment.Current.AddTaskToWait(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
