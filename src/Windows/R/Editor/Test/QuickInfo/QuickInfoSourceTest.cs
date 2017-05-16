@@ -71,7 +71,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         public async Task NonUniqueNameTest() {
             var content = @"x <- select()";
 
-            using (new RHostScript(Workflow.RSessions)) {
+            using (new RHostScript(Services)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 12);
@@ -99,7 +99,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
         public async Task LoadUnloadPackageTest() {
             var content = @"do()";
 
-            using (new RHostScript(Workflow.RSessions)) {
+            using (new RHostScript(Services)) {
                 //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
 
                 var session = await TriggerSessionAsync(content, 3);

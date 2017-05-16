@@ -8,17 +8,21 @@ using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Test {
     public class HostBasedInteractiveTest : InteractiveTest {
+        private readonly IRSessionCallback _callback;
+
         protected VsRHostScript HostScript { get; }
 
         public HostBasedInteractiveTest(IServiceContainer services, IRSessionCallback callback = null): base(services) {
-            HostScript = new VsRHostScript(SessionProvider, callback);
+            _callback = callback;
+            HostScript = new VsRHostScript(services, callback);
         }
 
         public HostBasedInteractiveTest(IServiceContainer services, bool async, IRSessionCallback callback = null): base(services) {
-            HostScript = new VsRHostScript(SessionProvider, async, callback);
+            _callback = callback;
+            HostScript = new VsRHostScript(services, async);
         }
 
-        public override Task InitializeAsync() => HostScript.InitializeAsync();
+        public override Task InitializeAsync() => HostScript.InitializeAsync(_callback);
 
         public override Task DisposeAsync() {
             HostScript.Dispose();

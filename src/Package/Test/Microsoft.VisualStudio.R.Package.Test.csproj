@@ -253,7 +253,6 @@
     <Compile Include="Fixtures\ProjectTestFilesFixture.cs" />
     <Compile Include="Utility\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\HostBasedInteractiveTest.cs" />
-    <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="Utility\InteractiveTest.cs" />
     <Compile Include="Utility\TestPackage.cs" />
     <Compile Include="Utility\TestServiceProvider.cs" />

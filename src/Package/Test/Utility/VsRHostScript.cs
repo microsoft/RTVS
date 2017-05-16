@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.R.Host.Client;
@@ -13,11 +14,11 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public sealed class VsRHostScript : RHostScript {
-        public VsRHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null)
-            : base(sessionProvider, clientApp) { }
+        public VsRHostScript(IServiceContainer services, IRSessionCallback clientApp = null)
+            : base(services, clientApp) { }
 
-        public VsRHostScript(IRSessionProvider sessionProvider, bool async, IRSessionCallback clientApp)
-            : base(sessionProvider, async, clientApp) { }
+        public VsRHostScript(IServiceContainer services, bool async)
+            : base(services, async) { }
 
         public static void DoIdle(int ms) {
             UIThreadHelper.Instance.Invoke(() => {

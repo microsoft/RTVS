@@ -20,11 +20,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public sealed class EvaluationWrapperTest : IAsyncLifetime {
+        private readonly IServiceContainer _services;
         private VariableRHostScript _hostScript;
+
+        public EvaluationWrapperTest(IServiceContainer services) {
+            _services = services;
+        }
 
         public Task InitializeAsync() {
             var workflow = VsAppShell.Current.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _hostScript = new VariableRHostScript(workflow.RSessions);
+            _hostScript = new VariableRHostScript(_services);
             return workflow.Connections.ConnectAsync(workflow.Connections.RecentConnections[0]);
         }
 

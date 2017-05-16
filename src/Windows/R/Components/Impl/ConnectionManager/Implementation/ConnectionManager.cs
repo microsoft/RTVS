@@ -201,10 +201,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return brokerSwitched;
         }
 
-        private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo) {
-            IConnection connection;
-            return _connections.TryGetValue(connectionInfo.Name, out connection) ? connection : Connection.Create(_securityService, connectionInfo);
-        }
+        private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo) 
+            => _connections.TryGetValue(connectionInfo.Name, out var connection) 
+               ? connection 
+               : Connection.Create(_securityService, connectionInfo);
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
             if (oldConnection != null && newConnection.Equals(oldConnection)) {

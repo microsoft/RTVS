@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Interpreters;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
@@ -15,31 +16,34 @@ namespace Microsoft.R.Host.Client.Test.Script {
         private IRSessionCallback _clientApp;
         private bool _disposed;
 
-        public IRSessionProvider SessionProvider { get; private set; }
-        public IRSession Session { get; private set; }
+        public IRSession Session => Workflow.RSession;
+        public IServiceContainer Services { get; }
+        public IRInteractiveWorkflowProvider WorkflowProvider { get; }
+        public IRInteractiveWorkflow Workflow { get; private set; }
 
         public static Version RVersion => new RInstallation().GetCompatibleEngines().First().Version;
 
-        public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
-            SessionProvider = sessionProvider;
+        public RHostScript(IServiceContainer services, IRSessionCallback clientApp = null) : this(services, true) {
             _clientApp = clientApp;
             InitializeAsync().Wait();
         }
 
-        public RHostScript(IRSessionProvider sessionProvider, bool async, IRSessionCallback clientApp) {
-            SessionProvider = sessionProvider;
-            _clientApp = clientApp;
+        public RHostScript(IServiceContainer services, bool async) {
+            Services = services;
+            WorkflowProvider = Services.GetService<IRInteractiveWorkflowProvider>();
+            Workflow = WorkflowProvider.GetOrCreate();
         }
 
         public async Task InitializeAsync(IRSessionCallback clientApp = null) {
-            _clientApp = clientApp ?? _clientApp;
+            _clientApp = clientApp;
 
-            Session = SessionProvider.GetOrCreate(SessionNames.InteractiveWindow);
-            if (Session.IsHostRunning) {
-                await Session.StopHostAsync();
+            await Workflow.RSessions.TrySwitchBrokerAsync(GetType().Name);
+
+            if (Workflow.RSession.IsHostRunning) {
+                await Workflow.RSession.StopHostAsync();
             }
 
-            await Session.StartHostAsync(new RHostStartupInfo(), _clientApp ?? new RHostClientTestApp(), 50000);
+            await Workflow.RSession.StartHostAsync(new RHostStartupInfo(), _clientApp ?? new RHostClientTestApp(), 50000);
         }
 
         public void Dispose() {
@@ -60,12 +64,8 @@ namespace Microsoft.R.Host.Client.Test.Script {
                     }
                     Debug.Assert(!Session.IsHostRunning);
                 }
-
-                if (SessionProvider != null) {
-                    SessionProvider = null;
-                }
+                Workflow?.Dispose();
             }
-
             _disposed = true;
         }
     }

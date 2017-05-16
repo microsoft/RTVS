@@ -70,7 +70,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("lm(utils::)", 10, "adist", "approximate string distance", false)]
         [InlineData("rtvs::", 6, "fetch_file", "used to download", true)]
         public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription, bool realHost) {
-            var hostScript = realHost ? new RHostScript(Workflow.RSessions) : null;
+            var hostScript = realHost ? new RHostScript(Services) : null;
             try {
                 var packageName = await FunctionIndex.GetPackageNameAsync(expectedEntry);
                 packageName.Should().NotBeNull();

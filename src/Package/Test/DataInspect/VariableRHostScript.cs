@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
@@ -22,8 +22,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
-        public VariableRHostScript(IRSessionProvider sessionProvider)
-            : base(sessionProvider) { }
+        public VariableRHostScript(IServiceContainer services)
+            : base(services) { }
 
         public VariableViewModel GlobalEnvrionment => _globalEnv;
 

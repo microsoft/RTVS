@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         public VariableGridTest(IServiceContainer services, TestFilesFixture files): base(services) {
             _files = files;
-            _hostScript = new VariableRHostScript(SessionProvider);
+            _hostScript = new VariableRHostScript(Services);
         }
 
         public override Task DisposeAsync() {

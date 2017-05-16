@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
             if (sessionProvider != null) {
                 IntelliSenseRSession.HostStartTimeout = 10000;
-                HostScript = new RHostScript(sessionProvider);
+                HostScript = new RHostScript(services);
 
                 PackageIndex = services.GetService<IPackageIndex>();
                 await PackageIndex.BuildIndexAsync();

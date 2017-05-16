@@ -14,7 +14,6 @@ using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Help;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using mshtml;
@@ -35,9 +34,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         public override async Task InitializeAsync() {
             _clientApp = new RHostClientHelpTestApp();
             await HostScript.InitializeAsync(_clientApp);
-
-            _workflow = Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            await _workflow.RSessions.TrySwitchBrokerAsync(GetType().Name);
         }
 
         public override Task DisposeAsync() {
