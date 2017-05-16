@@ -8,16 +8,18 @@ using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
     [ExcludeFromCodeCoverage]
-    public class TestMethodFixture : MethodFixtureBase {
+    public class TestMethodFixture : IMethodFixture {
         public MethodInfo MethodInfo { get; private set; }
         public string DisplayName { get; private set; }
         public string FileSystemSafeName { get; private set; }
 
-        public override Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+        public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             DisplayName = testInput.DisplayName;
             MethodInfo = testInput.TestMethod;
             FileSystemSafeName = testInput.FileSytemSafeName;
-            return base.InitializeAsync(testInput, messageBus);
+            return Task.CompletedTask;
         }
+
+        public Task DisposeAsync(RunSummary result, IMessageBus messageBus) => Task.CompletedTask;
     }
 }
