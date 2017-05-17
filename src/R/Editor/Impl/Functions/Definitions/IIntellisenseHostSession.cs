@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client;
@@ -21,8 +22,13 @@ namespace Microsoft.R.Editor.Functions {
         /// <summary>
         /// Starts intellisense session.
         /// </summary>
-        Task StartSessionAsync();
-        
+        Task StartSessionAsync(CancellationToken ct = default(CancellationToken));
+
+        /// <summary>
+        /// Stops the intellisense session
+        /// </summary>
+        Task StopSessionAsync(CancellationToken ct = default(CancellationToken));
+
         /// <summary>
         /// Given function name returns package the function belongs to.
         /// The package is determined from the interactive R session since
@@ -42,6 +48,6 @@ namespace Microsoft.R.Editor.Functions {
         /// <summary>
         /// Retrieves names of packages loaded into the interactive session.
         /// </summary>
-        Task<IEnumerable<string>> GetLoadedPackageNamesAsync();
+        Task<IEnumerable<string>> GetLoadedPackageNamesAsync(CancellationToken ct = default(CancellationToken));
     }
 }
