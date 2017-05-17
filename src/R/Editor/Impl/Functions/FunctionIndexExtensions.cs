@@ -20,6 +20,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private static async Task GetFunctionInfoFromPackageAsync(IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter) {
             IFunctionInfo fi = null;
+            packageName = packageName ?? await functionIndex.GetPackageNameAsync(functionName);
             if (!string.IsNullOrEmpty(packageName)) {
                 fi = functionIndex.GetFunctionInfo(functionName, packageName);
             }
