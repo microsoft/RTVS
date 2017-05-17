@@ -31,5 +31,13 @@ namespace Microsoft.R.Interpreters {
         /// Verifies actual installation on disk
         /// </summary>
         bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null);
+
+        string DocPath { get; }
+
+        string IncludePath { get; }
+
+        string RShareDir { get; }
+
+        string[] SiteLibraryDirs { get; }
     }
 }

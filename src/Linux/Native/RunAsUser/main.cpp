@@ -48,8 +48,8 @@ static constexpr int  RTVS_AUTH_NO_INPUT    = 202;
 static constexpr char RTVS_JSON_MSG_NAME[] = "name";
 static constexpr char  RTVS_JSON_MSG_USERNAME[] = "username";
 static constexpr char  RTVS_JSON_MSG_PASSWORD[] = "password";
-static constexpr char  RTVS_JSON_MSG_ARGS[] = "args";
-static constexpr char  RTVS_JSON_MSG_ENV[] = "env";
+static constexpr char  RTVS_JSON_MSG_ARGS[] = "arguments";
+static constexpr char  RTVS_JSON_MSG_ENV[] = "environment";
 
 
 static constexpr char  RTVS_RESPONSE_TYPE_PAM_INFO[] = "pam-info";

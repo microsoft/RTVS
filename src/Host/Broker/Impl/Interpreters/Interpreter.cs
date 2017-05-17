@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.R.Host.Protocol;
+using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     public class Interpreter {
@@ -26,13 +27,16 @@ namespace Microsoft.R.Host.Broker.Interpreters {
             Version = Version
         };
 
-        public Interpreter(InterpreterManager manager, string id, string name, string path, string binPath, Version version) {
+        public IRInterpreterInfo RInterpreterInfo { get; }
+
+        public Interpreter(InterpreterManager manager, string id, string name, string path, string binPath, Version version, IRInterpreterInfo rInterpreterInfo) {
             Manager = manager;
             Id = id;
             Name = name;
             Path = path;
             BinPath = binPath;
             Version = version;
+            RInterpreterInfo = rInterpreterInfo;
         }
     }
 }

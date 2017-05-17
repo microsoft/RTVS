@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using Microsoft.Common.Core;
@@ -22,7 +24,7 @@ namespace Microsoft.R.Host.Broker.Services {
             _sessionLogger = sessionLogger;
         }
 
-        public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, WindowsIdentity useridentity, string commandLine) {
+        public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, ClaimsPrincipal principal, string commandLine) {
             string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
             string rhostExePath = Path.Combine(brokerPath, RHostExe);
             commandLine = FormattableString.Invariant($"\"{rhostExePath}\" {commandLine}");
@@ -33,6 +35,7 @@ namespace Microsoft.R.Host.Broker.Services {
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(interpreter.Info.Path, shortHome, shortHome.Capacity);
 
+            WindowsIdentity useridentity = principal.Identity as WindowsIdentity;
             var loggedOnUser = useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User;
 
             // build user environment block

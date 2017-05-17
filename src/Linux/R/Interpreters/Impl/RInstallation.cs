@@ -36,9 +36,9 @@ namespace Microsoft.R.Interpreters {
             }
 
             if(package != null) {
-                return new RInterpreterInfo(name, path, package.Version, package.GetVersion(), _fileSystem);
+                return new RInterpreterInfo(name, package, package.Version, package.GetVersion(), _fileSystem);
             }
-            return new RInterpreterInfo(name, path, string.Empty, null, _fileSystem);
+            return new RInterpreterInfo(name, InstalledPackageInfo.EmptyPackage, string.Empty, null, _fileSystem);
         }
 
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
@@ -55,10 +55,8 @@ namespace Microsoft.R.Interpreters {
             var selectedPackages = packagesInfo.Where(p => p.PackageName.StartsWithIgnoreCase("microsoft-r-open-mro") && svl.IsCompatibleVersion(p.GetVersion()));
             foreach (var package in selectedPackages) {
                 var files = package.GetPackageFiles(_fileSystem);
-                string rInstallPath = GetRInstallPath(files, _fileSystem);
-                list.Add(new RInterpreterInfo($"Microsoft R Open '{package.Version}'", rInstallPath, package.Version, package.GetVersion(), _fileSystem));
+                list.Add(RInterpreterInfo.CreateFromPackage(package, "Microsoft R Open", _fileSystem));
             }
-
             return list;
         }
 
@@ -66,23 +64,9 @@ namespace Microsoft.R.Interpreters {
             var list = new List<IRInterpreterInfo>();
             var selectedPackages = packagesInfo.Where(p => p.PackageName.EqualsIgnoreCase("r-base-core") && svl.IsCompatibleVersion(p.GetVersion()));
             foreach (var package in selectedPackages) {
-                var files = package.GetPackageFiles(_fileSystem);
-                string rInstallPath = GetRInstallPath(files, _fileSystem);
-                list.Add(new RInterpreterInfo($"R '{package.Version}'", rInstallPath, package.Version, package.GetVersion(), _fileSystem));
+                list.Add(RInterpreterInfo.CreateFromPackage(package, "CRAN R", _fileSystem));
             }
-
             return list;
-        }
-
-        private string GetRInstallPath(IEnumerable<string> files, IFileSystem fs) {
-            var libFiles = files.Where(f => f.EndsWithIgnoreCase("/R/lib/libR.so"));
-            foreach (var f in libFiles) {
-                string path = f.Substring(0, f.Length - "/lib/libR.so".Length);
-                if (fs.FileExists(f)) {
-                    return path;
-                }
-            }
-            return string.Empty;
         }
     }
 }
