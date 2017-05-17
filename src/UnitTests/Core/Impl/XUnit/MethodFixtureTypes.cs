@@ -39,6 +39,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         private static void CreateMethodFixtures(IEnumerable<Type> instanceTypes, IList<IMethodFixtureFactory<object>> factories, IDictionary<Type, object> fixtures) {
             foreach (var type in instanceTypes.Where(t => !fixtures.ContainsKey(t))) {
+                var existingType = fixtures.Keys.FirstOrDefault(ft => type.IsAssignableFrom(ft));
+                if (existingType != null) {
+                    fixtures[type] = fixtures[existingType];
+                    continue;
+                }
+
                 var fixtureType = _fixtureTypes[type];
                 var factory = GetFactory(factories, type);
                 if (fixtureType.ArgumentTypes.Any()) {

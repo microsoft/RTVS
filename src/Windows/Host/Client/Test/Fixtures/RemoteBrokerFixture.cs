@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.IO;
+using System.Security;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -15,8 +16,6 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
     public class RemoteBrokerFixture : IMethodFixtureFactory<IRemoteBroker> {
-        private const string UserName = "test_name";
-
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
         private readonly IFileSystem _fileSystem;
         private readonly RInstallation _installations;
@@ -25,23 +24,19 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
 
         private volatile RemoteBrokerProcess _process;
 
-        public IRemoteBroker Dummy { get; } = new RemoteBrokerMethodFixture(null);
-        public ISecurityService SecurityService { get; }
+        public IRemoteBroker Dummy { get; } = new RemoteBrokerMethodFixture(null, null);
 
         internal string Address => _process.Address;
+        internal SecureString Password => _process.Password.ToSecureString();
 
         public RemoteBrokerFixture() {
             _fileSystem = new WindowsFileSystem();
             _installations = new RInstallation();
             _processService = new ProcessServices();
             _logFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
-            SecurityService = new SecurityServiceStub {
-                GetUserNameHandler = s => UserName,
-                GetUserCredentialsHandler = (authority, workspaceName) => Credentials.Create(UserName, _process.Password.ToSecureString())
-            };
         }
 
-        public RemoteBrokerMethodFixture Create() => new RemoteBrokerMethodFixture(this);
+        public RemoteBrokerMethodFixture Create(IServiceContainer services) => new RemoteBrokerMethodFixture(this, services);
 
         public async Task EnsureBrokerStartedAsync(string name) {
             var lockToken = await _connectLock.WaitAsync();

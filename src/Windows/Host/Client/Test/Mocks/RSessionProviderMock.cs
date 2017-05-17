@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public Task TestBrokerConnectionAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
-        public Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo, ISecurityService security = null, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
+        public Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
 
         public Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 

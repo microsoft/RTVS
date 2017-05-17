@@ -156,7 +156,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public async Task ReconnectAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             var connection = ActiveConnection;
             if (connection != null && !_sessionProvider.IsConnected) {
-                await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.BrokerConnectionInfo, null, cancellationToken);
+                await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.BrokerConnectionInfo, cancellationToken);
             }
         }
 
@@ -193,7 +193,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             _isFirstConnectionAttempt = false;
-            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.BrokerConnectionInfo, null, cancellationToken);
+            var brokerSwitched = await _sessionProvider.TrySwitchBrokerAsync(connection.Name, connection.BrokerConnectionInfo, cancellationToken);
             if (brokerSwitched) {
                 UpdateActiveConnection(connection);
             }

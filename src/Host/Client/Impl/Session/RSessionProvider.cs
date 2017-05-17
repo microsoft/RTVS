@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
@@ -125,7 +124,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                 // Create random name to avoid collision with actual broker client
                 name = name + Guid.NewGuid().ToString("N");
-                var brokerClient = CreateBrokerClient(name, connectionInfo, _services.Security(), cancellationToken);
+                var brokerClient = CreateBrokerClient(name, connectionInfo, cancellationToken);
                 if (brokerClient == null) {
                     throw new ArgumentException(nameof(connectionInfo));
                 }
@@ -164,11 +163,11 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo = default(BrokerConnectionInfo), ISecurityService security = null, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo = default(BrokerConnectionInfo), CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var brokerClient = CreateBrokerClient(name, connectionInfo, security ?? _services.Security(), cancellationToken);
+                var brokerClient = CreateBrokerClient(name, connectionInfo, cancellationToken);
                 if (brokerClient == null) {
                     return false;
                 }
@@ -337,11 +336,11 @@ namespace Microsoft.R.Host.Client.Session {
             }, cancellationToken);
         }
 
-        private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, ISecurityService security, CancellationToken cancellationToken) {
+        private IBrokerClient CreateBrokerClient(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken) {
             if (!connectionInfo.IsValid) {
                 var installSvc = _services.GetService<IRInstallationService>();
                 var path = installSvc.GetCompatibleEngines().FirstOrDefault()?.InstallPath;
-                connectionInfo = BrokerConnectionInfo.Create(security, connectionInfo.Name, path);
+                connectionInfo = BrokerConnectionInfo.Create(_services.Security(), connectionInfo.Name, path);
             }
 
             if (!connectionInfo.IsValid) {
@@ -349,7 +348,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (connectionInfo.IsRemote) {
-                return new RemoteBrokerClient(name, connectionInfo, security, _services, _console, cancellationToken);
+                return new RemoteBrokerClient(name, connectionInfo, _services, _console, cancellationToken);
             }
 
             return new LocalBrokerClient(name, connectionInfo, _services, _console);
