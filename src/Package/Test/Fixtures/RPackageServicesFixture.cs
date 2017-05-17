@@ -41,7 +41,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
-                .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IVsEditorAdaptersFactoryService, VsEditorAdaptersFactoryServiceMock>()
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))
