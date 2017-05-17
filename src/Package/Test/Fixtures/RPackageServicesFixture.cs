@@ -9,10 +9,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Test;
+using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Test.Shell;
@@ -39,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
-                .AddService(new TestStatusBar())
+                .AddService<IVsEditorAdaptersFactoryService, VsEditorAdaptersFactoryServiceMock>()
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))
                 .AddService(new MenuCommandServiceMock(), typeof(IMenuCommandService))

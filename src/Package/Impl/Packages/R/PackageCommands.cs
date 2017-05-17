@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.Documentation;
@@ -31,35 +32,37 @@ using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Utilities;
+using IServiceContainer = Microsoft.Common.Core.Services.IServiceContainer;
 using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuCommandShimFactory;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
-        public static IEnumerable<MenuCommand> GetCommands(ICoreShell shell) {
-            var interactiveWorkflowProvider = shell.GetService<IRInteractiveWorkflowVisualProvider>();
+        public static IEnumerable<MenuCommand> GetCommands(IServiceContainer services) {
+            var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowVisualProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
-            var projectServiceAccessor = shell.GetService<IProjectServiceAccessor>();
-            var textViewTracker = shell.GetService<IActiveWpfTextViewTracker>();
-            var replTracker = shell.GetService<IActiveRInteractiveWindowTracker>();
-            var debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
-            var pss = shell.GetService<IProjectSystemServices>();
-            var pcsp = shell.GetService<IProjectConfigurationSettingsProvider>();
-            var dbcs = shell.GetService<IDbConnectionService>();
-            var settings = shell.GetService<IRSettings>();
-            var ui = shell.UI();
+            var projectServiceAccessor = services.GetService<IProjectServiceAccessor>();
+            var textViewTracker = services.GetService<IActiveWpfTextViewTracker>();
+            var replTracker = services.GetService<IActiveRInteractiveWindowTracker>();
+            var debuggerModeTracker = services.GetService<IDebuggerModeTracker>();
+            var pss = services.GetService<IProjectSystemServices>();
+            var pcsp = services.GetService<IProjectConfigurationSettingsProvider>();
+            var dbcs = services.GetService<IDbConnectionService>();
+            var settings = services.GetService<IRSettings>();
+            var ui = services.UI();
+            var shell = services.GetService<ICoreShell>();
             var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
-                new GoToOptionsCommand(shell.Services),
-                new GoToEditorOptionsCommand(shell.Services),
-                new ImportRSettingsCommand(shell.Services),
-                new InstallRClientCommand(shell.Services),
-                new SurveyNewsCommand(shell.Services),
+                new GoToOptionsCommand(services),
+                new GoToEditorOptionsCommand(services),
+                new ImportRSettingsCommand(services),
+                new InstallRClientCommand(services),
+                new SurveyNewsCommand(services),
                 new SetupRemoteCommand(),
 
-                new ReportIssueCommand(shell.Services),
-                new SendSmileCommand(shell.Services),
-                new SendFrownCommand(shell.Services),
+                new ReportIssueCommand(services),
+                new SendSmileCommand(services),
+                new SendFrownCommand(services),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),
@@ -101,8 +104,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new SetDirectoryToProjectCommand(interactiveWorkflow, pss),
                 new SelectWorkingDirectoryCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(shell.Services, interactiveWorkflow.RSession),
-                new ImportDataSetUrlCommand(shell.Services, interactiveWorkflow.RSession),
+                new ImportDataSetTextFileCommand(services, interactiveWorkflow.RSession),
+                new ImportDataSetUrlCommand(services, interactiveWorkflow.RSession),
                 new DeleteAllVariablesCommand(interactiveWorkflow),
                 new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
                 new AddDsnCommand(shell, interactiveWorkflow),
@@ -120,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
-                new GotoEditorWindowCommand(textViewTracker, shell.Services),
+                new GotoEditorWindowCommand(textViewTracker, services),
                 new GotoSolutionExplorerCommand(shell),
 
                 // Plot commands

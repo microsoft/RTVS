@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         public new static ReplCommandController FromTextView(ITextView textView) => textView.GetService<ReplCommandController>();
 
         public override void BuildCommandSet() {
-            var factory = new ReplCommandFactory();
+            var factory = new ReplCommandFactory(Services);
             var commands = factory.GetCommands(TextView, TextBuffer);
             AddCommandSet(commands);
         }

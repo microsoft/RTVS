@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Settings;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
     /// Represents telemetry operations in RTVS
     /// </summary>
     internal sealed class RtvsTelemetry : IRtvsTelemetry {
-        private ToolWindowTracker _toolWindowTracker = new ToolWindowTracker(VsAppShell.Current.Services);
+        private ToolWindowTracker _toolWindowTracker;
         private readonly IPackageIndex _packageIndex;
         private readonly IRSettings _settings;
         private readonly IREditorSettings _editorSettings;
@@ -56,17 +57,21 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string ToolWindow = "Tool Window";
         }
 
-        public static void Initialize(IPackageIndex packageIndex, IRSettings settings, IREditorSettings editorSettings, ITelemetryService service = null) {
+        public static void Initialize(IPackageIndex packageIndex, IServiceContainer services) {
             if (Current == null) {
-                Current = new RtvsTelemetry(packageIndex, settings, editorSettings, service);
+                var settings = services.GetService<IRSettings>();
+                var editorSettings = services.GetService<IREditorSettings>();
+                var telemetryService = services.GetService<ITelemetryService>();
+                Current = new RtvsTelemetry(packageIndex, settings, editorSettings, telemetryService, new ToolWindowTracker(services));
             }
         }
 
-        public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, IREditorSettings editorSettings, ITelemetryService service = null) {
+        public RtvsTelemetry(IPackageIndex packageIndex, IRSettings settings, IREditorSettings editorSettings, ITelemetryService telemetryService = null, ToolWindowTracker toolWindowTracker = null) {
             _packageIndex = packageIndex;
             _settings = settings;
             _editorSettings = editorSettings;
-            TelemetryService = service ?? VsAppShell.Current.GetService<ITelemetryService>();
+            TelemetryService = telemetryService;
+            _toolWindowTracker = toolWindowTracker;
         }
 
         public ITelemetryService TelemetryService { get; }

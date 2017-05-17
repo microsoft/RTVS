@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Services {
 
             type = type ?? typeof(T);
             Check.ArgumentNull(nameof(service), service);
-            Check.InvalidOperation(() => _s.TryAdd(type, service), "Service already exists");
+            Check.InvalidOperation(() => _s.TryAdd(type, service), $"Service of type {type} already exists");
 
             return this;
         }
@@ -43,7 +43,7 @@ namespace Microsoft.Common.Core.Services {
             _disposeToken.ThrowIfDisposed();
 
             var lazy = new Lazy<object>(() => factory(this));
-            Check.InvalidOperation(() => _s.TryAdd(typeof(T), lazy), "Service already exists");
+            Check.InvalidOperation(() => _s.TryAdd(typeof(T), lazy), $"Service of type {typeof(T)} already exists");
             return this;
         }
 
@@ -55,7 +55,7 @@ namespace Microsoft.Common.Core.Services {
             _disposeToken.ThrowIfDisposed();
 
             var lazy = new Lazy<object>(() => Activator.CreateInstance(type));
-            Check.InvalidOperation(() => _s.TryAdd(type, lazy), "Service already exists");
+            Check.InvalidOperation(() => _s.TryAdd(type, lazy), $"Service of type {type} already exists");
             return this;
         }
 
