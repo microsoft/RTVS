@@ -178,6 +178,24 @@ namespace Microsoft.R.Editor.Windows {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roxygen Export.
+        /// </summary>
+        internal static string ColorName_R_RoxygenExport {
+            get {
+                return ResourceManager.GetString("ColorName_R_RoxygenExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roxygen Keyword.
+        /// </summary>
+        internal static string ColorName_R_RoxygenKeyword {
+            get {
+                return ResourceManager.GetString("ColorName_R_RoxygenKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R String.
         /// </summary>
         internal static string ColorName_R_String {

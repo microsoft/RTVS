@@ -189,4 +189,10 @@
   <data name="ColorName_RD_CurlyBraces" xml:space="preserve">
     <value>RD Braces</value>
   </data>
+  <data name="ColorName_R_RoxygenExport" xml:space="preserve">
+    <value>Roxygen Export</value>
+  </data>
+  <data name="ColorName_R_RoxygenKeyword" xml:space="preserve">
+    <value>Roxygen Keyword</value>
+  </data>
 </root>

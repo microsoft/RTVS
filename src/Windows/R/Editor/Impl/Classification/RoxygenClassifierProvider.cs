@@ -12,19 +12,20 @@ namespace Microsoft.R.Editor.Classification {
     [Export(typeof(IClassifierProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
-    internal sealed class RClassifierProvider : IClassifierProvider {
+    internal sealed class RoxygenClassifierProvider : IClassifierProvider {
         private readonly IClassificationTypeRegistryService _crs;
 
         [ImportingConstructor]
-        public RClassifierProvider(IClassificationTypeRegistryService crs) {
+        public RoxygenClassifierProvider(IClassificationTypeRegistryService crs) {
             _crs = crs;
         }
 
         // Classifier can be fetched before document is created
         // so we do not use service manager here.
         public IClassifier GetClassifier(ITextBuffer textBuffer)
-            => textBuffer.Properties.GetOrCreateSingletonProperty(() => new RClassifier(textBuffer, _crs));
+            => textBuffer.Properties.GetOrCreateSingletonProperty(() => new RoxygenClassifier(textBuffer, _crs));
 
-        public static RClassifier GetRClassifier(ITextBuffer textBuffer) => RClassifier.FromTextBuffer(textBuffer);
+        public static RClassifier GetRClassifier(ITextBuffer textBuffer)
+            => textBuffer.Properties.TryGetProperty(typeof(RoxygenClassifier), out object instance) ? instance as RClassifier : null;
     }
 }
