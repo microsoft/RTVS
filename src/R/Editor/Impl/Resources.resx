@@ -180,4 +180,10 @@
   <data name="AutoFormat" xml:space="preserve">
     <value>Automatic formatting</value>
   </data>
+  <data name="CommentSelection" xml:space="preserve">
+    <value>Comment selection</value>
+  </data>
+  <data name="UncommentSelection" xml:space="preserve">
+    <value>Uncomment selection</value>
+  </data>
 </root>

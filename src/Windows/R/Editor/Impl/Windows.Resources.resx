@@ -165,12 +165,6 @@
   <data name="FormatDocument" xml:space="preserve">
     <value>Format document</value>
   </data>
-  <data name="CommentSelection" xml:space="preserve">
-    <value>Comment selection</value>
-  </data>
-  <data name="UncommentSelection" xml:space="preserve">
-    <value>Uncomment selection</value>
-  </data>
   <data name="SmartTagName_InstallPackage" xml:space="preserve">
     <value>Install package</value>
   </data>

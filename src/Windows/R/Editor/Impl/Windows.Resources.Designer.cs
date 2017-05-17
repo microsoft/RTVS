@@ -232,15 +232,6 @@ namespace Microsoft.R.Editor.Windows {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Comment selection.
-        /// </summary>
-        internal static string CommentSelection {
-            get {
-                return ResourceManager.GetString("CommentSelection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Drag/drop.
         /// </summary>
         internal static string DragDropOperation {
@@ -282,15 +273,6 @@ namespace Microsoft.R.Editor.Windows {
         internal static string SmartTagName_LoadLibrary {
             get {
                 return ResourceManager.GetString("SmartTagName_LoadLibrary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Uncomment selection.
-        /// </summary>
-        internal static string UncommentSelection {
-            get {
-                return ResourceManager.GetString("UncommentSelection", resourceCulture);
             }
         }
     }
