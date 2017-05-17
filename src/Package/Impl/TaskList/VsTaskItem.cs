@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
                         var endLine = snapshot.GetLineFromPosition(end);
 
                         var textManager = _services.GetService<IVsTextManager>(typeof(SVsTextManager));
-                        var textLines = textView.TextBuffer.GetBufferAdapter<IVsTextLines>();
+                        var textLines = textView.TextBuffer.GetBufferAdapter<IVsTextLines>(_services);
 
                         textManager.NavigateToLineAndColumn(textLines, VSConstants.LOGVIEWID_TextView,
                             _item.Line - 1, _item.Column - 1,

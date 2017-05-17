@@ -135,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             // determine if it is a snippet shortcut.
             if (!TextView.Caret.InVirtualSpace) {
                 var textBuffer = GetTargetBuffer();
-                var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
+                var expansion = textBuffer.GetBufferAdapter<IVsExpansion>(_services);
 
                 var shortcut = TextView.GetItemBeforeCaret(out Span span, x => true);
                 var exp = _cache.GetExpansion(shortcut);
@@ -167,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             var endPos = -1;
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
-                var textBuffer = vsTextLines.ToITextBuffer();
+                var textBuffer = vsTextLines.ToITextBuffer(_services);
                 var range = TextRange.FromBounds(startPos, endPos);
                 // Do not format standalone operators
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
@@ -208,7 +208,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 var span = new Span(TextView.Caret.Position.BufferPosition, 0);
                 var ts = TextSpanFromViewSpan(span);
                 if (ts.HasValue) {
-                    var expansion = GetTargetBuffer().GetBufferAdapter<IVsExpansion>();
+                    var expansion = GetTargetBuffer().GetBufferAdapter<IVsExpansion>(_services);
                     hr = expansion.InsertNamedExpansion(pszTitle, pszPath, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     // If EndExpansion was called before InsertNamedExpansion returned, so set _expansionSession
                     // to null to indicate that there is no active expansion session. This can occur when 
@@ -298,7 +298,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
             // Convert text span to stream positions
             int snippetStart, snippetEnd;
-            var vsTextLines = GetTargetBuffer().GetBufferAdapter<IVsTextLines>();
+            var vsTextLines = GetTargetBuffer().GetBufferAdapter<IVsTextLines>(_services);
             ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out snippetStart));
             ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out snippetEnd));
 

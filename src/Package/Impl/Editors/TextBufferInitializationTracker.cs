@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             // will change content type to the one language service specifies instead of the default one for
             // the file extension, and will ensure that correct editor factory is used.
             _textLines.SetLanguageServiceID(ref _languageServiceGuid);
-            var adapterService = VsAppShell.Current.GetService<IVsEditorAdaptersFactoryService>();
+            var adapterService = _services.GetService<IVsEditorAdaptersFactoryService>();
             var diskBuffer = adapterService.GetDocumentBuffer(_textLines);
             Debug.Assert(diskBuffer != null);
 

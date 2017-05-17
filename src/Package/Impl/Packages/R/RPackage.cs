@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings;
@@ -116,12 +117,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             CranMirrorList.Download();
             base.Initialize();
 
-            ProjectIconProvider.LoadProjectImages(VsAppShell.Current.Services);
+            ProjectIconProvider.LoadProjectImages(Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
-
-            var settings = Services.GetService<IRSettings>();
-            var editorSettings = Services.GetService<IREditorSettings>();
-            RtvsTelemetry.Initialize(_packageIndex, settings, editorSettings);
+            RtvsTelemetry.Initialize(_packageIndex, Services);
 
             BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
@@ -129,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-            IdleTimeAction.Create(() => ExpansionsCache.Load(Services), 200, typeof(ExpansionsCache), VsAppShell.Current.GetService<IIdleTimeService>());
+            IdleTimeAction.Create(() => ExpansionsCache.Load(Services), 200, typeof(ExpansionsCache), Services.GetService<IIdleTimeService>());
         }
 
         protected override void Dispose(bool disposing) {
@@ -137,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             LogCleanup.Cancel();
             ProjectIconProvider.Close();
-            CsvAppFileIO.Close(VsAppShell.Current.FileSystem());
+            CsvAppFileIO.Close(Services.FileSystem());
 
             RtvsTelemetry.Current?.Dispose();
             VsAppShell.Terminate();
@@ -146,14 +144,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() => new List<IVsEditorFactory> {
-                new REditorFactory(this, Services)
-            };
+            new REditorFactory(this, Services)
+        };
 
         protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {
             yield return new RProjectFileGenerator();
         }
 
-        protected override IEnumerable<MenuCommand> CreateMenuCommands() => PackageCommands.GetCommands(VsAppShell.Current);
+        protected override IEnumerable<MenuCommand> CreateMenuCommands() => PackageCommands.GetCommands(Services);
 
         protected override object GetAutomationObject(string name) {
             if (name == RPackage.ProductName) {
@@ -170,17 +168,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            var toolWindowFactory = VsAppShell.Current.GetService<RPackageToolWindowProvider>();
+            var toolWindowFactory = Services.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
         protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
-            var toolWindowFactory = VsAppShell.Current.GetService<RPackageToolWindowProvider>();
+            var toolWindowFactory = Services.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
 
         private bool IsCommandLineMode() {
-            var shell = VsAppShell.Current.GetService<IVsShell>(typeof(SVsShell));
+            var shell = Services.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out object value);
                 return value is bool && (bool)value;
@@ -188,7 +186,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return false;
         }
 
-        private void BuildFunctionIndex() => _packageIndex = VsAppShell.Current.GetService<IPackageIndex>();
+        private void BuildFunctionIndex() => _packageIndex = Services.GetService<IPackageIndex>();
 
         private void SavePackageIndex() {
             _packageIndex?.WriteToDisk();

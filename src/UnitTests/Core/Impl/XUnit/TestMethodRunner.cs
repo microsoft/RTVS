@@ -32,39 +32,37 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override async Task<RunSummary> RunTestCaseAsync(IXunitTestCase testCase) {
-            if (_constructorArguments.OfType<IMethodFixture>().Any()) {
-                return await RunTestCaseWithMethodFixturesAsync(testCase);
-            }
-
             using (var taskObserver = _testEnvironment.UseTaskObserver()) {
+                if (_constructorArguments.OfType<IMethodFixture>().Any()) {
+                    return await RunTestCaseWithMethodFixturesAsync(testCase, taskObserver);
+                }
+
                 var testCaseRunSummay = await GetTestRunSummary(base.RunTestCaseAsync(testCase), taskObserver.Task);
                 await WaitForObservedTasksAsync(testCase, testCaseRunSummay, taskObserver);
                 return testCaseRunSummay;
             }
         }
 
-        private async Task<RunSummary> RunTestCaseWithMethodFixturesAsync(IXunitTestCase testCase) {
-            using (var taskObserver = _testEnvironment.UseTaskObserver()) {
-                var runSummary = new RunSummary();
-                var methodFixtures = CreateMethodFixtures(testCase, runSummary);
+        private async Task<RunSummary> RunTestCaseWithMethodFixturesAsync(IXunitTestCase testCase, TaskObserver taskObserver) {
+            var runSummary = new RunSummary();
+            var methodFixtures = CreateMethodFixtures(testCase, runSummary);
 
-                if (Aggregator.HasExceptions) {
-                    return runSummary;
-                }
-
-                var testCaseConstructorArguments = await InitializeMethodFixturesAsync(testCase, runSummary, methodFixtures);
-
-                if (!Aggregator.HasExceptions) {
-                    var testCaseRunTask = testCase.RunAsync(_diagnosticMessageSink, MessageBus, testCaseConstructorArguments, new ExceptionAggregator(Aggregator), CancellationTokenSource);
-                    var testCaseRunSummary = await GetTestRunSummary(testCaseRunTask, taskObserver.Task);
-                    runSummary.Aggregate(testCaseRunSummary);
-                }
-
-                await DisposeMethodFixturesAsync(testCase, runSummary, methodFixtures);
-                await WaitForObservedTasksAsync(testCase, runSummary, taskObserver);
-
+            if (Aggregator.HasExceptions) {
                 return runSummary;
             }
+
+            var testCaseConstructorArguments = await InitializeMethodFixturesAsync(testCase, runSummary, methodFixtures);
+
+            if (!Aggregator.HasExceptions) {
+                var testCaseRunTask = testCase.RunAsync(_diagnosticMessageSink, MessageBus, testCaseConstructorArguments, new ExceptionAggregator(Aggregator), CancellationTokenSource);
+                var testCaseRunSummary = await GetTestRunSummary(testCaseRunTask, taskObserver.Task);
+                runSummary.Aggregate(testCaseRunSummary);
+            }
+
+            await DisposeMethodFixturesAsync(testCase, runSummary, methodFixtures);
+            await WaitForObservedTasksAsync(testCase, runSummary, taskObserver);
+
+            return runSummary;
         }
 
         private IDictionary<Type, object> CreateMethodFixtures(IXunitTestCase testCase, RunSummary runSummary) {
@@ -158,6 +156,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _stopwatch.Restart();
             try {
                 await ParallelTools.When(task, 60_000, timeoutMessage);
+                await task;
             } catch (Exception ex) {
                 exception = ex;    
             }

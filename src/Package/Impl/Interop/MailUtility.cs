@@ -24,17 +24,11 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         const int MAPI_DIALOG = 0x00000008;
         const int maxAttachments = 20;
 
-        public bool AddRecipientTo(string email) {
-            return AddRecipient(email, HowTo.MAPI_TO);
-        }
+        public bool AddRecipientTo(string email) => AddRecipient(email, HowTo.MAPI_TO);
 
-        public void AddAttachment(string strAttachmentFileName) {
-            _attachments.Add(strAttachmentFileName);
-        }
+        public void AddAttachment(string strAttachmentFileName) => _attachments.Add(strAttachmentFileName);
 
-        public int SendMailPopup(string strSubject, string strBody) {
-            return SendMail(strSubject, strBody, MAPI_LOGON_UI | MAPI_DIALOG | MAPI_DIALOG_MODELESS);
-        }
+        public int SendMailPopup(string strSubject, string strBody) => SendMail(strSubject, strBody, MAPI_LOGON_UI | MAPI_DIALOG | MAPI_DIALOG_MODELESS);
 
         class ThreadParam {
             public MapiMessage Message { get; set; }

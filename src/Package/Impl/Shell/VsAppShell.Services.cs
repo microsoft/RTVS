@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(platformServices)
                 .AddService(settings)
                 .AddService(new REditorSettings(this))
-                .AddService(new ImageService(exportProvider.GetExportedValue<IGlyphService>()))
+                .AddService(new ImageService(_services))
                 .AddService(new VsEditorSupport(Services))
                 .AddService(new VsEditorViewLocator())
                 .AddService(telemetry)

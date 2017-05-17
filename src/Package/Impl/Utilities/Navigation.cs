@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.VisualStudio.Editor;
@@ -21,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         /// <summary>
         /// Activates a text view for a text buffer, and sets the cursor to a specific location
         /// </summary>
-        public static bool NavigateToTextBuffer(ITextBuffer textBuffer, int start, int length) {
+        public static bool NavigateToTextBuffer(IServiceContainer services, ITextBuffer textBuffer, int start, int length) {
             var projectionSnapshot = textBuffer.CurrentSnapshot as IProjectionSnapshot;
 
             if (projectionSnapshot != null) {
@@ -39,13 +40,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 }
 
                 if (success) {
-                    return NavigateToTextBuffer(sourcePoint.Snapshot.TextBuffer, sourcePoint.Position, length);
+                    return NavigateToTextBuffer(services, sourcePoint.Snapshot.TextBuffer, sourcePoint.Position, length);
                 }
             } else {
                 // This is the main buffer for the view
 
-                var textManager = VsAppShell.Current.GetService<IVsTextManager>(typeof(SVsTextManager));
-                var vsTextBuffer = textBuffer.GetBufferAdapter<IVsTextBuffer>();
+                var textManager = services.GetService<IVsTextManager>(typeof(SVsTextManager));
+                var vsTextBuffer = textBuffer.GetBufferAdapter<IVsTextBuffer>(services);
                 var viewType = VSConstants.LOGVIEWID_TextView;
 
                 if (vsTextBuffer != null &&
@@ -57,33 +58,27 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return false;
         }
 
-        public static bool NavigateToTextView(ITextView textView, int start, int length) {
-            return NavigateToTextBuffer(textView.TextBuffer, start, length);
-        }
+        public static bool NavigateToTextView(IServiceContainer services, ITextView textView, int start, int length) => NavigateToTextBuffer(services, textView.TextBuffer, start, length);
 
-        public static bool NavigateToTextView(IVsTextView vsTextView, int start, int length) {
-            var adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.GetService<ICompositionService>());
+        public static bool NavigateToTextView(IServiceContainer services, IVsTextView vsTextView, int start, int length) {
+            var adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(services.GetService<ICompositionService>());
             var textView = adapterService?.GetWpfTextView(vsTextView);
-            if (textView != null) {
-                return NavigateToTextView(textView, start, length);
-            }
-
-            return false;
+            return textView != null && NavigateToTextView(services, textView, start, length);
         }
 
-        public static bool NavigateToFrame(IVsWindowFrame frame, int start, int length) {
+        public static bool NavigateToFrame(IServiceContainer services, IVsWindowFrame frame, int start, int length) {
             var hr = frame.Show();
             if (ErrorHandler.Succeeded(hr)) {
                 var vsTextView = VsShellUtilities.GetTextView(frame);
                 if (vsTextView != null) {
-                    return NavigateToTextView(vsTextView, start, length);
+                    return NavigateToTextView(services, vsTextView, start, length);
                 }
             }
 
             return false;
         }
 
-        public static bool NavigateToFile(Uri fileUri, int start, int length, bool allowProvisionalTab) {
+        public static bool NavigateToFile(IServiceContainer services, Uri fileUri, int start, int length, bool allowProvisionalTab) {
             if (fileUri == null || !fileUri.IsAbsoluteUri || !fileUri.IsFile) {
                 Debug.Fail("Invalid fileUri: " + (fileUri != null ? fileUri.ToString() : string.Empty));
                 return false;
@@ -106,13 +101,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 IVsWindowFrame frame;
                 uint itemId;
 
-                var openService = VsAppShell.Current.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
+                var openService = services.GetService<IVsUIShellOpenDocument>(typeof(SVsUIShellOpenDocument));
                 if (openService != null) {
                     int hr = openService.OpenDocumentViaProject(
                         localPath, ref logicalViewGuid, out serviceProvider, out hierarchy, out itemId, out frame);
 
                     if (ErrorHandler.Succeeded(hr) && frame != null) {
-                        return NavigateToFrame(frame, start, length);
+                        return NavigateToFrame(services, frame, start, length);
                     }
                 }
             }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Testing;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -40,12 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 }
             }, cts.Token);
 
-            CommonMessagePumpExitCode exitCode;
-            if (!VsAppShell.Current.IsUnitTestEnvironment) {
-                exitCode = msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
-            } else {
-                exitCode = CommonMessagePumpExitCode.HandleSignaled;
-            }
+            var exitCode = TestEnvironment.Current == null 
+                ? msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle) 
+                : CommonMessagePumpExitCode.HandleSignaled;
 
             if (exitCode == CommonMessagePumpExitCode.UserCanceled || exitCode == CommonMessagePumpExitCode.ApplicationExit) {
                 cts.Cancel();

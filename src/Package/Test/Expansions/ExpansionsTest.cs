@@ -20,7 +20,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.Package {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class ExpansionsTest: IDisposable {
+    public class ExpansionsTest {
         private readonly IVsExpansionManager _expansionManager;
         private readonly IExpansionsCache _cache;
         private readonly IServiceContainer _services;
@@ -36,12 +36,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
                 shortcut = "if",
                 title = "if statement"
             });
-
-            TextBufferUtilities.AdaptersFactoryService = new VsEditorAdaptersFactoryServiceMock();
-        }
-
-        public void Dispose() {
-            TextBufferUtilities.AdaptersFactoryService = null;
         }
 
         [Test]
