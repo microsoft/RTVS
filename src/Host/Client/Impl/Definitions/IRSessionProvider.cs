@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client {
@@ -35,8 +36,9 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="name">Name of the broker. Will be displayed in REPL.</param>
         /// <param name="connectionInfo">Either a local path to the R binary or a URL to the broker + broker connection parameters</param>
+        /// <param name="security">Security service override</param>
         /// <param name="cancellationToken"></param>
-        Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo = default(BrokerConnectionInfo), CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo = default(BrokerConnectionInfo), ISecurityService security = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Removes current broker, switching all sessions to the disconnected state

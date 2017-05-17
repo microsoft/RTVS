@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Test.Mocks;
 
@@ -30,7 +31,7 @@ namespace Microsoft.R.Host.Client.Mocks {
 
         public Task TestBrokerConnectionAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 
-        public Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
+        public Task<bool> TrySwitchBrokerAsync(string name, BrokerConnectionInfo connectionInfo, ISecurityService security = null, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(true);
 
         public Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
 

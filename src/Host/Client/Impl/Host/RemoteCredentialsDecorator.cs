@@ -14,17 +14,19 @@ using Microsoft.R.Host.Client.BrokerServices;
 
 namespace Microsoft.R.Host.Client.Host {
     internal class RemoteCredentialsDecorator : ICredentialsDecorator {
-        private readonly IServiceContainer _services;
         private volatile Credentials _credentials;
         private readonly AsyncReaderWriterLock _lock;
         private readonly string _authority;
         private readonly string _workspaceName;
+        private readonly IMainThread _mainThread;
+        private readonly ISecurityService _security;
 
-        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, IServiceContainer services) {
-            _services = services;
+        public RemoteCredentialsDecorator(string credentialAuthority, string workspaceName, IMainThread mainThread, ISecurityService security) {
             _authority = credentialAuthority;
             _lock = new AsyncReaderWriterLock();
             _workspaceName = workspaceName;
+            _mainThread = mainThread;
+            _security = security;
         }
 
         public NetworkCredential GetCredential(Uri uri, string authType) {
@@ -38,10 +40,10 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
 
-            await _services.MainThread().SwitchToAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             try {
-                var credentials = _credentials ?? _services.Security().GetUserCredentials(_authority, _workspaceName);
+                var credentials = _credentials ?? _security.GetUserCredentials(_authority, _workspaceName);
                 _credentials = credentials;
             } catch (Exception ex) when (!ex.IsCriticalException() && !(ex is OperationCanceledException)) {
                 // TODO: provide better error message
@@ -58,7 +60,7 @@ namespace Microsoft.R.Host.Client.Host {
         public void InvalidateCredentials() {
             _credentials = null;
             try {
-                _services.Security().DeleteCredentials(_authority);
+                _security.DeleteCredentials(_authority);
             } catch(Exception ex) when (!ex.IsCriticalException()) {
                 // TODO: provide better error message
                 //_console.WriteErrorLine(Invariant($"{Common.Core.Resources.Error_CredWriteFailed} {ex.Message}"));

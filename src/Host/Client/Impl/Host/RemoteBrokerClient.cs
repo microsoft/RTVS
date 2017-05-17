@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Protocol;
 
@@ -33,8 +34,8 @@ namespace Microsoft.R.Host.Client.Host {
 #endif
         }
 
-        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
-            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), console, services) {
+        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, ISecurityService security, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
+            : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services.MainThread(), security), console, services) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;
