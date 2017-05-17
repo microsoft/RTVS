@@ -7,14 +7,14 @@ using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Test.Utility {
+namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
+    [Category.Variable.Explorer]
     public class CollectionUtilitiesTest {
         [Test]
-        [Category.Variable.Explorer]
         public void InplaceUpdateAddTest() {
-            List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(3) };
-            List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
+            var source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(3) };
+            var update = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
             source.Should().Equal(update, IntegerComparer);
@@ -26,10 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         }
 
         [Test]
-        [Category.Variable.Explorer]
         public void InplaceUpdateRemoveTest() {
-            List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
-            List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(4) };
+            var source = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
+            var update = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(4) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
             source.Should().Equal(update, IntegerComparer);
@@ -39,10 +38,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         }
 
         [Test]
-        [Category.Variable.Explorer]
         public void InplaceUpdateMixedTest() {
-            List<IntegerWrap> source = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
-            List<IntegerWrap> update = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
+            var source = new List<IntegerWrap>() { new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
+            var update = new List<IntegerWrap>() { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
             source.Should().Equal(update, IntegerComparer);
@@ -52,19 +50,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
         }
 
         [Test]
-        [Category.Variable.Explorer]
         public void InplaceUpdateRemoveAllTest() {
-            List<IntegerWrap> source = new List<IntegerWrap> { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
-            List<IntegerWrap> update = new List<IntegerWrap>();
+            var source = new List<IntegerWrap> { new IntegerWrap(1), new IntegerWrap(2), new IntegerWrap(3) };
+            var update = new List<IntegerWrap>();
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
             source.Should().Equal(update, IntegerComparer);
         }
 
         [Test]
-        [Category.Variable.Explorer]
         public void InplaceUpdateAddToEmptyTest() {
-            List<IntegerWrap> source = new List<IntegerWrap>();
+            var source = new List<IntegerWrap>();
             List<IntegerWrap> update = new List<IntegerWrap> { new IntegerWrap(2), new IntegerWrap(3), new IntegerWrap(4) };
 
             source.InplaceUpdate(update, IntegerComparer, ElementUpdater);
