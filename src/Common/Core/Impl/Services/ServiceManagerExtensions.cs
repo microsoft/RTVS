@@ -7,6 +7,6 @@ namespace Microsoft.Common.Core.Services {
         public static IServiceManager AddService<TService, TImplementation>(this IServiceManager services)
             where TService : class
             where TImplementation : class, TService, new()
-            => services.AddService((s) => new TImplementation());
+            => services.AddService<TService>(s => new TImplementation());
     }
 }
