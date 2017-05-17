@@ -93,7 +93,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             var testInput = CreateTestInput(testCase, constructorArguments);
 
             foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>()) {
-                await RunAsync(testCase, methodFixture.InitializeAsync(testInput, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to initialize");
+                await RunAsync(testCase, () => methodFixture.InitializeAsync(testInput, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to initialize");
             }
 
             return constructorArguments;
@@ -101,13 +101,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         private async Task DisposeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<Type, object> methodFixtures) {
             foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>()) {
-                await RunAsync(testCase, methodFixture.DisposeAsync(runSummary, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to dispose");
+                await RunAsync(testCase, () => methodFixture.DisposeAsync(runSummary, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to dispose");
             }
         }
 
         private Task WaitForObservedTasksAsync(IXunitTestCase testCase, RunSummary runSummary, TaskObserver taskObserver) {
             taskObserver.TestCompleted();
-            return RunAsync(testCase, taskObserver.Task, runSummary, "Tasks that have been started during test run are still not completed");
+            return RunAsync(testCase, () => taskObserver.Task, runSummary, "Tasks that have been started during test run are still not completed");
         }
 
         private ITestInput CreateTestInput(IXunitTestCase testCase, object[] testCaseConstructorArguments) {
@@ -151,10 +151,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return testCaseSummary;
         }
 
-        private async Task RunAsync(IXunitTestCase testCase, Task task, RunSummary runSummary, string timeoutMessage) {
+        private async Task RunAsync(IXunitTestCase testCase, Func<Task> action, RunSummary runSummary, string timeoutMessage) {
             Exception exception = null;
             _stopwatch.Restart();
             try {
+                var task = action();
                 await ParallelTools.When(task, 60_000, timeoutMessage);
                 await task;
             } catch (Exception ex) {
