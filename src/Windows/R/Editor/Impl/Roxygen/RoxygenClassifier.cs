@@ -4,16 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Core.Tokens;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Classification;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.R.Editor.Classification {
+namespace Microsoft.R.Editor.Roxygen {
     /// <summary>
     /// Implements <see cref="IClassifier"/> and provides classification (colorization) 
     /// of Roxygen items in R comments
@@ -57,54 +54,11 @@ namespace Microsoft.R.Editor.Classification {
         private string GetClassificationName(RToken t) {
             switch (t.TokenType) {
                 case RTokenType.Keyword:
-                    return ClassificationDefinitions.RoxygenKeywordClassificationFormatName;
+                    return RoxygenClassificationDefinitions.RoxygenKeywordClassificationFormatName;
                 case RTokenType.Identifier:
-                    return ClassificationDefinitions.RoxygenExportClassificationFormatName;
+                    return RoxygenClassificationDefinitions.RoxygenExportClassificationFormatName;
             }
             return string.Empty;
-        }
-
-        class RoxygenTokenizer : BaseTokenizer<RToken> {
-            public override void AddNextToken() {
-                if (_cs.CurrentChar == '#' && _cs.NextChar == '\'') {
-                    _cs.Advance(2);
-                    SkipWhitespace();
-
-                    if (_cs.CurrentChar == '@') {
-                        var start = _cs.Position;
-                        AddWord(RTokenType.Keyword);
-                        TryAddExport(start, _cs.Position - start);
-                    }
-                } else {
-                    _cs.Position = _cs.Length;
-                }
-            }
-
-            private void TryAddExport(int start, int length) {
-                var text = _cs.GetSubstringAt(start, length);
-                if (text.EqualsOrdinal("@export")) {
-                    AddWord(RTokenType.Identifier);
-                }
-            }
-
-            private void AddWord(RTokenType type) {
-                SkipWhitespace();
-                var start = _cs.Position;
-                SkipWord();
-                if (_cs.Position > start) {
-                    AddToken(type, start, _cs.Position - start);
-                }
-            }
-
-            private void SkipWord() {
-                Tokenizer.SkipIdentifier(
-                    _cs,
-                    (CharacterStream cs) => !cs.IsWhiteSpace(),
-                    (CharacterStream cs) => !cs.IsWhiteSpace());
-            }
-
-            private void AddToken(RTokenType type, int start, int length)
-                => _tokens.Add(new RToken(type, start, length));
         }
 
 #pragma warning disable 67

@@ -4,11 +4,12 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
+using Microsoft.R.Editor.Classification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Classification {
+namespace Microsoft.R.Editor.Roxygen {
     [Export(typeof(IClassifierProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [ContentType(RHistoryContentTypeDefinition.ContentType)]

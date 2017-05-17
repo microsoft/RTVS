@@ -268,6 +268,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class RoxygenAttribute : CategoryAttribute {
+            public RoxygenAttribute() : base("Roxygen") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class SqlAttribute : CategoryAttribute {
             public SqlAttribute() : base("SQL") { }
         }

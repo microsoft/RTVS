@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Languages.Editor.Completions;
+using Microsoft.R.Editor.Roxygen;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     internal sealed class RoxygenTagCompletionProvider : IRCompletionListProvider {
@@ -31,55 +32,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 return completions;
             }
 
-            completions.AddRange(_keywords.Select(k => new EditorCompletionEntry(k, k, string.Empty, _glyph)));
+            completions.AddRange(RoxygenKeywords.Keywords.Select(k => new EditorCompletionEntry(k, k, string.Empty, _glyph)));
             return completions;
         }
-
-        private static readonly string[] _keywords = {
-            "@aliases",
-            "@author",
-            "@concents",
-            "@describeIn",
-            "@description",
-            "@details",
-            "@docType",
-            "@evalRd",
-            "@example",
-            "@examples",
-            "@export",
-            "@exportClass",
-            "@exportMethod",
-            "@family",
-            "@field",
-            "@format",
-            "@import",
-            "@importClassesFrom",
-            "@importFrom",
-            "@importMethodsFrom",
-            "@include",
-            "@inheritDotParams",
-            "@inheritParams",
-            "@inheritSection",
-            "@keywords",
-            "@method",
-            "@name",
-            "@note",
-            "@noRd",
-            "@param",
-            "@rawRd",
-            "@rawNamespace",
-            "@rdname",
-            "@references",
-            "@return",
-            "@section",
-            "@seealso",
-            "@slot",
-            "@source",
-            "@template",
-            "@templateVar",
-            "@title",
-            "@usage",
-            "@useDynLib"
-        };
     }
 }
