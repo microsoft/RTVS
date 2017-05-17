@@ -23,10 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly IRSession _rSession;
         private VariableViewModel _evaluation;
 
-        public VariableGridHost() {
+        public VariableGridHost(): this(VsAppShell.Current.Services) { }
+
+        public VariableGridHost(IServiceContainer services) {
             InitializeComponent();
 
-            _services = VsAppShell.Current.Services;
+            _services = services;
             _rSession = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
         }

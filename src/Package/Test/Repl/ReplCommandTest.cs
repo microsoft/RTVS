@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ConnectionManager.Implementation;
@@ -31,14 +33,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
         private readonly IRInteractiveWorkflowVisual _workflow;
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
-        private readonly TestCoreShell _coreShell = TestCoreShell.CreateBasic();
-
-        public ReplCommandTest() {
-            _debuggerModeTracker = new VsDebuggerModeTracker(_coreShell);
-            _coreShell.ServiceManager.AddService(new RSettingsStub());
-
+ 
+        public ReplCommandTest(IServiceContainer services) {
+            var coreShell = services.GetService<ICoreShell>();
+            _debuggerModeTracker = new VsDebuggerModeTracker(coreShell);
+ 
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(
-                connectionsProvider: new ConnectionManagerProvider(_coreShell),
+                connectionsProvider: new ConnectionManagerProvider(coreShell),
                 debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }
