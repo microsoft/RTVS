@@ -23,12 +23,17 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pwd.h>
-#include <unistd.h>
 #include <string>
+#include <mutex>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <pwd.h>
+#include <grp.h>
+#include <unistd.h>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <boost/endian/buffers.hpp>
+#include <libexplain/execv.h>
 
 #include "picojson.h"
 #include "util.h"
@@ -43,12 +48,21 @@ static constexpr int  RTVS_AUTH_NO_INPUT    = 202;
 static constexpr char RTVS_JSON_MSG_NAME[] = "name";
 static constexpr char  RTVS_JSON_MSG_USERNAME[] = "username";
 static constexpr char  RTVS_JSON_MSG_PASSWORD[] = "password";
+static constexpr char  RTVS_JSON_MSG_ARGS[] = "arguments";
+static constexpr char  RTVS_JSON_MSG_ENV[] = "environment";
+
 
 static constexpr char  RTVS_RESPONSE_TYPE_PAM_INFO[] = "pam-info";
 static constexpr char  RTVS_RESPONSE_TYPE_PAM_ERROR[] = "pam-error";
+static constexpr char  RTVS_RESPONSE_TYPE_SYSTEM_ERROR[] = "unix-error";
 static constexpr char  RTVS_RESPONSE_TYPE_JSON_ERROR[] = "json-error";
 static constexpr char  RTVS_RESPONSE_TYPE_RTVS_RESULT[] = "rtvs-result";
 static constexpr char  RTVS_RESPONSE_TYPE_RTVS_ERROR[] = "rtvs-error";
+
+static constexpr char RTVS_MSG_AUTH_ONLY[] = "AuthOnly";
+static constexpr char RTVS_MSG_AUTH_AND_RUN[] = "AuthAndRun";
+
+static constexpr char RTVS_RHOST_PATH[] = "/usr/bin/Microsoft.R.Host";
 
 std::string read_string(FILE* stream) {
     boost::endian::little_uint32_buf_t data_size;
@@ -89,19 +103,16 @@ inline void write_json(Arg&& arg, Args&&... args) {
 }
 
 int rtvs_conv(int num_msg, const pam_message **msgm, pam_response **response, void *appdata_ptr) {
-    int count = 0;
-    pam_response *reply;
-
     if (num_msg < 0) {
         return PAM_CONV_ERR;
     }
 
-    reply = (pam_response*) calloc(num_msg, sizeof(pam_response));
+    pam_response *reply = (pam_response*) calloc(num_msg, sizeof(pam_response));
     if (reply == nullptr) {
         return PAM_CONV_ERR;
     }
 
-    for (count = 0; count < num_msg; ++count) {
+    for (int count = 0; count < num_msg; ++count) {
         char *str = nullptr;
         switch (msgm[count]->msg_style) {
         case PAM_PROMPT_ECHO_OFF:
@@ -131,34 +142,41 @@ int rtvs_conv(int num_msg, const pam_message **msgm, pam_response **response, vo
     return PAM_SUCCESS;
 }
 
-int rtvs_authenticate(const char *user, const char* password) {
-    pam_handle_t *pamh = nullptr;
-    int pam_err = 0;
-    struct pam_conv conv = {
-        rtvs_conv,
-        (void*)password
-    };
-
-    SCOPE_WARDEN(pam_end, {
-        pam_end(pamh, pam_err);
-    });
-
-    if ((pam_err = pam_start("rtvs_auth", user, &conv, &pamh)) != PAM_SUCCESS || pamh == nullptr) {
-        write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pam_err));
-        return RTVS_AUTH_INIT_FAILED;
+int rtvs_conv_quiet(int num_msg, const pam_message **msgm, pam_response **response, void *appdata_ptr) {
+    if (num_msg < 0) {
+        return PAM_CONV_ERR;
     }
 
-    if ((pam_err = pam_authenticate(pamh, 0)) != PAM_SUCCESS) {
-        write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pam_err));
-        return RTVS_AUTH_BAD_INPUT;
+    pam_response *reply = (pam_response*)calloc(num_msg, sizeof(pam_response));
+    if (reply == nullptr) {
+        return PAM_CONV_ERR;
     }
 
-    if ((pam_err = pam_acct_mgmt(pamh, 0)) != PAM_SUCCESS) {
-        // This can fail if the user's password has expired
-        write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pam_err));
-        return RTVS_AUTH_BAD_INPUT;
+    for (int count = 0; count < num_msg; ++count) {
+        char *str = nullptr;
+        switch (msgm[count]->msg_style) {
+        case PAM_PROMPT_ECHO_OFF:
+            str = strdup((char*)appdata_ptr);
+            break;
+        case PAM_PROMPT_ECHO_ON:
+            str = strdup((char*)appdata_ptr);
+            break;
+        case PAM_ERROR_MSG:
+        case PAM_TEXT_INFO:
+            break;
+        }
+
+        if (str) {
+            reply[count].resp_retcode = 0;
+            reply[count].resp = str;
+            str = nullptr;
+        }
     }
-    return RTVS_AUTH_OK;
+
+    *response = reply;
+    reply = nullptr;
+
+    return PAM_SUCCESS;
 }
 
 std::string get_user_home(const std::string &username) {
@@ -169,22 +187,215 @@ std::string get_user_home(const std::string &username) {
     return std::string();
 }
 
-int authenticate_only(const picojson::object& json) {
+template<typename T>
+T calloc_or_exit(size_t count, size_t size) {
+    T v = (T)calloc(count, size);
+    if (!v) {
+        // TODO: log error
+        _exit(EXIT_FAILURE);
+    }
+}
+
+void start_rhost(const picojson::object& json) {
+    // construct arguments
+    picojson::array json_args = json[RTVS_JSON_MSG_ARGS].get<picojson::array>();
+
+    // <binary path> <arg 1> <arg 2> ... <explicit null>
+    int argc = json_args.size() + 2;
+    char **argv = calloc_or_exit<char**>(argc, sizeof *argv);
+
+    // first item in the args must always be path to the binary
+    std::string pathname(RTVS_RHOST_PATH);
+    argv[0] = calloc_or_exit<char*>(pathname.length() + 1, sizeof **argv);
+    memcpy(argv[0], pathname.c_str(), pathname.size());
+
+    for (int i = 1; i < (argc - 1); ++i) {
+        std::string item(json_args[i - 1].get<std::string>());
+        argv[i] = calloc_or_exit<char*>(item.length() + 1, sizeof **argv);
+        memcpy(argv[i], item.c_str(), item.size());
+    }
+
+    // explicit null for the end of arguments
+    argv[argc - 1] = NULL;
+
+    // construct environment
+    picojson::array json_env = json[RTVS_JSON_MSG_ENV].get<picojson::array>();
+
+    // <key1=value1> <key2=value2> ... <explicit null>
+    int envc = json_env.size() + 1;
+    char **envp = calloc_or_exit<char**>(envc, sizeof *envp);
+
+    for (int i = 0; i < (argc - 1); ++i) {
+        std::string env(json_env[i].get<std::string>());
+        envp[i] = calloc_or_exit<char*>(env.length() + 1, sizeof **envp);
+        memcpy(envp[i], env.c_str(), env.size());
+    }
+
+    // explicit null for the end of enironment
+    envp[envc - 1] = NULL;
+
+    execve(RTVS_RHOST_PATH, argv, envp);
+    int err = errno;
+    // TODO: Log output of explain_errno_execve
+    _exit(err);
+}
+
+int authenticate_and_run(const picojson::object& json) {
+    std::string msg_name(json[RTVS_JSON_MSG_NAME].get<std::string>());
+    bool auth_only = msg_name == RTVS_MSG_AUTH_ONLY;
+
     std::string username(json[RTVS_JSON_MSG_USERNAME].get<std::string>());
     std::string password(json[RTVS_JSON_MSG_PASSWORD].get<std::string>());
 
     if (username.empty() || password.empty()) {
-        return RTVS_AUTH_NO_INPUT;
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, (double)RTVS_AUTH_NO_INPUT);
+        } else {
+            return RTVS_AUTH_NO_INPUT;
+        }
     }
 
-    int auth_result = rtvs_authenticate(username.c_str(), password.c_str());
+    pam_handle_t *pamh = nullptr;
+    int err = 0;
+    struct pam_conv conv = {
+        (auth_only ? rtvs_conv : rtvs_conv_quiet),
+        (void*)password.c_str()
+    };
 
-    if (auth_result == PAM_SUCCESS) {
-        std::string user_home = get_user_home(username);
-        write_json(RTVS_RESPONSE_TYPE_RTVS_RESULT, user_home);
+    bool pam_session_opened = false;
+    SCOPE_WARDEN(pam_end, {
+        if (pamh) {
+            if (pam_session_opened) {
+                err = pam_close_session(pamh, 0);
+            }
+            pam_end(pamh, err);
+        }
+    });
+
+    if ((err = pam_start("rtvs", username.c_str(), &conv, &pamh)) != PAM_SUCCESS || pamh == nullptr) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
     }
-    return auth_result;
+
+    char pam_rhost[HOST_NAME_MAX + 1] = {};
+    if ((err = gethostname(pam_rhost, sizeof(pam_rhost))) != 0) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_SYSTEM_ERROR, strerror(err));
+        } else {
+            return err;
+        }
+    }
+
+    if ((err = pam_set_item(pamh, PAM_RHOST, pam_rhost)) != PAM_SUCCESS) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+
+    if ((err = pam_set_item(pamh, PAM_RUSER, "root")) != PAM_SUCCESS) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+
+    if ((err = pam_authenticate(pamh, 0)) != PAM_SUCCESS) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+
+    if ((err = pam_acct_mgmt(pamh, 0)) != PAM_SUCCESS) {
+        // This can fail if the user's password has expired
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+
+    if ((err = pam_setcred(pamh, PAM_ESTABLISH_CRED)) != PAM_SUCCESS) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+
+    if ((err = pam_open_session(pamh, 0)) != PAM_SUCCESS) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+    pam_session_opened = true;
+
+    const char *pam_user = nullptr;
+    if ((err = pam_get_item(pamh, PAM_USER, (const void **)&pam_user)) != PAM_SUCCESS) {
+        if (auth_only) {
+            write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
+        } else {
+            return err;
+        }
+    }
+
+    if (auth_only) {
+        if (err == PAM_SUCCESS) {
+            std::string user_home = get_user_home(pam_user);
+            write_json(RTVS_RESPONSE_TYPE_RTVS_RESULT, user_home);
+        }
+        return err;
+    }
+
+    struct passwd *pw = getpwnam(pam_user);
+    if (!pw) {
+        return 1;
+    }
+
+    // we get here only for Auth and Run
+    int pid = fork();
+    if (pid == -1) {
+        // TODO: log err and output of explain_errno_fork;
+        int err = errno;
+        return err;
+    } else if (pid == 0) {
+        if (initgroups(pw->pw_name, pw->pw_gid) == -1) {
+            err = errno;
+            _exit(err);
+        }
+        if (setgid(pw->pw_gid) == -1) {
+            err = errno;
+            _exit(err);
+        }
+        if (setuid(pw->pw_uid) == -1) {
+            err = errno;
+            _exit(err);
+        }
+
+        start_rhost(json);
+    } else {
+        int ws = 0;
+        pid_t hpid = waitpid(pid, &ws, 0);
+        if (hpid < 0) {
+            err = errno;
+            // TODO: log err and output of explain_errno_waitpid()
+        }
+
+        return WEXITSTATUS(ws);
+    }
+
+    return err;
 }
+
 
 int main(int argc, char **argv) {
     input = fdopen(dup(fileno(stdin)), "rb");
@@ -197,29 +408,43 @@ int main(int argc, char **argv) {
     freopen("/dev/null", "rb", stdin);
     freopen("/dev/null", "wb", stdout);
 
+    int option = 0;
+    bool quiet = false;
+    while ((option = getopt(argc, argv, "q")) != -1) {
+        switch (option) {
+        case 'q':
+            quiet = true;
+        default:
+            break;
+        }
+    }
+
     picojson::value json_value;
     std::string json_err = picojson::parse(json_value, read_string(input));
 
     if (!json_err.empty()) {
-        write_json(RTVS_RESPONSE_TYPE_JSON_ERROR, json_err);
+        if (!quiet) {
+            write_json(RTVS_RESPONSE_TYPE_JSON_ERROR, json_err);
+        }
         return RTVS_AUTH_BAD_INPUT;
     }
 
     if (!json_value.is<picojson::object>()) {
-        write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, "Error_RunAsUser_InputFormatInvalid");
+        if (!quiet) {
+            write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, "Error_RunAsUser_InputFormatInvalid");
+        }
         return RTVS_AUTH_BAD_INPUT;
     }
 
     picojson::object json = json_value.get<picojson::object>();
-    std::string msg_name = json[RTVS_JSON_MSG_NAME].get<std::string>();
+    std::string msg_name(json[RTVS_JSON_MSG_NAME].get<std::string>());
 
-    
-    if (msg_name == "AuthOnly") {
-        return authenticate_only(json);
-    } else if (msg_name == "AuthAndRun") {
-        return 0; //TODO : authenticate and run
+    if (msg_name == RTVS_MSG_AUTH_ONLY || msg_name == RTVS_MSG_AUTH_AND_RUN) {
+        return authenticate_and_run(json);
     } else {
-        write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, "Error_RunAsUser_MessageTypeInvalid");
+        if (!quiet) {
+            write_json(RTVS_RESPONSE_TYPE_RTVS_ERROR, "Error_RunAsUser_MessageTypeInvalid");
+        }
         return RTVS_AUTH_BAD_INPUT;
     }
 }

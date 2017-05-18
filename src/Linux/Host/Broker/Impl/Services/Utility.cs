@@ -2,15 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Broker.Startup;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,9 +21,24 @@ namespace Microsoft.R.Host.Broker.Services {
     public class Utility {
         private const string PamInfo = "pam-info";
         private const string PamError = "pam-error";
+        private const string SysError = "unix-error";
         private const string JsonError = "json-error";
         private const string RtvsResult = "rtvs-result";
         private const string RtvsError = "rtvs-error";
+
+        public static Process AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
+            Process proc = CreateRLaunchProcess(ps, false);
+            using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
+                var message = new AuthenticateAndRunMessage() { Username = username, Password = password, Arguments = arguments, Environment = environment.Select(e => $"{e.Key}={e.Value}") };
+                string json = JsonConvert.SerializeObject(message, GetJsonSettings());
+                var jsonBytes = Encoding.UTF8.GetBytes(json);
+                writer.Write(jsonBytes.Length);
+                writer.Write(jsonBytes);
+                writer.Flush();
+            }
+
+            return proc;
+        }
 
         public static bool AuthenticateUser(ILogger<IAuthenticationService> logger, IProcessServices ps,  string username, string password, out string profileDir) {
             bool retval = false;
@@ -95,9 +111,8 @@ namespace Microsoft.R.Host.Broker.Services {
 
         private static Process CreateRLaunchProcess(IProcessServices ps, bool authenticateOnly) {
             // usage:
-            // Microsoft.R.Host.RunAsUser.out <-a|-r>
-            //    -a : authenticate only
-            //    -r : authenticate and run command
+            // Microsoft.R.Host.RunAsUser [-q]
+            //    -q: Quiet
             const string rLaunchBinary = "Microsoft.R.Host.RunAsUser";
 
             string brokerDir = Path.GetDirectoryName(typeof(Program).GetTypeInfo().Assembly.Location);
@@ -105,7 +120,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = rLaunchPath;
-            psi.Arguments = authenticateOnly ? "-a" : "-r";
+            psi.Arguments = authenticateOnly ? "" : "-q";
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
             psi.RedirectStandardOutput = true;
