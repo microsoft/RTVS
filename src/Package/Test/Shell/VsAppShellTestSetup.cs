@@ -38,9 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// </summary>
     [ExcludeFromCodeCoverage]
     static class VsAppShellTestSetup {
-        public static void Setup(VsAppShell instance) {
-            var serviceManager = (VsServiceManager)instance.Services;
-            Debug.Assert(!serviceManager.AllServices.Any(), "Test VsAppShell service container must be empty at init time");
+        public static VsServiceManager Setup(VsAppShell instance) {
+            var serviceManager = new VsServiceManager(instance);
 
             var catalog = VsTestCompositionCatalog.Current;
 
@@ -88,6 +87,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(OleComponentManagerMock.Create(), typeof(SOleComponentManager))
                 .AddService(VsSettingsManagerMock.Create(), typeof(SVsSettingsManager))
                 .AddService(new UIHostLocaleMock(), typeof(SUIHostLocale));
+
+            return serviceManager;
         }
     }
 }

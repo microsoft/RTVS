@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.R.Wpf.Themes;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
@@ -21,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         }
 
         public void SetImageBackgroundColor(DependencyObject o, object themeKey) {
-            if (_coreShell.IsUnitTestEnvironment) {
+            if (TestEnvironment.Current != null) {
                 return;
             }
 
@@ -45,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         }
 
         public void SetThemeScrollBars(DependencyObject o) {
-            if (!_coreShell.IsUnitTestEnvironment) {
+            if (TestEnvironment.Current == null) {
                 ImageThemingUtilities.SetThemeScrollBars(o, true);
             }
         }

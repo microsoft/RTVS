@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -25,6 +26,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ConfigureServices();
         }
 
+        private VsAppShell(Func<VsAppShell, VsServiceManager> serviceManagerFactory) {
+            Debug.Assert(_instance == null, "VsAppShell is a singleton and cannot be created twice");
+            _services = serviceManagerFactory(this);
+        }
+
         /// <summary>
         /// Current application shell instance. Provides access to services
         /// such as composition container, export provider, global VS IDE
@@ -32,18 +38,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static ICoreShell Current {
             get {
-                _instance = _instance ?? new VsAppShell();
-                if (!_instance.Services.AllServices.Any()) {
-                    // Assuming test mode since otherwise VS package 
-                    // would have called Initialize() by now.
-                    _instance.IsUnitTestEnvironment = true;
+                if (TestEnvironment.Current != null && _instance == null) {
                     SetupTestInstance();
                 }
 
-                return _instance.IsUnitTestEnvironment ? _instance : GetInstance();
+                return GetInstance();
             }
         }
-
-        public bool IsUnitTestEnvironment { get; private set; }
     }
 }

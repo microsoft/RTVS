@@ -35,7 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 Debug.Assert(testshell != null);
 
                 var mi = testshell.GetMethod("Setup", BindingFlags.Static | BindingFlags.Public);
-                mi.Invoke(null, new object[] { _instance });
+
+                _instance = new VsAppShell(c => (VsServiceManager)mi.Invoke(null, new object[] { c }));
             } else {
                 Debug.Fail("Unable to create VsAppShellTestSetup in Microsoft.VisualStudio.R.Package.Test.dll");
             }

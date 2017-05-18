@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Idle {
@@ -34,7 +35,7 @@ namespace Microsoft.Common.Core.Idle {
         public IdleTimeAsyncTask(IServiceContainer services) {
             _idleTime = services.GetService<IIdleTimeService>();
             _mainThread = services.MainThread();
-            _testEnvironment = services.GetService<ICoreShell>().IsUnitTestEnvironment;
+            _testEnvironment = TestEnvironment.Current != null;
         }
 
         /// <summary>

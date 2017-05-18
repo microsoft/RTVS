@@ -13,6 +13,7 @@ using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
@@ -25,17 +26,19 @@ using static Microsoft.R.DataInspection.REvaluationResultProperties;
 namespace Microsoft.R.DataInspection.Test {
     [ExcludeFromCodeCoverage]
     public class ValuesTest : IAsyncLifetime {
+        private readonly IRemoteBroker _remoteBroker;
         private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
-       private readonly IRSessionProvider _sessionProvider;
+        private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public ValuesTest(IServiceContainer services, TestMethodFixture testMethod) {
+        public ValuesTest(IServiceContainer services, IRemoteBroker remoteBroker, TestMethodFixture testMethod) {
+            _remoteBroker = remoteBroker;
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBrokerAsync(nameof(ValuesTest));
+            await _remoteBroker.ConnectAsync(_sessionProvider);
             await _session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
         }
 

@@ -184,8 +184,6 @@ namespace Microsoft.R.Host.Client {
 
             public IServiceContainer Services => _serviceManager;
 
-            public bool IsUnitTestEnvironment => false;
-
             public void Dispose() => _serviceManager.Dispose();
         }
     }
