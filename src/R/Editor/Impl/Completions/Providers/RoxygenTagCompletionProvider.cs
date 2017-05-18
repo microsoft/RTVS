@@ -28,9 +28,6 @@ namespace Microsoft.R.Editor.Completions.Providers {
             if (!lineText.StartsWith("#'") || context.Position < rawLineText.Length - lineText.Length + 2) {
                 return completions;
             }
-            if (lineText[context.Position - line.Start - 1] != '@') {
-                return completions;
-            }
 
             completions.AddRange(RoxygenKeywords.Keywords.Select(k => new EditorCompletionEntry(k, k, string.Empty, _glyph)));
             return completions;

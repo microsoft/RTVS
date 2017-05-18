@@ -11,7 +11,7 @@ using Microsoft.UnitTests.Core.XUnit;
 namespace Microsoft.R.Editor.Test.Roxygen {
     [ExcludeFromCodeCoverage]
     [Category.Roxygen]
-    public class TokenizeRoxygenTest : TokenizeTestBase<RToken, RTokenType> {
+    public class RoxygenTokenizeTest : TokenizeTestBase<RToken, RTokenType> {
         [Test]
         public void Keywords01() {
             foreach (var k in RoxygenKeywords.Keywords) {

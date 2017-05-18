@@ -206,7 +206,8 @@
     <Compile Include="RData\Tokens\TokenizeSampleFilesTest.cs" />
     <Compile Include="RData\Tokens\TokenizeTest.cs" />
     <Compile Include="RData\Tokens\VerifySortedTables.cs" />
-    <Compile Include="Roxygen\TokenizeRoxygenTest.cs" />
+    <Compile Include="Roxygen\RoxygenCompletionTest.cs" />
+    <Compile Include="Roxygen\RoxygenTokenizeTest.cs" />
     <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Mocks\EditorSupportMock.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
