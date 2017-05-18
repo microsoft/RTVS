@@ -109,7 +109,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
-                var aggregator = VsAppShell.Current.GetService<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
                     result.Add(new VariableViewModel(children[i], _services, i, GetMaxChildrenCount(children[i])));
                 }
@@ -117,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 // return children can be less than value's length in some cases e.g. missing parameter
                 if (valueEvaluation.Length > result.Count
                     && (valueEvaluation.Length > MaxChildrenCount)) {
-                    result.Add(VariableViewModel.Ellipsis); // insert dummy child to indicate truncation in UI
+                    result.Add(Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }
 
