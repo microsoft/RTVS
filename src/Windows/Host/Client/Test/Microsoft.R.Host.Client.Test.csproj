@@ -36,6 +36,10 @@
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
     <Compile Include="Fixtures\HostClientServicesFixture.cs" />
+    <Compile Include="Fixtures\IRemoteBroker.cs" />
+    <Compile Include="Fixtures\RemoteBrokerFixture.cs" />
+    <Compile Include="Fixtures\RemoteBrokerMethodFixture.cs" />
+    <Compile Include="Fixtures\RemoteBrokerProcess.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
     <Compile Include="Session\RSessionTest.Blobs.cs" />
     <Compile Include="StackTracing\CallStackTest.cs" />

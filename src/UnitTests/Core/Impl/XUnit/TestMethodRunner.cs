@@ -92,7 +92,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             var constructorArguments = GetConstructorArguments(methodFixtures);
             var testInput = CreateTestInput(testCase, constructorArguments);
 
-            foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>()) {
+            foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>().Distinct()) {
                 await RunAsync(testCase, () => methodFixture.InitializeAsync(testInput, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to initialize");
             }
 
@@ -100,7 +100,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         private async Task DisposeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<Type, object> methodFixtures) {
-            foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>()) {
+            foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>().Distinct()) {
                 await RunAsync(testCase, () => methodFixture.DisposeAsync(runSummary, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to dispose");
             }
         }

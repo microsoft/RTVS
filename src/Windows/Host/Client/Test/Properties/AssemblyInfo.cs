@@ -18,7 +18,7 @@ using Microsoft.UnitTests.Core.XUnit;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: TestFrameworkOverride]
-[assembly: AssemblyFixtureImport(typeof(HostClientServicesFixture))]
+[assembly: AssemblyFixtureImport(typeof(HostClientServicesFixture), typeof(RemoteBrokerFixture))]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
