@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Validation.Errors;
 
-namespace Microsoft.R.Editor.Validation.Definitions {
+namespace Microsoft.R.Editor.Validation {
     /// <summary>
     /// AST node validator
     /// </summary>

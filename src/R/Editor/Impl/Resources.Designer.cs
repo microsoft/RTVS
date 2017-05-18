@@ -80,6 +80,24 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ’&lt;-’ should always be used for assignment.
+        /// </summary>
+        internal static string LintR_Assignment {
+            get {
+                return ResourceManager.GetString("LintR_Assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma should be followed by space, but do not have space before it.
+        /// </summary>
+        internal static string LintR_CommaSpaces {
+            get {
+                return ResourceManager.GetString("LintR_CommaSpaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ) expected.
         /// </summary>
         internal static string ParseError_CloseBraceExpected {

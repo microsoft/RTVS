@@ -186,4 +186,10 @@
   <data name="UncommentSelection" xml:space="preserve">
     <value>Uncomment selection</value>
   </data>
+  <data name="LintR_Assignment" xml:space="preserve">
+    <value>’&lt;-’ should always be used for assignment</value>
+  </data>
+  <data name="LintR_CommaSpaces" xml:space="preserve">
+    <value>Comma should be followed by space, but do not have space before it</value>
+  </data>
 </root>
