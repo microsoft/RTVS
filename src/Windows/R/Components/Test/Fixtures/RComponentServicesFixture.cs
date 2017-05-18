@@ -34,6 +34,7 @@ namespace Microsoft.R.Components.Test.Fixtures {
             serviceManager
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
+                .AddWindowsRComponentstServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
         }

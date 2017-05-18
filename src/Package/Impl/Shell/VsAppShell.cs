@@ -22,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             Debug.Assert(_instance == null, "VsAppShell is a singleton and cannot be created twice");
             _instance = this;
             _services = new VsServiceManager(this);
+            ConfigureServices();
         }
 
         /// <summary>

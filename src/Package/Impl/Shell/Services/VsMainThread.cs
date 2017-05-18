@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Shell;
 
@@ -14,8 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private readonly Thread _mainThread;
 
         public VsMainThread() {
-            Check.InvalidOperation(() => Thread.CurrentThread.ManagedThreadId == ThreadHelper.JoinableTaskContext.MainThread.ManagedThreadId);
-
             _mainThread = ThreadHelper.JoinableTaskContext.MainThread;
             _mainThreadDispatcher = Dispatcher.FromThread(_mainThread);
         }

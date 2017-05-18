@@ -16,6 +16,7 @@ using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Interpreters;
 using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Components;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
@@ -75,6 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new VsEditorViewLocator())
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
+                .AddWindowsRComponentstServices()
                 // OLE and VS specifics
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))

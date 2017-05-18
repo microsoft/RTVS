@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
 using Microsoft.R.Components.ConnectionManager;
@@ -20,7 +21,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R {
     internal sealed class RSettingsImplementation : BindableBase, IRSettings {
         private const int MaxDirectoryEntries = 8;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly ISettingsStorage _settingStorage;
         private readonly ILoggingPermissions _loggingPermissions;
 
@@ -51,10 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
 
-        public RSettingsImplementation(ICoreShell coreShell, ISettingsStorage settingStorage, ILoggingPermissions loggingPermissions) {
-            _coreShell = coreShell;
-            _settingStorage = settingStorage;
-            _loggingPermissions = loggingPermissions;
+        public RSettingsImplementation(IServiceContainer services) {
+            _services = services;
+            _settingStorage = services.GetService<ISettingsStorage>();
+            _loggingPermissions = services.GetService<ILoggingPermissions>();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -135,8 +136,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 UpdateWorkingDirectoryList(newDirectory);
 
                 
-                _coreShell?.MainThread().Post(() => {
-                    var shell = _coreShell.GetService<IVsUIShell>(typeof(SVsUIShell));
+                _services?.MainThread().Post(() => {
+                    var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
                     shell.UpdateCommandUI(1);
                 });
             }

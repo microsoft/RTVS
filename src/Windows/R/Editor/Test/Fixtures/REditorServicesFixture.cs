@@ -7,6 +7,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Components;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Editor.Settings;
@@ -44,6 +45,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             serviceManager
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
+                .AddWindowsRComponentstServices()
                 .AddEditorServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService(new EditorSupportMock())

@@ -127,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
-            IdleTimeAction.Create(() => ExpansionsCache.Load(Services), 200, typeof(ExpansionsCache), Services.GetService<IIdleTimeService>());
+            ExpansionsCache.Load(Services);
         }
 
         protected override void Dispose(bool disposing) {
