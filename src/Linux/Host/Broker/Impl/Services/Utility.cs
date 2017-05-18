@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Common.Core;
@@ -28,7 +29,7 @@ namespace Microsoft.R.Host.Broker.Services {
         public static Process AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
             Process proc = CreateRLaunchProcess(ps, false);
             using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
-                var message = new AuthenticateAndRunMessage() { Username = username, Password = password, Arguments = arguments, Environment = GetEnvironmentForForkAndExec(environment) };
+                var message = new AuthenticateAndRunMessage() { Username = username, Password = password, Arguments = arguments, Environment = environment.Select(e => $"{e.Key}={e.Value}") };
                 string json = JsonConvert.SerializeObject(message, GetJsonSettings());
                 var jsonBytes = Encoding.UTF8.GetBytes(json);
                 writer.Write(jsonBytes.Length);
@@ -144,14 +145,6 @@ namespace Microsoft.R.Host.Broker.Services {
             return new JsonSerializerSettings {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
-        }
-
-        private static IEnumerable<string> GetEnvironmentForForkAndExec(IDictionary<string,string> environment){
-            List<string> list = new List<string>();
-            foreach(var e in environment) {
-                list.Add($"{e.Key}={e.Value}");
-            }
-            return list;
         }
     }
 }

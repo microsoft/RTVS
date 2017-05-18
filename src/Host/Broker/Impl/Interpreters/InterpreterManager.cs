@@ -46,7 +46,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                 if (engines.Any()) {
                     var interpreterId = 0;
                     foreach (var e in engines) {
-                        var detected = new Interpreter(this, Invariant($"{interpreterId++}"), e.Name, e.InstallPath, e.BinPath, e.Version, e);
+                        var detected = new Interpreter(this, Invariant($"{interpreterId++}"), e);
                         _logger.LogTrace(Resources.Trace_DetectedR, detected.Version, detected.Path);
                         yield return detected;
                     }
@@ -61,8 +61,8 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
                 if (!string.IsNullOrEmpty(options.BasePath) && _fs.DirectoryExists(options.BasePath)) {
                     var interpInfo = _installationService.CreateInfo(string.Empty, options.BasePath);
-                    if (interpInfo.VerifyInstallation()) {
-                        yield return new Interpreter(this, id, options.Name, interpInfo.InstallPath, interpInfo.BinPath, interpInfo.Version, interpInfo);
+                    if (interpInfo != null && interpInfo.VerifyInstallation()) {
+                        yield return new Interpreter(this, id, options.Name, interpInfo);
                         continue;
                     }
                 }

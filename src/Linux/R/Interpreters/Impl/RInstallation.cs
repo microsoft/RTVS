@@ -38,7 +38,7 @@ namespace Microsoft.R.Interpreters {
             if(package != null) {
                 return new RInterpreterInfo(name, package, package.Version, package.GetVersion(), _fileSystem);
             }
-            return new RInterpreterInfo(name, InstalledPackageInfo.EmptyPackage, string.Empty, null, _fileSystem);
+            return null;
         }
 
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
@@ -51,22 +51,17 @@ namespace Microsoft.R.Interpreters {
         }
 
         private IEnumerable<IRInterpreterInfo> GetInstalledMRO(IEnumerable<InstalledPackageInfo> packagesInfo, ISupportedRVersionRange svl) {
-            var list = new List<IRInterpreterInfo>();
             var selectedPackages = packagesInfo.Where(p => p.PackageName.StartsWithIgnoreCase("microsoft-r-open-mro") && svl.IsCompatibleVersion(p.GetVersion()));
             foreach (var package in selectedPackages) {
-                var files = package.GetPackageFiles(_fileSystem);
-                list.Add(RInterpreterInfo.CreateFromPackage(package, "Microsoft R Open", _fileSystem));
+                yield return RInterpreterInfo.CreateFromPackage(package, "Microsoft R Open", _fileSystem);
             }
-            return list;
         }
 
         private IEnumerable<IRInterpreterInfo> GetInstalledCranR(IEnumerable<InstalledPackageInfo> packagesInfo, ISupportedRVersionRange svl) {
-            var list = new List<IRInterpreterInfo>();
             var selectedPackages = packagesInfo.Where(p => p.PackageName.EqualsIgnoreCase("r-base-core") && svl.IsCompatibleVersion(p.GetVersion()));
             foreach (var package in selectedPackages) {
-                list.Add(RInterpreterInfo.CreateFromPackage(package, "CRAN R", _fileSystem));
+                yield return RInterpreterInfo.CreateFromPackage(package, "CRAN R", _fileSystem);
             }
-            return list;
         }
     }
 }

@@ -29,13 +29,23 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
         public IRInterpreterInfo RInterpreterInfo { get; }
 
-        public Interpreter(InterpreterManager manager, string id, string name, string path, string binPath, Version version, IRInterpreterInfo rInterpreterInfo) {
+        public Interpreter(InterpreterManager manager, string id, IRInterpreterInfo rInterpreterInfo) {
+            Manager = manager;
+            Id = id;
+            Name = rInterpreterInfo.Name;
+            Path = rInterpreterInfo.InstallPath;
+            BinPath = rInterpreterInfo.BinPath;
+            Version = rInterpreterInfo.Version;
+            RInterpreterInfo = rInterpreterInfo;
+        }
+
+        public Interpreter(InterpreterManager manager, string id, string name, IRInterpreterInfo rInterpreterInfo) {
             Manager = manager;
             Id = id;
             Name = name;
-            Path = path;
-            BinPath = binPath;
-            Version = version;
+            Path = rInterpreterInfo.InstallPath;
+            BinPath = rInterpreterInfo.BinPath;
+            Version = rInterpreterInfo.Version;
             RInterpreterInfo = rInterpreterInfo;
         }
     }

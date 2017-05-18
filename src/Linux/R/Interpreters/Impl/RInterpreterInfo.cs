@@ -43,10 +43,10 @@ namespace Microsoft.R.Interpreters {
         /// 
         /// </summary>
         /// <param name="name">Name of the R interpreter</param>
-        /// <param name="path">Path to the /R folder</param>
+        /// <param name="corePackage">Instance of the core interpreter package (r-base-core, microsoft-r-open-mro, etc)</param>
         /// <param name="fileSystem"></param>
-        public RInterpreterInfo(string name, InstalledPackageInfo package, string version, Version parsedVersion, IFileSystem fileSystem) {
-            var files = package.GetPackageFiles(fileSystem);
+        public RInterpreterInfo(string name, InstalledPackageInfo corePackage, string version, Version parsedVersion, IFileSystem fileSystem) {
+            var files = corePackage.GetPackageFiles(fileSystem);
             Name = name;
             InstallPath = GetRInstallPath(files, fileSystem);
             _fileSystem = fileSystem;
@@ -56,7 +56,7 @@ namespace Microsoft.R.Interpreters {
             BinPath = GetRLibPath();
             DocPath = GetRDocPath(files, fileSystem);
             IncludePath = GetIncludePath(files, fileSystem);
-            SiteLibraryDirs = GetSiteLibraryDirs(package, files, fileSystem);
+            SiteLibraryDirs = GetSiteLibraryDirs(corePackage, files, fileSystem);
         }
 
         public bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null) {

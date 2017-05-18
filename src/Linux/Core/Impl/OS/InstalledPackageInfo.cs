@@ -23,8 +23,6 @@ namespace Microsoft.Common.Core.OS {
             _parsedVersion = ParseVersion(version);
         }
 
-        public static InstalledPackageInfo EmptyPackage { get; } = new InstalledPackageInfo(string.Empty, string.Empty, string.Empty);
-
         public IEnumerable<string> GetPackageFiles(IFileSystem fs) {
             string path = $"/var/lib/dpkg/info/{PackageName}.list";
             if (fs.FileExists(path)) {
