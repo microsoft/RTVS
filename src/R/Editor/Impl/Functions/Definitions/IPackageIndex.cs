@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.R.Components.PackageManager;
 
 namespace Microsoft.R.Editor.Functions {
-    public interface IPackageIndex: IDisposable {
+    public interface IPackageIndex: IPackageInstallationNotifications, IDisposable {
         /// <summary>
         /// Creates index of packages available in the provided R session
         /// </summary>

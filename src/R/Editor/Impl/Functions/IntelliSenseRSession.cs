@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
@@ -77,7 +78,7 @@ namespace Microsoft.R.Editor.Functions {
                     if (candidate != null && candidate.StartsWithOrdinal("package:")) {
                         packageName = candidate.Substring(8);
                     }
-                } catch (Exception) { }
+                } catch (RException) { } catch(OperationCanceledException) { }
             }
 
             return packageName;
@@ -86,8 +87,8 @@ namespace Microsoft.R.Editor.Functions {
         /// <summary>
         /// Starts intellisense session.
         /// </summary>
-        public async Task StartSessionAsync() {
-            var token = await _lock.ResetAsync();
+        public async Task StartSessionAsync(CancellationToken ct = default(CancellationToken)) {
+            var token = await _lock.ResetAsync(ct);
             try {
                 if (!_sessionProvider.HasBroker) {
                     throw new RHostDisconnectedException();
@@ -100,7 +101,18 @@ namespace Microsoft.R.Editor.Functions {
                 if (!Session.IsHostRunning) {
                     int timeout = _unitTests ? 10000 : 3000;
                     var settings = Services.GetService<IRSettings>();
-                    await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout);
+                    await Session.EnsureHostStartedAsync(new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, timeout, ct);
+                }
+            } finally {
+                token.Set();
+            }
+        }
+
+        public async Task StopSessionAsync(CancellationToken ct = default(CancellationToken)) {
+            var token = await _lock.ResetAsync(ct);
+            try {
+                if (Session.IsHostRunning) {
+                    await Session.StopHostAsync(waitForShutdown: true, cancellationToken: ct);
                 }
             } finally {
                 token.Set();
@@ -123,9 +135,9 @@ namespace Microsoft.R.Editor.Functions {
         /// <summary>
         /// Retrieves names of packages loaded into the interactive session.
         /// </summary>
-        public async Task<IEnumerable<string>> GetLoadedPackageNamesAsync() {
+        public async Task<IEnumerable<string>> GetLoadedPackageNamesAsync(CancellationToken ct = default(CancellationToken)) {
             if (_loadedPackages == null && _updateTask == null) {
-                _updateTask = UpdateListOfLoadedPackagesAsync();
+                _updateTask = UpdateListOfLoadedPackagesAsync(ct);
             }
 
             Debug.Assert(_updateTask != null);
@@ -137,9 +149,9 @@ namespace Microsoft.R.Editor.Functions {
         private void OnInteractiveSessionMutated(object sender, EventArgs e)
              => _updateTask = UpdateListOfLoadedPackagesAsync();
 
-        private async Task UpdateListOfLoadedPackagesAsync() {
+        private async Task UpdateListOfLoadedPackagesAsync(CancellationToken ct = default(CancellationToken)) {
             try {
-                await StartSessionAsync();
+                await StartSessionAsync(ct);
                 var session = GetLoadedPackagesInspectionSession();
                 if (session != null) {
                     _loadedPackages = await session.EvaluateAsync<string[]>("as.list(.packages())", REvaluationKind.Normal);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
@@ -31,8 +32,10 @@ namespace Microsoft.R.Editor.Functions {
         private readonly IRSession _interactiveSession;
         private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
+        private readonly IIdleTimeService _idleTime;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
+        private volatile bool _updatePending;
 
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
@@ -46,6 +49,7 @@ namespace Microsoft.R.Editor.Functions {
         public PackageIndex(IServiceContainer services, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _host = host;
             _functionIndex = functionIndex;
+            _idleTime = services.GetService<IIdleTimeService>();
 
             var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = interactiveWorkflowProvider.GetOrCreate();
@@ -199,11 +203,14 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private async Task UpdateInstalledPackagesAsync() {
-            var token = await _buildIndexLock.ResetAsync();
+        private async Task UpdateInstalledPackagesAsync(CancellationToken ct = default(CancellationToken)) {
+            if (!_updatePending) {
+                return;
+            }
+            var token = await _buildIndexLock.ResetAsync(ct);
             if (!token.IsSet) {
                 try {
-                    var installed = await GetInstalledPackagesAsync();
+                    var installed = await GetInstalledPackagesAsync(ct);
                     var installedNames = installed.Select(p => p.Package).Concat(new[] { "rtvs" }).ToList();
 
                     var currentNames = _packages.Keys.ToArray();
@@ -212,7 +219,9 @@ namespace Microsoft.R.Editor.Functions {
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
                     await AddPackagesToIndexAsync(added);
-                } catch (OperationCanceledException) {
+
+                    _updatePending = false;
+                } catch (RException) { } catch (OperationCanceledException) {
                 } finally {
                     token.Reset();
                 }
@@ -249,8 +258,8 @@ namespace Microsoft.R.Editor.Functions {
             return list;
         }
 
-        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
-            await _host.StartSessionAsync();
+        private async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync(CancellationToken ct = default(CancellationToken)) {
+            await _host.StartSessionAsync(ct);
             var result = await _host.Session.InstalledPackagesAsync();
             return result.Select(p => p.ToObject<RPackage>());
         }
@@ -273,7 +282,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private void ScheduleIdleTimeRebuild() {
             IdleTimeAction.Cancel(typeof(PackageIndex));
-            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, typeof(PackageIndex), _host.Services.GetService<IIdleTimeService>());
+            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, GetType(), _idleTime);
         }
 
         private async Task RebuildIndexAsync() {
@@ -295,6 +304,31 @@ namespace Microsoft.R.Editor.Functions {
             packageName = packageName.TrimQuotes().Trim();
             _packages.TryGetValue(packageName, out PackageInfo package);
             return package;
+        }
+
+        #region IPackageInstallationNotifications
+        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) {
+            // Package is about to be installed. Stop intellisense session
+            // so loaded packages are released and new one will not be locked.
+            // If update is pending, cancel it.
+            CancelPendingIndexUpdate();
+            var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(5000);
+            return _host.StopSessionAsync(timeoutCts.Token);
+        }
+
+        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) {
+            _updatePending = true;
+            // Create delayed action. There may be multiple install.packages
+            // commands pending and we want to update index when processing
+            // is fully completes.
+            IdleTimeAction.Create(() => UpdateInstalledPackagesAsync(cancellationToken).DoNotWait(), 1000, GetType(), _idleTime);
+            return Task.CompletedTask;
+        }
+        #endregion
+        private void CancelPendingIndexUpdate() {
+            _updatePending = false;
+            IdleTimeAction.Cancel(GetType());
         }
     }
 }
