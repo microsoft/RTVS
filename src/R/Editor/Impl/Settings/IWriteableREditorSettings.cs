@@ -3,6 +3,7 @@
 
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Editor.Validation.LintR;
 
 namespace Microsoft.R.Editor {
     public interface IWritableREditorSettings : IWritableEditorSettings {
@@ -17,5 +18,6 @@ namespace Microsoft.R.Editor {
         bool PartialArgumentNameMatch { get; set; }
         bool EnableOutlining { get; set; }
         RFormatOptions FormatOptions { get; }
+        LintOptions LintOptions { get; }
     }
 }

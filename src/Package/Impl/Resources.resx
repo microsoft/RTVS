@@ -1138,4 +1138,175 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="Settings_SpacesAroundEquals_Description" xml:space="preserve">
     <value>Determines if formatter should place spaces around equals sign</value>
   </data>
+  <data name="Settings_LintCategory_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Settings_LintCategory_Assignment" xml:space="preserve">
+    <value>Assignment</value>
+  </data>
+  <data name="Settings_LintCategory_Naming" xml:space="preserve">
+    <value>Naming</value>
+  </data>
+  <data name="Settings_LintCategory_Operators" xml:space="preserve">
+    <value>Operators</value>
+  </data>
+  <data name="Settings_LintCategory_Quotes" xml:space="preserve">
+    <value>Quotes</value>
+  </data>
+  <data name="Settings_LintCategory_Spacing" xml:space="preserve">
+    <value>Spacing</value>
+  </data>
+  <data name="Settings_LintCategory_Statements" xml:space="preserve">
+    <value>Statements</value>
+  </data>
+  <data name="Settings_LintCategory_Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Settings_LintCategory_Whitespace" xml:space="preserve">
+    <value>Whitespace</value>
+  </data>
+  <data name="Settings_LintEnabled" xml:space="preserve">
+    <value>Enable lint</value>
+  </data>
+  <data name="Settings_LintEnabled_Description" xml:space="preserve">
+    <value>Enable or disable coding style (lintr-type) checks</value>
+  </data>
+  <data name="Settings_Lint_AssignmentType" xml:space="preserve">
+    <value>Enforce &lt;-</value>
+  </data>
+  <data name="Settings_Lint_AssignmentType_Description" xml:space="preserve">
+    <value>Check that ’&lt;-’ is always used for assignment</value>
+  </data>
+  <data name="Settings_Lint_CamelCase" xml:space="preserve">
+    <value>Flag camelCase</value>
+  </data>
+  <data name="Settings_Lint_CamelCase_Description" xml:space="preserve">
+    <value>Flag object names in camelCase</value>
+  </data>
+  <data name="Settings_Lint_CloseCurlySeparateLine" xml:space="preserve">
+    <value>} on separate line</value>
+  </data>
+  <data name="Settings_Lint_CloseCurlySeparateLine_Description" xml:space="preserve">
+    <value>Check that closing curly braces are always on their own line unless followed by an 'else' statement, comma or closing brace. </value>
+  </data>
+  <data name="Settings_Lint_DoubleQuotes" xml:space="preserve">
+    <value>Enforce "</value>
+  </data>
+  <data name="Settings_Lint_DoubleQuotes_Description" xml:space="preserve">
+    <value>Verify that strings are enclosed only in double quotes.</value>
+  </data>
+  <data name="Settings_Lint_LineLength" xml:space="preserve">
+    <value>Line length limit</value>
+  </data>
+  <data name="Settings_Lint_LineLength_Description" xml:space="preserve">
+    <value>Flag lines longer than the specified limit</value>
+  </data>
+  <data name="Settings_Lint_MaxLineLength" xml:space="preserve">
+    <value>Max line length</value>
+  </data>
+  <data name="Settings_Lint_MaxLineLength_Description" xml:space="preserve">
+    <value>Maximum permitted line length</value>
+  </data>
+  <data name="Settings_Lint_MaxName" xml:space="preserve">
+    <value>Flag long names</value>
+  </data>
+  <data name="Settings_Lint_MaxNameLength" xml:space="preserve">
+    <value>Max name length</value>
+  </data>
+  <data name="Settings_Lint_MaxNameLength_Description" xml:space="preserve">
+    <value>Max variable or object name length</value>
+  </data>
+  <data name="Settings_Lint_MaxName_Description" xml:space="preserve">
+    <value>Flag names longer than the specified limit</value>
+  </data>
+  <data name="Settings_Lint_MultipleDots" xml:space="preserve">
+    <value>Flas multiple dots</value>
+  </data>
+  <data name="Settings_Lint_MultipleDots_Description" xml:space="preserve">
+    <value>Flag objects names with multiple dots</value>
+  </data>
+  <data name="Settings_Lint_MultipleStatements" xml:space="preserve">
+    <value>Multiple</value>
+  </data>
+  <data name="Settings_Lint_MultipleStatements_Description" xml:space="preserve">
+    <value>Verify that there are no multiple statements in the same line</value>
+  </data>
+  <data name="Settings_Lint_NoSpaceAfterFunctionName" xml:space="preserve">
+    <value>After function name</value>
+  </data>
+  <data name="Settings_Lint_NoSpaceAfterFunctionName_Description" xml:space="preserve">
+    <value>Verify that there is no space after the function name.</value>
+  </data>
+  <data name="Settings_Lint_NoTabs" xml:space="preserve">
+    <value>Disallow tabs</value>
+  </data>
+  <data name="Settings_Lint_NoTabs_Description" xml:space="preserve">
+    <value>Verify there are no tabs in the file</value>
+  </data>
+  <data name="Settings_Lint_OpenCurlyPosition" xml:space="preserve">
+    <value>{ line</value>
+  </data>
+  <data name="Settings_Lint_OpenCurlyPosition_Description" xml:space="preserve">
+    <value>Check that open curly brace is not on its own line and is followed by a new line.</value>
+  </data>
+  <data name="Settings_Lint_PascalCase" xml:space="preserve">
+    <value>Flag PascalCase</value>
+  </data>
+  <data name="Settings_Lint_PascalCase_Description" xml:space="preserve">
+    <value>Flag object names in PascalCase</value>
+  </data>
+  <data name="Settings_Lint_Semicolons" xml:space="preserve">
+    <value>Semicolons</value>
+  </data>
+  <data name="Settings_Lint_Semicolons_Description" xml:space="preserve">
+    <value>Flag semicolons in the file.</value>
+  </data>
+  <data name="Settings_Lint_SnakeCase" xml:space="preserve">
+    <value>Flag snake_case</value>
+  </data>
+  <data name="Settings_Lint_SnakeCase_Description" xml:space="preserve">
+    <value>Flag object names in snake_case</value>
+  </data>
+  <data name="Settings_Lint_SpaceBeforeOpenBrace" xml:space="preserve">
+    <value>Before (</value>
+  </data>
+  <data name="Settings_Lint_SpaceBeforeOpenBrace_Description" xml:space="preserve">
+    <value>Check that left brace has a space before it unless it is a function call.</value>
+  </data>
+  <data name="Settings_Lint_SpacesAroundComma" xml:space="preserve">
+    <value>Around comma</value>
+  </data>
+  <data name="Settings_Lint_SpacesAroundComma_Description" xml:space="preserve">
+    <value>Checks that commas have space after and no space before them unless followed by another comma or by a closing brace</value>
+  </data>
+  <data name="Settings_Lint_SpacesAroundOperators" xml:space="preserve">
+    <value>Around operators</value>
+  </data>
+  <data name="Settings_Lint_SpacesAroundOperators_Description" xml:space="preserve">
+    <value>Checks that infix operators are surrounded by spaces</value>
+  </data>
+  <data name="Settings_Lint_SpacesInsideParenthesis" xml:space="preserve">
+    <value>Inside ( )</value>
+  </data>
+  <data name="Settings_Lint_SpacesInsideParenthesis_Description" xml:space="preserve">
+    <value>There should be no space after (, [ or [[ and no space before ), ] or ]] unless ] or ]] is preceded by a comma as in x[1, ]</value>
+  </data>
+  <data name="Settings_Lint_TrailingBlankLines" xml:space="preserve">
+    <value>Trailing empty lines</value>
+  </data>
+  <data name="Settings_Lint_TrailingBlankLines_Description" xml:space="preserve">
+    <value>Verify there is no trailing blank lines in the file.</value>
+  </data>
+  <data name="Settings_Lint_TrailingWhitespace" xml:space="preserve">
+    <value>Trailing whitespace</value>
+  </data>
+  <data name="Settings_Lint_TrailingWhitespace_Description" xml:space="preserve">
+    <value>Check there is no trailing whitespace in lines.</value>
+  </data>
+  <data name="Settings_Lint_UpperCase" xml:space="preserve">
+    <value>Flag UPPERCASE</value>
+  </data>
+  <data name="Settings_Lint_UpperCase_Description" xml:space="preserve">
+    <value>Flag object names in UPPERCASE</value>
+  </data>
 </root>

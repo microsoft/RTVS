@@ -55,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "#150", "#20136")]
+    [ProvideLanguageEditorOptionPage(typeof(RLintOptionsDialog), RContentTypeDefinition.LanguageName, "", "#151", "#20139")]
     [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 40)]

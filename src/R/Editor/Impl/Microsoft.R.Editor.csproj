@@ -10,6 +10,9 @@
     <None Remove="Text\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Validation\Lint\Lint.Whitespace.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
   </ItemGroup>
