@@ -15,11 +15,5 @@ namespace Microsoft.Common.Core.Shell {
         /// Application-global services access
         /// </summary>
         IServiceContainer Services { get; }
-
-
-        /// <summary>
-        /// Tells if code runs in unit test environment
-        /// </summary>
-        bool IsUnitTestEnvironment { get; }
     }
 }

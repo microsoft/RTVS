@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void Initialize() {
             VsWpfOverrides.Apply();
 
-            ConfigureServices();
+            ConfigurePackageServices();
             ConfigureIdleSource();
             CheckVsStarted();
         }

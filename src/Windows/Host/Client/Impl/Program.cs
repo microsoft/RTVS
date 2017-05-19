@@ -24,8 +24,7 @@ namespace Microsoft.R.Host.Client {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             var programName = "Microsoft.R.Host.Client.Program";
-            using (var logger = new Logger(programName, Path.GetTempPath(), new MaxLoggingPermissions())) {
-                var shell = new CoreShell(logger);
+            using (var shell = new CoreShell(programName)) {
                 var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create(null, "local", args[0]), shell.Services, new NullConsole());
                 var host = localConnector.ConnectAsync(new HostConnectionInfo(programName, new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
@@ -174,31 +173,18 @@ namespace Microsoft.R.Host.Client {
             public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
         }
 
-        class CoreShell : ICoreShell {
-            private readonly ServiceManager _serviceManager;
+        class CoreShell : ICoreShell, IDisposable {
+            private readonly IServiceManager _serviceManager;
 
-            public CoreShell(IActionLog log) {
-                ThreadId = Thread.CurrentThread.ManagedThreadId;
-                _serviceManager = new ServiceManager();
-                _serviceManager
+            public CoreShell(string programName) {
+                _serviceManager = new ServiceManager()
                     .AddService(new MaxLoggingPermissions())
-                    .AddService(log);
+                    .AddService(s => new Logger(programName, Path.GetTempPath(), s));
             }
 
-            public string ApplicationName => "Program";
-            public int LocaleId => 1033;
             public IServiceContainer Services => _serviceManager;
 
-            public bool IsUnitTestEnvironment => false;
-            public int ThreadId { get; }
-
-#pragma warning disable 67
-            public event EventHandler<EventArgs> Started;
-            public event EventHandler<EventArgs> Terminating;
-            public event EventHandler<EventArgs> Idle;
-#pragma warning restore 67
-
-            public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) => action();
+            public void Dispose() => _serviceManager.Dispose();
         }
     }
 }

@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.Text;
@@ -14,7 +13,6 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.History.Implementation {
-    [Export(typeof(IRHistoryProvider))]
     internal class RHistoryProvider : IRHistoryProvider {
         private readonly ITextBufferFactoryService _textBufferFactory;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
@@ -25,16 +23,15 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Dictionary<ITextBuffer, IRHistory> _histories;
         private readonly IFileSystem _fs;
 
-        [ImportingConstructor]
-        public RHistoryProvider(ICoreShell coreShell) {
-            _textBufferFactory = coreShell.GetService<ITextBufferFactoryService>();
-            _contentTypeRegistryService = coreShell.GetService<IContentTypeRegistryService>();
-            _editorOperationsFactory = coreShell.GetService<IEditorOperationsFactoryService>();
-            _rtfBuilderService = coreShell.GetService<IRtfBuilderService>();
-            _textSearchService = coreShell.GetService<ITextSearchService2>();
-            _settings = coreShell.GetService<IRSettings>();
+        public RHistoryProvider(IServiceContainer services) {
+            _textBufferFactory = services.GetService<ITextBufferFactoryService>();
+            _contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
+            _editorOperationsFactory = services.GetService<IEditorOperationsFactoryService>();
+            _rtfBuilderService = services.GetService<IRtfBuilderService>();
+            _textSearchService = services.GetService<ITextSearchService2>();
+            _settings = services.GetService<IRSettings>();
             _histories = new Dictionary<ITextBuffer, IRHistory>();
-            _fs = coreShell.FileSystem();
+            _fs = services.FileSystem();
         }
 
         public IRHistory GetAssociatedRHistory(ITextBuffer textBuffer) {

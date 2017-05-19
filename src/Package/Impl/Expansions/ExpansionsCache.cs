@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Snippets;
@@ -18,9 +19,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             // Caching language expansion structs requires access to the IVsExpansionManager
             // service which is valid on the main thread only. So we create cache on the main 
             // thread so we can then access objects from background threads.
-            CacheLanguageExpansionStructs(expansionManager);
             _instance = this;
             _services = services;
+            IdleTimeAction.Create(() => CacheLanguageExpansionStructs(expansionManager), 200, typeof(ExpansionsCache), services.GetService<IIdleTimeService>());
         }
 
         public static IExpansionsCache Current {
@@ -33,9 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public static void Load(IServiceContainer services) {
-            IVsExpansionManager expansionManager;
             var textManager2 = services.GetService<IVsTextManager2>(typeof(SVsTextManager));
-            textManager2.GetExpansionManager(out expansionManager);
+            textManager2.GetExpansionManager(out IVsExpansionManager expansionManager);
             _instance = new ExpansionsCache(expansionManager, services);
         }
 

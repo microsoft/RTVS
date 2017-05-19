@@ -10,18 +10,20 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.Common.Core.Security {
     public class SecurityService : ISecurityService {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
-        public SecurityService(ICoreShell coreShell) {
-            _coreShell = coreShell;
+        public SecurityService(IServiceContainer services) {
+            _services = services;
         }
 
         public Credentials GetUserCredentials(string authority, string workspaceName) {
-            _coreShell.AssertIsOnMainThread();
+            _services.MainThread().CheckAccess();
             return ReadSavedCredentials(authority) ?? PromptForWindowsCredentials(authority, workspaceName);
         }
 
@@ -34,8 +36,8 @@ namespace Microsoft.Common.Core.Security {
                 // is in modal state due to the progress dialog. Note that native message
                 // box appearance is a bit different from VS dialogs and matches OS theme
                 // rather than VS fonts and colors.
-                var platform = _coreShell.GetService<IPlatformServices>();
-                if (Win32MessageBox.Show(platform.ApplicationWindowHandle, message, 
+                var platform = _services.GetService<IPlatformServices>();
+                if (Win32MessageBox.Show(platform.ApplicationWindowHandle, message,
                     Win32MessageBox.Flags.YesNo | Win32MessageBox.Flags.IconWarning) == Win32MessageBox.Result.Yes) {
                     certificate2.Reset();
                     return true;
@@ -78,7 +80,7 @@ namespace Microsoft.Common.Core.Security {
         private Credentials PromptForWindowsCredentials(string authority, string workspaceName) {
             var credui = new NativeMethods.CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(NativeMethods.CREDUI_INFO)),
-                hwndParent = _coreShell.GetService<IPlatformServices>().ApplicationWindowHandle,
+                hwndParent = _services.GetService<IPlatformServices>().ApplicationWindowHandle,
                 pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
 

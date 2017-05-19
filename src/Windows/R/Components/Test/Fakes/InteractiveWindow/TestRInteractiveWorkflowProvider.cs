@@ -33,7 +33,21 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private Lazy<IRInteractiveWorkflowVisual> _instanceLazy;
         public IRSessionCallback HostClientApp { get; set; }
 
+        
         [ImportingConstructor]
+        public TestRInteractiveWorkflowProvider(IRPackageManagerProvider packagesProvider
+            , IRPlotManagerProvider plotsProvider
+            , IActiveWpfTextViewTracker activeTextViewTracker
+            , IDebuggerModeTracker debuggerModeTracker
+            , ICoreShell shell) 
+            : this(shell.GetService<IConnectionManagerProvider>()
+                  , shell.GetService<IRHistoryProvider>()
+                  , packagesProvider
+                  , plotsProvider
+                  , activeTextViewTracker
+                  , debuggerModeTracker
+                  , shell) {}
+
         public TestRInteractiveWorkflowProvider(IConnectionManagerProvider connectionManagerProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider

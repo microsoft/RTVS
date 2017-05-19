@@ -87,7 +87,5 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         }
 
         public IServiceContainer Services => ServiceManager;
-
-        public bool IsUnitTestEnvironment => true;
     }
 }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
@@ -38,7 +39,7 @@ namespace Microsoft.R.Editor.Functions {
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _workflow.RSession.Mutated += OnInteractiveSessionMutated;
             _sessionProvider = _workflow.RSessions;
-            _unitTests = Services.GetService<ICoreShell>().IsUnitTestEnvironment;
+            _unitTests = TestEnvironment.Current != null;
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.View;
@@ -17,9 +18,9 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
         private readonly ITextEditorFactoryService _textEditorFactory;
 
         [ImportingConstructor]
-        public TestRHistoryVisualComponentContainerFactory(IRHistoryProvider historyProvider, ITextEditorFactoryService textEditorFactory) {
-            _historyProvider = historyProvider;
-            _textEditorFactory = textEditorFactory;
+        public TestRHistoryVisualComponentContainerFactory(ICoreShell coreShell) {
+            _historyProvider = coreShell.GetService<IRHistoryProvider>();
+            _textEditorFactory = coreShell.GetService<ITextEditorFactoryService>();
         }
 
         public IVisualComponentContainer<IRHistoryWindowVisualComponent> GetOrCreate(ITextBuffer historyTextBuffer, int instanceId = 0) {

@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             _debuggerModeTracker = new VsDebuggerModeTracker(coreShell);
  
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(
-                connectionsProvider: new ConnectionManagerProvider(coreShell),
+                connectionsProvider: new ConnectionManagerProvider(services),
                 debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
         }

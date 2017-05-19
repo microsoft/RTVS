@@ -46,7 +46,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IProjectLockService _projectLockService;
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly ICoreShell _coreShell;
-        private readonly ISurveyNewsService _surveyNews;
 
         private IRInteractiveWorkflowVisual _workflow;
         private IRSession _session;
@@ -59,21 +58,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public RProjectLoadHooks(UnconfiguredProject unconfiguredProject
             , [ImportMany("Microsoft.VisualStudio.ProjectSystem.Microsoft.VisualStudio.Shell.Interop.IVsProject")] IEnumerable<Lazy<IVsProject>> cpsIVsProjects
             , IProjectLockService projectLockService
-            , IRInteractiveWorkflowVisualProvider workflowProvider
-            , IInteractiveWindowComponentContainerFactory componentContainerFactory
-            , IRSettings settings
             , IThreadHandling threadHandling
-            , ISurveyNewsService surveyNews
             , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider
             , ICoreShell coreShell) {
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
             _projectLockService = projectLockService;
-            _workflowProvider = workflowProvider;
 
-            _settings = settings;
+            _settings = coreShell.GetService<IRSettings>();
             _threadHandling = threadHandling;
-            _surveyNews = surveyNews;
             _coreShell = coreShell;
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
@@ -100,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // Verify project is not on a network share and give warning if it is
             CheckRemoteDrive(_projectDirectory);
 
-            _workflow = _workflowProvider.GetOrCreate();
+            _workflow = _coreShell.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate();
             _session = _workflow.RSession;
             _history = _workflow.History;
 
@@ -138,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // We do it this way instead of calling DoNotWait extension in order
             // to handle any non critical exceptions.
             try {
-                await _surveyNews.CheckSurveyNewsAsync(false);
+                await _coreShell.GetService<ISurveyNewsService>().CheckSurveyNewsAsync(false);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _coreShell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
             }

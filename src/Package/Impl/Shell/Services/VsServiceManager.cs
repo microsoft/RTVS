@@ -7,6 +7,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
@@ -70,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 service = ExportProvider.GetExportedValueOrDefault<T>();
                 if (service == null) {
                     // Now try VS services. Only allowed on UI thread.
-                    if (_shell.IsUnitTestEnvironment) {
+                    if (TestEnvironment.Current != null) {
                         service = RPackage.Current != null ? RPackage.Current.GetService(type) as T : null;
                     } else {
                         service = VsPackage.GetGlobalService(type) as T;

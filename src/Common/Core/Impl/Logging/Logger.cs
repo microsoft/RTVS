@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.Common.Core.Logging {
     /// <summary>
@@ -30,9 +31,9 @@ namespace Microsoft.Common.Core.Logging {
             _logs = Lazy.Create(CreateLogs);
         }
 
-        public Logger(string name, string folder, ILoggingPermissions permissions) {
+        public Logger(string name, string folder, IServiceContainer services) {
             _name = name;
-            _permissions = permissions;
+            _permissions = services.GetService<ILoggingPermissions>();
             _logs = Lazy.Create(CreateLogs);
             Folder = folder;
         }

@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Win32;
@@ -26,7 +27,6 @@ namespace Microsoft.Common.Core.Logging {
         internal const string LogVerbosityValueName = "LogVerbosity";
         internal const string FeedbackValueName = "Feedback";
 
-        private readonly IPlatformServices _platform;
         private readonly ITelemetryService _telemetryService;
         private readonly IRegistry _registry;
 
@@ -34,10 +34,9 @@ namespace Microsoft.Common.Core.Logging {
         private LogVerbosity? _registryVerbosity;
         private int? _registryFeedbackSetting;
 
-        public LoggingPermissions(IPlatformServices platform, ITelemetryService telemetryService, IRegistry registry) {
-            _platform = platform;
-            _telemetryService = telemetryService;
-            _registry = registry;
+        public LoggingPermissions(IServiceContainer services) {
+            _telemetryService = services.Telemetry();
+            _registry = services.GetService<IRegistry>();
 
             _registryVerbosity = GetLogLevelFromRegistry();
             _registryFeedbackSetting = GetFeedbackFromRegistry();
@@ -84,12 +83,12 @@ namespace Microsoft.Common.Core.Logging {
         private int? GetFeedbackFromRegistry() => GetValueFromRegistry(FeedbackValueName, 0, 1);
 
         private int? GetValueFromRegistry(string name, int minValue, int maxValue) {
-            if(_platform.LocalMachineHive == null) {
+            if(_registry.LocalMachineHive == null) {
                 return maxValue;
             }
             using (var hlkm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                 try {
-                    using (var key = hlkm.OpenSubKey(_platform.LocalMachineHive)) {
+                    using (var key = hlkm.OpenSubKey(_registry.LocalMachineHive)) {
                         var value = (int?)key.GetValue(name);
                         if (value.HasValue && value.Value >= minValue && value.Value <= maxValue) {
                             return value;

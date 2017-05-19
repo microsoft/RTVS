@@ -56,10 +56,10 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             }
 
             public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                _addServices(this, testInput);
                 var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
                 Directory.CreateDirectory(logsFolder);
-                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
-                _addServices(this, testInput);
+                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, this));
 
                 return Task.CompletedTask;
             }

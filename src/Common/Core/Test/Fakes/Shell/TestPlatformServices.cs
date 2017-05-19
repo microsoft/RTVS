@@ -8,8 +8,6 @@ using Microsoft.Common.Core.Shell;
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
     public sealed class TestPlatformServices : IPlatformServices {
-        public void Initialize() { }
-        public string LocalMachineHive => null;
         public IntPtr ApplicationWindowHandle => IntPtr.Zero;
     }
 }

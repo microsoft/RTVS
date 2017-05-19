@@ -238,6 +238,7 @@
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
+    <Compile Include="ServicesExtensions.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorList.cs" />
     <Compile Include="Sql\DbConnectionService.cs" />

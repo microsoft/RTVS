@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -23,7 +24,7 @@ namespace Microsoft.Languages.Editor.Undo {
 
         public CompoundUndoAction(IEditorView editorView, IServiceContainer services, bool addRollbackOnCancel = true) {
             var shell = services.GetService<ICoreShell>();
-            if (!shell.IsUnitTestEnvironment) {
+            if (TestEnvironment.Current == null) {
                 var operationsService = services.GetService<IEditorOperationsFactoryService>();
                 var undoProvider = services.GetService<ITextBufferUndoManagerProvider>();
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
@@ -42,7 +43,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             }
 
             // If task is still running, wait a bit, but not too long.
-            LookupTask.Wait(_services.GetService<ICoreShell>().IsUnitTestEnvironment ? 50000 : 2000);
+            LookupTask.Wait(TestEnvironment.Current != null ? 50000 : 2000);
             if (_exception != null) {
                 callback.ReportFailure(_exception);
             } else if (LookupTask.IsCompleted && LookupTask.Result != null) {
