@@ -63,7 +63,7 @@ namespace Microsoft.UnitTests.Core.Threading {
             }
 
             var sc = SynchronizationContext.Current;
-            var blockingLoopSynchronizationContext = new BlockingLoopSynchronizationContext(this, sc);
+            var blockingLoopSynchronizationContext = new BlockingLoopSynchronizationContext(UIThreadHelper.Instance, sc);
             SynchronizationContext.SetSynchronizationContext(blockingLoopSynchronizationContext);
             var bl = new BlockingLoop(func, sc);
             try {
@@ -122,11 +122,11 @@ namespace Microsoft.UnitTests.Core.Threading {
         }
 
         private class BlockingLoopSynchronizationContext : SynchronizationContext {
-            private readonly TestMainThread _mainThread;
+            private readonly UIThreadHelper _threadHelper;
             private readonly SynchronizationContext _innerSynchronizationContext;
 
-            public BlockingLoopSynchronizationContext(TestMainThread mainThread, SynchronizationContext innerSynchronizationContext) {
-                _mainThread = mainThread;
+            public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper, SynchronizationContext innerSynchronizationContext) {
+                _threadHelper = threadHelper;
                 _innerSynchronizationContext = innerSynchronizationContext;
             }
 
@@ -134,7 +134,7 @@ namespace Microsoft.UnitTests.Core.Threading {
                 => _innerSynchronizationContext.Send(d, state);
 
             public override void Post(SendOrPostCallback d, object state) {
-                var bl = _mainThread._blockingLoop.Value;
+                var bl = ((TestMainThread)_threadHelper.MainThread)._blockingLoop.Value;
                 if (bl != null) {
                     bl.Post(() => d(state));
                 } else {
@@ -143,7 +143,7 @@ namespace Microsoft.UnitTests.Core.Threading {
             }
 
             public override SynchronizationContext CreateCopy()
-                => new BlockingLoopSynchronizationContext(_mainThread, _innerSynchronizationContext);
+                => new BlockingLoopSynchronizationContext(_threadHelper, _innerSynchronizationContext);
         }
     }
 }
