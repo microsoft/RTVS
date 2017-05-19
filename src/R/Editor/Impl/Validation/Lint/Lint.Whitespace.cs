@@ -9,7 +9,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Validation.Errors;
 
-namespace Microsoft.R.Editor.Validation.LintR {
+namespace Microsoft.R.Editor.Validation.Lint {
     internal partial class LintValidator {
         private static IValidationError TabCheck(CharacterStream cs, LintOptions options) {
             if (options.NoTabs && cs.CurrentChar == '\t' && cs.Position < cs.Length) {
@@ -48,7 +48,8 @@ namespace Microsoft.R.Editor.Validation.LintR {
         private static IEnumerable<IValidationError> LineLengthCheck(ITextProvider tp, LintOptions options) {
             if (options.LineLength && tp.Length > 1) {
                 // line_length_linter: check the line length of both comments and code is less than length.
-                var list = new List<IValidationError>();                var start = 0;
+                var list = new List<IValidationError>();
+                var start = 0;
                 for (var i = 0; i < tp.Length + 1; i++) {
                     var ch = i < tp.Length ? tp[i] : '\0';
                     if (ch == '\r' || ch == '\n' || ch == '\0') {

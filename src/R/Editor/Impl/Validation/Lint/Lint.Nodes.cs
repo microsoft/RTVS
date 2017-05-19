@@ -14,7 +14,7 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Errors;
 
-namespace Microsoft.R.Editor.Validation.LintR {
+namespace Microsoft.R.Editor.Validation.Lint {
     internal partial class LintValidator {
         private static IValidationError AssignmentCheck(IAstNode node, LintOptions options) {
             if (options.AssignmentType) {

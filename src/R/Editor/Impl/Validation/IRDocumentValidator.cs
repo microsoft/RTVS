@@ -10,7 +10,7 @@ namespace Microsoft.R.Editor.Validation {
     /// <summary>
     /// AST node validator
     /// </summary>
-    public interface IValidator {
+    public interface IRDocumentValidator {
         /// <summary>
         /// Called by validation manager when validation session is about to begin.
         /// </summary>

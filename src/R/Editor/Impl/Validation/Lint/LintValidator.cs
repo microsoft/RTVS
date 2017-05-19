@@ -9,8 +9,8 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Validation.Errors;
 
-namespace Microsoft.R.Editor.Validation.LintR {
-    internal sealed partial class LintValidator : IValidator {
+namespace Microsoft.R.Editor.Validation.Lint {
+    internal sealed partial class LintValidator : IRDocumentValidator {
         // https://cran.rstudio.com/web/packages/lintr/lintr.pdf
 
         private static readonly Func<IAstNode, LintOptions, IValidationError>[] _singleCheckers =

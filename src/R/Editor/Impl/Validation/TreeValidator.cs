@@ -43,6 +43,7 @@ namespace Microsoft.R.Editor.Validation {
         private IREditorTree _editorTree;
         private readonly IREditorSettings _settings;
         private readonly IIdleTimeService _idleTime;
+        private readonly ValidatorAggregator _aggregator;
         private bool _syntaxCheckEnabled;
         private bool _validationStarted;
 
@@ -82,6 +83,7 @@ namespace Microsoft.R.Editor.Validation {
             ValidationResults = new ConcurrentQueue<IValidationError>();
 
             editorTree.EditorBuffer.AddService(this);
+            _aggregator = new ValidatorAggregator(services);
         }
         #endregion
 
@@ -223,11 +225,14 @@ namespace Microsoft.R.Editor.Validation {
             ValidationResults.Enqueue(new ValidationSentinel());
         }
 
+        private TreeUpdateTask ValidationTask;
+
         private void QueueTreeForValidation() {
             // Transfer available errors from the tree right away
             foreach (var e in _editorTree.AstRoot.Errors) {
                 ValidationResults.Enqueue(new ValidationError(e, ErrorText.GetText(e.ErrorType), e.Location));
             }
+
         }
     }
 }

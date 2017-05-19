@@ -166,14 +166,13 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public void Set<T>(string name, T value) {
             if (value is string) {
                 SetString(name, (string)(object)value);
-            }
-            if (value is int) {
+            } else if (value is int) {
                 SetInteger(name, Convert.ToInt32(value));
-            }
-            if (value is bool) {
+            } else if (value is bool) {
                 SetBoolean(name, Convert.ToBoolean(value));
+            } else {
+                Debug.Fail("Unknown editor setting type");
             }
-            Debug.Fail("Unknown editor setting type");
         }
 
         private void SetString(string name, string value) {

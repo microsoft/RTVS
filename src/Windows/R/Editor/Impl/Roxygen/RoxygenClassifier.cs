@@ -18,8 +18,8 @@ namespace Microsoft.R.Editor.Roxygen {
     internal sealed class RoxygenClassifier : IClassifier {
         private readonly ITextBuffer _textBuffer;
         private readonly IClassificationTypeRegistryService _ctrs;
-        private readonly RClassifier _rClassifier;
         private readonly IClassificationType _commentType;
+        private RClassifier _rClassifier;
 
         public RoxygenClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService ctrs) {
             _textBuffer = textBuffer;
@@ -29,11 +29,18 @@ namespace Microsoft.R.Editor.Roxygen {
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span) {
-            var rClassificationSpans = _rClassifier.GetClassificationSpans(span);
+            var rClassificationSpans = RClassifier.GetClassificationSpans(span);
             return rClassificationSpans
                     .Where(s => s.ClassificationType == _commentType)
                     .SelectMany(s => ClassifyCommentSpan(s))
                     .ToList();
+        }
+
+        private RClassifier RClassifier {
+            get {
+                _rClassifier = _rClassifier ?? RClassifier.FromTextBuffer(_textBuffer);
+                return _rClassifier;
+            }
         }
 
         private IEnumerable<ClassificationSpan> ClassifyCommentSpan(ClassificationSpan cs) {

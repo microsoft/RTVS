@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.R.Editor.Validation.LintR {
+namespace Microsoft.R.Editor.Validation.Lint {
     public sealed class LintOptions {
         /// <summary>
         /// Enable LintR-like checks

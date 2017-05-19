@@ -3,7 +3,7 @@
 
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Editor.Validation.LintR;
+using Microsoft.R.Editor.Validation.Lint;
 
 namespace Microsoft.R.Editor {
     public interface IREditorSettings: IEditorSettings {
