@@ -27,7 +27,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         protected virtual void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             serviceManager
-                .AddService(UIThreadHelper.Instance)
+                .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())
@@ -35,7 +35,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
                 .AddService(new TestTaskService())
-                .AddService(new TestUIServices())
+                .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestPlatformServices())
                 .AddService(new TestApplication())
                 .AddService(new TestIdleTimeService());

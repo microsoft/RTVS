@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -14,11 +13,12 @@ using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
-    public class UIThreadHelper : IMainThread {
+    public class UIThreadHelper {
         [DllImport("ole32.dll", ExactSpelling = true, SetLastError = true)]
         private static extern int OleInitialize(IntPtr value);
 
@@ -49,30 +49,34 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         public static UIThreadHelper Instance => LazyInstance.Value;
 
+        private readonly AsyncLocal<TestMainThread> _testMainThread;
         private DispatcherFrame _frame;
         private Application _application;
         private SynchronizationContext _syncContext;
         private ControlledTaskScheduler _taskScheduler;
-        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
 
-        private UIThreadHelper() { }
+        private UIThreadHelper() {
+            _testMainThread = new AsyncLocal<TestMainThread>();
+        }
 
         public Thread Thread { get; private set; }
 
         public SynchronizationContext SyncContext => _syncContext;
         public ControlledTaskScheduler TaskScheduler => _taskScheduler;
+        public IMainThread MainThread => _testMainThread.Value;
+        public IProgressDialog ProgressDialog => _testMainThread.Value;
 
-        #region IMainThread
-        int IMainThread.ThreadId => Thread.ManagedThreadId;
-        void IMainThread.Post(Action action, CancellationToken cancellationToken) {
-            var bl = _blockingLoop.Value;
-            if (bl != null) {
-                bl.Post(action);
-            } else {
-                InvokeAsync(action, cancellationToken).DoNotWait();
+        internal TestMainThread CreateTestMainThread() {
+            if (_testMainThread.Value != null) {
+                throw new InvalidOperationException("AsyncLocal<TestMainThread> reentrancy");
             }
+
+            var testMainThread = new TestMainThread(RemoveTestMainThread);
+            _testMainThread.Value = testMainThread;
+            return testMainThread;
         }
-        #endregion
+
+        private void RemoveTestMainThread() => _testMainThread.Value = null;
 
         public void Invoke(Action action) {
             ExceptionDispatchInfo exception = Thread == Thread.CurrentThread
@@ -165,41 +169,6 @@ namespace Microsoft.UnitTests.Core.Threading {
             ? _application.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background).Task
             : Task.Run(DoEventsAsync);
 
-        public void BlockUntilCompleted(Func<Task> func) => BlockUntilCompletedImpl(func);
-
-        public TResult BlockUntilCompleted<TResult>(Func<Task<TResult>> func) {
-            var task = BlockUntilCompletedImpl(func);
-            return ((Task<TResult>)task).Result;
-        }
-
-        private Task BlockUntilCompletedImpl(Func<Task> func) {
-            if (Thread != Thread.CurrentThread) {
-                try {
-                    var task = func();
-                    task.GetAwaiter().GetResult();
-                    return task;
-                } catch (OperationCanceledException ex) {
-                    return TaskUtilities.CreateCanceled(ex);
-                } catch (Exception ex) {
-                    return Task.FromException(ex);
-                }
-            }
-
-            var sc = SynchronizationContext.Current;
-            var blockingLoopSynchronizationContext = new BlockingLoopSynchronizationContext(this, sc);
-            SynchronizationContext.SetSynchronizationContext(blockingLoopSynchronizationContext);
-            var bl = new BlockingLoop(func, sc);
-            try {
-                _blockingLoop.Value = bl;
-                bl.Start();
-            } finally {
-                _blockingLoop.Value = null;
-                SynchronizationContext.SetSynchronizationContext(sc);
-            }
-
-            return bl.Task;
-        }
-
         private void RunMainThread(object obj) {
             if (Application.Current != null) {
                 // Need to be on our own sta thread
@@ -276,73 +245,6 @@ namespace Microsoft.UnitTests.Core.Threading {
         private class CallSafeResult<T> {
             public T Value { get; set; }
             public ExceptionDispatchInfo Exception { get; set; }
-        }
-
-        private class BlockingLoop {
-            private readonly Func<Task> _func;
-            private readonly SynchronizationContext _previousSyncContext;
-            private readonly AutoResetEvent _are;
-            private readonly ConcurrentQueue<Action> _actions;
-
-            public Task Task { get; private set; }
-
-            public BlockingLoop(Func<Task> func, SynchronizationContext previousSyncContext) {
-                _func = func;
-                _previousSyncContext = previousSyncContext;
-                _are = new AutoResetEvent(false);
-                _actions = new ConcurrentQueue<Action>();
-            }
-
-            public void Start() {
-                Task = _func();
-                Task.ContinueWith(Complete);
-                while (!Task.IsCompleted) {
-                    _are.WaitOne();
-                    ProcessQueue();
-                }
-            }
-
-            // TODO: Add support for cancellation token
-            public void Post(Action action) {
-                _actions.Enqueue(action);
-                _are.Set();
-                if (Task.IsCompleted) {
-                    _previousSyncContext.Post(c => ProcessQueue(), null);
-                }
-            }
-
-            private void Complete(Task task) => _are.Set();
-
-            private void ProcessQueue() {
-                while (_actions.TryDequeue(out var action)) {
-                    action();
-                }
-            }
-        }
-
-        private class BlockingLoopSynchronizationContext : SynchronizationContext {
-            private readonly UIThreadHelper _threadHelper;
-            private readonly SynchronizationContext _innerSynchronizationContext;
-
-            public BlockingLoopSynchronizationContext(UIThreadHelper threadHelper, SynchronizationContext innerSynchronizationContext) {
-                _threadHelper = threadHelper;
-                _innerSynchronizationContext = innerSynchronizationContext;
-            }
-
-            public override void Send(SendOrPostCallback d, object state)
-                => _innerSynchronizationContext.Send(d, state);
-
-            public override void Post(SendOrPostCallback d, object state) {
-                var bl = _threadHelper._blockingLoop.Value;
-                if (bl != null) {
-                    bl.Post(() => d(state));
-                } else {
-                    _innerSynchronizationContext.Post(d, state);
-                }
-            }
-
-            public override SynchronizationContext CreateCopy()
-                => new BlockingLoopSynchronizationContext(_threadHelper, _innerSynchronizationContext);
         }
     }
 }

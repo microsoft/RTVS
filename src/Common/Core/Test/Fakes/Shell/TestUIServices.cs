@@ -11,6 +11,10 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public event EventHandler<EventArgs> UIThemeChanged;
 #pragma warning restore 67
 
+        public TestUIServices(IProgressDialog progressDialog) {
+            ProgressDialog = progressDialog;
+        }
+
         public void ShowErrorMessage(string message)=> LastShownErrorMessage = message;
         public void ShowContextMenu(CommandId commandId, int x, int y, object commandTaget = null) => LastShownContextMenu = commandId;
 
@@ -22,8 +26,8 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             return MessageButtons.OK;
         }
 
+        public IProgressDialog ProgressDialog { get; }
         public UIColorTheme UIColorTheme => UIColorTheme.Light;
-        public IProgressDialog ProgressDialog { get; } = new TestProgressDialog();
         public IFileDialog FileDialog { get; } = new TestFileDialog();
 
         public string SaveFileIfDirty(string fullPath) => fullPath;

@@ -71,7 +71,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             , IProcessServices ps = null) {
             ServiceManager
                 .AddService(this)
-                .AddService(UIThreadHelper.Instance)
+                .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
@@ -79,7 +79,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(registry ?? new RegistryImpl())
                 .AddService(ps ?? new ProcessServices())
                 .AddService(new TestTaskService())
-                .AddService(new TestUIServices())
+                .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestImageService())
                 .AddService(new TestPlatformServices())
                 .AddService(new TestApplication())

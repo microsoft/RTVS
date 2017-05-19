@@ -33,7 +33,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             Interlocked.Increment(ref _count);
             _stackTraces.TryAdd(task.Id, new StackTrace(2).ToString());
 
-            var postToMainThread = UIThreadHelper.Instance.CheckAccess();
+            var postToMainThread = UIThreadHelper.Instance.MainThread.CheckAccess();
             task.ContinueWith(_afterTaskCompleted, postToMainThread, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
