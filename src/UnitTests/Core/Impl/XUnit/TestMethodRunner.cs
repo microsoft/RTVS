@@ -32,18 +32,19 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override async Task<RunSummary> RunTestCaseAsync(IXunitTestCase testCase) {
+            using (var testMainThread = UIThreadHelper.Instance.CreateTestMainThread())
             using (var taskObserver = _testEnvironment.UseTaskObserver()) {
                 if (_constructorArguments.OfType<IMethodFixture>().Any()) {
-                    return await RunTestCaseWithMethodFixturesAsync(testCase, taskObserver);
+                    return await RunTestCaseWithMethodFixturesAsync(testCase, taskObserver, testMainThread);
                 }
 
                 var testCaseRunSummay = await GetTestRunSummary(base.RunTestCaseAsync(testCase), taskObserver.Task);
-                await WaitForObservedTasksAsync(testCase, testCaseRunSummay, taskObserver);
+                await WaitForObservedTasksAsync(testCase, testCaseRunSummay, taskObserver, testMainThread);
                 return testCaseRunSummay;
             }
         }
 
-        private async Task<RunSummary> RunTestCaseWithMethodFixturesAsync(IXunitTestCase testCase, TaskObserver taskObserver) {
+        private async Task<RunSummary> RunTestCaseWithMethodFixturesAsync(IXunitTestCase testCase, TaskObserver taskObserver, TestMainThread testMainThread) {
             var runSummary = new RunSummary();
             var methodFixtures = CreateMethodFixtures(testCase, runSummary);
 
@@ -60,7 +61,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             await DisposeMethodFixturesAsync(testCase, runSummary, methodFixtures);
-            await WaitForObservedTasksAsync(testCase, runSummary, taskObserver);
+            await WaitForObservedTasksAsync(testCase, runSummary, taskObserver, testMainThread);
 
             return runSummary;
         }
@@ -105,7 +106,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private Task WaitForObservedTasksAsync(IXunitTestCase testCase, RunSummary runSummary, TaskObserver taskObserver) {
+        private Task WaitForObservedTasksAsync(IXunitTestCase testCase, RunSummary runSummary, TaskObserver taskObserver, TestMainThread testMainThread) {
+            testMainThread.CancelPendingTasks();
             taskObserver.TestCompleted();
             return RunAsync(testCase, () => taskObserver.Task, runSummary, "Tasks that have been started during test run are still not completed");
         }

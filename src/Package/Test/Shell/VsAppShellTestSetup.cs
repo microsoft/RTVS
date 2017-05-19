@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(catalog.CompositionService)
                 .AddService(catalog.ExportProvider)
                 // IMainThread and basic services
-                .AddService(UIThreadHelper.Instance)
+                .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(Substitute.For<IIdleTimeService>())
                 .AddService(new VsApplicationMock())
@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new WindowsFileSystem())
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
-                .AddService(new TestUIServices())
+                .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestTaskService())
                 .AddService(new TestPlatformServices())
                 .AddService(new RSettingsStub())
