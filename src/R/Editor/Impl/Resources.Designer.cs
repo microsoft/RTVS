@@ -107,7 +107,7 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Comma should be followed by space, but do not have space before it.
+        ///   Looks up a localized string similar to Comma should be followed by space, but should not have space before it.
         /// </summary>
         internal static string Lint_CommaSpaces {
             get {

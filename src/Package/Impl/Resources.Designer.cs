@@ -1915,7 +1915,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to } on separate line.
+        ///   Looks up a localized string similar to Closing curly position.
         /// </summary>
         public static string Settings_Lint_CloseCurlySeparateLine {
             get {
@@ -1933,7 +1933,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enforce &quot;.
+        ///   Looks up a localized string similar to Enforce double quotes.
         /// </summary>
         public static string Settings_Lint_DoubleQuotes {
             get {
@@ -1983,24 +1983,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_Lint_MaxLineLength_Description {
             get {
                 return ResourceManager.GetString("Settings_Lint_MaxLineLength_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Flag long names.
-        /// </summary>
-        public static string Settings_Lint_MaxName {
-            get {
-                return ResourceManager.GetString("Settings_Lint_MaxName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Flag names longer than the specified limit.
-        /// </summary>
-        public static string Settings_Lint_MaxName_Description {
-            get {
-                return ResourceManager.GetString("Settings_Lint_MaxName_Description", resourceCulture);
             }
         }
         
@@ -2059,6 +2041,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Flag long names.
+        /// </summary>
+        public static string Settings_Lint_NameLength {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NameLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag names longer than the specified limit.
+        /// </summary>
+        public static string Settings_Lint_NameLength_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NameLength_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to After function name.
         /// </summary>
         public static string Settings_Lint_NoSpaceAfterFunctionName {
@@ -2095,7 +2095,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to { line.
+        ///   Looks up a localized string similar to Opening curly position.
         /// </summary>
         public static string Settings_Lint_OpenCurlyPosition {
             get {
@@ -2167,7 +2167,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Before (.
+        ///   Looks up a localized string similar to Space before (.
         /// </summary>
         public static string Settings_Lint_SpaceBeforeOpenBrace {
             get {
@@ -2221,7 +2221,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Inside ( ).
+        ///   Looks up a localized string similar to Spaces inside ( ).
         /// </summary>
         public static string Settings_Lint_SpacesInsideParenthesis {
             get {
@@ -2383,7 +2383,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable or disable coding style (lintr-type) checks.
+        ///   Looks up a localized string similar to Enable or disable coding style checks similar to lintr package..
         /// </summary>
         public static string Settings_LintEnabled_Description {
             get {
@@ -2514,24 +2514,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_PartialArgumentNameMatch_Description {
             get {
                 return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Engine (64-bit).
-        /// </summary>
-        public static string Settings_RBasePath {
-            get {
-                return ResourceManager.GetString("Settings_RBasePath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Path to R installation (64-bit only)..
-        /// </summary>
-        public static string Settings_RBasePath_Description {
-            get {
-                return ResourceManager.GetString("Settings_RBasePath_Description", resourceCulture);
             }
         }
         

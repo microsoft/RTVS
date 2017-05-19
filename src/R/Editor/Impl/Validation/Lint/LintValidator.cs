@@ -58,11 +58,17 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 
-            return _singleCheckers
-                    .Select(c => c(node, _settings.LintOptions))
-                    .ExcludeDefault()
-                    .Concat(_multipleCheckers.SelectMany(m => m(node, _settings.LintOptions)))
-                    .ToList();
+            var warnings = new List<IValidationError>();
+            // Unrolled since most return nulls.
+            foreach (var c in _singleCheckers) {
+                var result = c(node, _settings.LintOptions);
+                if (result != null) {
+                    warnings.Add(result);
+                }
+            }
+
+            warnings.AddRange(_multipleCheckers.SelectMany(m => m(node, _settings.LintOptions)));
+            return warnings;
         }
 
         /// <summary>
@@ -74,13 +80,19 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 
-            var warnings = _whitespaceFileCheckers.SelectMany(c => c(tp, _settings.LintOptions));
+            var warnings = _whitespaceFileCheckers.SelectMany(c => c(tp, _settings.LintOptions)).ToList();
             var cs = new CharacterStream(tp);
             while (!cs.IsEndOfStream()) {
                 if (cs.IsWhiteSpace()) {
-                    warnings.Concat(_whitespaceCharCheckers.Select(c => c(cs, _settings.LintOptions)).ExcludeDefault());
-                    cs.MoveToNextChar();
+                    // Unrolled since most return nulls.
+                    foreach (var c in _whitespaceCharCheckers) {
+                        var result = c(cs, _settings.LintOptions);
+                        if (result != null) {
+                            warnings.Add(result);
+                        }
+                    }
                 }
+                cs.MoveToNextChar();
             }
             return warnings.ToList();
         }

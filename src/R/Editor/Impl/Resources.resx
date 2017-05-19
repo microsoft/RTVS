@@ -193,7 +193,7 @@
     <value>Objects names should not be in camelCase</value>
   </data>
   <data name="Lint_CommaSpaces" xml:space="preserve">
-    <value>Comma should be followed by space, but do not have space before it</value>
+    <value>Comma should be followed by space, but should not have space before it</value>
   </data>
   <data name="Lint_MultileDots" xml:space="preserve">
     <value>Objects names should not have.multiple.dots</value>

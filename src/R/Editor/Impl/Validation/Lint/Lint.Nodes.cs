@@ -20,8 +20,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.AssignmentType) {
                 // assignment_linter: checks that ’<-’ is always used for assignment
                 if (node is IOperator op && op.OperatorType == OperatorType.Equals) {
-                    if (!(op.RightOperand is NamedArgument)) {
-                        return new ValidationWarning(node, Resources.Lint_Assignment, ErrorLocation.Token);
+                    if (!(op.LeftOperand is NamedArgument)) {
+                        return new ValidationWarning(((TokenOperator)op).OperatorToken, Resources.Lint_Assignment, ErrorLocation.Token);
                     }
                 }
             }
@@ -69,7 +69,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 if (node is IOperator op && !op.IsUnary) {
                     var tp = node.Root.TextProvider;
                     if (!tp.IsWhitespaceBeforePosition(node.Start) || !tp.IsWhitespaceAfterPosition(node.Start)) {
-                        return new ValidationWarning(node, Resources.Lint_OperatorSpaces, ErrorLocation.Token);
+                        var range = (op as TokenOperator)?.OperatorToken ?? node;
+                        return new ValidationWarning(range, Resources.Lint_OperatorSpaces, ErrorLocation.Token);
                     }
                 }
             }
@@ -96,7 +97,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.DoubleQuotes) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.String) {
                     if (node.Root.TextProvider[node.Start] != '\"') {
-                        return new ValidationWarning(node, Resources.Lint_DoubleQuotes, ErrorLocation.Token);
+                        return new ValidationWarning(new TextRange(node.Start, 1), Resources.Lint_DoubleQuotes, ErrorLocation.Token);
                     }
                 }
             }
@@ -160,7 +161,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
 
         private static IValidationError SemicolonCheck(IAstNode node, LintOptions options) {
             if (options.Semicolons && node is TokenNode t && t.Token.TokenType == RTokenType.Semicolon) {
-                    return new ValidationWarning(node, Resources.Lint_Semicolons, ErrorLocation.Token);
+                return new ValidationWarning(node, Resources.Lint_Semicolons, ErrorLocation.Token);
             }
             return null;
         }

@@ -8,12 +8,11 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
-using Microsoft.R.Editor;
 using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
@@ -22,6 +21,7 @@ using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Definitions;
+using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
@@ -103,6 +103,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string ProductName = "R Tools";
 
         private IPackageIndex _packageIndex;
+        public IEditorSettingsStorage LanguageSettingsStorage { get; private set; }
 
         public static IRPackage Current { get; private set; }
         public static Microsoft.Common.Core.Services.IServiceContainer Services => VsAppShell.Current.Services;
@@ -120,9 +121,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             ProjectIconProvider.LoadProjectImages(Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
-            RtvsTelemetry.Initialize(_packageIndex, Services);
 
             BuildFunctionIndex();
+            RtvsTelemetry.Initialize(_packageIndex, Services);
+
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
@@ -187,7 +189,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return false;
         }
 
-        private void BuildFunctionIndex() => _packageIndex = Services.GetService<IPackageIndex>();
+        private void BuildFunctionIndex() {
+            LanguageSettingsStorage = new LanguageSettingsStorage(Services, RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, new string[] { RPackage.ProductName });
+            _packageIndex = Services.GetService<IPackageIndex>();
+        }
 
         private void SavePackageIndex() {
             _packageIndex?.WriteToDisk();

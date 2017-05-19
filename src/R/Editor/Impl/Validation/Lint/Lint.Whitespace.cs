@@ -20,9 +20,11 @@ namespace Microsoft.R.Editor.Validation.Lint {
         }
 
         private static IValidationError TrailingWhitespaceCheck(CharacterStream cs, LintOptions options) {
-            if (options.TrailingWhitespace && cs.IsWhiteSpace() && cs.NextChar.IsLineBreak()) {
-                // trailing_whitespace_linter: check there are no trailing whitespace characters.
-                return new ValidationWarning(new TextRange(cs.Position, 1), Resources.Lint_TrailingWhitespace, ErrorLocation.Token);
+            if (options.TrailingWhitespace) {
+                if (cs.IsWhiteSpace() && !cs.CurrentChar.IsLineBreak() && cs.NextChar.IsLineBreak()) {
+                    // trailing_whitespace_linter: check there are no trailing whitespace characters.
+                    return new ValidationWarning(new TextRange(cs.Position, 1), Resources.Lint_TrailingWhitespace, ErrorLocation.Token);
+                }
             }
             return null;
         }
@@ -34,7 +36,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 int i;
                 for (i = tp.Length - 1; i >= 0; i--) {
                     if (!char.IsWhiteSpace(tp[i]) && i < tp.Length - 1) {
-                        trailingWhitespace = tp.GetText(new TextRange(i + 1, tp.Length - i));
+                        trailingWhitespace = tp.GetText(new TextRange(i + 1, tp.Length - i - 1));
                         break;
                     }
                 }

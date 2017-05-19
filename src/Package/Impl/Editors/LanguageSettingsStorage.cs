@@ -4,11 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
@@ -24,22 +23,22 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private readonly Dictionary<string, string> _stringSettings = new Dictionary<string, string>();
         private readonly IVsTextManager4 _textManager;
         private readonly IEnumerable<string> _automationObjectNames;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
 
         private Guid _packageGuid;
         private ConnectionPointCookie _textManagerEventsCookie;
         private LANGPREFERENCES3? _langPrefs;
 
-        public LanguageSettingsStorage(ICoreShell coreShell, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
-            _shell = coreShell;
+        public LanguageSettingsStorage(IServiceContainer services, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
+            _services = services;
             _languageServiceId = languageServiceId;
             _packageGuid = packageId;
             _automationObjectNames = automationObjectNames;
 
-            _textManager = _shell.GetService<IVsTextManager4>(typeof(SVsTextManager));
+            _textManager = _services.GetService<IVsTextManager4>(typeof(SVsTextManager));
             _textManagerEventsCookie = new ConnectionPointCookie(_textManager, this, typeof(IVsTextManagerEvents4));
 
-            LoadFromStorage();
+            LoadLanguagePreferences();
         }
 
         public event EventHandler<EventArgs> SettingsChanged;
@@ -62,22 +61,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             return VSConstants.S_OK;
         }
         #endregion
-
-        /// <summary>
-        /// Loads settings via language (editor) tools options page
-        /// </summary>
-        public void LoadFromStorage() {
-            var vsShell = _shell.GetService<IVsShell>(typeof(SVsShell));
-            if (vsShell != null) {
-                vsShell.LoadPackage(ref _packageGuid, out IVsPackage package);
-                if (package != null) {
-                    foreach (var curAutomationObjectName in _automationObjectNames) {
-                        package.GetAutomationObject(curAutomationObjectName, out object automationObject);
-                    }
-                }
-                LoadLanguagePreferences();
-            }
-        }
 
         private void LoadLanguagePreferences() {
             var langPrefs = new LANGPREFERENCES3[1];

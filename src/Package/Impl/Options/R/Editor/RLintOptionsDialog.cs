@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         [LocCategory("Settings_LintCategory_All")]
         [CustomLocDisplayName("Settings_LintEnabled")]
         [LocDescription("Settings_LintEnabled_Description")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool EnableLint {
             get => _settings.LintOptions.Enabled;
             set => _settings.LintOptions.Enabled = value;
@@ -75,13 +75,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         [LocCategory("Settings_LintCategory_Naming")]
         [CustomLocDisplayName("Settings_Lint_NameLength")]
         [LocDescription("Settings_Lint_NameLength_Description")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool NameLength {
             get => _settings.LintOptions.NameLength;
             set => _settings.LintOptions.NameLength = value;
         }
 
-        [LocCategory("Settings_LintCategory_Spacing")]
+        [LocCategory("Settings_LintCategory_Naming")]
         [CustomLocDisplayName("Settings_Lint_MaxNameLength")]
         [LocDescription("Settings_Lint_MaxNameLength_Description")]
         [DefaultValue(32)]
@@ -211,7 +211,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         [LocCategory("Settings_LintCategory_Text")]
         [CustomLocDisplayName("Settings_Lint_LineLength")]
         [LocDescription("Settings_Lint_LineLength_Description")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool LineLength {
             get => _settings.LintOptions.LineLength;
             set => _settings.LintOptions.LineLength = value;
