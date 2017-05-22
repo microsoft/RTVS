@@ -145,6 +145,10 @@
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
       <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
+      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
+      <Name>Microsoft.R.Host.Broker.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>

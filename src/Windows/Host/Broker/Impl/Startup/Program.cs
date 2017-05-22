@@ -22,7 +22,9 @@ namespace Microsoft.R.Host.Broker.Startup {
                     .AddDebug()
                     .AddConsole(LogLevel.Trace);
 
-            if (configuration.GetStartupOptions().IsService) {
+
+            var startupOptions = configuration.GetStartupOptions();
+            if (startupOptions != null && startupOptions.IsService) {
                 loggerFactory.AddEventLog(new EventLogSettings {
                     Filter = (_, logLevel) => logLevel >= LogLevel.Warning,
                     SourceName = Resources.Text_ServiceName
@@ -30,10 +32,11 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
 
             configuration = Startup.LoadConfiguration(loggerFactory, configuration.GetValue<string>("config"), args);
-            var startupOptions = configuration.GetStartupOptions();
             var loggingOptions = configuration.GetLoggingOptions();
 
-            loggerFactory.AddFile(startupOptions.Name, loggingOptions.LogFolder);
+            if (startupOptions != null && loggingOptions != null) {
+                loggerFactory.AddFile(startupOptions.Name, loggingOptions.LogFolder);
+            }
 
             var webHost = new WebHostBuilder()
                 .ConfigureServices(s => s.AddSingleton(configuration))
@@ -44,7 +47,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .UseStartup<WindowsStartup>()
                 .Build();
 
-            if (startupOptions.IsService) {
+            if (startupOptions != null && startupOptions.IsService) {
                 ServiceBase.Run(new BrokerService(webHost));
             } else {
                 try {

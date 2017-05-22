@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
                         $" --security:secret \"{Password}\"" +
                         $" --R:autoDetect false" +
                         $" --R:interpreters:test:name \"{_name}\"" +
-                        $" --R:interpreters:test:basePath \"{rHome}\""
+                        $" --R:interpreters:test:basePath \"{rHome.TrimTrailingSlash()}\""
                 };
 
                 process = StartBroker(psi);
