@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.IO;
@@ -34,12 +35,24 @@ namespace Microsoft.R.Interpreters {
         /// </summary>
         public string BinPath { get; }
 
+        public string DocPath { get; }
+
+        public string IncludePath { get; }
+
+        public string RShareDir { get; }
+
+        public string[] SiteLibraryDirs { get; }
+
         public RInterpreterInfo(string name, string path, IFileSystem fileSystem) {
             _fileSystem = fileSystem;
             Name = name;
             InstallPath = NormalizeRPath(path);
             BinPath = Path.Combine(path, @"bin\x64");
             Version = DetermineVersion();
+            DocPath = Path.Combine(path, "doc");
+            IncludePath = Path.Combine(path, "include");
+            RShareDir = Path.Combine(path, "share");
+            SiteLibraryDirs = new string[0];
         }
 
         public bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null) {

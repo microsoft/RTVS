@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -111,9 +112,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
-        public Session CreateSession(IIdentity user, string id, Interpreter interpreter, string profilePath, string commandLineArguments, bool isInteractive) {
+        public Session CreateSession(ClaimsPrincipal principal, string id, Interpreter interpreter, string commandLineArguments, bool isInteractive) {
             Session session;
-
+            IIdentity user = principal.Identity;
             lock (_sessions) {
                 if (_blockedUsers.Contains(user.Name)) {
                     throw new InvalidOperationException(Resources.Error_BlockedByProfileDeletion.FormatInvariant(user.Name));
@@ -129,14 +130,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 }
 
                 var userSessions = GetOrCreateSessionList(user);
-                session = new Session(this, _processService, _applicationLifetime, _sessionLogger, _messageLogger, user, interpreter, id, commandLineArguments, isInteractive);
+                session = new Session(this, _processService, _applicationLifetime, _sessionLogger, _messageLogger, principal, interpreter, id, commandLineArguments, isInteractive);
                 session.StateChanged += Session_StateChanged;
 
                 userSessions.Add(session);
             }
 
             session.StartHost(
-                profilePath,
                 _loggingOptions.LogFolder,
                 _loggingOptions.LogHostOutput ? _hostOutputLogger : null,
                 _loggingOptions.LogPackets || _loggingOptions.LogHostOutput ? LogVerbosity.Traffic : LogVerbosity.Minimal);

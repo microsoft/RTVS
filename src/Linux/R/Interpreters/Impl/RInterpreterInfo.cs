@@ -7,6 +7,9 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.OS;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.R.Interpreters {
     public sealed class RInterpreterInfo : IRInterpreterInfo {
@@ -26,21 +29,34 @@ namespace Microsoft.R.Interpreters {
         /// <summary>
         /// Path to the directory that contains libR.so
         /// </summary>
-        public string BinPath { get; }
+        public string BinPath { get; private set; }
+
+        public string DocPath { get; private set; }
+
+        public string IncludePath { get; private set; }
+
+        public string RShareDir { get; private set; }
+
+        public string[] SiteLibraryDirs { get; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="name">Name of the R interpreter</param>
-        /// <param name="path">Path to the /R folder</param>
+        /// <param name="corePackage">Instance of the core interpreter package (r-base-core, microsoft-r-open-mro, etc)</param>
         /// <param name="fileSystem"></param>
-        public RInterpreterInfo(string name, string path, string version, Version parsedVersion, IFileSystem fileSystem) {
+        public RInterpreterInfo(string name, InstalledPackageInfo corePackage, string version, Version parsedVersion, IFileSystem fileSystem) {
+            var files = corePackage.GetPackageFiles(fileSystem);
             Name = name;
-            InstallPath = path;
-            BinPath = GetRLibPath();
+            InstallPath = GetRInstallPath(files, fileSystem);
             _fileSystem = fileSystem;
             _packageFullVersion = version;
             Version = parsedVersion;
+
+            BinPath = GetRLibPath();
+            DocPath = GetRDocPath(files, fileSystem);
+            IncludePath = GetIncludePath(files, fileSystem);
+            SiteLibraryDirs = GetSiteLibraryDirs(corePackage, files, fileSystem);
         }
 
         public bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null) {
@@ -82,6 +98,59 @@ namespace Microsoft.R.Interpreters {
 
         private string GetRLibPath() {
             return Path.Combine(InstallPath, "lib");
+        }
+
+        public static RInterpreterInfo CreateFromPackage(InstalledPackageInfo package, string namePrefix, IFileSystem fs) {
+            return new RInterpreterInfo($"{namePrefix} '{package.Version}'", package, package.Version, package.GetVersion(), fs);
+        }
+
+        private static string GetRInstallPath(IEnumerable<string> files, IFileSystem fs) {
+            return GetPath(files, "/R/lib/libR.so", "/lib/libR.so", fs) ;
+        }
+
+        private static string GetRDocPath(IEnumerable<string> files, IFileSystem fs) {
+            return GetPath(files, "/R/doc/html", "/html", fs);
+        }
+
+        private static string GetRSharePath(IEnumerable<string> files, IFileSystem fs) {
+            return GetPath(files, "/R/share/R", "/R", fs);
+        }
+
+        private static string GetIncludePath(IEnumerable<string> files, IFileSystem fs) {
+            return GetPath(files, "/R/include/R.h", "/R.h", fs);
+        }
+
+        private static string[] GetSiteLibraryDirs(InstalledPackageInfo package, IEnumerable<string> files, IFileSystem fs) {
+            List<string> dirs = new List<string>();
+            if (package.PackageName.ContainsIgnoreCase("r-base-core")) {
+                string localSiteLibrary = "/usr/local/r/site-library";
+                if (fs.DirectoryExists(localSiteLibrary)) {
+                    dirs.Add(localSiteLibrary);
+                }
+
+                string siteLibrary = GetPath(files, "/R/site-library", "", fs);
+                if (!string.IsNullOrWhiteSpace(siteLibrary)) {
+                    dirs.Add(siteLibrary);
+                }
+            }
+
+            string library = GetPath(files, "/R/library/base", "/base", fs);
+            if (!string.IsNullOrWhiteSpace(library)) {
+                dirs.Add(library);
+            }
+
+            return dirs.ToArray();
+        }
+
+        private static string GetPath(IEnumerable<string> files, string endPattern, string subPattern, IFileSystem fs) {
+            var libFiles = files.Where(f => f.EndsWithIgnoreCase(endPattern));
+            foreach (var f in libFiles) {
+                string path = f.Substring(0, f.Length - subPattern.Length);
+                if (fs.FileExists(f)) {
+                    return path;
+                }
+            }
+            return string.Empty;
         }
     }
 }

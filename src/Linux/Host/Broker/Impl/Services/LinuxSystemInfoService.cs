@@ -1,28 +1,50 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
+using Microsoft.R.Host.Protocol;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class LinuxSystemInfoService : ISystemInfoService {
+        private readonly ILogger<ISystemInfoService> _logger;
         private readonly IFileSystem _fs;
-        private static char[] _memInfoSplitter = new char[] { ' ', ':', '\t' };
-        private static Dictionary<string, long> _sizeLUT = new Dictionary<string, long> {
+        private readonly IProcessServices _ps;
+        private readonly static char[] _memInfoSplitter = new char[] { ' ', ':', '\t' };
+        private readonly static Dictionary<string, long> _sizeLUT = new Dictionary<string, long> {
             {"KB", 1000L},
             {"MB", 1000L * 1000L},
             {"GB", 1000L * 1000L * 1000L},
             {"TB", 1000L * 1000L * 1000L * 1000L},
         };
 
-        public LinuxSystemInfoService(IFileSystem fs) {
+        // Match anything that looks like 1024M or 1024MB
+        private readonly static Regex _ramPattern = new Regex(@"[\d]+[GM][B]?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        // Match numbrs in a string
+        private readonly static Regex _numPattern = new Regex(@"[\d]+", RegexOptions.Compiled);
+
+        // Match 'whitespace' at the begining of a string
+        private readonly static Regex _indentPattern = new Regex(@"(?<indent>[\s]*).*", RegexOptions.Compiled);
+
+        // Match '<whitespace><key>:<value>' in a string
+        private readonly static Regex _keyValuePairsPattern = new Regex(@"[\s]*(?<key>[ \w]*):(?<value>.*)", RegexOptions.Compiled);
+
+        public LinuxSystemInfoService(ILogger<ISystemInfoService> logger, IFileSystem fs, IProcessServices ps) {
+            _logger = logger;
             _fs = fs;
+            _ps = ps;
         }
 
         public double GetCpuLoad() {
@@ -51,10 +73,8 @@ namespace Microsoft.R.Host.Broker.Services {
                 foreach (string line in data) {
                     string[] split = line.Split(_memInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
                     if (split.Length == 3) {
-                        long value;
-                        if (split.Length > 2 && long.TryParse(split[1], out value)) {
-                            long multiplier;
-                            if (!_sizeLUT.TryGetValue(split[2].ToUpper(), out multiplier)) {
+                        if (split.Length > 2 && long.TryParse(split[1], out long value)) {
+                            if (!_sizeLUT.TryGetValue(split[2].ToUpper(), out long multiplier)) {
                                 multiplier = 1;
                             }
                             meminfo.Add(split[0], value * multiplier);
@@ -111,8 +131,134 @@ namespace Microsoft.R.Host.Broker.Services {
             }
         }
 
-        public (string VideoCardName, long VideoRAM, string VideoProcessor) GetVideoControllerInformation() {
-            return ("", 0, "");
+
+        private static object _videoCardInfoLock = new object();
+        private static List<VideoCardInfo> _videoCardInfo;
+        public IEnumerable<VideoCardInfo> GetVideoControllerInformation() {
+            lock (_videoCardInfoLock) {
+                if(_videoCardInfo != null) {
+                    return _videoCardInfo;
+                }
+
+                InitializeVideoCardInfo();
+                return _videoCardInfo;
+            }
+        }
+
+        private void InitializeVideoCardInfo() {
+            _videoCardInfo = new List<VideoCardInfo>();
+            const string vramPart = "VRAM:";
+            var lshwDisplayData = ParseDisplayData(ExecuteAndGetOutput("/usr/bin/lshw", "-c display"));
+            var dmesgData = ExecuteAndGetOutput("dmesg", null).Where(s => s.ContainsIgnoreCase(vramPart)).ToArray();
+
+            foreach (var displayData in lshwDisplayData) {
+                displayData.TryGetValue("product", out string productName);
+                displayData.TryGetValue("vendor", out string vendorName);
+
+                long vram = 0;
+                if (displayData.TryGetValue("bus info", out string busInfo)) {
+                    int index = busInfo.IndexOf('@');
+                    if (index >= 0 && index < busInfo.Length) {
+                        string busvalue = busInfo.Substring(index + 1);
+                        for (int j = 0; j < dmesgData.Length; ++j) {
+                            if (dmesgData[j].ContainsIgnoreCase(busvalue)) {
+                                var match = _ramPattern.Match(dmesgData[j]);
+                                if (match.Success) {
+                                    vram = GetRamValueMB(match.Value);
+                                }
+                            }
+                        }
+                    }
+                }
+                _videoCardInfo.Add(new VideoCardInfo() { VideoCardName = productName, VideoRAM = vram, VideoProcessor = vendorName });
+            }
+        }
+
+        private static IEnumerable<IDictionary<string,string>> ParseDisplayData(IEnumerable<string> lines) {
+            if (lines.Count() == 0) {
+                yield break;
+            }
+
+            var seperatorMatch = _indentPattern.Match(lines.First());
+            int separatorIndentation = 0;
+            if (seperatorMatch.Success) {
+                separatorIndentation = seperatorMatch.Groups["indent"].Length;
+            } else {
+                yield break;
+            }
+
+            Dictionary<string, string> data = null;
+            foreach (string line in lines) {
+                var match = _indentPattern.Match(line);
+                if (match.Success && match.Groups["indent"].Length == separatorIndentation) {
+                    if (data != null) {
+                        yield return data;
+                    }
+                    data = new Dictionary<string, string>();
+                    continue;
+                }
+
+                if (data == null) {
+                    // input does not contain separators
+                    yield break;
+                }
+
+                match = _keyValuePairsPattern.Match(line);
+                if (match.Success) {
+                    string key = match.Groups["key"].Value.Trim();
+                    string value = match.Groups["value"].Value.Trim();
+                    data[key] = value;
+                }
+            }
+
+            if (data != null && data.Count() > 0) {
+                yield return data;
+            }
+        }
+
+        private static long GetRamValueMB(string vramStr) {
+            long ram = 0;
+            var match = _numPattern.Match(vramStr);
+            
+            if (match.Success) {
+                long.TryParse(match.Value, out ram);
+            }
+
+            if (vramStr.ContainsIgnoreCase("G")) {
+                ram *= 1024;
+            }
+
+            return ram;
+        }
+
+        private IEnumerable<string> ExecuteAndGetOutput(string command, string arguments) {
+            Process proc = null;
+            List<string> standardOutData = new List<string>();
+            try {
+                ProcessStartInfo psi = new ProcessStartInfo() {
+                    Arguments = arguments,
+                    FileName = command,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                proc = _ps.Start(psi);
+
+                while (!proc.StandardOutput.EndOfStream) {
+                    standardOutData.Add(proc.StandardOutput.ReadLine());
+                }
+            } catch (Exception ex) {
+                _logger.LogError(Resources.Error_FailedToRun.FormatInvariant($"{command} {arguments}", ex.Message));
+            } finally {
+                if (proc != null && !proc.HasExited) {
+                    try {
+                        proc?.Kill();
+                    } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    }
+                }
+            }
+            return standardOutData;
         }
 
         private static char[] _cpuInfoSplitter = new char[] { ' ', ':', '\t' };
@@ -169,6 +315,20 @@ namespace Microsoft.R.Host.Broker.Services {
                 default:
                     return true;
             }
+        }
+
+        private static string GetPart(string[] lines, string part, ref int index) {
+            if (index < lines.Length) {
+                string line = lines[index];
+                while (!line.StartsWithOrdinal(part)) {
+                    if (++index >= lines.Length) {
+                        return null;
+                    }
+                    line = lines[index];
+                }
+                return line.Substring(part.Length).Trim();
+            }
+            return null;
         }
     }
 }

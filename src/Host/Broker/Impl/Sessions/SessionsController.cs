@@ -35,8 +35,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.NoRInterpreters));
             }
 
-            string profilePath = User.FindFirst(Claims.RUserProfileDir)?.Value;
-
             Interpreter interp;
             if (!string.IsNullOrEmpty(request.InterpreterId)) {
                 interp = _interpManager.Interpreters.FirstOrDefault(ip => ip.Id == request.InterpreterId);
@@ -48,7 +46,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             try {
-                var session = _sessionManager.CreateSession(User.Identity, id, interp, profilePath, request.CommandLineArguments, request.IsInteractive);
+                var session = _sessionManager.CreateSession(User, id, interp, request.CommandLineArguments, request.IsInteractive);
                 return Task.FromResult<IActionResult>(new ObjectResult(session.Info));
             } catch (Exception ex) {
                 return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.UnableToStartRHost, ex.Message));

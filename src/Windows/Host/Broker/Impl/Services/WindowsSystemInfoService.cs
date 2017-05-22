@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Net.NetworkInformation;
 using System.Threading;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class WindowsSystemInfoService : ISystemInfoService {
@@ -78,18 +80,18 @@ namespace Microsoft.R.Host.Broker.Services {
             return (0, 0, 0, 0);
         }
 
-        public (string VideoCardName, long VideoRAM, string VideoProcessor) GetVideoControllerInformation() {
+        public IEnumerable<VideoCardInfo> GetVideoControllerInformation() {
             using (var search = new ManagementObjectSearcher("Select * from Win32_VideoController")) {
                 foreach (var mo in search.Get()) {
-                    return (
-                        mo["Name"]?.ToString(), 
-                        ToLong(mo, "AdapterRAM", 1024 * 1024), 
-                        mo["VideoProcessor"]?.ToString()
-                    );
+                    yield return new VideoCardInfo() {
+                        VideoCardName = mo["Name"]?.ToString(),
+                        VideoRAM = ToLong(mo, "AdapterRAM", 1024 * 1024),
+                        VideoProcessor = mo["VideoProcessor"]?.ToString()
+                    };
                 }
             }
 
-            return (string.Empty, 0, string.Empty);
+            yield return new VideoCardInfo();
         }
         
         private static long ToLong(ManagementBaseObject mo, string name, int divider) {
