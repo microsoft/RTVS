@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -22,9 +23,7 @@ namespace Microsoft.R.Host.Protocol {
         public long TotalPhysicalMemory { get; set; }
         public long FreePhysicalMemory { get; set; }
 
-        public string VideoCardName { get; set; }
-        public long VideoRAM { get; set; }
-        public string VideoProcessor { get; set; }
+        public IEnumerable<VideoCardInfo> VideoCards { get; set; }
 
         public int ConnectedUserCount { get; set; }
 

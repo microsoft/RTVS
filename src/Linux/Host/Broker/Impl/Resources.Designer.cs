@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.R.Host.Broker.Linux {
+namespace Microsoft.R.Host.Broker {
     using System;
     using System.Reflection;
     
@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Broker.Linux {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Broker.Linux.Resources", typeof(Resources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Broker.Resources", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -58,6 +58,114 @@ namespace Microsoft.R.Host.Broker.Linux {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username or password is invalid..
+        /// </summary>
+        internal static string Error_AuthBadInput {
+            get {
+                return ResourceManager.GetString("Error_AuthBadInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication failed with Error: {0}.
+        /// </summary>
+        internal static string Error_AuthFailed {
+            get {
+                return ResourceManager.GetString("Error_AuthFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authentication initialization failed..
+        /// </summary>
+        internal static string Error_AuthInitFailed {
+            get {
+                return ResourceManager.GetString("Error_AuthInitFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No input to authenticate..
+        /// </summary>
+        internal static string Error_AuthNoInput {
+            get {
+                return ResourceManager.GetString("Error_AuthNoInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command &quot;{0}&quot; failed to run with error: {1}.
+        /// </summary>
+        internal static string Error_FailedToRun {
+            get {
+                return ResourceManager.GetString("Error_FailedToRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid response received from RunAsUser.
+        /// </summary>
+        internal static string Error_InvalidRunAsUserResponse {
+            get {
+                return ResourceManager.GetString("Error_InvalidRunAsUserResponse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profile dirctory could not be found..
+        /// </summary>
+        internal static string Error_NoProfileDir {
+            get {
+                return ResourceManager.GetString("Error_NoProfileDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PAM authentication failed with error: {0}.
+        /// </summary>
+        internal static string Error_PAMAuthenticationError {
+            get {
+                return ResourceManager.GetString("Error_PAMAuthenticationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid input to RunAsUser.
+        /// </summary>
+        internal static string Error_RunAsUser_InputFormatInvalid {
+            get {
+                return ResourceManager.GetString("Error_RunAsUser_InputFormatInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid message type used for RunAsUser.
+        /// </summary>
+        internal static string Error_RunAsUser_MessageTypeInvalid {
+            get {
+                return ResourceManager.GetString("Error_RunAsUser_MessageTypeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RunAsUser failed with error: {0}.
+        /// </summary>
+        internal static string Error_RunAsUserFailed {
+            get {
+                return ResourceManager.GetString("Error_RunAsUserFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error in run as user protocol: {0}.
+        /// </summary>
+        internal static string Error_RunAsUserJsonError {
+            get {
+                return ResourceManager.GetString("Error_RunAsUserJsonError", resourceCulture);
             }
         }
     }
