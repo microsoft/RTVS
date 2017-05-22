@@ -35,20 +35,19 @@ namespace Microsoft.R.Debugger {
 
     internal sealed class AD7EngineCreateEvent : AD7AsynchronousEvent, IDebugEngineCreateEvent2 {
         public const string IID = "FE5B734C-759D-4E59-AB04-F103343BDD06";
-        private IDebugEngine2 m_engine;
+        private readonly IDebugEngine2 m_engine;
 
         AD7EngineCreateEvent(AD7Engine engine) {
             m_engine = engine;
         }
 
         public static void Send(AD7Engine engine) {
-            AD7EngineCreateEvent eventObject = new AD7EngineCreateEvent(engine);
+            var eventObject = new AD7EngineCreateEvent(engine);
             engine.Send(eventObject, IID);
         }
 
         int IDebugEngineCreateEvent2.GetEngine(out IDebugEngine2 engine) {
             engine = m_engine;
-
             return VSConstants.S_OK;
         }
     }
@@ -57,7 +56,7 @@ namespace Microsoft.R.Debugger {
         public const string IID = "96CD11EE-ECD4-4E89-957E-B5D496FC4139";
 
         internal static void Send(AD7Engine engine) {
-            AD7ProgramCreateEvent eventObject = new AD7ProgramCreateEvent();
+            var eventObject = new AD7ProgramCreateEvent();
             engine.Send(eventObject, IID);
         }
     }
@@ -190,7 +189,7 @@ namespace Microsoft.R.Debugger {
         }
 
         int IDebugBreakpointBoundEvent2.EnumBoundBreakpoints(out IEnumDebugBoundBreakpoints2 ppEnum) {
-            IDebugBoundBreakpoint2[] boundBreakpoints = new IDebugBoundBreakpoint2[1];
+            var boundBreakpoints = new IDebugBoundBreakpoint2[1];
             boundBreakpoints[0] = m_boundBreakpoint;
             ppEnum = new AD7BoundBreakpointEnum(boundBreakpoints);
             return VSConstants.S_OK;
@@ -265,8 +264,8 @@ namespace Microsoft.R.Debugger {
                 pErrorResolutionInfo[0].dwType = enum_BP_ERROR_TYPE.BPET_GENERAL_WARNING;
             }
             if ((dwFields & enum_BPERESI_FIELDS.BPERESI_BPRESLOCATION) != 0) {
-                pErrorResolutionInfo[0].bpResLocation = new BP_RESOLUTION_LOCATION();
-                pErrorResolutionInfo[0].bpResLocation.bpType = (uint)enum_BP_TYPE.BPT_CODE;
+                pErrorResolutionInfo[0].bpResLocation =
+                    new BP_RESOLUTION_LOCATION {bpType = (uint) enum_BP_TYPE.BPT_CODE};
             }
             if ((dwFields & enum_BPERESI_FIELDS.BPERESI_MESSAGE) != 0) {
                 pErrorResolutionInfo[0].bstrMessage = "No code has been loaded for this code location.";

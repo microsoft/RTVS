@@ -23,12 +23,14 @@ namespace Microsoft.R.Core.AST.Comments {
 
         #region ITextRange
         public override bool Contains(int position) {
-            if (this.Count == 0 || position == this.Start)
+            if (this.Count == 0 || position == this.Start) {
                 return false;
+            }
 
             foreach (ITextRange range in this) {
-                if (range.Contains(position) || range.End == position)
+                if (range.Contains(position) || range.End == position) {
                     return true;
+                }
             }
 
             return false;

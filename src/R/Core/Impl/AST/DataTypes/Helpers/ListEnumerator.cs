@@ -6,32 +6,16 @@ using System.Collections.Generic;
 
 namespace Microsoft.R.Core.AST.DataTypes.Helpers {
     internal sealed class ListEnumerator<T> : IEnumerator<T> {
-        private IEnumerator enumerator;
+        private readonly IEnumerator _enumerator;
 
         public ListEnumerator(IEnumerator enumerator) {
-            this.enumerator = enumerator;
+            _enumerator = enumerator;
         }
 
-        public T Current {
-            get {
-                return (T)this.enumerator.Current;
-            }
-        }
-
-        object IEnumerator.Current {
-            get {
-                return this.enumerator.Current;
-            }
-        }
-
+        public T Current => (T)_enumerator.Current;
+        object IEnumerator.Current => _enumerator.Current;
         public void Dispose() { }
-
-        public bool MoveNext() {
-            return this.enumerator.MoveNext();
-        }
-
-        public void Reset() {
-            this.enumerator.Reset();
-        }
+        public bool MoveNext() => _enumerator.MoveNext();
+        public void Reset() => _enumerator.Reset();
     }
 }

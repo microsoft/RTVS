@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.DataInspection;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using static System.FormattableString;
 
@@ -14,8 +15,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     internal sealed class GridDataProvider : IGridProvider<string> {
         private readonly VariableViewModel _evaluation;
+        private readonly IRSession _session;
 
-        public GridDataProvider(VariableViewModel evaluation) {
+        public GridDataProvider(IRSession session, VariableViewModel evaluation) {
+            _session = session;
             _evaluation = evaluation;
 
             RowCount = evaluation.Dimensions[0];
@@ -36,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool CanSort { get; }
 
         public Task<IGridData<string>> GetAsync(GridRange gridRange, ISortOrder sortOrder = null) {
-            var t = GridDataSource.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
+            var t = _session.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
             if (t == null) {
                 // May happen when R host is not running
                 Trace.Fail(Invariant($"{nameof(VariableViewModel)} returned null grid data"));

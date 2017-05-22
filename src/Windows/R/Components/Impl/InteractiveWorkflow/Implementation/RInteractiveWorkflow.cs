@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
@@ -28,6 +29,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRSettings _settings;
         private readonly RInteractiveWorkflowOperations _operations;
+        private readonly IMainThread _mainThread;
 
         private TaskCompletionSource<IInteractiveWindowVisualComponent> _visualComponentTcs;
 
@@ -57,6 +59,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _settings = coreShell.GetService<IRSettings>();
+            _mainThread = coreShell.MainThread();
 
             Shell = coreShell;
             Console = new InteractiveWindowConsole(this);
@@ -90,7 +93,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             if (ActiveWindow.TextView.HasAggregateFocus) {
-                Shell.MainThread().Post(Operations.PositionCaretAtPrompt);
+                _mainThread.Post(Operations.PositionCaretAtPrompt);
             }
         }
 
@@ -100,7 +103,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0) {
-            Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             if (_visualComponentTcs == null) {
                 _visualComponentTcs = new TaskCompletionSource<IInteractiveWindowVisualComponent>();

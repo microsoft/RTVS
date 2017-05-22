@@ -4,11 +4,11 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Controller;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -19,7 +19,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using ServiceManager = Microsoft.Languages.Editor.Services.ServiceManager;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     [Guid(WindowGuidString)]
@@ -50,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
             _history = _historyProvider.GetAssociatedRHistory(Component.TextView);
             _history.HistoryChanged += OnHistoryChanged;
             _historyFiltering = _historyProvider.CreateFiltering(Component);
-            _commandTarget = new CommandTargetToOleShim(Component.TextView, ServiceManager.GetService<ICommandTarget>(Component.TextView));
+            _commandTarget = new CommandTargetToOleShim(Component.TextView, Component.TextView.GetService<ICommandTarget>());
 
             base.OnCreate();
         }
@@ -64,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override void OnToolWindowCreated() {
-            Guid commandUiGuid = VSConstants.GUID_TextEditorFactory;
+            var commandUiGuid = VSConstants.GUID_TextEditorFactory;
             ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref commandUiGuid);
             base.OnToolWindowCreated();
         }
@@ -79,13 +78,11 @@ namespace Microsoft.VisualStudio.R.Package.History {
             base.Dispose(disposing);
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
-            return _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-        }
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+            => _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
-        }
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+            => _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
 
         public override bool SearchEnabled => true;
 
@@ -95,9 +92,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
             base.ProvideSearchSettings(pSearchSettings);
         }
 
-        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
-            return new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Services);
-        }
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) 
+            => new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Services);
 
         public override void ClearSearch() {
             Services.MainThread().Post(() => _historyFiltering.ClearFilter());
@@ -105,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         private void OnHistoryChanged(object sender, EventArgs e) {
-            var settings = Services.GetService<IRToolsSettings>();
+            var settings = Services.GetService<IRSettings>();
             if (settings.ClearFilterOnAddHistory) {
                 SearchHost.SearchAsync(null);
             }

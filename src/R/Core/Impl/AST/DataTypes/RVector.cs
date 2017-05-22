@@ -19,8 +19,9 @@ namespace Microsoft.R.Core.AST.DataTypes {
         private Lazy<HybridDictionary> vector = new Lazy<HybridDictionary>(() => new HybridDictionary());
 
         public RVector(RMode mode, int length) {
-            if (length < 0)
+            if (length < 0) {
                 throw new ArgumentOutOfRangeException(nameof(length));
+            }
 
             this.Mode = mode;
             this.Length = length;
@@ -53,15 +54,17 @@ namespace Microsoft.R.Core.AST.DataTypes {
 
         #region IEnumerable
         public IEnumerator<T> GetEnumerator() {
-            if (this.vector.IsValueCreated)
+            if (this.vector.IsValueCreated) {
                 return Collection<T>.Empty.GetEnumerator();
+            }
 
             return Collection<T>.Empty.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            if (this.vector.IsValueCreated)
+            if (this.vector.IsValueCreated) {
                 return Collection<T>.Empty.GetEnumerator();
+            }
 
             return Collection<T>.Empty.GetEnumerator();
         }

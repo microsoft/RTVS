@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Testing;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
@@ -18,13 +19,11 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class CancelAll : IAsyncLifetime {
-            private readonly TaskObserverMethodFixture _taskObserver;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public CancelAll(IServiceContainer services, TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
-                _taskObserver = taskObserver;
+            public CancelAll(IServiceContainer services, TestMethodFixture testMethod) {
                 _callback = new RSessionCallbackStub();
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(CancelAll));
                 _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
@@ -32,8 +31,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo(isInteractive: true), _callback, 50000);
-
-                _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
+                TestEnvironment.Current.TryAddTaskToWait(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {

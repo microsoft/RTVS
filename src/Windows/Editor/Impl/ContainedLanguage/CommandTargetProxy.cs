@@ -2,10 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
@@ -18,17 +16,13 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     public sealed class CommandTargetProxy : ICommandTarget {
         private ICommandTarget _commandTarget;
 
-        public static CommandTargetProxy GetProxyTarget(ITextView textView, ICoreShell coreShell) {
-            var proxy = ServiceManager.GetService<CommandTargetProxy>(textView);
-            if (proxy == null) {
-                proxy = new CommandTargetProxy(textView, coreShell);
-            }
+        public static CommandTargetProxy GetProxyTarget(ITextView textView) {
+            var proxy = textView.GetService<CommandTargetProxy>();
+            proxy = proxy ?? new CommandTargetProxy(textView);
             return proxy;
         }
 
-        private CommandTargetProxy(ITextView textView, ICoreShell coreShell) {
-            ServiceManager.AddService(this, textView, coreShell);
-        }
+        private CommandTargetProxy(ITextView textView) => textView.AddService(this);
 
         #region ICommandTarget
         public CommandStatus Status(Guid group, int id) {
@@ -46,10 +40,10 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         #endregion
 
         public static void SetCommandTarget(ITextView textView, ICommandTarget target) {
-            var proxy = ServiceManager.GetService<CommandTargetProxy>(textView);
+            var proxy = textView.GetService<CommandTargetProxy>();
             if (proxy != null) {
                 proxy._commandTarget = target;
-                ServiceManager.RemoveService<CommandTargetProxy>(textView);
+                textView.RemoveService(proxy);
             }
         }
     }

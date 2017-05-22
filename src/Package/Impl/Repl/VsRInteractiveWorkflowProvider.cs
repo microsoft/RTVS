@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IRPlotManagerProvider _plotsProvider;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
+        private readonly IApplication _app;
         private readonly ICoreShell _shell;
 
         private Lazy<IRInteractiveWorkflowVisual> _instanceLazy;
@@ -41,11 +42,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
             _connectionsProvider = shell.GetService<IConnectionManagerProvider>();
 
-            _shell.Terminating += OnApplicationTerminating;
+            _app = _shell.GetService<IApplication>();
+            _app.Terminating += OnApplicationTerminating;
         }
 
         private void OnApplicationTerminating(object sender, EventArgs e) => Dispose();
-        public void Dispose() => _disposableBag.TryDispose();
+
+        public void Dispose() {
+            _app.Terminating -= OnApplicationTerminating;
+            _disposableBag.TryDispose();
+        }
 
         IRInteractiveWorkflowVisual IRInteractiveWorkflowVisualProvider.GetOrCreate() { 
             _disposableBag.ThrowIfDisposed();

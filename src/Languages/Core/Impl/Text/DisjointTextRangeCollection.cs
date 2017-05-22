@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Microsoft.Languages.Core.Text {
     /// <summary>
@@ -14,41 +15,19 @@ namespace Microsoft.Languages.Core.Text {
     /// <seealso cref="TextRangeCollection"/>
     /// </summary>
     /// <typeparam name="T">A class or an interface that derives from <seealso cref="ITextRange"/></typeparam>
-    [DebuggerDisplay("Count={Count}")]
+    [DebuggerDisplay("Count={" + nameof(Count) + "}")]
     public class DisjointTextRangeCollection<T> : TextRangeCollection<T> where T : ITextRange {
-
         #region Construction
-        public DisjointTextRangeCollection() {
-        }
-
-        public DisjointTextRangeCollection(IEnumerable<T> ranges) : base(ranges) {
-        }
+        public DisjointTextRangeCollection() { }
+        public DisjointTextRangeCollection(IEnumerable<T> ranges) : base(ranges) { }
         #endregion
 
         #region ITextRange
-        public override bool Contains(int position) {
-            if (this.Count == 0)
-                return false;
-
-            foreach (ITextRange range in this) {
-                if (range.Contains(position))
-                    return true;
-            }
-
-            return false;
-        }
+        public override bool Contains(int position) 
+            => this.Any(range => range.Contains(position));
         #endregion
 
-        public bool Contains(int position, bool inclusiveEnd) {
-            if (this.Count == 0)
-                return false;
-
-            foreach (ITextRange range in this) {
-                if (range.Contains(position) || (inclusiveEnd && range.End == position))
-                    return true;
-            }
-
-            return false;
-        }
+        public bool Contains(int position, bool inclusiveEnd) 
+            => this.Any(range => range.Contains(position) || (inclusiveEnd && range.End == position));
     }
 }

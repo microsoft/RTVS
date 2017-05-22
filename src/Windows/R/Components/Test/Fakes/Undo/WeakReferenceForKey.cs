@@ -20,8 +20,9 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
 
         public WeakReferenceForDictionaryKey(object target)
             : base(target) {
-            if (target != null)
+            if (target != null) {
                 _hashCode = target.GetHashCode() ^ XorWeakReference;
+            }
         }
 
         protected WeakReferenceForDictionaryKey(SerializationInfo info, StreamingContext context) : base(info, context) {

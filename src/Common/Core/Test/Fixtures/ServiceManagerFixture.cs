@@ -27,15 +27,18 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         protected virtual void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             serviceManager
-                .AddService(UIThreadHelper.Instance)
+                .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())
                 .AddService(new WindowsFileSystem())
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
-                .AddService(new TestUIServices())
-                .AddService(new TestPlatformServices());
+                .AddService(new TestTaskService())
+                .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
+                .AddService(new TestPlatformServices())
+                .AddService(new TestApplication())
+                .AddService(new TestIdleTimeService());
         }
 
         protected class TestServiceManager : ServiceManager, IMethodFixture {
@@ -52,17 +55,13 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 return this;
             }
 
-            public Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-                try {
-                    var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
-                    Directory.CreateDirectory(logsFolder);
-                    _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, new MaxLoggingPermissions()));
-                    _addServices(this, testInput);
-                } catch (Exception) {
-                    return Task.FromResult(Task.FromResult(new RunSummary {Failed = 1}));
-                }
+            public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
+                _addServices(this, testInput);
+                var logsFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
+                Directory.CreateDirectory(logsFolder);
+                _log.SetLog(new Logger(testInput.FileSytemSafeName, logsFolder, this));
 
-                return MethodFixtureBase.DefaultInitializeTask;
+                return Task.CompletedTask;
             }
 
             public virtual Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
@@ -81,7 +80,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 _log = log;
             }
 
-            public void Write(LogVerbosity verbosity, MessageCategory category, string message) 
+            public void Write(LogVerbosity verbosity, MessageCategory category, string message)
                 => _log.Write(verbosity, category, message);
 
             public void WriteFormat(LogVerbosity verbosity, MessageCategory category, string format, params object[] arguments)

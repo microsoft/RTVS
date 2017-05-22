@@ -36,21 +36,13 @@ namespace Microsoft.R.Host.Client.Test {
             _testMethod = testMethod.MethodInfo;
         }
 
-        private double X(double percentX) {
-            return DefaultWidth * percentX;
-        }
+        private double X(double percentX) => DefaultWidth * percentX;
 
-        private double Y(double percentY) {
-            return DefaultHeight - DefaultHeight * percentY;
-        }
+        private double Y(double percentY) => DefaultHeight - DefaultHeight * percentY;
 
-        private double W(double percentX) {
-            return DefaultWidth * percentX;
-        }
+        private double W(double percentX) => DefaultWidth * percentX;
 
-        private double H(double percentY) {
-            return DefaultHeight * percentY;
-        }
+        private double H(double percentY) => DefaultHeight * percentY;
 
         [Test]
         [Category.Plots]
@@ -204,17 +196,14 @@ namespace Microsoft.R.Host.Client.Test {
             CheckDoubleAttr(element, "Canvas.Top", top);
         }
 
-        private void CheckStrokeThickness(XElement element, double expected) {
-            CheckDoubleAttr(element, "StrokeThickness", expected);
-        }
+        private void CheckStrokeThickness(XElement element, double expected) 
+            => CheckDoubleAttr(element, "StrokeThickness", expected);
 
-        private void CheckStroke(XElement element, string expected) {
-            CheckStringAttr(element, "Stroke", expected);
-        }
+        private void CheckStroke(XElement element, string expected) 
+            => CheckStringAttr(element, "Stroke", expected);
 
-        private void CheckStrokeDashArray(XElement element, string expected) {
-            CheckStringAttr(element, "StrokeDashArray", expected);
-        }
+        private void CheckStrokeDashArray(XElement element, string expected) 
+            => CheckStringAttr(element, "StrokeDashArray", expected);
 
         private void CheckStringAttr(XElement element, string attributeName, string expected) {
             var attrs = element.Attributes(attributeName);
@@ -228,7 +217,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private void CheckDoubleAttr(XElement element, string attributeName, double? expected) {
             var attrs = element.Attributes(attributeName);
-            
+
             if (expected != null) {
                 attrs.Should().ContainSingle().Which.Should().HaveValue(expected.ToString());
             } else {
@@ -240,7 +229,7 @@ namespace Microsoft.R.Host.Client.Test {
             using (var sessionProvider = new RSessionProvider(_services)) {
                 await sessionProvider.TrySwitchBrokerAsync(nameof(XamlGraphicsDeviceTest));
                 var session = sessionProvider.GetOrCreate(_testMethod.Name);
-                await session.StartHostAsync(new RHostStartupInfo (), new RHostClientTestApp(), 50000);
+                await session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
 
                 using (var interaction = await session.BeginInteractionAsync()) {
                     await interaction.RespondAsync(code);

@@ -3,11 +3,10 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.History.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

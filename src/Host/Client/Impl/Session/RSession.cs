@@ -6,20 +6,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
-using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.Host.Client.Session {
     public sealed class RSession : IRSession, IRCallbacks {

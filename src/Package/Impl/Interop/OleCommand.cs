@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Interop {
@@ -32,8 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
                     commands[0].cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
                 }
             }
-
-            return 0; // S_OK;
+            return VSConstants.S_OK;
         }
 
         /// <summary>
@@ -56,30 +54,31 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         /// <param name="oleCommandFlags">OLE command state flags</param>
         /// <returns>Command status</returns>
         public static CommandStatus MakeCommandStatus(int oleResult, uint oleCommandFlags) {
-            CommandStatus cs = CommandStatus.NotSupported;
-            OLECMDF oleFlags = (OLECMDF)oleCommandFlags;
+            var cs = CommandStatus.NotSupported;
+            var oleFlags = (OLECMDF)oleCommandFlags;
 
             if (oleResult != (int)Constants.OLECMDERR_E_NOTSUPPORTED) {
-                if ((oleFlags & OLECMDF.OLECMDF_SUPPORTED) == OLECMDF.OLECMDF_SUPPORTED)
+                if ((oleFlags & OLECMDF.OLECMDF_SUPPORTED) == OLECMDF.OLECMDF_SUPPORTED) {
                     cs |= CommandStatus.Supported;
+                }
 
-                if ((oleFlags & OLECMDF.OLECMDF_ENABLED) == OLECMDF.OLECMDF_ENABLED)
+                if ((oleFlags & OLECMDF.OLECMDF_ENABLED) == OLECMDF.OLECMDF_ENABLED) {
                     cs |= CommandStatus.Enabled;
-
-                if ((oleFlags & OLECMDF.OLECMDF_INVISIBLE) == OLECMDF.OLECMDF_INVISIBLE)
+                }
+                if ((oleFlags & OLECMDF.OLECMDF_INVISIBLE) == OLECMDF.OLECMDF_INVISIBLE) {
                     cs |= CommandStatus.Invisible;
-
-                if ((oleFlags & OLECMDF.OLECMDF_LATCHED) == OLECMDF.OLECMDF_LATCHED)
+                }
+                if ((oleFlags & OLECMDF.OLECMDF_LATCHED) == OLECMDF.OLECMDF_LATCHED) {
                     cs |= CommandStatus.Latched;
+                }
             }
-
             return cs;
         }
 
         public static CommandResult MakeCommandResult(int oleResult) {
-            if (oleResult == (int)Constants.OLECMDERR_E_NOTSUPPORTED)
+            if (oleResult == (int)Constants.OLECMDERR_E_NOTSUPPORTED) {
                 return new CommandResult(CommandStatus.NotSupported, 0);
-
+            }
             return new CommandResult(CommandStatus.Supported, oleResult);
         }
     }

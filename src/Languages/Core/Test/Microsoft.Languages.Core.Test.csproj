@@ -53,6 +53,7 @@
     <Compile Include="Text\TextRangeTest.cs" />
     <Compile Include="Utility\DebugWriter.cs" />
     <Compile Include="Utility\TextRangeCollectionWriter.cs" />
+    <Compile Include="Utility\TokenizeFiles.cs" />
     <Compile Include="Utility\TokensCompare.cs" />
   </ItemGroup>
   <ItemGroup>

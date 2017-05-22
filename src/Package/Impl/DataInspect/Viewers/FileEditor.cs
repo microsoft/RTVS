@@ -7,11 +7,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -23,14 +24,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IFileEditor))]
     internal sealed class FileEditor : IFileEditor {
         private readonly ICoreShell _coreShell;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
 
         [ImportingConstructor]
-        public FileEditor(ICoreShell coreShell, IRToolsSettings settings, IVsEditorAdaptersFactoryService adapterService) {
+        public FileEditor(ICoreShell coreShell) {
             _coreShell = coreShell;
-            _settings = settings;
-            _adapterService = adapterService;
+            _settings = coreShell.GetService< IRSettings>();
+            _adapterService = coreShell.GetService<IVsEditorAdaptersFactoryService>();
         }
 
         public async Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -62,39 +63,42 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 } catch (ArgumentException) {
                     return string.Empty;
                 }
-                return await new FileEditorWindow(_coreShell, _adapterService, fileName).ShowAsync(cancellationToken);
+                return await new FileEditorWindow(_coreShell.Services, _adapterService, fileName).ShowAsync(cancellationToken);
             }
 
             return string.Empty;
         }
 
         private class FileEditorWindow : IVsWindowFrameEvents {
-            private readonly ICoreShell _coreShell;
+            private readonly IServiceContainer _services;
             private readonly IVsEditorAdaptersFactoryService _adapterService;
             private readonly TaskCompletionSource<string> _tcs;
+            private readonly IApplication _app;
             private readonly string _fileName;
             private volatile IVsWindowFrame _editorFrame;
             private ITextBuffer _textBuffer;
             private IVsUIShell7 _uiShell;
             private uint _cookie;
 
-            public FileEditorWindow(ICoreShell coreShell, IVsEditorAdaptersFactoryService adapterService, string fileName) {
-                _coreShell = coreShell;
+            public FileEditorWindow(IServiceContainer services, IVsEditorAdaptersFactoryService adapterService, string fileName) {
+                _services = services;
                 _adapterService = adapterService;
                 _fileName = fileName;
                 _tcs = new TaskCompletionSource<string>();
-                _coreShell.Terminating += OnAppTerminating;
+
+                _app = services.GetService<IApplication>();
+                _app.Terminating += OnAppTerminating;
             }
 
             public async Task<string> ShowAsync(CancellationToken cancellationToken) {
                 var registration = _tcs.RegisterForCancellation(cancellationToken);
                 try {
-                    _coreShell.MainThread().Post(Show);
+                    _services.MainThread().Post(Show);
                     return await _tcs.Task;
                 } finally {
                     registration.Dispose();
                     if (_tcs.Task.IsCanceled && _editorFrame != null) {
-                        _coreShell.MainThread().Post(Close);
+                        _services.MainThread().Post(Close);
                     }
                 }
             }
@@ -108,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     uint itemid;
                     VsShellUtilities.OpenDocument(RPackage.Current, _fileName, VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out vsWindowFrame, out view);
                 } catch (Exception ex) {
-                    _coreShell.ShowErrorMessage(Resources.Error_ExceptionAccessingPath.FormatInvariant(_fileName, ex.Message));
+                    _services.ShowErrorMessage(Resources.Error_ExceptionAccessingPath.FormatInvariant(_fileName, ex.Message));
                     _tcs.TrySetResult(string.Empty);
                     return;
                 }
@@ -128,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 view.GetBuffer(out vsTextLines);
                 _textBuffer = _adapterService.GetDataBuffer(vsTextLines);
 
-                _uiShell = _coreShell.GetService<IVsUIShell7>(typeof(SVsUIShell));
+                _uiShell = _services.GetService<IVsUIShell7>(typeof(SVsUIShell));
                 _cookie = _uiShell.AdviseWindowFrameEvents(this);
             }
 
@@ -141,10 +145,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     UnadviseWindowFrameEvents();
                     _tcs.TrySetCanceled();
                 }
+                _app.Terminating -= OnAppTerminating;
             }
 
             private void UnadviseWindowFrameEvents() {
-                _coreShell.AssertIsOnMainThread();
+                _services.MainThread().Assert();
                 _uiShell.UnadviseWindowFrameEvents(_cookie);
                 _cookie = 0;
             }

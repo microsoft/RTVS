@@ -19,7 +19,7 @@ namespace Microsoft.R.Core.AST {
         }
 
         public static IReadOnlyCollection<IAstNode> FindElements(this AstRoot tree, Func<IAstNode, bool> filter) {
-            MultipleElementFinder finder = new MultipleElementFinder(filter);
+            var finder = new MultipleElementFinder(filter);
             tree.Accept(finder, null);
 
             if (finder.Result.Count == 0) {
@@ -38,8 +38,9 @@ namespace Microsoft.R.Core.AST {
             }
 
             public bool Visit(IAstNode element, object parameter) {
-                if (!_match(element))
+                if (!_match(element)) {
                     return true;
+                }
 
                 Result = element;
                 return false;
@@ -56,8 +57,9 @@ namespace Microsoft.R.Core.AST {
             }
 
             public bool Visit(IAstNode element, object parameter) {
-                if (_match(element))
+                if (_match(element)) {
                     Result.Add(element);
+                }
 
                 return true;
             }
@@ -67,7 +69,7 @@ namespace Microsoft.R.Core.AST {
         /// Locates deepest node of a particular type 
         /// </summary>
         public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position, bool includeEnd = false) where T : class {
-            return GetSpecificNodeFromPosition<T>(ast, position, (IAstNode n) => { return n is T; }, includeEnd) as T;
+            return GetSpecificNodeFromPosition<T>(ast, position, n => n is T, includeEnd);
         }
 
         /// <summary>
@@ -92,7 +94,7 @@ namespace Microsoft.R.Core.AST {
                 deepestNode = node;
             }
 
-            for (int i = 0; i < node.Children.Count && node.Children[i].Start <= position; i++) {
+            for (var i = 0; i < node.Children.Count && node.Children[i].Start <= position; i++) {
                 FindSpecificNode(node.Children[i], position, match, ref deepestNode, includeEnd);
             }
         }
@@ -104,35 +106,33 @@ namespace Microsoft.R.Core.AST {
         /// </summary>
         public static IEnumerable<string> GetFilePackageNames(this AstRoot ast) {
             // TODO: results can be cached until AST actually changes
-            AstLibrarySearch search = new AstLibrarySearch();
+            var search = new AstLibrarySearch();
             ast.Accept(search, null);
 
             return search.PackageNames;
         }
 
         private class AstLibrarySearch : IAstVisitor {
-            public List<string> PackageNames { get; private set; } = new List<string>();
+            public List<string> PackageNames { get; } = new List<string>();
 
             public bool Visit(IAstNode node, object parameter) {
-                FunctionCall fc = node as FunctionCall;
-                if (fc != null && fc.Arguments != null && fc.Arguments.Count > 0) {
+                var fc = node as FunctionCall;
+                if (fc?.Arguments != null && fc.Arguments.Count > 0) {
 
                     // Function name is a Variable and is a child of () operator
-                    Variable functionNameVariable = fc.Children.Count > 0 ? fc.Children[0] as Variable : null;
+                    var functionNameVariable = fc.Children.Count > 0 ? fc.Children[0] as Variable : null;
                     if (functionNameVariable != null) {
 
                         if (functionNameVariable.Name == "library" || functionNameVariable.Name == "require") {
                             // Now get the argument list. first argument, if any, is the package name.
-                            ExpressionArgument arg = fc.Arguments[0] as ExpressionArgument;
-                            if (arg != null && arg.ArgumentValue.Children.Count == 1) {
-
+                            if (fc.Arguments[0] is ExpressionArgument arg && arg.ArgumentValue.Children.Count == 1) {
                                 // Technically we need to evaluate the expression and calculate 
                                 // the actual package name in case it is constructed or returned 
                                 // from another function. However, for now we limit search to 
                                 // single value arguments like library(abind).
-                                Variable packageNameVariable = arg.ArgumentValue.Children[0] as Variable;
+                                var packageNameVariable = arg.ArgumentValue.Children[0] as Variable;
                                 if (packageNameVariable != null) {
-                                    this.PackageNames.Add(packageNameVariable.Name);
+                                    PackageNames.Add(packageNameVariable.Name);
                                 }
                             }
                         }
@@ -144,14 +144,14 @@ namespace Microsoft.R.Core.AST {
 
         public static bool IsPositionInsideString(this AstRoot ast, int position) {
             // We don't want to auto-format inside strings
-            TokenNode node = ast.NodeFromPosition(position) as TokenNode;
+            var node = ast.NodeFromPosition(position) as TokenNode;
             return node != null && node.Token.TokenType == RTokenType.String;
         }
 
         public static string IsInLibraryStatement(this AstRoot ast, int position) {
             var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
-            if (fc != null && fc.RightOperand != null) {
-                string funcName = ast.TextProvider.GetText(fc.RightOperand);
+            if (fc?.RightOperand != null) {
+                var funcName = ast.TextProvider.GetText(fc.RightOperand);
                 if (funcName.Equals("library", StringComparison.Ordinal)) {
                     if (fc.Arguments.Count == 1) {
                         return ast.TextProvider.GetText(fc.Arguments[0]);

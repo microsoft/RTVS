@@ -4,9 +4,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Expansions;
@@ -20,33 +20,29 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.Package {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class ExpansionsTest: IDisposable {
-        private IVsExpansionManager _expansionManager;
-        private IExpansionsCache _cache;
+    public class ExpansionsTest {
+        private readonly IVsExpansionManager _expansionManager;
+        private readonly IExpansionsCache _cache;
+        private readonly IServiceContainer _services;
 
-        public ExpansionsTest() {
+        public ExpansionsTest(IServiceContainer services) {
+            _services = services;
             _expansionManager = Substitute.For<IVsExpansionManager>();
 
             _cache = Substitute.For<IExpansionsCache>();
-            _cache.GetExpansion("if").Returns(new VsExpansion() {
+            _cache.GetExpansion("if").Returns(new VsExpansion {
                 description = "if statement",
                 path = "path",
                 shortcut = "if",
                 title = "if statement"
             });
-
-            TextBufferUtilities.AdaptersFactoryService = new VsEditorAdaptersFactoryServiceMock();
-        }
-
-        public void Dispose() {
-            TextBufferUtilities.AdaptersFactoryService = null;
         }
 
         [Test]
        public void ExpansionClientTest() {
             var textBuffer = new TextBufferMock("if", RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer);
-            var client = new ExpansionClient(textView, textBuffer, _expansionManager, _cache);
+            var client = new ExpansionClient(textView, textBuffer, _expansionManager, _cache, _services);
 
             client.IsEditingExpansion().Should().BeFalse();
             client.IsCaretInsideSnippetFields().Should().BeFalse();
@@ -81,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
             var textView = new TextViewMock(textBuffer);
             var o = new object();
 
-            var controller = new ExpansionsController(textView, textBuffer, _expansionManager, _cache);
+            var controller = new ExpansionsController(textView, textBuffer, _expansionManager, _cache, _services);
             controller.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.INSERTSNIPPET).Should().Be(CommandStatus.SupportedAndEnabled);
             controller.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SURROUNDWITH).Should().Be(CommandStatus.SupportedAndEnabled);
 

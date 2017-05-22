@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Extensions;
-using Microsoft.Languages.Editor.Services;
+using System.Linq;
+using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -17,33 +17,32 @@ namespace Microsoft.Languages.Editor.Projection {
     /// Manages the projection buffer for the primary language
     /// </summary>
     public sealed class ProjectionBufferManager : IProjectionBufferManager {
-        private const string _inertContentTypeName = "inert";
-
-        private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private int? _savedCaretPosition;
 
-        public ProjectionBufferManager(ITextBuffer diskBuffer,
-                                       IProjectionBufferFactoryService projectionBufferFactoryService,
-                                       IContentTypeRegistryService contentTypeRegistryService,
-                                       ICoreShell coreShell,
-                                       string topLevelContentTypeName,
-                                       string secondaryContentTypeName) {
+        public ProjectionBufferManager(ITextBuffer diskBuffer, IServiceContainer services, string topLevelContentTypeName, string secondaryContentTypeName) {
             DiskBuffer = diskBuffer;
 
-            _contentTypeRegistryService = contentTypeRegistryService;
+            var projectionBufferFactoryService = services.GetService<IProjectionBufferFactoryService>();
+            var contentTypeRegistryService = services.GetService<IContentTypeRegistryService>();
 
-            var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
+            var contentType = contentTypeRegistryService.GetContentType(topLevelContentTypeName);
             ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
+            EditorBuffer.Create(ViewBuffer, services.GetService<ITextDocumentFactoryService>());
 
-            contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
+            contentType = contentTypeRegistryService.GetContentType(secondaryContentTypeName);
             ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
-            ServiceManager.AddService<IProjectionBufferManager>(this, DiskBuffer, coreShell);
-            ServiceManager.AddService<IProjectionBufferManager>(this, ViewBuffer, coreShell);
+            DiskBuffer.AddService(this);
+            ViewBuffer.AddService(this);
         }
 
         public static IProjectionBufferManager FromTextBuffer(ITextBuffer textBuffer) {
-            return ServiceManager.GetService<IProjectionBufferManager>(textBuffer);
+            var pbm = textBuffer.GetService<IProjectionBufferManager>();
+            if(pbm == null) {
+                var pb = textBuffer as IProjectionBuffer;
+                pbm = pb?.SourceBuffers?.Select(b => b.GetService<IProjectionBufferManager>())?.FirstOrDefault(b => b != null);
+            }
+            return pbm;
         }
 
         #region IProjectionBufferManager
@@ -94,8 +93,8 @@ namespace Microsoft.Languages.Editor.Projection {
         }
 
         public void Dispose() {
-            ServiceManager.RemoveService<IProjectionBufferManager>(DiskBuffer);
-            ServiceManager.RemoveService<IProjectionBufferManager>(ViewBuffer);
+            DiskBuffer?.RemoveService(this);
+            ViewBuffer?.RemoveService(this);
         }
         #endregion
 
@@ -106,7 +105,7 @@ namespace Microsoft.Languages.Editor.Projection {
             Span span;
 
             for (int i = 0; i < mappings.Count; i++) {
-                ProjectionMapping mapping = mappings[i];
+                var mapping = mappings[i];
                 if (mapping.Length > 0) {
                     span = Span.FromBounds(secondaryIndex, mapping.ProjectionRange.Start);
                     if (!span.IsEmpty) {
@@ -134,7 +133,7 @@ namespace Microsoft.Languages.Editor.Projection {
             Span span;
 
             for (int i = 0; i < mappings.Count; i++) {
-                ProjectionMapping mapping = mappings[i];
+                var mapping = mappings[i];
                 if (mapping.Length > 0) {
                     span = Span.FromBounds(primaryIndex, mapping.SourceStart);
                     spans.Add(new CustomTrackingSpan(diskSnapshot, span, i == 0 ? PointTrackingMode.Negative : PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
@@ -150,29 +149,16 @@ namespace Microsoft.Languages.Editor.Projection {
             return spans;
         }
 
-        private ITextCaret GetCaret() {
-            var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
-            var textView = document?.TextBuffer.GetFirstView();
-            return textView?.Caret;
-        }
-
-        private int? GetCaretPosition() {
-            return GetCaret()?.Position.BufferPosition.Position;
-        }
-
-        private void SaveCaretPosition() {
-            _savedCaretPosition = GetCaretPosition();
-        }
+        private ITextCaret GetCaret() => DiskBuffer.GetFirstView()?.Caret;
+        private int? GetCaretPosition() => GetCaret()?.Position.BufferPosition.Position;
+        private void SaveCaretPosition() => _savedCaretPosition = GetCaretPosition();
 
         private void RestoreCaretPosition() {
             if (_savedCaretPosition.HasValue) {
                 var caretPosition = GetCaretPosition();
                 if (caretPosition.HasValue && caretPosition.Value != _savedCaretPosition.Value) {
-                    var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
-                    var textView = document?.TextBuffer.GetFirstView();
-                    if (textView != null) {
-                        textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, _savedCaretPosition.Value));
-                    }
+                    var textView = DiskBuffer.GetFirstView();
+                    textView?.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, _savedCaretPosition.Value));
                     _savedCaretPosition = null;
                 }
             }

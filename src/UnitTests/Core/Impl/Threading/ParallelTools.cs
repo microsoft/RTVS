@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -22,21 +21,21 @@ namespace Microsoft.UnitTests.Core.Threading {
         public static async Task<Task<T>[]> InvokeAsync<T>(int count, Func<int, Task<T>> method, int delayMs = 10000) {
             var results = Invoke(count, method);
             var tasks = results.ToArray();
-            await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
+            await When(Task.WhenAll(tasks).SilenceException<Exception>(), delayMs);
             return tasks.ToArray();
         }
 
         public static async Task<TResult[]> InvokeAsync<TResult>(int count, Func<int, TResult> method, Func<TResult, Task> taskSelector, int delayMs = 10000) {
             var results = Invoke(count, method).ToArray();
             var tasks = results.Select(taskSelector).ToArray();
-            await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
+            await When(Task.WhenAll(tasks).SilenceException<Exception>(), delayMs);
             return results;
         }
 
         public static async Task<Task[]> InvokeAsync(int count, Func<int, Task> method, int delayMs = 10000) {
             var results = Invoke(count, method);
             var tasks = results.ToArray();
-            await Task.WhenAny(Task.WhenAll(tasks).SilenceException<Exception>(), Task.Delay(delayMs));
+            await When(Task.WhenAll(tasks).SilenceException<Exception>(), delayMs);
             return tasks.ToArray();
         }
 

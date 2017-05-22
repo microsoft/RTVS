@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using static System.FormattableString;
 

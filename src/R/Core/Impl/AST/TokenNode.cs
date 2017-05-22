@@ -23,59 +23,46 @@ namespace Microsoft.R.Core.AST {
             Token = token;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent) {
-            RToken currentToken = context.Tokens.CurrentToken;
+        public override bool Parse(ParseContext context, IAstNode parent = null) {
+            var currentToken = context.Tokens.CurrentToken;
 
-            this.Token = currentToken;
+            Token = currentToken;
             context.Tokens.MoveToNextToken();
 
             return base.Parse(context, parent);
         }
 
         #region ITextRange
-        public override int Start {
-            get { return this.Token.Start; }
-        }
+        public override int Start => Token.Start;
+        public override int End => Token.End;
+        public override IReadOnlyTextRangeCollection<IAstNode> Children => TextRangeCollection<IAstNode>.EmptyCollection;
 
-        public override int End {
-            get { return this.Token.End; }
-        }
-
-        public override IReadOnlyTextRangeCollection<IAstNode> Children {
-            get { return TextRangeCollection<IAstNode>.EmptyCollection; }
-        }
-
-        public override bool Contains(int position) {
-            return this.Token.Contains(position);
-        }
-
-        public override void Shift(int offset) {
-            this.Token.Shift(offset);
-        }
+        public override bool Contains(int position) => Token.Contains(position);
+        public override void Shift(int offset) => Token.Shift(offset);
 
         public override void ShiftStartingFrom(int position, int offset) {
-            if (this.Token.Start < position && position < this.Token.End) {
+            if (Token.Start < position && position < Token.End) {
                 // Leaf nodes are not composite range so we cannot shift parts.
                 // Instead, we will expoand the range and next parsing pass
                 // will generate actual new tokens
-                this.Token.Expand(0, offset);
-            } else if (position <= this.Token.Start) {
-                this.Token.Shift(offset);
+                Token.Expand(0, offset);
+            } else if (position <= Token.Start) {
+                Token.Shift(offset);
             }
         }
         #endregion
 
         public override string ToString() {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            string name = (this.Root != null) ?
-                this.Root.TextProvider.GetText(this.Token) : "<???>";
+            var name = (Root != null) ?
+                Root.TextProvider.GetText(Token) : "<???>";
 
             sb.Append(name);
             sb.Append(" [");
-            sb.Append(this.Start);
+            sb.Append(Start);
             sb.Append("...");
-            sb.Append(this.End);
+            sb.Append(End);
             sb.Append(')');
 
             return sb.ToString();

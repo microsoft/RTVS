@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -66,8 +65,7 @@ namespace Microsoft.Common.Core.Threading {
             }
 
             var source = new LockSource(this, false);
-            bool isAddedAfterWriter;
-            _queue.AddReader(source, out isAddedAfterWriter);
+            _queue.AddReader(source, out var isAddedAfterWriter);
             if (isAddedAfterWriter) {
                 source.RegisterCancellation(cancellationToken);
             } else {
@@ -86,8 +84,7 @@ namespace Microsoft.Common.Core.Threading {
             }
 
             var source = new LockSource(this, true);
-            bool isFirstWriter;
-            _queue.AddWriter(source, out isFirstWriter);
+            _queue.AddWriter(source, out var isFirstWriter);
             if (isFirstWriter) {
                 source.Release();
             } else {
@@ -107,8 +104,7 @@ namespace Microsoft.Common.Core.Threading {
             }
 
             var source = new ExclusiveReaderLockSource(this, erLock);
-            bool isAddedAfterWriterOrExclusiveReader;
-            _queue.AddExclusiveReader(source, out isAddedAfterWriterOrExclusiveReader);
+            _queue.AddExclusiveReader(source, out var isAddedAfterWriterOrExclusiveReader);
             if (isAddedAfterWriterOrExclusiveReader) {
                 source.RegisterCancellation(cancellationToken);
             } else {
@@ -121,8 +117,7 @@ namespace Microsoft.Common.Core.Threading {
 
         private static Task<IAsyncReaderWriterLockToken> ReentrantOrCanceled(bool writerOnly, CancellationToken cancellationToken, ReentrancyToken reentrancyToken) {
             var source = LockTokenFactory.GetSource(reentrancyToken);
-            Task<IAsyncReaderWriterLockToken> task;
-            if (source != null && source.TryReenter(writerOnly, out task)) {
+            if (source != null && source.TryReenter(writerOnly, out var task)) {
                 return task;
             }
 

@@ -117,8 +117,6 @@ namespace Microsoft.R.Core.AST.Scopes {
             return base.Parse(context, parent);
         }
 
-        public override string ToString() {
-            return this.Name != null ? this.Name : string.Empty;
-        }
+        public override string ToString() => Name ?? string.Empty;
     }
 }

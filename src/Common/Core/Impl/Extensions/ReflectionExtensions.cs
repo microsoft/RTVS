@@ -19,8 +19,7 @@ namespace Microsoft.Common.Core.Extensions {
         public static void SetProperties(this object o, IDictionary<string, object> dict) {
             var properties = o.GetType().GetTypeInfo().GetProperties();
             foreach (var p in properties) {
-                object value;
-                if(dict.TryGetValue(p.Name, out value)) {
+                if (dict.TryGetValue(p.Name, out var value)) {
                     p.SetValue(o, value);
                 }
             }

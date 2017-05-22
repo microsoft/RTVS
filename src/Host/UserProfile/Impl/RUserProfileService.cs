@@ -10,7 +10,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
-using EventLogLoggerProvider = Microsoft.Common.Core.Logging.EventLogLoggerProvider;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {

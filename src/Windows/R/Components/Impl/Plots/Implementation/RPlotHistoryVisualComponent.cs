@@ -5,7 +5,6 @@ using System.Windows;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.Implementation.ViewModel;
 using Microsoft.R.Components.Plots.ViewModel;

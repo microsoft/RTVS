@@ -9,6 +9,11 @@ namespace Microsoft.Common.Core.Shell {
         /// Fires when host application enters idle state.
         /// </summary>
         event EventHandler<EventArgs> Idle;
+
+        /// <summary>
+        /// Fires when application is closing
+        /// </summary>
+        event EventHandler<EventArgs> Closing;
     }
 }
 

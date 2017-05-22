@@ -27,9 +27,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public Guid DeviceId { get; }
 
         public int DeviceNum {
-            get {
-                return _deviceNum;
-            }
+            get => _deviceNum;
 
             set {
                 if (value != _deviceNum) {
@@ -40,10 +38,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public bool LocatorMode {
-            get {
-                return _locatorMode;
-            }
-
+            get => _locatorMode;
             set {
                 if (value != _locatorMode) {
                     _locatorMode = value;

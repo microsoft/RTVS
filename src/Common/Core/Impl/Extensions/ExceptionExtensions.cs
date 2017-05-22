@@ -9,16 +9,7 @@ namespace Microsoft.Common.Core {
         /// <summary>
         /// Returns true if an exception should not be handled by logging code.
         /// </summary>
-        public static bool IsCriticalException(this Exception ex) {
-#if NETSTANDARD1_6
-            return ex is OutOfMemoryException;
-#else
-            return ex is StackOverflowException 
-                || ex is OutOfMemoryException 
-                || ex is ThreadAbortException 
-                || ex is AccessViolationException;
-#endif
-        }
+        public static bool IsCriticalException(this Exception ex) => ex is OutOfMemoryException;
 
         public static bool IsProtocolException(this Exception ex) =>
                 ex is IndexOutOfRangeException ||

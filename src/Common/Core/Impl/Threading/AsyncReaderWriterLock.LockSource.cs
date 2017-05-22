@@ -47,9 +47,7 @@ namespace Microsoft.Common.Core.Threading {
                 }
             }
 
-            public void RegisterCancellation(CancellationToken cancellationToken) {
-                _cancellationTokenRegistration = cancellationToken.Register(Cancel);
-            }
+            public void RegisterCancellation(CancellationToken cancellationToken) => _cancellationTokenRegistration = cancellationToken.Register(Cancel);
 
             public bool TryRemoveFromQueue() {
                 var count = Interlocked.Decrement(ref _reentrancyCount);

@@ -5,13 +5,10 @@ using System;
 
 namespace Microsoft.Languages.Editor.Settings {
     /// <summary>
-    /// Settings storage. Exported via MEF for a particular content type.
-    /// Editor uses exported object to retrieve its settings such as indentation
-    /// style, tab size, formatting options and so on.
+    /// Editor settings storage.
     /// </summary>
-    public interface IEditorSettingsStorage {
+    public interface IEditorSettingsStorage: IDisposable {
         event EventHandler<EventArgs> SettingsChanged;
-        void LoadFromStorage();
         T Get<T>(string name, T defaultValue);
     }
 }

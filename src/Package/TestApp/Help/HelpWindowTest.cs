@@ -5,8 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.Help.Commands;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -14,10 +17,7 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using mshtml;
-using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.UI.Commands;
-using Microsoft.R.Components.Help.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
@@ -25,18 +25,22 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class HelpWindowTest : HostBasedInteractiveTest {
-        private readonly IServiceContainer _services;
         private const string darkThemeCssColor = "rgb(36,36,36)";
+        private RHostClientHelpTestApp _clientApp;
+        private VsRHostScript _hostScript;
 
-        public HelpWindowTest(IServiceContainer services) : base(true) {
-            _services = services;
+        public HelpWindowTest(IServiceContainer services) : base(services, true) {
+            _hostScript = GetScript<VsRHostScript>();
+        }
+
+        public override async Task InitializeAsync() {
+            _clientApp = new RHostClientHelpTestApp();
+            await _hostScript.InitializeAsync(_clientApp);
         }
 
         [Test]
         public async Task HelpTest() {
-            var clientApp = new RHostClientHelpTestApp();
-            await HostScript.InitializeAsync(clientApp);
-            using (new ControlTestScript(typeof(HelpVisualComponent), _services)) {
+            using (new ControlTestScript(typeof(HelpVisualComponent), Services)) {
                 DoIdle(100);
 
                 var component = ControlWindow.Component as IHelpVisualComponent;
@@ -44,29 +48,29 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                 component.VisualTheme = "Dark.css";
                 await UIThreadHelper.Instance.InvokeAsync(() => {
-                    clientApp.Component = component;
+                    _clientApp.Component = component;
                 });
 
-                await ShowHelpAsync("plot", HostScript, clientApp);
+                await ShowHelpAsync("plot", _hostScript, _clientApp);
 
-                clientApp.Uri.IsLoopback.Should().Be(true);
-                clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
-                (await GetBackgroundColorAsync(component, clientApp)).Should().Be(darkThemeCssColor);
+                _clientApp.Uri.IsLoopback.Should().Be(true);
+                _clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
+                (await GetBackgroundColorAsync(component, _clientApp)).Should().Be(darkThemeCssColor);
 
                 component.VisualTheme = "Light.css";
-                await ShowHelpAsync("lm", HostScript, clientApp);
-                clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
+                await ShowHelpAsync("lm", _hostScript, _clientApp);
+                _clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
-                (await GetBackgroundColorAsync(component, clientApp)).Should().Be("white");
+                (await GetBackgroundColorAsync(component, _clientApp)).Should().Be("white");
 
-                await ExecCommandAsync(clientApp, new HelpPreviousCommand(component));
-                clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
+                await ExecCommandAsync(_clientApp, new HelpPreviousCommand(component));
+                _clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
-                await ExecCommandAsync(clientApp, new HelpNextCommand(component));
-                clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
+                await ExecCommandAsync(_clientApp, new HelpNextCommand(component));
+                _clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
-                await ExecCommandAsync(clientApp, new HelpHomeCommand(VsAppShell.Current.Services));
-                clientApp.Uri.PathAndQuery.Should().Be("/doc/html/index.html");
+                await ExecCommandAsync(_clientApp, new HelpHomeCommand(Services));
+                _clientApp.Uri.PathAndQuery.Should().Be("/doc/html/index.html");
             }
         }
 
@@ -83,11 +87,11 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         }
 
         private async Task<string> GetBackgroundColorAsync(IHelpVisualComponent component, RHostClientHelpTestApp clientApp) {
-            string color = "red";
+            var color = "red";
 
             await clientApp.WaitForReadyAndRenderedAsync(DoIdle, nameof(HelpTest));
             await UIThreadHelper.Instance.InvokeAsync(() => {
-                IHTMLElement2 body = component.Browser.Document.Body.DomElement as IHTMLElement2;
+                var body = component.Browser.Document.Body.DomElement as IHTMLElement2;
                 color = body.currentStyle.backgroundColor as string;
             });
 

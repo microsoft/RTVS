@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Core.Composition;
 
 namespace Microsoft.Languages.Editor.Composition {
     public class ImportComposer<TInterface, TMetadata>

@@ -4,8 +4,8 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                     xmlns:wpf="clr-namespace:Microsoft.R.Wpf"
+                    xmlns:controls="clr-namespace:Microsoft.R.Wpf.Controls"
                     xmlns:selectors="clr-namespace:Microsoft.Common.Wpf.Selectors;assembly=Microsoft.R.Common.Wpf"
-                    xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
                     xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
                     mc:Ignorable="d">
     <!--Icons-->
@@ -433,7 +433,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type wpf:IconWithOverlay}" x:Key="ConnectionStyle">
+    <Style TargetType="{x:Type controls:IconWithOverlay}" x:Key="ConnectionStyle">
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>

@@ -11,9 +11,7 @@ namespace Microsoft.Common.Core.Disposables {
         private readonly CancellationTokenSource _cts;
         private int _disposed;
 
-        public static DisposeToken Create<T>() where T : IDisposable {
-            return new DisposeToken(typeof(T));
-        }
+        public static DisposeToken Create<T>() where T : IDisposable => new DisposeToken(typeof(T));
 
         private DisposeToken(Type type) {
             _type = type;

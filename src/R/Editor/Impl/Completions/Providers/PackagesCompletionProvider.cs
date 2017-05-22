@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
-using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.R.Support.Help;
+using Microsoft.Languages.Editor.Completions;
+using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
@@ -14,23 +13,21 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// library(...) statement. List of packages is  obtained from 
     /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
-    [Export(typeof(IRHelpSearchTermProvider))]
     public class PackagesCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
-        private readonly ImageSource _glyph;
+        private readonly object _glyph;
         private readonly IPackageIndex _packageIndex;
 
-        [ImportingConstructor]
         public PackagesCompletionProvider(IPackageIndex packageIndex, IImageService imageService) {
             _packageIndex = packageIndex;
-            _glyph = imageService.GetImage(ImageType.Library) as ImageSource;
+            _glyph = imageService.GetImage(ImageType.Library);
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             return _packageIndex.Packages
-                .Select(p => new RCompletion(p.Name, p.Name, p.Description, _glyph))
+                .Select(p => new EditorCompletionEntry(p.Name, p.Name, p.Description, _glyph))
                 .ToList();
         }
         #endregion

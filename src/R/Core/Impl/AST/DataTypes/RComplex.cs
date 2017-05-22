@@ -9,11 +9,10 @@ namespace Microsoft.R.Core.AST.DataTypes {
     /// Represents R complex number. Complex numbers are 
     /// scalars which are one element vectors of 'complex' mode.
     /// </summary>
-    [DebuggerDisplay("[{Value}]")]
+    [DebuggerDisplay("[{" + nameof(Value) + "}]")]
     public class RComplex : RScalar<Complex> {
-        public override RMode Mode {
-            get { return RMode.Complex; }
-        }
+        public override RMode Mode => RMode.Complex;
+
         public RComplex(Complex value) :
             base(value) {
         }

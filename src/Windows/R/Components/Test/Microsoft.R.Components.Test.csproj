@@ -30,13 +30,9 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
+    <Reference Include="Microsoft.VisualStudio.Text.Internal.dll">
       <Private>True</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
-    </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Text.Internal.dll">
-      <Private>False</Private>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -84,7 +80,7 @@
     <Compile Include="Information\HostLoadIndicatorViewModelTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveEvaluatorTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
-    <Compile Include="MefCompositionTests.cs" />
+    <Compile Include="Mef\MefCompositionTests.cs" />
     <Compile Include="PackageManager\PackageVersionTest.cs" />
     <Compile Include="PackageManager\PackageManagerIntegrationTest.cs" />
     <Compile Include="PackageManager\RPackageManagerViewModelTest.cs" />
@@ -107,7 +103,7 @@
     <Compile Include="StubFactories\TextSearchServiceStubFactory.cs" />
     <Compile Include="Stubs\RSettingsStub.cs" />
     <Compile Include="Stubs\VisualComponents\VisualComponentContainerStub.cs" />
-    <Compile Include="TestFilesFixture.cs" />
+    <Compile Include="Fixtures\TestFilesFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

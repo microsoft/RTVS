@@ -20,14 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
     [Name("Visual Studio Markdown Editor Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsMarkdownTextViewConnectionListener : MdTextViewConnectionListener {
-        private readonly ICoreShell _coreShell;
         private readonly IVsEditorAdaptersFactoryService _adapterService;
         private CommandTargetToOleShim _oleController;
 
         [ImportingConstructor]
-        public VsMarkdownTextViewConnectionListener(ICoreShell coreShell) {
-            _coreShell = coreShell;
-            _adapterService = coreShell.GetService<IVsEditorAdaptersFactoryService>();
+        public VsMarkdownTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) {
+            _adapterService = Services.GetService<IVsEditorAdaptersFactoryService>();
         }
 
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
@@ -36,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
                 // Check if another buffer already attached a command controller to the view.
                 // Don't allow two to be attached, or commands could be run twice.
                 // This currently can only happen with inline diff views.
-                MdMainController mainController = MdMainController.FromTextView(textView);
+                var mainController = MdMainController.FromTextView(textView);
                 if (textBuffer == mainController.TextBuffer) {
                     // Connect main controller to VS text view filter chain. The chain looks like
                     // VS IDE -> HTML main controller -> Core editor
@@ -44,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
                     // is represented by OLE command target as well. Since HTML controller
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
-                    OleControllerChain.ConnectController(_coreShell.Services, textView, mainController);
+                    OleControllerChain.ConnectController(Services, textView, mainController);
                 }
             }
 
@@ -66,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
         }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
-            OleControllerChain.InitEditorInstance(textBuffer, _coreShell.Services);
+            OleControllerChain.InitEditorInstance(textBuffer, Services);
             base.OnTextBufferCreated(textView, textBuffer);
         }
     }

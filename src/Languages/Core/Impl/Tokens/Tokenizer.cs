@@ -42,8 +42,9 @@ namespace Microsoft.Languages.Core.Tokens {
                         cs.MoveToNextChar();
                     }
 
-                    if (!cs.MoveToNextChar())
+                    if (!cs.MoveToNextChar()) {
                         break;
+                    }
                 }
             }
 
@@ -54,18 +55,22 @@ namespace Microsoft.Languages.Core.Tokens {
         }
 
         public static void SkipIdentifier(CharacterStream cs, Func<CharacterStream, bool> isIdentifierLeadCharacter, Func<CharacterStream, bool> isIdentifierCharacter) {
-            if (!isIdentifierLeadCharacter(cs))
+            if (!isIdentifierLeadCharacter(cs)) {
                 return;
+            }
 
-            if (cs.IsEndOfStream())
+            if (cs.IsEndOfStream()) {
                 return;
+            }
 
             while (!cs.IsWhiteSpace()) {
-                if (!isIdentifierCharacter(cs))
+                if (!isIdentifierCharacter(cs)) {
                     break;
+                }
 
-                if (!cs.MoveToNextChar())
+                if (!cs.MoveToNextChar()) {
                     break;
+                }
             }
         }
     }

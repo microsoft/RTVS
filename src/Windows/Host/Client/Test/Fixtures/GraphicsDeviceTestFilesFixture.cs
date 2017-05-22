@@ -20,7 +20,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public string ExpectedExportToPdfPath { get; }
         public string ActualFolderPath { get; }
 
-        public GraphicsDeviceTestFilesFixture() : base(@"Host\Client\Test\Files", "Files") {
+        public GraphicsDeviceTestFilesFixture() : base(@"Windows\Host\Client\Test\Files", "Files") {
             ActualFolderPath = Path.Combine(DestinationPath, "Actual");
             Directory.CreateDirectory(ActualFolderPath);
 

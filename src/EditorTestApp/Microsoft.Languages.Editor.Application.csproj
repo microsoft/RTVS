@@ -30,7 +30,7 @@
     <Compile Include="Core\DefaultTextViewRoleSet.cs" />
     <Compile Include="Core\TextDataModel.cs" />
     <Compile Include="Core\TextViewRoleSet.cs" />
-    <Compile Include="Host\EditorInstanceFactory.cs" />
+    <Compile Include="Host\EditorViewModelFactory.cs" />
     <Compile Include="Packages\MarkdownPackage.cs" />
     <Compile Include="Packages\TextPackage.cs" />
     <Compile Include="Packages\RPackage.cs" />
@@ -52,10 +52,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Name>Microsoft.Markdown.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
@@ -65,25 +61,38 @@
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
       <Name>Microsoft.R.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Windows\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Text.Internal.dll">
-      <Private>False</Private>
+    <Reference Include="Microsoft.VisualStudio.Text.Internal.dll">
+      <Private>True</Private>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor">
+      <Private>True</Private>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor.Interop">
+      <Private>True</Private>
+      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.Interop.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

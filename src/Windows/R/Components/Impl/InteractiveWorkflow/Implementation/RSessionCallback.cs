@@ -14,13 +14,10 @@ using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
-using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Task = System.Threading.Tasks.Task;
-using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     internal sealed class RSessionCallback : IRSessionCallback {

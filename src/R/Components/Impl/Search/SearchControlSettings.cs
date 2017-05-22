@@ -10,33 +10,27 @@ namespace Microsoft.R.Components.Search {
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
         
         public uint MinWidth {
-            get { return GetValue<uint>(); }
-            set { SetValue(value); }
+            get => GetValue<uint>();
+            set => SetValue(value);
         }
 
         public uint MaxWidth {
-            get { return GetValue<uint>(); }
-            set { SetValue(value); }
+            get => GetValue<uint>();
+            set => SetValue(value);
         }
 
         public Guid SearchCategory {
-            get { return GetValue<Guid>(); }
-            set { SetValue(value); }
+            get => GetValue<Guid>();
+            set => SetValue(value);
         }
 
-        private T GetValue<T>([CallerMemberName] string propertyName = null) {
-            T value;
-            return TryGetValue(propertyName, out value) ? value : default(T);
-        }
+        private T GetValue<T>([CallerMemberName] string propertyName = null) => TryGetValue(propertyName, out T value) ? value : default(T);
 
-        private void SetValue<T>(T value, [CallerMemberName] string propertyName = null) {
-            _values[propertyName] = value;
-        }
+        private void SetValue<T>(T value, [CallerMemberName] string propertyName = null) => _values[propertyName] = value;
 
         public bool TryGetValue<T>(string propertyName, out T value) {
-            object objValue;
-            if (_values.TryGetValue(propertyName, out objValue)) {
-                value = (T) objValue;
+            if (_values.TryGetValue(propertyName, out var objValue)) {
+                value = (T)objValue;
                 return true;
             }
 

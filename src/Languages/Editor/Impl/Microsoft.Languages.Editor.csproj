@@ -5,11 +5,6 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <ItemGroup>
-    <Compile Remove="Text\**" />
-    <EmbeddedResource Remove="Text\**" />
-    <None Remove="Text\**" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
   </ItemGroup>
@@ -20,6 +15,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
     <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

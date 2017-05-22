@@ -34,13 +34,15 @@ namespace Microsoft.VisualStudio.Editor.Mocks
 
         public bool IsOfType(string type)
         {
-            if (String.Compare(type, _type, StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(type, _type, StringComparison.OrdinalIgnoreCase) == 0) {
                 return true;
+            }
 
             foreach (var t in _baseTypes)
             {
-                if (t.IsOfType(type))
+                if (t.IsOfType(type)) {
                     return true;
+                }
             }
 
             return false;

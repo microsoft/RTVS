@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
@@ -36,7 +36,7 @@ namespace Microsoft.R.Debugger {
 
         private Lazy<IReadOnlyList<IREvaluationResultInfo>> _children;
         private Lazy<string> _reprToString;
-        private IRToolsSettings _settings;
+        private IRSettings _settings;
 
         public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
@@ -57,7 +57,7 @@ namespace Microsoft.R.Debugger {
 
             _children = Lazy.Create(CreateChildren);
             _reprToString = Lazy.Create(GetReprToString);
-            _settings = stackFrame.Engine.Shell.GetService<IRToolsSettings>();
+            _settings = stackFrame.Engine.Shell.GetService<IRSettings>();
         }
 
         private IReadOnlyList<IREvaluationResultInfo> CreateChildren() =>
@@ -67,7 +67,7 @@ namespace Microsoft.R.Debugger {
                     return new IREvaluationResultInfo[0];
                 }
 
-                REvaluationResultProperties properties = _settings.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
+                var properties = _settings.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
                 properties |= PrefetchedProperties;
                 var children = await valueResult.DescribeChildrenAsync(properties, Repr, ChildrenMaxCount, ct);
 
@@ -96,7 +96,7 @@ namespace Microsoft.R.Debugger {
             var valueResult = EvaluationResult as IRValueInfo;
             if (valueResult != null) {
                 if (valueResult.HasAttributes() == true) {
-                    string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
+                    var attrExpr = Invariant($"base::attributes({valueResult.Expression})");
                     var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedProperties, Repr, ct));
                     if (!(attrResult is IRErrorInfo)) {
                         var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
@@ -105,7 +105,7 @@ namespace Microsoft.R.Debugger {
                 }
 
                 if (valueResult.Flags.HasFlag(RValueFlags.HasParentEnvironment)) {
-                    string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
+                    var parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
                     var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedProperties, Repr, ct));
                     if (!(parentResult is IRErrorInfo)) {
                         var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
@@ -158,9 +158,7 @@ namespace Microsoft.R.Debugger {
             return VSConstants.E_NOTIMPL;
         }
 
-        int IDebugProperty2.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout) {
-            return VSConstants.E_NOTIMPL;
-        }
+        int IDebugProperty2.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout) => VSConstants.E_NOTIMPL;
 
         int IDebugProperty2.SetValueAsString(string pszValue, uint dwRadix, uint dwTimeout) {
             string errorString;
@@ -171,17 +169,11 @@ namespace Microsoft.R.Debugger {
             return IDebugProperty2.SetValueAsString(pszValue, dwRadix, dwTimeout);
         }
 
-        int IDebugProperty3.CreateObjectID() {
-            return VSConstants.E_NOTIMPL;
-        }
+        int IDebugProperty3.CreateObjectID() => VSConstants.E_NOTIMPL;
+        int IDebugProperty3.DestroyObjectID() => VSConstants.E_NOTIMPL;
 
-        int IDebugProperty3.DestroyObjectID() {
-            return VSConstants.E_NOTIMPL;
-        }
-
-        int IDebugProperty3.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            return IDebugProperty2.EnumChildren(dwFields, dwRadix, guidFilter, dwAttribFilter, pszNameFilter, dwTimeout, out ppEnum);
-        }
+        int IDebugProperty3.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum)
+            => IDebugProperty2.EnumChildren(dwFields, dwRadix, guidFilter, dwAttribFilter, pszNameFilter, dwTimeout, out ppEnum);
 
         int IDebugProperty3.GetCustomViewerCount(out uint pcelt) {
             pcelt = StackFrame.Engine.GridViewProvider?.CanShowDataGrid(EvaluationResult) == true ? 1u : 0u;
@@ -204,33 +196,14 @@ namespace Microsoft.R.Debugger {
             return VSConstants.S_OK;
         }
 
-        int IDebugProperty3.GetDerivedMostProperty(out IDebugProperty2 ppDerivedMost) {
-            return IDebugProperty2.GetDerivedMostProperty(out ppDerivedMost);
-        }
-
-        int IDebugProperty3.GetExtendedInfo(ref Guid guidExtendedInfo, out object pExtendedInfo) {
-            return IDebugProperty2.GetExtendedInfo(guidExtendedInfo, out pExtendedInfo);
-        }
-
-        int IDebugProperty3.GetMemoryBytes(out IDebugMemoryBytes2 ppMemoryBytes) {
-            return IDebugProperty2.GetMemoryBytes(out ppMemoryBytes);
-        }
-
-        int IDebugProperty3.GetMemoryContext(out IDebugMemoryContext2 ppMemory) {
-            return IDebugProperty2.GetMemoryContext(out ppMemory);
-        }
-
-        int IDebugProperty3.GetParent(out IDebugProperty2 ppParent) {
-            return IDebugProperty2.GetParent(out ppParent);
-        }
-
-        int IDebugProperty3.GetPropertyInfo(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, uint dwTimeout, IDebugReference2[] rgpArgs, uint dwArgCount, DEBUG_PROPERTY_INFO[] pPropertyInfo) {
-            return IDebugProperty2.GetPropertyInfo(dwFields, dwRadix, dwTimeout, rgpArgs, dwArgCount, pPropertyInfo);
-        }
-
-        int IDebugProperty3.GetSize(out uint pdwSize) {
-            return IDebugProperty2.GetSize(out pdwSize);
-        }
+        int IDebugProperty3.GetDerivedMostProperty(out IDebugProperty2 ppDerivedMost)=> IDebugProperty2.GetDerivedMostProperty(out ppDerivedMost);
+        int IDebugProperty3.GetExtendedInfo(ref Guid guidExtendedInfo, out object pExtendedInfo) => IDebugProperty2.GetExtendedInfo(guidExtendedInfo, out pExtendedInfo);
+        int IDebugProperty3.GetMemoryBytes(out IDebugMemoryBytes2 ppMemoryBytes) => IDebugProperty2.GetMemoryBytes(out ppMemoryBytes);
+        int IDebugProperty3.GetMemoryContext(out IDebugMemoryContext2 ppMemory) => IDebugProperty2.GetMemoryContext(out ppMemory);
+        int IDebugProperty3.GetParent(out IDebugProperty2 ppParent) => IDebugProperty2.GetParent(out ppParent);
+        int IDebugProperty3.GetPropertyInfo(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, uint dwTimeout, IDebugReference2[] rgpArgs, uint dwArgCount, DEBUG_PROPERTY_INFO[] pPropertyInfo)
+            => IDebugProperty2.GetPropertyInfo(dwFields, dwRadix, dwTimeout, rgpArgs, dwArgCount, pPropertyInfo);
+        int IDebugProperty3.GetSize(out uint pdwSize) => IDebugProperty2.GetSize(out pdwSize);
 
         int IDebugProperty3.GetStringCharLength(out uint pLen) {
             pLen = 0;
@@ -250,19 +223,15 @@ namespace Microsoft.R.Debugger {
                 return VSConstants.E_FAIL;
             }
 
-            for (int i = 0; i < buflen; ++i) {
+            for (var i = 0; i < buflen; ++i) {
                 rgString[i] = _reprToString.Value[i];
             }
             return VSConstants.S_OK;
         }
 
-        int IDebugProperty3.GetReference(out IDebugReference2 ppReference) {
-            return IDebugProperty2.GetReference(out ppReference);
-        }
-
-        int IDebugProperty3.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout) {
-            return IDebugProperty2.SetValueAsReference(rgpArgs, dwArgCount, pValue, dwTimeout);
-        }
+        int IDebugProperty3.GetReference(out IDebugReference2 ppReference) => IDebugProperty2.GetReference(out ppReference);
+        int IDebugProperty3.SetValueAsReference(IDebugReference2[] rgpArgs, uint dwArgCount, IDebugReference2 pValue, uint dwTimeout)
+            => IDebugProperty2.SetValueAsReference(rgpArgs, dwArgCount, pValue, dwTimeout);
 
         int IDebugProperty3.SetValueAsStringWithError(string pszValue, uint dwRadix, uint dwTimeout, out string errorString) {
             errorString = null;
@@ -279,10 +248,9 @@ namespace Microsoft.R.Debugger {
         }
 
         internal DEBUG_PROPERTY_INFO GetDebugPropertyInfo(uint radix, enum_DEBUGPROP_INFO_FLAGS fields) {
-            var dpi = new DEBUG_PROPERTY_INFO();
+            var dpi = new DEBUG_PROPERTY_INFO {pProperty = this};
 
             // Always provide the property so that we can access locals from the automation object.
-            dpi.pProperty = this;
             dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_PROP;
 
             var valueInfo = EvaluationResult as IRValueInfo;

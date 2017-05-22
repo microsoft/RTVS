@@ -2,26 +2,22 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Functions;
 using Microsoft.R.Editor.Snippets;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Packages;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// Provides list of functions from installed packages
     /// </summary>
-    [Export(typeof(IRCompletionListProvider))]
-    [Export(typeof(IRHelpSearchTermProvider))]
     public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
         private const int _asyncWaitTimeout = 1000;
         private readonly IIntellisenseRSession _session;
@@ -29,56 +25,46 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
-        private readonly ImageSource _functionGlyph;
-        private readonly ImageSource _constantGlyph;
+        private readonly object _functionGlyph;
+        private readonly object _constantGlyph;
 
-        [ImportingConstructor]
-        public PackageFunctionCompletionProvider(
-            IIntellisenseRSession session,
-            [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource,
-            IPackageIndex packageIndex,
-            IFunctionIndex functionIndex,
-            ICoreShell coreShell) {
-            _session = session;
-            _snippetInformationSource = snippetInformationSource;
-            _packageIndex = packageIndex;
-            _functionIndex = functionIndex;
+        public PackageFunctionCompletionProvider(IServiceContainer serviceContainer) {
+            _session = serviceContainer.GetService<IIntellisenseRSession>();
+            _snippetInformationSource = serviceContainer.GetService<ISnippetInformationSourceProvider>();
+            _packageIndex = serviceContainer.GetService<IPackageIndex>();
+            _functionIndex = serviceContainer.GetService<IFunctionIndex>();
 
-            var imageService = coreShell.GetService<IImageService>();
-            _functionGlyph = imageService.GetImage(ImageType.Method) as ImageSource;
-            _constantGlyph = imageService.GetImage(ImageType.Constant) as ImageSource; ;
+            var imageService = serviceContainer.GetService<IImageService>();
+            _functionGlyph = imageService.GetImage(ImageType.Method);
+            _constantGlyph = imageService.GetImage(ImageType.Constant);
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            List<RCompletion> completions = new List<RCompletion>();
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
+            var completions = new List<ICompletionEntry>();
             var infoSource = _snippetInformationSource?.InformationSource;
-
-            // TODO: this is different in the console window where 
-            // packages may have been loaded from the command line. 
-            // We need an extensibility point here.
-            IEnumerable<IPackageInfo> packages = GetPackages(context);
+            var packages = GetPackages(context);
 
             // Get list of functions in the package
-            foreach (IPackageInfo pkg in packages) {
+            foreach (var pkg in packages) {
                 Debug.Assert(pkg != null);
+                var functions = pkg.Functions;
+                if (functions == null) {
+                    continue;
+                }
 
-                IEnumerable<INamedItemInfo> functions = pkg.Functions;
-                if (functions != null) {
-                    foreach (INamedItemInfo function in functions) {
-                        bool isSnippet = false;
-                        // Snippets are suppressed if user typed namespace
-                        if (!context.IsInNameSpace() && infoSource != null) {
-                            isSnippet = infoSource.IsSnippet(function.Name);
-                        }
-                        if (!isSnippet) {
-                            ImageSource glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
-                            var completion = new RFunctionCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph, _functionIndex, context.Session);
-                            completions.Add(completion);
+                foreach (var function in functions) {
+                    // Snippets are suppressed if user typed namespace
+                    if (!context.IsCaretInNameSpace() && infoSource != null) {
+                        if (infoSource.IsSnippet(function.Name)) {
+                            continue;
                         }
                     }
+                    var glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
+                    var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, _functionIndex, context.Session);
+                    completions.Add(completion);
                 }
             }
 
@@ -87,17 +73,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #endregion
 
         #region IRHelpSearchTermProvider
-        public IReadOnlyCollection<string> GetEntries() {
-            var list = new List<string>();
-            foreach (IPackageInfo pkg in _packageIndex.Packages) {
-                list.AddRange(pkg.Functions.Select(x => x.Name));
-            }
-            return list;
-        }
+        public IReadOnlyCollection<string> GetEntries()
+            => _packageIndex.Packages.SelectMany(pkg => pkg.Functions.Select(x => x.Name)).ToList();
         #endregion
 
-        private IEnumerable<IPackageInfo> GetPackages(RCompletionContext context) {
-            if (context.IsInNameSpace()) {
+        private IEnumerable<IPackageInfo> GetPackages(IRIntellisenseContext context) {
+            if (context.IsCaretInNameSpace()) {
                 return GetSpecificPackage(context);
             }
 
@@ -111,25 +92,25 @@ namespace Microsoft.R.Editor.Completions.Providers {
         /// so intellisense can show list of functions available
         /// in the specific package.
         /// </summary>
-        private IEnumerable<IPackageInfo> GetSpecificPackage(RCompletionContext context) {
-            List<IPackageInfo> packages = new List<IPackageInfo>();
-            ITextSnapshot snapshot = context.TextBuffer.CurrentSnapshot;
-            int colons = 0;
+        private IEnumerable<IPackageInfo> GetSpecificPackage(IRIntellisenseContext context) {
+            var packages = new List<IPackageInfo>();
+            var snapshot = context.EditorBuffer.CurrentSnapshot;
+            var colons = 0;
 
-            for (int i = context.Position - 1; i >= 0; i--, colons++) {
-                char ch = snapshot[i];
+            for (var i = context.Position - 1; i >= 0; i--, colons++) {
+                var ch = snapshot[i];
                 if (ch != ':') {
                     break;
                 }
             }
 
             if (colons > 1 && colons < 4) {
-                string packageName = string.Empty;
-                int start = 0;
-                int end = context.Position - colons;
+                var packageName = string.Empty;
+                var start = 0;
+                var end = context.Position - colons;
 
-                for (int i = end - 1; i >= 0; i--) {
-                    char ch = snapshot[i];
+                for (var i = end - 1; i >= 0; i--) {
+                    var ch = snapshot[i];
                     if (!RTokenizer.IsIdentifierCharacter(ch)) {
                         start = i + 1;
                         break;
@@ -137,7 +118,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 }
 
                 if (start < end) {
-                    packageName = snapshot.GetText(Span.FromBounds(start, end));
+                    packageName = snapshot.GetText(TextRange.FromBounds(start, end));
                     if (packageName.Length > 0) {
                         context.InternalFunctions = colons == 3;
                         var package = GetPackageByName(packageName);
@@ -156,11 +137,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(RCompletionContext context) {
+        private Task<IEnumerable<IPackageInfo>> GetAllFilePackagesAsync(IRIntellisenseContext context) {
 
-            IEnumerable<string> loadedPackages = _session?.LoadedPackageNames ?? Enumerable.Empty<string>();
-            IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
+            var loadedPackages = _session?.LoadedPackageNames ?? Enumerable.Empty<string>();
+            var filePackageNames = context.AstRoot.GetFilePackageNames();
+            var allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 
             return _packageIndex.GetPackagesInfoAsync(allPackageNames);
         }

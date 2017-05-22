@@ -4,128 +4,70 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.VisualStudio.Editor.Mocks
-{
+namespace Microsoft.VisualStudio.Editor.Mocks {
     /// <summary>
     /// Mock implementation of ITextSnapshotLine based on mock snapshot for unit tests.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public sealed class TextLineMock : ITextSnapshotLine
-    {
-        private int _lineNumber;
-        private ITextSnapshot _snapshot;
-        private int _start;
-        private int _length;
+    public sealed class TextLineMock : ITextSnapshotLine {
+        private readonly int _start;
 
-        public TextLineMock(ITextSnapshot snapshot, int start, int length, int lineNumber)
-        {
-            _snapshot = snapshot;
+        public TextLineMock(ITextSnapshot snapshot, int start, int length, int lineNumber) {
             _start = start;
-            _length = length;
-            _lineNumber = lineNumber;
+
+            Snapshot = snapshot;
+            Length = length;
+            LineNumber = lineNumber;
         }
 
         #region ITextSnapshotLine Members
 
-        public SnapshotPoint End
-        {
-            get { return new SnapshotPoint(_snapshot, _start + _length); }
-        }
+        public SnapshotPoint End => new SnapshotPoint(Snapshot, _start + Length);
 
-        public SnapshotPoint EndIncludingLineBreak
-        {
-            get
-            {
-                return
-                    _start + _length + 2 <= _snapshot.Length ?
-                    new SnapshotPoint(_snapshot, _start + _length + 2) :
-                    new SnapshotPoint(_snapshot, _start + _length);
-            }
-        }
+        public SnapshotPoint EndIncludingLineBreak => _start + Length + 2 <= Snapshot.Length ?
+            new SnapshotPoint(Snapshot, _start + Length + 2) :
+            new SnapshotPoint(Snapshot, _start + Length);
 
-        public SnapshotSpan Extent
-        {
-            get { return new SnapshotSpan(_snapshot, new Span(_start, _length)); }
-        }
+        public SnapshotSpan Extent => new SnapshotSpan(Snapshot, new Span(_start, Length));
 
-        public SnapshotSpan ExtentIncludingLineBreak
-        {
-            get
-            {
-                return
-                    _start + _length + 2 <= _snapshot.Length ?
-                    new SnapshotSpan(_snapshot, new Span(_start, _length + 2)) :
-                    new SnapshotSpan(_snapshot, new Span(_start, _length));
-            }
-        }
+        public SnapshotSpan ExtentIncludingLineBreak => _start + Length + 2 <= Snapshot.Length ?
+            new SnapshotSpan(Snapshot, new Span(_start, Length + 2)) :
+            new SnapshotSpan(Snapshot, new Span(_start, Length));
 
-        public string GetLineBreakText()
-        {
-            return "\r\n";
-        }
+        public string GetLineBreakText() => "\r\n";
 
-        public string GetText()
-        {
-            return _snapshot.GetText(_start, _length);
-        }
+        public string GetText() => Snapshot.GetText(_start, Length);
+        public string GetTextIncludingLineBreak() => GetText() + GetLineBreakText();
+        public int Length { get; }
 
-        public string GetTextIncludingLineBreak()
-        {
-            return GetText() + GetLineBreakText();
-        }
+        public int LengthIncludingLineBreak => Length + LineBreakLength;
 
-        public int Length
-        {
-            get { return _length; }
-        }
-
-        public int LengthIncludingLineBreak
-        {
-            get { return _length + LineBreakLength; }
-        }
-
-        public int LineBreakLength
-        {
-            get
-            {
+        public int LineBreakLength {
+            get {
                 // Mock only handles \n or \r\n
-                int end = _start + _length;
+                int end = _start + Length;
                 int extra = 0;
 
-                if (end < _snapshot.Length)
-                {
-                    if (_snapshot[end] == '\r')
-                    {
+                if (end < Snapshot.Length) {
+                    if (Snapshot[end] == '\r') {
                         extra++;
                         end++;
                     }
                 }
 
-                if (end < _snapshot.Length)
-                {
-                    if (_snapshot[end] == '\n')
+                if (end < Snapshot.Length) {
+                    if (Snapshot[end] == '\n') {
                         extra++;
+                    }
                 }
 
                 return extra;
             }
         }
 
-        public int LineNumber
-        {
-            get { return _lineNumber; }
-        }
-
-        public ITextSnapshot Snapshot
-        {
-            get { return _snapshot; }
-        }
-
-        public SnapshotPoint Start
-        {
-            get { return new SnapshotPoint(_snapshot, _start); }
-        }
-
+        public int LineNumber { get; }
+        public ITextSnapshot Snapshot { get; }
+        public SnapshotPoint Start => new SnapshotPoint(Snapshot, _start);
         #endregion
     }
 }

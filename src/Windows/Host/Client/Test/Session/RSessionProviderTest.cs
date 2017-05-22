@@ -10,6 +10,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -19,8 +20,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
     [Category.R.Session]
     public class RSessionProviderTest {
         private readonly IServiceContainer _services;
-        public RSessionProviderTest(IServiceContainer services) {
+        private readonly IRemoteBroker _remoteBroker;
+
+        public RSessionProviderTest(IServiceContainer services, IRemoteBroker remoteBroker) {
             _services = services;
+            _remoteBroker = remoteBroker;
         }
 
         [Test]
@@ -59,6 +63,17 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     var session = sessionProvider.GetOrCreate(guids[i % 2]);
                     session.Dispose();
                 });
+            }
+        }
+
+        [Test]
+        public async Task ConnectToRemote() {
+            using (var sessionProvider = new RSessionProvider(_services)) {
+                await _remoteBroker.ConnectAsync(sessionProvider);
+                var session = sessionProvider.GetOrCreate(nameof(ConnectToRemote));
+                await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 5000);
+                var evaluationResult = await session.EvaluateAsync<int>("1+2", REvaluationKind.Normal);
+                evaluationResult.Should().Be(3);
             }
         }
 

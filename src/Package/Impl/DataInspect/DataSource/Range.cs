@@ -28,7 +28,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public bool Contains(Range other) {
-            if (Count == 0) return false;
+            if (Count == 0) {
+                return false;
+            }
 
             return (other.Start <= this.Start) && (other._end >= this._end);
         }

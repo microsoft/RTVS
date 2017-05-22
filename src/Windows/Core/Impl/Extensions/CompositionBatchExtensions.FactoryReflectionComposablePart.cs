@@ -27,13 +27,8 @@ namespace Microsoft.Common.Core.Extensions {
             public override IEnumerable<ImportDefinition> ImportDefinitions => _composablePartDefinition.ImportDefinitions;
             public override IDictionary<string, object> Metadata => _composablePartDefinition.Metadata;
 
-            public override void Activate() {
-                _composablePart.Value.Activate();
-            }
-
-            public override object GetExportedValue(ExportDefinition definition) {
-                return _composablePart.Value.GetExportedValue(definition);
-            }
+            public override void Activate() => _composablePart.Value.Activate();
+            public override object GetExportedValue(ExportDefinition definition) => _composablePart.Value.GetExportedValue(definition);
 
             public override void SetImport(ImportDefinition definition, IEnumerable<Export> exports) {
                 if (_composablePart.IsValueCreated ||
@@ -48,7 +43,7 @@ namespace Microsoft.Common.Core.Extensions {
                 var args = GetArguments(valueFactory);
                 var value = valueFactory.DynamicInvoke(args);
                 var part = AttributedModelServices.CreatePart(_composablePartDefinition, value);
-                foreach (KeyValuePair<ImportDefinition, IEnumerable<Export>> import in _imports) {
+                foreach (var import in _imports) {
                     part.SetImport(import.Key, import.Value);
                 }
 
@@ -57,13 +52,12 @@ namespace Microsoft.Common.Core.Extensions {
             }
 
             private object[] GetArguments(Delegate valueFactory) {
-                object[] arguments = new object[valueFactory.GetMethodInfo().GetParameters().Length];
+                var arguments = new object[valueFactory.GetMethodInfo().GetParameters().Length];
 
-                IEnumerable<ImportDefinition> ctorImportDefinitions = ImportDefinitions.Where(ReflectionModelServices.IsImportingParameter);
-                foreach (ImportDefinition ctorImportDefinition in ctorImportDefinitions) {
-                    ParameterInfo parameterInfo = ReflectionModelServices.GetImportingParameter(ctorImportDefinition).Value;
-                    IEnumerable<Export> value;
-                    if (_imports.TryGetValue(ctorImportDefinition, out value)) {
+                var ctorImportDefinitions = ImportDefinitions.Where(ReflectionModelServices.IsImportingParameter);
+                foreach (var ctorImportDefinition in ctorImportDefinitions) {
+                    var parameterInfo = ReflectionModelServices.GetImportingParameter(ctorImportDefinition).Value;
+                    if (_imports.TryGetValue(ctorImportDefinition, out var value)) {
                         arguments[parameterInfo.Position] = value.Single().Value;
                         _imports.Remove(ctorImportDefinition);
                     } else {

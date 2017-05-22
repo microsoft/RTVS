@@ -4,7 +4,7 @@
 using System;
 using System.Linq;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Commands;
+using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.R.Components.History;
 using Microsoft.VisualStudio.Text.Editor;
 

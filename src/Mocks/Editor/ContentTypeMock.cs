@@ -17,8 +17,9 @@ namespace Microsoft.VisualStudio.Editor.Mocks
         {
             get
             {
-                if (_textContentType == null)
+                if (_textContentType == null) {
                     _textContentType = new ContentTypeMock("text");
+                }
 
                 return _textContentType;
             }
@@ -53,13 +54,15 @@ namespace Microsoft.VisualStudio.Editor.Mocks
 
         public bool IsOfType(string type)
         {
-            if (String.Equals(type, TypeName, StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(type, TypeName, StringComparison.OrdinalIgnoreCase)) {
                 return true;
+            }
 
             foreach (IContentType baseType in BaseTypes)
             {
-                if (baseType.IsOfType(type))
+                if (baseType.IsOfType(type)) {
                     return true;
+                }
             }
 
             return false;

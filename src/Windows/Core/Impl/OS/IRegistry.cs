@@ -3,6 +3,11 @@
 
 namespace Microsoft.Common.Core.OS {
     public interface IRegistry {
+        /// <summary>
+        /// Root of HLKM application hive for admin-level settings.
+        /// </summary>
+        string LocalMachineHive { get; }
+
         IRegistryKey OpenBaseKey(Win32.RegistryHive hive, Win32.RegistryView view);
     }
 }

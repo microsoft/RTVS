@@ -9,18 +9,12 @@ using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
     public class ContainerHostMethodFixture : IMethodFixture {
-        public async Task<Task<RunSummary>> InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
-            await ContainerHost.Increment();
-            return MethodFixtureBase.DefaultInitializeResult;
-        }
+        public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) => ContainerHost.Increment();
 
-        public virtual Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
-            Dispose(true);
-            return ContainerHost.Decrement();
-        }
+        public Task DisposeAsync(RunSummary result, IMessageBus messageBus) => ContainerHost.Decrement();
 
         public Task<IDisposable> AddToHost(UIElement element) => ContainerHost.AddContainer(element);
-
-        protected virtual void Dispose(bool disposing) { }
     }
 }
+
+

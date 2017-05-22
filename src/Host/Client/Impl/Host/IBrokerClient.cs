@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
     public interface IBrokerClient : IDisposable {

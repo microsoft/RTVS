@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.Settings.Mirrors {
 
             if (File.Exists(_cranCsvFileTempPath)) {
                 using (var fs = File.Open(_cranCsvFileTempPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    byte[] buffer = new byte[fs.Length];
+                    var buffer = new byte[fs.Length];
                     fs.Read(buffer, 0, (int)fs.Length);
                     content = Encoding.UTF8.GetString(buffer);
                 }
@@ -80,15 +80,15 @@ namespace Microsoft.R.Components.Settings.Mirrors {
 
             ReadCsv(content);
 
-            using (WebClient webClient = new WebClient()) {
-                string tempFile = Path.GetTempFileName();
+            using (var webClient = new WebClient()) {
+                var tempFile = Path.GetTempFileName();
                 webClient.DownloadFileCompleted += OnDownloadFileCompleted;
                 webClient.DownloadFileAsync(new Uri("https://cran.r-project.org/CRAN_mirrors.csv", UriKind.Absolute), tempFile, tempFile);
             }
         }
 
         private static void OnDownloadFileCompleted(object sender, AsyncCompletedEventArgs e) {
-            string file = e.UserState as string;
+            var file = e.UserState as string;
             string content = null;
 
             if (!e.Cancelled && e.Error == null) {
@@ -112,16 +112,16 @@ namespace Microsoft.R.Components.Settings.Mirrors {
         }
 
         private static void ReadCsv(string content) {
-            string[] lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
+            var lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
             char[] comma = { ',' };
 
-            List<CranMirrorEntry> entries = new List<CranMirrorEntry>();
+            var entries = new List<CranMirrorEntry>();
 
-            for (int i = 1; i < lines.Length; i++) {
+            for (var i = 1; i < lines.Length; i++) {
                 // Name, Country, City, URL, Host, Maintainer, OK, CountryCode, Comment
-                string[] items = lines[i].Split(comma);
+                var items = lines[i].Split(comma);
                 if (items.Length >= 4) {
-                    CranMirrorEntry e = new CranMirrorEntry() {
+                    var e = new CranMirrorEntry() {
                         Name = items[0].Replace("\"", string.Empty),
                         Country = items[1].Replace("\"", string.Empty),
                         City = items[2].Replace("\"", string.Empty),

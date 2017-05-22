@@ -11,9 +11,7 @@ namespace Microsoft.Common.Core.IO {
             _fileSystemWatcher = new FileSystemWatcher(path, filter);
         }
 
-        public void Dispose() {
-            _fileSystemWatcher.Dispose();
-        }
+        public void Dispose() => _fileSystemWatcher.Dispose();
 
         public bool EnableRaisingEvents {
             get => _fileSystemWatcher.EnableRaisingEvents;

@@ -5,50 +5,45 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Support.Help;
+using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
-    /// Provides list of installed packages for completion inside 
-    /// library(...) statement. List of packages is  obtained from 
-    /// ~\Program Files\R and from ~\Documents\R folders
+    /// Provides completion for variables in the current workspace.
     /// </summary>
     public sealed class WorkspaceVariableCompletionProvider : IRCompletionListProvider {
         private readonly IVariablesProvider _variablesProvider;
-        private readonly ImageSource _functionGlyph;
-        private readonly ImageSource _variableGlyph;
+        private readonly object _functionGlyph;
+        private readonly object _variableGlyph;
 
         public WorkspaceVariableCompletionProvider(IVariablesProvider provider, IImageService imageService) {
             _variablesProvider = provider;
-            _functionGlyph = imageService.GetImage(ImageType.Method) as ImageSource;
-            _variableGlyph = imageService.GetImage(ImageType.Variable) as ImageSource;
+            _functionGlyph = imageService.GetImage(ImageType.Method);
+            _variableGlyph = imageService.GetImage(ImageType.Variable);
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            List<RCompletion> completions = new List<RCompletion>();
-
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
+            var completions = new List<ICompletionEntry>();
             var start = DateTime.Now;
 
             _variablesProvider.Initialize();
             var names = GetFieldProvidingVariableNames(context);
 
             foreach (var variableName in names) {
-                int memberCount = _variablesProvider.GetMemberCount(variableName);
-                IReadOnlyCollection<INamedItemInfo> members = _variablesProvider.GetMembers(variableName, 200);
-
+                var members = _variablesProvider.GetMembers(variableName, 200);
                 foreach (var v in members) {
                     Debug.Assert(v != null);
                     if (v.Name.Length > 0 && v.Name[0] != '[') {
-                        ImageSource glyph = v.ItemType == NamedItemType.Variable ? _variableGlyph : _functionGlyph;
-                        var completion = new RCompletion(v.Name, CompletionUtilities.BacktickName(v.Name), v.Description, glyph);
+                        var glyph = v.ItemType == NamedItemType.Variable ? _variableGlyph : _functionGlyph;
+                        var completion = new EditorCompletionEntry(v.Name, v.Name.BacktickName(), v.Description, glyph);
                         completions.Add(completion);
                     }
                 }
@@ -67,7 +62,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         ///     dt[c|
         /// we want to complete for 'cyl'. This expressions can be nested.
         /// </remarks>
-        private static IEnumerable<string> GetFieldProvidingVariableNames(RCompletionContext context) {
+        private static IEnumerable<string> GetFieldProvidingVariableNames(IRIntellisenseContext context) {
             var list = new List<string>();
             // Traverse AST up to the nearest expression which parent is a scope
             // (i.e. not nested in other expressions) collecting names of indexed
@@ -75,8 +70,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
             var indexer = context.AstRoot.GetNodeOfTypeFromPosition<Indexer>(context.Position, includeEnd: true);
             while (indexer != null) {
-                var variable = indexer.RightOperand as Variable;
-                if (variable != null) {
+                if (indexer.RightOperand is Variable variable) {
                     list.Add(variable.Name + "$");
                 } else {
                     break;
@@ -94,8 +88,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 return list;
             }
 
-            var name = context.Session.TextView.GetVariableNameBeforeCaret();
-            return !string.IsNullOrEmpty(name) ? new string[] { name } : Enumerable.Empty<string>();
+            var name = context.Session.View.GetVariableNameBeforeCaret();
+            return !string.IsNullOrEmpty(name) ? new [] { name } : Enumerable.Empty<string>();
         }
     }
 }

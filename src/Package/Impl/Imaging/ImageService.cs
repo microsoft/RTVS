@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -19,12 +20,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Imaging {
     internal sealed class ImageService : IImageService {
+        private readonly IServiceContainer _services;
         private readonly IGlyphService _glyphService;
         private readonly Dictionary<string, ImageMoniker> _monikerCache = new Dictionary<string, ImageMoniker>();
-        private readonly Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(() => CreateExtensionCache());
+        private readonly Lazy<Dictionary<string, string>> _fileExtensionCache = Lazy.Create(CreateExtensionCache);
 
-        public ImageService(IGlyphService glyphService) {
-            _glyphService = glyphService;
+        public ImageService(IServiceContainer services) {
+            _services = services;
+            _glyphService = services.GetService<IGlyphService>();
         }
 
         public object GetImage(ImageType imageType) {
@@ -100,8 +103,8 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             return moniker;
         }
 
-        public static ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
-            IVsImageService2 imageService = VsAppShell.Current.Services.GetService<IVsImageService2>(typeof(SVsImageService));
+        public ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
+            IVsImageService2 imageService = _services.GetService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 
             ImageAttributes imageAttributes = new ImageAttributes();

@@ -11,8 +11,6 @@ namespace Microsoft.Common.Core.OS {
             SetHandle(existingThreadHandle);
         }
 
-        protected override bool ReleaseHandle() {
-            return CloseHandle(handle);
-        }
+        protected override bool ReleaseHandle() => CloseHandle(handle);
     }
 }

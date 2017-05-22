@@ -10,7 +10,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
                 menuCommandService.AddCommand(commmand);
             }
 
-            var settings = VsAppShell.Current.GetService<IRToolsSettings>();
+            var settings = VsAppShell.Current.GetService<IRSettings>();
             var dte = VsAppShell.Current.GetService<DTE2>(typeof(DTE));
             _toolbar = new RToolbar(dte, settings);
             _toolbar.Show();

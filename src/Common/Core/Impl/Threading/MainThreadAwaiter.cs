@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Threading {
     public struct MainThreadAwaiter : ICriticalNotifyCompletion {
@@ -12,6 +13,7 @@ namespace Microsoft.Common.Core.Threading {
         private readonly CancellationToken _cancellationToken;
 
         public MainThreadAwaiter(IMainThread mainThread, CancellationToken cancellationToken) {
+            Check.ArgumentNull(nameof(mainThread), mainThread);
             _mainThread = mainThread;
             _cancellationToken = cancellationToken;
         }

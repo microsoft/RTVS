@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Security;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Security;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;

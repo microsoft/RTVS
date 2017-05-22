@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
@@ -11,9 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         public CommandAsyncToOleMenuCommandShim(Guid group, int id, IAsyncCommand command)
             : base(group, id) {
-            if (command == null) {
-                throw new ArgumentNullException(nameof(command));
-            }
+            Check.ArgumentNull(nameof(command), command);
             _command = command;
         }
 

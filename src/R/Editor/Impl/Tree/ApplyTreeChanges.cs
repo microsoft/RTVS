@@ -3,19 +3,17 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
-using Microsoft.Languages.Core.Text;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.R.Editor.Tree {
     public partial class EditorTree {
-        internal List<TreeChangeEventRecord> ApplyChangesFromQueue(Queue<EditorTreeChange> queue) {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-                throw new ThreadStateException("Method should only be called on the main thread");
-
-            var changesToFire = new List<TreeChangeEventRecord>();
-
-            if (queue == null || queue.Count == 0)
-                return changesToFire;
+        internal void ApplyChanges(IEnumerable<EditorTreeChange> changes) {
+            Check.InvalidOperation(() => _ownerThread == Thread.CurrentThread.ManagedThreadId, _threadCheckMessage);
+            if (changes == null || !changes.Any()) {
+                return;
+            }
 
             // Since we have write lock we cannot fire events. If we fire an event,
             // listener may try and access the tree while a) tree not ready and
@@ -27,15 +25,11 @@ namespace Microsoft.R.Editor.Tree {
 
             try {
                 AcquireWriteLock();
-
-                while (queue.Count > 0) {
-                    var change = queue.Dequeue();
-
+                foreach (var change in changes) {
                     switch (change.ChangeType) {
                         case TreeChangeType.NewTree: {
                                 var c = change as EditorTreeChange_NewTree;
                                 _astRoot = c.NewTree;
-                                changesToFire.Add(new TreeChangeEventRecord(change.ChangeType));
                             }
                             break;
 
@@ -47,20 +41,16 @@ namespace Microsoft.R.Editor.Tree {
             } finally {
                 ReleaseWriteLock();
             }
-            return changesToFire;
         }
 
-        internal void FirePostUpdateEvents(List<TreeChangeEventRecord> changes, bool fullParse) {
-            List<TextChangeEventArgs> textChanges = new List<TextChangeEventArgs>();
-
-            FireOnUpdatesPending(textChanges);
+        internal void FirePostUpdateEvents() {
+            FireOnUpdatesPending();
             FireOnUpdateBegin();
 
-            foreach (var a in _actionsToInvokeOnReady.Values) {
+            foreach (var a in _actionsToInvokeOnReady.Values.ToList()) {
                 a.Action(a.Parameter);
             }
             _actionsToInvokeOnReady.Clear();
-
             FireOnUpdateCompleted(TreeUpdateType.NewTree);
         }
     }

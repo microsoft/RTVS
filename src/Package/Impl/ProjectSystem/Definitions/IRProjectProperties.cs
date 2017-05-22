@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.R.Components.Application.Configuration;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     /// <summary>

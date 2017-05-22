@@ -4,7 +4,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSession : IRExpressionEvaluator, IRBlobService, IDisposable {

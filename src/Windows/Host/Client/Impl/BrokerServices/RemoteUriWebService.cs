@@ -34,13 +34,13 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             string postUri = null;
 
             if (context.Request.IsWebSocketRequest) {
-                UriBuilder ub = new UriBuilder(PostUri) { Scheme = "wss" };
+                var ub = new UriBuilder(PostUri) { Scheme = "wss" };
                 postUri = ub.Uri.ToString();
             } else {
                 postUri = PostUri.ToString();
             }
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(postUri);
+            var request = (HttpWebRequest)WebRequest.Create(postUri);
             request.Method = context.Request.HttpMethod;
             request.ServerCertificateValidationCallback += ValidateCertificate;
 
@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             request.Headers.Add(CustomHttpHeaders.RTVSRequestedURL, remoteUri.ToString());
 
             if (context.Request.ContentLength64 > 0) {
-                using (Stream reqStream = await request.GetRequestStreamAsync()) {
+                using (var reqStream = await request.GetRequestStreamAsync()) {
                     await context.Request.InputStream.CopyAndFlushAsync(reqStream, null, ct);
                 }
             }
@@ -63,16 +63,16 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 response = (HttpWebResponse)await request.GetResponseAsync();
                 if (response != null) {
                     if (context.Request.IsWebSocketRequest && response.StatusCode == HttpStatusCode.SwitchingProtocols) {
-                        Stream respStream = response.GetResponseStream();
-                        string subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
+                        var respStream = response.GetResponseStream();
+                        var subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
                         var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), receiveBufferSize: 65335, useZeroMask: true);
                         var websocketContext = await context.AcceptWebSocketAsync(subProtocol, receiveBufferSize: 65335, keepAliveInterval: TimeSpan.FromMinutes(10));
                         await WebSocketHelper.SendReceiveAsync(websocketContext.WebSocket, remoteWebSocket, ct);
                     } else {
                         context.Response.StatusCode = (int)response.StatusCode;
                         SetResponseHeaders(response, context.Response, localBaseUrl, remoteBaseUrl);
-                        using (Stream respStream = response.GetResponseStream())
-                        using (Stream outStream = context.Response.OutputStream) {
+                        using (var respStream = response.GetResponseStream())
+                        using (var outStream = context.Response.OutputStream) {
                             await respStream.CopyAndFlushAsync(outStream, null, ct);
                         }
                         response.Close();
@@ -92,32 +92,29 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         private Uri GetRemoteUri(Uri url, string remoteBase) {
-            Uri remote = new Uri(Invariant($"http://{remoteBase}"));
-            UriBuilder ub = new UriBuilder(url);
-            ub.Host = remote.Host;
-            ub.Port = remote.Port;
+            var remote = new Uri(Invariant($"http://{remoteBase}"));
+            var ub = new UriBuilder(url) {
+                Host = remote.Host,
+                Port = remote.Port
+            };
             return ub.Uri;
         }
 
-        private static string ReplaceAndGet(string value, string url1, string url2) {
-            return value.Replace(url1, url2);
-        }
+        private static string ReplaceAndGet(string value, string url1, string url2) => value.Replace(url1, url2);
 
         private static void SetRequestHeaders(HttpWebRequest request, NameValueCollection requestHeaders, string localBaseUrl, string remoteBaseUrl) {
             // copy headers to avoid messing with original request headers
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            foreach (string key in requestHeaders.AllKeys) {
+            var headers = new Dictionary<string, string>();
+            foreach (var key in requestHeaders.AllKeys) {
                 headers.Add(key, requestHeaders[key]);
             }
 
-            string valueAccept;
-            if (headers.TryGetValue("Accept", out valueAccept)) {
+            if (headers.TryGetValue("Accept", out var valueAccept)) {
                 request.Accept = ReplaceAndGet(valueAccept, localBaseUrl, remoteBaseUrl);
                 headers.Remove("Accept");
             }
 
-            string valueConnection;
-            if (headers.TryGetValue("Connection", out valueConnection)) {
+            if (headers.TryGetValue("Connection", out var valueConnection)) {
                 if (valueConnection.EqualsIgnoreCase("keep-alive")) {
                     request.KeepAlive = true;
                 } else if (valueConnection.EqualsIgnoreCase("close")) {
@@ -134,57 +131,48 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 headers.Remove("Content-Length");
             }
 
-            string valueContentType;
-            if (headers.TryGetValue("Content-Type", out valueContentType)) {
+            if (headers.TryGetValue("Content-Type", out var valueContentType)) {
                 request.ContentType = valueContentType;
                 headers.Remove("Content-Type");
             }
 
-            string valueExpect;
-            if (headers.TryGetValue("Expect", out valueExpect)) {
+            if (headers.TryGetValue("Expect", out var valueExpect)) {
                 request.Expect = valueExpect;
                 headers.Remove("Expect");
             }
 
-            string valueDate;
-            if (headers.TryGetValue("Date", out valueDate)) {
+            if (headers.TryGetValue("Date", out var valueDate)) {
                 request.Date = valueDate.ToDateTimeOrDefault();
                 headers.Remove("Date");
             }
 
-            string valueHost;
-            if (headers.TryGetValue("Host", out valueHost)) {
+            if (headers.TryGetValue("Host", out var valueHost)) {
                 request.Host = ReplaceAndGet(valueHost, localBaseUrl, remoteBaseUrl);
                 headers.Remove("Host");
             }
 
-            string valueIfModifiedSince;
-            if (headers.TryGetValue("If-Modified-Since", out valueIfModifiedSince)) {
+            if (headers.TryGetValue("If-Modified-Since", out var valueIfModifiedSince)) {
                 request.IfModifiedSince = valueIfModifiedSince.ToDateTimeOrDefault();
                 headers.Remove("If-Modified-Since");
             }
 
-            string valueRange;
-            if (headers.TryGetValue("Range", out valueRange)) {
+            if (headers.TryGetValue("Range", out var valueRange)) {
                 // TODO: AddRange
                 headers.Remove("Range");
             }
 
-            string valueReferer;
-            if (headers.TryGetValue("Referer", out valueReferer)) {
+            if (headers.TryGetValue("Referer", out var valueReferer)) {
                 request.Referer = ReplaceAndGet(valueReferer, localBaseUrl, remoteBaseUrl);
                 headers.Remove("Referer");
             }
 
-            string valueTransferEncoding;
-            if (headers.TryGetValue("Transfer-Encoding", out valueTransferEncoding)) {
+            if (headers.TryGetValue("Transfer-Encoding", out var valueTransferEncoding)) {
                 request.SendChunked = true;
                 request.TransferEncoding = valueTransferEncoding;
                 headers.Remove("Transfer-Encoding");
             }
 
-            string valueUserAgent;
-            if (headers.TryGetValue("User-Agent", out valueUserAgent)) {
+            if (headers.TryGetValue("User-Agent", out var valueUserAgent)) {
                 request.UserAgent = valueUserAgent;
                 headers.Remove("User-Agent");
             }
@@ -196,7 +184,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
         private static void SetResponseHeaders(HttpWebResponse response, HttpListenerResponse httpListenerResponse, string localBaseUrl, string remoteBaseUrl) {
             // copy headers to avoid messing with original response headers
-            Dictionary<string, string> headers = new Dictionary<string, string>();
+            var headers = new Dictionary<string, string>();
             foreach (var key in response.Headers.AllKeys) {
                 headers.Add(key, ReplaceAndGet(response.Headers[key], remoteBaseUrl, localBaseUrl));
             }

@@ -33,10 +33,8 @@ namespace Microsoft.Common.Core {
             }
         }
 
-        public static Task SendReceiveAsync(WebSocket ws1, WebSocket ws2, CancellationToken ct) {
-            return Task.WhenAll(
+        public static Task SendReceiveAsync(WebSocket ws1, WebSocket ws2, CancellationToken ct) => Task.WhenAll(
                 DoWebSocketReceiveSendAsync(ws1, ws2, ct),
                 DoWebSocketReceiveSendAsync(ws2, ws1, ct));
-        }
     }
 }

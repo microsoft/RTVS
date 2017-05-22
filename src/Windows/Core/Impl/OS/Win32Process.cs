@@ -53,7 +53,7 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public void WaitForExit(int milliseconds) {
-            using (ProcessWaitHandle processWaitHandle = new ProcessWaitHandle(_processHandle)) {
+            using (var processWaitHandle = new ProcessWaitHandle(_processHandle)) {
                 if (processWaitHandle.WaitOne(milliseconds)) {
                     // This means the process exited while waiting.
                     SetExitState();
@@ -82,8 +82,10 @@ namespace Microsoft.Common.Core.OS {
 
         public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment) {
 
-            var si = new NativeMethods.STARTUPINFO();
-            si.cb = Marshal.SizeOf(typeof(NativeMethods.STARTUPINFO));
+            var si = new NativeMethods.STARTUPINFO {
+                cb = Marshal.SizeOf(typeof(NativeMethods.STARTUPINFO)),
+                lpDesktop = ""
+            };
 
             /* 
             When a process is started using CreateProcessAsUser function, the process will be started into a windowstation 
@@ -93,16 +95,13 @@ namespace Microsoft.Common.Core.OS {
             lpDesktop = <somevalue>; the system will create a new windowstation and desktop that you cannot see.
             lpDesktop = ""; it will either create a new windowstation and desktop that you cannot see, or if one has been created by means of a prior call by using the same access token, the existing windowstation and desktop will be used.
             */
-            si.lpDesktop = "";
 
-            IntPtr stdinRead, stdinWrite, stdoutRead, stdoutWrite, stderrorRead, stderrorWrite;
-
-            NativeMethods.SECURITY_ATTRIBUTES sa = default(NativeMethods.SECURITY_ATTRIBUTES);
+            var sa = default(NativeMethods.SECURITY_ATTRIBUTES);
             sa.nLength = Marshal.SizeOf(sa);
             sa.lpSecurityDescriptor = IntPtr.Zero;
             sa.bInheritHandle = true;
 
-            if (!NativeMethods.CreatePipe(out stdinRead, out stdinWrite, ref sa, 0)) {
+            if (!NativeMethods.CreatePipe(out var stdinRead, out var stdinWrite, ref sa, 0)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
@@ -110,7 +109,7 @@ namespace Microsoft.Common.Core.OS {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!NativeMethods.CreatePipe(out stdoutRead, out stdoutWrite, ref sa, 0)) {
+            if (!NativeMethods.CreatePipe(out var stdoutRead, out var stdoutWrite, ref sa, 0)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
@@ -118,7 +117,7 @@ namespace Microsoft.Common.Core.OS {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            if (!NativeMethods.CreatePipe(out stderrorRead, out stderrorWrite, ref sa, 0)) {
+            if (!NativeMethods.CreatePipe(out var stderrorRead, out var stderrorWrite, ref sa, 0)) {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
@@ -131,13 +130,13 @@ namespace Microsoft.Common.Core.OS {
             si.hStdOutput = stdoutWrite;
             si.hStdError = stderrorWrite;
 
-            NativeMethods.SECURITY_ATTRIBUTES processAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
-            NativeMethods.SECURITY_ATTRIBUTES threadAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
+            var processAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
+            var threadAttr = CreateSecurityAttributes(winIdentity == null ? WellKnownSidType.AuthenticatedUserSid : WellKnownSidType.NetworkServiceSid);
 
             lock (_createProcessLock) {
-                NativeMethods.PROCESS_INFORMATION pi;
-                NativeMethods.ErrorModes oldErrorMode = NativeMethods.SetErrorMode(NativeMethods.ErrorModes.SEM_FAILCRITICALERRORS);
+                var oldErrorMode = NativeMethods.SetErrorMode(NativeMethods.ErrorModes.SEM_FAILCRITICALERRORS);
                 try {
+                    NativeMethods.PROCESS_INFORMATION pi;
                     if (winIdentity == null) {
                         if (!NativeMethods.CreateProcess(applicationName, commandLine, ref processAttr, ref threadAttr, true,
                             (uint)(NativeMethods.CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | NativeMethods.CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
@@ -180,18 +179,18 @@ namespace Microsoft.Common.Core.OS {
 
         private static NativeMethods.SECURITY_ATTRIBUTES CreateSecurityAttributes(WellKnownSidType sidType) {
             // Grant access to Network Service.
-            SecurityIdentifier networkService = new SecurityIdentifier(sidType, null);
-            DiscretionaryAcl dacl = new DiscretionaryAcl(false, false, 1);
+            var networkService = new SecurityIdentifier(sidType, null);
+            var dacl = new DiscretionaryAcl(false, false, 1);
             dacl.AddAccess(AccessControlType.Allow, networkService, -1, InheritanceFlags.None, PropagationFlags.None);
-            CommonSecurityDescriptor csd = new CommonSecurityDescriptor(false, false, ControlFlags.DiscretionaryAclPresent | ControlFlags.OwnerDefaulted | ControlFlags.GroupDefaulted, null, null, null, dacl);
+            var csd = new CommonSecurityDescriptor(false, false, ControlFlags.DiscretionaryAclPresent | ControlFlags.OwnerDefaulted | ControlFlags.GroupDefaulted, null, null, null, dacl);
 
-            byte[] buffer = new byte[csd.BinaryLength];
+            var buffer = new byte[csd.BinaryLength];
             csd.GetBinaryForm(buffer, 0);
 
-            IntPtr dest = Marshal.AllocHGlobal(buffer.Length);
+            var dest = Marshal.AllocHGlobal(buffer.Length);
             Marshal.Copy(buffer, 0, dest, buffer.Length);
 
-            NativeMethods.SECURITY_ATTRIBUTES sa = new NativeMethods.SECURITY_ATTRIBUTES();
+            var sa = new NativeMethods.SECURITY_ATTRIBUTES();
             sa.nLength = Marshal.SizeOf(sa);
             sa.lpSecurityDescriptor = dest;
 

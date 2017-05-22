@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Media.Imaging;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;

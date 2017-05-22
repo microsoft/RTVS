@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Wpf;
 using Microsoft.R.Wpf.Themes;

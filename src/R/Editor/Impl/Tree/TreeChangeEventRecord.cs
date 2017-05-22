@@ -5,17 +5,10 @@ using Microsoft.R.Core.AST;
 
 namespace Microsoft.R.Editor.Tree {
     class TreeChangeEventRecord {
-        public TreeChangeType ChangeType { get; private set; }
+        public TreeChangeType ChangeType { get; }
+        public IAstNode Node { get; }
 
-        public IAstNode Node { get; private set; }
-
-        public TreeChangeEventRecord(TreeChangeType changeType) {
-            ChangeType = changeType;
-        }
-
-        public TreeChangeEventRecord(TreeChangeType changeType, IAstNode node) :
-            this(changeType) {
-            Node = node;
-        }
+        public TreeChangeEventRecord(TreeChangeType changeType)=> ChangeType = changeType;
+        public TreeChangeEventRecord(TreeChangeType changeType, IAstNode node) : this(changeType) => Node = node;
     }
 }

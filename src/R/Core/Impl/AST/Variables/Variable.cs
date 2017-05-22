@@ -14,28 +14,24 @@ namespace Microsoft.R.Core.AST.Variables {
     [DebuggerDisplay("[{Name} : {Start}...{End}), Length = {Length}")]
     public sealed class Variable : TokenNode, IVariable {
         #region IVariable
-        public string Name {
-            get { return Root != null ? Root.TextProvider.GetText(NameRange) : "<not_ready>"; }
-        }
+        public string Name => Root != null ? Root.TextProvider.GetText(NameRange) : "<not_ready>";
         public ITextRange NameRange => this;
         public TokenNode Identifier => this;
         public RObject Value { get; set; }
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent) {
+        public override bool Parse(ParseContext context, IAstNode parent = null) {
             RToken currentToken = context.Tokens.CurrentToken;
             Debug.Assert(currentToken.IsVariableKind());
 
             // Not calling base since expression parser will decide 
             // what parent node the variable belongs to.
-            this.Token = currentToken;
+            Token = currentToken;
             context.Tokens.MoveToNextToken();
 
             return true;
         }
 
-        public override string ToString() {
-            return this.Name;
-        }
+        public override string ToString() => Name;
     }
 }
