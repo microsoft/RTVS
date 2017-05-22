@@ -16,6 +16,7 @@ namespace Microsoft.R.Editor.Document {
     /// </summary>
     public sealed class REditorDocument : IREditorDocument {
         private readonly IServiceContainer _services;
+        private readonly TreeValidator _validator;
 
         public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, IExpressionTermFilter termFilter = null) {
             EditorBuffer = editorBuffer;
@@ -28,7 +29,7 @@ namespace Microsoft.R.Editor.Document {
             tree.Build();
             EditorTree = tree;
 
-            TreeValidator.FromEditorBuffer(EditorTree, services);
+            _validator = new TreeValidator(EditorTree, services);
         }
 
         #region IREditorDocument

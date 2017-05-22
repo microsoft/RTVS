@@ -200,12 +200,14 @@
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
-    <Compile Include="RData%27\BraceMatch\BraceMatchTest.cs" />
-    <Compile Include="RData%27\Classification\RdClassifierTest.cs" />
-    <Compile Include="RData%27\Help\GetFunctionInfoTest.cs" />
-    <Compile Include="RData%27\Tokens\TokenizeSampleFilesTest.cs" />
-    <Compile Include="RData%27\Tokens\TokenizeTest.cs" />
-    <Compile Include="RData%27\Tokens\VerifySortedTables.cs" />
+    <Compile Include="RData\BraceMatch\BraceMatchTest.cs" />
+    <Compile Include="RData\Classification\RdClassifierTest.cs" />
+    <Compile Include="RData\Help\GetFunctionInfoTest.cs" />
+    <Compile Include="RData\Tokens\TokenizeSampleFilesTest.cs" />
+    <Compile Include="RData\Tokens\TokenizeTest.cs" />
+    <Compile Include="RData\Tokens\VerifySortedTables.cs" />
+    <Compile Include="Roxygen\RoxygenCompletionTest.cs" />
+    <Compile Include="Roxygen\RoxygenTokenizeTest.cs" />
     <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Mocks\EditorSupportMock.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
@@ -232,6 +234,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

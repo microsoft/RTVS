@@ -165,12 +165,6 @@
   <data name="FormatDocument" xml:space="preserve">
     <value>Format document</value>
   </data>
-  <data name="CommentSelection" xml:space="preserve">
-    <value>Comment selection</value>
-  </data>
-  <data name="UncommentSelection" xml:space="preserve">
-    <value>Uncomment selection</value>
-  </data>
   <data name="SmartTagName_InstallPackage" xml:space="preserve">
     <value>Install package</value>
   </data>
@@ -188,5 +182,11 @@
   </data>
   <data name="ColorName_RD_CurlyBraces" xml:space="preserve">
     <value>RD Braces</value>
+  </data>
+  <data name="ColorName_R_RoxygenExport" xml:space="preserve">
+    <value>Roxygen Export</value>
+  </data>
+  <data name="ColorName_R_RoxygenKeyword" xml:space="preserve">
+    <value>Roxygen Keyword</value>
   </data>
 </root>

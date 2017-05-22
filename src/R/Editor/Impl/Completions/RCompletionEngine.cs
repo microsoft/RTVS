@@ -36,7 +36,8 @@ namespace Microsoft.R.Editor.Completions.Engine {
 
             var providers = new List<IRCompletionListProvider>();
             if (ast.Comments.Contains(context.Position)) {
-                // No completion in comments
+                // No completion in comments except iif it is Roxygen
+                providers.Add(new RoxygenTagCompletionProvider(_imageService));
                 return providers;
             }
 

@@ -198,6 +198,9 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\R\Editor\RLintOptionsDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Options\R\Editor\REditorSettingsStorageProvider.cs" />
     <Compile Include="Options\R\Tools\BrowserForFolderUIEditor.cs" />
     <Compile Include="Options\R\Tools\LogVerbosityTypeConverter.cs" />

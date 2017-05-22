@@ -180,4 +180,79 @@
   <data name="AutoFormat" xml:space="preserve">
     <value>Automatic formatting</value>
   </data>
+  <data name="CommentSelection" xml:space="preserve">
+    <value>Comment selection</value>
+  </data>
+  <data name="UncommentSelection" xml:space="preserve">
+    <value>Uncomment selection</value>
+  </data>
+  <data name="Lint_Assignment" xml:space="preserve">
+    <value>’&lt;-’ should always be used for assignment</value>
+  </data>
+  <data name="Lint_CamelCase" xml:space="preserve">
+    <value>Objects names should not be in camelCase</value>
+  </data>
+  <data name="Lint_CommaSpaces" xml:space="preserve">
+    <value>Comma should be followed by space, but should not have space before it</value>
+  </data>
+  <data name="Lint_MultileDots" xml:space="preserve">
+    <value>Objects names should not have.multiple.dots</value>
+  </data>
+  <data name="Lint_NameTooLong" xml:space="preserve">
+    <value>Objects name is {0} characters long. Max {1} characters is recommended.</value>
+  </data>
+  <data name="Lint_OpenCurlyPosition" xml:space="preserve">
+    <value>Opening curly brace must not be on its own line and should always be followed by a newline</value>
+  </data>
+  <data name="Lint_OperatorSpaces" xml:space="preserve">
+    <value>Infix operators should have spaces around them.</value>
+  </data>
+  <data name="Lint_DoubleQuotes" xml:space="preserve">
+    <value>Only double quotes should used to delimit strings.</value>
+  </data>
+  <data name="Lint_SnakeCase" xml:space="preserve">
+    <value>Object names should not be in snake_case.</value>
+  </data>
+  <data name="Lint_Tabs" xml:space="preserve">
+    <value>Files should not contain tabs</value>
+  </data>
+  <data name="Lint_TrailingWhitespace" xml:space="preserve">
+    <value>Lines should not contain trailing whitespace characters.</value>
+  </data>
+  <data name="Lint_CloseCurlySeparateLine" xml:space="preserve">
+    <value>Closing curly brace should be on its own line unless it is followed by an 'else'</value>
+  </data>
+  <data name="Lint_SpaceBeforeOpenBrace" xml:space="preserve">
+    <value>Opening brace should have a space before it unless it is in a function call</value>
+  </data>
+  <data name="Lint_LineTooLong" xml:space="preserve">
+    <value>Line is {0} characters long. Max {1} characters is recommended.</value>
+  </data>
+  <data name="Lint_TrailingBlankLines" xml:space="preserve">
+    <value>There should not be trailing blank lines in the file.</value>
+  </data>
+  <data name="Lint_MultipleStatementsInLine" xml:space="preserve">
+    <value>Multiple statements in line</value>
+  </data>
+  <data name="Lint_NoSpaceBetweenCommaAndClosingBracket" xml:space="preserve">
+    <value>Insert space between ] or ]] and preceding a comma</value>
+  </data>
+  <data name="Lint_PascalCase" xml:space="preserve">
+    <value>Objects names should not be in PascalCase</value>
+  </data>
+  <data name="Lint_Semicolons" xml:space="preserve">
+    <value>Use of semicolons is not recommended</value>
+  </data>
+  <data name="Lint_SpaceAfterFunctionName" xml:space="preserve">
+    <value>There should not be spaces between function name and opening brace.</value>
+  </data>
+  <data name="Lint_SpaceAfterLeftParenthesis" xml:space="preserve">
+    <value>There should not be spaces after (, [ or [[</value>
+  </data>
+  <data name="Lint_SpaceBeforeClosingBrace" xml:space="preserve">
+    <value>There should not be spaces before )</value>
+  </data>
+  <data name="Lint_Uppercase" xml:space="preserve">
+    <value>Objects names should not be in all uppercase</value>
+  </data>
 </root>
