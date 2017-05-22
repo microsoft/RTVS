@@ -50,6 +50,18 @@ namespace Microsoft.Common.Core.Test.Services {
         }
 
         [Test]
+        public void AddRemove() {
+            var s = new C1();
+            _serviceManager.AddService(s);
+            _serviceManager.RemoveService(s);
+            _serviceManager.GetService<I1>().Should().BeNull();
+
+            _serviceManager.AddService(s as I1);
+            _serviceManager.RemoveService<I1>();
+            _serviceManager.GetService<I1>().Should().BeNull();
+        }
+
+        [Test]
         public void Disposed() {
             var instance = new C1();
             _serviceManager.AddService(instance);

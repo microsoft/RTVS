@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             ps.Received().Start(_url);
 
             ps.ClearReceivedCalls();
-            shell.ServiceManager.RemoveService(externalSettings);
+            shell.ServiceManager.RemoveService<IRSettings>();
             shell.ServiceManager.AddService(internalSettings);
 
             wbs = new WebBrowserServices(shell);

@@ -49,7 +49,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         private void AddSubstiteServices() {
             ServiceManager
                 .AddService(this)
-                .AddService(UIThreadHelper.Instance)
+                .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(Substitute.For<IActionLog>())
                 .AddService(Substitute.For<ISecurityService>())
                 .AddService(Substitute.For<ILoggingPermissions>())
