@@ -44,7 +44,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private double H(double percentY) => DefaultHeight * percentY;
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
@@ -71,7 +71,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], "4 8 1 2");
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
@@ -84,7 +84,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
@@ -97,7 +97,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], "4 4");
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
@@ -110,7 +110,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
@@ -121,7 +121,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.2), Y(0.5) - W(0.2));
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
@@ -132,7 +132,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
@@ -152,7 +152,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3532")]
+        [Test]
         [Category.Plots]
         public async Task TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
