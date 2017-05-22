@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
 using Microsoft.VisualStudio.TextManager.Interop;
 using NSubstitute;
+using Microsoft.R.Components.Test.Fakes.StatusBar;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
@@ -77,6 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentstServices()
                 // OLE and VS specifics
+                .AddService(new TestStatusBar())
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))
                 .AddService(VsRegisterEditorsMock.Create(), typeof(SVsRegisterEditors))
                 .AddService(new MenuCommandServiceMock(), typeof(IMenuCommandService))
