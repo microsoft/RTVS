@@ -54,9 +54,10 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.SpacesAroundComma) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.Comma) {
                     var tp = node.Root.TextProvider;
-                    warning = tp.IsWhitespaceBeforePosition(node.Start);
-                    if (!warning) {
-                        warning = node.Start < tp.Length && tp[node.Start + 1] != ')' && tp[node.Start + 1] != ',';
+                    warning = tp.IsWhitespaceBeforePosition(t.Start);
+                    if (!warning && t.End < tp.Length) {
+                        var nextChar = tp[t.End];
+                        warning = !char.IsWhiteSpace(nextChar) && nextChar != ')' && nextChar != ',';
                     }
                 }
             }
@@ -66,11 +67,11 @@ namespace Microsoft.R.Editor.Validation.Lint {
         private static IValidationError InfixOperatorsSpacesCheck(IAstNode node, LintOptions options) {
             // infix_spaces_linter: check that all infix operators have spaces around them.
             if (options.SpacesAroundOperators) {
-                if (node is IOperator op && !op.IsUnary) {
+                if (node is IOperator op && !op.IsUnary && op is TokenOperator to) {
                     var tp = node.Root.TextProvider;
-                    if (!tp.IsWhitespaceBeforePosition(node.Start) || !tp.IsWhitespaceAfterPosition(node.Start)) {
-                        var range = (op as TokenOperator)?.OperatorToken ?? node;
-                        return new ValidationWarning(range, Resources.Lint_OperatorSpaces, ErrorLocation.Token);
+                    var t = to.OperatorToken;
+                    if (!tp.IsWhitespaceBeforePosition(t.Start) || !tp.IsWhitespaceAfterPosition(t.End - 1)) {
+                        return new ValidationWarning(t, Resources.Lint_OperatorSpaces, ErrorLocation.Token);
                     }
                 }
             }
@@ -109,8 +110,9 @@ namespace Microsoft.R.Editor.Validation.Lint {
             // before them unless they are in a function call.
             if (options.SpaceBeforeOpenBrace && node is TokenNode t) {
                 if (t.Token.TokenType == RTokenType.OpenBrace && node.Parent is IKeywordExpression) {
-                    if (!node.Root.TextProvider.IsWhitespaceBeforePosition(node.Start)) {
-                        return new ValidationWarning(node, Resources.Lint_SpaceBeforeOpenBrace, ErrorLocation.Token);
+                    var tp = node.Root.TextProvider;
+                    if (!tp.IsWhitespaceBeforePosition(node.Start)) {
+                        return new ValidationWarning(t.Token, Resources.Lint_SpaceBeforeOpenBrace, ErrorLocation.Token);
                     }
                 }
             }
@@ -127,7 +129,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     case RTokenType.OpenSquareBracket:
                     case RTokenType.OpenDoubleSquareBracket:
                         // x[1, OK x( 2) is not
-                        if (tp.IsWhitespaceAfterPosition(node.Start)) {
+                        if (tp.IsWhitespaceAfterPosition(node.End - 1)) {
                             return new ValidationWarning(node, Resources.Lint_SpaceAfterLeftParenthesis, ErrorLocation.Token);
                         }
                         break;
@@ -141,7 +143,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     case RTokenType.CloseDoubleSquareBracket:
                         // x[1] is OK, x[1,] is not OK, should be x[1, ]
                         var prevChar = node.Start > 0 ? tp[node.Start - 1] : '\0';
-                        if (!tp.IsWhitespaceAfterPosition(node.Start) && prevChar == ',') {
+                        if (!tp.IsWhitespaceAfterPosition(node.End - 1) && prevChar == ',') {
                             return new ValidationWarning(node, Resources.Lint_NoSpaceBetweenCommaAndClosingBracket, ErrorLocation.Token);
                         }
                         break;
@@ -152,8 +154,9 @@ namespace Microsoft.R.Editor.Validation.Lint {
 
         private static IValidationError SpaceAfterFunctionNameCheck(IAstNode node, LintOptions options) {
             if (options.NoSpaceAfterFunctionName && node is FunctionCall fc) {
-                if (fc.RightOperand is Variable v && node.Root.TextProvider.IsWhitespaceAfterPosition(v.End - 1)) {
-                    return new ValidationWarning(node, Resources.Lint_SpaceAfterFunctionName, ErrorLocation.Token);
+                var tp = node.Root.TextProvider;
+                if (fc.RightOperand is Variable v && tp.IsWhitespaceAfterPosition(v.End - 1)) {
+                    return new ValidationWarning(fc.OpenBrace, Resources.Lint_SpaceAfterFunctionName, ErrorLocation.Token);
                 }
             }
             return null;
@@ -174,6 +177,19 @@ namespace Microsoft.R.Editor.Validation.Lint {
             }
             return null;
         }
+
+        private static IValidationError TrueFalseNamesCheck(IAstNode node, LintOptions options) {
+            // Use TRUE and FALSE instead of T and F
+            if (options.TrueFalseNames) {
+                if (node is TokenNode t && t.Token.TokenType == RTokenType.Logical) {
+                    if (t.Token.Length == 1) {
+                        return new ValidationWarning(t.Token, Resources.Lint_TrueFalseNames, ErrorLocation.Token);
+                    }
+                }
+            }
+            return null;
+        }
+
 
         private static IEnumerable<IValidationError> NameCheck(IAstNode node, LintOptions options) {
             // camel_case_linter: check that objects are not in camelCase.

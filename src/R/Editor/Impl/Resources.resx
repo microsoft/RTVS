@@ -255,4 +255,7 @@
   <data name="Lint_Uppercase" xml:space="preserve">
     <value>Objects names should not be in all uppercase</value>
   </data>
+  <data name="Lint_TrueFalseNames" xml:space="preserve">
+    <value>Use TRUE and FALSE rather than T and F</value>
+  </data>
 </root>

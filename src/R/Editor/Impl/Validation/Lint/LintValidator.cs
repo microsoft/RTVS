@@ -25,7 +25,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 SpacesInsideParenthesisCheck,
                 SpaceAfterFunctionNameCheck,
                 SemicolonCheck,
-                MultipleStatementsCheck
+                MultipleStatementsCheck,
+                TrueFalseNamesCheck
             };
 
         private static readonly Func<IAstNode, LintOptions, IEnumerable<IValidationError>>[] _multipleCheckers =

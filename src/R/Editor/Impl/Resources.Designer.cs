@@ -278,6 +278,15 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use TRUE and FALSE rather than T and F.
+        /// </summary>
+        internal static string Lint_TrueFalseNames {
+            get {
+                return ResourceManager.GetString("Lint_TrueFalseNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Objects names should not be in all uppercase.
         /// </summary>
         internal static string Lint_Uppercase {
