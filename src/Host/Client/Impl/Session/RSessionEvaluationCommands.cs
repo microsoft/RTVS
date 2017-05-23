@@ -210,13 +210,18 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
+            string cp = $".{codePage}";
             if (codePage == 0) {
-                // TODO: update this to get the codepage via platform agnostic service
-                codePage = 437;
+                var isWindows = await evaluation.EvaluateAsync<bool>(".Platform$OS.type == 'windows'", REvaluationKind.Normal, cancellationToken);
+                if (isWindows) {
+                    cp = ".437";
+                } else {
+                    cp = "en_US.UTF-8";
+                }
             }
-            var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
-            return evaluation.ExecuteAsync(script, cancellationToken);
+            var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
+            await evaluation.ExecuteAsync(script, cancellationToken);
         }
 
         public static Task OverrideFunctionAsync(this IRExpressionEvaluator evaluation, string name, string ns) {
