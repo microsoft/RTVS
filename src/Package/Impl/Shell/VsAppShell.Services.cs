@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.StatusBar;
 using Microsoft.VisualStudio.R.Package.Telemetry;
+using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -69,7 +70,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<IImageService, ImageService>()
                 .AddService(new REditorSettings(this))
                 .AddService(new VsEditorViewLocator())
-                .AddService<IStatusBar, VsStatusBar>() 
+                .AddService<IStatusBar, VsStatusBar>()
+                .AddService(typeof(RPackageToolWindowProvider))
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentstServices()
