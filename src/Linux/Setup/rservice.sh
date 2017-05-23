@@ -8,7 +8,7 @@
 
 start() {
         initlog -c "echo -n Starting Remote R Server: "
-        dotnet /usr/bin/Microsoft.R.Host.Broker.dll --config "/usr/lib/rtvs/Microsoft.R.Host.Broker.config.json" &
+        dotnet /usr/bin/Microsoft.R.Host.Broker.dll --config "/etc/rtvs/Microsoft.R.Host.Broker.config.json" &
         touch /var/lock/subsys/Microsoft.R.Host.Broker.dll
         success $"Microsoft.R.Host.Broker server startup"
         echo
