@@ -161,7 +161,7 @@
       <Visible>True</Visible>
     </Content>
     <Content Include="RFile.ico" />
-    <None Include="Microsoft.R.Host.Broker.Config.json">
+    <None Include="Microsoft.R.Host.Broker.Windows.Config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
