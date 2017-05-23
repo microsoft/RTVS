@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
@@ -24,24 +25,34 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private readonly IVsTextManager4 _textManager;
         private readonly IEnumerable<string> _automationObjectNames;
         private readonly IServiceContainer _services;
+        private readonly IVsPackage _package;
 
-        private Guid _packageGuid;
         private ConnectionPointCookie _textManagerEventsCookie;
         private LANGPREFERENCES3? _langPrefs;
 
-        public LanguageSettingsStorage(IServiceContainer services, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
+        public LanguageSettingsStorage(IVsPackage package, IServiceContainer services, Guid languageServiceId, IEnumerable<string> automationObjectNames) {
+            _package = package;
             _services = services;
             _languageServiceId = languageServiceId;
-            _packageGuid = packageId;
             _automationObjectNames = automationObjectNames;
 
             _textManager = _services.GetService<IVsTextManager4>(typeof(SVsTextManager));
             _textManagerEventsCookie = new ConnectionPointCookie(_textManager, this, typeof(IVsTextManagerEvents4));
-
-            LoadLanguagePreferences();
         }
 
         public event EventHandler<EventArgs> SettingsChanged;
+
+        /// <summary>
+        /// Loads settings via language (editor) tools options page
+        /// </summary>
+        public void Load() {
+            LoadLanguagePreferences();
+
+            var vsShell = _services.GetService<IVsShell>(typeof(SVsShell));
+            foreach (var curAutomationObjectName in _automationObjectNames) {
+                _package.GetAutomationObject(curAutomationObjectName, out object automationObject);
+            }
+        }
 
         /// <summary>
         /// VS language preferences: tab size, indent size, spaces or tabs.

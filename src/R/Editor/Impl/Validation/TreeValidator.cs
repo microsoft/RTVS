@@ -169,6 +169,7 @@ namespace Microsoft.R.Editor.Validation {
             while (!ValidationResults.IsEmpty) {
                 ValidationResults.TryDequeue(out IValidationError error);
             }
+            ClearResults();
             UnadviseFromIdle();
         }
 
@@ -184,9 +185,7 @@ namespace Microsoft.R.Editor.Validation {
         /// <param name="e"></param>
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
             if (_syntaxCheckEnabled) {
-                foreach (var node in e.Nodes) {
-                    ClearResultsForNode(node);
-                }
+                ClearResults();
             }
         }
 
@@ -211,10 +210,7 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        private void ClearResultsForNode(IAstNode node) {
-            foreach (var child in node.Children) {
-                ClearResultsForNode(child);
-            }
+        private void ClearResults() {
             // Adding sentinel will cause task list handler
             // to remove all results from the task list 
             ValidationResults.Enqueue(new ValidationSentinel());

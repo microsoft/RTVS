@@ -168,17 +168,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                         }
 
                         if (string.IsNullOrEmpty(error.Message)) {
-                            // Empty message means remove all error for the element.
-                            var removedRange = TextRange.EmptyRange; // _errorTags.RemoveTagsForNode(error.NodeKey);
-
-                            // Only update changedRange if there were errors removed
-                            if (removedRange.End > 0) {
-                                if (changedRange.End == 0) {
-                                    changedRange = removedRange;
-                                } else {
-                                    changedRange = changedRange.Union(removedRange);
-                                }
-                            }
+                            // Empty message means remove all errors.
+                            changedRange = new TextRange(0, _textBuffer.CurrentSnapshot.Length);
                         } else {
                             var tag = new EditorErrorTag(_document.EditorTree, error);
                             if (tag.Length > 0) {
