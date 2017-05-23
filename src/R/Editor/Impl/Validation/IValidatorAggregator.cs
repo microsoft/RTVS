@@ -3,12 +3,13 @@
 
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Validation.Errors;
 
 namespace Microsoft.R.Editor.Validation {
-    interface IValidatorAggregator {
-        void Run(AstRoot ast, ConcurrentQueue<IValidationError> results, CancellationToken ct);
+    public interface IValidatorAggregator {
+        Task RunAsync(AstRoot ast, ConcurrentQueue<IValidationError> results, CancellationToken ct);
         bool Busy { get; }
     }
 }

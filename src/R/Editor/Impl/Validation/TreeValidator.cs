@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
@@ -158,7 +159,7 @@ namespace Microsoft.R.Editor.Validation {
                 }
                 // Run all validators
                 _cts = new CancellationTokenSource();
-                _aggregator.Run(_editorTree.AstRoot, ValidationResults, _cts.Token);
+                _aggregator.RunAsync(_editorTree.AstRoot, ValidationResults, _cts.Token).DoNotWait();
             }
         }
 

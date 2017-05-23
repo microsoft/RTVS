@@ -227,6 +227,7 @@
     <Compile Include="Utility\TestRSettings.cs" />
     <Compile Include="Utility\TextViewTest.cs" />
     <Compile Include="Utility\TextBufferUtility.cs" />
+    <Compile Include="Validation\LinterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">

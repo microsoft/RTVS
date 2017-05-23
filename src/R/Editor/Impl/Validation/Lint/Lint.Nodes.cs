@@ -209,7 +209,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 if (options.SnakeCase && IsSnakeCase(text)) {
                     list.Add(new ValidationWarning(node, Resources.Lint_SnakeCase, ErrorLocation.Token));
                 }
-                if (options.SnakeCase && IsPascalCase(text)) {
+                if (options.PascalCase && IsPascalCase(text)) {
                     list.Add(new ValidationWarning(node, Resources.Lint_PascalCase, ErrorLocation.Token));
                 }
                 if (options.MultipleDots && HasMultipleDots(text)) {

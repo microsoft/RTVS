@@ -23,6 +23,7 @@ namespace Microsoft.R.Editor.Validation {
         private readonly IREditorSettings _settings;
         private readonly IEnumerable<IRDocumentValidator> _validators;
         private Task _validationTask;
+        private TaskCompletionSource<bool> _tcs;
 
         public ValidatorAggregator(IServiceContainer services) {
             _services = services;
@@ -43,11 +44,8 @@ namespace Microsoft.R.Editor.Validation {
         /// Launches AST and file validation / syntax check.
         /// The process runs asyncronously.
         /// </summary>
-        public void Run(AstRoot ast, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
-            // Begin/End validation mush happen on main thread so validators
-            // can acquire necessary resources and services up front and release
-            // then appropriately when done.
-            _services.MainThread().Assert();
+        public Task RunAsync(AstRoot ast, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
+            _tcs = new TaskCompletionSource<bool>();
             try {
                 BeginValidation(_settings);
                 _validationTask = Task.Run(() => {
@@ -55,13 +53,16 @@ namespace Microsoft.R.Editor.Validation {
                     foreach (var o in outcome) {
                         results.Enqueue(o);
                     }
-                }).ContinueWith(async t => {
-                    await _services.MainThread().SwitchToAsync();
+                }).ContinueWith(t => {
                     EndValidation();
+                    _tcs.TrySetResult(true);
                 });
             } catch (OperationCanceledException) {
                 EndValidation();
+                _tcs.TrySetCanceled();
             }
+
+            return _tcs.Task;
         }
 
         public bool Busy => _validationTask != null;
