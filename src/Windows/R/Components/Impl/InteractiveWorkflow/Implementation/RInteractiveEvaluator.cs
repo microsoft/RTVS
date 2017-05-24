@@ -224,7 +224,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (args.OutputType == OutputType.Output) {
                 Write(args.Message.ToUnicodeQuotes()).DoNotWait();
             } else {
-                WriteErrorLine(args.Message);
+                WriteError(args.Message.ToUnicodeQuotes()).DoNotWait();
             }
         }
 
@@ -283,6 +283,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
                 await _coreShell.SwitchToMainThreadAsync();
                 CurrentWindow?.Write(message);
+            }
+        }
+
+        private async Task WriteError(string message) {
+            if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
+                await _coreShell.SwitchToMainThreadAsync();
+                CurrentWindow?.WriteError(message);
             }
         }
 
