@@ -53,22 +53,27 @@ namespace Microsoft.R.Editor.Validation.Lint {
         }
 
         private static IEnumerable<IValidationError> LineLengthCheck(ITextProvider tp, LintOptions options) {
-            if (options.LineLength && tp.Length > 1) {
-                // line_length_linter: check the line length of both comments and code is less than length.
-                var list = new List<IValidationError>();
-                var start = 0;
-                for (var i = 0; i < tp.Length + 1; i++) {
-                    var ch = i < tp.Length ? tp[i] : '\0';
-                    if (ch == '\r' || ch == '\n' || ch == '\0') {
-                        var length = i - start;
-                        if (length > options.MaxLineLength) {
-                            list.Add(new ValidationWarning(new TextRange(start, 1), Resources.Lint_LineTooLong.FormatInvariant(length, options.MaxLineLength), ErrorLocation.Token));
-                        }
-                        start = i;
+            if (!options.LineLength || tp.Length <= 1) {
+                return Enumerable.Empty<IValidationError>();
+            }
+            // line_length_linter: check the line length of both comments and code is less than length.
+            var list = new List<IValidationError>();
+            var start = 0;
+            for (var i = 0; i < tp.Length + 1; i++) {
+                var ch = i < tp.Length ? tp[i] : '\0';
+                if (ch == '\r' || ch == '\n' || ch == '\0') {
+                    var length = i - start;
+                    if (length > options.MaxLineLength) {
+                        list.Add(new ValidationWarning(new TextRange(start, length), Resources.Lint_LineTooLong.FormatInvariant(length, options.MaxLineLength), ErrorLocation.Token));
                     }
+
+                    if (i < tp.Length && ((ch == '\r' && tp[i + 1] == '\n') || (ch == '\n' && tp[i + 1] == '\r'))) {
+                        i++;
+                    }
+                    start = i + 1;
                 }
             }
-            return Enumerable.Empty<IValidationError>();
+            return list;
         }
     }
 }

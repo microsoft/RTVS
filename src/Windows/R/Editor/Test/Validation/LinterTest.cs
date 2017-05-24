@@ -2,24 +2,17 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Resources;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Roxygen;
-using Microsoft.R.Editor.Test.Completions;
 using Microsoft.R.Editor.Validation;
 using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.R.Editor.Validation.Lint;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Roxygen {
@@ -103,25 +96,45 @@ namespace Microsoft.R.Editor.Test.Roxygen {
             }
         }
         [CompositeTest]
-        [InlineData("x[1,]", 2, 1, "Lint_NoSpaceBetweenCommaAndClosingBracket", "SpacesAroundComma")]
-        [InlineData("x[[1,]]", 2, 1, "Lint_NoSpaceBetweenCommaAndClosingBracket", "SpacesAroundComma")]
-        [InlineData("if (TRUE) { x <- 1 }", 19, 1, "Lint_CloseCurlySeparateLine", "CloseCurlySeparateLine")]
-        public async Task Validate2(string content, int start, int length, string message, string propertyName) {
-
-            var prop = propertyName != null ? _options.GetType().GetProperty(propertyName) : null;
-            prop?.SetValue(_options, true);
+        [InlineData("x[1,]", new[] { 3, 4 }, new[] { 1, 1 }, new[] { "Lint_CommaSpaces", "Lint_NoSpaceBetweenCommaAndClosingBracket" })]
+        [InlineData("x[[1,]]", new[] { 4, 5 }, new[] { 1, 2 }, new[] { "Lint_CommaSpaces", "Lint_NoSpaceBetweenCommaAndClosingBracket" })]
+        [InlineData("if (TRUE) { x <- 1 }", new[] { 10, 19 }, new[] { 1, 1 }, new[] { "Lint_OpenCurlyPosition", "Lint_CloseCurlySeparateLine" })]
+        public async Task Validate2(string content, int[] start, int[] length, string[] message) {
 
             var ast = RParser.Parse(content);
             await _validator.RunAsync(ast, _results, CancellationToken.None);
-            _results.Should().HaveCount(length > 0 ? 1 : 0);
+            _results.Should().HaveCount(start.Length);
 
-            if (length > 0) {
-                _results.TryPeek(out IValidationError e);
-                e.Start.Should().Be(start);
-                e.Length.Should().Be(length);
-                e.Message.Should().Be(Resources.ResourceManager.GetString(message));
+            for (var i = 0; i < start.Length; i++) {
+                _results.TryDequeue(out IValidationError e);
+                e.Start.Should().Be(start[i]);
+                e.Length.Should().Be(length[i]);
+                e.Message.Should().Be(Resources.ResourceManager.GetString(message[i]));
                 e.Severity.Should().Be(ErrorSeverity.Warning);
             }
+        }
+
+        [CompositeTest]
+        [InlineData("x <- \"012345678901234567890123456789\"", 20, 0, 37, "Lint_LineTooLong", "LineLength", "MaxLineLength")]
+        [InlineData("x <- 1\nx <- \"012345678901234567890123456789\"\ny <- 3", 20, 7, 37, "Lint_LineTooLong", "LineLength", "MaxLineLength")]
+        [InlineData(" abcdefghijklmnopqrstuvwxyz <- 1", 20, 1, 26, "Lint_NameTooLong", "NameLength", "MaxNameLength")]
+        public async Task LengthLimit(string content, int maxLength, int start, int length, string message, string propertyName, string propertyLimitName) {
+
+            var prop = propertyName != null ? _options.GetType().GetProperty(propertyName) : null;
+            prop?.SetValue(_options, true);
+            var propLimit = propertyLimitName != null ? _options.GetType().GetProperty(propertyLimitName) : null;
+            propLimit?.SetValue(_options, maxLength);
+
+            var ast = RParser.Parse(content);
+            await _validator.RunAsync(ast, _results, CancellationToken.None);
+            _results.Should().HaveCount(1);
+
+            _results.TryPeek(out IValidationError e);
+            e.Start.Should().Be(start);
+            e.Length.Should().Be(length);
+            var m = Resources.ResourceManager.GetString(message).FormatInvariant(e.Length, maxLength);
+            e.Message.Should().Be(m);
+            e.Severity.Should().Be(ErrorSeverity.Warning);
 
             if (prop != null) {
                 prop.SetValue(_options, false);

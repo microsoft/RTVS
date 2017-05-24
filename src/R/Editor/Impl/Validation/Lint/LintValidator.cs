@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Validation.Errors;
