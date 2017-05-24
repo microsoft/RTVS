@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
@@ -21,7 +20,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
 
         private static IValidationError TrailingWhitespaceCheck(CharacterStream cs, LintOptions options) {
             if (options.TrailingWhitespace) {
-                if (cs.IsWhiteSpace() && !cs.CurrentChar.IsLineBreak() && cs.NextChar.IsLineBreak()) {
+                if (cs.IsWhiteSpace() && !cs.CurrentChar.IsLineBreak() && (cs.NextChar.IsLineBreak() || cs.Position == cs.Length - 1)) {
                     // trailing_whitespace_linter: check there are no trailing whitespace characters.
                     return new ValidationWarning(new TextRange(cs.Position, 1), Resources.Lint_TrailingWhitespace, ErrorLocation.Token);
                 }
@@ -36,12 +35,18 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 int i;
                 for (i = tp.Length - 1; i >= 0; i--) {
                     if (!char.IsWhiteSpace(tp[i]) && i < tp.Length - 1) {
-                        trailingWhitespace = tp.GetText(new TextRange(i + 1, tp.Length - i - 1));
+                        i++;
+                        trailingWhitespace = tp.GetText(new TextRange(i, tp.Length - i));
                         break;
                     }
                 }
                 if (trailingWhitespace.Count(ch => ch == '\n') > 1 || trailingWhitespace.Count(ch => ch == '\r') > 1) {
-                    return new[] { new ValidationWarning(new TextRange(i + 1, 1), Resources.Lint_TrailingBlankLines, ErrorLocation.Token) };
+                    // Squiggle all extra blank lines (a single one is OK)
+                    return trailingWhitespace
+                            .IndexWhere(ch => ch == '\n')
+                            .Skip(1)
+                            .Select(x =>
+                                new ValidationWarning(new TextRange(i + x, 1), Resources.Lint_TrailingBlankLines, ErrorLocation.Token));
                 }
             }
             return Enumerable.Empty<IValidationError>();

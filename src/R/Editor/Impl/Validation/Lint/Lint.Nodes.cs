@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
@@ -37,10 +38,10 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     var result = HasLineTextBeforePosition(tp, node.Start);
                     if (!result) {
                         var text = GetLineTextAfterPosition(tp, node.Start);
-                        result = text.Length > 0 && !text.Trim().EqualsOrdinal("else");
-                        if (result) {
-                            return new ValidationWarning(node, Resources.Lint_CloseCurlySeparateLine, ErrorLocation.Token);
-                        }
+                        result = text.Length > 0 && !text.Trim().StartsWithOrdinal("else");
+                    }
+                    if (result) {
+                        return new ValidationWarning(node, Resources.Lint_CloseCurlySeparateLine, ErrorLocation.Token);
                     }
                 }
             }
@@ -84,7 +85,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.OpenCurlyPosition) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.OpenCurlyBrace) {
                     var tp = node.Root.TextProvider;
-                    if (!HasLineTextBeforePosition(tp, node.Start) || !tp.IsNewLineAfterPosition(node.Start)) {
+                    if (!HasLineTextBeforePosition(tp, node.Start) || !tp.IsNewLineAfterPosition(node.End)) {
                         return new ValidationWarning(node, Resources.Lint_OpenCurlyPosition, ErrorLocation.Token);
                     }
                 }
@@ -98,7 +99,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.DoubleQuotes) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.String) {
                     if (node.Root.TextProvider[node.Start] != '\"') {
-                        return new ValidationWarning(new TextRange(node.Start, 1), Resources.Lint_DoubleQuotes, ErrorLocation.Token);
+                        return new ValidationWarning(node, Resources.Lint_DoubleQuotes, ErrorLocation.Token);
                     }
                 }
             }
@@ -129,14 +130,27 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     case RTokenType.OpenSquareBracket:
                     case RTokenType.OpenDoubleSquareBracket:
                         // x[1, OK x( 2) is not
-                        if (tp.IsWhitespaceAfterPosition(node.End - 1)) {
-                            return new ValidationWarning(node, Resources.Lint_SpaceAfterLeftParenthesis, ErrorLocation.Token);
+                        if (!tp.IsNewLineAfterPosition(node.End) && tp.IsWhitespaceAfterPosition(node.End - 1)) {
+                            var lineEnd = tp.IndexOf('\n', node.End);
+                            lineEnd = lineEnd >= 0 ? lineEnd : tp.Length;
+                            var text = tp.GetText(TextRange.FromBounds(node.End, lineEnd));
+                            var wsEnd = text.IndexWhere(ch => !char.IsWhiteSpace(ch)).FirstOrDefault();
+                            wsEnd = wsEnd > 0 ? wsEnd + node.End : tp.Length;
+                            return new ValidationWarning(TextRange.FromBounds(node.End, wsEnd), Resources.Lint_SpaceAfterLeftParenthesis, ErrorLocation.Token);
                         }
                         break;
                     case RTokenType.CloseBrace:
                         // () is OK, (,,,) is OK, x( )  is not OK. But we do allow line break before )
                         if (tp.IsWhitespaceBeforePosition(node.Start) && !tp.IsNewLineBeforePosition(node.Start)) {
-                            return new ValidationWarning(node, Resources.Lint_SpaceBeforeClosingBrace, ErrorLocation.Token);
+                            var i = node.Start - 1;
+                            for (; i >= 0; i--) {
+                                if (!char.IsWhiteSpace(tp[i]) || tp[i] == '\r' || tp[i] == '\n') {
+                                    i++;
+                                    break;
+                                }
+                            }
+                            i = Math.Max(i, 0);
+                            return new ValidationWarning(TextRange.FromBounds(i, node.Start), Resources.Lint_SpaceBeforeClosingBrace, ErrorLocation.Token);
                         }
                         break;
                     case RTokenType.CloseSquareBracket:
@@ -156,7 +170,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.NoSpaceAfterFunctionName && node is FunctionCall fc) {
                 var tp = node.Root.TextProvider;
                 if (fc.RightOperand is Variable v && tp.IsWhitespaceAfterPosition(v.End - 1)) {
-                    return new ValidationWarning(fc.OpenBrace, Resources.Lint_SpaceAfterFunctionName, ErrorLocation.Token);
+                    return new ValidationWarning(TextRange.FromBounds(v.End, fc.OpenBrace.Start), Resources.Lint_SpaceAfterFunctionName, ErrorLocation.Token);
                 }
             }
             return null;
@@ -171,8 +185,18 @@ namespace Microsoft.R.Editor.Validation.Lint {
 
         private static IValidationError MultipleStatementsCheck(IAstNode node, LintOptions options) {
             if (options.MultipleStatements && node is TokenNode t && t.Token.TokenType == RTokenType.Semicolon) {
-                if (!node.Root.TextProvider.IsNewLineAfterPosition(node.End)) {
-                    return new ValidationWarning(node, Resources.Lint_MultipleStatementsInLine, ErrorLocation.Token);
+                var tp = node.Root.TextProvider;
+                if (!tp.IsNewLineAfterPosition(node.End)) {
+                    // # comment is OK but comments are not part of the AST.
+                    var lineBreakIndex = tp.IndexOf('\n', node.End);
+                    var trailingTextEnd = lineBreakIndex >= 0 ? lineBreakIndex : tp.Length;
+                    var trailingText = tp.GetText(TextRange.FromBounds(node.End, trailingTextEnd));
+                    var tokens = new RTokenizer().Tokenize(trailingText);
+                    var offendingTokens = tokens.Where(x => x.TokenType != RTokenType.Comment);
+                    if (offendingTokens.Any()) {
+                        var squiggle = TextRange.FromBounds(node.End + offendingTokens.First().Start, node.End + offendingTokens.Last().End);
+                        return new ValidationWarning(squiggle, Resources.Lint_MultipleStatementsInLine, ErrorLocation.Token);
+                    }
                 }
             }
             return null;

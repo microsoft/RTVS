@@ -161,7 +161,7 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Insert space between ] or ]] and preceding a comma.
+        ///   Looks up a localized string similar to Insert space between ] or ]] and the preceding comma.
         /// </summary>
         internal static string Lint_NoSpaceBetweenCommaAndClosingBracket {
             get {

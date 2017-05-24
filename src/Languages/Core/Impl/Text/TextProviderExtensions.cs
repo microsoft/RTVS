@@ -23,10 +23,8 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         /// <param name="textProvider">Text provider</param>
         /// <param name="position">Position to check</param>
-        public static bool IsNewLineBeforePosition(this ITextProvider textProvider, int position) {
-            int newLinePosition; // Don't care about the value for this function overload
-            return TryGetNewLineBeforePosition(textProvider, position, out newLinePosition);
-        }
+        public static bool IsNewLineBeforePosition(this ITextProvider textProvider, int position)
+            =>  TryGetNewLineBeforePosition(textProvider, position, out int newLinePosition);
 
         public static bool TryGetNewLineBeforePosition(this ITextProvider textProvider, int position, out int newLinePosition) {
             newLinePosition = -1;
