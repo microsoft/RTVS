@@ -40,14 +40,25 @@ namespace Microsoft.R.Editor.Validation.Lint {
                         break;
                     }
                 }
-                if (trailingWhitespace.Count(ch => ch == '\n') > 1 || trailingWhitespace.Count(ch => ch == '\r') > 1) {
-                    // Squiggle all extra blank lines (a single one is OK)
-                    return trailingWhitespace
-                            .IndexWhere(ch => ch == '\n')
-                            .Skip(1)
-                            .Select(x =>
-                                new ValidationWarning(new TextRange(i + x, 1), Resources.Lint_TrailingBlankLines, ErrorLocation.Token));
+                // On Windows, we get \r\n and need to squiggle \r.
+                // On other platforms we may get standalone \n and should then report it
+                var warnings = GetEolWarnings(trailingWhitespace, i, '\r');
+                if (!warnings.Any()) {
+                    warnings = GetEolWarnings(trailingWhitespace, i, '\n');
                 }
+                return warnings;
+            }
+            return Enumerable.Empty<IValidationError>();
+        }
+
+        private static IEnumerable<IValidationError> GetEolWarnings(string trailingWhitespace, int baseIndex, char eol) {
+            if (trailingWhitespace.Count(ch => ch == eol) > 1) {
+                // Squiggle all extra blank lines (a single one is OK)
+                return trailingWhitespace
+                        .IndexWhere(ch => ch == eol)
+                        .Skip(1)
+                        .Select(x =>
+                            new ValidationWarning(new TextRange(baseIndex + x, 1), Resources.Lint_TrailingBlankLines, ErrorLocation.Token));
             }
             return Enumerable.Empty<IValidationError>();
         }

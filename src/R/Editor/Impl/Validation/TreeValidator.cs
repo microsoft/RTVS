@@ -164,7 +164,7 @@ namespace Microsoft.R.Editor.Validation {
         }
 
         private void StopValidation() {
-            _cts.Cancel();
+            _cts?.Cancel();
 
             //  Empty the results queue
             while (!ValidationResults.IsEmpty) {
