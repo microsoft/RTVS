@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
@@ -18,13 +19,13 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     public sealed class VariableExplorerTest : HostBasedInteractiveTest {
         private readonly TestFilesFixture _files;
 
-        public VariableExplorerTest(TestFilesFixture files) {
+        public VariableExplorerTest(IServiceContainer services, TestFilesFixture files): base(services) {
             _files = files;
         }
 
         [Test]
         public void ConstructorTest02() {
-            using (var script = new ControlTestScript(typeof(VariableView))) {
+            using (var script = new ControlTestScript(typeof(VariableView), Services)) {
                 var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
             }
@@ -33,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         public async Task SimpleDataTest() {
             VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableView))) {
+            using (var script = new ControlTestScript(typeof(VariableView), Services)) {
                 DoIdle(100);
                 await HostScript.Session.ExecuteAsync("x <- c(1:10)");
                 DoIdle(1000);
@@ -45,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         [Test]
         public async Task SimpleFunctionTest() {
             VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableView))) {
+            using (var script = new ControlTestScript(typeof(VariableView), Services)) {
                 DoIdle(100);
                 await HostScript.Session.ExecuteAsync("x <- lm");
                 DoIdle(1000);

@@ -14,6 +14,8 @@ namespace Microsoft.Common.Core.Test.Registry {
             _keys = keys;
         }
 
+        public string LocalMachineHive => null;
+
         public IRegistryKey OpenBaseKey(RegistryHive hive, RegistryView view) {
             return new RegistryBaseKeyMock(_keys);
         }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Comments;
@@ -14,19 +13,15 @@ using Microsoft.R.Core.Utility;
 namespace Microsoft.R.Core.AST {
     [DebuggerDisplay("AstRoot, Comments: {Comments.Count}, Errors: {Errors.Count}")]
     public sealed class AstRoot : AstNode {
-        private TextRangeCollection<IParseError> _errors = new TextRangeCollection<IParseError>();
-
         public ITextProvider TextProvider { get; internal set; }
 
         public CommentsCollection Comments { get; private set; }
 
-        public ICodeEvaluator CodeEvaluator { get; private set; }
+        public ICodeEvaluator CodeEvaluator { get; }
 
         public TextRangeCollection<IParseError> Errors { get; internal set; }
 
-        public AstRoot(ITextProvider textProvider) :
-            this(textProvider, new CodeEvaluator()) {
-        }
+        public AstRoot(ITextProvider textProvider) : this(textProvider, new CodeEvaluator()) { }
 
         public AstRoot(ITextProvider textProvider, ICodeEvaluator codeEvaluator) {
             TextProvider = textProvider;
@@ -36,61 +31,37 @@ namespace Microsoft.R.Core.AST {
         }
 
         #region IAstNode
-        public override AstRoot Root {
-            get { return this; }
-        }
+        public override AstRoot Root => this;
 
         /// <summary>
         /// Finds deepest element node that contains given position
         /// </summary>
         /// <param name="position">Position</param>
-        public override IAstNode NodeFromPosition(int position) {
-            IAstNode node = base.NodeFromPosition(position);
-            return node ?? this;
-        }
+        public override IAstNode NodeFromPosition(int position) 
+            => base.NodeFromPosition(position) ?? this;
 
         /// <summary>
         /// Finds deepest element node that contains given position
         /// </summary>
-        /// <param name="position">Position</param>
-        public override IAstNode NodeFromRange(ITextRange range, bool inclusiveEnd = false) {
-            IAstNode node = base.NodeFromRange(range, inclusiveEnd);
-            return node ?? this;
-        }
+        public override IAstNode NodeFromRange(ITextRange range, bool inclusiveEnd = false) 
+            => base.NodeFromRange(range, inclusiveEnd) ?? this;
+
         #endregion
 
         #region ITextRange
-        public override int Start {
-            get { return 0; }
-        }
-
-        public override int End {
-            get { return TextProvider.Length; }
-        }
-
-        public override bool Contains(int position) {
-            return position >= Start && position <= End;
-        }
+        public override int Start => 0;
+        public override int End => TextProvider.Length;
+        public override bool Contains(int position) => position >= Start && position <= End;
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent) {
+        public override bool Parse(ParseContext context, IAstNode parent = null) {
             // Remove comments from the token stream
-            this.Comments = new CommentsCollection(context.Comments);
+            Comments = new CommentsCollection(context.Comments);
 
-            GlobalScope globalScope = new GlobalScope();
+            var globalScope = new GlobalScope();
             return globalScope.Parse(context, this);
         }
 
-
-        /// <summary>
-        /// Updates positions of nodes in the tree reflecting multiple 
-        /// changes made to the source text buffer.
-        /// </summary>
-        public void ReflectTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges, ITextProvider newText) {
-            foreach (TextChangeEventArgs curChange in textChanges) {
-                ReflectTextChange(curChange.Start, curChange.OldLength, curChange.NewLength, newText);
-            }
-        }
 
         /// <summary>
         /// Updates positions of nodes in the tree reflecting changes 
@@ -102,13 +73,13 @@ namespace Microsoft.R.Core.AST {
         /// <param name="newText">Complete new text snapshot</param>
         public void ReflectTextChange(int start, int oldLength, int newLength, ITextProvider newText) {
             TextProvider = newText;
-            int offset = newLength - oldLength;
+            var offset = newLength - oldLength;
             ShiftStartingFrom(start, offset);
             Comments.ReflectTextChange(start, oldLength, newLength);
         }
 
         public string WriteTree() {
-            AstWriter writer = new AstWriter();
+            var writer = new AstWriter();
             return writer.WriteTree(this);
         }
     }

@@ -6,16 +6,13 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Testing;
 
 namespace Microsoft.Common.Core {
     public static class TaskExtensions {
-        public static Task FailOnTimeout(this Task task, int millisecondsTimeout) {
-            return task.TimeoutAfterImpl<object>(millisecondsTimeout);
-        }
+        public static Task FailOnTimeout(this Task task, int millisecondsTimeout) => task.TimeoutAfterImpl<object>(millisecondsTimeout);
 
-        public static Task<T> FailOnTimeout<T>(this Task task, int millisecondsTimeout) {
-            return (Task<T>) task.TimeoutAfterImpl<T>(millisecondsTimeout);
-        }
+        public static Task<T> FailOnTimeout<T>(this Task task, int millisecondsTimeout) => (Task<T>)task.TimeoutAfterImpl<T>(millisecondsTimeout);
 
         public static Task TimeoutAfterImpl<T>(this Task task, int millisecondsTimeout) {
             if (task.IsCompleted || (millisecondsTimeout == Timeout.Infinite)) {
@@ -52,10 +49,8 @@ namespace Microsoft.Common.Core {
             task.ContinueWith(continuation, taskState, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
         }
-        
-        public static Task ContinueOnRanToCompletion<TResult>(this Task<TResult> task, Action<TResult> action) {
-            return task.ContinueWith(t => action(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
-        }
+
+        public static Task ContinueOnRanToCompletion<TResult>(this Task<TResult> task, Action<TResult> action) => task.ContinueWith(t => action(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
 
         /// <summary>
         /// Rethrows task exceptions back to the callers synchronization context if it is possible
@@ -66,6 +61,10 @@ namespace Microsoft.Common.Core {
         public static void DoNotWait(this Task task) {
             if (task.IsCompleted) {
                 ReThrowTaskException(task);
+                return;
+            }
+
+            if (TestEnvironment.Current != null && TestEnvironment.Current.TryAddTaskToWait(task)) {
                 return;
             }
 
@@ -102,18 +101,14 @@ namespace Microsoft.Common.Core {
         /// will be raised without being wrapped in a
         /// <see cref="AggregateException"/>.
         /// </summary>
-        public static void WaitAndUnwrapExceptions(this Task task) {
-            task.GetAwaiter().GetResult();
-        }
+        public static void WaitAndUnwrapExceptions(this Task task) => task.GetAwaiter().GetResult();
 
         /// <summary>
         /// Waits for a task to complete. If an exception occurs, the exception
         /// will be raised without being wrapped in a
         /// <see cref="AggregateException"/>.
         /// </summary>
-        public static T WaitAndUnwrapExceptions<T>(this Task<T> task) {
-            return task.GetAwaiter().GetResult();
-        }
+        public static T WaitAndUnwrapExceptions<T>(this Task<T> task) => task.GetAwaiter().GetResult();
 
         /// <summary>
         /// Waits for a task to complete within a given timeout. 

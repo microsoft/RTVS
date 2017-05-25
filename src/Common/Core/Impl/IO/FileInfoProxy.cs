@@ -16,12 +16,8 @@ namespace Microsoft.Common.Core.IO {
         public FileAttributes Attributes => _fileInfo.Attributes;
         public IDirectoryInfo Directory => _fileInfo.Directory != null ? new DirectoryInfoProxy(_fileInfo.Directory) : null;
 
-        public StreamWriter CreateText() {
-            return _fileInfo.CreateText();
-        }
+        public StreamWriter CreateText() => _fileInfo.CreateText();
 
-        public void Delete() {
-            _fileInfo.Delete();
-        }
+        public void Delete() => _fileInfo.Delete();
     }
 }

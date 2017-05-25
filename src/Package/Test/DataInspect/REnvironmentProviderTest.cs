@@ -96,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             // Wait for prompt to appear.
             using (await _session.BeginInteractionAsync()) { }
 
-            var envProvider = new REnvironmentProvider(_session, UIThreadHelper.Instance);
+            var envProvider = new REnvironmentProvider(_session, UIThreadHelper.Instance.MainThread);
             var envTcs = new TaskCompletionSource<IREnvironment[]>();
             envProvider.Environments.CollectionChanged += (sender, args) => {
                 envTcs.TrySetResult(envProvider.Environments.ToArray());

@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.Search;
-using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;

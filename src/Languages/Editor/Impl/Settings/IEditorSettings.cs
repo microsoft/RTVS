@@ -5,7 +5,7 @@ using System;
 using Microsoft.Languages.Core.Formatting;
 
 namespace Microsoft.Languages.Editor.Settings {
-    public interface IEditorSettings {
+    public interface IEditorSettings: IDisposable {
         event EventHandler<EventArgs> SettingsChanged;
 
         bool AutoFormat { get; }

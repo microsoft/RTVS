@@ -20,8 +20,9 @@ namespace Microsoft.Languages.Editor.Outline {
 
         #region ITagger<IOutliningRegionTag>
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (spans.Count == 0 || _currentRegions == null || _currentRegions.Count == 0)
+            if (spans.Count == 0 || _currentRegions == null || _currentRegions.Count == 0) {
                 yield break;
+            }
 
             ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
             SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(snapshot, SpanTrackingMode.EdgeExclusive);

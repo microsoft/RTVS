@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -218,7 +217,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override int VisualChildrenCount {
             get {
-                if (_visualChildren.Count == 0) return 0;
+                if (_visualChildren.Count == 0) {
+                    return 0;
+                }
+
                 return _visualChildren.Count + 1;
             }
         }

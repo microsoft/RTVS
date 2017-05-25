@@ -13,9 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
-
 
 namespace Microsoft.R.Host.Client.Host {
     internal sealed class RemoteBrokerClient : BrokerClient {
@@ -67,7 +65,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
             // Broker is not responding. Try regular ping.
-            string status = await ConnectionInfo.Uri.GetMachineOnlineStatusAsync();
+            var status = await ConnectionInfo.Uri.GetMachineOnlineStatusAsync();
             return string.IsNullOrEmpty(status)
                 ? new RHostDisconnectedException(Resources.Error_BrokerNotRunning.FormatInvariant(Name), exception)
                 : new RHostDisconnectedException(Resources.Error_HostNotRespondingToPing.FormatInvariant(Name, exception.Message), exception);
@@ -104,14 +102,14 @@ namespace Microsoft.R.Host.Client.Host {
                         _certificateHash = hashString;
                     }
                 }
-                return _certificateValidationResult.HasValue ? _certificateValidationResult.Value : false;
+                return _certificateValidationResult ?? false;
             }
         }
 
         private string GetCertHashString(byte[] hash) {
-            StringBuilder sb = new StringBuilder(); 
-            for (int i = 0; i < hash.Length; i++) {
-                sb.Append(hash[i].ToString("x2"));
+            var sb = new StringBuilder(); 
+            foreach (var t in hash) {
+                sb.Append(t.ToString("x2"));
             }
             return sb.ToString();
         }

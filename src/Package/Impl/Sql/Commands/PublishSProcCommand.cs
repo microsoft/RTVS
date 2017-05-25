@@ -27,8 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly ISettingsStorage _settings;
 
         [ImportingConstructor]
-        public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) :
-            this(shell, pss, shell.FileSystem(), dacServicesProvider, settings) {
+        public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IDacPackageServicesProvider dacServicesProvider) :
+            this(shell, pss, shell.FileSystem(), dacServicesProvider, shell.GetService<ISettingsStorage>()) {
         }
 
         public PublishSProcCommand(ICoreShell shell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServicesProvider dacServicesProvider, ISettingsStorage settings) {

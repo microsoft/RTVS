@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
+using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.R.Core.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -159,7 +160,7 @@ namespace Microsoft.R.Core.Test.Tokens {
         [Test]
         [Category.R.Tokenizer]
         public void TokenizeFile_FloatsFile() {
-            TokenizeFiles.TokenizeFile(_files, @"Tokenization\Floats.r");
+            TokenizeFiles.TokenizeFile<RToken, RTokenType, RTokenizer>(_files, @"Tokenization\Floats.r", "R");
         }
     }
 }

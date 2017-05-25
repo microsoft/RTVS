@@ -9,7 +9,6 @@ using Microsoft.Languages.Editor.Settings;
 
 namespace Microsoft.Language.Editor.Test.Settings {
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IWritableEditorSettingsStorage))]
     public class TestSettingsStorage : IWritableEditorSettingsStorage {
         private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
 
@@ -24,8 +23,8 @@ namespace Microsoft.Language.Editor.Test.Settings {
         public void Set<T>(string name, T value) => _settings[name] = value;
         #endregion
 
-        public void LoadFromStorage() { }
         public void ResetSettings() { }
+        public void Dispose() { }
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> SettingsChanged;

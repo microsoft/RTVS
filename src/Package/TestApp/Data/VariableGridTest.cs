@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -22,30 +23,28 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         private readonly TestFilesFixture _files;
         private readonly VariableRHostScript _hostScript;
 
-        public VariableGridTest(TestFilesFixture files) {
+        public VariableGridTest(IServiceContainer services, TestFilesFixture files): base(services) {
             _files = files;
-            _hostScript = new VariableRHostScript(SessionProvider);
+            _hostScript = new VariableRHostScript(Services);
         }
 
-        protected override void Dispose(bool disposing) {
+        public override Task DisposeAsync() {
             _hostScript.Dispose();
-            base.Dispose(disposing);
+            return base.DisposeAsync();
         }
 
         [Test]
         public async Task ConstructorTest() {
-            VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
                 await PrepareControl(_hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
-                actual = VisualTreeObject.Create(script.Control);
+                var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
             }
         }
 
         [Test]
         public async Task SortTest01() {
-            VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
                 await PrepareControl(_hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
                 var header = VisualTreeTestExtensions.FindFirstVisualChildOfType<HeaderTextVisual>(script.Control);
                 var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
@@ -56,15 +55,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     grid.ToggleSort(header, false);
                 });
                 DoIdle(200);
-                actual = VisualTreeObject.Create(script.Control);
+                var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted01");
             }
         }
 
         [Test]
         public async Task SortTest02() {
-            VisualTreeObject actual = null;
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
                 await PrepareControl(_hostScript, script, "grid.test <- mtcars");
                 UIThreadHelper.Instance.Invoke(() => {
                     var grid = VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
@@ -84,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(200);
                 });
 
-                actual = VisualTreeObject.Create(script.Control);
+                var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted02");
             }
         }
@@ -93,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             DoIdle(100);
 
             var result = await hostScript.EvaluateAsync(expression);
-            VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.Services);
+            var wrapper = new VariableViewModel(result, VsAppShell.Current.Services);
 
             DoIdle(2000);
             wrapper.Should().NotBeNull();

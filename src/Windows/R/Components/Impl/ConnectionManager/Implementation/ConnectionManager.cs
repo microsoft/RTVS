@@ -40,6 +40,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRInstallationService _installationService;
         private readonly object _syncObj = new object();
         private volatile bool _isFirstConnectionAttempt = true;
+        private bool _disposed;
 
         public bool IsConnected { get; private set; }
         public bool IsRunning { get; private set; }
@@ -92,12 +93,22 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void AddToStatusBar(FrameworkElement element, object dataContext) {
-            element.DataContext = dataContext;
-            _disposableBag.Add(_statusBar.AddItem(element));
+            lock (_syncObj) {
+                // This only happens in tests when fixture is disposed
+                // from background thread and main thread completion comes late.
+                // TODO: Figure out of this can be improved in the test framework.
+                if (!_disposed) {
+                    element.DataContext = dataContext;
+                    _disposableBag.Add(_statusBar.AddItem(element));
+                }
+            }
         }
 
         public void Dispose() {
-            _disposableBag.TryDispose();
+            lock (_syncObj) {
+                _disposed = true;
+                _disposableBag.TryDispose();
+            }
         }
 
         public IConnectionManagerVisualComponent GetOrCreateVisualComponent(int instanceId = 0) {
@@ -123,18 +134,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return connection;
         }
 
-        public IConnection GetConnection(string name) {
-            IConnection connection;
-            return _connections.TryGetValue(name, out connection) ? connection : null;
-        }
+        public IConnection GetConnection(string name) => _connections.TryGetValue(name, out IConnection connection) ? connection : null;
 
         public bool TryRemove(string name) {
             if (name.Equals(ActiveConnection?.Name)) {
                 return false;
             }
 
-            IConnection connection;
-            var isRemoved = _connections.TryRemove(name, out connection);
+            var isRemoved = _connections.TryRemove(name, out IConnection connection);
             if (isRemoved) {
                 UpdateRecentConnections();
                 _securityService.DeleteUserCredentials(connection.BrokerConnectionInfo.CredentialAuthority);
@@ -150,7 +157,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
-            var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo 
+            var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo
                 ?? BrokerConnectionInfo.Create(_securityService, connection.Name, connection.Path, connection.RCommandLineArguments);
             return _sessionProvider.TestBrokerConnectionAsync(connection.Name, brokerConnectionInfo, cancellationToken);
         }
@@ -203,10 +210,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return brokerSwitched;
         }
 
-        private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo) {
-            IConnection connection;
-            return _connections.TryGetValue(connectionInfo.Name, out connection) ? connection : Connection.Create(_securityService, connectionInfo);
-        }
+        private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo)
+            => _connections.TryGetValue(connectionInfo.Name, out var connection)
+               ? connection
+               : Connection.Create(_securityService, connectionInfo);
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
             if (oldConnection != null && newConnection.Equals(oldConnection)) {
@@ -218,7 +225,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private Dictionary<string, IConnection> GetConnectionsFromSettings() {
-            if(_settings.Connections == null) {
+            if (_settings.Connections == null) {
                 return new Dictionary<string, IConnection>();
             }
 
@@ -229,7 +236,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void SaveConnectionsToSettings() {
             _settings.Connections = RecentConnections
-                .Select(c => new ConnectionInfo (c))
+                .Select(c => new ConnectionInfo(c))
                 .ToArray();
             _settings.SaveSettingsAsync().DoNotWait();
         }

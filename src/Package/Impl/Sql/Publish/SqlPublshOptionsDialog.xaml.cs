@@ -30,9 +30,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             ICoreShell shell, IProjectSystemServices pss, IProjectConfigurationSettingsProvider pcsp, ISettingsStorage settings) {
             var dialog = new SqlPublshOptionsDialog(shell, pss, shell.FileSystem(), pcsp, settings);
             await dialog.InitializeModelAsync();
-            await shell.SwitchToMainThreadAsync();
-            dialog.InitializeComponent();
-            dialog.InitializeUI();
             return dialog;
         }
 
@@ -43,6 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _settings = settings;
 
             Title = Package.Resources.SqlPublishDialog_Title;
+        }
+
+        public async Task InitializeAsync() {
+            await _shell.SwitchToMainThreadAsync();
+            InitializeComponent();
+            InitializeUI();
         }
 
         private async Task InitializeModelAsync() {

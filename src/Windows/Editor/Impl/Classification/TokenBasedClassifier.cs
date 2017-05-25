@@ -33,12 +33,12 @@ namespace Microsoft.Languages.Editor.Classification {
         protected ITextBuffer TextBuffer { get; set; }
         protected bool LineBasedClassification { get; set; }
 
-        private Dictionary<string, IClassificationNameProvider> _compositeClassificationNameProviders = new Dictionary<string, IClassificationNameProvider>();
-        private IClassificationNameProvider<TTokenClass> _classificationNameProvider;
+        private readonly Dictionary<string, IClassificationNameProvider> _compositeClassificationNameProviders = new Dictionary<string, IClassificationNameProvider>();
+        private readonly IClassificationNameProvider<TTokenClass> _classificationNameProvider;
         private int _lastValidPosition;
         private bool _suspended;
 
-        public TokenBasedClassifier(ITextBuffer textBuffer,
+        protected TokenBasedClassifier(ITextBuffer textBuffer,
                                     ITokenizer<TTokenClass> tokenizer,
                                     IClassificationNameProvider<TTokenClass> classificationNameProvider) {
             _classificationNameProvider = classificationNameProvider;
@@ -60,21 +60,21 @@ namespace Microsoft.Languages.Editor.Classification {
         }
 
         protected virtual void OnTextChanged(object sender, TextContentChangedEventArgs e) {
-            int start, oldLength, newLength;
-            TextUtility.CombineChanges(e, out start, out oldLength, out newLength);
+            var c = e.ToTextChange();
+            var start = c.Start;
+            var newLength = c.NewLength;
 
             // check if change is still within current snapshot. the problem is that
             // change could have been calculated against projected buffer and then
-            // host (HTML editor) could have dropped projections effectively
-            // shortening buffer to nothing.
+            // host could have dropped projections effectively shortening buffer to nothing.
 
             var snapshot = TextBuffer.CurrentSnapshot;
-            if (start > snapshot.Length || start + newLength > snapshot.Length) {
+            if (c.Start > snapshot.Length || c.NewEnd > snapshot.Length) {
                 start = 0;
                 newLength = snapshot.Length;
             }
 
-            OnTextChanged(start, oldLength, newLength);
+            OnTextChanged(start, c.OldLength, newLength);
         }
 
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "oldLength", Justification = "It may be used in derived class and/or unit tests")]
@@ -88,8 +88,7 @@ namespace Microsoft.Languages.Editor.Classification {
             // However / is technically outside of the changed area and hence may end up
             // lingering on.
 
-            int initialIndex = -1;
-            int changeStart = start;
+            var initialIndex = -1;
 
             var touchingTokens = Tokens.GetItemsContainingInclusiveEnd(start);
 
@@ -136,16 +135,17 @@ namespace Microsoft.Languages.Editor.Classification {
         }
 
         public virtual IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span) {
-            List<ClassificationSpan> classifications = new List<ClassificationSpan>();
+            var classifications = new List<ClassificationSpan>();
             if(_suspended) {
                 return classifications;
             }
 
-            ITextSnapshot textSnapshot = TextBuffer.CurrentSnapshot;
+            var textSnapshot = TextBuffer.CurrentSnapshot;
             if (span.Length <= 2) {
-                string ws = textSnapshot.GetText(span);
-                if (String.IsNullOrWhiteSpace(ws))
+                var ws = textSnapshot.GetText(span);
+                if (string.IsNullOrWhiteSpace(ws)) {
                     return classifications;
+                }
             }
 
             // Token collection at this point contains valid tokens at least to a point
@@ -156,7 +156,7 @@ namespace Microsoft.Languages.Editor.Classification {
                 // tokenize from end of the last good token. If last token intersected last change
                 // it would have been removed from the collection by now.
 
-                int tokenizeFrom = Tokens.Count > 0 ? Tokens[Tokens.Count - 1].End : new SnapshotPoint(textSnapshot, 0);
+                var tokenizeFrom = Tokens.Count > 0 ? Tokens[Tokens.Count - 1].End : new SnapshotPoint(textSnapshot, 0);
                 var tokenizeAnchor = GetAnchorPosition(tokenizeFrom);
 
                 if (tokenizeAnchor < tokenizeFrom) {
@@ -200,13 +200,13 @@ namespace Microsoft.Languages.Editor.Classification {
 
         private void AddClassificationFromToken(List<ClassificationSpan> classifications, ITextSnapshot textSnapshot, TTokenClass token) {
             // We don't necessarily map each token to a classification
-            string classificationName = _classificationNameProvider.GetClassificationName(token);
+            var classificationName = _classificationNameProvider.GetClassificationName(token);
 
             if (!string.IsNullOrEmpty(classificationName)) {
                 var ct = ClassificationRegistryService.GetClassificationType(classificationName);
                 if (ct != null) {
-                    Span tokenSpan = new Span(token.Start, token.Length);
-                    ClassificationSpan cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);
+                    var tokenSpan = new Span(token.Start, token.Length);
+                    var cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);
                     classifications.Add(cs);
                 }
 
@@ -214,7 +214,7 @@ namespace Microsoft.Languages.Editor.Classification {
         }
 
         private void AddClassificationFromCompositeToken(List<ClassificationSpan> classifications, ITextSnapshot textSnapshot, ICompositeToken composite) {
-            string contentTypeName = composite.ContentType;
+            var contentTypeName = composite.ContentType;
             IClassificationNameProvider compositeNameProvider;
 
             if (!_compositeClassificationNameProviders.TryGetValue(contentTypeName, out compositeNameProvider)) {
@@ -231,16 +231,16 @@ namespace Microsoft.Languages.Editor.Classification {
                 }
             }
 
-            foreach (object token in composite.TokenList) {
+            foreach (var token in composite.TokenList) {
                 // We don't necessarily map each token to a classification
                 ITextRange range;
-                string classificationName = compositeNameProvider.GetClassificationName(token, out range);
+                var classificationName = compositeNameProvider.GetClassificationName(token, out range);
 
                 if (!string.IsNullOrEmpty(classificationName)) {
                     var ct = ClassificationRegistryService.GetClassificationType(classificationName);
                     if (ct != null) {
-                        Span tokenSpan = new Span(range.Start, range.Length);
-                        ClassificationSpan cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);
+                        var tokenSpan = new Span(range.Start, range.Length);
+                        var cs = new ClassificationSpan(new SnapshotSpan(textSnapshot, tokenSpan), ct);
                         classifications.Add(cs);
                     }
 
@@ -248,9 +248,7 @@ namespace Microsoft.Languages.Editor.Classification {
             }
         }
 
-        public void Suspend() {
-            _suspended = true;
-        }
+        public void Suspend() => _suspended = true;
 
         public void Resume() {
             if (_suspended) {

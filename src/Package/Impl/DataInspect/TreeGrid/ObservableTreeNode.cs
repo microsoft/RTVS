@@ -162,7 +162,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             newItem.Parent = this;
 
-            int insertionIndex = this.Children.BinarySearch(newItem, _comparer);
+            var insertionIndex = this.Children.BinarySearch(newItem, _comparer);
             if (insertionIndex < 0) {
                 // BinarySearch returns bitwise complement if not found
                 insertionIndex = ~insertionIndex;
@@ -246,12 +246,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var sortedUpdate = update.ToList();
             sortedUpdate.Sort(_modelComparer);
 
-            int srcIndex = 0;
-            int updateIndex = 0;
+            var srcIndex = 0;
+            var updateIndex = 0;
 
             while (srcIndex < Children.Count) {
-                int sameUpdateIndex = -1;
-                for (int u = updateIndex; u < sortedUpdate.Count; u++) {
+                var sameUpdateIndex = -1;
+                for (var u = updateIndex; u < sortedUpdate.Count; u++) {
                     if (Children[srcIndex].Model.CanUpdateTo(sortedUpdate[u])) {
                         sameUpdateIndex = u;
                         break;
@@ -259,11 +259,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
 
                 if (sameUpdateIndex != -1) {
-                    int insertIndex = srcIndex;
-                    for (int i = updateIndex; i < sameUpdateIndex; i++) {
-                        var newItem = new ObservableTreeNode(sortedUpdate[i], _modelComparer);
-                        newItem.Parent = this;
-
+                    var insertIndex = srcIndex;
+                    for (var i = updateIndex; i < sameUpdateIndex; i++) {
+                        var newItem = new ObservableTreeNode(sortedUpdate[i], _modelComparer) {
+                            Parent = this
+                        };
                         Children.Insert(insertIndex++, newItem);
                         srcIndex++;
                     }
@@ -280,11 +280,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (updateIndex < sortedUpdate.Count) {
                 Debug.Assert(srcIndex == Children.Count);
 
-                int insertIndex = srcIndex;
-                for (int i = updateIndex; i < sortedUpdate.Count; i++) {
-                    var newItem = new ObservableTreeNode(sortedUpdate[i], _modelComparer);
-                    newItem.Parent = this;
-
+                var insertIndex = srcIndex;
+                for (var i = updateIndex; i < sortedUpdate.Count; i++) {
+                    var newItem = new ObservableTreeNode(sortedUpdate[i], _modelComparer) {
+                        Parent = this
+                    };
                     Children.Insert(insertIndex++, newItem);
                 }
             }

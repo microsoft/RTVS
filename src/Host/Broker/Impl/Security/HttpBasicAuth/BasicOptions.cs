@@ -1,12 +1,6 @@
 ﻿// From https://github.com/Kukkimonsuta/Odachi/tree/master/src/Odachi.AspNetCore.Authentication.Basic
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System;
 using Microsoft.AspNetCore.Builder;
 
 namespace Odachi.AspNetCore.Authentication.Basic

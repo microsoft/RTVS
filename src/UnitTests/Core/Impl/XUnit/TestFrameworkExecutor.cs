@@ -10,12 +10,17 @@ using Xunit.Sdk;
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     internal class TestFrameworkExecutor : XunitTestFrameworkExecutor {
-        public TestFrameworkExecutor(AssemblyName assemblyName, ISourceInformationProvider sourceInformationProvider, IMessageSink diagnosticMessageSink)
-            : base(assemblyName, sourceInformationProvider, diagnosticMessageSink) {}
+        private readonly XunitTestEnvironment _testEnvironment;
+
+        public TestFrameworkExecutor(AssemblyName assemblyName, ISourceInformationProvider sourceInformationProvider, IMessageSink diagnosticMessageSink, XunitTestEnvironment testEnvironment)
+            : base(assemblyName, sourceInformationProvider, diagnosticMessageSink) {
+            _testEnvironment = testEnvironment;
+        }
 
         protected override async void RunTestCases(IEnumerable<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions) {
-            using (var assemblyRunner = new AssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
+            using (var assemblyRunner = new AssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions, _testEnvironment)) {
                 await assemblyRunner.RunAsync();
+            }
         }
     }
 }

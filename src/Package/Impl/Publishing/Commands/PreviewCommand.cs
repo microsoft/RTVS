@@ -15,13 +15,12 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Controller.Commands;
-using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Document;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
-using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Flavor;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -114,8 +113,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         }
 
         private ITextBuffer SaveFile() {
-            var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
-            var tb = document.TextBuffer;
+            var document = TextView.TextBuffer.GetEditorDocument<IMdEditorDocument>();
+            var tb = document.TextBuffer();
             if (!tb.CanBeSavedInCurrentEncoding()) {
                 if (MessageButtons.No == Services.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                     return null;

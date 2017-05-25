@@ -6,14 +6,15 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.UnitTests.Core.Linux;
+using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
-using Microsoft.Common.Core.IO;
 
 namespace Microsoft.R.Interpreters.Linux.Test {
+    [Category.Linux]
     public class RInstallationTest {
         [Fact]
         public void RInstallationBasicTest() {
-            IFileSystem fs = new TestFileSystem();
+            var fs = new TestFileSystem();
             var rInstallation = new RInstallation(fs);
             var installs = rInstallation.GetCompatibleEngines();
             installs.Count().Should().Be(2);

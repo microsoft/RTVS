@@ -18,21 +18,21 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("function(a,b) {{return(a+b)}}", "function(a, b) {{ return(a + b) }}")]
         [InlineData("function(a,b) a+b", "function(a, b) a + b")]
         public void FormatFunction(string original, string expected) {
-            RFormatter f = new RFormatter();
-            string actual = f.Format(original);
+            var f = new RFormatter();
+            var actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatFunctionAlignArguments() {
-            RFormatOptions options = new RFormatOptions();
-            options.IndentType = IndentType.Tabs;
-            options.TabSize = 2;
-
-            RFormatter f = new RFormatter(options);
-            string original = "x <- function (x,  \n intercept=TRUE, tolerance =1e-07, \n    yname = NULL)\n";
-            string actual = f.Format(original);
-            string expected = "x <- function(x,\n intercept = TRUE, tolerance = 1e-07,\n\t\tyname = NULL)\n";
+            var options = new RFormatOptions() {
+                IndentType = IndentType.Tabs,
+                TabSize = 2
+            };
+            var f = new RFormatter(options);
+            var original = "x <- function (x,  \n intercept=TRUE, tolerance =1e-07, \n    yname = NULL)\n";
+            var actual = f.Format(original);
+            var expected = "x <- function(x,\n intercept = TRUE, tolerance = 1e-07,\n\t\tyname = NULL)\n";
 
             actual.Should().Be(expected);
         }
@@ -43,8 +43,8 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("x<-func({return(b)})", "x <- func({ return(b) })")]
         [InlineData("x<-func({\nreturn(b)})", "x <- func({\n  return(b)\n})")]
         public void FunctionInlineScope(string original, string expected) {
-            RFormatter f = new RFormatter();
-            string actual = f.Format(original);
+            var f = new RFormatter();
+            var actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
@@ -56,18 +56,18 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })", "x <- func(a, {\n  if (TRUE) { 1 }\n  else { 2 }\n})")]
         [InlineData("x <- func(a,\n   {\n      if(TRUE) 1 else 2\n   })", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
         public void FunctionInlineIf(string original, string expected) {
-            RFormatter f = new RFormatter();
-            string actual = f.Format(original);
+            var f = new RFormatter();
+            var actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
         [Test]
         public void FormatFunctionInlineIf02() {
-            RFormatter f = new RFormatter();
+            var f = new RFormatter();
 
-            string original = "x <- func(a,\n   {\n      if(TRUE) \n        if(FALSE) {x <-1} else x<-2\nelse\n        if(z) x <-1 else {5}\n    })";
-            string actual = f.Format(original);
-            string expected =
+            var original = "x <- func(a,\n   {\n      if(TRUE) \n        if(FALSE) {x <-1} else x<-2\nelse\n        if(z) x <-1 else {5}\n    })";
+            var actual = f.Format(original);
+            var expected =
 "x <- func(a, {\n" +
 "  if (TRUE)\n" +
 "    if (FALSE) { x <- 1 } else x <- 2\n" +
@@ -82,11 +82,11 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("function(a, b) {return(a+b)}", "function(a,b) { return(a + b) }")]
         [InlineData("function(a, b) {return(a+b)\n}", "function(a,b) {\n  return(a + b)\n}")]
         public void FormatFunctionNoSpaceAfterComma(string original, string expected) {
-            RFormatOptions options = new RFormatOptions();
-            options.SpaceAfterComma = false;
-
-            RFormatter f = new RFormatter(options);
-            string actual = f.Format(original);
+            var options = new RFormatOptions() {
+                SpaceAfterComma = false
+            };
+            var f = new RFormatter(options);
+            var actual = f.Format(original);
             actual.Should().Be(expected);
         }
     }

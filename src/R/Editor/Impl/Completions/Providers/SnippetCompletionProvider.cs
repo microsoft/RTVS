@@ -2,38 +2,34 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Editor.Snippets;
 
 namespace Microsoft.R.Editor.Completions.Providers {
     /// <summary>
     /// R language code snippets completion provider.
     /// </summary>
-    [Export(typeof(IRCompletionListProvider))]
     public class SnippetCompletionProvider : IRCompletionListProvider {
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
-        private readonly ImageSource _snippetGlyph;
+        private readonly IImageService _imageService;
+        private readonly object _snippetGlyph;
 
-        [ImportingConstructor]
-        public SnippetCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, ICoreShell coreShell) {
-            _snippetInformationSource = snippetInformationSource;
-            var imageService = coreShell.GetService<IImageService>();
-            _snippetGlyph = imageService.GetImage(ImageType.Snippet) as ImageSource;
+        public SnippetCompletionProvider(IServiceContainer serviceContainer) {
+            _snippetInformationSource = serviceContainer.GetService<ISnippetInformationSourceProvider>();
+            _imageService = serviceContainer.GetService<IImageService>();
+            _snippetGlyph = _imageService.GetImage(ImageType.Snippet);
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            List<RCompletion> completions = new List<RCompletion>();
-            var infoSource = _snippetInformationSource?.InformationSource;
-
-            if (!context.IsInNameSpace() && infoSource != null) {
-                foreach (ISnippetInfo info in infoSource.Snippets) {
-                    completions.Add(new RCompletion(info.Name, info.Name, info.Description, _snippetGlyph));
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
+            var completions = new List<ICompletionEntry>();
+            if (_snippetInformationSource?.InformationSource != null && !context.IsCaretInNameSpace()) {
+                foreach (ISnippetInfo info in _snippetInformationSource.InformationSource.Snippets) {
+                    completions.Add(new EditorCompletionEntry(info.Name, info.Name, info.Description, _snippetGlyph));
                 }
             }
             return completions;

@@ -18,10 +18,11 @@ namespace Microsoft.R.Debugger {
         }
 
         public int GetResolutionInfo(enum_BPERESI_FIELDS dwFields, BP_ERROR_RESOLUTION_INFO[] pErrorResolutionInfo) {
-            var result = new BP_ERROR_RESOLUTION_INFO();
-            result.dwFields = enum_BPERESI_FIELDS.BPERESI_MESSAGE | enum_BPERESI_FIELDS.BPERESI_TYPE;
-            result.dwType = enum_BP_ERROR_TYPE.BPET_GENERAL_ERROR;
-            result.bstrMessage = Message;
+            var result = new BP_ERROR_RESOLUTION_INFO {
+                dwFields = enum_BPERESI_FIELDS.BPERESI_MESSAGE | enum_BPERESI_FIELDS.BPERESI_TYPE,
+                dwType = enum_BP_ERROR_TYPE.BPET_GENERAL_ERROR,
+                bstrMessage = Message
+            };
 
             pErrorResolutionInfo[0] = result;
             return VSConstants.S_OK;

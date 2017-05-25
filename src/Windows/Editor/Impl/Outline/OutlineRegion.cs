@@ -35,8 +35,9 @@ namespace Microsoft.Languages.Editor.Outline {
                     hoverTextLength = Math.Min(hoverTextLength, _textBuffer.CurrentSnapshot.Length - this.Start);
 
                     var text = _textBuffer.CurrentSnapshot.GetText(this.Start, hoverTextLength);
-                    if (hoverTextLength < this.Length)
+                    if (hoverTextLength < this.Length) {
                         text += "...";
+                    }
 
                     return text;
                 }

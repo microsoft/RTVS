@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -16,24 +16,24 @@ namespace Microsoft.Languages.Editor.Selection {
     /// </summary>
     public sealed class SelectionUndo : IDisposable {
         private readonly ISelectionTracker _selectionTracker;
+        private readonly ITextBuffer _textBuffer;
         private readonly ITextUndoTransaction _transaction;
 
         public SelectionUndo(ISelectionTracker selectionTracker, ITextBufferUndoManagerProvider undoManagerProvider, string transactionName, bool automaticTracking) {
             _selectionTracker = selectionTracker;
-            var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
+            _textBuffer = selectionTracker.EditorView.As<ITextView>().TextBuffer;
+            var undoManager = undoManagerProvider.GetTextBufferUndoManager(_textBuffer);
 
-            ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
+            var innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
             _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
-            _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
+            _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker, _textBuffer));
 
             _selectionTracker.StartTracking(automaticTracking);
         }
 
         public void Dispose() {
             _selectionTracker.EndTracking();
-
-            _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
-
+            _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker, _textBuffer));
             _transaction.Complete();
             _transaction.Dispose();
         }
@@ -43,31 +43,27 @@ namespace Microsoft.Languages.Editor.Selection {
     /// 'Forward' ('do') action selection undo
     /// </summary>
     internal class StartSelectionTrackingUndoUnit : TextUndoPrimitiveBase {
-        private ISelectionTracker _selectionTracker;
+        private readonly ISelectionTracker _selectionTracker;
 
-        public StartSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
-            : base(selectionTracker.TextView.TextBuffer) {
+        public StartSelectionTrackingUndoUnit(ISelectionTracker selectionTracker, ITextBuffer textBuffer)
+            : base(textBuffer) {
             _selectionTracker = selectionTracker;
         }
 
-        public override void Undo() {
-            _selectionTracker.MoveToBeforeChanges();
-        }
+        public override void Undo() => _selectionTracker.MoveToBeforeChanges();
     }
 
     /// <summary>
     /// Reverse ('undo') selection unit.
     /// </summary>
     internal class EndSelectionTrackingUndoUnit : TextUndoPrimitiveBase {
-        private ISelectionTracker _selectionTracker;
+        private readonly ISelectionTracker _selectionTracker;
 
-        public EndSelectionTrackingUndoUnit(ISelectionTracker selectionTracker)
-            : base(selectionTracker.TextView.TextBuffer) {
+        public EndSelectionTrackingUndoUnit(ISelectionTracker selectionTracker, ITextBuffer textBuffer)
+            : base(textBuffer) {
             _selectionTracker = selectionTracker;
         }
 
-        public override void Do() {
-            _selectionTracker.MoveToAfterChanges();
-        }
+        public override void Do() => _selectionTracker.MoveToAfterChanges();
     }
 }

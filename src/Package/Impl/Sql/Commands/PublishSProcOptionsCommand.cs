@@ -26,13 +26,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         [ImportingConstructor]
         public PublishSProcOptionsCommand(ICoreShell shell, IProjectSystemServices pss, 
-                                          IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider,
-                                          ISettingsStorage settings) {
+                                          IProjectConfigurationSettingsProvider pcsp, IDacPackageServicesProvider dacServicesProvider) {
             _shell = shell;
             _pss = pss;
             _pcsp = pcsp;
             _dacServicesProvider = dacServicesProvider;
-            _settings = settings;
+            _settings = shell.GetService<ISettingsStorage>();
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -46,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             if (commandId == RPackageCommandId.icmdPublishSProcOptions) {
                 if (_dacServicesProvider.GetDacPackageServices() != null) {
                     var dlg = await SqlPublshOptionsDialog.CreateAsync(_shell, _pss, _pcsp, _settings);
-
+                    await dlg.InitializeAsync();
                     await _shell.MainThread().SwitchToAsync();
                     dlg.ShowModal();
                 } 

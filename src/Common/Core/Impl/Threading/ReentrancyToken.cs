@@ -9,13 +9,9 @@ namespace Microsoft.Common.Core.Threading {
         internal static IReentrancyTokenFactory<TSource> CreateFactory<TSource>() where TSource : class => new Factory<TSource>();
 
         private class Factory<TSource> : IReentrancyTokenFactory<TSource> where TSource : class {
-            public TSource GetSource(ReentrancyToken token) {
-                return token._source as TSource;
-            }
+            public TSource GetSource(ReentrancyToken token) => token._source as TSource;
 
-            public ReentrancyToken Create(TSource source) {
-                return new ReentrancyToken(source);
-            }
+            public ReentrancyToken Create(TSource source) => new ReentrancyToken(source);
         }
     }
 }

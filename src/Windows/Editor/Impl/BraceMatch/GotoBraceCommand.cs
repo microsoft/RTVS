@@ -2,34 +2,28 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controller.Commands;
-using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.BraceMatch {
-
     public class GotoBraceCommand : ViewCommand {
-        private IBraceMatcherProvider _braceMatcherProvider;
+        private readonly IBraceMatcherProvider _braceMatcherProvider;
         protected ITextBuffer TextBuffer { get; set; }
 
-        private static CommandId[] _commands = new CommandId[]
-        {
+        private static readonly CommandId[] _commands = {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.GOTOBRACE),
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.GOTOBRACE_EXT),
         };
 
-        public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) :
+        public GotoBraceCommand(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) :
             base(textView, _commands, false) {
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(shell.GetService<ICompositionService>());
-            _braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
-
+            var locator = services.GetService<IContentTypeServiceLocator>();
+            _braceMatcherProvider = locator.GetService< IBraceMatcherProvider>(textBuffer.ContentType.TypeName);
             TextBuffer = textBuffer;
         }
 
@@ -54,15 +48,14 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         #endregion
 
         private CommandResult GotoBrace(bool extendSelection) {
-            if (_braceMatcherProvider == null)
+            if (_braceMatcherProvider == null) {
                 return CommandResult.NotSupported;
-
+            }
             var secondaryBufferPoint = TextView.Caret.Position.Point.GetPoint(TextBuffer, TextView.Caret.Position.Affinity);
             var viewOriginPoint = TextView.Caret.Position.BufferPosition;
 
             if (secondaryBufferPoint.HasValue) {
                 var snapshot = TextBuffer.CurrentSnapshot;
-
                 var currentPoint = secondaryBufferPoint.Value;
                 int currentPosition = currentPoint.Position;
                 int start;
@@ -79,32 +72,25 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                     }
 
                     var bufferPosition = new SnapshotPoint(snapshot, moveTo);
-
                     var viewMatchPoint = TextView.BufferGraph.MapUpToBuffer(bufferPosition, PointTrackingMode.Positive, PositionAffinity.Successor, TextView.TextBuffer);
 
                     if (viewMatchPoint.HasValue) {
                         TextView.Caret.MoveTo(viewMatchPoint.Value);
-
                         if (extendSelection) {
                             var newPosition = viewMatchPoint.Value;
-
                             SnapshotSpan span;
                             if (viewOriginPoint > newPosition) {
                                 span = new SnapshotSpan(newPosition, viewOriginPoint);
                             } else {
                                 span = new SnapshotSpan(viewOriginPoint, newPosition);
                             }
-
                             TextView.Selection.Select(span, false);
                         }
                     }
-
                     TextView.Caret.EnsureVisible();
-
                     return CommandResult.Executed;
                 }
             }
-
             return CommandResult.NotSupported;
         }
     }

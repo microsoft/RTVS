@@ -43,9 +43,7 @@ namespace Microsoft.Common.Core {
         /// If awaited on a thread with custom scheduler or synchronization context, invokes the continuation
         /// on a background (thread pool) thread. If already on such a thread, await is a no-op.
         /// </summary>
-        public static BackgroundThreadAwaitable SwitchToBackgroundThread() {
-            return new BackgroundThreadAwaitable();
-        }
+        public static BackgroundThreadAwaitable SwitchToBackgroundThread() => new BackgroundThreadAwaitable();
 
         [Conditional("TRACE")]
         public static void AssertIsOnBackgroundThread(

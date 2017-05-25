@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.Languages.Core.Text;

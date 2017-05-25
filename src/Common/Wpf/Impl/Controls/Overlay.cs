@@ -12,13 +12,11 @@ using System.Windows.Media;
 
 namespace Microsoft.Common.Wpf.Controls {
     public class Overlay {
-        public static UIElement GetAdornerContent(FrameworkElement frameworkElement) {
-            return (UIElement)frameworkElement.GetValue(AdornerContentProperty);
-        }
+        public static UIElement GetAdornerContent(FrameworkElement frameworkElement) 
+            => (UIElement)frameworkElement.GetValue(AdornerContentProperty);
 
-        public static void SetAdornerContent(FrameworkElement frameworkElement, UIElement value) {
-            frameworkElement.SetValue(AdornerContentProperty, value);
-        }
+        public static void SetAdornerContent(FrameworkElement frameworkElement, UIElement value) 
+            => frameworkElement.SetValue(AdornerContentProperty, value);
 
         public static readonly DependencyProperty AdornerContentProperty =
             DependencyProperty.RegisterAttached("AdornerContent", typeof(UIElement), typeof(Overlay),
@@ -75,9 +73,8 @@ namespace Microsoft.Common.Wpf.Controls {
             .Where(dpd => dpd != null && ((dpd.Metadata as FrameworkPropertyMetadata)?.AffectsRender == true || dpd.DependencyProperty == UIElement.VisibilityProperty))
             .ToList();
 
-        private static PropertyDescriptorCollection GetPropertyDescriptors(DependencyObject obj) {
-            return TypeDescriptor.GetProperties(obj, new Attribute[] { new PropertyFilterAttribute(PropertyFilterOptions.Valid) });
-        }
+        private static PropertyDescriptorCollection GetPropertyDescriptors(DependencyObject obj) 
+            => TypeDescriptor.GetProperties(obj, new Attribute[] { new PropertyFilterAttribute(PropertyFilterOptions.Valid) });
 
         private class OverlayAdorner : Adorner, IDisposable {
             private readonly AdornerLayer _layer;

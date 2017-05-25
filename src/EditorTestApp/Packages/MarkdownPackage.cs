@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -16,7 +17,10 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [Name("Markdown Text View Connection Listener")]
     [Order(Before = "Default")]
-    internal sealed class TestMdTextViewConnectionListener : MdTextViewConnectionListener {}
+    internal sealed class TestMdTextViewConnectionListener : MdTextViewConnectionListener {
+        [ImportingConstructor]
+        public TestMdTextViewConnectionListener(ICoreShell coreShell): base(coreShell.Services) { }
+    }
 
     [ExcludeFromCodeCoverage]
     [Export(typeof(IWritableEditorSettingsStorage))]

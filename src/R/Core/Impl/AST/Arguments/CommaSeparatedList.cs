@@ -35,9 +35,9 @@ namespace Microsoft.R.Core.AST.Arguments {
                     break;
                 }
 
-                CommaSeparatedItem item = this.CreateItem(this, context);
+                var item = this.CreateItem(this, context);
                 if (item != null) {
-                    int currentPosition = context.Tokens.Position;
+                    var currentPosition = context.Tokens.Position;
                     if (item.Parse(context, this)) {
                         _arguments.Add(item);
                     } else {
@@ -82,16 +82,15 @@ namespace Microsoft.R.Core.AST.Arguments {
         #endregion
 
         private bool AddErrorArgument(ParseContext context, int startPosition) {
-            int terminatorIndex = TryFindNextArgument(context, startPosition);
+            var terminatorIndex = TryFindNextArgument(context, startPosition);
             if (terminatorIndex >= 0 && startPosition < terminatorIndex) {
-                List<RToken> tokens = new List<RToken>();
-                for (int i = startPosition; i < terminatorIndex; i++) {
+                var tokens = new List<RToken>();
+                for (var i = startPosition; i < terminatorIndex; i++) {
                     tokens.Add(context.Tokens[i]);
                 }
 
                 context.Tokens.Position = terminatorIndex;
-
-                ErrorArgument arg = new ErrorArgument(tokens);
+                var arg = new ErrorArgument(tokens);
                 arg.Parse(context, this);
 
                 _arguments.Add(arg);
@@ -102,8 +101,8 @@ namespace Microsoft.R.Core.AST.Arguments {
         }
 
         private int TryFindNextArgument(ParseContext context, int startPosition) {
-            for (int i = startPosition; i < context.Tokens.Length; i++) {
-                RToken token = context.Tokens[i];
+            for (var i = startPosition; i < context.Tokens.Length; i++) {
+                var token = context.Tokens[i];
                 if (token.TokenType == RTokenType.Comma || token.TokenType == RTokenType.CloseBrace) {
                     return i;
                 }
@@ -121,7 +120,7 @@ namespace Microsoft.R.Core.AST.Arguments {
         /// since it does not have any associated token. 
         /// </summary>
         private void AddStubArgument(ParseContext context) {
-            StubArgument arg = new StubArgument();
+            var arg = new StubArgument();
             _arguments.Add(arg);
         }
 
@@ -129,21 +128,10 @@ namespace Microsoft.R.Core.AST.Arguments {
         /// <summary>
         /// Number of items in the list
         /// </summary>
-        public int Count {
-            get { return _arguments.Count; }
-        }
-
-        public CommaSeparatedItem this[int i] {
-            get { return _arguments[i]; }
-        }
-
-        public IEnumerator<CommaSeparatedItem> GetEnumerator() {
-            return _arguments.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return _arguments.GetEnumerator();
-        }
+        public int Count => _arguments.Count;
+        public CommaSeparatedItem this[int i] => _arguments[i];
+        public IEnumerator<CommaSeparatedItem> GetEnumerator() => _arguments.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _arguments.GetEnumerator();
         #endregion
     }
 }

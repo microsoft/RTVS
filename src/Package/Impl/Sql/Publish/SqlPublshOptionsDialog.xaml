@@ -7,7 +7,6 @@
              xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.Sql"
              ShowInTaskbar="False" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" 
              Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
              Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"

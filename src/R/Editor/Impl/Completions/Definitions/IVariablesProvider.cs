@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.R.Support.Help;
+using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor.Completions {
     /// <summary>

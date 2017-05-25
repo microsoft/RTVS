@@ -2,12 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
-using Microsoft.Common.Core.Diagnostics;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Components.History.Implementation {

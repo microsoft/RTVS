@@ -3,7 +3,7 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.DataTips;
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
         }
 
         public int GetDataTipText(TextSpan[] pSpan, out string pbstrText) {
-            var doc = REditorDocument.FromTextBuffer(_textView.TextBuffer);
+            var doc = _textView.TextBuffer.GetEditorDocument<IREditorDocument>();
             var ast = doc?.EditorTree?.AstRoot;
             if (ast == null) {
                 pbstrText = null;
@@ -69,27 +69,19 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
                 return VSConstants.E_FAIL;
             }
 
-            var exprSpan = node.ToSnapshotSpan(doc.TextBuffer.CurrentSnapshot);
+            var exprSpan = node.ToSnapshotSpan(doc.TextBuffer().CurrentSnapshot);
             SnapshotPointToLineAndColumnNumber(exprSpan.Start, out pSpan[0].iStartLine, out pSpan[0].iStartIndex);
             SnapshotPointToLineAndColumnNumber(exprSpan.End, out pSpan[0].iEndLine, out pSpan[0].iEndIndex);
             return _debugger.GetDataTipValue(_vsTextLines, pSpan, null, out pbstrText);
         }
 
-        public int GetPairExtents(int iLine, int iIndex, TextSpan[] pSpan) {
-            return VSConstants.E_NOTIMPL;
-        }
+        public int GetPairExtents(int iLine, int iIndex, TextSpan[] pSpan) => VSConstants.E_NOTIMPL;
+        public int GetWordExtent(int iLine, int iIndex, uint dwFlags, TextSpan[] pSpan) => VSConstants.E_NOTIMPL;
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) 
+            => _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
-        public int GetWordExtent(int iLine, int iIndex, uint dwFlags, TextSpan[] pSpan) {
-            return VSConstants.E_NOTIMPL;
-        }
-
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            return _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-        }
-
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
-            return _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-        }
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) 
+            => _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
         private static SnapshotPoint LineAndColumnNumberToSnapshotPoint(ITextSnapshot snapshot, int lineNumber, int columnNumber) {
             var line = snapshot.GetLineFromLineNumber(lineNumber);

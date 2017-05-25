@@ -5,9 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Internal.VisualStudio.PlatformUI;
 using Microsoft.R.Components.Search;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Search {

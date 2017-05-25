@@ -6,8 +6,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Markup;
 using System.Xaml;
-using System.Windows.Data;
-using System.Globalization;
 
 namespace Microsoft.Common.Wpf {
     [ContentProperty("Lambda")]

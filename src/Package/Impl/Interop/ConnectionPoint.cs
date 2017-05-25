@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio.OLE.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Interop {
     /// <summary>
@@ -15,8 +16,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         private uint _cookie;
 
 #if DEBUG
-        //        private string _callStack = "(none)";
-        //        private Type _eventInterface;
+        private string _callStack = "(none)";
+        private Type _eventInterface;
 #endif
 
         /// <summary>
@@ -71,8 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             }
 
 #if DEBUG
-            //_callStack = Environment.StackTrace;
-            //this._eventInterface = eventInterface;
+            _callStack = Environment.StackTrace;
+            _eventInterface = eventInterface;
 #endif
         }
 
@@ -83,10 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1821:RemoveEmptyFinalizers")]
         ~ConnectionPointCookie() {
             Debug.Assert(_connectionPoint == null || _cookie == 0,
-                "We should never finalize an active connection point.");// (Interface = " +
-                                                                        //_eventInterface.FullName +
-                                                                        //"), allocating code (see stack) is responsible for unhooking the ConnectionPoint by calling Disconnect. Hookup Stack =\r\n" +
-                                                                        //_callStack);
+                Invariant($"Connection point was not released. Interface {_eventInterface.FullName}, Call stack: {_callStack}"));
         }
 
 #endif

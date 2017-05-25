@@ -64,7 +64,9 @@ namespace Microsoft.R.Components.Test.Sql {
             hlkm.OpenSubKey(@"SOFTWARE\ODBC\ODBCINST.INI\ODBC Driver 13 for SQL Server").Returns(odbc13Key);
 
             registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).Returns(hlkm);
-            coreShell.LocaleId.Returns(lcid);
+            var app = Substitute.For<IApplication>();
+            app.LocaleId.Returns(lcid);
+            sm.AddService(app);
 
             var ui = Substitute.For<IUIService>();
             sm.AddService(ui);

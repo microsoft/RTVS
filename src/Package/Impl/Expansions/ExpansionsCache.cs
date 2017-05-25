@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -10,30 +12,31 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.VisualStudio.R.Package.Expansions {
     internal sealed class ExpansionsCache : IExpansionsCache {
         private static ExpansionsCache _instance;
-        private Dictionary<string, VsExpansion> _expansions = new Dictionary<string, VsExpansion>();
+        private readonly Dictionary<string, VsExpansion> _expansions = new Dictionary<string, VsExpansion>();
+        private static IServiceContainer _services;
 
-        internal ExpansionsCache(IVsExpansionManager expansionManager) {
+        internal ExpansionsCache(IVsExpansionManager expansionManager, IServiceContainer services) {
             // Caching language expansion structs requires access to the IVsExpansionManager
             // service which is valid on the main thread only. So we create cache on the main 
             // thread so we can then access objects from background threads.
-            CacheLanguageExpansionStructs(expansionManager);
             _instance = this;
+            _services = services;
+            IdleTimeAction.Create(() => CacheLanguageExpansionStructs(expansionManager), 200, typeof(ExpansionsCache), services.GetService<IIdleTimeService>());
         }
 
         public static IExpansionsCache Current {
             get {
                 if (_instance == null) {
-                    Load();
+                    Load(_services);
                 }
                 return _instance;
             }
         }
 
-        public static void Load() {
-            IVsExpansionManager expansionManager;
-            var textManager2 = VsAppShell.Current.GetService<IVsTextManager2>(typeof(SVsTextManager));
-            textManager2.GetExpansionManager(out expansionManager);
-            _instance = new ExpansionsCache(expansionManager);
+        public static void Load(IServiceContainer services) {
+            var textManager2 = services.GetService<IVsTextManager2>(typeof(SVsTextManager));
+            textManager2.GetExpansionManager(out IVsExpansionManager expansionManager);
+            _instance = new ExpansionsCache(expansionManager, services);
         }
 
         public VsExpansion? GetExpansion(string shortcut) {

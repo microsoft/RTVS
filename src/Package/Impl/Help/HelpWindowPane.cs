@@ -5,7 +5,6 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Help.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;

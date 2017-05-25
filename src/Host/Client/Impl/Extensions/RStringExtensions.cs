@@ -39,15 +39,15 @@ namespace Microsoft.R.Host.Client {
                 throw new FormatException("Not a quoted R string literal");
             }
 
-            char quote = s[0];
+            var quote = s[0];
             if (s[s.Length - 1] != quote) {
                 throw new FormatException("Mismatching quotes");
             }
 
             var sb = new StringBuilder();
-            bool escape = false;
-            for (int i = 1; i < s.Length - 1; ++i) {
-                char c = s[i];
+            var escape = false;
+            for (var i = 1; i < s.Length - 1; ++i) {
+                var c = s[i];
                 if (escape) {
                     // https://stat.ethz.ch/R-manual/R-devel/library/base/html/Quotes.html
                     switch (c) {
@@ -106,9 +106,9 @@ namespace Microsoft.R.Host.Client {
                         default:
                             if (c >= '0' && c <= '7') {
                                 // 1 to 3 octal digits
-                                int val = c - '0';
+                                var val = c - '0';
                                 if (i < s.Length - 1) {
-                                    char next = s[i + 1];
+                                    var next = s[i + 1];
                                     if (next >= '0' && next <= '7') {
                                         i++;
                                         val = (val << 3) | (next - '0');
@@ -166,7 +166,7 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         public static string ToUnicodeQuotes(this string s) {
             var sb = new StringBuilder(s.Length);
-            for (int i = 0; i < s.Length; i++) {
+            for (var i = 0; i < s.Length; i++) {
                 char ch;
                 switch (s[i]) {
                     case (char)0x0091:
@@ -202,13 +202,8 @@ namespace Microsoft.R.Host.Client {
             return s;
         }
 
-        public static string ToRPath(this string s) {
-            return s.Replace("\\", "/");
-        }
-
-        public static string FromRPath(this string s) {
-            return s.Replace("/", "\\");
-        }
+        public static string ToRPath(this string s) => s.Replace("\\", "/");
+        public static string FromRPath(this string s) => s.Replace("/", "\\");
 
         public static string ProjectRelativePathToRemoteProjectPath(this string path, string remoteRoot, string projectName) {
             if (string.IsNullOrWhiteSpace(projectName)) {
@@ -225,7 +220,7 @@ namespace Microsoft.R.Host.Client {
         /// to append at the end.
         /// </summary>
         public static string ConvertCharacterCodes(this string s) {
-            int t = s.IndexOfOrdinal("\"| __truncated__");
+            var t = s.IndexOfOrdinal("\"| __truncated__");
             if (t >= 0) {
                 s = s.Substring(0, t);
             }
@@ -235,12 +230,12 @@ namespace Microsoft.R.Host.Client {
                 return s;
             }
 
-            char[] converted = new char[s.Length];
-            int j = 0;
-            for (int i = 0; i < s.Length;) {
+            var converted = new char[s.Length];
+            var j = 0;
+            for (var i = 0; i < s.Length;) {
                 if (i <= s.Length - 8 &&
                     s[i] == '<' && s[i + 1] == 'U' && s[i + 2] == '+' && s[i + 7] == '>') {
-                    int code = s.SubstringToHex(i + 3, 4);
+                    var code = s.SubstringToHex(i + 3, 4);
                     if (code > 0 && code < 65535) {
                         converted[j++] = Convert.ToChar(code);
                         i += 8;

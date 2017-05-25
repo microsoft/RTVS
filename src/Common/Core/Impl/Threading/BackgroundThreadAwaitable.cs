@@ -3,8 +3,6 @@
 
 namespace Microsoft.Common.Core.Threading {
     public struct BackgroundThreadAwaitable {
-        public BackgroundThreadAwaiter GetAwaiter() {
-            return new BackgroundThreadAwaiter();
-        }
+        public BackgroundThreadAwaiter GetAwaiter() => new BackgroundThreadAwaiter();
     }
 }

@@ -2,7 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Testing;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -11,20 +14,21 @@ namespace Microsoft.Languages.Editor.Undo {
     /// Opens and closes a compound undo action in Visual Studio for a given text buffer
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "ICompoundUndoAction.Close is used instead")]
-    public class CompoundUndoAction : ICompoundUndoAction, ICompoundUndoActionOptions {
-        private ITextBufferUndoManager _undoManager;
+    public sealed class CompoundUndoAction : ICompoundUndoAction, ICompoundUndoActionOptions {
+        private readonly ITextBufferUndoManager _undoManager;
         private ITextUndoTransaction _undoTransaction;
-        private IEditorOperations _editorOperations;
+        private readonly IEditorOperations _editorOperations;
+        private readonly bool _addRollbackOnCancel;
         private bool _undoAfterClose;
-        private bool _addRollbackOnCancel;
         private bool _discardChanges = true;
 
-        public CompoundUndoAction(ITextView textView, ICoreShell shell, bool addRollbackOnCancel = true) {
-            if (!shell.IsUnitTestEnvironment) {
-                IEditorOperationsFactoryService operationsService = shell.GetService<IEditorOperationsFactoryService>();
-                ITextBufferUndoManagerProvider undoProvider = shell.GetService<ITextBufferUndoManagerProvider>();
+        public CompoundUndoAction(IEditorView editorView, IServiceContainer services, bool addRollbackOnCancel = true) {
+            var shell = services.GetService<ICoreShell>();
+            if (TestEnvironment.Current == null) {
+                var operationsService = services.GetService<IEditorOperationsFactoryService>();
+                var undoProvider = services.GetService<ITextBufferUndoManagerProvider>();
 
-                _editorOperations = operationsService.GetEditorOperations(textView);
+                _editorOperations = operationsService.GetEditorOperations(editorView.As<ITextView>());
                 _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);
                 _addRollbackOnCancel = addRollbackOnCancel;
             }
@@ -50,9 +54,7 @@ namespace Microsoft.Languages.Editor.Undo {
         /// <summary>
         /// Marks action as successful. Dispose will place the undo unit on the undo stack.
         /// </summary>
-        public void Commit() {
-            _discardChanges = false;
-        }
+        public void Commit() => _discardChanges = false;
 
         public void Dispose() {
             if (_undoTransaction != null) {
@@ -82,8 +84,6 @@ namespace Microsoft.Languages.Editor.Undo {
             }
         }
 
-        public void SetUndoAfterClose(bool undoAfterClose) {
-            _undoAfterClose = undoAfterClose;
-        }
+        public void SetUndoAfterClose(bool undoAfterClose) => _undoAfterClose = undoAfterClose;
     }
 }

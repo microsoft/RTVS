@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -38,8 +37,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             startPosition = 0;
             endPosition = 0;
 
-            if (snapshot != TextBuffer.CurrentSnapshot || snapshot.Length == 0)
+            if (snapshot != TextBuffer.CurrentSnapshot || snapshot.Length == 0) {
                 return false;
+            }
 
             BraceType braceType = BraceType.Unknown;
 
@@ -59,8 +59,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 searchPosition--;
             }
 
-            if (!validCharacter)
+            if (!validCharacter) {
                 return false;
+            }
 
             return GetLanguageBracesFromPosition(braceType, searchPosition, reversed, out startPosition, out endPosition);
         }
@@ -91,11 +92,13 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 }
             }
 
-            if (startIndex < 0)
+            if (startIndex < 0) {
                 return false;
+            }
 
-            if (_tokenComparer.Compare(tokens[startIndex].TokenType, startTokenType) != 0 && _tokenComparer.Compare(tokens[startIndex].TokenType, endTokenType) != 0)
+            if (_tokenComparer.Compare(tokens[startIndex].TokenType, startTokenType) != 0 && _tokenComparer.Compare(tokens[startIndex].TokenType, endTokenType) != 0) {
                 return false;
+            }
 
             if (!reversed) {
                 for (int i = startIndex; i < tokens.Count; i++) {
@@ -104,8 +107,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                     if (token.TokenType.Equals(startTokenType)) {
                         stack.Push(token.TokenType);
                     } else if (_tokenComparer.Compare(token.TokenType, endTokenType) == 0) {
-                        if (stack.Count > 0)
+                        if (stack.Count > 0) {
                             stack.Pop();
+                        }
 
                         if (stack.Count == 0) {
                             start = tokens[startIndex].Start;
@@ -121,8 +125,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                     if (_tokenComparer.Compare(token.TokenType, endTokenType) == 0) {
                         stack.Push(token.TokenType);
                     } else if (_tokenComparer.Compare(token.TokenType, startTokenType) == 0) {
-                        if (stack.Count > 0)
+                        if (stack.Count > 0) {
                             stack.Pop();
+                        }
 
                         if (stack.Count == 0) {
                             start = token.Start;

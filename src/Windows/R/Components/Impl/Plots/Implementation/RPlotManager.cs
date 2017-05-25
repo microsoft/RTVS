@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
@@ -28,7 +29,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private readonly Dictionary<int, IRPlotDeviceVisualComponent> _visualComponents = new Dictionary<int, IRPlotDeviceVisualComponent>();
         private readonly Dictionary<Guid, IRPlotDeviceVisualComponent> _assignedVisualComponents = new Dictionary<Guid, IRPlotDeviceVisualComponent>();
         private readonly List<IRPlotDeviceVisualComponent> _unassignedVisualComponents = new List<IRPlotDeviceVisualComponent>();
-        private readonly ICoreShell _shell;
+        private readonly IMainThread _mainThread;
 
         private TaskCompletionSource<LocatorResult> _locatorTcs;
         private CancellationTokenRegistration _locatorCancelTokenRegistration;
@@ -40,7 +41,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public RPlotManager(IRSettings settings, IRInteractiveWorkflowVisual interactiveWorkflow, IFileSystem fileSystem) {
             _interactiveWorkflow = interactiveWorkflow;
             _fileSystem = fileSystem;
-            _shell = _interactiveWorkflow.Shell;
+            _mainThread = _interactiveWorkflow.Shell.MainThread();
 
             _disposableBag = DisposableBag.Create<RPlotManager>()
                 .Add(() => interactiveWorkflow.RSession.Connected -= RSession_Connected)
@@ -62,7 +63,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public IRPlotDeviceVisualComponent GetOrCreateVisualComponent(IRPlotDeviceVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             IRPlotDeviceVisualComponent component;
             if (_visualComponents.TryGetValue(instanceId, out component)) {
@@ -76,13 +77,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public IRPlotHistoryVisualComponent GetOrCreateVisualComponent(IRPlotHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             return HistoryVisualComponent ?? (HistoryVisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component);
         }
 
         public IRPlotDeviceVisualComponent GetPlotVisualComponent(IRPlotDevice device) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             IRPlotDeviceVisualComponent visualComponent = null;
             _assignedVisualComponents.TryGetValue(device.DeviceId, out visualComponent);
@@ -90,7 +91,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public IRPlotDeviceVisualComponent GetPlotVisualComponent(int instanceId) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             IRPlotDeviceVisualComponent visualComponent = null;
             _visualComponents.TryGetValue(instanceId, out visualComponent);
@@ -98,13 +99,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public void RegisterVisualComponent(IRPlotDeviceVisualComponent visualComponent) {
-            _shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             _unassignedVisualComponents.Add(visualComponent);
         }
 
         public async Task DeviceDestroyedAsync(Guid deviceId, CancellationToken cancellationToken) {
-            await _shell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             var device = FindDevice(deviceId);
             Debug.Assert(device != null, "List of devices is out of sync.");
@@ -129,7 +130,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public async Task LoadPlotAsync(PlotMessage plot, CancellationToken cancellationToken) {
-            await _shell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             var device = FindDevice(plot.DeviceId);
             device.DeviceNum = plot.DeviceNum;
@@ -161,7 +162,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public async Task<PlotDeviceProperties> DeviceCreatedAsync(Guid deviceId, CancellationToken cancellationToken) {
-            await _shell.SwitchToMainThreadAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
 
             var device = new RPlotDevice(deviceId);
             lock (_devicesLock) {
@@ -195,10 +196,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _locatorTcs = new TaskCompletionSource<LocatorResult>();
             _locatorCancelTokenRegistration = cancellationToken.Register(() => CancelLocatorMode(device));
 
-            _shell.MainThread().Post(() => {
+            _mainThread.Post(() => {
                 var visualComponent = GetVisualComponentForDevice(deviceId);
                 visualComponent?.Container.Show(focus: false, immediate: true);
-            });
+            }, cancellationToken);
 
             return _locatorTcs.Task;
         }
@@ -244,7 +245,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public async Task ActivatePlotAsync(IRPlot plot) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             if (HistoryVisualComponent != null) {
                 if (HistoryVisualComponent.AutoHide) {
@@ -305,7 +306,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public async Task NewDeviceAsync(int existingInstanceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             if (existingInstanceId >= 0) {
                 // User wants to create a graphics device for an existing unassigned visual component.
@@ -327,7 +328,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public async Task CopyOrMovePlotFromAsync(Guid sourceDeviceId, Guid sourcePlotId, IRPlotDevice targetDevice, bool isMove) {
             Debug.Assert(targetDevice != null);
 
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             var sourcePlot = FindPlot(sourceDeviceId, sourcePlotId);
             if (sourcePlot != null) {
@@ -343,7 +344,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public IRPlot[] GetAllPlots() {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             var plots = new List<IRPlot>();
 
@@ -368,7 +369,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private void ShowDevice(IRPlotDevice device) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             var visualComponent = GetVisualComponentForDevice(device.DeviceId);
             visualComponent?.Container.Show(focus: false, immediate: false);
@@ -389,7 +390,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private IRPlotDeviceVisualComponent GetVisualComponentForDevice(Guid deviceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             // If we've already assigned a plot window, reuse it
             IRPlotDeviceVisualComponent component = GetPlotDeviceVisualComponent(deviceId);
@@ -450,7 +451,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private IRPlot FindPlot(Guid deviceId, Guid plotId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             var device = FindDevice(deviceId);
             if (device != null) {
@@ -461,7 +462,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private void RemoveAllDevices() {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             IRPlotDevice[] devices;
             lock (_devicesLock) {
@@ -475,7 +476,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private int GetUnusedInstanceId() {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             // Pick the lowest number that isn't known to be used.
             // Note that some plot windows may technically exist but
@@ -495,7 +496,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private void SetNextVisualComponent(int existingInstanceId) {
-            InteractiveWorkflow.Shell.AssertIsOnMainThread();
+            _mainThread.CheckAccess();
 
             int[] indices = _unassignedVisualComponents.IndexWhere(component => component.InstanceId == existingInstanceId).ToArray();
             if (indices.Length == 1) {
@@ -517,7 +518,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task RSessionMutatedAsync() {
-            await _shell.SwitchToMainThreadAsync();
+            await _mainThread.SwitchToAsync();
 
             try {
                 var deviceId = await InteractiveWorkflow.RSession.GetActivePlotDeviceAsync();
@@ -555,7 +556,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         private async Task RSessionConnectedAsync() {
-            await _shell.SwitchToMainThreadAsync();
+            await _mainThread.SwitchToAsync();
 
             RemoveAllDevices();
 

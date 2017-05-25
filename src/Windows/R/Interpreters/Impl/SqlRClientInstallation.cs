@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Services;
 using Microsoft.Win32;
 
 namespace Microsoft.R.Interpreters {

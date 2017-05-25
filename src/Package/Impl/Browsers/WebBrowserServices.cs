@@ -6,9 +6,7 @@ using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Tasks;
-using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -18,14 +16,14 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private readonly ICoreShell _coreShell;
         private readonly IProcessServices _ps;
         private readonly IVsWebBrowsingService _wbs;
-        private readonly IRToolsSettings _settings;
+        private readonly IRSettings _settings;
 
         [ImportingConstructor]
         public WebBrowserServices(ICoreShell coreShell) { 
             _coreShell = coreShell;
             _wbs = _coreShell.GetService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
             _ps = _coreShell.Process();
-            _settings = _coreShell.GetService<IRToolsSettings>();
+            _settings = _coreShell.GetService<IRSettings>();
         }
 
         #region IWebBrowserServices
@@ -52,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
             if (!string.IsNullOrEmpty(url)) {
                 IdleTimeAction.Create(() => {
                     OpenVsBrowser(role, url);
-                }, 100, typeof(WebBrowserServices), _coreShell);
+                }, 100, typeof(WebBrowserServices), _coreShell.GetService<IIdleTimeService>());
             }
         }
 

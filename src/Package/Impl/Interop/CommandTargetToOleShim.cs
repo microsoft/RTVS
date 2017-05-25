@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -30,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         #region IOleCommandTarget
 
         public int QueryStatus(ref Guid guidCommandGroup, uint commandCount, OLECMD[] commandArray, IntPtr commandText) {
-            CommandStatus status = _commandTarget.Status(guidCommandGroup, (int)commandArray[0].cmdID);
+            var status = _commandTarget.Status(guidCommandGroup, (int)commandArray[0].cmdID);
             return OleCommand.MakeOleCommandStatus(status, commandArray);
         }
 
@@ -40,12 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             CommandResult result;
 
             try {
-                if (_variantStacks != null)
-                    _variantStacks.Push(variantIn, variantOut, false);
+                _variantStacks?.Push(variantIn, variantOut, false);
 
-                object inputArg = TranslateInputArg(ref guidCommandGroup, commandID, variantIn);
+                var inputArg = TranslateInputArg(ref guidCommandGroup, commandID, variantIn);
+
                 object outputArg = null;
-
                 result = _commandTarget.Invoke(guidCommandGroup, (int)commandID, inputArg, ref outputArg);
 
                 if (outputArg != null && variantOut != IntPtr.Zero) {
@@ -60,8 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
                 throw;
             } finally {
-                if (_variantStacks != null)
-                    _variantStacks.Pop();
+                _variantStacks?.Pop();
             }
 
             return OleCommand.MakeOleResult(result);
@@ -73,10 +70,11 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             object inputArg = null;
 
             if (variantIn != IntPtr.Zero) {
-                if ((commandID == (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU) && (guidCommandGroup == VSConstants.VSStd2K))
+                if ((commandID == (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU) && (guidCommandGroup == VSConstants.VSStd2K)) {
                     inputArg = GetShortPositionFromInputArg(variantIn);
-                else
+                } else {
                     inputArg = Marshal.GetObjectForNativeVariant(variantIn);
+                }
             }
 
             return inputArg;
@@ -88,10 +86,10 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
             //the coordinates are passed as variants containing short values. The y coordinate is an offset sizeof(variant)
             //from pvaIn (which is 16 bytes)
-            object xCoordinateVariant = Marshal.GetObjectForNativeVariant(location);
-            object yCoordinateVariant = Marshal.GetObjectForNativeVariant(new IntPtr(location.ToInt32() + 16));
-            short? xCoordinate = xCoordinateVariant as short?;
-            short? yCoordinate = yCoordinateVariant as short?;
+            var xCoordinateVariant = Marshal.GetObjectForNativeVariant(location);
+            var yCoordinateVariant = Marshal.GetObjectForNativeVariant(new IntPtr(location.ToInt32() + 16));
+            var xCoordinate = xCoordinateVariant as short?;
+            var yCoordinate = yCoordinateVariant as short?;
             Debug.Assert(xCoordinate.HasValue, "Couldn't parse the provided x coordinate for show context command");
             Debug.Assert(yCoordinate.HasValue, "Couldn't parse the provided y coordinate for show context command");
             if (xCoordinate.HasValue && yCoordinate.HasValue) {
@@ -104,34 +102,23 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         }
 
         #region ICommandTarget
-
-        public CommandStatus Status(Guid group, int id) {
-            return _commandTarget.Status(group, id);
-        }
-
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            return Invoke(_commandTarget, group, id, inputArg, ref outputArg);
-        }
+        public CommandStatus Status(Guid group, int id) => _commandTarget.Status(@group, id);
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
+            => Invoke(_commandTarget, @group, id, inputArg, ref outputArg);
 
         public CommandResult Invoke(ICommandTarget commandTarget, Guid group, int id, object inputArg, ref object outputArg) {
             CommandResult result;
             try {
-                if (_variantStacks != null)
-                    _variantStacks.Push(IntPtr.Zero, IntPtr.Zero, true);
-
+                _variantStacks?.Push(IntPtr.Zero, IntPtr.Zero, true);
                 result = commandTarget.Invoke(group, id, inputArg, ref outputArg);
             } finally {
-                if (_variantStacks != null)
-                    _variantStacks.Pop();
+                _variantStacks?.Pop();
             }
-
             return result;
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
-            _commandTarget.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
-        }
-
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg)
+            => _commandTarget.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
         #endregion
     }
 }

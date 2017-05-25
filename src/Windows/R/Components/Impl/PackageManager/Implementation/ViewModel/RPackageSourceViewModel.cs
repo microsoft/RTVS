@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     public class RPackageSourceViewModel {
@@ -15,12 +16,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public RPackageSourceViewModel(string source, string name) : this(source, name, isEnabled: true) { }
 
         public RPackageSourceViewModel(string source, string name, bool isEnabled) {
-            if (source == null) {
-                throw new ArgumentNullException(nameof(source));
-            }
-            if (name == null) {
-                throw new ArgumentNullException(nameof(name));
-            }
+            Check.ArgumentNull(nameof(source), source);
+            Check.ArgumentNull(nameof(name), name);
 
             Name = name;
             Source = source;

@@ -59,15 +59,5 @@ namespace Microsoft.Common.Core.Test {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap BlueSquare {
-            get {
-                object obj = ResourceManager.GetObject("BlueSquare", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

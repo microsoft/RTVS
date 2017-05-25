@@ -36,6 +36,10 @@
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
     <Compile Include="Fixtures\HostClientServicesFixture.cs" />
+    <Compile Include="Fixtures\IRemoteBroker.cs" />
+    <Compile Include="Fixtures\RemoteBrokerFixture.cs" />
+    <Compile Include="Fixtures\RemoteBrokerMethodFixture.cs" />
+    <Compile Include="Fixtures\RemoteBrokerProcess.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
     <Compile Include="Session\RSessionTest.Blobs.cs" />
     <Compile Include="StackTracing\CallStackTest.cs" />
@@ -106,6 +110,10 @@
     <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
       <Name>Microsoft.R.Interpreters.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
+      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
+      <Name>Microsoft.R.Host.Broker.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>

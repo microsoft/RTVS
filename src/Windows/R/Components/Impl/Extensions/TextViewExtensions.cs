@@ -49,8 +49,7 @@ namespace Microsoft.R.Components.Extensions {
         /// <summary>
         /// Determines if given text view is interactive window
         /// </summary>
-        public static bool IsRepl(this ITextView textView) {
-            return textView.TextBuffer.ContentType.TypeName.EqualsIgnoreCase(_replContentTypeName);
-        }
+        public static bool IsRepl(this ITextView textView) 
+            => textView.TextBuffer.ContentType.TypeName.EqualsIgnoreCase(_replContentTypeName);
     }
 }

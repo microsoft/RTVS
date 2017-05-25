@@ -61,8 +61,6 @@ namespace Microsoft.R.Core.Formatting {
             return 0;
         }
 
-        public void Dispose() {
-            _tb.IndentBuilder.SetIndentLevel(_previousIndentLevel);
-        }
+        public void Dispose() => _tb.IndentBuilder.SetIndentLevel(_previousIndentLevel);
     }
 }

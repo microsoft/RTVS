@@ -1,5 +1,4 @@
 using System;
-using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Components.History.Implementation {
     internal sealed partial class RHistory {

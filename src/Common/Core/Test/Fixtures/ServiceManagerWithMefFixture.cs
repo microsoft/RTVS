@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -20,8 +21,13 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         private readonly Lazy<ComposablePartCatalog> _catalogLazy;
 
         protected ServiceManagerWithMefFixture() {
-            _catalogLazy = new Lazy<ComposablePartCatalog>(() => CatalogFactory.CreateAssembliesCatalog(GetAssemblyNames()));
+            _catalogLazy = new Lazy<ComposablePartCatalog>(() => {
+                var catalog = CatalogFactory.CreateAssembliesCatalog(GetAssemblyNames());
+                return FilterCatalog(catalog);
+            });
         }
+
+        protected virtual ComposablePartCatalog FilterCatalog(ComposablePartCatalog catalog) => catalog;
 
         protected abstract IEnumerable<string> GetAssemblyNames();
 
@@ -33,6 +39,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         private sealed class TestServiceManagerWithMef : TestServiceManager {
             private readonly CompositionContainer _compositionContainer;
+            private readonly DisposeToken _disposeToken = DisposeToken.Create< TestServiceManagerWithMef>();
 
             public TestServiceManagerWithMef(ComposablePartCatalog catalog, Action<IServiceManager, ITestInput> addServices) : base(addServices) {
                 _compositionContainer = new CompositionContainer(catalog, CompositionOptions.DisableSilentRejection);
@@ -52,12 +59,19 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             }
 
             public override Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
+                if (!_disposeToken.TryMarkDisposed()) {
+                    return Task.CompletedTask;
+                }
                 _compositionContainer.Dispose();
                 return base.DisposeAsync(result, messageBus);
             }
 
-            public override T GetService<T>(Type type = null) 
-                => base.GetService<T>(type) ?? _compositionContainer.GetExportedValue<T>();
+            public override T GetService<T>(Type type = null) {
+                if (_disposeToken.IsDisposed) {
+                    return null;
+                }
+                return base.GetService<T>(type) ?? _compositionContainer.GetExportedValueOrDefault<T>();
+            }
         }
     }
 }

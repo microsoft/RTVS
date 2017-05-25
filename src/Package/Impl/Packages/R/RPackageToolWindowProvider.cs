@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.History;
@@ -17,20 +17,14 @@ using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
-    [Export]
-    internal class RPackageToolWindowProvider {
-        [Import]
-        private Lazy<IRInteractiveWorkflowVisualProvider> WorkflowProvider { get; set; }
-        [Import]
-        private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
-        [Import]
-        private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
-        [Import]
-        private Lazy<IHelpVisualComponentContainerFactory> HelpVisualComponentContainerFactory { get; set; }
-        [Import]
-        private Lazy<IRPlotDeviceVisualComponentContainerFactory> PlotDeviceVisualComponentContainerFactory { get; set; }
-        [Import]
-        private Lazy<IRPlotHistoryVisualComponentContainerFactory> PlotHistoryVisualComponentContainerFactory { get; set; }
+    internal sealed class RPackageToolWindowProvider {
+        private readonly IServiceContainer _services;
+        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
+
+        public RPackageToolWindowProvider(IServiceContainer services) {
+            _services = services;
+            _workflowProvider = _services.GetService<IRInteractiveWorkflowVisualProvider>();
+        }
 
         public bool TryCreateToolWindow(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -71,9 +65,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return false;
         }
 
-        public ToolWindowPane CreateToolWindow(Type toolWindowType, int id) {
-            return CreateContainer(toolWindowType.GUID, id) as ToolWindowPane;
-        }
+        public ToolWindowPane CreateToolWindow(Type toolWindowType, int id) 
+            => CreateContainer(toolWindowType.GUID, id) as ToolWindowPane;
 
         private IVisualComponentContainer<IVisualComponent> CreateContainer(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -108,37 +101,42 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private Task<IInteractiveWindowVisualComponent> CreateInteractiveWindow(int id) {
-            var workflow = WorkflowProvider.Value.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
             return workflow.GetOrCreateVisualComponentAsync(id);
         }
 
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
-            var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.History.GetOrCreateVisualComponent(HistoryComponentContainerFactory.Value, id);
+            var factory = _services.GetService<IRHistoryVisualComponentContainerFactory>();
+            var workflow = _workflowProvider.GetOrCreate();
+            return workflow.History.GetOrCreateVisualComponent(factory, id);
         }
 
         private IConnectionManagerVisualComponent CreateConnectionManagerToolWindow(int id) {
-            var workflow = WorkflowProvider.Value.GetOrCreate();
+            var workflow = _workflowProvider.GetOrCreate();
             return workflow.Connections.GetOrCreateVisualComponent(id);
         }
 
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {
-            var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.Packages.GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
+            var factory = _services.GetService<IRPackageManagerVisualComponentContainerFactory>();
+            var workflow = _workflowProvider.GetOrCreate();
+            return workflow.Packages.GetOrCreateVisualComponent(factory, id);
         }
 
         private IRPlotDeviceVisualComponent CreatePlotDeviceToolWindow(int id) {
-            var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.Plots.GetOrCreateVisualComponent(PlotDeviceVisualComponentContainerFactory.Value, id);
+            var factory = _services.GetService<IRPlotDeviceVisualComponentContainerFactory>();
+            var workflow = _workflowProvider.GetOrCreate();
+            return workflow.Plots.GetOrCreateVisualComponent(factory, id);
         }
 
         private IRPlotHistoryVisualComponent CreatePlotHistoryToolWindow(int id) {
-            var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow.Plots.GetOrCreateVisualComponent(PlotHistoryVisualComponentContainerFactory.Value, id);
+            var factory = _services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
+            var workflow = _workflowProvider.GetOrCreate();
+            return workflow.Plots.GetOrCreateVisualComponent(factory, id);
         }
 
         private IHelpVisualComponent CreateHelpToolWindow(int id) {
-            return HelpVisualComponentContainerFactory.Value.GetOrCreate(id).Component;
+            var factory = _services.GetService<IHelpVisualComponentContainerFactory>();
+            return factory.GetOrCreate(id).Component;
         }
     }
 }

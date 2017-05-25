@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {

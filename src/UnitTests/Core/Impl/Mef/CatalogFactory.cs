@@ -31,7 +31,7 @@ namespace Microsoft.UnitTests.Core.Mef {
 Please use {nameof(AssemblyLoaderAttribute)}-derived types to provide paths for assembly resolution.");
             }
 
-            ValidateCatalog(aggregateCatalog);
+            //ValidateCatalog(aggregateCatalog);
             return aggregateCatalog;
         }
 

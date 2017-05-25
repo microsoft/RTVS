@@ -66,7 +66,7 @@ namespace Microsoft.Common.Core.OS {
             using (var form = new Form() { TopMost = true, Size = new Size(1, 1), StartPosition = FormStartPosition.Manual }) {
                 // We do not want anyone to see this window so position it off the 
                 // visible screen and make it as small as possible
-                Rectangle rect = SystemInformation.VirtualScreen;
+                var rect = SystemInformation.VirtualScreen;
                 form.Location = new Point(rect.Bottom + 10, rect.Right + 10);
                 form.Show();
                 form.Focus();
@@ -89,14 +89,14 @@ namespace Microsoft.Common.Core.OS {
 
         private static Task MoveMessageBoxAsync(string title, int centerX, int centerY) {
             return Task.Run(() => {
-                IntPtr msgBoxHandle = IntPtr.Zero;
+                var msgBoxHandle = IntPtr.Zero;
                 var startTime = DateTime.Now;
 
                 while (msgBoxHandle == IntPtr.Zero && (DateTime.Now - startTime).TotalMilliseconds < 2000) {
                     msgBoxHandle = NativeMethods.FindWindow(null, title);
                 }
                 if (msgBoxHandle != IntPtr.Zero) {
-                    int bottom = 0;
+                    var bottom = 0;
 
                     var progressBoxHandle = NativeMethods.FindWindow("#32770", "Microsoft Visual Studio");
                     if (progressBoxHandle != IntPtr.Zero) {
@@ -107,8 +107,8 @@ namespace Microsoft.Common.Core.OS {
 
                     var rc = new NativeMethods.RECT();
                     NativeMethods.GetWindowRect(msgBoxHandle, out rc);
-                    int x = centerX - rc.Width / 2;
-                    int y = centerY - rc.Height / 2;
+                    var x = centerX - rc.Width / 2;
+                    var y = centerY - rc.Height / 2;
                     if (bottom > 0) {
                         y = bottom - rc.Height;
                     }

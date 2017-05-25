@@ -7,15 +7,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
@@ -23,8 +22,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
-        public VariableRHostScript(IRSessionProvider sessionProvider)
-            : base(sessionProvider) { }
+        public VariableRHostScript(IServiceContainer services)
+            : base(services) { }
 
         public VariableViewModel GlobalEnvrionment => _globalEnv;
 
@@ -39,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var result = await frame.TryEvaluateAndDescribeAsync(rScript, properties, RValueRepresentations.Str());
 
                 var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", properties, RValueRepresentations.Str());
-                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.Services);
+                _globalEnv = new VariableViewModel(globalResult, Services);
 
                 return result;
             } finally {

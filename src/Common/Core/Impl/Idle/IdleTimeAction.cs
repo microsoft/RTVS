@@ -10,15 +10,14 @@ namespace Microsoft.Common.Core.Idle {
     /// Action that should be executed on next idle after certain amount of milliseconds
     /// </summary>
     public class IdleTimeAction {
-        static Dictionary<object, IdleTimeAction> _idleActions = new Dictionary<object, IdleTimeAction>();
+        static readonly Dictionary<object, IdleTimeAction> _idleActions = new Dictionary<object, IdleTimeAction>();
 
         private readonly Action _action;
         private readonly int _delay;
-        private readonly ICoreShell _shell;
-        bool _connectedToIdle = false;
-        DateTime _idleConnectTime;
-        object _tag;
-
+        private readonly IIdleTimeService _idleTime;
+        private readonly object _tag;
+        private bool _connectedToIdle;
+        private DateTime _idleConnectTime;
 
         /// <summary>
         /// Create delayed idle time action
@@ -26,12 +25,10 @@ namespace Microsoft.Common.Core.Idle {
         /// <param name="action">Action to execute on idle</param>
         /// <param name="delay">Minimum number of milliseconds to wait before executing the action</param>
         /// <param name="tag">Object that uniquely identifies the action. Typically creator object.</param>
-        /// <param name="shell"></param>
-        public static void Create(Action action, int delay, object tag, ICoreShell shell) {
-            IdleTimeAction existingAction;
-
-            if (!_idleActions.TryGetValue(tag, out existingAction)) {
-                existingAction = new IdleTimeAction(action, delay, tag, shell);
+        /// <param name="idleTime">Idle time service</param>
+        public static void Create(Action action, int delay, object tag, IIdleTimeService idleTime) {
+            if (!_idleActions.TryGetValue(tag, out IdleTimeAction existingAction)) {
+                existingAction = new IdleTimeAction(action, delay, tag, idleTime);
                 _idleActions[tag] = existingAction;
             }
         }
@@ -41,19 +38,17 @@ namespace Microsoft.Common.Core.Idle {
         /// </summary>
         /// <param name="tag">Tag identifying the action to cancel</param>
         public static void Cancel(object tag) {
-            IdleTimeAction idleTimeAction;
-
-            if (_idleActions.TryGetValue(tag, out idleTimeAction)) {
+            if (_idleActions.TryGetValue(tag, out IdleTimeAction idleTimeAction)) {
                 idleTimeAction.DisconnectFromIdle();
                 _idleActions.Remove(tag);
             }
         }
 
-        private IdleTimeAction(Action action, int delay, object tag, ICoreShell shell) {
+        private IdleTimeAction(Action action, int delay, object tag, IIdleTimeService idleTime) {
             _action = action;
             _delay = delay;
             _tag = tag;
-            _shell = shell;
+            _idleTime = idleTime;
 
             ConnectToIdle();
         }
@@ -69,7 +64,7 @@ namespace Microsoft.Common.Core.Idle {
 
         void ConnectToIdle() {
             if (!_connectedToIdle) {
-                _shell.Idle += OnIdle;
+                _idleTime.Idle += OnIdle;
 
                 _idleConnectTime = DateTime.UtcNow;
                 _connectedToIdle = true;
@@ -78,7 +73,7 @@ namespace Microsoft.Common.Core.Idle {
 
         void DisconnectFromIdle() {
             if (_connectedToIdle) {
-                _shell.Idle -= OnIdle;
+                _idleTime.Idle -= OnIdle;
                 _connectedToIdle = false;
             }
         }

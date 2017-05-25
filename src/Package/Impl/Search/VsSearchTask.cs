@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.Shell.Interop;
 using static Microsoft.VisualStudio.VSConstants.VsSearchTaskStatus;
@@ -18,21 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         public uint Status => (uint)_taskStatus;
 
         public VsSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, ISearchHandler handler, CancellationTokenSource cts) {
-            if (pSearchQuery == null) {
-                throw new ArgumentNullException(nameof(pSearchQuery));
-            }
-
-            if (pSearchCallback == null) {
-                throw new ArgumentNullException(nameof(pSearchCallback));
-            }
-
-            if (dwCookie == VSConstants.VSCOOKIE_NIL) {
-                throw new ArgumentException(nameof(dwCookie));
-            }
-
-            if (string.IsNullOrEmpty(pSearchQuery.SearchString)) {
-                throw new ArgumentException(nameof(pSearchQuery));
-            }
+            Check.ArgumentNull(nameof(pSearchQuery), pSearchQuery);
+            Check.ArgumentNull(nameof(pSearchCallback), pSearchCallback);
+            Check.Argument(nameof(dwCookie), () => dwCookie != VSConstants.VSCOOKIE_NIL);
+            Check.ArgumentStringNullOrEmpty(nameof(pSearchQuery), pSearchQuery.SearchString);
 
             Id = dwCookie;
             SearchQuery = pSearchQuery;

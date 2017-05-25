@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
@@ -11,9 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         private readonly int _maxCount;
 
         public AsyncCommandRangeToOleMenuCommandShim(Guid group, int id, IAsyncCommandRange commandRange) : base(group, id) {
-            if (commandRange == null) {
-                throw new ArgumentNullException(nameof(commandRange));
-            }
+            Check.ArgumentNull(nameof(commandRange), commandRange);
             _commandRange = commandRange;
             _maxCount = commandRange.MaxCount;
         }

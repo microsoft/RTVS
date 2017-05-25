@@ -63,17 +63,14 @@ namespace Microsoft.R.Core.AST {
 
             if (!globalScope) {
                 // See if this is a function scope with arguments
-                var funcDef = scope.Parent as IFunctionDefinition;
-                if (funcDef != null && funcDef.Arguments != null) {
+                if (scope.Parent is IFunctionDefinition funcDef && funcDef.Arguments != null) {
                     foreach (var arg in funcDef.Arguments) {
-                        var na = arg as IVariable;
-                        if (na != null) {
+                        if (arg is IVariable na) {
                             yield return na;
                         } else {
                             var ea = arg as ExpressionArgument;
-                            if (ea != null && ea.ArgumentValue != null && ea.ArgumentValue.Children.Count == 1) {
-                                var v = ea.ArgumentValue.Children[0] as IVariable;
-                                if (v != null) {
+                            if (ea?.ArgumentValue != null && ea.ArgumentValue.Children.Count == 1) {
+                                if (ea.ArgumentValue.Children[0] is IVariable v) {
                                     yield return v;
                                 }
                             }
@@ -90,8 +87,7 @@ namespace Microsoft.R.Core.AST {
             }
 
             foreach (var c in scope.Children) {
-                var es = c as IExpressionStatement;
-                if (es != null) {
+                if (c is IExpressionStatement es) {
                     if (!globalScope && es.Start > position) {
                         // In local scope stop at the predefined location
                         // so we do not enumerate variables or functions

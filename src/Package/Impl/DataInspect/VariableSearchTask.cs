@@ -26,8 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var searchString = SearchQuery.SearchString;
             if (_grid?.Items != null && !string.IsNullOrWhiteSpace(searchString)) {
                 found = Find(s => s.StartsWithOrdinal(searchString));
-                if (!found)
+                if (!found) {
                     found = Find(s => s.Contains(searchString));
+                }
             }
             if (!found) {
                 _callback.ReportComplete(this, 0);

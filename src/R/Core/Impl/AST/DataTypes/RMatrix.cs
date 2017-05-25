@@ -45,8 +45,9 @@ namespace Microsoft.R.Core.AST.DataTypes {
                 foreach (RString name in value) {
                     this[i++].DimName = name;
 
-                    if (i >= this.NRow)
+                    if (i >= this.NRow) {
                         break;
+                    }
                 }
             }
         }

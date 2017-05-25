@@ -27,11 +27,13 @@ namespace Microsoft.Languages.Core.Formatting {
                 for (int i = position - 1; i >= 0; i--) {
                     char ch = iterator[i];
 
-                    if (!Char.IsWhiteSpace(ch))
+                    if (!Char.IsWhiteSpace(ch)) {
                         return false;
+                    }
 
-                    if (ch.IsLineBreak())
+                    if (ch.IsLineBreak()) {
                         return true;
+                    }
                 }
             }
 
@@ -48,8 +50,9 @@ namespace Microsoft.Languages.Core.Formatting {
                 for (int i = position - 1; i >= 0; i--) {
                     char ch = iterator[i];
 
-                    if (!Char.IsWhiteSpace(ch))
+                    if (!Char.IsWhiteSpace(ch)) {
                         return count;
+                    }
 
                     if (ch == '\r') {
                         count++;
@@ -77,8 +80,9 @@ namespace Microsoft.Languages.Core.Formatting {
             for (int i = position; i < iterator.Length; i++) {
                 char ch = iterator[i];
 
-                if (!Char.IsWhiteSpace(ch))
+                if (!Char.IsWhiteSpace(ch)) {
                     return count;
+                }
 
                 if (ch == '\r') {
                     count++;

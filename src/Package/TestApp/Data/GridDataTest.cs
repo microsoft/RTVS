@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         /// <summary>
         /// Runs <c>rtvs:::grid_data</c> for <paramref name="expression"/>, and validates that
-        /// returned data matches expectations.
+        /// returned data matches expectations. Requires quantmod package preinstalled.
         /// </summary>
         /// <param name="expression">Expression to produce a data structure to retrieve grid data from.</param>
         /// <param name="firstRow">First row which should be retrieved; 1-based (as in R).</param>

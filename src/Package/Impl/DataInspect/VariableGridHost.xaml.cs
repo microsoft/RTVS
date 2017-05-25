@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
@@ -24,10 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly IRSession _rSession;
         private VariableViewModel _evaluation;
 
-        public VariableGridHost() {
+        public VariableGridHost(): this(VsAppShell.Current.Services) { }
+
+        public VariableGridHost(IServiceContainer services) {
             InitializeComponent();
 
-            _services = VsAppShell.Current.Services;
+            _services = services;
             _rSession = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
         }
@@ -73,7 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             // Otherwise, need to refresh the whole thing from scratch.
-            VariableGrid.Initialize(new GridDataProvider(wrapper));
+            var session = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
+            VariableGrid.Initialize(new GridDataProvider(session, wrapper));
             _evaluation = wrapper;
         }
 

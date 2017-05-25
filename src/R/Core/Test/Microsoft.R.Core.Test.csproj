@@ -160,7 +160,6 @@
     <Compile Include="Tokens\TokenizeExpressionsTest.cs" />
     <Compile Include="Tokens\TokenizeFunctionsTest.cs" />
     <Compile Include="Tokens\TokenizeIntegersTest.cs" />
-    <Compile Include="Tokens\TokenizeFilesTest.cs" />
     <Compile Include="Utility\ParserTest.cs" />
     <Compile Include="CoreTestFilesFixture.cs" />
   </ItemGroup>

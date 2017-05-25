@@ -15,11 +15,14 @@ using Xunit.Sdk;
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     internal sealed class AssemblyRunner : XunitTestAssemblyRunner {
+        private readonly XunitTestEnvironment _testEnvironment;
         private IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
         private IList<AssemblyLoaderAttribute> _assemblyLoaders;
 
-        public AssemblyRunner(ITestAssembly testAssembly, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
-            : base(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions) {}
+        public AssemblyRunner(ITestAssembly testAssembly, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions, XunitTestEnvironment testEnvironment)
+            : base(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions) {
+            _testEnvironment = testEnvironment;
+        }
 
         protected override async Task AfterTestAssemblyStartingAsync() {
             await base.AfterTestAssemblyStartingAsync();
@@ -64,7 +67,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override Task<RunSummary> RunTestCollectionAsync(IMessageBus messageBus, ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, CancellationTokenSource cancellationTokenSource) {
-            return new CollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource, _assemblyFixtureMappings).RunAsync();
+            return new CollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource, _assemblyFixtureMappings, _testEnvironment).RunAsync();
         }
 
         private async Task AddAssemblyFixtureAsync(Dictionary<Type, object> fixtures, Type fixtureType) {

@@ -8,10 +8,10 @@ using System.Text;
 
 namespace Microsoft.Common.Core {
     public static class StringExtensions {
-        public static bool EqualsOrdinal(this string s, string other)=> string.Equals(s, other, StringComparison.Ordinal);
-        public static bool EqualsIgnoreCase(this string s, string other)=> string.Equals(s, other, StringComparison.OrdinalIgnoreCase);
-        public static bool StartsWithIgnoreCase(this string s, string prefix)=> s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
-        public static bool StartsWithOrdinal(this string s, string prefix)=> s.StartsWith(prefix, StringComparison.Ordinal);
+        public static bool EqualsOrdinal(this string s, string other) => string.Equals(s, other, StringComparison.Ordinal);
+        public static bool EqualsIgnoreCase(this string s, string other) => string.Equals(s, other, StringComparison.OrdinalIgnoreCase);
+        public static bool StartsWithIgnoreCase(this string s, string prefix) => s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+        public static bool StartsWithOrdinal(this string s, string prefix) => s.StartsWith(prefix, StringComparison.Ordinal);
         public static bool EndsWithIgnoreCase(this string s, string suffix) => s.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
         public static bool EndsWithOrdinal(this string s, string suffix) => s.EndsWith(suffix, StringComparison.Ordinal);
         public static bool EndsWith(this string s, char ch) => s.Length > 0 && s[s.Length - 1] == ch;
@@ -182,16 +182,10 @@ namespace Microsoft.Common.Core {
         public static string FormatCurrent(this string format, params object[] args) =>
             string.Format(CultureInfo.CurrentCulture, format, args);
 
-        public static long ToLongOrDefault(this string value) {
-            long ret;
-            long.TryParse(value, out ret);
-            return ret;
-        }
+        public static long ToLongOrDefault(this string value)
+            => long.TryParse(value, out long ret) ? ret : 0;
 
-        public static DateTime ToDateTimeOrDefault(this string value) {
-            DateTime ret;
-            DateTime.TryParse(value, out ret);
-            return ret;
-        }
+        public static DateTime ToDateTimeOrDefault(this string value)
+            => DateTime.TryParse(value, out DateTime ret) ? ret : default(DateTime);
     }
 }

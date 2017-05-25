@@ -20,28 +20,13 @@ namespace Microsoft.R.Core.AST.Scopes {
         private string _terminatingKeyword;
 
         #region IScope
-        public string Name {
-            get { return string.Empty; }
-        }
+        public string Name => string.Empty;
+        public TokenNode OpenCurlyBrace => null;
+        public TokenNode CloseCurlyBrace => null;
 
-        public TokenNode OpenCurlyBrace {
-            get { return null; }
-        }
-
-        public TokenNode CloseCurlyBrace {
-            get { return null; }
-        }
-
-        public IReadOnlyDictionary<string, int> Functions {
-            get { return StaticDictionary<string, int>.Empty; }
-        }
-
-        public IReadOnlyDictionary<string, int> Variables {
-            get { return StaticDictionary<string, int>.Empty; }
-        }
-        public IReadOnlyTextRangeCollection<IStatement> Statements {
-            get { return new TextRangeCollection<IStatement>() { _statement }; }
-        }
+        public IReadOnlyDictionary<string, int> Functions => StaticDictionary<string, int>.Empty;
+        public IReadOnlyDictionary<string, int> Variables => StaticDictionary<string, int>.Empty;
+        public IReadOnlyTextRangeCollection<IStatement> Statements => new TextRangeCollection<IStatement> { _statement };
         #endregion
 
         public SimpleScope(string terminatingKeyword) {

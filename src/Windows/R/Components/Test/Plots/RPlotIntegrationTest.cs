@@ -19,6 +19,7 @@ using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -29,28 +30,28 @@ namespace Microsoft.R.Components.Test.Plots {
     [ExcludeFromCodeCoverage]
     [Category.Plots]
     public class RPlotIntegrationTest : IAsyncLifetime {
-        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly IRInteractiveWorkflowVisual _workflow;
         private readonly TestRPlotDeviceVisualComponentContainerFactory _plotDeviceVisualComponentContainerFactory;
         private readonly IRPlotHistoryVisualComponentContainerFactory _plotHistoryVisualComponentContainerFactory;
         private readonly MethodInfo _testMethod;
+        private readonly IRemoteBroker _remoteBroker;
         private readonly TestFilesFixture _testFiles;
         private readonly TestUIServices _ui;
         private IInteractiveWindowVisualComponent _replVisualComponent;
         private IRPlotManagerVisual _plotManager;
 
-        public RPlotIntegrationTest(IServiceContainer services, TestMethodFixture testMethod, TestFilesFixture testFiles) {
-            _workflowProvider = services.GetService<TestRInteractiveWorkflowProvider>();
-            _workflow = _workflowProvider.GetOrCreate();
+        public RPlotIntegrationTest(IServiceContainer services, IRemoteBroker remoteBroker, TestMethodFixture testMethod, TestFilesFixture testFiles) {
+            _workflow = services.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate();
             _plotDeviceVisualComponentContainerFactory = services.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
             _plotHistoryVisualComponentContainerFactory = services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
              _testMethod = testMethod.MethodInfo;
+            _remoteBroker = remoteBroker;
             _testFiles = testFiles;
             _ui = _workflow.Shell.UI() as TestUIServices;
         }
 
         public async Task InitializeAsync() {
-            await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RPlotIntegrationTest));
+            await _remoteBroker.ConnectAsync(_workflow.RSessions);
             _replVisualComponent = await _workflow.GetOrCreateVisualComponentAsync();
             _plotManager = (IRPlotManagerVisual)_workflow.Plots;
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(600, 500, 96);

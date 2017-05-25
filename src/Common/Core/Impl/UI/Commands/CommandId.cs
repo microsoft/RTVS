@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Common.Core.UI.Commands {
     /// <summary>
     /// Command identifier
     /// </summary>
+    [SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
     public struct CommandId {
         public CommandId(Guid group, int id)
             : this() {
@@ -21,11 +23,11 @@ namespace Microsoft.Common.Core.UI.Commands {
         /// <summary>
         /// Command group identifier
         /// </summary>
-        public Guid Group { get; set; }
+        public Guid Group { get;}
 
         /// <summary>
         /// Command identifier within the group
         /// </summary>
-        public int Id { get; set; }
+        public int Id { get; }
     }
 }

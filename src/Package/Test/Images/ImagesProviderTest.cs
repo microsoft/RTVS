@@ -4,19 +4,24 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Images {
     [ExcludeFromCodeCoverage]
+    [Category.Project.Services]
     [Collection(CollectionNames.NonParallel)]
     public class ImageServiceTest {
+        private readonly IServiceContainer _services;
+
+        public ImageServiceTest(IServiceContainer services) {
+            _services = services;
+        }
+
         [Test]
-        [Category.Project.Services]
         public void Test01() {
-            var service = VsAppShell.Current.GetService<IImageService>();
+            var service = _services.GetService<IImageService>();
             service.Should().NotBeNull();
 
             service.GetFileIcon("foo.R").Should().NotBeNull();

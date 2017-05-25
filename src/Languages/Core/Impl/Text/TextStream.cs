@@ -9,38 +9,36 @@ namespace Microsoft.Languages.Core.Text {
     /// Implements <seealso cref="ITextProvider"/> over a string
     /// </summary>
     public class TextStream : ITextProvider {
-        string _text;
+        private readonly string _text;
 
-        // Array access (i.e. converting string to an array)
-        // is faster, but takes more memory.
+        public static ITextProvider Empty { get; } = new TextStream(string.Empty);
 
         [DebuggerStepThrough]
-        public TextStream(string text) {
+        public TextStream(string text): this(text, 0) { }
+
+        [DebuggerStepThrough]
+        public TextStream(string text, int version) {
             _text = text;
+            Version = version;
         }
 
         [DebuggerStepThrough]
-        public override string ToString() {
-            return _text;
-        }
+        public override string ToString() => _text;
 
         #region ITextStream
-
         /// <summary>
         /// Text length
         /// </summary>
-        public int Length {
-            get { return _text.Length; }
-        }
+        public int Length => _text.Length;
 
         /// <summary>
         /// Retrieves character at a given position
         /// </summary>
         public char this[int position] {
             get {
-                if (position < 0 || position >= _text.Length)
+                if (position < 0 || position >= _text.Length) {
                     return '\0';
-
+                }
                 return _text[position];
             }
         }
@@ -49,9 +47,9 @@ namespace Microsoft.Languages.Core.Text {
         /// Retrieves a substring given start position and length
         /// </summary>
         public string GetText(int position, int length) {
-            if (length == 0)
-                return String.Empty;
-
+            if (length == 0) {
+                return string.Empty;
+            }
             Debug.Assert(position >= 0 && length >= 0 && position + length <= _text.Length);
             return _text.Substring(position, length);
         }
@@ -60,9 +58,13 @@ namespace Microsoft.Languages.Core.Text {
         /// Retrieves substring given text range
         /// </summary>
         [DebuggerStepThrough]
-        public string GetText(ITextRange range) {
-            return GetText(range.Start, range.Length);
-        }
+        public string GetText(ITextRange range) => GetText(range.Start, range.Length);
+
+        /// <summary>
+        /// Retrieves the complete text
+        /// </summary>
+        [DebuggerStepThrough]
+        public string GetText() => _text;
 
         /// <summary>
         /// Searches text for a given character starting at specified position
@@ -71,9 +73,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="startPosition">Starting position</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
         [DebuggerStepThrough]
-        public int IndexOf(char ch, int startPosition) {
-            return _text.IndexOf(ch, startPosition);
-        }
+        public int IndexOf(char ch, int startPosition) => _text.IndexOf(ch, startPosition);
 
         /// <summary>
         /// Searches text for a given character with the specified range
@@ -82,9 +82,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="range">Range to search in</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
         [DebuggerStepThrough]
-        public int IndexOf(char ch, ITextRange range) {
-            return _text.IndexOf(ch, range.Start, range.Length);
-        }
+        public int IndexOf(char ch, ITextRange range) => _text.IndexOf(ch, range.Start, range.Length);
 
         /// <summary>
         /// Searches text for a given string starting at specified position
@@ -93,9 +91,8 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="startPosition">Starting position</param>
         /// <param name="ignoreCase">True if search should be case-insensitive</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
-        public int IndexOf(string stringToFind, int startPosition, bool ignoreCase) {
-            return _text.IndexOf(stringToFind, startPosition, ignoreCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-        }
+        public int IndexOf(string stringToFind, int startPosition, bool ignoreCase) 
+            => _text.IndexOf(stringToFind, startPosition, ignoreCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Searches text for a given string within text fragment 
@@ -106,29 +103,25 @@ namespace Microsoft.Languages.Core.Text {
         /// <param name="ignoreCase">True if search should be case-insensitive</param>
         /// <returns>Character index of the first string appearance or -1 if string was not found</returns>
         public int IndexOf(string stringToFind, ITextRange range, bool ignoreCase) {
-            if (range.Start + stringToFind.Length > _text.Length)
+            if (range.Start + stringToFind.Length > _text.Length) {
                 return -1;
-
-            if (range.End > _text.Length)
+            }
+            if (range.End > _text.Length) {
                 return -1;
+            }
 
             var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-
             return _text.IndexOf(stringToFind, range.Start, range.Length, comparison);
         }
 
         public bool CompareTo(int position, int length, string compareTo, bool ignoreCase) {
             var comparison = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-
-            return String.Compare(_text, position, compareTo, 0, length, comparison) == 0;
+            return string.Compare(_text, position, compareTo, 0, length, comparison) == 0;
         }
 
-        public ITextProvider Clone() {
-            return new TextStream(_text);
-        }
+        public ITextProvider Clone() => new TextStream(_text);
 
-        public int Version { get { return 0; } }
-
+        public int Version { get; }
         // static string text provider does not fire text change event
 #pragma warning disable 0067
         public event EventHandler<TextChangeEventArgs> OnTextChange;
@@ -138,9 +131,7 @@ namespace Microsoft.Languages.Core.Text {
 
         #region Dispose
         [DebuggerStepThrough]
-        public void Dispose() {
-            _text = null;
-        }
+        public void Dispose() { }
         #endregion
     }
 }

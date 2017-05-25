@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Components.Settings;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     internal interface ISurveyNewsOptions {

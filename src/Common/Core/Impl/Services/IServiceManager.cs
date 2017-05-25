@@ -20,12 +20,23 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Adds on-demand created service
         /// </summary>
-        /// <param name="factory">Optional service factory. If not provided, reflection with default constructor will be used.</param>
-        IServiceManager AddService<T>(Func<T> factory = null) where T : class;
+        /// <param name="factory">Service factory</param>
+        IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class;
 
         /// <summary>
-        /// Removes service from container
+        /// Adds on-demand created service
         /// </summary>
-        void RemoveService<T>() where T : class;
+        /// <param name="type">Type to instantiate with reflection.</param>
+        IServiceManager AddService(Type type);
+
+        /// <summary>
+        /// Removes service from container by instance
+        /// </summary>
+        void RemoveService(object service);
+
+        /// <summary>
+        /// Removes service from container by type
+        /// </summary>
+        void RemoveService<T>();
     }
 }

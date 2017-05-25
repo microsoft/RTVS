@@ -10,7 +10,8 @@ namespace Microsoft.R.Editor.Completions {
     /// completion items but exclude things like file names or workspace variables.
     /// Providers are exported via MEF.
     /// </summary>
-    public interface IRHelpSearchTermProvider {
+    public interface IRHelpSearchTermProvider
+    {
         /// <summary>
         /// Retrieves list of search terms
         /// </summary>

@@ -14,7 +14,7 @@ using System.Threading;
 namespace Microsoft.Common.Core.Extensions {
     public static partial class CompositionBatchExtensions {
         public static CompositionBatch AddValue<TContract>(this CompositionBatch batch, TContract value) {
-            string contractName = AttributedModelServices.GetContractName(typeof(TContract));
+            var contractName = AttributedModelServices.GetContractName(typeof(TContract));
             return batch.AddValue(contractName, value);
         }
 
@@ -37,50 +37,44 @@ namespace Microsoft.Common.Core.Extensions {
         }
 
         private static ExportDefinition CreateExportDefinition(string contractName, Type type) {
-            LazyMemberInfo memberInfo = new LazyMemberInfo(MemberTypes.TypeInfo, type);
+            var memberInfo = new LazyMemberInfo(MemberTypes.TypeInfo, type);
 
-            Lazy<IDictionary<string, object>> metadata = new Lazy<IDictionary<string, object>>(() => {
+            var metadata = new Lazy<IDictionary<string, object>>(() => {
                 string typeIdentity = AttributedModelServices.GetTypeIdentity(type);
                 return new Dictionary<string, object> {
                     {CompositionConstants.ExportTypeIdentityMetadataName, typeIdentity}
                 };
             });
 
-            ExportDefinition exportDefinition = ReflectionModelServices.CreateExportDefinition(memberInfo, contractName, metadata, null);
+            var exportDefinition = ReflectionModelServices.CreateExportDefinition(memberInfo, contractName, metadata, null);
             return exportDefinition;
         }
 
 
         private static ComposablePartDefinition CreatePartDefinition(IEnumerable<ImportDefinition> ctorImports, ExportDefinition contractExport, Type type) {
-            ComposablePartDefinition originalPartDefinition = AttributedModelServices.CreatePartDefinition(type, null);
+            var originalPartDefinition = AttributedModelServices.CreatePartDefinition(type, null);
             if (originalPartDefinition == null) {
                 throw new InvalidOperationException();
             }
 
-            IList<ImportDefinition> imports = originalPartDefinition.ImportDefinitions
+            var imports = originalPartDefinition.ImportDefinitions
                 .Where(idef => !ReflectionModelServices.IsImportingParameter(idef))
                 .Concat(ctorImports)
                 .ToList();
 
-            IList<ExportDefinition> exports = originalPartDefinition.ExportDefinitions
-                .Append(contractExport)
-                .ToList();
-
-            IDictionary<string, object> metadata = originalPartDefinition.Metadata;
+            var exports = originalPartDefinition.ExportDefinitions.ToList();
+            exports.Add(contractExport);
+            var metadata = originalPartDefinition.Metadata;
 
             return CreatePartDefinition(type, imports, exports, metadata);
         }
 
-        private static ComposablePartDefinition CreatePartDefinition(Type type, IList<ImportDefinition> imports, IList<ExportDefinition> exports, IDictionary<string, object> metadata) {
-            return ReflectionModelServices.CreatePartDefinition(
-                new Lazy<Type>(() => type, LazyThreadSafetyMode.PublicationOnly),
-                false,
-                new Lazy<IEnumerable<ImportDefinition>>(() => imports),
-                new Lazy<IEnumerable<ExportDefinition>>(() => exports),
-                new Lazy<IDictionary<string, object>>(() => metadata),
-                null);
-        }
-
-
+        private static ComposablePartDefinition CreatePartDefinition(Type type, IList<ImportDefinition> imports, IList<ExportDefinition> exports, IDictionary<string, object> metadata) => ReflectionModelServices.CreatePartDefinition(
+            new Lazy<Type>(() => type, LazyThreadSafetyMode.PublicationOnly),
+            false,
+            new Lazy<IEnumerable<ImportDefinition>>(() => imports),
+            new Lazy<IEnumerable<ExportDefinition>>(() => exports),
+            new Lazy<IDictionary<string, object>>(() => metadata),
+            null);
     }
 }

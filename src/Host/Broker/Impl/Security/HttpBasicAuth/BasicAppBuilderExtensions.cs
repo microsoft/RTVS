@@ -19,10 +19,11 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns>The original app parameter</returns>
         public static IApplicationBuilder UseBasicAuthentication(this IApplicationBuilder app)
         {
-            if (app == null)
+            if (app == null) {
                 throw new ArgumentNullException(nameof(app));
+            }
 
-			var options = app.ApplicationServices.GetService<IOptions<BasicOptions>>();
+            var options = app.ApplicationServices.GetService<IOptions<BasicOptions>>();
 
 			return app.UseBasicAuthentication(options?.Value ?? new BasicOptions());
         }
@@ -35,12 +36,14 @@ namespace Microsoft.AspNetCore.Builder
 		/// <returns>The original app parameter</returns>
 		public static IApplicationBuilder UseBasicAuthentication(this IApplicationBuilder app, Action<BasicOptions> configureOptions)
         {
-            if (app == null)
+            if (app == null) {
                 throw new ArgumentNullException(nameof(app));
+            }
 
             var options = new BasicOptions();
-            if (configureOptions != null)
+            if (configureOptions != null) {
                 configureOptions(options);
+            }
 
             return app.UseBasicAuthentication(options);
         }
@@ -53,11 +56,13 @@ namespace Microsoft.AspNetCore.Builder
 		/// <returns>The original app parameter</returns>
 		public static IApplicationBuilder UseBasicAuthentication(this IApplicationBuilder app, BasicOptions options)
         {
-            if (app == null)
+            if (app == null) {
                 throw new ArgumentNullException(nameof(app));
+            }
 
-            if (options == null)
+            if (options == null) {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             return app.UseMiddleware<BasicMiddleware>(options);
         }

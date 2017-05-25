@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using FluentAssertions;
@@ -26,8 +25,9 @@ namespace Microsoft.Common.Core.Test.Utility {
 
             }
 
-            if (expected.Length != actual.Length)
+            if (expected.Length != actual.Length) {
                 result.Append(FormattableString.Invariant($"\r\nLength different. Expected: '{expected.Length}' , actual '{actual.Length}'"));
+            }
 
             return result.ToString();
         }
@@ -50,8 +50,9 @@ namespace Microsoft.Common.Core.Test.Utility {
                 expectedLine = expectedReader.ReadLine();
                 actualLine = actualReader.ReadLine();
 
-                if (expectedLine == null || actualLine == null)
+                if (expectedLine == null || actualLine == null) {
                     break;
+                }
 
                 int minLength = Math.Min(expectedLine.Length, actualLine.Length);
                 for (int i = 0; i < minLength; i++) {
@@ -87,8 +88,9 @@ namespace Microsoft.Common.Core.Test.Utility {
 
         public static void CompareFiles(string baselineFile, string actual, bool regenerateBaseline, bool ignoreCase = false) {
             if (regenerateBaseline) {
-                if (File.Exists(baselineFile))
+                if (File.Exists(baselineFile)) {
                     File.SetAttributes(baselineFile, FileAttributes.Normal);
+                }
 
                 using (var sw = new StreamWriter(baselineFile)) {
                     sw.Write(actual);
