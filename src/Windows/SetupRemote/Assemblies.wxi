@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
+  <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
   <File Source="$(var.BinDir)\Microsoft.Languages.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Common.Core.Windows.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.dll" />
+  <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Windows.exe" />
+  <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.Windows.dll" />
-  <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Antiforgery.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Authorization.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Authentication.dll" />
@@ -84,6 +86,7 @@
   <File Source="$(var.BinDir)\Microsoft.Extensions.WebEncoders.dll" />
   <File Source="$(var.BinDir)\Microsoft.Net.Http.Server.dll" />
   <File Source="$(var.BinDir)\Microsoft.Net.Http.Headers.dll" />
+  <File Source="$(var.BinDir)\Microsoft.Win32.Primitives.dll" />
   <File Source="$(var.BinDir)\System.AppContext.dll" />
   <File Source="$(var.BinDir)\System.Buffers.dll" />
   <File Source="$(var.BinDir)\System.Collections.Immutable.dll" />
@@ -101,8 +104,11 @@
   <File Source="$(var.BinDir)\System.IO.Compression.ZipFile.dll" />
   <File Source="$(var.BinDir)\System.IO.FileSystem.dll" />
   <File Source="$(var.BinDir)\System.IO.FileSystem.Primitives.dll" />
+  <File Source="$(var.BinDir)\System.Net.Http.dll" />
+  <File Source="$(var.BinDir)\System.Net.Http.WinHttpHandler.dll" />
   <File Source="$(var.BinDir)\System.Numerics.Vectors.dll" />
   <File Source="$(var.BinDir)\System.Reflection.Metadata.dll" />
+  <File Source="$(var.BinDir)\System.Runtime.CompilerServices.Unsafe.dll" />
   <File Source="$(var.BinDir)\System.Runtime.InteropServices.RuntimeInformation.dll" />
   <File Source="$(var.BinDir)\System.Security.Cryptography.Algorithms.dll" />
   <File Source="$(var.BinDir)\System.Security.Cryptography.Encoding.dll" />
