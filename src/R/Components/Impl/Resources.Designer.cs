@@ -1273,6 +1273,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Vertical splitter.
+        /// </summary>
+        public static string PackageManager_VerticalSplitter {
+            get {
+                return ResourceManager.GetString("PackageManager_VerticalSplitter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Physical Memory: {0} MB, {1} MB free.
         /// </summary>
         public static string PhysicalMemory {
