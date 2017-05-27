@@ -75,7 +75,7 @@
                         </MultiBinding>
                     </Button.Visibility>
                     <Button.Focusable>
-                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                        <MultiBinding Converter="{x:Static wpf:Converters.All}">
                             <Binding Path="CanBeUninstalled" />
                             <Binding Path="IsInstalled" />
                         </MultiBinding>
@@ -104,7 +104,7 @@
                         </MultiBinding>
                     </Button.Visibility>
                     <Button.Focusable>
-                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}" Mode="OneWay">
+                        <MultiBinding Converter="{x:Static wpf:Converters.All}" Mode="OneWay">
                             <Binding Path="IsUpdateAvailable" />
                             <Binding Path="IsInstalled" />
                         </MultiBinding>
