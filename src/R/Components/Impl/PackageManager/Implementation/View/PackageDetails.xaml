@@ -37,7 +37,9 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" MinHeight="32" Margin="0,8">
 
                 <TextBox Background="Transparent" Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" BorderThickness="0" Margin="-2,0,-2,0"
-                         Text="{Binding Path=Name, Mode=OneWay}" IsReadOnly="True" FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" />
+                         Text="{Binding Path=Name, Mode=OneWay}" IsReadOnly="True" 
+                         FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" 
+                         Focusable="False"/>
             </StackPanel>
 
             <!-- project action when in project package manager -->
@@ -72,6 +74,12 @@
                             <Binding Path="IsInstalled" />
                         </MultiBinding>
                     </Button.Visibility>
+                    <Button.Focusable>
+                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                            <Binding Path="CanBeUninstalled" />
+                            <Binding Path="IsInstalled" />
+                        </MultiBinding>
+                    </Button.Focusable>
                 </Button>
 
                 <!-- Row 2 -->
@@ -81,9 +89,11 @@
                            Visibility="{Binding Path=LatestVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
                 <!-- install button and update button. They are in fact the same button. Which one is displayed depends on whether InstalledVersion is null. -->
-                <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Install}"
+                <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" 
+                        Content="{x:Static local:Resources.Install}"
                         Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
-                        IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}" />
+                        IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}" 
+                        Focusable="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"/>
 
                 <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonUpdate_Click" Content="{x:Static local:Resources.Update}"
                         IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}">
@@ -93,6 +103,12 @@
                             <Binding Path="IsInstalled" />
                         </MultiBinding>
                     </Button.Visibility>
+                    <Button.Focusable>
+                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}" Mode="OneWay">
+                            <Binding Path="IsUpdateAvailable" />
+                            <Binding Path="IsInstalled" />
+                        </MultiBinding>
+                    </Button.Focusable>
                 </Button>
             </Grid>
 
