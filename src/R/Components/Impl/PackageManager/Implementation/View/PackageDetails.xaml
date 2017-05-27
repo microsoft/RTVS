@@ -93,7 +93,7 @@
                         Content="{x:Static local:Resources.Install}"
                         Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
                         IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}" 
-                        Focusable="{Binding Path=IsInstalled"/>
+                        Focusable="{Binding Path=IsInstalled}"/>
 
                 <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonUpdate_Click" Content="{x:Static local:Resources.Update}"
                         IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}">

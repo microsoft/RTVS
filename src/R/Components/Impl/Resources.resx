@@ -696,4 +696,13 @@ This prompt can be suppressed in R Tools | Options.
   <data name="PackageManager_VerticalSplitter" xml:space="preserve">
     <value>Vertical splitter</value>
   </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="ConnectionManager_DeleteConnection" xml:space="preserve">
+    <value>Delete connection</value>
+  </data>
+  <data name="ConnectionManager_EditConnection" xml:space="preserve">
+    <value>Edit connection</value>
+  </data>
 </root>

@@ -140,7 +140,8 @@
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
                                  ToolTip="{Binding Path=NameTextBoxTooltip}"
-                                 IsVisibleChanged="TextBoxName_IsVisibleChanged"/>
+                                 IsVisibleChanged="TextBoxName_IsVisibleChanged"
+                                 AutomationProperties.Name="{Binding Path=NameTextBoxTooltip}"/>
 
                         <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -149,12 +150,14 @@
                                  LostFocus="PathTextBox_LostFocus"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
                                  Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 ToolTip="{Binding Path=PathTextBoxTooltip}"/>
+                                 ToolTip="{Binding Path=PathTextBoxTooltip}"
+                                 AutomationProperties.Name="{Binding Path=PathTextBoxTooltip}"/>
 
                         <Button Grid.Row="1" Grid.Column="2" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
                                 VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"
                                 IsEnabled="{Binding Path=IsUserCreated}" 
-                                Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"/>
+                                Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
+                                AutomationProperties.Name="{x:Static components:Resources.Browse}"/>
 
                         <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -167,7 +170,8 @@
                                     VerticalAlignment="Center" Click="ButtonSave_Click" 
                                     Style="{StaticResource ToolWindowButtonStyle}"  ToolTipService.ShowOnDisabled="True"
                                     Content="{x:Static components:Resources.ConnectionManager_Save}" 
-                                    ToolTip="{Binding Path=SaveButtonTooltip}">
+                                    ToolTip="{Binding Path=SaveButtonTooltip}"
+                                    AutomationProperties.Name="{Binding Path=SaveButtonTooltip}">
                                 <Button.IsEnabled>
                                     <MultiBinding Converter="{x:Static rwpf:Converters.All}">
                                         <Binding Path="IsValid" />
@@ -194,7 +198,8 @@
 -->
                             <Button VerticalAlignment="Center" Click="ButtonCancel_Click"
                                     Style="{StaticResource HyperlinkButton}"
-                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}"/>
+                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}"
+                                    IsCancel="True" AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Cancel}"/>
 
                         </WrapPanel>
 
@@ -284,12 +289,14 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}">
+                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}"
+                                AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_EditConnection}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}">
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}"
+                                AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_DeleteConnection}">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" 
                                                 Grayscale="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}" />
                         </Button>
@@ -380,6 +387,7 @@
                     <Button x:Name="ToggleButtonAdd" Style="{StaticResource HyperlinkDownArrowButton}"
                             IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
                             Content="{x:Static components:Resources.ConnectionManager_Add}"
+                            AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Add}"
                             Click="ButtonAdd_Click"/>
                 </WrapPanel>
 

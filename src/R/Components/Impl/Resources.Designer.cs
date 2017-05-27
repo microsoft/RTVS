@@ -70,6 +70,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Browse.
+        /// </summary>
+        public static string Browse {
+            get {
+                return ResourceManager.GetString("Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -169,6 +178,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete connection.
+        /// </summary>
+        public static string ConnectionManager_DeleteConnection {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleting &quot;{0}&quot;.
         /// </summary>
         public static string ConnectionManager_DeleteConnectionProgressBarMessage {
@@ -201,6 +219,15 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_Disconnected {
             get {
                 return ResourceManager.GetString("ConnectionManager_Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit connection.
+        /// </summary>
+        public static string ConnectionManager_EditConnection {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditConnection", resourceCulture);
             }
         }
         
