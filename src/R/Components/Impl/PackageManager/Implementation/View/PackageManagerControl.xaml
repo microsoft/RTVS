@@ -95,7 +95,7 @@
                     <GridSplitter Grid.Column="1" Width="4" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
                                   Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" 
                                   BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}"
-                                  Name="{x:Static components:Resources.PackageManager_VerticalSplitter}"/>
+                                  AutomationProperties.Name="{x:Static components:Resources.PackageManager_VerticalSplitter}"/>
 
                     <!-- right side -->
                     <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" 
