@@ -1153,4 +1153,7 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="RunPropertyPage_TransferFilesFilter" xml:space="preserve">
     <value>Files to transfer</value>
   </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
 </root>
