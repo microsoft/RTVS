@@ -35,8 +35,9 @@
                                   Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"/>
 
                         <!-- Load button -->
-                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonLoad_Click"
-                                VerticalAlignment="Center">
+                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" 
+                                Click="ButtonLoad_Click" VerticalAlignment="Center"
+                                AutomationProperties.Name="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}">
                             <Button.Visibility>
                                 <MultiBinding Converter="{x:Static rwpf:Converters.AllIsNotHidden}">
                                     <Binding Path="IsLoaded" Converter="{x:Static rwpf:Converters.Not}" />
@@ -50,8 +51,11 @@
                         </Button>
 
                         <!-- Unload button -->
-                        <Button x:Name="ButtonUnload" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUnload_Click" 
-                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
+                        <Button x:Name="ButtonUnload" Grid.Column="1" 
+                                Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUnload_Click" 
+                                Visibility="{Binding Path=IsLoaded, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
+                                VerticalAlignment="Center" 
+                                AutomationProperties.Name="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}">
                             <Button.ToolTip>
                                 <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}" />
                             </Button.ToolTip>
@@ -96,8 +100,10 @@
                             </TextBlock>
 
                             <!-- uninstall button -->
-                            <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUninstall_Click"
-                                    ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
+                            <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}"
+                                    Click="ButtonUninstall_Click"
+                                    ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}"
+                                    AutomationProperties.Name="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
                                 <Button.Visibility>
                                     <MultiBinding Converter="{x:Static rwpf:Converters.AllIsNotHidden}">
                                         <Binding Path="CanBeUninstalled" />
@@ -108,8 +114,15 @@
                             </Button>
 
                             <!-- install button -->
-                            <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonInstall_Click" 
+                            <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ToolWindowButtonStyle}"
+                                    Click="ButtonInstall_Click"
                                     Visibility="{Binding Path=IsInstalled, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}">
+                                <AutomationProperties.Name>
+                                    <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
+                                        <Binding Path="Name" />
+                                        <Binding Path="LatestVersion" />
+                                    </MultiBinding>
+                                </AutomationProperties.Name>
                                 <Button.ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
@@ -134,6 +147,12 @@
 
                             <!-- update button -->
                             <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ToolWindowButtonStyle}" Click="ButtonUpdate_Click">
+                                <AutomationProperties.Name>
+                                    <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
+                                        <Binding Path="Name" />
+                                        <Binding Path="LatestVersion" />
+                                    </MultiBinding>
+                                </AutomationProperties.Name>
                                 <Button.ToolTip>
                                     <TextBlock>
                                         <TextBlock.Text>
@@ -178,7 +197,8 @@
                 <CheckBox x:Name="CheckBoxSelectAllPackages" Grid.Column="0" Margin="16, 8" VerticalAlignment="Center"
                           Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" Content="{x:Static components:Resources.PackageManager_SelectAllPackages}" />
                 <Button x:Name="ButtonUpdate" Grid.Column="2" MinWidth="100" MinHeight="24" Margin="24,8" VerticalAlignment="Center"
-                        Click="ButtonUpdate_Click" Content="{x:Static components:Resources.Update}" />
+                        Click="ButtonUpdate_Click" Content="{x:Static components:Resources.Update}"
+                        AutomationProperties.Name="{x:Static components:Resources.Update}"/>
             </Grid>
         </Border>
         <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static rwpf:Brushes.ListPaneBackgroundKey}}">
