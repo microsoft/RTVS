@@ -24,9 +24,6 @@
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
     <SetupRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\SetupRemote\SetupRemote.wixproj</SetupRemote>
 
-    <WixTargetsPath Condition="'$(WixTargetsPath)' == ''">$(WixBinDirectory)wix.targets</WixTargetsPath>
-    <WixCATargetsPath Condition="'$(WixCATargetsPath)' == ''">$(WixBinSdkDirectory)wix.ca.targets</WixCATargetsPath>
-
     <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);LibDirectory=$(LibDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
     <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SetupProperties>
   </PropertyGroup>
