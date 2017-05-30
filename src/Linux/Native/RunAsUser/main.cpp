@@ -275,67 +275,59 @@ int authenticate_and_run(const picojson::object& json) {
     if ((err = pam_start("rtvs", username.c_str(), &conv, &pamh)) != PAM_SUCCESS || pamh == nullptr) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
-        }
+        } 
+        return err;
     }
 
     char pam_rhost[HOST_NAME_MAX + 1] = {};
     if ((err = gethostname(pam_rhost, sizeof(pam_rhost))) != 0) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_SYSTEM_ERROR, strerror(err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if ((err = pam_set_item(pamh, PAM_RHOST, pam_rhost)) != PAM_SUCCESS) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if ((err = pam_set_item(pamh, PAM_RUSER, "root")) != PAM_SUCCESS) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if ((err = pam_authenticate(pamh, 0)) != PAM_SUCCESS) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if ((err = pam_acct_mgmt(pamh, 0)) != PAM_SUCCESS) {
         // This can fail if the user's password has expired
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if ((err = pam_setcred(pamh, PAM_ESTABLISH_CRED)) != PAM_SUCCESS) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if ((err = pam_open_session(pamh, 0)) != PAM_SUCCESS) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
     pam_session_opened = true;
 
@@ -343,9 +335,8 @@ int authenticate_and_run(const picojson::object& json) {
     if ((err = pam_get_item(pamh, PAM_USER, (const void **)&pam_user)) != PAM_SUCCESS) {
         if (auth_only) {
             write_json(RTVS_RESPONSE_TYPE_PAM_ERROR, pam_strerror(pamh, err));
-        } else {
-            return err;
         }
+        return err;
     }
 
     if (auth_only) {

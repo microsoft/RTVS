@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -41,44 +42,43 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         private IDictionary<string, string> GetHostEnvironment(Interpreter interpreter, string profilePath, string userName) {
-            var currentEnvironment = Process.GetCurrentProcess().StartInfo.Environment;
             string siteLibrary = string.Join(":", interpreter.RInterpreterInfo.SiteLibraryDirs);
-            string loadLibraryPath = string.Join(":", new string[] { interpreter.RInterpreterInfo.BinPath, currentEnvironment["LD_LIBRARY_PATH"]});
+            string loadLibraryPath = string.Join(":", new string[] { interpreter.RInterpreterInfo.BinPath, Environment.GetEnvironmentVariable("LD_LIBRARY_PATH")});
 
             Dictionary<string, string> environment = new Dictionary<string, string>() {
                 { "HOME"                    , profilePath},
                 { "LD_LIBRARY_PATH"         , loadLibraryPath},
-                { "LN_S"                    , GetCurrentOrDefault("LN_S", currentEnvironment)},
-                { "PATH"                    , currentEnvironment["PATH"]},
+                { "LN_S"                    , GetCurrentOrDefault("LN_S")},
+                { "PATH"                    , Environment.GetEnvironmentVariable("PATH")},
                 { "PWD"                     , profilePath},
-                { "R_ARCH"                  , GetCurrentOrDefault("R_ARCH", currentEnvironment)},
-                { "R_BROWSER"               , GetCurrentOrDefault("R_BROWSER", currentEnvironment)},
-                { "R_BZIPCMD"               , GetCurrentOrDefault("R_BZIPCMD", currentEnvironment)},
+                { "R_ARCH"                  , GetCurrentOrDefault("R_ARCH")},
+                { "R_BROWSER"               , GetCurrentOrDefault("R_BROWSER")},
+                { "R_BZIPCMD"               , GetCurrentOrDefault("R_BZIPCMD")},
                 { "R_DOC_DIR"               , interpreter.RInterpreterInfo.DocPath},
-                { "R_GZIPCMD"               , GetCurrentOrDefault("R_GZIPCMD", currentEnvironment)},
+                { "R_GZIPCMD"               , GetCurrentOrDefault("R_GZIPCMD")},
                 { "R_HOME"                  , interpreter.RInterpreterInfo.InstallPath},
                 { "R_INCLUDE_DIR"           , interpreter.RInterpreterInfo.IncludePath},
                 { "R_LIBS_SITE"             , siteLibrary},
-                { "R_PAPERSIZE"             , GetCurrentOrDefault("R_PAPERSIZE", currentEnvironment)},
-                { "R_PAPERSIZE_USER"        , GetCurrentOrDefault("R_PAPERSIZE_USER", currentEnvironment)},
-                { "R_PDFVIEWER"             , GetCurrentOrDefault("R_PDFVIEWER", currentEnvironment)},
-                { "R_PRINTCMD"              , GetCurrentOrDefault("R_PRINTCMD", currentEnvironment)},
-                { "R_RD4PDF"                , GetCurrentOrDefault("R_RD4PDF", currentEnvironment)},
+                { "R_PAPERSIZE"             , GetCurrentOrDefault("R_PAPERSIZE")},
+                { "R_PAPERSIZE_USER"        , GetCurrentOrDefault("R_PAPERSIZE_USER")},
+                { "R_PDFVIEWER"             , GetCurrentOrDefault("R_PDFVIEWER")},
+                { "R_PRINTCMD"              , GetCurrentOrDefault("R_PRINTCMD")},
+                { "R_RD4PDF"                , GetCurrentOrDefault("R_RD4PDF")},
                 { "R_SHARE_DIR"             , interpreter.RInterpreterInfo.RShareDir},
-                { "R_TEXI2DVICMD"           , GetCurrentOrDefault("R_TEXI2DVICMD", currentEnvironment)},
-                { "R_UNZIPCMD"              , GetCurrentOrDefault("R_UNZIPCMD", currentEnvironment)},
-                { "R_ZIPCMD"                , GetCurrentOrDefault("R_ZIPCMD", currentEnvironment)},
-                { "SED"                     , GetCurrentOrDefault("SED", currentEnvironment)},
-                { "SHELL"                   , GetCurrentOrDefault("SHELL", currentEnvironment)},
-                { "SHLVL"                   , GetCurrentOrDefault("SHLVL", currentEnvironment)},
-                { "TAR"                     , GetCurrentOrDefault("TAR", currentEnvironment)},
+                { "R_TEXI2DVICMD"           , GetCurrentOrDefault("R_TEXI2DVICMD")},
+                { "R_UNZIPCMD"              , GetCurrentOrDefault("R_UNZIPCMD")},
+                { "R_ZIPCMD"                , GetCurrentOrDefault("R_ZIPCMD")},
+                { "SED"                     , GetCurrentOrDefault("SED")},
+                { "SHELL"                   , GetCurrentOrDefault("SHELL")},
+                { "SHLVL"                   , GetCurrentOrDefault("SHLVL")},
+                { "TAR"                     , GetCurrentOrDefault("TAR")},
                 { "USER"                    , userName},
             };
             return environment;
         }
 
-        private static string GetCurrentOrDefault(string key, IDictionary<string,string> current) {
-            var value = current[key];
+        private static string GetCurrentOrDefault(string key) {
+            var value = Environment.GetEnvironmentVariable(key);
             if (string.IsNullOrEmpty(value) || !_defaultEnvironment.TryGetValue(key, out value)) {
                 return string.Empty;
             }
