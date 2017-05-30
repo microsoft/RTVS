@@ -6,9 +6,6 @@
   <File Source="$(var.BinDir)\Microsoft.R.Common.Core.Windows.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Windows.exe" />
-  <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.Windows.dll" />
   <File Source="$(var.BinDir)\Microsoft.AspNetCore.Antiforgery.dll" />
