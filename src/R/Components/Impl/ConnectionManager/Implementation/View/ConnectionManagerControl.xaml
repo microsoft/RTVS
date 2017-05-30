@@ -289,14 +289,12 @@
                         </Button>
 
                         <!-- edit/properties button -->
-                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}"
-                                AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_EditConnection}">
+                        <Button x:Name="ButtonEdit" Grid.Row="0" Grid.Column="4" Style="{StaticResource EditButtonStyle}">
                             <imaging:CrispImage  Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Settings}" />
                         </Button>
 
                         <!-- delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}"
-                                AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_DeleteConnection}">
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="5" Style="{StaticResource DeleteButtonStyle}">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" 
                                                 Grayscale="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}" />
                         </Button>
