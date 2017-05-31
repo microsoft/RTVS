@@ -10,6 +10,9 @@
     <None Remove="Text\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
