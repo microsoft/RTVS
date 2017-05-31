@@ -1883,7 +1883,7 @@
             <Val><![CDATA[Автоматическое сохранение рабочей области в образе "{0}"...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image "{0}" ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1895,7 +1895,7 @@
             <Val><![CDATA[Удалить автоматически сохраненный образ рабочей области "{0}"?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image "{0}"?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1907,7 +1907,7 @@
             <Val><![CDATA[Удаляется автоматически сохраненный образ рабочей области "{0}".]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1919,7 +1919,7 @@
             <Val><![CDATA[Не удалось загрузить рабочую область из автоматически сохраненного образа "{0}".]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1931,7 +1931,7 @@
             <Val><![CDATA[Рабочая область загружена из автоматически сохраненного образа "{0}".]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1943,7 +1943,7 @@
             <Val><![CDATA[Предыдущий сеанс R завершен, а его глобальная рабочая область была сохранена в образе "{0}". Вы хотите перезагрузить ее?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "{0}". Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
