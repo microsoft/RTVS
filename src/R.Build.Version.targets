@@ -46,7 +46,7 @@
   </Target>
 
   <Target Name="GenerateAssemblyInfoFile"
-          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND $(GenerateAssemblyVersionInfo)"
+          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND '$(MSBuildProjectExtension)'!='.wixproj' AND $(GenerateAssemblyVersionInfo)"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"

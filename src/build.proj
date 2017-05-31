@@ -60,6 +60,7 @@
     <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Restore" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Build" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
