@@ -11,6 +11,10 @@
     <ProductName Condition=" '$(ProductName)'=='' ">R Tools for Visual Studio</ProductName>
   </PropertyGroup>
 
+  <Target Name="Restore">
+    <Exec Command='nuget.exe restore "$(MSBuildProjectDirectory)\project.json"'/> 
+  </Target>
+  
   <!-- sign settings -->
   <PropertyGroup>
     <SignOutput Condition=" '$(SignOutput)'=='' ">true</SignOutput>
