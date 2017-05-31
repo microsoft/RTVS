@@ -1,16 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
-    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-  </PropertyGroup>
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props')" />
-  <Import Project="..\..\R.Build.Version.targets" />
-  <Import Project="..\..\R.Wix.settings" />
-  <Import Project="..\..\R.Wix.Path.settings" />
+  <Import Project="..\..\..\R.Build.Version.targets" />
+  <Import Project="..\..\..\R.Wix.settings" />
+  <Import Project="..\..\..\R.Wix.Path.settings" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.7</ProductVersion>
+    <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>9A3D13C0-7685-4C5B-835C-9BFC9E42C0B0</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName Condition="'$(OutputName)' == ''">RTVS.Remote</OutputName>
@@ -71,7 +68,7 @@
     <Content Include="RtvsPackage.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SetupRHostRemote\SetupRHostRemote.wixproj">
+    <ProjectReference Include="..\RHostRemote\RHostRemote.wixproj">
       <Name>SetupRHostRemote</Name>
       <Project>{4aa5ce64-5be2-414c-8ad9-e3110e490dc4}</Project>
       <Private>True</Private>
@@ -80,6 +77,6 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(WixTargetsPath)" />
+  <Import Condition="Exists('$(WixTargetsPath)')" Project="$(WixTargetsPath)" />
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />
 </Project>
