@@ -29,8 +29,8 @@
       LibDirectory=$(LibDirectory);
     </SolutionProperties>
   
-    <SetupRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\SetupRemote\SetupRemote.wixproj</SetupRemote>
-    <SetupRHostRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\SetupRHostRemote\SetupRHostRemote.wixproj</SetupRHostRemote>
+    <SetupRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\Setup\RemoteServices\RemoteServices.wixproj</SetupRemote>
+    <SetupRHostRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\Setup\RHostRemote\RHostRemote.wixproj</SetupRHostRemote>
     
     <SetupProperties Condition="'$(SetupProperties)' == ''">
       Configuration=$(Configuration);
