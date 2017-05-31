@@ -71,14 +71,6 @@
     <Content Include="RtvsPackage.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
-      <Name>Microsoft.R.Host.Broker.Windows</Name>
-      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
     <ProjectReference Include="..\SetupRHostRemote\SetupRHostRemote.wixproj">
       <Name>SetupRHostRemote</Name>
       <Project>{4aa5ce64-5be2-414c-8ad9-e3110e490dc4}</Project>
