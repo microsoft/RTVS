@@ -10,8 +10,8 @@
     <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
-    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix\1.0.15100801\</WixDirectory>
-    <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)bin\</WixBinDirectory>
+    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)Wix\3.11.0\</WixDirectory>
+    <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)tools\</WixBinDirectory>
     <WixBinSdkDirectory Condition="'$(WixBinSdkDirectory)' == ''">$(WixBinDirectory)sdk\</WixBinSdkDirectory>
     <DDWixDirectory Condition="'$(DDWixDirectory)' == ''">$(NugetDirectory)DDWixExt\14.0.22823.1\</DDWixDirectory>
 

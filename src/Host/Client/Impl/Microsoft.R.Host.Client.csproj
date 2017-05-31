@@ -5,6 +5,12 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <ItemGroup>
+    <Compile Remove="AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets.Protocol" Version="0.1.0" />
     <PackageReference Include="System.Net.Http.WinHttpHandler" Version="4.3.0" />
@@ -100,6 +106,9 @@
     <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
       <InProject>false</InProject>
     </SignFilesDependsOn>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

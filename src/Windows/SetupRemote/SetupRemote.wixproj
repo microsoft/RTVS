@@ -66,6 +66,7 @@
     <Compile Include="Product.wxs" />
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
+    <Content Include="project.json" />
     <Content Include="RFile.ico" />
     <Content Include="RtvsPackage.wxi" />
   </ItemGroup>

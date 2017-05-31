@@ -1,9 +1,8 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <WIX>C:\Program Files (x86)\WiX Toolset v3.11</WIX>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <WixInstallPath Condition=" '$(WixInstallPath)' == '' ">$(WIX)\bin</WixInstallPath>
+    <WIX>$(NugetDirectory)Wix\3.11.0</WIX>
+    <WixInstallPath Condition=" '$(WixInstallPath)' == '' ">$(WIX)\tools</WixInstallPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(WixInstallPath)</WixTargetsPath>
     <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(WixInstallPath)\WixTasks.dll</WixTasksPath>
   </PropertyGroup>
 </Project>
