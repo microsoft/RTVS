@@ -421,6 +421,9 @@
       <Item ItemId=";ConnectionManager_EditConnection" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Modifica connessione]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1318,6 +1321,9 @@
       <Item ItemId=";PackageManager_VerticalSplitter" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Vertical splitter]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Barra di divisione verticale]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
