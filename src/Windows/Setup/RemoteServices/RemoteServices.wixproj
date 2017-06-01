@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
+    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+  </PropertyGroup>
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\..\..\R.Build.Version.targets" />
   <Import Project="..\..\..\R.Wix.settings" />
@@ -20,8 +23,8 @@
   <PropertyGroup>
     <NuGetPackageRoot Condition="'$(NuGetPackageRoot)' == ''">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
     <VsVersion Condition="'$(VsVersion)' == ''">$(VisualStudioVersion)</VsVersion>
-    <BinDirectory Condition="'$(BinDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\..\bin\</BinDirectory>
-    <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\..\obj\</ObjDirectory>
+    <BinDirectory Condition="'$(BinDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\..\..\bin\</BinDirectory>
+    <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\..\..\obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\SetupRemote\</IntermediateOutputPath>
@@ -77,6 +80,6 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
-  <Import Condition="Exists('$(WixTargetsPath)')" Project="$(WixTargetsPath)" />
+  <Import Project="$(WixTargetsPath)" />
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />
 </Project>
