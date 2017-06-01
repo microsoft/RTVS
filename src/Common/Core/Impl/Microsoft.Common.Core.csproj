@@ -38,8 +38,8 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/>
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
   <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
   <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
