@@ -11,7 +11,7 @@
 
   <?define BinDir="$(var.OutDir)" ?>
   <?define LocDir="$(var.OutDir)\localize" ?>
-  <?define SourceDir="..\.." ?>
+  <?define SourceDir="..\..\.." ?>
 
   <?ifdef LabBuild?>
   <!--<?define LangList=CHS;CHT;CSY;DEU;ENU;ESN;FRA;ITA;JPN;KOR;PLK;PTB;RUS;TRK?>

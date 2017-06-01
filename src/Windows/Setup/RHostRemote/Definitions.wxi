@@ -2,7 +2,7 @@
 <Include>
   <?define ProductName ="Microsoft R Remote Host" ?>
   <?define BinDir="$(var.OutDir)" ?>
-  <?define SourceDir="..\.." ?>
+  <?define SourceDir="..\..\.." ?>
   <!-- Use 14.0 for now instead of $(var.VsVersion) since there are no vcruntime150 redistributables yet -->
   <?define LibDir="$(var.SourceDir)\..\lib\14.0" ?>
 

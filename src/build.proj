@@ -42,6 +42,7 @@
       Time=$(Time);
       BinDirectory=$(OutputDirectory);
       ObjDirectory=$(IntermediateOutputDirectory);
+      LibDirectory=$(LibDirectory);
     </SetupProperties>
   </PropertyGroup>
 
