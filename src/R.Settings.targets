@@ -73,7 +73,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='16.0'">VS16;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 </Project>
