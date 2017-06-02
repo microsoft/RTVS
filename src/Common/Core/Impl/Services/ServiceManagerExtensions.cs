@@ -8,6 +8,10 @@ using System.Reflection;
 
 namespace Microsoft.Common.Core.Services {
     public static class ServiceManagerExtensions {
+        public static IServiceManager AddService<TService>(this IServiceManager services) 
+            where TService : class
+            => AddService<TService, TService>(services);
+
         public static IServiceManager AddService<TService, TImplementation>(this IServiceManager services)
             where TService : class
             where TImplementation : class, TService

@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new REditorSettings(this))
                 .AddService(new VsEditorViewLocator())
                 .AddService<IStatusBar, VsStatusBar>()
-                .AddService(typeof(RPackageToolWindowProvider))
+                .AddService<RPackageToolWindowProvider>()
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentstServices()
