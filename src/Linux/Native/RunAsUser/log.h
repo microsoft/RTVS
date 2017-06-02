@@ -23,6 +23,7 @@
 #pragma once
 #include "stdafx.h"
 
+//TODO: Unify with log from RHost https://github.com/Microsoft/RTVS/issues/3590
 namespace rau {
     namespace log {
         enum class log_verbosity {

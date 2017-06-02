@@ -45,37 +45,25 @@ namespace Microsoft.R.Host.Broker.Services {
             return new UnixProcess(process);
         }
 
-        private string GetUsrLibPath() {
-            const string x64Lib = "/usr/lib/x86_64-linux-gnu";
-            const string x86Lib = "/usr/lib";
-            return _fs.DirectoryExists(x64Lib) ? x64Lib : x86Lib;
-        }
-
-        private static string[] _standardPaths = { "/bin", "/usr/bin", "/usr/local/bin" };
-        private static string[] _pathSplitter = { ":" };
-        private IEnumerable<string> GetAllPaths() {
-            foreach(string s in _standardPaths) {
-                yield return s;
+        private string GetLdLibraryPath(string rBinPath) {
+            string ldLibPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
+            if (string.IsNullOrEmpty(ldLibPath)) {
+                return rBinPath;
             }
-
-            string[] paths = Environment.GetEnvironmentVariable("PATH").Split(_pathSplitter, StringSplitOptions.RemoveEmptyEntries);
-            foreach(string p in paths) {
-                if (_fs.DirectoryExists(p)) {
-                    yield return p;
-                }
-            }
+            return $"{rBinPath}:{ldLibPath}";
         }
 
         private IDictionary<string, string> GetHostEnvironment(Interpreter interpreter, string profilePath, string userName) {
             string siteLibrary = string.Join(":", interpreter.RInterpreterInfo.SiteLibraryDirs);
-            string loadLibraryPath = string.Join(":", new string[] { interpreter.RInterpreterInfo.BinPath, GetUsrLibPath() });
-            string envPath = string.Join(":", GetAllPaths().Distinct());
+
+            // TODO: LD_LIBRARY_PATH should be set in R-Host where we call dlopen.
+            string loadLibraryPath = GetLdLibraryPath(interpreter.RInterpreterInfo.BinPath);
 
             Dictionary<string, string> environment = new Dictionary<string, string>() {
                 { "HOME"                    , profilePath},
                 { "LD_LIBRARY_PATH"         , loadLibraryPath},
                 { "LN_S"                    , GetCurrentOrDefault("LN_S")},
-                { "PATH"                    , envPath},
+                { "PATH"                    , Environment.GetEnvironmentVariable("PATH")},
                 { "PWD"                     , profilePath},
                 { "R_ARCH"                  , GetCurrentOrDefault("R_ARCH")},
                 { "R_BROWSER"               , GetCurrentOrDefault("R_BROWSER")},
