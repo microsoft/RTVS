@@ -9,7 +9,7 @@
     <RootNamespace>Microsoft.Languages.Editor.Application</RootNamespace>
     <OutputType>Library</OutputType>
   </PropertyGroup>
-  <Import Project="..\R.Settings.targets" />
+  <Import Project="..\R.Settings.props" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>

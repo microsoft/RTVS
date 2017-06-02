@@ -1,10 +1,10 @@
 ﻿<Project>
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk"/>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.R.Host.Client</AssemblyName>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
     <Compile Remove="AssemblyVersionInfo.cs" />
   </ItemGroup>
@@ -96,9 +96,16 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk"/>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" Condition="'$(Configuration)'=='Debug'" />
+  <ItemGroup>
+    <RtvsPackageFiles Include="rtvs\**\*" />
+  </ItemGroup>
+  <Target Name="AfterBuild" Condition="'$(Configuration)'=='Debug'">
+    <Copy SourceFiles="@(RtvsPackageFiles)" DestinationFolder="$(BinDirectory)\$(Configuration)\rtvs\%(RecursiveDir)" />
+  </Target>
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
     <ItemGroup>
       <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">

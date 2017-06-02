@@ -37,7 +37,7 @@
   <PropertyGroup>
     <ApplicationIcon>RFile.ico</ApplicationIcon>
   </PropertyGroup>
-  <Import Project="..\..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\..\R.Settings.props" />
   <PropertyGroup>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

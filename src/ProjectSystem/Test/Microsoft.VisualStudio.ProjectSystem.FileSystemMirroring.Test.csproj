@@ -21,7 +21,7 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
   </PropertyGroup>
-  <Import Project="..\..\R.Settings.targets" />
+  <Import Project="..\..\R.Settings.props" />
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
