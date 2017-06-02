@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
@@ -17,10 +19,12 @@ namespace Microsoft.R.Host.Broker.Services {
     class LinuxRHostProcessService : IRHostProcessService {
         private readonly ILogger<Session> _sessionLogger;
         private readonly IProcessServices _ps;
+        private readonly IFileSystem _fs;
 
-        public LinuxRHostProcessService(ILogger<Session> sessionLogger, IProcessServices ps) {
+        public LinuxRHostProcessService(ILogger<Session> sessionLogger, IFileSystem fs, IProcessServices ps) {
             _sessionLogger = sessionLogger;
             _ps = ps;
+            _fs = fs;
         }
 
         public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, ClaimsPrincipal principal, string commandLine) {
@@ -41,9 +45,19 @@ namespace Microsoft.R.Host.Broker.Services {
             return new UnixProcess(process);
         }
 
+        private string GetLdLibraryPath(string rBinPath) {
+            string ldLibPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
+            if (string.IsNullOrEmpty(ldLibPath)) {
+                return rBinPath;
+            }
+            return $"{rBinPath}:{ldLibPath}";
+        }
+
         private IDictionary<string, string> GetHostEnvironment(Interpreter interpreter, string profilePath, string userName) {
             string siteLibrary = string.Join(":", interpreter.RInterpreterInfo.SiteLibraryDirs);
-            string loadLibraryPath = string.Join(":", new string[] { interpreter.RInterpreterInfo.BinPath, Environment.GetEnvironmentVariable("LD_LIBRARY_PATH")});
+
+            // TODO: LD_LIBRARY_PATH should be set in R-Host where we call dlopen.
+            string loadLibraryPath = GetLdLibraryPath(interpreter.RInterpreterInfo.BinPath);
 
             Dictionary<string, string> environment = new Dictionary<string, string>() {
                 { "HOME"                    , profilePath},
@@ -72,14 +86,14 @@ namespace Microsoft.R.Host.Broker.Services {
                 { "SHELL"                   , GetCurrentOrDefault("SHELL")},
                 { "SHLVL"                   , GetCurrentOrDefault("SHLVL")},
                 { "TAR"                     , GetCurrentOrDefault("TAR")},
-                { "USER"                    , userName},
+                { "USER"                    , Utility.GetUnixUserName(userName)},
             };
             return environment;
         }
 
         private static string GetCurrentOrDefault(string key) {
             var value = Environment.GetEnvironmentVariable(key);
-            if (string.IsNullOrEmpty(value) || !_defaultEnvironment.TryGetValue(key, out value)) {
+            if (string.IsNullOrEmpty(value) && !_defaultEnvironment.TryGetValue(key, out value)) {
                 return string.Empty;
             }
             return value;
