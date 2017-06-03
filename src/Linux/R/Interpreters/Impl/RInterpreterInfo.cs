@@ -56,6 +56,7 @@ namespace Microsoft.R.Interpreters {
             BinPath = GetRLibPath();
             DocPath = GetRDocPath(files, fileSystem);
             IncludePath = GetIncludePath(files, fileSystem);
+            RShareDir = GetRSharePath(files, fileSystem);
             SiteLibraryDirs = GetSiteLibraryDirs(corePackage, files, fileSystem);
         }
 
@@ -146,7 +147,7 @@ namespace Microsoft.R.Interpreters {
             var libFiles = files.Where(f => f.EndsWithIgnoreCase(endPattern));
             foreach (var f in libFiles) {
                 string path = f.Substring(0, f.Length - subPattern.Length);
-                if (fs.FileExists(f)) {
+                if (fs.DirectoryExists(f) || fs.FileExists(f)) {
                     return path;
                 }
             }
