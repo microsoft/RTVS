@@ -24,12 +24,6 @@ namespace Microsoft.Common.Core.Services {
         IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class;
 
         /// <summary>
-        /// Adds on-demand created service
-        /// </summary>
-        /// <param name="type">Type to instantiate with reflection.</param>
-        IServiceManager AddService(Type type);
-
-        /// <summary>
         /// Removes service from container by instance
         /// </summary>
         void RemoveService(object service);
