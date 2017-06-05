@@ -9,6 +9,8 @@
     <SourceDirectory Condition="'$(SourceDirectory)' == ''">$(RootDirectory)src\</SourceDirectory>
     <MicroBuildPluginDirectory Condition=" '$(MicroBuildPluginDirectory)' == '' ">$(RootDirectory)\NugetPackages\</MicroBuildPluginDirectory>
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
+    <!-- We do not strong name sign in desktop builds -->
+    <MicroBuild_DoNotStrongNameSign>true</MicroBuild_DoNotStrongNameSign>
   </PropertyGroup>
 
   <!--
