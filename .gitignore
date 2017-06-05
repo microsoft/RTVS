@@ -99,3 +99,4 @@ TestFiles/
 *.db-wal
 *.db-shm
 *.ipch
+*.tmp_proj
