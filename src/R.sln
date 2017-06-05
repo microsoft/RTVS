@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
-	ProjectSection(ProjectDependencies) = postProject
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7} = {131842CE-DAF9-4C0E-8409-4A26EF7961A7}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Languages.Core", "Languages\Core\Impl\Microsoft.Languages.Core.csproj", "{25CD8690-6208-4740-B123-6DBCE6B9444A}"
 EndProject
@@ -54,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger", "Deb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Wpf", "Common\Wpf\Impl\Microsoft.Common.Wpf.csproj", "{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host", "Host\Process\src\Microsoft.R.Host.vcxproj", "{131842CE-DAF9-4C0E-8409-4A26EF7961A7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host", "Host\Process\src\Microsoft.R.Host.vcxproj", "{DBBED91F-BF32-4C77-9445-8666532225BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Interactive.Test", "Package\TestApp\Microsoft.VisualStudio.R.Interactive.Test.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
 EndProject
@@ -404,18 +401,18 @@ Global
 		{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}.Release|x64.Build.0 = Release|Any CPU
 		{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}.Release|x86.ActiveCfg = Release|Any CPU
 		{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}.Release|x86.Build.0 = Release|Any CPU
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|Any CPU.Build.0 = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x64.ActiveCfg = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x64.Build.0 = Debug|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x86.ActiveCfg = Debug|Win32
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Debug|x86.Build.0 = Debug|Win32
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|Any CPU.ActiveCfg = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|Any CPU.Build.0 = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x64.ActiveCfg = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x64.Build.0 = Release|x64
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x86.ActiveCfg = Release|Win32
-		{131842CE-DAF9-4C0E-8409-4A26EF7961A7}.Release|x86.Build.0 = Release|Win32
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Debug|Any CPU.Build.0 = Debug|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Debug|x64.ActiveCfg = Debug|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Debug|x64.Build.0 = Debug|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Debug|x86.ActiveCfg = Debug|Win32
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Debug|x86.Build.0 = Debug|Win32
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Release|Any CPU.ActiveCfg = Release|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Release|Any CPU.Build.0 = Release|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Release|x64.ActiveCfg = Release|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Release|x64.Build.0 = Release|x64
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Release|x86.ActiveCfg = Release|Win32
+		{DBBED91F-BF32-4C77-9445-8666532225BC}.Release|x86.Build.0 = Release|Win32
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}.Debug|x64.ActiveCfg = Debug|Any CPU
