@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Broker.Services {
         public static Process AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
             Process proc = CreateRLaunchProcess(ps, false);
             using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
-                var message = new AuthenticateAndRunMessage() { Username = username, Password = password, Arguments = arguments, Environment = environment.Select(e => $"{e.Key}={e.Value}") };
+                var message = new AuthenticateAndRunMessage() { Username = GetUnixUserName(username), Password = password, Arguments = arguments, Environment = environment.Select(e => $"{e.Key}={e.Value}") };
                 string json = JsonConvert.SerializeObject(message, GetJsonSettings());
                 var jsonBytes = Encoding.UTF8.GetBytes(json);
                 writer.Write(jsonBytes.Length);
@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 proc = CreateRLaunchProcess(ps, true);
                 using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true))
                 using (BinaryReader reader = new BinaryReader(proc.StandardOutput.BaseStream, Encoding.UTF8, true)) {
-                    var message = new AuthenticationOnlyMessage() { Username = username, Password = password };
+                    var message = new AuthenticationOnlyMessage() { Username = GetUnixUserName(username), Password = password };
                     string json = JsonConvert.SerializeObject(message, GetJsonSettings());
                     var jsonBytes = Encoding.UTF8.GetBytes(json);
                     writer.Write(jsonBytes.Length);
@@ -57,7 +57,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
                     proc.WaitForExit(3000);
 
-                    if (proc.ExitCode == 0 && !proc.StandardOutput.EndOfStream) {
+                    if (proc.HasExited && proc.ExitCode == 0) {
                         int size = reader.ReadInt32();
                         var bytes = reader.ReadBytes(size);
                         var arr = JsonConvert.DeserializeObject<JArray>(Encoding.UTF8.GetString(bytes));
@@ -139,6 +139,17 @@ namespace Microsoft.R.Host.Broker.Services {
                 default:
                     return exitcode.ToString();
             }
+        }
+
+        public static string GetUnixUserName(string source) {
+            // This is needed because the windows credential UI uses domain\username format.
+            // This will not be required if we can show generic credential UI for Linux remote.
+            // :unix:\<username> format should be used to for local accounts only.
+            const string unixPrefix = ":unix:\\";
+            if (source.StartsWithIgnoreCase(unixPrefix)) {
+                return source.Substring(unixPrefix.Length);
+            }
+            return source;
         }
 
         private static JsonSerializerSettings GetJsonSettings() {

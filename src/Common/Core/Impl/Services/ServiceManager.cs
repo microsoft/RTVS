@@ -48,30 +48,6 @@ namespace Microsoft.Common.Core.Services {
         }
 
         /// <summary>
-        /// Adds on-demand created service
-        /// </summary>
-        /// <param name="type">Type to instantiate with reflection.</param>
-        public virtual IServiceManager AddService(Type type) {
-            _disposeToken.ThrowIfDisposed();
-
-            object parameter = null;
-            var ctors = type.GetTypeInfo().GetConstructors();
-            var ctor = ctors.Where(c => c.GetParameters().Length == 0).FirstOrDefault();
-            if (ctor == null) {
-                ctor = ctors.Where(c => {
-                    var parameters = c.GetParameters();
-                    return parameters.Length == 1 && parameters[0].ParameterType == typeof(IServiceContainer);
-                }).FirstOrDefault();
-                parameter = this;
-            }
-            Check.InvalidOperation(() => ctor != null, $"Service of type {type} neither has parameterless constructor nor constructor accepting IServiceContainer");
-
-            var lazy = new Lazy<object>(() => ctor.Invoke(parameter != null ? new object[] { parameter } : null));
-            Check.InvalidOperation(() => _s.TryAdd(type, lazy), $"Service of type {type} already exists");
-            return this;
-        }
-
-        /// <summary>
         /// Retrieves service from the container
         /// </summary>
         /// <typeparam name="T">Service type</typeparam>
