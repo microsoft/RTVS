@@ -103,7 +103,7 @@
   <ItemGroup>
     <RtvsPackageFiles Include="rtvs\**\*" />
   </ItemGroup>
-  <Target Name="AfterBuild" Condition="'$(Configuration)'=='Debug'">
+  <Target Name="AfterBuild">
     <Copy SourceFiles="@(RtvsPackageFiles)" DestinationFolder="$(BinDirectory)\$(Configuration)\rtvs\%(RecursiveDir)" />
   </Target>
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
