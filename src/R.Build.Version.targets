@@ -4,9 +4,8 @@
     <!-- Suppress automatic generation of version information. We generate it ourselves
       since we need it for both .NET Core and .NET Desktop -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyVersionInfo>true</GenerateAssemblyVersionInfo>
-    <!--<GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND Exists('$(AssemblyVersionInfoPath)')">false</GenerateAssemblyVersionInfo>
-    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>-->
+    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND Exists('$(AssemblyVersionInfoPath)')">false</GenerateAssemblyVersionInfo>
+    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
   <PropertyGroup>
