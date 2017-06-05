@@ -29,15 +29,9 @@
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{AFE50A8E-1F80-409E-A14C-6D940625C78F}" Win64="yes">
         <File Source="$(var.BinDir)\Microsoft.R.Host.exe" />
-        <File Source="$(var.BinDir)\zip.dll" />
-        <File Source="$(var.BinDir)\$(var.ZlibName).dll" />
-        <!-- For remote we must include C++ runtime as VS may not be installed -->
-        <?ifdef Debug?>
-        <File Source="$(var.LibDir)\vcruntime140d.dll" />
-        <File Source="$(var.LibDir)\ucrtbased.dll" />
-        <?else?>
-        <File Source="$(var.LibDir)\vcruntime140.dll" />
-        <?endif?>
+        <File Source="$(var.LibDir)\libwinpthread-1.dll" />
+        <File Source="$(var.LibDir)\libzip-5.dll" />
+        <File Source="$(var.LibDir)\zlib1.dlll" />
         <fire:FirewallException Id="RHostFirewallException" Name="Microsoft.R.Host" Program="[INSTALLFOLDER]Microsoft.R.Host.exe" Scope="any" Profile="all"/>
       </Component>
     </DirectoryRef>
