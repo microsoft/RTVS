@@ -1883,7 +1883,7 @@
             <Val><![CDATA[ワークスペースをイメージ '{0}' に自動保存しています...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image "{0}" ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1895,7 +1895,7 @@
             <Val><![CDATA[自動保存したワークスペース イメージ '{0}' を削除しますか?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image "{0}"?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1907,7 +1907,7 @@
             <Val><![CDATA[自動保存したワークスペース イメージ '{0}' を削除しています。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1919,7 +1919,7 @@
             <Val><![CDATA[自動保存したイメージ '{0}' からワークスペースを読み込めませんでした。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1931,7 +1931,7 @@
             <Val><![CDATA[自動保存したイメージ '{0}' からワークスペースが読み込まれました。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1943,7 +1943,7 @@
             <Val><![CDATA[前の R セッションが終了し、グローバル ワークスペースがイメージ '{0}' に保存されています。このワークスペースを再度読み込みますか?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "{0}". Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
