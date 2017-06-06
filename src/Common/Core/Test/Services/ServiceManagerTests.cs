@@ -35,7 +35,7 @@ namespace Microsoft.Common.Core.Test.Services {
         public void ServiceOfTypeLazyObject() {
             _serviceManager
                 .AddService(new Lazy<object>())
-                .AddService(typeof(object));
+                .AddService<object>();
 
             _serviceManager.GetService<Lazy<object>>().Should().NotBeNull();
             _serviceManager.GetService<object>().Should().NotBeNull();

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -210,13 +211,19 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static Task<string> GetRSessionPlatformAsync(this IRExpressionEvaluator evaluation, CancellationToken cancellationToken = default(CancellationToken)) {
+            string script = Invariant($".Platform$OS.type");
+            return evaluation.EvaluateAsync<string>(script, REvaluationKind.Normal, cancellationToken);
+        }
+
+        public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
+            string cp = $".{codePage}";
             if (codePage == 0) {
-                // TODO: update this to get the codepage via platform agnostic service
-                codePage = 437;
+                var platformType = await evaluation.GetRSessionPlatformAsync(cancellationToken);
+                cp = platformType.EqualsIgnoreCase("windows")? ".437": "en_US.UTF-8";
             }
-            var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
-            return evaluation.ExecuteAsync(script, cancellationToken);
+            var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
+            await evaluation.ExecuteAsync(script, cancellationToken);
         }
 
         public static Task OverrideFunctionAsync(this IRExpressionEvaluator evaluation, string name, string ns) {

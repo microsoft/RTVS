@@ -24,7 +24,9 @@ namespace Microsoft.R.Host.Broker.Startup {
             var startupOptions = configuration.GetStartupOptions();
             var loggingOptions = configuration.GetLoggingOptions();
 
-            loggerFactory.AddFile(startupOptions.Name, loggingOptions.LogFolder);
+            if (startupOptions != null && loggingOptions != null) {
+                loggerFactory.AddFile(startupOptions.Name, loggingOptions.LogFolder);
+            }
 
             var webHost = new WebHostBuilder()
                 .ConfigureServices(s => s.AddSingleton(configuration))

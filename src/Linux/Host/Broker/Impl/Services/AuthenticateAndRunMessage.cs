@@ -10,5 +10,6 @@ namespace Microsoft.R.Host.Broker.Services {
         public string Password { get; set; }
         public IEnumerable<string> Arguments { get; set; }
         public IEnumerable<string> Environment { get; set; }
+        public string WorkingDirectory { get; set; }
     }
 }
