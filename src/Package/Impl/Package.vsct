@@ -918,7 +918,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button" Condition="!Defined(VS15)">
+      <Button guid="guidRToolsCmdSet" id="icmdCheckForPackageUpdates" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenuGroup"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -1351,7 +1351,7 @@
       </Button>
 
       <!-- Install Microsoft R Client -->
-      <Button guid="guidRToolsCmdSet" id="icmdInstallRClient" priority="0x0450" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdInstallRClient" priority="0x0450" type="Button" Condition="Defined(VS14)">
         <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
         <Icon guid="ImageCatalogGuid" id="ClientStatistics"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1382,7 +1382,7 @@
       </Button>
 
       <!-- Check for Updates -->
-      <Button guid="guidRToolsCmdSet" id="icmdCheckForUpdates" priority="0x0400" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdCheckForUpdates" priority="0x0400" type="Button" Condition="Defined(VS14)">
         <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
         <Strings>
           <ButtonText>&amp;Check for Updates...</ButtonText>
