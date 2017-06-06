@@ -52,10 +52,13 @@ namespace Microsoft.Common.Core.Json {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(null);
             jsonSerializer.CheckAdditionalContent = true;
 
-            using (JsonTextReader reader = new JsonTextReader(new StringReader(value))) {
-                reader.DateParseHandling = DateParseHandling.None;
-                return jsonSerializer.Deserialize(reader, type);
-            }
+            try {
+                using (JsonTextReader reader = new JsonTextReader(new StringReader(value))) {
+                    reader.DateParseHandling = DateParseHandling.None;
+                    return jsonSerializer.Deserialize(reader, type);
+                }
+            } catch (JsonReaderException) { }
+            return null;
         }
     }
 }
