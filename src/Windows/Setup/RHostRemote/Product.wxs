@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?include Definitions.wxi ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
+
+  <Product Id="*"
+           Name="$(var.ProductName)"
+           Language="1033"
+           Version="$(var.MsiVersion)"
+           Manufacturer="Microsoft Corporation"
+           UpgradeCode="{21F7893A-167D-47A5-BCC6-348CDFDB9762}">
+
+    <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" Id="*" Platform="x64" />
+
+    <MajorUpgrade AllowDowngrades="yes" RemoveFeatures="ALL" Schedule="afterInstallInitialize"/>
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="$(var.ProductName)">
+      <ComponentRef Id="ProductAssemblies" />
+    </Feature>
+  </Product>
+
+  <!-- Install folder is defined by the main remote setup (broker binaries) -->
+  <Fragment>
+    <?include "InstallFolder.wxi"?>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="ProductAssemblies" Guid="{AFE50A8E-1F80-409E-A14C-6D940625C78F}" Win64="yes">
+        <File Source="$(var.BinDir)\Microsoft.R.Host.exe" />
+        <File Source="$(var.BinDir)\libwinpthread-1.dll" />
+        <File Source="$(var.BinDir)\libzip-5.dll" />
+        <File Source="$(var.BinDir)\zlib1.dll" />
+        <fire:FirewallException Id="RHostFirewallException" Name="Microsoft.R.Host" Program="[INSTALLFOLDER]Microsoft.R.Host.exe" Scope="any" Profile="all"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

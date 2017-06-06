@@ -20,7 +20,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>..\..\..\..\bin\Release\Microsoft.R.Host.Client.API.XML</DocumentationFile>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>

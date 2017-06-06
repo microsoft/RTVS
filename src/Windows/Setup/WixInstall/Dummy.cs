@@ -1,0 +1,3 @@
+﻿namespace WixInstall {
+    class Dummy { }
+}

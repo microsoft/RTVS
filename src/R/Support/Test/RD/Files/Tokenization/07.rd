@@ -1,1 +1,0 @@
-\ifelse{{latex}{\out[x]{~}}{ }}{}

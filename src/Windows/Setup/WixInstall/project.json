@@ -1,0 +1,14 @@
+﻿{
+  "dependencies": {
+    "MicroBuild.Core": "0.2.0",
+    "VS.Tools.Wix": "1.0.15100801",
+    "DDWixExt": "14.0.22823.1",
+    "WiX": "3.11.0"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

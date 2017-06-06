@@ -19,7 +19,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
-  <Import Project="..\..\R.Settings.targets" />
+  <Import Project="..\..\R.Settings.props" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>

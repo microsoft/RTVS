@@ -44,7 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IProjectLockService _projectLockService;
-        private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
         private readonly ICoreShell _coreShell;
 
         private IRInteractiveWorkflowVisual _workflow;

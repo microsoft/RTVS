@@ -21,7 +21,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>

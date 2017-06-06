@@ -1,9 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <RootNamespace>Microsoft.R.Core</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\R.Settings.props" />
+  <ItemGroup>
+    <Compile Remove="AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
@@ -13,14 +20,16 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
-    <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" Condition="'$(Configuration)'=='Debug'"/>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
 </Project>

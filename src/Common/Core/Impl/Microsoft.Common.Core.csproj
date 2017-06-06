@@ -1,11 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.R.Common.Core</AssemblyName>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
-    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <Compile Remove="AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="project.lock.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MicroBuild.VisualStudio" Version="2.0.40" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
@@ -28,11 +38,7 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" Condition="'$(Configuration)'=='Debug'"/>
 </Project>

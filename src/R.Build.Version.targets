@@ -1,11 +1,14 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup >
     <AssemblyVersionInfoPath>$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs</AssemblyVersionInfoPath>
+    <!-- Suppress automatic generation of version information. We generate it ourselves
+      since we need it for both .NET Core and .NET Desktop -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND Exists('$(AssemblyVersionInfoPath)')">false</GenerateAssemblyVersionInfo>
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(GenerateAssemblyVersionInfo)">
+  <PropertyGroup>
     <!-- 0.1.YMMDD.HHMM -->
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
@@ -15,7 +18,7 @@
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
     <MajorVersion>1</MajorVersion>
-    <MinorVersion>0</MinorVersion>
+    <MinorVersion>2</MinorVersion>
     <Build>$(LastDigitOfYear)$(Date)</Build>
     <Revision>$(Time)</Revision>
     <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
@@ -42,7 +45,7 @@
   </Target>
 
   <Target Name="GenerateAssemblyInfoFile"
-          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND $(GenerateAssemblyVersionInfo)"
+          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND '$(MSBuildProjectExtension)'!='.wixproj' AND $(GenerateAssemblyVersionInfo)"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
@@ -57,6 +60,10 @@
     <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
+  
+  <Target Name="GenerateAssemblyInfoFileNetCore" BeforeTargets="PreBuildEvent">
+    <CallTarget Targets="GenerateAssemblyInfoFile" />
+  </Target>
 
   <!-- C++ -->
   <Target Name="GenerateNativeVersionInfoFile"
