@@ -22,7 +22,7 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Import Project="..\..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\..\R.Settings.props" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
 </Project>

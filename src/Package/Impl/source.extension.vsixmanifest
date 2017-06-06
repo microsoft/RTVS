@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PackageManifest Version="2.0.0" 
-                 xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" 
+<PackageManifest Version="2.0.0"
+                 xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="Microsoft.RTVS" Version="1.2" Language="en-US" Publisher="Microsoft" />
@@ -49,8 +49,6 @@
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.Windows.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Sql.dll" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="Templates\ItemTemplates" />
-    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" Path="Templates\ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.R.Package.dll" />
   </Assets>
 </PackageManifest>

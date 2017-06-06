@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Defines installation folder for the remote R broker and host -->
+<Include>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="ProductRootFolder" Name="R Remote Service for Visual Studio">
+          <Directory Id="INSTALLFOLDER" Name="$(var.ProductVersion)">
+
+            <?ifdef LabBuild?>
+            <Directory Id="CHS_Satellites" Name="zh-cn" />
+            <Directory Id="CHT_Satellites" Name="zh-tw" />
+            <Directory Id="CSY_Satellites" Name="cs" />
+            <Directory Id="DEU_Satellites" Name="de" />
+            <Directory Id="ESN_Satellites" Name="es" />
+            <Directory Id="FRA_Satellites" Name="fr" />
+            <Directory Id="ITA_Satellites" Name="it" />
+            <Directory Id="JPN_Satellites" Name="ja" />
+            <Directory Id="KOR_Satellites" Name="ko" />
+            <Directory Id="PLK_Satellites" Name="pl" />
+            <Directory Id="PTB_Satellites" Name="pt" />
+            <Directory Id="RUS_Satellites" Name="ru" />
+            <Directory Id="TRK_Satellites" Name="tr" />
+            <?endif?>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+</Include>

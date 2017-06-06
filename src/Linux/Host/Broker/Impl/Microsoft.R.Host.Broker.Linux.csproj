@@ -6,7 +6,7 @@
     <AssemblyName>Microsoft.R.Host.Broker.Linux</AssemblyName>
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\..\R.Settings.props" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <ItemGroup>

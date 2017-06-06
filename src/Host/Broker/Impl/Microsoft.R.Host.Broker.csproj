@@ -1,9 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.targets" />
+  <Import Project="..\..\..\R.Settings.props" />
+  <ItemGroup>
+    <Compile Remove="AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.1.1" />
@@ -30,9 +37,9 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.5.24" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj" />
-    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj" />
-    <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Interpreters\Impl\Microsoft.R.Interpreters.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">
@@ -50,13 +57,25 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Target Name="BuiltProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="BuiltProjectOutputGroupDependencies" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="GetCopyToOutputDirectoryItems" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="SatelliteDllsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
-  <Target Name="DebugSymbolsProjectOutputGroup" Condition=" '$(TargetFramework)' == 'net46' " />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" Condition="'$(Configuration)'=='Debug'" />
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
+      <Authenticode>Microsoft</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
+      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).dll.lcl</TranslationFile>
+      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
+    </FilesToLocalize>
+    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
+      <InProject>false</InProject>
+    </SignFilesDependsOn>
+  </ItemGroup>
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
     <ItemGroup>
       <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">

@@ -10,10 +10,6 @@
     <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
-    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix\1.0.15100801\</WixDirectory>
-    <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)bin\</WixBinDirectory>
-    <WixBinSdkDirectory Condition="'$(WixBinSdkDirectory)' == ''">$(WixBinDirectory)sdk\</WixBinSdkDirectory>
-    <DDWixDirectory Condition="'$(DDWixDirectory)' == ''">$(NugetDirectory)DDWixExt\14.0.22823.1\</DDWixDirectory>
 
     <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">any cpu</Platform>
@@ -22,17 +18,36 @@
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
-
-    <WixTargetsPath Condition="'$(WixTargetsPath)' == ''">$(WixBinDirectory)wix.targets</WixTargetsPath>
-    <WixCATargetsPath Condition="'$(WixCATargetsPath)' == ''">$(WixBinSdkDirectory)wix.ca.targets</WixCATargetsPath>
-    <RHostMsi Condition="'$(RHostMsi)' == ''">RHost_$(Year)$(Date)$(Time).msi</RHostMsi>
-
-    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);LibDirectory=$(LibDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
+    <SolutionProperties Condition="'$(SolutionProperties)' == ''">
+      Configuration=$(Configuration);
+      Platform=$(Platform);
+      GenerateAssemblyVersionInfo=true;
+      Year=$(Year);Date=$(Date);Time=$(Time);
+      SolutionDir=$(SourceDirectory);
+      BinDirectory=$(OutputDirectory);
+      ObjDirectory=$(IntermediateOutputDirectory);
+      LibDirectory=$(LibDirectory);
+    </SolutionProperties>
+  
+    <SetupRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\Setup\RemoteServices\RemoteServices.wixproj</SetupRemote>
+    <SetupRHostRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\Setup\RHostRemote\RHostRemote.wixproj</SetupRHostRemote>
+    
+    <SetupProperties Condition="'$(SetupProperties)' == ''">
+      Configuration=$(Configuration);
+      Platform=x86;
+      GenerateAssemblyVersionInfo=false;
+      SuppressValidation=true;
+      Year=$(Year);
+      Date=$(Date);
+      Time=$(Time);
+      BinDirectory=$(OutputDirectory);
+      ObjDirectory=$(IntermediateOutputDirectory);
+      LibDirectory=$(LibDirectory);
+    </SetupProperties>
   </PropertyGroup>
 
   <Target Name="ResetNuget">
     <ItemGroup>
-      <ProjectJson Include="$(SourceDirectory)**\project.$(VisualStudioVersion).json"/>
       <ProjectLockJson Include="$(SourceDirectory)**\project.lock.json"/>
       <NugetProps Include="$(SourceDirectory)**\*.nuget.props"/>
       <NugetTargets Include="$(SourceDirectory)**\*.nuget.targets"/>
@@ -60,17 +75,32 @@
   <Target Name="Clean">
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <MSBuild Targets="Clean" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+
+    <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Clean" Projects="$(SetupRHostRemote)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Clean" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
 
   <Target Name="Build">
     <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
+    
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <MSBuild Targets="Restore" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+
+    <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Build" Projects="$(SetupRHostRemote)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Build" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
 
   <Target Name="Rebuild">
     <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
+    
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <MSBuild Targets="Rebuild" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupRHostRemote)" Properties="$(SetupProperties)" />
+
+    <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupRemote)" Properties="$(SetupProperties)" />
   </Target>
 </Project>

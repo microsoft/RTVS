@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <Feature Id="ProductFeature" Title="$(var.ProductName)">
+
+    <!--<?foreach Lang in $(var.LangList)?>
+      <?if $(var.Lang) != "ENU"?>
+        <ComponentRef Id="ProductLocalizedResources_$(var.Lang)" />
+      <?endif?>    
+    <?endforeach?>-->
+
+   
+    <ComponentRef Id="ProductAssemblies" />
+    <ComponentGroupRef Id="RtvsPackage" />
+    <ComponentRef Id="RemoteRUserProfile" />
+    <ComponentRef Id="RemoteRBrokerService" />
+  </Feature>
+</Include>
