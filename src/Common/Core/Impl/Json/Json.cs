@@ -15,10 +15,10 @@ namespace Microsoft.Common.Core.Json {
         /// Workaround for https://github.com/JamesNK/Newtonsoft.Json/issues/862.
         /// </remarks>
         public static JToken ParseToken(string json, JsonLoadSettings settings = null) {
-            using (JsonReader reader = new JsonTextReader(new StringReader(json))) {
+            using (var reader = new JsonTextReader(new StringReader(json))) {
                 reader.DateParseHandling = DateParseHandling.None;
 
-                JToken t = JToken.Load(reader, settings);
+                var t = JToken.Load(reader, settings);
                 if (reader.Read() && reader.TokenType != JsonToken.Comment) {
                     throw new JsonReaderException("Additional text found in JSON string after parsing content.");
                 }
@@ -33,10 +33,10 @@ namespace Microsoft.Common.Core.Json {
         /// Workaround for  https://github.com/JamesNK/Newtonsoft.Json/issues/862.
         /// </remarks>
         public static T DeserializeObject<T>(string value) {
-            JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(null);
+            var jsonSerializer = JsonSerializer.CreateDefault(null);
             jsonSerializer.CheckAdditionalContent = true;
 
-            using (JsonTextReader reader = new JsonTextReader(new StringReader(value))) {
+            using (var reader = new JsonTextReader(new StringReader(value))) {
                 reader.DateParseHandling = DateParseHandling.None;
                 return jsonSerializer.Deserialize<T>(reader);
             }
@@ -49,13 +49,15 @@ namespace Microsoft.Common.Core.Json {
         /// Workaround for  https://github.com/JamesNK/Newtonsoft.Json/issues/862.
         /// </remarks>
         public static object DeserializeObject(string value, Type type) {
-            JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(null);
+            var jsonSerializer = JsonSerializer.CreateDefault(null);
             jsonSerializer.CheckAdditionalContent = true;
-
-            using (JsonTextReader reader = new JsonTextReader(new StringReader(value))) {
-                reader.DateParseHandling = DateParseHandling.None;
-                return jsonSerializer.Deserialize(reader, type);
-            }
+            try {
+                using (var reader = new JsonTextReader(new StringReader(value))) {
+                    reader.DateParseHandling = DateParseHandling.None;
+                    return jsonSerializer.Deserialize(reader, type);
+                }
+            } catch(JsonReaderException) { }
+            return null;
         }
     }
 }
