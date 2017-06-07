@@ -111,7 +111,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.UnitTests.Core.Li
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Interpreters.Linux.Test", "Linux\R\Interpreters\Test\Microsoft.R.Interpreters.Linux.Test.csproj", "{79EB7D57-84C8-4F36-BE4C-C2C5DBCA98FC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host.RunAsUser", "Linux\Native\RunAsUser\Microsoft.R.Host.RunAsUser.vcxproj", "{2F4D16A0-E6C3-4017-8CC3-41430AFB9D06}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host.RunAsUser", "Linux\Native\RunAsUser\src\Microsoft.R.Host.RunAsUser.vcxproj", "{2F4D16A0-E6C3-4017-8CC3-41430AFB9D06}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{CB1B6145-674B-454F-A427-EEB18900BF65}"
 EndProject
