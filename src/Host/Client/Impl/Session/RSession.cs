@@ -390,11 +390,7 @@ namespace Microsoft.R.Host.Client.Session {
         private async Task AfterHostStarted(RHostStartupInfo startupInfo) {
             var evaluator = new BeforeInitializedRExpressionEvaluator(this);
             try {
-                // Load RTVS R package before doing anything in R since the calls
-                // below calls may depend on functions exposed from the RTVS package
-                var libPath = IsRemote ? "." : Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
-
-                await LoadRtvsPackage(evaluator, libPath);
+                await LoadRtvsPackage(evaluator, IsRemote);
 
                 var suggest_mro = await evaluator.EvaluateAsync<bool>("!exists('Revo.version')", REvaluationKind.Normal);
                 if (suggest_mro) {
@@ -489,8 +485,12 @@ namespace Microsoft.R.Host.Client.Session {
 
         private const int rtvsPackageVersion = 1;
 
-        private static Task LoadRtvsPackage(IRExpressionEvaluator eval, string libPath) {
-            return eval.ExecuteAsync(Invariant($@"
+        private static async Task LoadRtvsPackage(IRExpressionEvaluator eval, bool isRemote) {
+            // Load RTVS R package before doing anything in R since the calls
+            // below calls may depend on functions exposed from the RTVS package
+            var libPath = isRemote ? await GetRemoteRtvsPackagePath(eval) : Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
+
+            await eval.ExecuteAsync(Invariant($@"
 if (!base::isNamespaceLoaded('rtvs')) {{
     base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})
 }}
@@ -498,6 +498,12 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
     warning('This R session was created using an incompatible version of RTVS, and may misbehave or crash when used with this version. Click ""Reset"" to replace it with a new clean session.');
 }}
 "));
+        }
+
+        private static async Task<string> GetRemoteRtvsPackagePath(IRExpressionEvaluator eval) {
+            const string windowsPath = ".";
+            const string unixPath = "/usr/share/rtvs";
+            return await eval.IsRSessionPlatformWindowsAsync() ? windowsPath : unixPath;
         }
 
         private static Task SuppressUI(IRExpressionEvaluator eval) {
