@@ -28,4 +28,14 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS filesystem system)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(Microsoft.R.Host.RunAsUser ${Boost_LIBRARIES})
 
-target_link_libraries(Microsoft.R.Host.RunAsUser pthread pam explain)
+find_library(PAM_LIBRARY pam)
+if(NOT PAM_LIBRARY)
+    message(FATAL_ERROR "pam not found")
+endif()
+
+find_library(EXPLAIN_LIBRARY explain)
+if(NOT EXPLAIN_LIBRARY)
+    message(FATAL_ERROR "explain not found")
+endif()
+
+target_link_libraries(Microsoft.R.Host.RunAsUser pthread ${EXPLAIN_LIBRARY} ${PAM_LIBRARY})
