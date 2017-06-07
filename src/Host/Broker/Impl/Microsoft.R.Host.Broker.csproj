@@ -6,9 +6,6 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
-    <Compile Remove="AssemblyVersionInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
