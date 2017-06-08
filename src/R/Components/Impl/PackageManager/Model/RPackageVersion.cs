@@ -25,15 +25,15 @@ namespace Microsoft.R.Components.PackageManager.Model {
             }
 
             // R version numbers can be separated with dots and hyphens (ex: 0.3-10)
-            char[] splitChars = new char[] { '.', '-' };
+            var splitChars = new char[] { '.', '-' };
 
             // Compare each version part, a missing part is considered the same as 0
             // Bad values that can't be parsed are also considered as 0
-            string[] thisParts = _version.Split(splitChars);
-            string[] otherParts = other._version.Split(splitChars);
-            int count = Math.Max(thisParts.Length, otherParts.Length);
-            for (int i = 0; i < count; i++) {
-                int res = ComparePart(
+            var thisParts = _version.Split(splitChars);
+            var otherParts = other._version.Split(splitChars);
+            var count = Math.Max(thisParts.Length, otherParts.Length);
+            for (var i = 0; i < count; i++) {
+                var res = ComparePart(
                     thisParts.Length > i ? thisParts[i] : null,
                     otherParts.Length > i ? otherParts[i] : null
                 );
@@ -44,20 +44,17 @@ namespace Microsoft.R.Components.PackageManager.Model {
             return 0;
         }
 
-        private static int ComparePart(string thisPart, string otherPart) {
-            return ParsePart(thisPart).CompareTo(ParsePart(otherPart));
-        }
+        private static int ComparePart(string thisPart, string otherPart) 
+            => ParsePart(thisPart).CompareTo(ParsePart(otherPart));
 
         private static int ParsePart(string part) {
-            int val = 0;
+            var val = 0;
             if (part != null) {
                 int.TryParse(part, out val);
             }
             return val;
         }
 
-        public override string ToString() {
-            return _version;
-        }
+        public override string ToString() => _version;
     }
 }

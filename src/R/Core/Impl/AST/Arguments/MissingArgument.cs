@@ -12,8 +12,6 @@ namespace Microsoft.R.Core.AST.Arguments {
     /// </summary>
     [DebuggerDisplay("Missing Argument [{Start}...{End})")]
     public class MissingArgument : CommaSeparatedItem {
-        public override string ToString() {
-            return "{Missing}";
-        }
+        public override string ToString() => "{Missing}";
     }
 }

@@ -11,9 +11,8 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
-        public static Task OptionsSetWidthAsync(this IRExpressionEvaluator evaluation, int width) {
-            return evaluation.ExecuteAsync(Invariant($"options(width=as.integer({width}))\n"));
-        }
+        public static Task OptionsSetWidthAsync(this IRExpressionEvaluator evaluation, int width) 
+            => evaluation.ExecuteAsync(Invariant($"options(width=as.integer({width}))\n"));
 
         public static Task QuitAsync(this IRExpressionEvaluator eval) =>
             eval.ExecuteAsync("q()", REvaluationKind.Normal);
@@ -183,17 +182,17 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<string[]>(script, REvaluationKind.Normal, cancellationToken);
         }
         public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
-            string script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
+            var script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
         public static Task<ulong> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
-            string script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
+            var script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
         public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
+            var script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
@@ -212,12 +211,12 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<string> GetRSessionPlatformAsync(this IRExpressionEvaluator evaluation, CancellationToken cancellationToken = default(CancellationToken)) {
-            string script = Invariant($".Platform$OS.type");
+            var script = Invariant($".Platform$OS.type");
             return evaluation.EvaluateAsync<string>(script, REvaluationKind.Normal, cancellationToken);
         }
 
         public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
-            string cp = $".{codePage}";
+            var cp = $".{codePage}";
             if (codePage == 0) {
                 var platformType = await evaluation.GetRSessionPlatformAsync(cancellationToken);
                 cp = platformType.EqualsIgnoreCase("windows")? ".437": "en_US.UTF-8";

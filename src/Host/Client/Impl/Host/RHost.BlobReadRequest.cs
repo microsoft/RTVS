@@ -24,9 +24,7 @@ namespace Microsoft.R.Host.Client {
                 return request;
             }
 
-            public override void Handle(RHost host, Message response) {
-                CompletionSource.TrySetResult(response.Blob);
-            }
+            public override void Handle(RHost host, Message response) => CompletionSource.TrySetResult(response.Blob);
         }
     }
 }

@@ -24,8 +24,6 @@ namespace Microsoft.R.Host.Client.Host {
             throw new RHostDisconnectedException(message);
         }
 
-        public NetworkCredential GetCredential(Uri uri, string authType) {
-            return LocalCredentials;
-        }
+        public NetworkCredential GetCredential(Uri uri, string authType) => LocalCredentials;
     }
 }

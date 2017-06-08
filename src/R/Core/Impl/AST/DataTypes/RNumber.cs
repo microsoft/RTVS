@@ -10,39 +10,19 @@ namespace Microsoft.R.Core.AST.DataTypes {
     /// </summary>
     [DebuggerDisplay("[{Value}]")]
     public class RNumber : RScalar<double> {
-        public override RMode Mode {
-            get { return RMode.Numeric; }
-        }
+        public override RMode Mode => RMode.Numeric;
 
         public RNumber(double value) :
             base(value) {
         }
 
-        public static implicit operator RNumber(double x) {
-            return new RNumber(x);
-        }
-
-        public static explicit operator double (RNumber x) {
-            return x.Value;
-        }
-
-        public static bool operator ==(RNumber x, RNumber y) {
-            return x.Value == y.Value;
-        }
-
-        public static bool operator !=(RNumber x, RNumber y) {
-            return x.Value != y.Value;
-        }
-        public static RNumber operator +(RNumber x, RNumber y) {
-            return new RNumber(x.Value + y.Value);
-        }
-        public static RNumber operator -(RNumber x, RNumber y) {
-            return new RNumber(x.Value - y.Value);
-        }
-
-        public static RNumber operator *(RNumber x, RNumber y) {
-            return new RNumber(x.Value * y.Value);
-        }
+        public static implicit operator RNumber(double x) => new RNumber(x);
+        public static explicit operator double (RNumber x) => x.Value;
+        public static bool operator ==(RNumber x, RNumber y) => x.Value == y.Value;
+        public static bool operator !=(RNumber x, RNumber y) => x.Value != y.Value;
+        public static RNumber operator +(RNumber x, RNumber y) => new RNumber(x.Value + y.Value);
+        public static RNumber operator -(RNumber x, RNumber y) => new RNumber(x.Value - y.Value);
+        public static RNumber operator *(RNumber x, RNumber y) => new RNumber(x.Value * y.Value);
 
         public static RNumber operator /(RNumber x, RNumber y) {
             return new RNumber(x.Value / y.Value);
@@ -50,13 +30,11 @@ namespace Microsoft.R.Core.AST.DataTypes {
 
         public override bool Equals(object obj) {
             try {
-                return this.Value == ((RNumber)obj).Value;
+                return Value == ((RNumber)obj).Value;
             } catch {
                 return false;
             }
         }
-        public override int GetHashCode() {
-            return this.Value.GetHashCode();
-        }
+        public override int GetHashCode() => this.Value.GetHashCode();
     }
 }

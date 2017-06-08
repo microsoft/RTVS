@@ -35,7 +35,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         static LocalBrokerClient() {
             // Allow "true" and non-zero integer to enable, otherwise disable.
-            string rtvsShowConsole = Environment.GetEnvironmentVariable("RTVS_SHOW_CONSOLE");
+            var rtvsShowConsole = Environment.GetEnvironmentVariable("RTVS_SHOW_CONSOLE");
             if (!bool.TryParse(rtvsShowConsole, out ShowConsole)) {
                 int n;
                 if (int.TryParse(rtvsShowConsole, out n) && n != 0) {
@@ -76,19 +76,19 @@ namespace Microsoft.R.Host.Client.Host {
         private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
 
-            string rhostExe = Path.Combine(_rhostDirectory, RHostExe);
+            var rhostExe = Path.Combine(_rhostDirectory, RHostExe);
             if (!_services.FileSystem().FileExists(rhostExe)) {
                 throw new RHostBinaryMissingException();
             }
 
-            string rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
+            var rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
             if (!_services.FileSystem().FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }
 
             Process process = null;
             try {
-                string pipeName = Guid.NewGuid().ToString();
+                var pipeName = Guid.NewGuid().ToString();
                 var cts = new CancellationTokenSource(100000);
 
                 using (var processConnectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token))
@@ -133,14 +133,14 @@ namespace Microsoft.R.Host.Client.Host {
                         // when the other side has finished writing and closed the pipe.
                         var buffer = new byte[0x1000];
                         do {
-                            int count = await serverUriPipe.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                            var count = await serverUriPipe.ReadAsync(buffer, 0, buffer.Length, cts.Token);
                             serverUriData.Write(buffer, 0, count);
                         } while (serverUriPipe.IsConnected);
                     } catch (OperationCanceledException) {
                         throw new RHostDisconnectedException("Timed out while waiting for broker process to report its endpoint URI");
                     }
 
-                    string serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());
+                    var serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());
                     Uri[] serverUri;
                     try {
                         serverUri = Json.DeserializeObject<Uri[]>(serverUriStr);

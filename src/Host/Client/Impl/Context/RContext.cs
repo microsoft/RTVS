@@ -3,9 +3,7 @@
 
 namespace Microsoft.R.Host.Client {
     public class RContext : IRContext {
-        protected bool Equals(RContext other) {
-            return other != null && CallFlag == other.CallFlag;
-        }
+        protected bool Equals(RContext other) => other != null && CallFlag == other.CallFlag;
 
         public RContext(RContextType callFlag) {
             CallFlag = callFlag;
@@ -13,12 +11,8 @@ namespace Microsoft.R.Host.Client {
 
         public RContextType CallFlag { get; }
 
-        public override bool Equals(object obj) {
-            return Equals(obj as RContext);
-        }
+        public override bool Equals(object obj) => Equals(obj as RContext);
 
-        public override int GetHashCode() {
-            return (int)CallFlag;
-        }
+        public override int GetHashCode() => (int)CallFlag;
     }
 }

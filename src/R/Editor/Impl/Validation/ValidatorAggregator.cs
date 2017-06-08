@@ -19,21 +19,20 @@ namespace Microsoft.R.Editor.Validation {
     /// In VS validators may be exported via MEF for the "R" content type.
     /// </summary>
     internal sealed class ValidatorAggregator : IValidatorAggregator, IAstVisitor {
-        private readonly IServiceContainer _services;
         private readonly IREditorSettings _settings;
         private readonly IEnumerable<IRDocumentValidator> _validators;
         private Task _validationTask;
         private TaskCompletionSource<bool> _tcs;
 
         public ValidatorAggregator(IServiceContainer services) {
-            _services = services;
-            _settings = _services.GetService<IREditorSettings>();
+            var services1 = services;
+            _settings = services1.GetService<IREditorSettings>();
 
             // Populate known validators
             var list = new List<IRDocumentValidator>() { new LintValidator() };
 
             // Fetch externally provided ones
-            var locator = _services.GetService<IContentTypeServiceLocator>();
+            var locator = services1.GetService<IContentTypeServiceLocator>();
             list.AddRange(locator.GetAllServices<IRDocumentValidator>("R"));
 
             _validators = list;

@@ -8,11 +8,8 @@ namespace Microsoft.Common.Wpf {
         public static readonly DependencyProperty ImportedNamespacesProperty = DependencyProperty.RegisterAttached(
             "ImportedNamespaces", typeof(string), typeof(LambdaProperties));
 
-        public static string GetImportedNamespaces(object obj) {
-            return null;
-        }
+        public static string GetImportedNamespaces(object obj) => null;
 
-        public static void SetImportedNamespaces(object obj, string value) {
-        }
+        public static void SetImportedNamespaces(object obj, string value) { }
     }
 }

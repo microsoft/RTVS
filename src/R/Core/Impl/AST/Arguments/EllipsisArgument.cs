@@ -18,8 +18,6 @@ namespace Microsoft.R.Core.AST.Arguments {
             return base.Parse(context, parent);
         }
 
-        public override string ToString() {
-            return "...";
-        }
+        public override string ToString() => "...";
     }
 }

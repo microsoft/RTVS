@@ -1,11 +1,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup >
+  <PropertyGroup>
     <AssemblyVersionInfoPath>$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs</AssemblyVersionInfoPath>
     <!-- Suppress automatic generation of version information. We generate it ourselves
       since we need it for both .NET Core and .NET Desktop -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND Exists('$(AssemblyVersionInfoPath)')">false</GenerateAssemblyVersionInfo>
-    <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
+    <!-- By default assemblies are not versioned -->
+    <GenerateAssemblyVersionInfo>false</GenerateAssemblyVersionInfo>
+    <GenerateAssemblyVersionInfo Condition="'$(Configuration)' == 'Release'">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -21,8 +22,8 @@
     <MinorVersion>2</MinorVersion>
     <Build>$(LastDigitOfYear)$(Date)</Build>
     <Revision>$(Time)</Revision>
-    <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
 
+    <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
     <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(BuildNumber)</AssemblyVersion>
     <BuildVersion>$(MajorVersion).$(MinorVersion).$(Build).$(Revision)</BuildVersion>
   </PropertyGroup>
@@ -51,7 +52,7 @@
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
-      <Output TaskParameter="OutputFile" ItemName="Compile" />
+      <Output TaskParameter="OutputFile" ItemName="Compile" Condition="'$(TargetFrameworks)' == ''"/>
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
     </WriteCodeFragment>
   </Target>
@@ -60,7 +61,7 @@
     <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
-  
+
   <Target Name="GenerateAssemblyInfoFileNetCore" BeforeTargets="PreBuildEvent">
     <CallTarget Targets="GenerateAssemblyInfoFile" />
   </Target>

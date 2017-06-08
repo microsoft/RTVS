@@ -156,8 +156,7 @@ namespace Microsoft.Common.Core.Security {
             return Credentials.Create(userName, password);
         }
 
-        private static IntPtr CreatePasswordBuffer() {
-            return Marshal.AllocCoTaskMem(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH);
-        }
+        private static IntPtr CreatePasswordBuffer() 
+            => Marshal.AllocCoTaskMem(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH);
     }
 }

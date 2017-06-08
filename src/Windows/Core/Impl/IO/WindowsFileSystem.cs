@@ -2,34 +2,21 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using Microsoft.Extensions.FileSystemGlobbing;
 
 namespace Microsoft.Common.Core.IO {
     public sealed class WindowsFileSystem : FileSystem {
-        public override string GetDownloadsPath(string fileName) {
-            if (string.IsNullOrWhiteSpace(fileName)) {
-                return GetKnownFolderPath(KnownFolderGuids.Downloads);
-            } else {
-                return Path.Combine(GetKnownFolderPath(KnownFolderGuids.Downloads), fileName);
-            }
-        }
+        public override string GetDownloadsPath(string fileName) => 
+            string.IsNullOrWhiteSpace(fileName) 
+                ? GetKnownFolderPath(KnownFolderGuids.Downloads) 
+                : Path.Combine(GetKnownFolderPath(KnownFolderGuids.Downloads), fileName);
 
         private string GetKnownFolderPath(string knownFolder) {
-            IntPtr knownFolderPath;
-            uint flags = (uint)NativeMethods.KnownFolderflags.KF_FLAG_DEFAULT_PATH;
-            int result = NativeMethods.SHGetKnownFolderPath(new Guid(knownFolder), flags, IntPtr.Zero, out knownFolderPath);
-            if (result >= 0) {
-                return Marshal.PtrToStringUni(knownFolderPath);
-            } else {
-                return string.Empty;
-            }
+            var flags = (uint)NativeMethods.KnownFolderflags.KF_FLAG_DEFAULT_PATH;
+            var result = NativeMethods.SHGetKnownFolderPath(new Guid(knownFolder), flags, IntPtr.Zero, out IntPtr knownFolderPath);
+            return result >= 0 ? Marshal.PtrToStringUni(knownFolderPath) : string.Empty;
         }
 
         private static class NativeMethods {

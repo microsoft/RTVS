@@ -29,19 +29,19 @@ namespace Microsoft.R.Host.Broker.UserProfile {
         }
 
         private async Task<RUserProfileServiceResponse> ProfileWorkerAsync(string name, string log, RUserProfileServiceRequest request, CancellationToken ct) {
-            using (NamedPipeClientStream client = new NamedPipeClientStream(name)) {
+            using (var client = new NamedPipeClientStream(name)) {
                 try {
                     await client.ConnectAsync(ct);
 
-                    string jsonReq = JsonConvert.SerializeObject(request);
-                    byte[] data = Encoding.Unicode.GetBytes(jsonReq.ToString());
+                    var jsonReq = JsonConvert.SerializeObject(request);
+                    var data = Encoding.Unicode.GetBytes(jsonReq.ToString());
 
                     await client.WriteAsync(data, 0, data.Length, ct);
                     await client.FlushAsync(ct);
 
-                    byte[] responseRaw = new byte[1024];
+                    var responseRaw = new byte[1024];
                     var bytesRead = await client.ReadAsync(responseRaw, 0, responseRaw.Length, ct);
-                    string jsonResp = Encoding.Unicode.GetString(responseRaw, 0, bytesRead);
+                    var jsonResp = Encoding.Unicode.GetString(responseRaw, 0, bytesRead);
                     return Json.DeserializeObject<RUserProfileServiceResponse>(jsonResp);
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     _logger.LogError(log, request.Username);

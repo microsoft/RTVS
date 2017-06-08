@@ -19,25 +19,19 @@ namespace Microsoft.Common.Core.Logging {
             _eventLogSource = eventLogSource;
         }
 
-        public void Dispose() {
-        }
+        public void Dispose() { }
 
-        public IDisposable BeginScope<TState>(TState state) {
-            return Disposable.Empty;
-        }
-
-        public bool IsEnabled(LogLevel logLevel) {
-            return logLevel >= _logLevel;
-        }
+        public IDisposable BeginScope<TState>(TState state) => Disposable.Empty;
+        public bool IsEnabled(LogLevel logLevel) => logLevel >= _logLevel;
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {
             if(logLevel < _logLevel) {
                 return;
             }
 
-            string message = formatter(state, exception);
-            using (EventLog eventLog = new EventLog("Application")) {
-                EventLogEntryType logType = GetLogType(logLevel);
+            var message = formatter(state, exception);
+            using (var eventLog = new EventLog("Application")) {
+                var logType = GetLogType(logLevel);
                 eventLog.Source = _eventLogSource;
                 string logMessage;
                 if (exception != null) {
