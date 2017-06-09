@@ -17,7 +17,7 @@
     <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
-    <Broker Condition="'$(Broker)' == ''">$(SourceDirectory)Linux\Host\Broker\Impl\Microsoft.R.Host.Broker.Linux.csproj</Broker>
+    <Broker Condition="'$(Broker)' == ''">$(SourceDirectory)Linux\Host\Broker\Impl\linux-build.proj</Broker>
     <RunAsUser Condition="'$(RunAsUser)' == ''">$(SourceDirectory)Linux\Native\RunAsUser\linux-build.proj</RunAsUser>
     <RHost Condition="'$(RHost)' == ''">$(SourceDirectory)Host\Process\linux-build.proj</RHost>
 
