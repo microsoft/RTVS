@@ -69,6 +69,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
         /// ![text]
         /// </summary>
         AltText,
+
         /// <summary>
         /// Preudo-token indicating end of stream
         /// </summary>

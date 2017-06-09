@@ -3,7 +3,10 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -15,16 +18,20 @@ namespace Microsoft.Markdown.Editor.Commands {
     [Export(typeof(ICommandFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class MdCommandFactory : ICommandFactory {
+        private readonly IServiceContainer _services;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         [ImportingConstructor]
-        public MdCommandFactory(IRInteractiveWorkflowProvider workflowProvider) {
-            _workflowProvider = workflowProvider;
+        public MdCommandFactory(ICoreShell coreShell)
+        {
+            _services = coreShell.Services;
+            _workflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var commands = new List<ICommand>() {
-                new RunRChunkCommand(textView, _workflowProvider.GetOrCreate())
+                new RunRChunkCommand(textView, _workflowProvider.GetOrCreate()),
+                new GotoBraceCommand(textView, textBuffer, _services)
             };
             return commands;
         }
