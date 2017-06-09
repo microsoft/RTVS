@@ -63,6 +63,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Browsers\WebBrowserRole.cs" />
     <Compile Include="Commands\AsyncCommandController.cs" />
     <Compile Include="Commands\AsyncCommandRangeToOleMenuCommandShim.cs" />

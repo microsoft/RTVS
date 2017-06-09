@@ -27,6 +27,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Publish\DacPacBuilder.cs" />
     <Compile Include="Publish\DacPackageServices.cs" />
     <Compile Include="Publish\SqlPublishException.cs" />

@@ -27,6 +27,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Threading\TestMainThread.cs" />
     <Compile Include="XUnit\TaskObserver.cs" />
     <Compile Include="XUnit\VsAssemblyLoaderAttribute.cs" />

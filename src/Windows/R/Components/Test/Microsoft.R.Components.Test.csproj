@@ -36,6 +36,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\BitmapSourceAssertions.cs" />
     <Compile Include="Assertions\AsyncCommandAssertions.cs" />

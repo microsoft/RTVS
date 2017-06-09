@@ -40,6 +40,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\ITokenAssertions.cs" />
     <Compile Include="TestFilesFixture.cs" />
