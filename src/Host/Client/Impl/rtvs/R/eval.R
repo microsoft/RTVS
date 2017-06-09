@@ -68,6 +68,8 @@ describe_object <- function(obj, res, fields, repr = NULL) {
 
     if (field('dim')) {
         dim <- NA_if_error(dim(obj));
+		names(dim) <- NULL;
+
         # Since the entire dimension vector is serialized, restrict exceedingly large numbers of dimensions.
         if (is.integer(dim) && !anyNA(dim) && length(dim) < 1000) {
             res$dim <- as.list(dim);
