@@ -155,6 +155,27 @@ namespace Microsoft.R.DataInspection.Test {
 
         [Test]
         [Category.R.DataInspection]
+        public async Task DimWithNames() {
+            const string code =
+@"x <- c(100, 200)
+  dim(x) <- list(a = 1, b = 2)
+";
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile(code)) {
+                await sf.Source(_session);
+
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
+                stackFrames.Should().NotBeEmpty();
+
+                var children = await stackFrames.Last().DescribeChildrenAsync(DimProperty, null);
+                children.Should().ContainSingle(er => er.Name == "x")
+                    .Which.Should().BeAssignableTo<IRValueInfo>()
+                    .Which.Dim.Should().BeEquivalentTo(1L, 2L);
+            }
+        }
+
+        [Test]
+        [Category.R.DataInspection]
         public async Task MultilinePromise() {
             const string code =
 @"f <- function(p, d) {
@@ -312,7 +333,7 @@ namespace Microsoft.R.DataInspection.Test {
         public async Task DeparseLimit() {
             string expr = "as.double(1:100)";
             string fullRepr = (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Deparse())).Representation;
-            string expectedRepr = fullRepr.Substring(0, 53); 
+            string expectedRepr = fullRepr.Substring(0, 53);
             (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Deparse(50)))
                 .Representation.Should().Be(expectedRepr);
         }
