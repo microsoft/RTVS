@@ -23,9 +23,8 @@ namespace Microsoft.R.Editor.Comments {
         /// Uncomments selected lines or current line if range has zero length.
         /// Only removes single comment. ### -> ## -> # and so on. Matches C# behavior.
         /// </summary>
-        public static void UncommentBlock(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorSupport es) {
-            DoActionOnLines(editorView, editorBuffer, range, es, UncommentLine, Resources.UncommentSelection);
-        }
+        public static void UncommentBlock(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorSupport es) 
+            => DoActionOnLines(editorView, editorBuffer, range, es, UncommentLine, Resources.UncommentSelection);
 
         public static void DoActionOnLines(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange range, IEditorSupport es, Func<IEditorLine, bool> action, string actionName) {
             // When user clicks editor margin to select a line, selection actually

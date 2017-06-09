@@ -4,16 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Linq;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core.Idle;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
-using Microsoft.R.Editor;
 using Microsoft.R.Editor.Functions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Definitions;
+using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
@@ -55,6 +56,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
+    [ProvideLanguageEditorOptionPage(typeof(RLintOptionsDialog), RContentTypeDefinition.LanguageName, "", "Lint", "#20139")]
     [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 40)]
@@ -101,10 +103,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string ProductName = "R Tools";
 
-        private IPackageIndex _packageIndex;
+        public IEditorSettingsStorage LanguageSettingsStorage { get; private set; }
 
         public static IRPackage Current { get; private set; }
-        public static Microsoft.Common.Core.Services.IServiceContainer Services => VsAppShell.Current.Services;
+        public static Common.Core.Services.IServiceContainer Services => VsAppShell.Current.Services;
+
+        private readonly Dictionary<string, Type> _editorOptionsPages = new Dictionary<string, Type>() {
+            { "R Editor", typeof(REditorOptionsDialog)},
+            { "R Lint", typeof(RLintOptionsDialog)},
+        };
+        private IPackageIndex _packageIndex;
 
         protected override void Initialize() {
             Current = this;
@@ -119,9 +127,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             ProjectIconProvider.LoadProjectImages(Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
+
+            LoadEditorSettings();
+            BuildFunctionIndex();
             RtvsTelemetry.Initialize(_packageIndex, Services);
 
-            BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
@@ -154,9 +164,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override IEnumerable<MenuCommand> CreateMenuCommands() => PackageCommands.GetCommands(Services);
 
         protected override object GetAutomationObject(string name) {
-            if (name == RPackage.ProductName) {
-                var page = GetDialogPage(typeof(REditorOptionsDialog));
+            if (_editorOptionsPages.TryGetValue(name, out Type pageType)) {
+                var page = GetDialogPage(pageType);
                 return page.AutomationObject;
+
             }
             return base.GetAutomationObject(name);
         }
@@ -184,6 +195,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return value is bool && (bool)value;
             }
             return false;
+        }
+
+        private void LoadEditorSettings() {
+            var storage = new LanguageSettingsStorage(this, Services, RGuidList.RLanguageServiceGuid, _editorOptionsPages.Keys);
+            LanguageSettingsStorage = storage;
+            storage.Load();
         }
 
         private void BuildFunctionIndex() => _packageIndex = Services.GetService<IPackageIndex>();

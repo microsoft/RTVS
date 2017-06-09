@@ -21,8 +21,7 @@ namespace Microsoft.R.Host.Client.Host {
         public static BrokerConnectionInfo Create(ISecurityService securityService, string name, string path, string rCommandLineArguments = null) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
-            Uri uri;
-            if (!Uri.TryCreate(path, UriKind.Absolute, out uri)) {
+            if (!Uri.TryCreate(path, UriKind.Absolute, out Uri uri)) {
                 return new BrokerConnectionInfo();
             }
 
@@ -34,12 +33,13 @@ namespace Microsoft.R.Host.Client.Host {
         private static BrokerConnectionInfo CreateRemote(string name, Uri uri, ISecurityService securityService, string rCommandLineArguments) {
             var fragment = uri.Fragment;
             var interpreterId = string.IsNullOrEmpty(fragment) ? string.Empty : fragment.Substring(1);
-            UriBuilder ub = new UriBuilder(uri);
-            ub.Fragment = null;
-            ub.UserName = null;
-            ub.Password = null;
+            var ub = new UriBuilder(uri) {
+                Fragment = null,
+                UserName = null,
+                Password = null
+            };
             uri = ub.Uri;
-            string username = securityService.GetUserName(GetCredentialAuthority(name));
+            var username = securityService.GetUserName(GetCredentialAuthority(name));
             return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username);
         }
 

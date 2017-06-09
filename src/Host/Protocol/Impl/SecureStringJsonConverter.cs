@@ -9,9 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Protocol {
     public class SecureStringJsonConverter : JsonConverter {
-        public override bool CanConvert(Type objectType) {
-            return objectType == typeof(SecureString);
-        }
+        public override bool CanConvert(Type objectType) => objectType == typeof(SecureString);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
             if (typeof(SecureString) == objectType) {

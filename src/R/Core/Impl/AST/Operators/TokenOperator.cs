@@ -39,9 +39,7 @@ namespace Microsoft.R.Core.AST.Operators {
             return base.Parse(context, parent);
         }
 
-        public override string ToString() {
-            return OperatorToken.ToString();
-        }
+        public override string ToString() => OperatorToken.ToString();
 
         public static OperatorType GetOperatorType(string text) {
             switch (text) {

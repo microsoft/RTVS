@@ -23,8 +23,6 @@ namespace Microsoft.R.Host.Protocol {
     }
 
     public static class IUserProfileServiceResultExtension {
-        public static bool IsInvalidResponse(this IUserProfileServiceResult response) {
-            return response.Error == 13;
-        }
+        public static bool IsInvalidResponse(this IUserProfileServiceResult response) => response.Error == 13;
     }
 }

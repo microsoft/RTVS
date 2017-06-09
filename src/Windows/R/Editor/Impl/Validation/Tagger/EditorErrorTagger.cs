@@ -26,21 +26,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         private readonly IEditorTaskList _taskList;
         private readonly IREditorSettings _settings;
         private readonly IIdleTimeService _idleTime;
+        private readonly ITextBuffer _textBuffer;
+        private readonly ErrorTagCollection _errorTags;
+        private readonly IREditorDocument _document;
+        private readonly ConcurrentQueue<IValidationError> _resultsQueue;
 
-        /// <summary>
-        /// Tells the editor (or any listener) that syntax errors have changed
-        /// </summary>
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
-
-        /// <summary>
-        /// Reference to the validation results queue
-        /// </summary>
-        internal ConcurrentQueue<IValidationError> ResultsQueue;
-
-        private ITextBuffer _textBuffer;
-        private IREditorDocument _document;
-        private ErrorTagCollection _errorTags;
-        private bool _fireCodeMarkerUponCompletion;
 
         public EditorErrorTagger(ITextBuffer textBuffer, IEditorTaskList taskList, IServiceContainer services) {
             _taskList = taskList;
@@ -57,8 +47,6 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             _textBuffer = _document.EditorTree.TextBuffer();
             _textBuffer.Changed += OnTextBufferChanged;
 
-            _fireCodeMarkerUponCompletion = true;
-
             // Don't push syntax errors to the Error List in transient
             // documents such as in document attached to a projected buffer
             // in the R interactive window
@@ -69,12 +57,17 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 }
             }
 
-            var validator = TreeValidator.FromEditorBuffer(_document.EditorTree, services);
+            var validator = _document.EditorBuffer.GetService<TreeValidator>();
             validator.Cleared += OnCleared;
 
-            ResultsQueue = validator.ValidationResults;
+            _resultsQueue = validator.ValidationResults;
             _idleTime.Idle += OnIdle;
         }
+
+        /// <summary>
+        /// Tells the editor (or any listener) that syntax errors have changed
+        /// </summary>
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         /// <summary>
         /// Retriever error (squiggly) tagger associated with the text buffer
@@ -141,18 +134,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
 
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 _document.EditorTree.NodesRemoved -= OnNodesRemoved;
-
                 _document.Closing -= OnDocumentClosing;
-                _document = null;
 
                 _errorTags.Clear();
-                _errorTags = null;
-
-                ResultsQueue = null;
 
                 _textBuffer.Changed -= OnTextBufferChanged;
-                _textBuffer = null;
-
                 _taskList?.RemoveTaskSource(this);
             }
         }
@@ -167,8 +153,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// <param name="eventArgs"></param>
         private void OnIdle(object sender, EventArgs eventArgs) {
             if (_settings.SyntaxCheckEnabled && _textBuffer != null) {
-                if (ResultsQueue.Count > 0) {
-                    _fireCodeMarkerUponCompletion = true;
+                if (_resultsQueue.Count > 0) {
 
                     var addedTags = new List<IEditorTaskListItem>();
                     var changedRange = _errorTags.BeginUpdate();
@@ -178,22 +163,13 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                     timer.Reset();
 
                     while (timer.ElapsedMilliseconds < 100) {
-                        if (!ResultsQueue.TryDequeue(out var error)) {
+                        if (!_resultsQueue.TryDequeue(out var error)) {
                             break;
                         }
 
                         if (string.IsNullOrEmpty(error.Message)) {
-                            // Empty message means remove all error for the element.
-                            var removedRange = TextRange.EmptyRange; // _errorTags.RemoveTagsForNode(error.NodeKey);
-
-                            // Only update changedRange if there were errors removed
-                            if (removedRange.End > 0) {
-                                if (changedRange.End == 0) {
-                                    changedRange = removedRange;
-                                } else {
-                                    changedRange = changedRange.Union(removedRange);
-                                }
-                            }
+                            // Empty message means remove all errors.
+                            changedRange = new TextRange(0, _textBuffer.CurrentSnapshot.Length);
                         } else {
                             var tag = new EditorErrorTag(_document.EditorTree, error);
                             if (tag.Length > 0) {
@@ -243,15 +219,6 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                     }
 
                     timer.Stop();
-                }
-
-                if (_fireCodeMarkerUponCompletion && (ResultsQueue.Count == 0)) {
-                    // Use this flag so we don't incessantly fire this code marker on every idle.
-                    // TODO: Even this isn't quite correct, as it's possible that a validator
-                    //  yet pushed all it's entries into the results queue. There should really
-                    //  be a notification from the validators to indicate their completeness. If there
-                    //  were such a notification, then we could actually even unhook ourselves from idle.
-                    _fireCodeMarkerUponCompletion = false;
                 }
             }
         }

@@ -13,9 +13,7 @@ namespace Microsoft.R.DataInspection {
             Code = code;
         }
 
-        public override string ToString() {
-            return Invariant($"PROMISE: {Code}");
-        }
+        public override string ToString() => Invariant($"PROMISE: {Code}");
 
         public override IREvaluationResultInfo ToEnvironmentIndependentResult() =>
             new RPromiseInfo(Evaluator, EnvironmentExpression, this.GetEnvironmentIndependentExpression(), Name, Code);

@@ -1,14 +1,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup >
+  <PropertyGroup>
     <AssemblyVersionInfoPath>$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs</AssemblyVersionInfoPath>
     <!-- Suppress automatic generation of version information. We generate it ourselves
       since we need it for both .NET Core and .NET Desktop -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- By default assemblies are not versioned -->
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND Exists('$(AssemblyVersionInfoPath)')">false</GenerateAssemblyVersionInfo>
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <!-- 0.1.YMMDD.HHMM -->
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
@@ -21,8 +22,17 @@
     <MinorVersion>2</MinorVersion>
     <Build>$(LastDigitOfYear)$(Date)</Build>
     <Revision>$(Time)</Revision>
-    <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
+    <MajorVersion>1</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <Build>0</Build>
+    <Revision>0</Revision>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
     <AssemblyVersion>$(MajorVersion).$(MinorVersion).$(BuildNumber)</AssemblyVersion>
     <BuildVersion>$(MajorVersion).$(MinorVersion).$(Build).$(Revision)</BuildVersion>
   </PropertyGroup>
@@ -45,13 +55,14 @@
   </Target>
 
   <Target Name="GenerateAssemblyInfoFile"
-          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND '$(MSBuildProjectExtension)'!='.wixproj' AND $(GenerateAssemblyVersionInfo)"
+          Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND 
+                     '$(MSBuildProjectExtension)'!='.wixproj' AND 
+                     '$(GenerateAssemblyVersionInfo)' == true"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
-      <Output TaskParameter="OutputFile" ItemName="Compile" />
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
     </WriteCodeFragment>
   </Target>
@@ -60,14 +71,14 @@
     <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
-  
+
   <Target Name="GenerateAssemblyInfoFileNetCore" BeforeTargets="PreBuildEvent">
     <CallTarget Targets="GenerateAssemblyInfoFile" />
   </Target>
 
   <!-- C++ -->
   <Target Name="GenerateNativeVersionInfoFile"
-          Condition="'$(MSBuildProjectExtension)'=='.vcxproj' AND $(GenerateAssemblyVersionInfo)"
+          Condition="'$(MSBuildProjectExtension)'=='.vcxproj' AND '$(GenerateAssemblyVersionInfo)' == true"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(MSBuildProjectDirectory)\GeneratedVersion.h"
           BeforeTargets="PrepareForBuild">

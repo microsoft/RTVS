@@ -69,6 +69,7 @@
     <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="RBrokerServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

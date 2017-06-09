@@ -178,6 +178,24 @@ namespace Microsoft.R.Editor.Windows {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roxygen Export.
+        /// </summary>
+        internal static string ColorName_R_RoxygenExport {
+            get {
+                return ResourceManager.GetString("ColorName_R_RoxygenExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roxygen Keyword.
+        /// </summary>
+        internal static string ColorName_R_RoxygenKeyword {
+            get {
+                return ResourceManager.GetString("ColorName_R_RoxygenKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R String.
         /// </summary>
         internal static string ColorName_R_String {
@@ -210,15 +228,6 @@ namespace Microsoft.R.Editor.Windows {
         internal static string ColorName_RD_CurlyBraces {
             get {
                 return ResourceManager.GetString("ColorName_RD_CurlyBraces", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Comment selection.
-        /// </summary>
-        internal static string CommentSelection {
-            get {
-                return ResourceManager.GetString("CommentSelection", resourceCulture);
             }
         }
         
@@ -264,15 +273,6 @@ namespace Microsoft.R.Editor.Windows {
         internal static string SmartTagName_LoadLibrary {
             get {
                 return ResourceManager.GetString("SmartTagName_LoadLibrary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Uncomment selection.
-        /// </summary>
-        internal static string UncommentSelection {
-            get {
-                return ResourceManager.GetString("UncommentSelection", resourceCulture);
             }
         }
     }

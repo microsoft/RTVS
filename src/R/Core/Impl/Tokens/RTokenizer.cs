@@ -364,9 +364,8 @@ namespace Microsoft.R.Core.Tokens {
         /// Adds a token that represent a string
         /// </summary>
         /// <param name="openQuote"></param>
-        private void HandleString(char openQuote) {
-            Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.String, start, length));
-        }
+        private void HandleString(char openQuote)
+            => Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.String, start, length));
 
         private bool AddIdentifier() {
             // 10.3.2 Identifiers
@@ -394,8 +393,7 @@ namespace Microsoft.R.Core.Tokens {
         }
 
         private void AddToken(RTokenType type, RTokenSubType subType, int start, int length) {
-            var token = new RToken(type, start, length);
-            token.SubType = subType;
+            var token = new RToken(type, start, length) { SubType = subType };
             _tokens.Add(token);
         }
 
@@ -427,13 +425,10 @@ namespace Microsoft.R.Core.Tokens {
             }
         }
 
-        private static bool IsIdentifierCharacter(CharacterStream cs) {
-            return IsIdentifierCharacter(cs.CurrentChar);
-        }
+        private static bool IsIdentifierCharacter(CharacterStream cs) => IsIdentifierCharacter(cs.CurrentChar);
 
-        public static bool IsIdentifierCharacter(char ch) {
-            return (CharacterStream.IsLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_');
-        }
+        public static bool IsIdentifierCharacter(char ch)
+            => (CharacterStream.IsLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_');
 
         private static bool IsOpenBraceFollow(CharacterStream cs, int position) {
             for (var i = position; i < cs.Length; i++) {

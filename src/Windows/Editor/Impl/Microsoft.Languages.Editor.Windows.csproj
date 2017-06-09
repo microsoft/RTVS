@@ -35,6 +35,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BraceMatch\BraceHighlighter.cs" />
     <Compile Include="BraceMatch\BraceHighlightProvider.cs" />
     <Compile Include="BraceMatch\BraceHighlightTag.cs" />

@@ -62,155 +62,11 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parsing document....
-        /// </summary>
-        internal static string AsyncIntellisense {
-            get {
-                return ResourceManager.GetString("AsyncIntellisense", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Automatic formatting.
         /// </summary>
         internal static string AutoFormat {
             get {
                 return ResourceManager.GetString("AutoFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Assignment.
-        /// </summary>
-        internal static string ColorName_R_Assignment {
-            get {
-                return ResourceManager.GetString("ColorName_R_Assignment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Braces.
-        /// </summary>
-        internal static string ColorName_R_Braces {
-            get {
-                return ResourceManager.GetString("ColorName_R_Braces", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Square Brackets.
-        /// </summary>
-        internal static string ColorName_R_Brackets {
-            get {
-                return ResourceManager.GetString("ColorName_R_Brackets", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Builtin Function.
-        /// </summary>
-        internal static string ColorName_R_Builtin {
-            get {
-                return ResourceManager.GetString("ColorName_R_Builtin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Comment.
-        /// </summary>
-        internal static string ColorName_R_Comment {
-            get {
-                return ResourceManager.GetString("ColorName_R_Comment", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Curly Brace.
-        /// </summary>
-        internal static string ColorName_R_CurlyBrace {
-            get {
-                return ResourceManager.GetString("ColorName_R_CurlyBrace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Curly Braces.
-        /// </summary>
-        internal static string ColorName_R_CurlyBraces {
-            get {
-                return ResourceManager.GetString("ColorName_R_CurlyBraces", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Function Default Parameter.
-        /// </summary>
-        internal static string ColorName_R_FunctionDefaultParameter {
-            get {
-                return ResourceManager.GetString("ColorName_R_FunctionDefaultParameter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Function Reference.
-        /// </summary>
-        internal static string ColorName_R_FunctionReference {
-            get {
-                return ResourceManager.GetString("ColorName_R_FunctionReference", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Keyword.
-        /// </summary>
-        internal static string ColorName_R_Keyword {
-            get {
-                return ResourceManager.GetString("ColorName_R_Keyword", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Number.
-        /// </summary>
-        internal static string ColorName_R_Number {
-            get {
-                return ResourceManager.GetString("ColorName_R_Number", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Operator.
-        /// </summary>
-        internal static string ColorName_R_Operator {
-            get {
-                return ResourceManager.GetString("ColorName_R_Operator", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Punctuation.
-        /// </summary>
-        internal static string ColorName_R_Punctuation {
-            get {
-                return ResourceManager.GetString("ColorName_R_Punctuation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R String.
-        /// </summary>
-        internal static string ColorName_R_String {
-            get {
-                return ResourceManager.GetString("ColorName_R_String", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Type Functions.
-        /// </summary>
-        internal static string ColorName_R_TypeFunction {
-            get {
-                return ResourceManager.GetString("ColorName_R_TypeFunction", resourceCulture);
             }
         }
         
@@ -224,20 +80,218 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Drag/drop.
+        ///   Looks up a localized string similar to ’&lt;-’ should always be used for assignment.
         /// </summary>
-        internal static string DragDropOperation {
+        internal static string Lint_Assignment {
             get {
-                return ResourceManager.GetString("DragDropOperation", resourceCulture);
+                return ResourceManager.GetString("Lint_Assignment", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Format document.
+        ///   Looks up a localized string similar to Objects names should not be in camelCase.
         /// </summary>
-        internal static string FormatDocument {
+        internal static string Lint_CamelCase {
             get {
-                return ResourceManager.GetString("FormatDocument", resourceCulture);
+                return ResourceManager.GetString("Lint_CamelCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closing curly brace should be on its own line unless it is followed by an &apos;else&apos;.
+        /// </summary>
+        internal static string Lint_CloseCurlySeparateLine {
+            get {
+                return ResourceManager.GetString("Lint_CloseCurlySeparateLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma should be followed by space, but should not have space before it.
+        /// </summary>
+        internal static string Lint_CommaSpaces {
+            get {
+                return ResourceManager.GetString("Lint_CommaSpaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only double quotes should used to delimit strings..
+        /// </summary>
+        internal static string Lint_DoubleQuotes {
+            get {
+                return ResourceManager.GetString("Lint_DoubleQuotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line is {0} characters long. Max {1} characters is recommended..
+        /// </summary>
+        internal static string Lint_LineTooLong {
+            get {
+                return ResourceManager.GetString("Lint_LineTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objects names should not have.multiple.dots.
+        /// </summary>
+        internal static string Lint_MultileDots {
+            get {
+                return ResourceManager.GetString("Lint_MultileDots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiple statements in line.
+        /// </summary>
+        internal static string Lint_MultipleStatementsInLine {
+            get {
+                return ResourceManager.GetString("Lint_MultipleStatementsInLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objects name is {0} characters long. Max {1} characters is recommended..
+        /// </summary>
+        internal static string Lint_NameTooLong {
+            get {
+                return ResourceManager.GetString("Lint_NameTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert space between ] or ]] and the preceding comma.
+        /// </summary>
+        internal static string Lint_NoSpaceBetweenCommaAndClosingBracket {
+            get {
+                return ResourceManager.GetString("Lint_NoSpaceBetweenCommaAndClosingBracket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening curly brace must not be on its own line and should always be followed by a newline.
+        /// </summary>
+        internal static string Lint_OpenCurlyPosition {
+            get {
+                return ResourceManager.GetString("Lint_OpenCurlyPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infix operators should have spaces around them..
+        /// </summary>
+        internal static string Lint_OperatorSpaces {
+            get {
+                return ResourceManager.GetString("Lint_OperatorSpaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objects names should not be in PascalCase.
+        /// </summary>
+        internal static string Lint_PascalCase {
+            get {
+                return ResourceManager.GetString("Lint_PascalCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use of semicolons is not recommended.
+        /// </summary>
+        internal static string Lint_Semicolons {
+            get {
+                return ResourceManager.GetString("Lint_Semicolons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Object names should not be in snake_case..
+        /// </summary>
+        internal static string Lint_SnakeCase {
+            get {
+                return ResourceManager.GetString("Lint_SnakeCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There should not be spaces between function name and opening brace..
+        /// </summary>
+        internal static string Lint_SpaceAfterFunctionName {
+            get {
+                return ResourceManager.GetString("Lint_SpaceAfterFunctionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There should not be spaces after (, [ or [[.
+        /// </summary>
+        internal static string Lint_SpaceAfterLeftParenthesis {
+            get {
+                return ResourceManager.GetString("Lint_SpaceAfterLeftParenthesis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There should not be spaces before ).
+        /// </summary>
+        internal static string Lint_SpaceBeforeClosingBrace {
+            get {
+                return ResourceManager.GetString("Lint_SpaceBeforeClosingBrace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening brace should have a space before it unless it is in a function call.
+        /// </summary>
+        internal static string Lint_SpaceBeforeOpenBrace {
+            get {
+                return ResourceManager.GetString("Lint_SpaceBeforeOpenBrace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files should not contain tabs.
+        /// </summary>
+        internal static string Lint_Tabs {
+            get {
+                return ResourceManager.GetString("Lint_Tabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There should not be trailing blank lines in the file..
+        /// </summary>
+        internal static string Lint_TrailingBlankLines {
+            get {
+                return ResourceManager.GetString("Lint_TrailingBlankLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lines should not contain trailing whitespace characters..
+        /// </summary>
+        internal static string Lint_TrailingWhitespace {
+            get {
+                return ResourceManager.GetString("Lint_TrailingWhitespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use TRUE and FALSE rather than T and F.
+        /// </summary>
+        internal static string Lint_TrueFalseNames {
+            get {
+                return ResourceManager.GetString("Lint_TrueFalseNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objects names should not be in all uppercase.
+        /// </summary>
+        internal static string Lint_Uppercase {
+            get {
+                return ResourceManager.GetString("Lint_Uppercase", resourceCulture);
             }
         }
         
@@ -418,33 +472,6 @@ namespace Microsoft.R.Editor {
         internal static string ParseError_UnexpectedToken {
             get {
                 return ResourceManager.GetString("ParseError_UnexpectedToken", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Interactive Window.
-        /// </summary>
-        internal static string ReplWindowName {
-            get {
-                return ResourceManager.GetString("ReplWindowName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Install package.
-        /// </summary>
-        internal static string SmartTagName_InstallPackage {
-            get {
-                return ResourceManager.GetString("SmartTagName_InstallPackage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Load library.
-        /// </summary>
-        internal static string SmartTagName_LoadLibrary {
-            get {
-                return ResourceManager.GetString("SmartTagName_LoadLibrary", resourceCulture);
             }
         }
         

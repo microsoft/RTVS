@@ -242,6 +242,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class TokenizerAttribute : CategoryAttribute {
                 public TokenizerAttribute() : base("R.Tokenizer") { }
             }
+
+            [ExcludeFromCodeCoverage]
+            public class LinterAttribute : CategoryAttribute {
+                public LinterAttribute() : base("R.Linter") { }
+            }
         }
 
         [ExcludeFromCodeCoverage]
@@ -266,6 +271,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public class ReplAttribute : CategoryAttribute {
             public ReplAttribute() : base("Repl") { }
         }
+
+        [ExcludeFromCodeCoverage]
+        public class RoxygenAttribute : CategoryAttribute {
+            public RoxygenAttribute() : base("Roxygen") { }
+        }
+
 
         [ExcludeFromCodeCoverage]
         public class SqlAttribute : CategoryAttribute {

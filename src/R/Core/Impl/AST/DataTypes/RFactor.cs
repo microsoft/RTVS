@@ -25,9 +25,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
         /// R language returns label value with index operator. For that purpose, use LabelOf() method
         /// </summary>
         public override RNumber this[int index] {
-            get {
-                return base[index];
-            }
+            get => base[index];
 
             set {
                 if (value.Value <= 0 || value.Value > Label.Length) // R is one-based index unlike C family languages
@@ -40,8 +38,8 @@ namespace Microsoft.R.Core.AST.DataTypes {
         }
 
         public RString LabelOf(int index) {
-            RNumber number = this[index];
-            int labelIndex = (int)number.Value - 1; // R is one-based index
+            var number = this[index];
+            var labelIndex = (int)number.Value - 1; // R is one-based index
             return Label[labelIndex];
         }
     }

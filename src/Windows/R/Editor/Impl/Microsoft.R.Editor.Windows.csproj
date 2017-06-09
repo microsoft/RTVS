@@ -30,13 +30,17 @@
     <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BraceMatch\RBraceHighlightProvider.cs" />
     <Compile Include="BraceMatch\RBraceMatcher.cs" />
     <Compile Include="BraceMatch\RBraceMatcherProvider.cs" />
     <Compile Include="Classification\ClassificationDefinitions.cs" />
+    <Compile Include="Roxygen\RoxygenClassificationDefinitions.cs" />
+    <Compile Include="Roxygen\RoxygenClassifier.cs" />
     <Compile Include="Classification\RClassifierProvider.cs" />
     <Compile Include="Classification\RClassificationNameProvider.cs" />
     <Compile Include="Classification\RClassifier.cs" />
+    <Compile Include="Roxygen\RoxygenClassifierProvider.cs" />
     <Compile Include="Commands\RCompletionCommandHandler.cs" />
     <Compile Include="Commands\RCommandFactory.cs" />
     <Compile Include="Commands\REditorCommands.cs" />

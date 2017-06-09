@@ -47,17 +47,17 @@ namespace Microsoft.R.Core.AST.Expressions {
             // Instead of evaluating expressions like calculator would do, 
             // we create tree nodes with operator and its operands.
 
-            TokenStream<RToken> tokens = context.Tokens;
-            OperationType currentOperationType = OperationType.None;
-            ParseErrorType errorType = ParseErrorType.None;
-            ErrorLocation errorLocation = ErrorLocation.AfterToken;
-            bool endOfExpression = false;
+            var tokens = context.Tokens;
+            var currentOperationType = OperationType.None;
+            var errorType = ParseErrorType.None;
+            var errorLocation = ErrorLocation.AfterToken;
+            var endOfExpression = false;
 
             // Push sentinel
             _operators.Push(Expression.Sentinel);
 
             while (!tokens.IsEndOfStream() && errorType == ParseErrorType.None && !endOfExpression) {
-                RToken token = tokens.CurrentToken;
+                var token = tokens.CurrentToken;
 
                 switch (token.TokenType) {
                     // Terminal constants
@@ -308,13 +308,13 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleConstant(ParseContext context) {
-            IRValueNode constant = Expression.CreateConstant(context);
+            var constant = Expression.CreateConstant(context);
             _operands.Push(constant);
             return OperationType.Operand;
         }
 
         private OperationType HandleIdentifier(ParseContext context) {
-            Variable variable = new Variable();
+            var variable = new Variable();
             variable.Parse(context, null);
 
             _operands.Push(variable);
@@ -324,7 +324,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         private OperationType HandleLambda(ParseContext context, out ParseErrorType errorType) {
             errorType = ParseErrorType.None;
 
-            Lambda lambda = new Lambda();
+            var lambda = new Lambda();
             lambda.Parse(context, null);
 
             _operands.Push(lambda);
@@ -332,7 +332,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleOpenBrace(ParseContext context, out ParseErrorType errorType) {
-            TokenStream<RToken> tokens = context.Tokens;
+            var tokens = context.Tokens;
             errorType = ParseErrorType.None;
 
             // Separate expression from function call. In case of 
@@ -359,7 +359,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                     tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
                     tokens.PreviousToken.TokenType == RTokenType.CloseDoubleSquareBracket ||
                     tokens.PreviousToken.IsVariableKind()) {
-                    FunctionCall functionCall = new FunctionCall();
+                    var functionCall = new FunctionCall();
                     functionCall.Parse(context, null);
 
                     errorType = HandleOperatorPrecedence(context, functionCall);
@@ -367,7 +367,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 }
             }
 
-            Group group = new Group();
+            var group = new Group();
             group.Parse(context, null);
 
             _operands.Push(group);
@@ -375,7 +375,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleSquareBrackets(ParseContext context, out ParseErrorType errorType) {
-            Indexer indexer = new Indexer();
+            var indexer = new Indexer();
             indexer.Parse(context, null);
 
             errorType = HandleOperatorPrecedence(context, indexer);
@@ -383,15 +383,14 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType) {
-            bool isUnary;
-            errorType = this.HandleOperator(context, null, out isUnary);
+            errorType = this.HandleOperator(context, null, out bool isUnary);
             return isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
         }
 
         private OperationType HandleKeyword(ParseContext context, out ParseErrorType errorType) {
             errorType = ParseErrorType.None;
 
-            string keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
+            var keyword = context.TextProvider.GetText(context.Tokens.CurrentToken);
             if (IsTerminatingKeyword(keyword)) {
                 return OperationType.EndOfExpression;
             }
@@ -405,11 +404,11 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private ParseErrorType HandleKeyword(ParseContext context, string keyword) {
-            ParseErrorType errorType = ParseErrorType.None;
+            var errorType = ParseErrorType.None;
 
             if (keyword.Equals("function", StringComparison.Ordinal)) {
                 // Special case 'exp <- function(...) { }
-                FunctionDefinition funcDef = new FunctionDefinition();
+                var funcDef = new FunctionDefinition();
                 funcDef.Parse(context, null);
 
                 // Add to the stack even if it has errors in order
@@ -421,7 +420,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 // when if is without { }.
                 context.Expressions.Push(this);
 
-                InlineIf inlineIf = new InlineIf();
+                var inlineIf = new InlineIf();
                 inlineIf.Parse(context, null);
 
                 context.Expressions.Pop();
@@ -445,7 +444,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private ParseErrorType HandleOperator(ParseContext context, IAstNode parent, out bool isUnary) {
-            TokenOperator currentOperator = new TokenOperator(firstInExpression: (_operands.Count == 0));
+            var currentOperator = new TokenOperator(firstInExpression: (_operands.Count == 0));
             currentOperator.Parse(context, null);
             isUnary = currentOperator.IsUnary;
 
@@ -453,8 +452,8 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private ParseErrorType HandleOperatorPrecedence(ParseContext context, IOperator currentOperator) {
-            ParseErrorType errorType = ParseErrorType.None;
-            IOperator lastOperator = _operators.Peek();
+            var errorType = ParseErrorType.None;
+            var lastOperator = _operators.Peek();
 
             if (currentOperator.Precedence < lastOperator.Precedence ||
                 (currentOperator.Precedence == lastOperator.Precedence &&
@@ -481,9 +480,9 @@ namespace Microsoft.R.Core.AST.Expressions {
 
         private ParseErrorType ProcessHigherPrecendenceOperators(ParseContext context, IOperator currentOperator) {
             Debug.Assert(_operators.Count > 1);
-            ParseErrorType errorType = ParseErrorType.None;
-            Associativity associativity = currentOperator.Associativity;
-            IOperator nextOperatorNode = _operators.Peek();
+            var errorType = ParseErrorType.None;
+            var associativity = currentOperator.Associativity;
+            var nextOperatorNode = _operators.Peek();
 
             // At least one operator above sentinel is on the stack.
             do {
@@ -529,9 +528,9 @@ namespace Microsoft.R.Core.AST.Expressions {
         /// <param name="context">Parsing context</param>
         /// <returns>Parsing error of any</returns>
         private ParseErrorType MakeNode(ParseContext context) {
-            IOperator operatorNode = _operators.Pop();
+            var operatorNode = _operators.Pop();
 
-            IRValueNode rightOperand = SafeGetOperand(operatorNode);
+            var rightOperand = SafeGetOperand(operatorNode);
             if (rightOperand == null) {
                 // Oddly, no operands
                 return ParseErrorType.RightOperandExpected;
@@ -541,7 +540,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 operatorNode.AppendChild(rightOperand);
                 operatorNode.RightOperand = rightOperand;
             } else {
-                IRValueNode leftOperand = SafeGetOperand(operatorNode);
+                var leftOperand = SafeGetOperand(operatorNode);
                 if (leftOperand == null) {
                     // Operand is missing in expression like x <- [].
                     // Operator on top of the stack is <- since [] was not
@@ -567,8 +566,8 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private static IRValueNode CreateConstant(ParseContext context) {
-            TokenStream<RToken> tokens = context.Tokens;
-            RToken currentToken = tokens.CurrentToken;
+            var tokens = context.Tokens;
+            var currentToken = tokens.CurrentToken;
             IRValueNode term = null;
 
             switch (currentToken.TokenType) {

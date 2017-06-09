@@ -10,9 +10,8 @@ namespace Microsoft.R.Core.AST.DataTypes {
     [DebuggerDisplay("[{RFunction}]")]
     public class RFunction : RScalar<IRValueNode> {
         #region IRVector
-        public override RMode Mode {
-            get { return RMode.Function; }
-        }
+        public override RMode Mode => RMode.Function;
+
         #endregion
 
         public RFunction(IRValueNode value) :

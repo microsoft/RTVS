@@ -4,7 +4,7 @@
 using System;
 
 namespace Microsoft.Common.Core.Services {
-    public interface IServiceManager: IServiceContainer, IDisposable {
+    public interface IServiceManager : IServiceContainer, IDisposable {
         /// <summary>
         /// Adds service instance
         /// </summary>

@@ -7,12 +7,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
     public sealed class RMissing : RObject, IRVector {
         public static RMissing NA = new RMissing();
 
-        public int Length {
-            get { return 0; }
-        }
-
-        public RMode Mode {
-            get { return RMode.Logical; }
-        }
+        public int Length => 0;
+        public RMode Mode => RMode.Logical;
     }
 }

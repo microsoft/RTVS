@@ -143,6 +143,9 @@
   <data name="20138" xml:space="preserve">
     <value>Options for statement completion, word wrap, and line number display.</value>
   </data>
+  <data name="20139" xml:space="preserve">
+    <value>Lint</value>
+  </data>
   <data name="300" xml:space="preserve">
     <value>RStudio Project Files (*.rproj);*.rproj</value>
     <comment>"RStudio" is a trademark</comment>

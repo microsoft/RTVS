@@ -13,14 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
     [Export(typeof(IEditorSettingsStorageProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class REditorSettingsStorageProvider : IEditorSettingsStorageProvider {
-        private readonly ICoreShell _coreShell;
-
-        [ImportingConstructor]
-        public REditorSettingsStorageProvider(ICoreShell coreShell) {
-            _coreShell = coreShell;
-        }
-
-        public IEditorSettingsStorage GetSettingsStorage()
-            => new LanguageSettingsStorage(_coreShell, RGuidList.RLanguageServiceGuid, RGuidList.RPackageGuid, new string[] { RPackage.ProductName });
+        public IEditorSettingsStorage GetSettingsStorage() => RPackage.Current.LanguageSettingsStorage;
     }
 }

@@ -12,8 +12,7 @@ namespace Microsoft.Common.Core.OS {
         /// </summary>
         public string LocalMachineHive => @"Software\Microsoft\R Tools";
 
-        public IRegistryKey OpenBaseKey(RegistryHive hive, RegistryView view) {
-            return new RegistryKeyImpl(RegistryKey.OpenBaseKey(hive, view));
-        }
+        public IRegistryKey OpenBaseKey(RegistryHive hive, RegistryView view) 
+            => new RegistryKeyImpl(RegistryKey.OpenBaseKey(hive, view));
     }
 }

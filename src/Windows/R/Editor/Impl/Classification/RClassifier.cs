@@ -3,20 +3,23 @@
 
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Classification;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
 namespace Microsoft.R.Editor.Classification {
     /// <summary>
-    /// Implements <see cref="IClassifier"/> and provides classification (colorization) of CoffeeScript items
+    /// Implements <see cref="IClassifier"/> and provides classification 
+    /// (colorization) of R language tokens
     /// </summary>
     internal sealed class RClassifier : TokenBasedClassifier<RTokenType, RToken> {
         public RClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
             base(textBuffer, new RTokenizer(), new RClassificationNameProvider()) {
             ClassificationRegistryService = classificationRegistryService;
         }
+
+        public static RClassifier FromTextBuffer(ITextBuffer textBuffer)
+            => textBuffer.Properties.TryGetProperty(typeof(RClassifier), out object instance) ? instance as RClassifier : null;
 
         protected override void RemoveSensitiveTokens(int position, TextRangeCollection<RToken> tokens) {
             if (tokens == null) {

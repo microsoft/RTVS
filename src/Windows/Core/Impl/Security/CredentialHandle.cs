@@ -33,17 +33,15 @@ namespace Microsoft.Common.Core.Security {
         }
 
         internal static CredentialHandle ReadFromCredentialManager(string authority) {
-            IntPtr creds;
-            if (NativeMethods.CredRead(authority, NativeMethods.CRED_TYPE.GENERIC, 0, out creds)) {
+            if (NativeMethods.CredRead(authority, NativeMethods.CRED_TYPE.GENERIC, 0, out IntPtr creds)) {
                 return new CredentialHandle(creds);
-            } else {
-                var error = Marshal.GetLastWin32Error();
-                // if credentials were not found then continue to prompt user for credentials.
-                // otherwise there was an error while reading credentials. 
-                if (error != ERROR_NOT_FOUND) {
-                    Win32MessageBox.Show(IntPtr.Zero, Invariant($"{Common.Core.Resources.Error_CredReadFailed} {ErrorCodeConverter.MessageFromErrorCode(error)}"), 
-                         Win32MessageBox.Flags.OkOnly | Win32MessageBox.Flags.Topmost | Win32MessageBox.Flags.TaskModal);
-                }
+            }
+            var error = Marshal.GetLastWin32Error();
+            // if credentials were not found then continue to prompt user for credentials.
+            // otherwise there was an error while reading credentials. 
+            if (error != ERROR_NOT_FOUND) {
+                Win32MessageBox.Show(IntPtr.Zero, Invariant($"{Common.Core.Resources.Error_CredReadFailed} {ErrorCodeConverter.MessageFromErrorCode(error)}"),
+                     Win32MessageBox.Flags.OkOnly | Win32MessageBox.Flags.Topmost | Win32MessageBox.Flags.TaskModal);
             }
             return null;
         }

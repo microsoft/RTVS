@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -24,25 +24,35 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private readonly Dictionary<string, string> _stringSettings = new Dictionary<string, string>();
         private readonly IVsTextManager4 _textManager;
         private readonly IEnumerable<string> _automationObjectNames;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
+        private readonly IVsPackage _package;
 
-        private Guid _packageGuid;
         private ConnectionPointCookie _textManagerEventsCookie;
         private LANGPREFERENCES3? _langPrefs;
 
-        public LanguageSettingsStorage(ICoreShell coreShell, Guid languageServiceId, Guid packageId, IEnumerable<string> automationObjectNames) {
-            _shell = coreShell;
+        public LanguageSettingsStorage(IVsPackage package, IServiceContainer services, Guid languageServiceId, IEnumerable<string> automationObjectNames) {
+            _package = package;
+            _services = services;
             _languageServiceId = languageServiceId;
-            _packageGuid = packageId;
             _automationObjectNames = automationObjectNames;
 
-            _textManager = _shell.GetService<IVsTextManager4>(typeof(SVsTextManager));
+            _textManager = _services.GetService<IVsTextManager4>(typeof(SVsTextManager));
             _textManagerEventsCookie = new ConnectionPointCookie(_textManager, this, typeof(IVsTextManagerEvents4));
-
-            LoadFromStorage();
         }
 
         public event EventHandler<EventArgs> SettingsChanged;
+
+        /// <summary>
+        /// Loads settings via language (editor) tools options page
+        /// </summary>
+        public void Load() {
+            LoadLanguagePreferences();
+
+            var vsShell = _services.GetService<IVsShell>(typeof(SVsShell));
+            foreach (var curAutomationObjectName in _automationObjectNames) {
+                _package.GetAutomationObject(curAutomationObjectName, out object automationObject);
+            }
+        }
 
         /// <summary>
         /// VS language preferences: tab size, indent size, spaces or tabs.
@@ -62,22 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             return VSConstants.S_OK;
         }
         #endregion
-
-        /// <summary>
-        /// Loads settings via language (editor) tools options page
-        /// </summary>
-        public void LoadFromStorage() {
-            var vsShell = _shell.GetService<IVsShell>(typeof(SVsShell));
-            if (vsShell != null) {
-                vsShell.LoadPackage(ref _packageGuid, out IVsPackage package);
-                if (package != null) {
-                    foreach (var curAutomationObjectName in _automationObjectNames) {
-                        package.GetAutomationObject(curAutomationObjectName, out object automationObject);
-                    }
-                }
-                LoadLanguagePreferences();
-            }
-        }
 
         private void LoadLanguagePreferences() {
             var langPrefs = new LANGPREFERENCES3[1];
@@ -166,14 +160,13 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public void Set<T>(string name, T value) {
             if (value is string) {
                 SetString(name, (string)(object)value);
-            }
-            if (value is int) {
+            } else if (value is int) {
                 SetInteger(name, Convert.ToInt32(value));
-            }
-            if (value is bool) {
+            } else if (value is bool) {
                 SetBoolean(name, Convert.ToBoolean(value));
+            } else {
+                Debug.Fail("Unknown editor setting type");
             }
-            Debug.Fail("Unknown editor setting type");
         }
 
         private void SetString(string name, string value) {

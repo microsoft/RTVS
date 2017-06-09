@@ -1879,6 +1879,519 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enforce &lt;-.
+        /// </summary>
+        public static string Settings_Lint_AssignmentType {
+            get {
+                return ResourceManager.GetString("Settings_Lint_AssignmentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check that ’&lt;-’ is always used for assignment.
+        /// </summary>
+        public static string Settings_Lint_AssignmentType_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_AssignmentType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag camelCase.
+        /// </summary>
+        public static string Settings_Lint_CamelCase {
+            get {
+                return ResourceManager.GetString("Settings_Lint_CamelCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag object names in camelCase.
+        /// </summary>
+        public static string Settings_Lint_CamelCase_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_CamelCase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closing curly position.
+        /// </summary>
+        public static string Settings_Lint_CloseCurlySeparateLine {
+            get {
+                return ResourceManager.GetString("Settings_Lint_CloseCurlySeparateLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check that closing curly braces are always on their own line unless followed by an &apos;else&apos; statement, comma or closing brace. .
+        /// </summary>
+        public static string Settings_Lint_CloseCurlySeparateLine_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_CloseCurlySeparateLine_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enforce double quotes.
+        /// </summary>
+        public static string Settings_Lint_DoubleQuotes {
+            get {
+                return ResourceManager.GetString("Settings_Lint_DoubleQuotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify that strings are enclosed only in double quotes..
+        /// </summary>
+        public static string Settings_Lint_DoubleQuotes_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_DoubleQuotes_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line length limit.
+        /// </summary>
+        public static string Settings_Lint_LineLength {
+            get {
+                return ResourceManager.GetString("Settings_Lint_LineLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag lines longer than the specified limit.
+        /// </summary>
+        public static string Settings_Lint_LineLength_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_LineLength_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max line length.
+        /// </summary>
+        public static string Settings_Lint_MaxLineLength {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MaxLineLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum permitted line length.
+        /// </summary>
+        public static string Settings_Lint_MaxLineLength_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MaxLineLength_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max name length.
+        /// </summary>
+        public static string Settings_Lint_MaxNameLength {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MaxNameLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max variable or object name length.
+        /// </summary>
+        public static string Settings_Lint_MaxNameLength_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MaxNameLength_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flas multiple dots.
+        /// </summary>
+        public static string Settings_Lint_MultipleDots {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MultipleDots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag objects names with multiple dots.
+        /// </summary>
+        public static string Settings_Lint_MultipleDots_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MultipleDots_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiple.
+        /// </summary>
+        public static string Settings_Lint_MultipleStatements {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MultipleStatements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify that there are no multiple statements in the same line.
+        /// </summary>
+        public static string Settings_Lint_MultipleStatements_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_MultipleStatements_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag long names.
+        /// </summary>
+        public static string Settings_Lint_NameLength {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NameLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag names longer than the specified limit.
+        /// </summary>
+        public static string Settings_Lint_NameLength_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NameLength_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After function name.
+        /// </summary>
+        public static string Settings_Lint_NoSpaceAfterFunctionName {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NoSpaceAfterFunctionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify that there is no space after the function name..
+        /// </summary>
+        public static string Settings_Lint_NoSpaceAfterFunctionName_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NoSpaceAfterFunctionName_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disallow tabs.
+        /// </summary>
+        public static string Settings_Lint_NoTabs {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NoTabs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify there are no tabs in the file.
+        /// </summary>
+        public static string Settings_Lint_NoTabs_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_NoTabs_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening curly position.
+        /// </summary>
+        public static string Settings_Lint_OpenCurlyPosition {
+            get {
+                return ResourceManager.GetString("Settings_Lint_OpenCurlyPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check that open curly brace is not on its own line and is followed by a new line..
+        /// </summary>
+        public static string Settings_Lint_OpenCurlyPosition_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_OpenCurlyPosition_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag PascalCase.
+        /// </summary>
+        public static string Settings_Lint_PascalCase {
+            get {
+                return ResourceManager.GetString("Settings_Lint_PascalCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag object names in PascalCase.
+        /// </summary>
+        public static string Settings_Lint_PascalCase_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_PascalCase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Semicolons.
+        /// </summary>
+        public static string Settings_Lint_Semicolons {
+            get {
+                return ResourceManager.GetString("Settings_Lint_Semicolons", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag semicolons in the file..
+        /// </summary>
+        public static string Settings_Lint_Semicolons_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_Semicolons_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag snake_case.
+        /// </summary>
+        public static string Settings_Lint_SnakeCase {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SnakeCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag object names in snake_case.
+        /// </summary>
+        public static string Settings_Lint_SnakeCase_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SnakeCase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Space before (.
+        /// </summary>
+        public static string Settings_Lint_SpaceBeforeOpenBrace {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpaceBeforeOpenBrace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check that left brace has a space before it unless it is a function call..
+        /// </summary>
+        public static string Settings_Lint_SpaceBeforeOpenBrace_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpaceBeforeOpenBrace_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Around comma.
+        /// </summary>
+        public static string Settings_Lint_SpacesAroundComma {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpacesAroundComma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checks that commas have space after and no space before them unless followed by another comma or by a closing brace.
+        /// </summary>
+        public static string Settings_Lint_SpacesAroundComma_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpacesAroundComma_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Around operators.
+        /// </summary>
+        public static string Settings_Lint_SpacesAroundOperators {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpacesAroundOperators", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checks that infix operators are surrounded by spaces.
+        /// </summary>
+        public static string Settings_Lint_SpacesAroundOperators_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpacesAroundOperators_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spaces inside ( ).
+        /// </summary>
+        public static string Settings_Lint_SpacesInsideParenthesis {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpacesInsideParenthesis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There should be no space after (, [ or [[ and no space before ), ] or ]] unless ] or ]] is preceded by a comma as in x[1, ].
+        /// </summary>
+        public static string Settings_Lint_SpacesInsideParenthesis_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_SpacesInsideParenthesis_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trailing empty lines.
+        /// </summary>
+        public static string Settings_Lint_TrailingBlankLines {
+            get {
+                return ResourceManager.GetString("Settings_Lint_TrailingBlankLines", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify there is no trailing blank lines in the file..
+        /// </summary>
+        public static string Settings_Lint_TrailingBlankLines_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_TrailingBlankLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trailing whitespace.
+        /// </summary>
+        public static string Settings_Lint_TrailingWhitespace {
+            get {
+                return ResourceManager.GetString("Settings_Lint_TrailingWhitespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check there is no trailing whitespace in lines..
+        /// </summary>
+        public static string Settings_Lint_TrailingWhitespace_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_TrailingWhitespace_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag UPPERCASE.
+        /// </summary>
+        public static string Settings_Lint_UpperCase {
+            get {
+                return ResourceManager.GetString("Settings_Lint_UpperCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flag object names in UPPERCASE.
+        /// </summary>
+        public static string Settings_Lint_UpperCase_Description {
+            get {
+                return ResourceManager.GetString("Settings_Lint_UpperCase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string Settings_LintCategory_All {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assignment.
+        /// </summary>
+        public static string Settings_LintCategory_Assignment {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Naming.
+        /// </summary>
+        public static string Settings_LintCategory_Naming {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Naming", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operators.
+        /// </summary>
+        public static string Settings_LintCategory_Operators {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Operators", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quotes.
+        /// </summary>
+        public static string Settings_LintCategory_Quotes {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Quotes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spacing.
+        /// </summary>
+        public static string Settings_LintCategory_Spacing {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Spacing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statements.
+        /// </summary>
+        public static string Settings_LintCategory_Statements {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Statements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        public static string Settings_LintCategory_Text {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whitespace.
+        /// </summary>
+        public static string Settings_LintCategory_Whitespace {
+            get {
+                return ResourceManager.GetString("Settings_LintCategory_Whitespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable lint.
+        /// </summary>
+        public static string Settings_LintEnabled {
+            get {
+                return ResourceManager.GetString("Settings_LintEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable or disable coding style checks similar to lintr package..
+        /// </summary>
+        public static string Settings_LintEnabled_Description {
+            get {
+                return ResourceManager.GetString("Settings_LintEnabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load workspace when project opens.
         /// </summary>
         public static string Settings_LoadRDataOnProjectLoad {
@@ -2001,24 +2514,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_PartialArgumentNameMatch_Description {
             get {
                 return ResourceManager.GetString("Settings_PartialArgumentNameMatch_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Engine (64-bit).
-        /// </summary>
-        public static string Settings_RBasePath {
-            get {
-                return ResourceManager.GetString("Settings_RBasePath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Path to R installation (64-bit only)..
-        /// </summary>
-        public static string Settings_RBasePath_Description {
-            get {
-                return ResourceManager.GetString("Settings_RBasePath_Description", resourceCulture);
             }
         }
         

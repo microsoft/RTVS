@@ -6,6 +6,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Editor.Validation.Lint;
 
 namespace Microsoft.R.Editor.Settings {
     public sealed class REditorSettings: EditorSettings, IWritableREditorSettings, IREditorSettings {
@@ -23,12 +24,14 @@ namespace Microsoft.R.Editor.Settings {
         public const string ShowTclFunctionsKey = "ShowTclFunctions";
 
         private RFormatOptions _formatOptions = new RFormatOptions();
-        
+        private LintOptions _lintOptions = new LintOptions();
+
         public REditorSettings(ICoreShell coreShell): base(coreShell, RContentTypeDefinition.ContentType) { }
         public REditorSettings(IEditorSettingsStorage storage) : base(storage) { }
 
         public override void ResetSettings() {
             _formatOptions = new RFormatOptions();
+            _lintOptions = new LintOptions();
             base.ResetSettings();
         }
 
@@ -90,5 +93,7 @@ namespace Microsoft.R.Editor.Settings {
                 return _formatOptions;
             }
         }
+
+        public LintOptions LintOptions => _lintOptions;
     }
 }

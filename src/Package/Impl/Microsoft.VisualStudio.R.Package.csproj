@@ -63,6 +63,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Browsers\WebBrowserRole.cs" />
     <Compile Include="Commands\AsyncCommandController.cs" />
     <Compile Include="Commands\AsyncCommandRangeToOleMenuCommandShim.cs" />
@@ -196,6 +197,9 @@
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoTypeConverter.cs" />
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\R\Editor\RLintOptionsDialog.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\Editor\REditorSettingsStorageProvider.cs" />
@@ -1596,6 +1600,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>

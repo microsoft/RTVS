@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Completions {
                 return -1;
             }
 
-            int value = String.Compare(completion1.DisplayText, completion2.DisplayText, comparison);
+            var value = String.Compare(completion1.DisplayText, completion2.DisplayText, comparison);
             if (0 == value) {
                 value = String.Compare(completion1.AccessibleText, completion2.AccessibleText, comparison);
             }
@@ -47,9 +47,7 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         #region IComparable<ICompletionEntry>
-        public int CompareTo(ICompletionEntry other) {
-            return CompareIgnoreCase(this, other);
-        }
+        public int CompareTo(ICompletionEntry other) => CompareIgnoreCase(this, other);
         #endregion
     }
 }

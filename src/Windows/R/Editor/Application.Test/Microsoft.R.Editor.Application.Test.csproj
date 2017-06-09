@@ -113,6 +113,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="Documentation\SelectionTest.cs" />
     <Compile Include="Fixtures\EditorAppTestFilesFixture.cs" />

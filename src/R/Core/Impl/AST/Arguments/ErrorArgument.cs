@@ -26,11 +26,9 @@ namespace Microsoft.R.Core.AST.Arguments {
         }
 
         public override bool Parse(ParseContext context, IAstNode parent) {
-            foreach (RToken t in Tokens) {
-                TokenNode n = new TokenNode(t);
-                n.Parent = this;
+            foreach (var t in Tokens) {
+                var n = new TokenNode(t) { Parent = this };
             }
-
             return base.Parse(context, parent);
         }
     }

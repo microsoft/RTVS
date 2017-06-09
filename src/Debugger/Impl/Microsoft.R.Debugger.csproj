@@ -41,6 +41,7 @@
     <Compile Include="AD7Property.cs" />
     <Compile Include="AD7StackFrame.cs" />
     <Compile Include="AD7Thread.cs" />
+    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="DebuggerConstants.cs" />
     <Compile Include="DebuggerGuids.cs" />
     <Compile Include="DTEDebuggerExtensions.cs" />

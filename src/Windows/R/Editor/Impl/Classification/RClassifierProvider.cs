@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.VisualStudio.Text;
@@ -26,7 +25,6 @@ namespace Microsoft.R.Editor.Classification {
         public IClassifier GetClassifier(ITextBuffer textBuffer)
             => textBuffer.Properties.GetOrCreateSingletonProperty(() => new RClassifier(textBuffer, _crs));
 
-        public static RClassifier GetRClassifier(ITextBuffer textBuffer)
-            => textBuffer.Properties.TryGetProperty(typeof(RClassifier), out object instance) ? instance as RClassifier : null;
+        public static RClassifier GetRClassifier(ITextBuffer textBuffer) => RClassifier.FromTextBuffer(textBuffer);
     }
 }
