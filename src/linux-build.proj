@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(MSBuildThisFileDirectory)..\</RootDirectory>
+    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
+    <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\$(Configuration)\$(Platform)\</IntermediateOutputDirectory>
+    <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
+    <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
+    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
+
+    <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">any cpu</Platform>
+    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
+    <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
+    <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
+
+    <Broker Condition="'$(Broker)' == ''">$(SourceDirectory)Linux\Host\Broker\Impl\linux-build.proj</Broker>
+    <RunAsUser Condition="'$(RunAsUser)' == ''">$(SourceDirectory)Linux\Native\RunAsUser\linux-build.proj</RunAsUser>
+    <RHost Condition="'$(RHost)' == ''">$(SourceDirectory)Host\Process\linux-build.proj</RHost>
+    <RtvsPkgProject Condition="'$(RtvsPkgProject)' == ''">$(SourceDirectory)Host\Client\Impl\linux-build.proj</RtvsPkgProject>
+
+    <SolutionProperties Condition="'$(SolutionProperties)' == ''">
+      Configuration=$(Configuration);
+      Platform=$(Platform);
+      GenerateAssemblyVersionInfo=true;
+      Year=$(Year);Date=$(Date);Time=$(Time);
+      SolutionDir=$(SourceDirectory);
+      BinDirectory=$(OutputDirectory);
+      ObjDirectory=$(IntermediateOutputDirectory);
+      LibDirectory=$(LibDirectory);
+    </SolutionProperties>
+  </PropertyGroup>
+
+  <Target Name="ResetNuget">
+    <ItemGroup>
+      <ProjectLockJson Include="$(SourceDirectory)**\project.lock.json"/>
+      <NugetProps Include="$(SourceDirectory)**\*.nuget.props"/>
+      <NugetTargets Include="$(SourceDirectory)**\*.nuget.targets"/>
+    </ItemGroup>
+    <Copy SourceFiles="%(ProjectJson.FullPath)" DestinationFiles="@(ProjectJson -> '%(RootDir)%(Directory)project.json')" />
+    <Delete Files="%(ProjectLockJson.FullPath)" />
+    <Delete Files="%(NugetProps.FullPath)" />
+    <Delete Files="%(NugetTargets.FullPath)" />
+  </Target>
+
+  <Target Name="Reset">
+    <ItemGroup>
+      <Bin Include="$(OutputDirectory)" />
+      <Obj Include="$(IntermediateOutputDirectory)" />
+    </ItemGroup>
+    <CallTarget Targets="ResetNuget" />
+    <RemoveDir Directories="%(Bin.FullPath);%(Obj.FullPath)" />
+  </Target>
+
+  <Target Name="Restore">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <MSBuild Targets="Restore" Projects="$(Broker)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Restore" Projects="$(RunAsUser)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Restore" Projects="$(RHost)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+  </Target>
+
+  <Target Name="Clean">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <MSBuild Targets="Clean" Projects="$(Broker)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Clean" Projects="$(RunAsUser)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Clean" Projects="$(RHost)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Clean" Projects="$(RtvsPkgProject)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+  </Target>
+
+  <Target Name="Build">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <MSBuild Targets="Restore" Projects="$(Broker)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Build" Projects="$(Broker)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+
+    <MSBuild Targets="Restore" Projects="$(RunAsUser)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Build" Projects="$(RunAsUser)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+
+    <MSBuild Targets="Restore" Projects="$(RHost)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Build" Projects="$(RHost)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+
+    <MSBuild Targets="Build" Projects="$(RtvsPkgProject)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+  </Target>
+
+  <Target Name="Rebuild">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <MSBuild Targets="Rebuild" Projects="$(Broker)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Rebuild" Projects="$(RunAsUser)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Rebuild" Projects="$(RHost)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Rebuild" Projects="$(RtvsPkgProject)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+  </Target>
+</Project>

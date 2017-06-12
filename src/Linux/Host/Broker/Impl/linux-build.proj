@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(SolutionDir)..\</RootDirectory>
+    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\$(Configuration)\</OutputDirectory>
+    <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\$(Configuration)\$(RunAsUserName)\$(Platform)\</IntermediateOutputDirectory>
+    <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(MSBuildThisFileDirectory)src\</SourceDirectory>
+
+    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
+    <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
+    <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
+
+    <BrokerCS Condition="'$(BrokerCS)' == ''">$(MSBuildThisFileDirectory)Microsoft.R.Host.Broker.Linux.csproj</BrokerCS>
+  </PropertyGroup>
+
+  <Target Name="Restore">
+  </Target> 
+
+  <Target Name="Clean">
+    <RemoveDir  Directories="$(OutputDirectory);$(IntermediateOutputDirectory)" />
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+
+  <Target Name="Build">
+    <Exec Command="dotnet restore '$(BrokerCS)'"/>
+    <Exec Command="dotnet publish '$(BrokerCS)' --configuration $(Configuration) "/>
+  </Target>  
+</Project>

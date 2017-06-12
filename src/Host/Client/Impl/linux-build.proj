@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(SolutionDir)..\</RootDirectory>
+    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\$(Configuration)\</OutputDirectory>
+    <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\$(Configuration)\$(Platform)</IntermediateOutputDirectory>
+    <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
+    <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
+    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
+    <RtvsPkgDirectory Condition="'$(RtvsPkgDirectory)' == ''">$(SolutionDir)\Host\Client\Impl\rtvs\</RtvsPkgDirectory>
+
+    <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">any cpu</Platform>
+    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
+    <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
+    <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
+  </PropertyGroup>
+
+  <Target Name="Clean">
+    <RemoveDir  Directories="$(OutputDirectory)rtvs" />
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+
+  <Target Name="Build">
+    <Exec Command="cp -R '$(RtvsPkgDirectory)' '$(OutputDirectory)'"/>
+  </Target> 
+
+</Project>
