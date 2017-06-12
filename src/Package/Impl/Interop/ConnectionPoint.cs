@@ -16,8 +16,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         private uint _cookie;
 
 #if DEBUG
-        private string _callStack = "(none)";
-        private Type _eventInterface;
+        private readonly string _callStack;
+        private readonly Type _eventInterface;
 #endif
 
         /// <summary>

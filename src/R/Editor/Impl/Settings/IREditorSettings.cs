@@ -19,5 +19,6 @@ namespace Microsoft.R.Editor {
         bool EnableOutlining { get; }
         RFormatOptions FormatOptions { get; }
         LintOptions LintOptions { get; }
+        RMarkdownOptions MarkdownOptions { get; }
     }
 }

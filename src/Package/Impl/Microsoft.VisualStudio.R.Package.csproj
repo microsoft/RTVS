@@ -195,8 +195,12 @@
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
     <Compile Include="Imaging\ImageService.cs" />
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
+    <Compile Include="Options\Attributes\PreviewPositionTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoTypeConverter.cs" />
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\R\Editor\RMarkdownOptionsDialog.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\Editor\RLintOptionsDialog.cs">
@@ -1479,6 +1483,7 @@
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
+      <VSIXSourceItem Include="$(OutputPath)\Markdig.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />

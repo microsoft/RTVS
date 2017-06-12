@@ -19,7 +19,7 @@ namespace Microsoft.Markdown.Editor {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,15 @@ namespace Microsoft.Markdown.Editor {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected exception occurred.
+        /// </summary>
+        internal static string BrowserView_Error {
+            get {
+                return ResourceManager.GetString("BrowserView_Error", resourceCulture);
             }
         }
         
@@ -147,6 +156,33 @@ namespace Microsoft.Markdown.Editor {
         internal static string ColorName_MD_Monospace {
             get {
                 return ResourceManager.GetString("ColorName_MD_Monospace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll sync is active.
+        /// </summary>
+        internal static string ScrollSync_Active {
+            get {
+                return ResourceManager.GetString("ScrollSync_Active", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll sync is paused.
+        /// </summary>
+        internal static string ScrollSync_Paused {
+            get {
+                return ResourceManager.GetString("ScrollSync_Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click to toggle scroll sync.
+        /// </summary>
+        internal static string ScrollSync_Tooltip {
+            get {
+                return ResourceManager.GetString("ScrollSync_Tooltip", resourceCulture);
             }
         }
     }

@@ -115,6 +115,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Below.
+        /// </summary>
+        public static string Below {
+            get {
+                return ResourceManager.GetString("Below", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to External.
         /// </summary>
         public static string BrowserType_External {
@@ -1429,6 +1438,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Right.
+        /// </summary>
+        public static string Right {
+            get {
+                return ResourceManager.GetString("Right", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RMdFileNode {
@@ -2437,6 +2455,114 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatic update.
+        /// </summary>
+        public static string Settings_Markdown_AutomaticSync {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_AutomaticSync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically update preview when markdown file changes.
+        /// </summary>
+        public static string Settings_Markdown_AutomaticSync_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_AutomaticSync_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stylesheet.
+        /// </summary>
+        public static string Settings_Markdown_CustomStylesheet {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_CustomStylesheet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom stylesheet to apply to the generated HTML.
+        /// </summary>
+        public static string Settings_Markdown_CustomStylesheet_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_CustomStylesheet_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable preview.
+        /// </summary>
+        public static string Settings_Markdown_EnablePreview {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_EnablePreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables or disables preview of resulting HTML in a browser pane.
+        /// </summary>
+        public static string Settings_Markdown_EnablePreview_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_EnablePreview_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Height.
+        /// </summary>
+        public static string Settings_Markdown_PreviewHeight {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewHeight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview pane height when it is positioned below the editor.
+        /// </summary>
+        public static string Settings_Markdown_PreviewHeight_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewHeight_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position.
+        /// </summary>
+        public static string Settings_Markdown_PreviewPosition {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines where HTML preview pane appears.
+        /// </summary>
+        public static string Settings_Markdown_PreviewPosition_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewPosition_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Width.
+        /// </summary>
+        public static string Settings_Markdown_PreviewWidth {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewWidth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview pane width when it is positioned at the right side of the editor.
+        /// </summary>
+        public static string Settings_Markdown_PreviewWidth_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewWidth_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown preview browser.
         /// </summary>
         public static string Settings_MarkdownBrowserType {
@@ -2460,6 +2586,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_MarkdownCategory {
             get {
                 return ResourceManager.GetString("Settings_MarkdownCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CSS.
+        /// </summary>
+        public static string Settings_MarkdownCategory_CSS {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownCategory_CSS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview.
+        /// </summary>
+        public static string Settings_MarkdownCategory_Preview {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownCategory_Preview", resourceCulture);
             }
         }
         

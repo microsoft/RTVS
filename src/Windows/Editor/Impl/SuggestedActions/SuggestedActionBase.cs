@@ -18,7 +18,7 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
     /// for their language context (e.g. R, Markdown, JSON, etc).
     /// </summary>
     public abstract class SuggestedActionBase : ISuggestedAction {
-        public SuggestedActionBase(ITextBuffer buffer, ITextView view, int position, string displayText) {
+        protected SuggestedActionBase(ITextBuffer buffer, ITextView view, int position, string displayText) {
             TextBuffer = buffer;
             TextView = view;
             Position = position;
@@ -38,9 +38,8 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
         /// <summary>
         /// By default, nested actions are not supported.
         /// </summary>
-        public virtual Task<IEnumerable<SuggestedActionSet>> GetActionSetsAsync(CancellationToken cancellationToken) {
-            return Task.FromResult(Enumerable.Empty<SuggestedActionSet>());
-        }
+        public virtual Task<IEnumerable<SuggestedActionSet>> GetActionSetsAsync(CancellationToken cancellationToken) 
+            => Task.FromResult(Enumerable.Empty<SuggestedActionSet>());
 
         public string DisplayText { get; }
         public string IconAutomationText { get; }
