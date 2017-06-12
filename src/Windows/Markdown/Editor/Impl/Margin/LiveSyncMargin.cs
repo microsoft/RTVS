@@ -27,7 +27,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             VerticalAlignment = VerticalAlignment.Stretch;
 
             Initialized += (s, e) => {
-                if (!view.Properties.TryGetProperty(typeof(BrowserMargin), out BrowserMargin browser)) {
+                if (view.Properties.TryGetProperty(typeof(BrowserMargin), out BrowserMargin browser)) {
                     CreateControls();
                     UpdateControls();
                 }

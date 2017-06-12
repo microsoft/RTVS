@@ -89,11 +89,10 @@ namespace Microsoft.Markdown.Editor.Margin {
                 _options = coreShell.Services.GetService<IREditorSettings>().MarkdownOptions;
             }
 
-            public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost,
-                IWpfTextViewMargin marginContainer) {
-                if (_options.EnablePreview && _options.PreviewPosition == RMarkdownPreviewPosition.Right) {
-                    return wpfTextViewHost.TextView.Properties.GetOrCreateSingletonProperty(
-                        () => new LiveSyncMargin(wpfTextViewHost.TextView, _services));
+            public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer) {
+                if (_options.EnablePreview) {
+                    var tv = wpfTextViewHost.TextView;
+                    return tv.Properties.GetOrCreateSingletonProperty(() => new LiveSyncMargin(tv, _services));
                 }
                 return null;
             }
