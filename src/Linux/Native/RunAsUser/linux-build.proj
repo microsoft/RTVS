@@ -6,7 +6,7 @@
   <PropertyGroup>
     <RunAsUserName Condition=" '$(RunAsUserName)'=='' ">Microsoft.R.Host.RunAsUser</RunAsUserName>
     <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(SolutionDir)..\</RootDirectory>
-    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
+    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\$(Configuration)\</OutputDirectory>
     <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\$(Configuration)\$(RunAsUserName)\$(Platform)\</IntermediateOutputDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(MSBuildThisFileDirectory)src\</SourceDirectory>
 
