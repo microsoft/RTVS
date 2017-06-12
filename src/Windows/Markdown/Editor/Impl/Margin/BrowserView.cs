@@ -207,23 +207,12 @@ namespace Microsoft.Markdown.Editor.Margin {
             StringWriter htmlWriter = null;
             try {
                 _currentDocument = snapshot.ParseToMarkdown();
-
-                htmlWriter = new StringWriter();
-                htmlWriter.GetStringBuilder().Clear();
-                var htmlRenderer = new HtmlRenderer(htmlWriter);
-                MarkdownFactory.Pipeline.Setup(htmlRenderer);
-                htmlRenderer.UseNonAsciiNoEscape = true;
-                htmlRenderer.Render(_currentDocument);
-                htmlWriter.Flush();
-                html = htmlWriter.ToString();
+                html = _currentDocument.ToHtml();
             } catch (Exception ex) {
                 // We could output this to the exception pane of VS?
                 // Though, it's easier to output it directly to the browser
                 var message = ex.ToString().Replace("<", "&lt;").Replace("&", "&amp;");
                 html = Invariant($"<p>{Resources.BrowserView_Error}:</p><pre>{message}</pre>");
-            } finally {
-                // Free any resources allocated by HtmlWriter
-                htmlWriter?.GetStringBuilder().Clear();
             }
 
             _services.MainThread().Post(() => {

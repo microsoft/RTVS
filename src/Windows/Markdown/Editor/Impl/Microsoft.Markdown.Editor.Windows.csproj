@@ -69,6 +69,8 @@
     <Compile Include="Margin\LiveSyncMargin.cs" />
     <Compile Include="Margin\MarkdownFactory.cs" />
     <Compile Include="Margin\ParsingEventArgs.cs" />
+    <Compile Include="Margin\DocumentRenderer.cs" />
+    <Compile Include="Margin\REvalRenderer.cs" />
     <Compile Include="Margin\StylesheetUpdatedEventArgs.cs" />
     <Compile Include="ViewModel\MdEditorViewModel.cs" />
     <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />
