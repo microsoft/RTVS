@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -180,12 +181,12 @@ grDevices::deviceIsInteractive('ide')
             var script = @"rtvs:::packages.libpaths()";
             return evaluation.EvaluateAsync<string[]>(script, REvaluationKind.Normal, cancellationToken);
         }
-        public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
+        public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, int widthInPixels, int heightInPixels, int resolution) {
             var script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<ulong> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
+        public static Task<ulong> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, double widthInInches, double heightInInches, int resolution) {
             var script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }

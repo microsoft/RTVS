@@ -7,7 +7,7 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"  
         xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
         xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.ExportDialog"
-        xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
+        xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components.Windows"
         mc:Ignorable="d" MinHeight="150" x:Name="Self"
         ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
         Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"

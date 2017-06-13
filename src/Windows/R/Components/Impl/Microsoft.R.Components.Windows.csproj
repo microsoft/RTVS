@@ -147,6 +147,9 @@
     <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
+    <Compile Include="Plots\ExportArguments.cs" />
+    <Compile Include="Plots\ExportImageParameters.cs" />
+    <Compile Include="Plots\ExportPdfParameters.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistorySelectionCommand.cs" />
     <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryEntryViewModel.cs" />
@@ -155,9 +158,11 @@
     <Compile Include="Plots\Implementation\View\PointEventArgs.cs" />
     <Compile Include="Plots\IRPlotDeviceVisualComponent.cs" />
     <Compile Include="Plots\IRPlotDeviceVisualComponentContainerFactory.cs" />
+    <Compile Include="Plots\IRPlotExportDialogs.cs" />
     <Compile Include="Plots\IRPlotHistoryVisualComponent.cs" />
     <Compile Include="Plots\IRPlotHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Plots\IRPlotManagerVisual.cs" />
+    <Compile Include="Plots\PDFExportOptions.cs" />
     <Compile Include="Plots\RPlotHistoryCommands.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotDevicePasteCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotDeviceCutCopyCommand.cs" />
