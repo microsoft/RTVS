@@ -38,6 +38,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         private readonly IServiceContainer _services;
         private readonly string _sessionId;
         private readonly CancellationTokenSource _hostStartCts = new CancellationTokenSource();
+        private readonly RSessionCallback _sessionCallback = new RSessionCallback();
 
         private IRSession _session;
         private CancellationTokenSource _blockEvalCts = new CancellationTokenSource();
@@ -117,8 +118,6 @@ namespace Microsoft.Markdown.Editor.Margin {
             return Invariant($"<div id='{elementId}'><img src='data:image/gif;base64, {base64Image}' width='32' height='32' /></div>");
         }
 
-        private static string GetBlockHtmlElementId(int blockNumber) => Invariant($"rcode_{blockNumber}");
-
         private static string GetPlaceholderImage() {
             if (_placeholderImage == null) {
                 using (var ms = new MemoryStream()) {
@@ -145,7 +144,7 @@ namespace Microsoft.Markdown.Editor.Margin {
                     var session = await StartSessionAsync(ct);
 
                     foreach (var block in blocks.Where(b => b.State == CodeBlockEvalState.Created)) {
-                        await block.EvaluateAsync(session, ct);
+                        await block.EvaluateAsync(session, _sessionCallback, ct);
                     }
                 } catch (OperationCanceledException) { }
             }, ct);
@@ -159,7 +158,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             if (!_session.IsHostRunning) {
                 var settings = _services.GetService<IRSettings>();
                 await _session.EnsureHostStartedAsync(
-                    new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), null, 3000, ct);
+                    new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), _sessionCallback, 3000, ct);
             }
 
             return _session;

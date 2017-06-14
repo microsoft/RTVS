@@ -17,7 +17,6 @@ using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Editor;
 using Microsoft.VisualStudio.Text;
 using mshtml;
-using Microsoft.Common.Core.Extensions;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
@@ -25,6 +24,8 @@ using WebBrowser = System.Windows.Controls.WebBrowser;
 namespace Microsoft.Markdown.Editor.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/Browser.cs
     public sealed class Browser : IDisposable {
+        private static string _htmlTemplate;
+
         private readonly IServiceContainer _services;
         private readonly RMarkdownOptions _options;
         private readonly string _fileName;
@@ -151,7 +152,7 @@ namespace Microsoft.Markdown.Editor.Margin {
                         }
                     }
                 }
-            } catch(Exception ex) when (!ex.IsCriticalException()) { }
+            } catch (Exception ex) when (!ex.IsCriticalException()) { }
         }
 
         private static int GetZoomFactor() {
@@ -222,7 +223,7 @@ namespace Microsoft.Markdown.Editor.Margin {
                     // Adjust the anchors after and edit
                     AdjustAnchors();
                 } else {
-                    html = GetHtmlTemplate().FormatInvariant(html);
+                    html = GetPageHtml(html);
                     Control.NavigateToString(html);
                 }
                 if (_htmlDocument != null) {
@@ -242,20 +243,14 @@ namespace Microsoft.Markdown.Editor.Margin {
         private static string GetCustomStylesheet(string markdownFile)
             => Path.ChangeExtension(markdownFile, "css");
 
-        private string GetHtmlTemplate()
-            => $@"<!DOCTYPE html>
-<html lang='en'>
-    <head>
-        <meta http-equiv='X-UA-Compatible' content='IE=Edge' />
-        <meta charset='utf-8' />
-        <title>Markdown Preview</title>
-</head>
-    <body class='markdown-body'>
-        <div id='___markdown-content___'>
-          {{0}}
-        </div>
-    </body>
-</html>";
+        private string GetPageHtml(string body) {
+            if (_htmlTemplate == null) {
+                var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                var path = Path.Combine(dir, "Markdown", "PreviewTemplate.html");
+                _htmlTemplate = _services.FileSystem().ReadAllText(path);
+            }
+            return _htmlTemplate.Replace("_BODY_", body);
+        }
 
         private void Zoom(int zoomFactor) {
             if (zoomFactor == 100)
