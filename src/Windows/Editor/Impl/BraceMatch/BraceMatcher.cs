@@ -25,9 +25,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public ITextView TextView { get; private set; }
         public ITextBuffer TextBuffer { get; private set; }
 
-        private IComparer<TokenTypeT> _tokenComparer;
+        private readonly IComparer<TokenTypeT> _tokenComparer;
 
-        public BraceMatcher(ITextView textView, ITextBuffer textBuffer, IComparer<TokenTypeT> tokenComparer) {
+        protected BraceMatcher(ITextView textView, ITextBuffer textBuffer, IComparer<TokenTypeT> tokenComparer) {
             TextView = textView;
             TextBuffer = textBuffer;
             _tokenComparer = tokenComparer;
@@ -41,12 +41,12 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 return false;
             }
 
-            BraceType braceType = BraceType.Unknown;
+            var braceType = BraceType.Unknown;
 
-            char ch = '\0';
-            bool validCharacter = false;
-            int searchPosition = currentPosition;
-            bool reversed = false;
+            var ch = '\0';
+            var validCharacter = false;
+            var searchPosition = currentPosition;
+            var reversed = false;
 
             if (currentPosition < snapshot.Length) {
                 ch = snapshot[currentPosition];
@@ -75,17 +75,17 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public virtual bool GetLanguageBracesFromPosition(
             BraceType braceType,
             int position, bool reversed, out int start, out int end) {
-            TokenTypeT startTokenType = BraceTypeToTokenTypeMap[braceType].OpenBrace;
-            TokenTypeT endTokenType = BraceTypeToTokenTypeMap[braceType].CloseBrace;
-            IReadOnlyTextRangeCollection<TokenClassT> tokens = GetTokens(0, TextBuffer.CurrentSnapshot.Length);
+            var startTokenType = BraceTypeToTokenTypeMap[braceType].OpenBrace;
+            var endTokenType = BraceTypeToTokenTypeMap[braceType].CloseBrace;
+            var tokens = GetTokens(0, TextBuffer.CurrentSnapshot.Length);
 
             start = -1;
             end = -1;
 
-            Stack<TokenTypeT> stack = new Stack<TokenTypeT>();
+            var stack = new Stack<TokenTypeT>();
 
-            int startIndex = -1;
-            for (int i = 0; i < tokens.Count; i++) {
+            var startIndex = -1;
+            for (var i = 0; i < tokens.Count; i++) {
                 if (tokens[i].Start == position) {
                     startIndex = i;
                     break;
@@ -101,8 +101,8 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             }
 
             if (!reversed) {
-                for (int i = startIndex; i < tokens.Count; i++) {
-                    TokenClassT token = tokens[i];
+                for (var i = startIndex; i < tokens.Count; i++) {
+                    var token = tokens[i];
 
                     if (token.TokenType.Equals(startTokenType)) {
                         stack.Push(token.TokenType);
@@ -119,8 +119,8 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                     }
                 }
             } else {
-                for (int i = startIndex; i >= 0; i--) {
-                    TokenClassT token = tokens[i];
+                for (var i = startIndex; i >= 0; i--) {
+                    var token = tokens[i];
 
                     if (_tokenComparer.Compare(token.TokenType, endTokenType) == 0) {
                         stack.Push(token.TokenType);

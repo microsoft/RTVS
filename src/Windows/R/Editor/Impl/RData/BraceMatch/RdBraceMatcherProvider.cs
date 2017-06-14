@@ -12,8 +12,7 @@ namespace Microsoft.R.Editor.RData.BraceMatch {
     [Export(typeof(IBraceMatcherProvider))]
     [ContentType(RdContentTypeDefinition.ContentType)]
     internal class MdBraceMatcherProvider : IBraceMatcherProvider {
-        public IBraceMatcher CreateBraceMatcher(ITextView textView, ITextBuffer textBuffer) {
-            return new RdBraceMatcher(textView, textBuffer);
-        }
+        public IBraceMatcher CreateBraceMatcher(ITextView textView, ITextBuffer textBuffer) 
+            => new RdBraceMatcher(textView, textBuffer);
     }
 }

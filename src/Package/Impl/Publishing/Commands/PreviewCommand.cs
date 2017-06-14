@@ -84,28 +84,28 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             _lastCommandTask = Task.Run(async () => {
                 // Get list of installed packages and verify that all the required ones are installed
                 var packages = await workflow.Packages.GetInstalledPackagesAsync();
-                if (packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
-                    // Text buffer operations should be performed in UI thread
-                    await Services.MainThread().SwitchToAsync();
-                    if (await CheckPrerequisitesAsync()) {
-                        var textBuffer = SaveFile();
-                        if (textBuffer != null) {
-                            var inputFilePath = textBuffer.GetFilePath();
-                            _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
+                if (!packages.Any(p => p.Package.EqualsIgnoreCase(flavorHandler.RequiredPackageName))) {
+                    await workflow.Packages.InstallPackageAsync(flavorHandler.RequiredPackageName, null);
+                }
 
-                            try {
-                                _fs.DeleteFile(_outputFilePath);
-                            } catch (IOException ex) {
-                                Services.UI().ShowErrorMessage(ex.Message);
-                                return;
-                            }
+                // Text buffer operations should be performed in UI thread
+                await Services.MainThread().SwitchToAsync();
+                if (await CheckPrerequisitesAsync()) {
+                    var textBuffer = SaveFile();
+                    if (textBuffer != null) {
+                        var inputFilePath = textBuffer.GetFilePath();
+                        _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
-                            var session = workflow.RSession;
-                            await flavorHandler.PublishAsync(session, Services, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
+                        try {
+                            _fs.DeleteFile(_outputFilePath);
+                        } catch (IOException ex) {
+                            Services.UI().ShowErrorMessage(ex.Message);
+                            return;
                         }
+
+                        var session = workflow.RSession;
+                        await flavorHandler.PublishAsync(session, Services, inputFilePath, _outputFilePath, Format, textBuffer.GetEncoding()).ContinueWith(t => LaunchViewer());
                     }
-                } else {
-                    await Services.ShowErrorMessageAsync(Resources.Error_PackageMissing.FormatInvariant(flavorHandler.RequiredPackageName));
                 }
             });
 

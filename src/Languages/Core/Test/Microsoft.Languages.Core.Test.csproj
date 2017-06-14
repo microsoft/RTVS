@@ -43,6 +43,7 @@
     <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\ITokenAssertions.cs" />
+    <Compile Include="Braces\BraceTokenizerTest.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bytes\ByteStreamTest.cs" />
