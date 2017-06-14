@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 result.Should().Be(ExecutionResult.Success);
                 window.FlushOutput();
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
-                text.TrimEnd().Should().Be("[1] \"電話帳 全米のお\"");
+                text.TrimEnd().TrimEnd((char)0).Should().Be("[1] \"電話帳 全米のお\"");
 
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("Encoding(z)\n");
@@ -129,7 +129,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 result.Should().Be(ExecutionResult.Success);
                 window.FlushOutput();
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
-                text.TrimEnd().Should().Be("[1] \"“абвг”\"");
+                text.TrimEnd().TrimEnd((char)0).Should().Be("[1] \"“абвг”\"");
             }
         }
     }
