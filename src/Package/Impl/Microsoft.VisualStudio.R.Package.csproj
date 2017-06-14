@@ -197,10 +197,11 @@
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\PreviewPositionTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoTypeConverter.cs" />
+    <Compile Include="Options\Markdown\REditorSettingsStorageProvider.cs" />
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\R\Editor\RMarkdownOptionsDialog.cs">
+    <Compile Include="Options\Markdown\RMarkdownOptionsDialog.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\Editor\RLintOptionsDialog.cs">

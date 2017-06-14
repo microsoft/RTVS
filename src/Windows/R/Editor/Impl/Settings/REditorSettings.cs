@@ -93,7 +93,5 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         public LintOptions LintOptions { get; private set; } = new LintOptions();
-
-        public RMarkdownOptions MarkdownOptions { get; } = new RMarkdownOptions();
     }
 }

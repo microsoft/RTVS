@@ -8,18 +8,17 @@ using System.Windows.Controls.Primitives;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Editor;
+using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMargin.cs
     public sealed class BrowserMargin : DockPanel, IWpfTextViewMargin {
-        private readonly IServiceContainer _services;
         private readonly IIdleTimeService _idleTime;
         private readonly ITextDocument _document;
         private readonly ITextView _textView;
-        private readonly RMarkdownOptions _options;
+        private readonly IRMarkdownEditorSettings _settings;
 
         private bool _connectedToIdle;
         private bool _updateContent;
@@ -34,12 +33,11 @@ namespace Microsoft.Markdown.Editor.Margin {
         public BrowserMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
             _textView = textView;
             _document = document;
-            _services = services;
-            _options = services.GetService<IREditorSettings>().MarkdownOptions;
+            _settings = services.GetService<IRMarkdownEditorSettings>();
 
             Browser = new Browser(_document.FilePath, services);
 
-            if (_options.PreviewPosition == RMarkdownPreviewPosition.Below) {
+            if (_settings.PreviewPosition == RMarkdownPreviewPosition.Below) {
                 CreateBottomMarginControls();
             } else {
                 CreateRightMarginControls();
@@ -48,7 +46,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             UpdateBrowser();
 
             // TODO: separate R code changes from markdown changes
-            _idleTime = _services.GetService<IIdleTimeService>();
+            _idleTime = services.GetService<IIdleTimeService>();
             _textView.TextBuffer.Changed += OnTextBufferChanged;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
         }
@@ -92,7 +90,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         public ITextViewMargin GetTextViewMargin(string marginName) => this;
 
         private void CreateRightMarginControls() {
-            var width = _options.PreviewWidth;
+            var width = _settings.PreviewWidth;
 
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
@@ -142,7 +140,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         }
 
         private void CreateBottomMarginControls() {
-            var height = _options.PreviewHeight;
+            var height = _settings.PreviewHeight;
 
             var grid = new Grid();
             grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Star) });
@@ -171,13 +169,13 @@ namespace Microsoft.Markdown.Editor.Margin {
 
         private void RightDragCompleted(object sender, DragCompletedEventArgs e) {
             if (!double.IsNaN(Browser.Control.ActualWidth)) {
-                _options.PreviewWidth = (int)Browser.Control.ActualWidth;
+                _settings.PreviewWidth = (int)Browser.Control.ActualWidth;
             }
         }
 
         private void BottomDragCompleted(object sender, DragCompletedEventArgs e) {
             if (!double.IsNaN(Browser.Control.ActualHeight)) {
-                _options.PreviewHeight = (int)Browser.Control.ActualHeight;
+                _settings.PreviewHeight = (int)Browser.Control.ActualHeight;
             }
         }
 

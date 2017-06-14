@@ -14,9 +14,9 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.R.Editor;
 using Microsoft.VisualStudio.Text;
 using mshtml;
+using Microsoft.Markdown.Editor.Settings;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
@@ -27,7 +27,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         private static string _htmlTemplate;
 
         private readonly IServiceContainer _services;
-        private readonly RMarkdownOptions _options;
+        private readonly IRMarkdownEditorSettings _settings;
         private readonly string _fileName;
         private readonly int _zoomFactor;
         private readonly DocumentRenderer _documentRenderer;
@@ -46,7 +46,7 @@ namespace Microsoft.Markdown.Editor.Margin {
 
             _fileName = fileName;
             _services = services;
-            _options = _services.GetService<IREditorSettings>().MarkdownOptions;
+            _settings = _services.GetService<IRMarkdownEditorSettings>();
 
             _zoomFactor = GetZoomFactor();
             InitBrowser();
@@ -173,7 +173,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         }
 
         public void UpdatePosition(int line) {
-            if (_htmlDocument != null && _currentDocument != null && _options.AutomaticSync) {
+            if (_htmlDocument != null && _currentDocument != null && _settings.AutomaticSync) {
                 _currentViewLine = _currentDocument.FindClosestLine(line);
                 SyncNavigation();
             }
@@ -184,7 +184,7 @@ namespace Microsoft.Markdown.Editor.Margin {
                 return;
             }
 
-            if (_options.AutomaticSync) {
+            if (_settings.AutomaticSync) {
                 if (_currentViewLine == 0) {
                     // Forces the preview window to scroll to the top of the document
                     _htmlDocument.documentElement.setAttribute("scrollTop", 0);

@@ -4,11 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Linq;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
@@ -57,7 +54,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideLanguageEditorOptionPage(typeof(RLintOptionsDialog), RContentTypeDefinition.LanguageName, "", "Lint", "#20139")]
-    [ProvideLanguageEditorOptionPage(typeof(RMarkdownOptionsDialog), RContentTypeDefinition.LanguageName, "", "Markdown", "#20140")]
     [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 40)]
@@ -104,12 +100,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string ProductName = "R Tools";
 
-        public IEditorSettingsStorage LanguageSettingsStorage { get; private set; }
-
         public static IRPackage Current { get; private set; }
         public static Common.Core.Services.IServiceContainer Services => VsAppShell.Current.Services;
 
-        private readonly Dictionary<string, Type> _editorOptionsPages = new Dictionary<string, Type>() {
+        private readonly Dictionary<string, Type> _editorOptionsPages = new Dictionary<string, Type> {
             { "R Editor", typeof(REditorOptionsDialog)},
             { "R Lint", typeof(RLintOptionsDialog)},
         };
@@ -177,6 +171,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
             return FindWindowPane(t, id, create) as T;
         }
+        public IEditorSettingsStorage LanguageSettingsStorage { get; private set; }
         #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {

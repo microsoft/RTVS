@@ -129,19 +129,9 @@
   <data name="20136" xml:space="preserve">
     <value>Advanced</value>
   </data>
-  <data name="20137" xml:space="preserve">
-    <value>Options for automatic formatting and case preferences for all tags, checking tag syntax, paste behavior, outline mode, absolute or static positioning, and Design view settings.</value>
-  </data>
-  <data name="20138" xml:space="preserve">
-    <value>Options for statement completion, word wrap, and line number display.</value>
-  </data>
   <data name="20139" xml:space="preserve">
     <value>Lint</value>
     <comment>Do not localize (common tool name)</comment>
-  </data>
-  <data name="20140" xml:space="preserve">
-    <value>Markdown</value>
-    <comment>Programming language name</comment>
   </data>
   <data name="300" xml:space="preserve">
     <value>RStudio Project Files (*.rproj);*.rproj</value>

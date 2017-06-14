@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using Microsoft.Common.Core;
+using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Options.Attributes {

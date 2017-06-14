@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
     /// application-agnostic editor code. This class also provides tracking of tab/indent settings via VS
     /// text manager (<seealso cref="IVsTextManager"/>) and language preferences (<seealso cref="LANGPREFERENCES"/>).
     /// </summary>
-    public sealed class LanguageSettingsStorage : IVsTextManagerEvents4, IWritableEditorSettingsStorage, IDisposable {
+    public sealed class LanguageSettingsStorage : IVsTextManagerEvents4, IWritableEditorSettingsStorage {
         private readonly Guid _languageServiceId;
         private readonly Dictionary<string, bool> _booleanSettings = new Dictionary<string, bool>();
         private readonly Dictionary<string, int> _integerSettings = new Dictionary<string, int>();
@@ -48,7 +48,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public void Load() {
             LoadLanguagePreferences();
 
-            var vsShell = _services.GetService<IVsShell>(typeof(SVsShell));
             foreach (var curAutomationObjectName in _automationObjectNames) {
                 _package.GetAutomationObject(curAutomationObjectName, out object automationObject);
             }
@@ -108,7 +107,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             if (defaultValue is bool) {
                 return (T)(object)GetBoolean(name, Convert.ToBoolean(defaultValue));
             }
-            Debug.Fail("Unknown editor setting type");
             return defaultValue;
         }
 

@@ -3,14 +3,14 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Settings;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
     [Export(typeof(IEditorSettingsStorageProvider))]
-    [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class REditorSettingsStorageProvider : IEditorSettingsStorageProvider {
-        public IEditorSettingsStorage GetSettingsStorage() => RPackage.Current.LanguageSettingsStorage;
+    [ContentType(MdContentTypeDefinition.ContentType)]
+    internal sealed class RMarkdownEditorSettingsStorageProvider : IEditorSettingsStorageProvider {
+        public IEditorSettingsStorage GetSettingsStorage() => MdPackage.Current.LanguageSettingsStorage;
     }
 }

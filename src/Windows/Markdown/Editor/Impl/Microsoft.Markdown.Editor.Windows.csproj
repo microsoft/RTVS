@@ -66,7 +66,6 @@
     <Compile Include="Margin\BrowserMargin.cs" />
     <Compile Include="Margin\BrowserMarginProvider.cs" />
     <Compile Include="Margin\CssCreationListener.cs" />
-    <Compile Include="Margin\HtmlFormatter.cs" />
     <Compile Include="Margin\LiveSyncMargin.cs" />
     <Compile Include="Margin\MarkdownFactory.cs" />
     <Compile Include="Margin\ParsingEventArgs.cs" />
@@ -75,6 +74,9 @@
     <Compile Include="Margin\RCodeBlockRenderer.cs" />
     <Compile Include="Margin\RSessionCallback.cs" />
     <Compile Include="Margin\StylesheetUpdatedEventArgs.cs" />
+    <Compile Include="Settings\IRMarkdownEditorSettings.cs" />
+    <Compile Include="Settings\RMarkdownEditorSettings.cs" />
+    <Compile Include="Settings\RMarkdownPreviewPosition.cs" />
     <Compile Include="ViewModel\MdEditorViewModel.cs" />
     <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

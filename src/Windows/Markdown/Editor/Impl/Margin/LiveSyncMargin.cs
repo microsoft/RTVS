@@ -7,20 +7,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Editor;
+using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text.Editor;
 using Brushes = Microsoft.R.Wpf.Brushes;
 
 namespace Microsoft.Markdown.Editor.Margin {
     public class LiveSyncMargin : DockPanel, IWpfTextViewMargin {
         private readonly IServiceContainer _services;
-        private readonly RMarkdownOptions _options;
+        private readonly IRMarkdownEditorSettings _settings;
         private Image _image;
         private TextBlock _text;
 
         public LiveSyncMargin(IWpfTextView view, IServiceContainer services) {
             _services = services;
-            _options = _services.GetService<IREditorSettings>().MarkdownOptions;
+            _settings = _services.GetService<IRMarkdownEditorSettings>();
 
             SetResourceReference(BackgroundProperty, Brushes.ScrollBarBackgroundBrushKey);
             HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -53,14 +53,14 @@ namespace Microsoft.Markdown.Editor.Margin {
         }
 
         private void UpdateControls() {
-            var imageName = _options.AutomaticSync ? "Play" : "Pause";
+            var imageName = _settings.AutomaticSync ? "Play" : "Pause";
             var imageService = _services.GetService<IImageService>();
             _image.Source = imageService.GetImage(imageName) as ImageSource;
-            _text.Text = _options.AutomaticSync ? Editor.Resources.ScrollSync_Active : Editor.Resources.ScrollSync_Paused;
+            _text.Text = _settings.AutomaticSync ? Editor.Resources.ScrollSync_Active : Editor.Resources.ScrollSync_Paused;
         }
 
         private void OnClick(object sender, MouseButtonEventArgs e) {
-            _options.AutomaticSync = !_options.AutomaticSync;
+            _settings.AutomaticSync = !_settings.AutomaticSync;
             UpdateControls();
         }
 
