@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Text;
+using static Microsoft.Languages.Core.Braces.BraceTokenType;
 
 namespace Microsoft.Languages.Core.Braces {
     public sealed class BraceTokenizer {
@@ -12,22 +13,22 @@ namespace Microsoft.Languages.Core.Braces {
                 BraceTokenType? t = null;
                 switch (cs.CurrentChar) {
                     case '(':
-                        t = BraceTokenType.OpenBrace;
+                        t = OpenBrace;
                         break;
                     case ')':
-                        t = BraceTokenType.CloseBrace;
+                        t = CloseBrace;
                         break;
                     case '{':
-                        t = BraceTokenType.OpenCurly;
+                        t = OpenCurly;
                         break;
                     case '}':
-                        t = BraceTokenType.CloseCurly;
+                        t = CloseCurly;
                         break;
                     case '[':
-                        t = BraceTokenType.OpenBracket;
+                        t = OpenBracket;
                         break;
                     case ']':
-                        t = BraceTokenType.CloseBracket;
+                        t = CloseBracket;
                         break;
                 }
                 if (t != null) {

@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Languages.Core.Braces;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
+using static Microsoft.Languages.Core.Braces.BraceTokenType;
 
 namespace Microsoft.Languages.Core.Test.Braces {
     [ExcludeFromCodeCoverage]
@@ -14,8 +15,8 @@ namespace Microsoft.Languages.Core.Test.Braces {
     public sealed class BraceTokenizerTest {
         [CompositeTest]
         [InlineData("", new BraceTokenType[0])]
-        [InlineData("func()[x]{}", new[] { BraceTokenType.OpenBrace, BraceTokenType.CloseBrace, BraceTokenType.OpenBracket, BraceTokenType.CloseBracket, BraceTokenType.OpenCurly, BraceTokenType.CloseCurly })]
-        [InlineData("([3 {\n ]})1]* ", new[] { BraceTokenType.OpenBrace, BraceTokenType.OpenBracket, BraceTokenType.OpenCurly, BraceTokenType.CloseBracket, BraceTokenType.CloseCurly, BraceTokenType.CloseBrace, BraceTokenType.CloseBracket })]
+        [InlineData("func()[x]{}", new[] { OpenBrace, CloseBrace, OpenBracket, CloseBracket, OpenCurly, CloseCurly })]
+        [InlineData("([3 {\n ]})1]* ", new[] { OpenBrace, OpenBracket, OpenCurly, CloseBracket, CloseCurly, CloseBrace, CloseBracket })]
         public void Tokenize(string content, BraceTokenType[] expected) {
             var tokenizer = new BraceTokenizer();
             var actual = tokenizer.Tokenize(content);
