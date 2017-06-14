@@ -37,7 +37,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
                 _window.CurrentLanguageBuffer?.ChangeContentType(contentType, null);
                 _window.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, false);
 
-                return new RInteractiveWindowVisualComponent(_window, container, sessionProvider, _shell);
+                return new RInteractiveWindowVisualComponent(_window, container, sessionProvider, _shell.Services);
             }).Component;
         }
 

@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             var container = new VisualComponentContainerStub<RInteractiveWindowVisualComponent>();
-            var component = new RInteractiveWindowVisualComponent(new InteractiveWindowMock(new WpfTextViewMock(tb), evaluator), container, sessionProvider, _shell);
+            var component = new RInteractiveWindowVisualComponent(new InteractiveWindowMock(new WpfTextViewMock(tb), evaluator), container, sessionProvider, _shell.Services);
             container.Component = component;
             return component;
         }
