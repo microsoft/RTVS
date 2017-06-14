@@ -189,8 +189,15 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 headers.Add(key, ReplaceAndGet(response.Headers[key], remoteBaseUrl, localBaseUrl));
             }
 
-            httpListenerResponse.ContentLength64 = response.ContentLength;
+            if(response.ContentLength >= 0) {
+                httpListenerResponse.ContentLength64 = response.ContentLength;
+            }
             httpListenerResponse.ContentType = response.ContentType;
+
+            if(headers.TryGetValue("Transfer-Encoding", out string valueTransferEncoding)) {
+                httpListenerResponse.SendChunked = valueTransferEncoding.EqualsIgnoreCase("chunked");
+                headers.Remove("Transfer-Encoding");
+            }
 
             if (!string.IsNullOrWhiteSpace(response.ContentEncoding)) {
                 httpListenerResponse.ContentEncoding = Encoding.GetEncoding(response.ContentEncoding);
