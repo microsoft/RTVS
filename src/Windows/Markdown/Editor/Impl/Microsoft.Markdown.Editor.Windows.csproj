@@ -62,7 +62,7 @@
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
-    <Compile Include="Margin\BrowserView.cs" />
+    <Compile Include="Margin\Browser.cs" />
     <Compile Include="Margin\BrowserMargin.cs" />
     <Compile Include="Margin\BrowserMarginProvider.cs" />
     <Compile Include="Margin\CssCreationListener.cs" />
@@ -70,7 +70,8 @@
     <Compile Include="Margin\MarkdownFactory.cs" />
     <Compile Include="Margin\ParsingEventArgs.cs" />
     <Compile Include="Margin\DocumentRenderer.cs" />
-    <Compile Include="Margin\REvalRenderer.cs" />
+    <Compile Include="Margin\RCodeBlock.cs" />
+    <Compile Include="Margin\RCodeBlockRenderer.cs" />
     <Compile Include="Margin\StylesheetUpdatedEventArgs.cs" />
     <Compile Include="ViewModel\MdEditorViewModel.cs" />
     <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />
@@ -163,6 +164,9 @@
       <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
       <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
     </FilesToLocalize>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="loading.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

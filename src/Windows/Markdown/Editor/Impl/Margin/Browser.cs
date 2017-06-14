@@ -7,7 +7,6 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Markdig.Renderers;
 using Markdig.Syntax;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
@@ -18,20 +17,21 @@ using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Editor;
 using Microsoft.VisualStudio.Text;
 using mshtml;
+using Microsoft.Common.Core.Extensions;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
 
 namespace Microsoft.Markdown.Editor.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/Browser.cs
-    public sealed class BrowserView : IDisposable {
+    public sealed class Browser : IDisposable {
         private readonly IServiceContainer _services;
         private readonly RMarkdownOptions _options;
         private readonly string _fileName;
         private readonly int _zoomFactor;
+        private readonly DocumentRenderer _documentRenderer;
 
         private HTMLDocument _htmlDocument;
-
         private double _cachedPosition;
         private double _cachedHeight;
         private double _positionPercentage;
@@ -39,7 +39,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         private MarkdownDocument _currentDocument;
         private int _currentViewLine = -1;
 
-        public BrowserView(string fileName, IServiceContainer services) {
+        public Browser(string fileName, IServiceContainer services) {
             Check.ArgumentNull(nameof(fileName), fileName);
             Check.ArgumentNull(nameof(services), services);
 
@@ -48,8 +48,10 @@ namespace Microsoft.Markdown.Editor.Margin {
             _options = _services.GetService<IREditorSettings>().MarkdownOptions;
 
             _zoomFactor = GetZoomFactor();
-
             InitBrowser();
+
+            _documentRenderer = new DocumentRenderer(Path.GetFileName(_fileName), _services);
+
             CssCreationListener.StylesheetUpdated += OnStylesheetUpdated;
         }
 
@@ -64,8 +66,8 @@ namespace Microsoft.Markdown.Editor.Margin {
 
                 _cachedHeight = _htmlDocument.body.offsetHeight;
                 _htmlDocument.documentElement.setAttribute("scrollTop", _positionPercentage * _cachedHeight / 100);
-
                 AdjustAnchors();
+                _documentRenderer.RenderCodeBlocks(_htmlDocument);
             };
 
             // Open external links in default browser
@@ -149,9 +151,7 @@ namespace Microsoft.Markdown.Editor.Margin {
                         }
                     }
                 }
-            } catch {
-                // Ignore exceptions
-            }
+            } catch(Exception ex) when (!ex.IsCriticalException()) { }
         }
 
         private static int GetZoomFactor() {
@@ -204,10 +204,9 @@ namespace Microsoft.Markdown.Editor.Margin {
         private void UpdateBrowser(ITextSnapshot snapshot) {
             // Generate the HTML document
             string html;
-            StringWriter htmlWriter = null;
             try {
                 _currentDocument = snapshot.ParseToMarkdown();
-                html = _currentDocument.ToHtml();
+                html = _documentRenderer.RenderStaticHtml(_currentDocument);
             } catch (Exception ex) {
                 // We could output this to the exception pane of VS?
                 // Though, it's easier to output it directly to the browser
@@ -225,6 +224,9 @@ namespace Microsoft.Markdown.Editor.Margin {
                 } else {
                     html = GetHtmlTemplate().FormatInvariant(html);
                     Control.NavigateToString(html);
+                }
+                if (_htmlDocument != null) {
+                    _documentRenderer.RenderCodeBlocks(_htmlDocument);
                 }
                 SyncNavigation();
             });
@@ -274,6 +276,7 @@ namespace Microsoft.Markdown.Editor.Margin {
 
         public void Dispose() {
             Control?.Dispose();
+            _documentRenderer?.Dispose();
             _htmlDocument = null;
         }
     }

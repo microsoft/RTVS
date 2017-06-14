@@ -29,7 +29,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         public bool Enabled => true;
         public double MarginSize => 500;
         public FrameworkElement VisualElement => this;
-        public BrowserView Browser { get; }
+        public Browser Browser { get; }
 
         public BrowserMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
             _textView = textView;
@@ -37,7 +37,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             _services = services;
             _options = services.GetService<IREditorSettings>().MarkdownOptions;
 
-            Browser = new BrowserView(_document.FilePath, services);
+            Browser = new Browser(_document.FilePath, services);
 
             if (_options.PreviewPosition == RMarkdownPreviewPosition.Below) {
                 CreateBottomMarginControls();

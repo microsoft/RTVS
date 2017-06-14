@@ -160,6 +160,16 @@ namespace Microsoft.Markdown.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LoadingImage {
+            get {
+                object obj = ResourceManager.GetObject("LoadingImage", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scroll sync is active.
         /// </summary>
         internal static string ScrollSync_Active {
