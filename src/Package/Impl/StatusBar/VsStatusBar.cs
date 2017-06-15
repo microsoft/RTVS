@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -21,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
     internal class VsStatusBar : IStatusBar {
         private readonly IServiceContainer _services;
         private readonly IIdleTimeService _idleTime;
+        private readonly IVsStatusbar _vsStatusBar;
         private ItemsControl _itemsControl;
         private Visual _visualRoot;
         private bool _onIdleScheduled;
@@ -28,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         public VsStatusBar(IServiceContainer services) {
             _services = services;
             _idleTime = services.GetService<IIdleTimeService>();
+            _vsStatusBar = services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
         }
 
         private Visual GetRootVisual() {
@@ -41,6 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             return hwndSource?.RootVisual;
         }
 
+        #region IStatusBar
         public IDisposable AddItem(UIElement element) {
             _services.MainThread().CheckAccess();
             EnsureItemsControlCreated();
@@ -49,8 +53,27 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             return Disposable.Create(() => _services.MainThread().Post(() => _itemsControl.Items.Remove(element)));
         }
 
+        public async Task<string> GetTextAsync(CancellationToken ct = default(CancellationToken)) {
+            await _services.MainThread().SwitchToAsync(ct);
+            _vsStatusBar.GetText(out string text);
+            return text ?? string.Empty;
+        }
+
+        public async Task SetTextAsync(string text, CancellationToken ct = default(CancellationToken)) {
+            await _services.MainThread().SwitchToAsync(ct);
+            _vsStatusBar.SetText(text);
+        }
+
+        public async Task ReportProgressAsync(string message, uint step, uint totalSteps, bool complete = false, CancellationToken ct = default(CancellationToken)) {
+            await _services.MainThread().SwitchToAsync(ct);
+            uint cookie = 0;
+            _vsStatusBar.Progress(ref cookie, complete ? 0 : 1, message, step, totalSteps);
+        }
+        #endregion
+
+
         private bool TryAddItemsControlToVisualRoot() {
-            if(_itemsControl.Parent != null) {
+            if (_itemsControl.Parent != null) {
                 return true;
             }
 

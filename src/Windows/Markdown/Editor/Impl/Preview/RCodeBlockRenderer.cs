@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using mshtml;
 using Markdig.Renderers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
@@ -19,9 +18,10 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using mshtml;
 using static System.FormattableString;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     /// <summary>
     /// Renders R code block output into HTML element
     /// </summary>
@@ -40,8 +40,8 @@ namespace Microsoft.Markdown.Editor.Margin {
         private readonly CancellationTokenSource _hostStartCts = new CancellationTokenSource();
         private readonly RSessionCallback _sessionCallback = new RSessionCallback();
 
-        private IRSession _session;
         private CancellationTokenSource _blockEvalCts = new CancellationTokenSource();
+        private IRSession _session;
         private int _blockNumber;
         private Task _evalTask;
 
@@ -80,20 +80,27 @@ namespace Microsoft.Markdown.Editor.Margin {
 
                 var result = GetCachedResult(_blockNumber, hash, fencedCodeBlock);
                 if (result != null) {
+                    WriteBlockContent(renderer, _blockNumber, text);
                     renderer.Write(result);
                     return;
                 }
 
-                var rCodeBlock = new RCodeBlock(_blockNumber, text, hash);
+                var rCodeBlock = new RCodeBlock(_blockNumber, fencedCodeBlock.Arguments, text, hash);
                 var elementId = rCodeBlock.HtmlElementId;
                 _blocks.Add(rCodeBlock);
 
+                WriteBlockContent(renderer, _blockNumber, text);
                 // Write placeholder first. We will insert actual data when the evaluation is done.
                 renderer.Write(GetBlockPlaceholder(elementId));
                 _blockNumber++;
             }
         }
 
+        private void WriteBlockContent(HtmlRenderer renderer, int blockNumber, string text) {
+            if (_blocks[blockNumber].EchoContent) {
+                renderer.Write(Invariant($"<pre class='r'><code>{text}</code></pre>"));
+            }
+        }
 
         private string GetCachedResult(int blockNumber, int hash, FencedCodeBlock block) {
             if (blockNumber >= _blocks.Count) {
@@ -121,7 +128,7 @@ namespace Microsoft.Markdown.Editor.Margin {
         private static string GetPlaceholderImage() {
             if (_placeholderImage == null) {
                 using (var ms = new MemoryStream()) {
-                    Resources.LoadingImage.Save(ms, ImageFormat.Gif);
+                    Resources.Loading.Save(ms, ImageFormat.Gif);
                     _placeholderImage = Convert.ToBase64String(ms.ToArray());
                 }
             }
@@ -133,7 +140,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             foreach (var line in block.Lines.Lines) {
                 sb.AppendLine(line.ToString());
             }
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         private Task EvaluateBlocksAsync(CancellationToken ct) {

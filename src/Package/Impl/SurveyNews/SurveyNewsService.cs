@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Settings;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
@@ -17,15 +17,13 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     internal class SurveyNewsService : ISurveyNewsService {
         private readonly ISurveyNewsFeedClient _feedClient;
         private readonly ISurveyNewsOptions _options;
-        private readonly IWebBrowserServices _browserServices;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
 
         [ImportingConstructor]
-        public SurveyNewsService(ISurveyNewsFeedClient feedClient, ISurveyNewsOptions options, IWebBrowserServices browserServices, ICoreShell coreShell) {
+        public SurveyNewsService(ISurveyNewsFeedClient feedClient, ISurveyNewsOptions options,ICoreShell coreShell) {
             _feedClient = feedClient;
             _options = options;
-            _browserServices = browserServices;
-            _coreShell = coreShell;
+            _services = coreShell.Services;
         }
 
         public async Task CheckSurveyNewsAsync(bool forceCheck) {
@@ -86,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     url = _options.IndexUrl;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
+                _services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
                 if (forceCheck) {
                     url = _options.CannotConnectUrl;
                 }
@@ -94,10 +92,10 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
 
             try {
                 if (!string.IsNullOrEmpty(url)) {
-                    _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: !forceCheck);
+                    _services.Process().Start(url);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
+                _services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
             }
         }
     }

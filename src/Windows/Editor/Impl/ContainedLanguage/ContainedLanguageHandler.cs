@@ -16,7 +16,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         private ITextRange _cachedLanguageBlock;
 
         protected ContainedLanguageHandler(ITextBuffer textBuffer) {
-            textBuffer.AddService<IContainedLanguageHandler>(this);
+            textBuffer.AddService(this);
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
         }

@@ -9,7 +9,7 @@ using Markdig.Syntax;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     /// <summary>
     /// Renders R Markdown document into HTML
     /// </summary>

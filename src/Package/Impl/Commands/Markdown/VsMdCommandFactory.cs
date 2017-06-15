@@ -4,14 +4,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands.Markdown;
-using Microsoft.VisualStudio.R.Package.Publishing.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Text;
@@ -22,15 +21,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [Export(typeof(ICommandFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class VsMdCommandFactory : ICommandFactory {
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
-        private readonly IWebBrowserServices _wbs;
 
         [ImportingConstructor]
         public VsMdCommandFactory(ICoreShell coreShell) {
-            _coreShell = coreShell;
-            _workflowProvider = coreShell.GetService<IRInteractiveWorkflowVisualProvider>();
-            _wbs = coreShell.GetService<IWebBrowserServices>();
+            _services = coreShell.Services;
+            _workflowProvider = _services.GetService<IRInteractiveWorkflowVisualProvider>();
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
@@ -41,13 +38,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
                     .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false));
             }
 
-            var services = workflow.Shell.Services;
             return new ICommand[] {
-                new PreviewHtmlCommand(textView, _workflowProvider, services),
-                new PreviewPdfCommand(textView, _workflowProvider, services),
-                new PreviewWordCommand(textView, _workflowProvider, services),
                 new ClearReplCommand(textView, workflow),
-                new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD, _coreShell.Services)
+                new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD, _services)
             };
         }
     }

@@ -5,7 +5,7 @@ using System;
 using Markdig.Syntax;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     public sealed class ParsingEventArgs : EventArgs {
         public ParsingEventArgs(MarkdownDocument document, string file, ITextSnapshot snapshot) {
             Document = document;

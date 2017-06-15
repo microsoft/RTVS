@@ -4,14 +4,13 @@
 using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
+namespace Microsoft.Markdown.Editor.Publishing.Commands {
     internal sealed class PreviewWordCommand : PreviewCommand {
         public PreviewWordCommand(
             ITextView textView,
-            IRInteractiveWorkflowVisualProvider workflowProvider,
+            IRInteractiveWorkflowProvider workflowProvider,
             IServiceContainer services) :
             base(textView, (int)MdPackageCommandId.icmdPreviewWord, workflowProvider, services) { }
 

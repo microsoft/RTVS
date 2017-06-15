@@ -13,5 +13,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         public const int icmdPreviewWord = 603;
         public const int icmdPublish = 610;
         public const int icmdRunRChunk = 611;
+        public const int icmdAutomaticSync = 612;
+        public const int icmdUpdatePreview = 613;
     }
 }

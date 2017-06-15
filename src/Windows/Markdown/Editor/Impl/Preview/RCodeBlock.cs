@@ -5,13 +5,13 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.XPath;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Languages.Core.Tokens;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     internal enum CodeBlockEvalState {
         Created,
         Evaluated,
@@ -27,13 +27,18 @@ namespace Microsoft.Markdown.Editor.Margin {
         public int Hash { get; }
         public string Result { get; set; }
         public CodeBlockEvalState State { get; set; } = CodeBlockEvalState.Created;
+        public bool Eval { get; private set; } = true;
+        public bool DisplayErrors { get; private set; } = true;
+        public bool DisplayWarnings { get; private set; } = true;
+        public bool EchoContent { get; private set; } = true;
 
         public string HtmlElementId => Invariant($"rcode_{BlockNumber}_{Hash}");
 
-        public RCodeBlock(int number, string text, int hash) {
+        public RCodeBlock(int number, string arguments, string text, int hash) {
             BlockNumber = number;
             Hash = hash;
             _text = text;
+            ExtractOptions(arguments);
         }
 
         public async Task<string> EvaluateAsync(IRSession session, RSessionCallback callback, CancellationToken ct) {
@@ -45,7 +50,7 @@ namespace Microsoft.Markdown.Editor.Margin {
                 if (callback.PlotResult != null) {
                     Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' />");
                     callback.PlotResult = null;
-                } else if(_output.Length > 0) {
+                } else if (_output.Length > 0) {
                     Result = Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>");
                 } else if (_errors.Length > 0) {
                     Result = Invariant($"<code style='white-space: pre-wrap; color: red'>{_errors.ToString()}</code>");
@@ -76,6 +81,44 @@ namespace Microsoft.Markdown.Editor.Margin {
                     _output.Append(e.Message);
                 }
             }
+        }
+        private void ExtractOptions(string info) {
+            // Lookup 'echo=TRUE'
+            var tokens = new TokenStream<RToken>(new RTokenizer().Tokenize(info), RToken.EndOfStreamToken);
+            while (!tokens.IsEndOfStream()) {
+                var t = tokens.CurrentToken;
+                if (t.TokenType == RTokenType.Identifier) {
+                    if (t.Length == 4) {
+                        if (info.Substring(t.Start, t.Length).EqualsOrdinal("echo")) {
+                            EchoContent = GetTokenValue(info, tokens, true);
+                        } else if (info.Substring(t.Start, t.Length).EqualsOrdinal("eval")) {
+                            Eval = GetTokenValue(info, tokens, true);
+                        }
+                    } else if (t.Length == 5 && info.Substring(t.Start, t.Length).EqualsOrdinal("error")) {
+                         DisplayErrors = GetTokenValue(info, tokens, true);
+                    } else if (t.Length == 7 && info.Substring(t.Start, t.Length).EqualsOrdinal("warning")) {
+                        DisplayWarnings = GetTokenValue(info, tokens, true);
+                    }
+                }
+                tokens.MoveToNextToken();
+            }
+        }
+
+        private bool GetTokenValue(string info, TokenStream<RToken> tokens, bool defaultValue) {
+            var t = tokens.MoveToNextToken();
+            if (t.Length == 1 && info[t.Start] == '=') {
+                t = tokens.MoveToNextToken();
+                if (t.TokenType == RTokenType.Logical) {
+                    var value = info.Substring(t.Start, t.Length);
+                    if (value.EqualsOrdinal("FALSE")) {
+                        return false;
+                    }
+                    if (value.EqualsOrdinal("TRUE")) {
+                        return true;
+                    }
+                }
+            }
+            return defaultValue;
         }
     }
 }

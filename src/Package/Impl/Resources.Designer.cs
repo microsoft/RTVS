@@ -394,61 +394,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
-        /// </summary>
-        public static string Error_PackageMissing {
-            get {
-                return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown requires Pandoc. Please install Pandoc for Windows from http://pandoc.org/installing.html.
-        ///    
-        ///Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes..
-        /// </summary>
-        public static string Error_PandocMissingLocal {
-            get {
-                return ResourceManager.GetString("Error_PandocMissingLocal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
-        ///    
-        ///Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes..
-        /// </summary>
-        public static string Error_PandocMissingRemote {
-            get {
-                return ResourceManager.GetString("Error_PandocMissingRemote", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown to PDF requires TeX installation. Please install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
-        ///    
-        ///Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.
-        ///.
-        /// </summary>
-        public static string Error_PdfLatexMissingLocal {
-            get {
-                return ResourceManager.GetString("Error_PdfLatexMissingLocal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown to PDF requires TeX installation. Please contact the remote machine administrator and ask them to install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
-        ///
-        ///Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.
-        ///.
-        /// </summary>
-        public static string Error_PdfLatexMissingRemote {
-            get {
-                return ResourceManager.GetString("Error_PdfLatexMissingRemote", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {
@@ -778,42 +723,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Info_LocalFilePath {
             get {
                 return ResourceManager.GetString("Info_LocalFilePath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saving published output file: {0}.
-        /// </summary>
-        public static string Info_MarkdownGetOutputFile {
-            get {
-                return ResourceManager.GetString("Info_MarkdownGetOutputFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Finished publishing markdown file: {0}.
-        /// </summary>
-        public static string Info_MarkdownPublishComplete {
-            get {
-                return ResourceManager.GetString("Info_MarkdownPublishComplete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown file: {0}.
-        /// </summary>
-        public static string Info_MarkdownPublishingFile {
-            get {
-                return ResourceManager.GetString("Info_MarkdownPublishingFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sending markdown input file to R: {0}.
-        /// </summary>
-        public static string Info_MarkdownSendingInputFile {
-            get {
-                return ResourceManager.GetString("Info_MarkdownSendingInputFile", resourceCulture);
             }
         }
         
@@ -3624,15 +3533,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Warning_RStudioKeyboardShortcuts {
             get {
                 return ResourceManager.GetString("Warning_RStudioKeyboardShortcuts", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?.
-        /// </summary>
-        public static string Warning_SaveInUtf8 {
-            get {
-                return ResourceManager.GetString("Warning_SaveInUtf8", resourceCulture);
             }
         }
         

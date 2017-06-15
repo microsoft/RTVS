@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMarginProvider.cs
 
     [Export(typeof(IWpfTextViewMarginProvider))]
@@ -35,7 +35,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             if (_settings.EnablePreview && _settings.PreviewPosition == RMarkdownPreviewPosition.Right) {
                 var tv = wpfTextViewHost.TextView;
                 if (_tdfs.TryGetTextDocument(tv.TextDataModel.DocumentBuffer, out ITextDocument document)) {
-                    return tv.Properties.GetOrCreateSingletonProperty(() => new BrowserMargin(tv, document, _services));
+                    return tv.Properties.GetOrCreateSingletonProperty(() => new PreviewMargin(tv, document, _services));
                 }
             }
             return null;
@@ -66,33 +66,8 @@ namespace Microsoft.Markdown.Editor.Margin {
                 if (_settings.EnablePreview && _settings.PreviewPosition == RMarkdownPreviewPosition.Below) {
                     var tv = wpfTextViewHost.TextView;
                     if (_tdfs.TryGetTextDocument(tv.TextDataModel.DocumentBuffer, out ITextDocument document)) {
-                        return tv.Properties.GetOrCreateSingletonProperty(() => new BrowserMargin(tv, document, _services));
+                        return tv.Properties.GetOrCreateSingletonProperty(() => new PreviewMargin(tv, document, _services));
                     }
-                }
-                return null;
-            }
-        }
-
-        [Export(typeof(IWpfTextViewMarginProvider))]
-        [Name("LiveSyncFactory")]
-        [Order(Before = PredefinedMarginNames.HorizontalScrollBarContainer)]
-        [MarginContainer(PredefinedMarginNames.BottomRightCorner)]
-        [ContentType(MdContentTypeDefinition.LanguageName)]
-        [TextViewRole(PredefinedTextViewRoles.Debuggable)] // This is to prevent the margin from loading in the diff view
-        public class LiveSyncMarginBottomProvider : IWpfTextViewMarginProvider {
-            private readonly IServiceContainer _services;
-            private readonly IRMarkdownEditorSettings _settings;
-
-            [ImportingConstructor]
-            public LiveSyncMarginBottomProvider(ICoreShell coreShell) {
-                _services = coreShell.Services;
-                _settings = coreShell.Services.GetService<IRMarkdownEditorSettings>();
-            }
-
-            public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer) {
-                if (_settings.EnablePreview) {
-                    var tv = wpfTextViewHost.TextView;
-                    return tv.Properties.GetOrCreateSingletonProperty(() => new LiveSyncMargin(tv, _services));
                 }
                 return null;
             }

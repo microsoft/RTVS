@@ -10,11 +10,10 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Flavor;
+using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
-using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Publishing {
+namespace Microsoft.Markdown.Editor.Publishing {
 
     [Export(typeof(IMarkdownFlavorPublishHandler))]
     internal sealed class RmdPublishHandler : IMarkdownFlavorPublishHandler {
@@ -35,29 +34,27 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
 
         private async Task RMarkdownRenderAsync(IRSession session, string inputFilePath, string outputFilePath, string format, int codePage, IServiceContainer services) {
             using (var fts = new DataTransferSession(session, services.FileSystem())) {
-                string currentStatusText = string.Empty;
-                uint cookie = 0;
-                IVsStatusbar statusBar = null;
-                services.MainThread().Post(() => {
-                    statusBar = services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
-                    statusBar.GetText(out currentStatusText);
-                    statusBar.Progress(ref cookie, 1, "", 0, 0);
-                });
+                var statusBar = services.GetService<IStatusBar>();
+
+                var currentStatusText = await statusBar.GetTextAsync();
+                await statusBar.ReportProgressAsync(string.Empty, 0, 0);
 
                 try {
                     // TODO: progress and cancellation handling
-                    services.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3); });
+                    await statusBar.ReportProgressAsync(Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3);
+
                     var rmd = await fts.SendFileAsync(inputFilePath, true, null, CancellationToken.None);
-                    services.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3); });
+                    await statusBar?.ReportProgressAsync(Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3);
+
                     var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
-                    services.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3); });
+
+                    await statusBar?.ReportProgressAsync(Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3);
                     await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath, true, null, CancellationToken.None);
-                    services.MainThread().Post(() => { statusBar?.Progress(ref cookie, 1, Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3); });
+
+                    await statusBar?.ReportProgressAsync(Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3);
                 } finally {
-                    services.MainThread().Post(() => {
-                        statusBar?.Progress(ref cookie, 0, "", 0, 0);
-                        statusBar?.SetText(currentStatusText);
-                    });
+                    await statusBar.ReportProgressAsync(string.Empty, 0, 0, true);
+                    await statusBar.SetTextAsync(currentStatusText);
                 }
             }
         }

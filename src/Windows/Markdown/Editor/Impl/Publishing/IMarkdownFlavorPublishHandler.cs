@@ -7,7 +7,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.VisualStudio.R.Package.Publishing.Definitions {
+namespace Microsoft.Markdown.Editor.Publishing {
     public interface IMarkdownFlavorPublishHandler {
         MarkdownFlavor Flavor { get; }
         string RequiredPackageName { get; }

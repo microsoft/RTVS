@@ -202,7 +202,6 @@
     <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
-    <Compile Include="Browsers\WebBrowserServicesTest.cs" />
     <Compile Include="Feedback\FeedbackCommandTest.cs" />
     <Compile Include="Fixtures\DisposeRInteractiveWorkflowFixture.cs" />
     <Compile Include="Fixtures\RPackageServicesFixture.cs" />

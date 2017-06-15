@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     public sealed class StylesheetUpdatedEventArgs: EventArgs {
         public string FileName { get; }
 

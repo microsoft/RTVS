@@ -24,25 +24,24 @@ using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
 
-namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
+namespace Microsoft.Markdown.Editor.Publishing.Commands {
     internal abstract class PreviewCommand : ViewCommand {
         private Task _lastCommandTask;
         private string _outputFilePath;
         private readonly Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler> _flavorHandlers = new Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler>();
-        protected readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
+        protected readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IProcessServices _pss;
         private readonly IFileSystem _fs;
 
         protected IServiceContainer Services { get; }
 
         protected PreviewCommand(ITextView textView, int id,
-            IRInteractiveWorkflowVisualProvider workflowProvider, IServiceContainer services)
-            : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
+            IRInteractiveWorkflowProvider workflowProvider, IServiceContainer services)
+            : base(textView, new [] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
             _workflowProvider = workflowProvider;
             Services = services;
             _fs = services.FileSystem();
@@ -75,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 return CommandResult.Disabled;
             }
 
-            IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
+            var flavorHandler = GetFlavorHandler(TextView.TextBuffer);
             if (flavorHandler == null) {
                 return CommandResult.Disabled;
             }
@@ -146,9 +145,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
             _lastCommandTask = null;
         }
 
-        protected virtual void LaunchViewer(string fileName) {
-            _pss.Start(_outputFilePath);
-        }
+        protected virtual void LaunchViewer(string fileName) => _pss.Start(_outputFilePath);
 
         private bool TaskAvailable() {
             if (_lastCommandTask == null) {
@@ -166,24 +163,16 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
         }
 
         private IMarkdownFlavorPublishHandler GetFlavorHandler(ITextBuffer textBuffer) {
-            MarkdownFlavor flavor = MdFlavor.FromTextBuffer(textBuffer);
-            IMarkdownFlavorPublishHandler value = null;
-
-            if (_flavorHandlers.TryGetValue(flavor, out value)) {
+            var flavor = MdFlavor.FromTextBuffer(textBuffer);
+            if (_flavorHandlers.TryGetValue(flavor, out IMarkdownFlavorPublishHandler value)) {
                 return value;
             }
-
             return null; // new MdPublishHandler();
         }
 
         private bool IsFormatSupported() {
-            IMarkdownFlavorPublishHandler flavorHandler = GetFlavorHandler(TextView.TextBuffer);
-            if (flavorHandler != null) {
-                if (flavorHandler.FormatSupported(Format)) {
-                    return true;
-                }
-            }
-            return false;
+            var flavorHandler = GetFlavorHandler(TextView.TextBuffer);
+            return flavorHandler != null && flavorHandler.FormatSupported(Format);
         }
 
         protected Task<bool> CheckExistsOnPathAsync(string fileName) {

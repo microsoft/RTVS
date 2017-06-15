@@ -10,18 +10,16 @@ using System.Threading.Tasks;
 using Markdig.Syntax;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
-using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using mshtml;
-using Microsoft.Markdown.Editor.Settings;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/Browser.cs
     public sealed class Browser : IDisposable {
         private static string _htmlTemplate;
@@ -67,7 +65,6 @@ namespace Microsoft.Markdown.Editor.Margin {
 
                 _cachedHeight = _htmlDocument.body.offsetHeight;
                 _htmlDocument.documentElement.setAttribute("scrollTop", _positionPercentage * _cachedHeight / 100);
-                AdjustAnchors();
                 _documentRenderer.RenderCodeBlocks(_htmlDocument);
             };
 
@@ -79,81 +76,14 @@ namespace Microsoft.Markdown.Editor.Margin {
             if (e.Uri == null) {
                 return;
             }
+
             e.Cancel = true;
-
-            // If it's a file-based anchor we converted, open the related file if possible
-            if (e.Uri.Scheme.EqualsOrdinal("about")) {
-                var file = e.Uri.LocalPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-
-                if (file.EqualsOrdinal("blank")) {
-                    var fragment = e.Uri.Fragment?.TrimStart('#');
-                    NavigateToFragment(fragment);
-                    return;
-                }
-
-                var fs = _services.GetService<IFileSystem>();
-                if (!fs.FileExists(file)) {
-                    string ext = null;
-
-                    // If the file has no extension, see if one exists with a markdown extension.
-                    // If so, treat it as the file to open.
-                    if (string.IsNullOrEmpty(Path.GetExtension(file))) {
-                        ext = MdContentTypeDefinition.FileExtension;
-                    }
-
-                    if (ext != null) {
-                        //ProjectHelpers.OpenFileInPreviewTab(Path.ChangeExtension(file, ext));
-                    }
-                } else {
-                    //ProjectHelpers.OpenFileInPreviewTab(file);
-                }
-            } else if (e.Uri.IsAbsoluteUri && e.Uri.Scheme.StartsWith("http")) {
+            if (e.Uri.IsAbsoluteUri && e.Uri.Scheme.StartsWith("http")) {
                 var ps = _services.GetService<IProcessServices>();
                 ps.Start(e.Uri.ToString());
             }
         }
 
-
-        private void NavigateToFragment(string fragmentId)
-            => _htmlDocument.getElementById(fragmentId)?.scrollIntoView(true);
-
-        /// <summary>
-        /// Adjust the file-based anchors so that they are navigable on the local file system
-        /// </summary>
-        /// <remarks>Anchors using the "file:" protocol appear to be blocked by security settings and won't work.
-        /// If we convert them to use the "about:" protocol so that we recognize them, we can open the file in
-        /// the <c>Navigating</c> event handler.</remarks>
-        private void AdjustAnchors() {
-            try {
-                foreach (var link in _htmlDocument.links) {
-                    var anchor = link as HTMLAnchorElement;
-
-                    if (anchor != null && anchor.protocol.EqualsOrdinal("file:")) {
-                        string pathName = null, hash = anchor.hash;
-
-                        // Anchors with a hash cause a crash if you try to set the protocol without clearing the
-                        // hash and path name first.
-                        if (hash != null) {
-                            pathName = anchor.pathname;
-                            anchor.hash = null;
-                            anchor.pathname = string.Empty;
-                        }
-
-                        anchor.protocol = "about:";
-
-                        if (hash != null) {
-                            // For an in-page section link, use "blank" as the path name.  These don't work
-                            // anyway but this is the proper way to handle them.
-                            if (pathName == null || pathName.EndsWith("/")) {
-                                pathName = "blank";
-                            }
-                            anchor.pathname = pathName;
-                            anchor.hash = hash;
-                        }
-                    }
-                }
-            } catch (Exception ex) when (!ex.IsCriticalException()) { }
-        }
 
         private static int GetZoomFactor() {
             using (var g = Graphics.FromHwnd(Process.GetCurrentProcess().MainWindowHandle)) {
@@ -221,7 +151,6 @@ namespace Microsoft.Markdown.Editor.Margin {
                 if (content != null) {
                     content.innerHTML = html;
                     // Adjust the anchors after and edit
-                    AdjustAnchors();
                 } else {
                     html = GetPageHtml(html);
                     Control.NavigateToString(html);
@@ -253,8 +182,9 @@ namespace Microsoft.Markdown.Editor.Margin {
         }
 
         private void Zoom(int zoomFactor) {
-            if (zoomFactor == 100)
+            if (zoomFactor == 100) {
                 return;
+            }
 
             dynamic OLECMDEXECOPT_DODEFAULT = 0;
             dynamic OLECMDID_OPTICAL_ZOOM = 63;

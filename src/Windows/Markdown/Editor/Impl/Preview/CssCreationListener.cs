@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("CSS")]
     [TextViewRole(PredefinedTextViewRoles.Document)]

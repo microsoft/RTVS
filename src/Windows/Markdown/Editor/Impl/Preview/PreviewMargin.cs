@@ -2,41 +2,40 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Markdown.Editor.Margin {
+namespace Microsoft.Markdown.Editor.Preview {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMargin.cs
-    public sealed class BrowserMargin : DockPanel, IWpfTextViewMargin {
+    public sealed class PreviewMargin : DockPanel, IWpfTextViewMargin {
         private static object _idleActionTag;
 
         private readonly IIdleTimeService _idleTime;
         private readonly ITextDocument _document;
         private readonly ITextView _textView;
         private readonly IRMarkdownEditorSettings _settings;
+        private readonly IContainedLanguageHandler _containedLanguageHandler;
 
-        private bool _updateContent;
-        private bool _updatePosition;
         private int _lastLineNumber;
         private Task _browserUpdateTask;
 
-        public bool Enabled => true;
-        public double MarginSize => 500;
-        public FrameworkElement VisualElement => this;
         public Browser Browser { get; }
 
-        public BrowserMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
-            _idleActionTag = _idleActionTag ?? this.GetType();
+        public PreviewMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
+            _idleActionTag = _idleActionTag ?? GetType();
 
             _textView = textView;
             _document = document;
@@ -56,41 +55,52 @@ namespace Microsoft.Markdown.Editor.Margin {
             _idleTime = services.GetService<IIdleTimeService>();
             _textView.TextBuffer.Changed += OnTextBufferChanged;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
+
+            var rmdBuffer = _textView.BufferGraph.GetTextBuffers(b => b.ContentType.DisplayName.EqualsOrdinal(MdContentTypeDefinition.ContentType)).First();
+            _containedLanguageHandler = rmdBuffer.GetService<IContainedLanguageHandler>();
+
         }
 
-        public void Dispose() {
-            _updateContent = _updatePosition = false;
-            Browser?.Dispose();
-        }
+        public void Dispose() => Browser?.Dispose();
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            _updatePosition = true;
+            var snapshot = _textView.TextBuffer.CurrentSnapshot;
+
             if (IsCaretInRCode()) {
-                var lineNumber =
-                    _textView.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(_textView.Caret.Position
-                        .BufferPosition);
-                if (lineNumber == _lastLineNumber) {
-                    _updateContent = false;
+                // In R Code. only update if caret line changes
+                var caretPosition = _textView.Caret.Position.BufferPosition;
+                var currentLineNumber = snapshot.GetLineNumberFromPosition(caretPosition);
+                if (currentLineNumber == _lastLineNumber) {
+                    return;
                 }
-                _lastLineNumber = lineNumber;
+                _lastLineNumber = currentLineNumber;
+            }
+            else if (_lastLineNumber < snapshot.LineCount) {
+                    // Did the caret move out?
+                    if (!IsPositionInRCode(snapshot.GetLineFromLineNumber(_lastLineNumber).Start)) {
+                        // No, it did not, do nothing
+                        return;
+                    }
             }
 
-            IdleTimeAction.Cancel(_idleActionTag);
-            IdleTimeAction.Create(Update, 500, _idleActionTag, _idleTime);
+            UpdateOnIdle();
         }
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) => _updateContent = true;
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            // Update as-you-type outside of code blocks only.
+            // Code blocks are updated on caret line change
+            if (!IsCaretInRCode()) {
+                UpdateOnIdle();
+            }
+        }
+
+        private void UpdateOnIdle() {
+            IdleTimeAction.Cancel(_idleActionTag);
+            IdleTimeAction.Create(Update, 0, _idleActionTag, _idleTime);
+        }
 
         private void Update() {
-            if (_updateContent) {
-                UpdateBrowser();
-                _updateContent = false;
-            }
-
-            if (_updatePosition) {
-                Browser.UpdatePosition(_lastLineNumber);
-                _updatePosition = false;
-            }
+            UpdateBrowser();
         }
 
         private void UpdateBrowser() {
@@ -104,7 +114,13 @@ namespace Microsoft.Markdown.Editor.Margin {
             }
         }
 
+        #region IWpfTextViewMargin
         public ITextViewMargin GetTextViewMargin(string marginName) => this;
+        public bool Enabled => true;
+        public double MarginSize => 500;
+        public FrameworkElement VisualElement => this;
+        #endregion
+
 
         private void CreateRightMarginControls() {
             var width = _settings.PreviewWidth;
@@ -196,10 +212,7 @@ namespace Microsoft.Markdown.Editor.Margin {
             }
         }
 
-        private bool IsCaretInRCode() {
-            var containedLanguageHandler = _textView.TextBuffer.GetService<IContainedLanguageHandler>();
-            var block = containedLanguageHandler?.GetCodeBlockOfLocation(_textView.Caret.Position.BufferPosition);
-            return block != null;
-        }
+        private bool IsCaretInRCode() => IsPositionInRCode(_textView.Caret.Position.BufferPosition);
+        private bool IsPositionInRCode(int position) => _containedLanguageHandler.GetCodeBlockOfLocation(position) != null;
     }
 }
