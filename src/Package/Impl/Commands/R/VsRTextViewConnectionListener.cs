@@ -9,6 +9,8 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -61,6 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
             var clh = ContainedLanguageHost.GetHost(textView, textBuffer, Services);
+            VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
             OleControllerChain.InitEditorInstance(textBuffer, Services);
             base.OnTextBufferCreated(textView, textBuffer);
         }

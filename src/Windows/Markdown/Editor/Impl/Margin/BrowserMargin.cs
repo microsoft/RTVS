@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Microsoft.Common.Core;
+using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -15,15 +18,17 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Markdown.Editor.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMargin.cs
     public sealed class BrowserMargin : DockPanel, IWpfTextViewMargin {
+        private static object _idleActionTag;
+
         private readonly IIdleTimeService _idleTime;
         private readonly ITextDocument _document;
         private readonly ITextView _textView;
         private readonly IRMarkdownEditorSettings _settings;
 
-        private bool _connectedToIdle;
         private bool _updateContent;
         private bool _updatePosition;
         private int _lastLineNumber;
+        private Task _browserUpdateTask;
 
         public bool Enabled => true;
         public double MarginSize => 500;
@@ -31,6 +36,8 @@ namespace Microsoft.Markdown.Editor.Margin {
         public Browser Browser { get; }
 
         public BrowserMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
+            _idleActionTag = _idleActionTag ?? this.GetType();
+
             _textView = textView;
             _document = document;
             _settings = services.GetService<IRMarkdownEditorSettings>();
@@ -51,41 +58,51 @@ namespace Microsoft.Markdown.Editor.Margin {
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
         }
 
-        public void Dispose() => Browser?.Dispose();
+        public void Dispose() {
+            _updateContent = _updatePosition = false;
+            Browser?.Dispose();
+        }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
             _updatePosition = true;
-            ConnectToIdle();
+            if (IsCaretInRCode()) {
+                var lineNumber =
+                    _textView.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(_textView.Caret.Position
+                        .BufferPosition);
+                if (lineNumber == _lastLineNumber) {
+                    _updateContent = false;
+                }
+                _lastLineNumber = lineNumber;
+            }
+
+            IdleTimeAction.Cancel(_idleActionTag);
+            IdleTimeAction.Create(Update, 500, _idleActionTag, _idleTime);
         }
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            _updateContent = true;
-            ConnectToIdle();
-        }
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) => _updateContent = true;
 
-        private void OnIdle(object sender, EventArgs e) {
-            DisconnectFromIdle();
-
+        private void Update() {
             if (_updateContent) {
                 UpdateBrowser();
                 _updateContent = false;
             }
 
             if (_updatePosition) {
-                UpdatePosition();
+                Browser.UpdatePosition(_lastLineNumber);
                 _updatePosition = false;
             }
         }
 
-        private void UpdatePosition() {
-            var lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(_textView.TextViewLines.FirstVisibleLine.Start.Position);
-            if (lineNumber != _lastLineNumber) {
-                _lastLineNumber = lineNumber;
-                Browser.UpdatePosition(lineNumber);
+        private void UpdateBrowser() {
+            if (_browserUpdateTask == null) {
+                _browserUpdateTask = Browser
+                    .UpdateBrowserAsync(_document.TextBuffer.CurrentSnapshot)
+                    .ContinueWith(t => _browserUpdateTask = null);
+            } else {
+                // Still running, try again later
+                IdleTimeAction.Create(Update, 500, _idleActionTag, _idleTime);
             }
         }
-
-        private void UpdateBrowser() => Browser.UpdateBrowserAsync(_document.TextBuffer.CurrentSnapshot).DoNotWait();
 
         public ITextViewMargin GetTextViewMargin(string marginName) => this;
 
@@ -179,16 +196,10 @@ namespace Microsoft.Markdown.Editor.Margin {
             }
         }
 
-        private void ConnectToIdle() {
-            if (!_connectedToIdle) {
-                _idleTime.Idle += OnIdle;
-                _connectedToIdle = true;
-            }
-        }
-
-        private void DisconnectFromIdle() {
-            _idleTime.Idle -= OnIdle;
-            _connectedToIdle = false;
+        private bool IsCaretInRCode() {
+            var containedLanguageHandler = _textView.TextBuffer.GetService<IContainedLanguageHandler>();
+            var block = containedLanguageHandler?.GetCodeBlockOfLocation(_textView.Caret.Position.BufferPosition);
+            return block != null;
         }
     }
 }
