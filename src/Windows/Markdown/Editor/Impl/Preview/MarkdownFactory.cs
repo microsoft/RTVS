@@ -17,7 +17,6 @@ namespace Microsoft.Markdown.Editor.Preview {
         static MarkdownFactory() {
             Pipeline = new MarkdownPipelineBuilder()
                 .UseYamlFrontMatter()
-                .UsePragmaLines()
                 .Build();
         }
 

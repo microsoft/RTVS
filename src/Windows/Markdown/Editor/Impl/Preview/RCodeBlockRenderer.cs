@@ -82,16 +82,15 @@ namespace Microsoft.Markdown.Editor.Preview {
                 if (result != null) {
                     WriteBlockContent(renderer, _blockNumber, text);
                     renderer.Write(result);
-                    return;
+                } else {
+                    var rCodeBlock = new RCodeBlock(_blockNumber, fencedCodeBlock.Arguments, text, hash);
+                    var elementId = rCodeBlock.HtmlElementId;
+                    _blocks.Add(rCodeBlock);
+
+                    WriteBlockContent(renderer, _blockNumber, text);
+                    // Write placeholder first. We will insert actual data when the evaluation is done.
+                    renderer.Write(GetBlockPlaceholder(elementId));
                 }
-
-                var rCodeBlock = new RCodeBlock(_blockNumber, fencedCodeBlock.Arguments, text, hash);
-                var elementId = rCodeBlock.HtmlElementId;
-                _blocks.Add(rCodeBlock);
-
-                WriteBlockContent(renderer, _blockNumber, text);
-                // Write placeholder first. We will insert actual data when the evaluation is done.
-                renderer.Write(GetBlockPlaceholder(elementId));
                 _blockNumber++;
             }
         }

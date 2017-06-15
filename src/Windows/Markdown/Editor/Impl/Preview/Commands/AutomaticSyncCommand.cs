@@ -9,7 +9,7 @@ using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Markdown.Editor.Publishing.Commands {
+namespace Microsoft.Markdown.Editor.Preview.Commands {
     internal sealed class AutomaticSyncCommand: ViewCommand {
         private readonly IRMarkdownEditorSettings _settings;
 

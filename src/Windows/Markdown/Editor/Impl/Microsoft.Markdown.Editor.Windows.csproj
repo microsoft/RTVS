@@ -63,6 +63,7 @@
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="Preview\Browser.cs" />
+    <Compile Include="Preview\IMarkdownPreview.cs" />
     <Compile Include="Preview\PreviewMargin.cs" />
     <Compile Include="Preview\PreviewMarginProvider.cs" />
     <Compile Include="Preview\CssCreationListener.cs" />
@@ -73,8 +74,8 @@
     <Compile Include="Preview\RCodeBlockRenderer.cs" />
     <Compile Include="Preview\RSessionCallback.cs" />
     <Compile Include="Preview\StylesheetUpdatedEventArgs.cs" />
-    <Compile Include="Publishing\Commands\UpdatePreviewCommand.cs" />
-    <Compile Include="Publishing\Commands\AutomaticSyncCommand.cs" />
+    <Compile Include="Preview\Commands\UpdatePreviewCommand.cs" />
+    <Compile Include="Preview\Commands\AutomaticSyncCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
     <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />

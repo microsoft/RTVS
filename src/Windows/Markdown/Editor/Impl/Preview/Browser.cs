@@ -12,7 +12,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
-using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using mshtml;
 using static System.FormattableString;
@@ -25,18 +24,12 @@ namespace Microsoft.Markdown.Editor.Preview {
         private static string _htmlTemplate;
 
         private readonly IServiceContainer _services;
-        private readonly IRMarkdownEditorSettings _settings;
         private readonly string _fileName;
         private readonly int _zoomFactor;
         private readonly DocumentRenderer _documentRenderer;
 
         private HTMLDocument _htmlDocument;
-        private double _cachedPosition;
-        private double _cachedHeight;
-        private double _positionPercentage;
-
         private MarkdownDocument _currentDocument;
-        private int _currentViewLine = -1;
 
         public Browser(string fileName, IServiceContainer services) {
             Check.ArgumentNull(nameof(fileName), fileName);
@@ -44,7 +37,6 @@ namespace Microsoft.Markdown.Editor.Preview {
 
             _fileName = fileName;
             _services = services;
-            _settings = _services.GetService<IRMarkdownEditorSettings>();
 
             _zoomFactor = GetZoomFactor();
             InitBrowser();
@@ -62,9 +54,6 @@ namespace Microsoft.Markdown.Editor.Preview {
             Control.LoadCompleted += (s, e) => {
                 Zoom(_zoomFactor);
                 _htmlDocument = (HTMLDocument)Control.Document;
-
-                _cachedHeight = _htmlDocument.body.offsetHeight;
-                _htmlDocument.documentElement.setAttribute("scrollTop", _positionPercentage * _cachedHeight / 100);
                 _documentRenderer.RenderCodeBlocks(_htmlDocument);
             };
 
@@ -102,37 +91,9 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
         }
 
-        public void UpdatePosition(int line) {
-            if (_htmlDocument != null && _currentDocument != null && _settings.AutomaticSync) {
-                _currentViewLine = _currentDocument.FindClosestLine(line);
-                SyncNavigation();
-            }
-        }
-
-        private void SyncNavigation() {
-            if (_htmlDocument == null) {
-                return;
-            }
-
-            if (_settings.AutomaticSync) {
-                if (_currentViewLine == 0) {
-                    // Forces the preview window to scroll to the top of the document
-                    _htmlDocument.documentElement.setAttribute("scrollTop", 0);
-                } else {
-                    var element = _htmlDocument.getElementById("pragma-line-" + _currentViewLine);
-                    element?.scrollIntoView(true);
-                }
-            } else if (_htmlDocument != null) {
-                _currentViewLine = -1;
-                _cachedPosition = _htmlDocument.documentElement.getAttribute("scrollTop");
-                _cachedHeight = Math.Max(1.0, _htmlDocument.body.offsetHeight);
-                _positionPercentage = _cachedPosition * 100 / _cachedHeight;
-            }
-        }
-
         public Task UpdateBrowserAsync(ITextSnapshot snapshot) => Task.Run(() => UpdateBrowser(snapshot));
 
-        private void UpdateBrowser(ITextSnapshot snapshot) {
+        public void UpdateBrowser(ITextSnapshot snapshot) {
             // Generate the HTML document
             string html;
             try {
@@ -158,7 +119,6 @@ namespace Microsoft.Markdown.Editor.Preview {
                 if (_htmlDocument != null) {
                     _documentRenderer.RenderCodeBlocks(_htmlDocument);
                 }
-                SyncNavigation();
             });
         }
 

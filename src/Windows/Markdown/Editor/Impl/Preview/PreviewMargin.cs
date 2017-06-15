@@ -20,7 +20,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.Preview {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMargin.cs
-    public sealed class PreviewMargin : DockPanel, IWpfTextViewMargin {
+    public sealed class PreviewMargin : DockPanel, IWpfTextViewMargin, IMarkdownPreview {
         private static object _idleActionTag;
 
         private readonly IIdleTimeService _idleTime;
@@ -59,11 +59,19 @@ namespace Microsoft.Markdown.Editor.Preview {
             var rmdBuffer = _textView.BufferGraph.GetTextBuffers(b => b.ContentType.DisplayName.EqualsOrdinal(MdContentTypeDefinition.ContentType)).First();
             _containedLanguageHandler = rmdBuffer.GetService<IContainedLanguageHandler>();
 
+            textView.AddService(this);
         }
 
-        public void Dispose() => Browser?.Dispose();
+        public void Dispose() {
+            Browser?.Dispose();
+            _textView?.RemoveService(this);
+        }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+            if (!_settings.AutomaticSync) {
+                return;
+            }
+
             var snapshot = _textView.TextBuffer.CurrentSnapshot;
 
             if (IsCaretInRCode()) {
@@ -89,7 +97,7 @@ namespace Microsoft.Markdown.Editor.Preview {
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             // Update as-you-type outside of code blocks only.
             // Code blocks are updated on caret line change
-            if (!IsCaretInRCode()) {
+            if (_settings.AutomaticSync && !IsCaretInRCode()) {
                 UpdateOnIdle();
             }
         }
@@ -99,9 +107,7 @@ namespace Microsoft.Markdown.Editor.Preview {
             IdleTimeAction.Create(Update, 0, _idleActionTag, _idleTime);
         }
 
-        private void Update() {
-            UpdateBrowser();
-        }
+        public void Update() => UpdateBrowser();
 
         private void UpdateBrowser() {
             if (_browserUpdateTask == null) {

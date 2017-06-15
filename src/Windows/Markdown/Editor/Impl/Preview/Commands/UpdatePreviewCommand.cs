@@ -5,11 +5,12 @@ using System;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Markdown.Editor.Publishing.Commands {
+namespace Microsoft.Markdown.Editor.Preview.Commands {
     internal sealed class UpdatePreviewCommand : ViewCommand {
         private readonly IRMarkdownEditorSettings _settings;
 
@@ -20,5 +21,10 @@ namespace Microsoft.Markdown.Editor.Publishing.Commands {
 
         public override CommandStatus Status(Guid @group, int id)
             => _settings.AutomaticSync ? CommandStatus.Supported : CommandStatus.SupportedAndEnabled;
+
+        public override CommandResult Invoke(Guid @group, int id, object inputArg, ref object outputArg) {
+            TextView.GetService<IMarkdownPreview>()?.Update();
+            return CommandResult.Executed;
+        }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Preview.Commands;
 using Microsoft.Markdown.Editor.Publishing.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text;
