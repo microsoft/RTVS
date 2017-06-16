@@ -123,6 +123,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             ClientToHostWorker(_process.StandardInput, hostEnd).DoNotWait();
             HostToClientWorker(_process.StandardOutput, hostEnd).DoNotWait();
 
+            // ToDo: Remove this after https://github.com/Microsoft/RTVS/issues/3626 
             HostToClientErrorWorker(_process.StandardError, _process.Id, 
                 (processid, errdata) => outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata)).DoNotWait();
         }
@@ -154,7 +155,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 while (true) {
                     try {
                         string data = await reader.ReadLineAsync();
-                        if (data.Length > 0) {
+                        if (data != null && data.Length > 0) {
                             opp?.Invoke(processid, data);
                         }
                     } catch (IOException) {
