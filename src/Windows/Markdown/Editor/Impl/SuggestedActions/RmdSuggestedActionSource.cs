@@ -15,21 +15,22 @@ using Microsoft.Languages.Editor.SuggestedActions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Editor;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.SuggestedActions {
-    internal sealed class RSuggestedActionSource : ISuggestedActionsSource {
+namespace Microsoft.Markdown.Editor.SuggestedActions {
+    internal sealed class RmdSuggestedActionSource : ISuggestedActionsSource {
         private readonly IEnumerable<ISuggestedActionProvider> _suggestedActionProviders;
         private ITextBuffer _textBuffer;
         private ITextView _textView;
         IREditorDocument _document;
         IAstNode _lastNode;
 
-        private RSuggestedActionSource(ITextView textView, ITextBuffer textBuffer, IEnumerable<ISuggestedActionProvider> suggestedActionProviders, ICoreShell shell) {
+        private RmdSuggestedActionSource(ITextView textView, ITextBuffer textBuffer, IEnumerable<ISuggestedActionProvider> suggestedActionProviders, ICoreShell shell) {
             _textBuffer = textBuffer;
             _textView = textView;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
@@ -44,7 +45,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) {
-            var suggestedActionsSource = textView.GetService<RSuggestedActionSource>();
+            var suggestedActionsSource = textView.GetService<RmdSuggestedActionSource>();
             if (suggestedActionsSource == null) {
                 // Check for detached documents in the interactive window projected buffers
                 var document = textBuffer.GetEditorDocument<IREditorDocument>();
@@ -53,7 +54,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
                 }
                 var suggestedActionProviders = 
                     ComponentLocator<ISuggestedActionProvider>.ImportMany(shell.GetService<ICompositionService>()).Select(p => p.Value);
-                suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders, shell);
+                suggestedActionsSource = new RmdSuggestedActionSource(textView, textBuffer, suggestedActionProviders, shell);
             }
             return suggestedActionsSource;
         }

@@ -88,6 +88,8 @@
     <Compile Include="Settings\IRMarkdownEditorSettings.cs" />
     <Compile Include="Settings\RMarkdownEditorSettings.cs" />
     <Compile Include="Settings\RMarkdownPreviewPosition.cs" />
+    <Compile Include="SuggestedActions\RmdSuggestedActionSource.cs" />
+    <Compile Include="SuggestedActions\RmdSuggestedActionSourceProvider.cs" />
     <Compile Include="ViewModel\MdEditorViewModel.cs" />
     <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
