@@ -13,15 +13,15 @@ namespace Microsoft.R.Editor.SuggestedActions {
     [Export(typeof(ISuggestedActionsSourceProvider))]
     [Name("RSuggestedActionSourceProvider")]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class RSuggestedActionSourceProvider : ISuggestedActionsSourceProvider {
+    internal sealed class RSuggestedActionsSourceProvider : ISuggestedActionsSourceProvider {
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public RSuggestedActionSourceProvider(ICoreShell shell) {
+        public RSuggestedActionsSourceProvider(ICoreShell shell) {
             _shell = shell;
         }
 
         public ISuggestedActionsSource CreateSuggestedActionsSource(ITextView textView, ITextBuffer textBuffer)
-            => textView.Properties.GetOrCreateSingletonProperty(() => RSuggestedActionSource.FromViewAndBuffer(textView, textBuffer, _shell));
+            => textView.Properties.GetOrCreateSingletonProperty(() => RSuggestedActionsSource.Create(textView, textBuffer, _shell.Services));
     }
 }

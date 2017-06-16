@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 
 namespace Microsoft.Languages.Editor.Composition {
     public class ImportComposer<TInterface, TMetadata>
@@ -16,44 +17,17 @@ namespace Microsoft.Languages.Editor.Composition {
             cs.SatisfyImportsOnce(this);
         }
 
-        public virtual TInterface GetImport(string attributeValue) {
-            foreach (var import in Imports) {
-                foreach (var value in import.Metadata.ContentTypes) {
-                    if (String.Compare(value, attributeValue, StringComparison.OrdinalIgnoreCase) == 0) {
-                        return import.Value;
-                    }
-                }
-            }
+        public virtual TInterface GetImport(string attributeValue)
+            => Imports.FirstOrDefault(x => x.Metadata.ContentTypes.Contains(attributeValue, StringComparer.OrdinalIgnoreCase))?.Value;
 
-            return null;
-        }
 
-        public virtual ICollection<TInterface> GetAll(string attributeValue) {
-            var list = new List<TInterface>();
+        public virtual ICollection<TInterface> GetAll(string attributeValue)
+            => Imports.Where(x => x.Metadata.ContentTypes.Contains(attributeValue, StringComparer.OrdinalIgnoreCase))
+                      .Select(x => x.Value)
+                      .ToList();
 
-            foreach (var import in Imports) {
-                foreach (var value in import.Metadata.ContentTypes) {
-                    if (String.Compare(value, attributeValue, StringComparison.OrdinalIgnoreCase) == 0) {
-                        list.Add(import.Value);
-                    }
-                }
-            }
-
-            return list;
-        }
-
-        public virtual ICollection<Lazy<TInterface, TMetadata>> GetAllLazy(string attributeValue) {
-            var list = new List<Lazy<TInterface, TMetadata>>();
-
-            foreach (var import in Imports) {
-                foreach (var value in import.Metadata.ContentTypes) {
-                    if (String.Compare(value, attributeValue, StringComparison.OrdinalIgnoreCase) == 0) {
-                        list.Add(import);
-                    }
-                }
-            }
-
-            return list;
-        }
+        public virtual ICollection<Lazy<TInterface, TMetadata>> GetAllLazy(string attributeValue)
+            => Imports.Where(x => x.Metadata.ContentTypes.Contains(attributeValue, StringComparer.OrdinalIgnoreCase))
+                      .ToList();
     }
 }

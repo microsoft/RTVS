@@ -11,17 +11,17 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.SuggestedActions {
     [Export(typeof(ISuggestedActionsSourceProvider))]
-    [Name("RSuggestedActionSourceProvider")]
+    [Name("RmdSuggestedActionSourceProvider")]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    internal sealed class RmdSuggestedActionSourceProvider : ISuggestedActionsSourceProvider {
+    internal sealed class RmdSuggestedActionsSourceProvider : ISuggestedActionsSourceProvider {
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public RmdSuggestedActionSourceProvider(ICoreShell shell) {
+        public RmdSuggestedActionsSourceProvider(ICoreShell shell) {
             _shell = shell;
         }
 
         public ISuggestedActionsSource CreateSuggestedActionsSource(ITextView textView, ITextBuffer textBuffer)
-            => textView.Properties.GetOrCreateSingletonProperty(() => RmdSuggestedActionSource.FromViewAndBuffer(textView, textBuffer, _shell));
+            => textView.Properties.GetOrCreateSingletonProperty(() => RmdSuggestedActionsSource.Create(textView, textBuffer, _shell.Services));
     }
 }

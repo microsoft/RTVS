@@ -126,8 +126,8 @@
     <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\RSuggestedActionBase.cs" />
     <Compile Include="SuggestedActions\Providers\LibraryStatementSuggestedActionProvider.cs" />
-    <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
-    <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionsSource.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionsSourceProvider.cs" />
     <Compile Include="Undo\MassiveChange.cs" />
     <Compile Include="Validation\Tagger\EditorErrorTag.cs" />
     <Compile Include="Validation\Tagger\ErrorTagCollection.cs" />

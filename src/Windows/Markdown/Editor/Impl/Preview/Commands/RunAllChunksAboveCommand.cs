@@ -13,11 +13,11 @@ using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.Preview.Commands {
-    internal sealed class UpdateChunkCommand : ViewCommand {
+    internal sealed class RunAllChunksAboveCommand : ViewCommand {
         private readonly IRMarkdownEditorSettings _settings;
 
-        public UpdateChunkCommand(ITextView textView, IServiceContainer services) :
-            base(textView, new CommandId(MdPackageCommandId.MdCmdSetGuid, MdPackageCommandId.icmdUpdateChunk), false) {
+        public RunAllChunksAboveCommand(ITextView textView, IServiceContainer services) :
+            base(textView, new CommandId(MdPackageCommandId.MdCmdSetGuid, MdPackageCommandId.icmdRunAllChunksAbove), false) {
             _settings = services.GetService<IRMarkdownEditorSettings>();
         }
 
@@ -32,7 +32,7 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
         }
 
         public override CommandResult Invoke(Guid @group, int id, object inputArg, ref object outputArg) {
-            TextView.GetService<IMarkdownPreview>()?.UpdateChunk();
+            TextView.GetService<IMarkdownPreview>()?.RunAllChunksAbove();
             return CommandResult.Executed;
         }
     }

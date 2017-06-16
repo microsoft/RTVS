@@ -1593,6 +1593,7 @@
       <VSIXSourceItem Include="$(OutputPath)\System.Xml.XPath.XDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.CodeAnalysis.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
       <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />

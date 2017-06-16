@@ -4,6 +4,7 @@
 namespace Microsoft.Markdown.Editor.Preview {
     internal interface IMarkdownPreview {
         void Update();
-        void UpdateChunk();
+        void RunCurrentChunk();
+        void RunAllChunksAbove();
     }
 }

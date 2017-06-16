@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
         private static Task _runningAction;
 
         protected RSuggestedActionBase(ITextView textView, ITextBuffer textBuffer, IRInteractiveWorkflow workflow, int position, string displayText)
-            : base(textBuffer, textView, position, displayText) {
+            : base(textView, textBuffer, position, displayText) {
             _workflow = workflow;
         }
 

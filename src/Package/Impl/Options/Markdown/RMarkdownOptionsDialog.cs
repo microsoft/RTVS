@@ -63,13 +63,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.Markdown {
             set => _settings.PreviewHeight = value;
         }
 
-        [LocCategory("Settings_MarkdownCategory_CSS")]
-        [CustomLocDisplayName("Settings_Markdown_CustomStylesheet")]
-        [LocDescription("Settings_Markdown_CustomStylesheet_Description")]
-        public string CustomStylesheet {
-            get => _settings.CustomStylesheetFileName;
-            set => _settings.CustomStylesheetFileName = value;
-        }
+        //[LocCategory("Settings_MarkdownCategory_Preview")]
+        //[CustomLocDisplayName("Settings_Markdown_CustomStylesheet")]
+        //[LocDescription("Settings_Markdown_CustomStylesheet_Description")]
+        //public string CustomStylesheet {
+        //    get => _settings.CustomStylesheetFileName;
+        //    set => _settings.CustomStylesheetFileName = value;
+        //}
 
         public override void ResetSettings() {
             _settings.ResetSettings();

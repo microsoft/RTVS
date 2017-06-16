@@ -19,6 +19,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using mshtml;
+using Microsoft.Markdown.Editor.Settings;
 using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.Preview {
@@ -26,7 +27,7 @@ namespace Microsoft.Markdown.Editor.Preview {
     /// Renders R code block output into HTML element
     /// </summary>
     internal sealed class RCodeBlockRenderer : HtmlObjectRenderer<CodeBlock>, IDisposable {
-        private static string _placeholderImage;
+        private static string _dynamicPlaceholderImage;
 
         /// <summary>
         /// Rendered results cache. Caches HTML for every code block.
@@ -36,6 +37,7 @@ namespace Microsoft.Markdown.Editor.Preview {
         private readonly List<RCodeBlock> _blocks = new List<RCodeBlock>();
 
         private readonly IServiceContainer _services;
+        private readonly IRMarkdownEditorSettings _settings;
         private readonly string _sessionId;
         private readonly CancellationTokenSource _hostStartCts = new CancellationTokenSource();
         private readonly RSessionCallback _sessionCallback = new RSessionCallback();
@@ -43,10 +45,11 @@ namespace Microsoft.Markdown.Editor.Preview {
         private CancellationTokenSource _blockEvalCts = new CancellationTokenSource();
         private IRSession _session;
         private int _blockNumber;
-        private Task _evalTask;
+        private Task _evalTask = Task.CompletedTask;
 
         public RCodeBlockRenderer(string documentName, IServiceContainer services) {
             _services = services;
+            _settings = services.GetService<IRMarkdownEditorSettings>();
             _sessionId = Invariant($"({documentName} - {Guid.NewGuid()}");
             StartSessionAsync(_hostStartCts.Token).DoNotWait();
         }
@@ -55,7 +58,7 @@ namespace Microsoft.Markdown.Editor.Preview {
             _blockNumber = 0;
             _blockEvalCts?.Cancel();
             _blockEvalCts = new CancellationTokenSource();
-            return Disposable.Create(() => _evalTask = EvaluateBlocksAsync(_blockEvalCts.Token));
+            return Disposable.Create(() => _evalTask = _settings.AutomaticSync ? EvaluateBlocksAsync(_blockEvalCts.Token) : Task.CompletedTask);
         }
 
         public async Task RenderBlocks(HTMLDocument htmlDocument) {
@@ -87,18 +90,23 @@ namespace Microsoft.Markdown.Editor.Preview {
                     var elementId = rCodeBlock.HtmlElementId;
                     _blocks.Add(rCodeBlock);
 
-                    WriteBlockContent(renderer, _blockNumber, text);
-                    // Write placeholder first. We will insert actual data when the evaluation is done.
-                    renderer.Write(GetBlockPlaceholder(elementId));
+                    var echoed = WriteBlockContent(renderer, _blockNumber, text);
+                    // Avoid duplicate code in non-automatic case
+                    if (!echoed || _settings.AutomaticSync) {
+                        // Write placeholder first. We will insert actual data when the evaluation is done.
+                        renderer.Write(GetBlockPlaceholder(elementId, text));
+                    }
                 }
                 _blockNumber++;
             }
         }
 
-        private void WriteBlockContent(HtmlRenderer renderer, int blockNumber, string text) {
+        private bool WriteBlockContent(HtmlRenderer renderer, int blockNumber, string text) {
             if (_blocks[blockNumber].EchoContent) {
                 renderer.Write(Invariant($"<pre class='r'><code>{text}</code></pre>"));
+                return true;
             }
+            return false;
         }
 
         private string GetCachedResult(int blockNumber, int hash, FencedCodeBlock block) {
@@ -119,20 +127,27 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
         }
 
-        private string GetBlockPlaceholder(string elementId) {
-            var base64Image = GetPlaceholderImage();
-            return Invariant($"<div id='{elementId}'><img src='data:image/gif;base64, {base64Image}' width='32' height='32' /></div>");
-        }
+        private string GetBlockPlaceholder(string elementId, string text)
+            => _settings.AutomaticSync ? GetDynamicPlaceholder(elementId) : GetStaticPlaceholder(elementId, text);
 
-        private static string GetPlaceholderImage() {
-            if (_placeholderImage == null) {
+        /// <summary>
+        /// Returns spinner image for automatic sync mode
+        /// </summary>
+        private static string GetDynamicPlaceholder(string elementId) {
+            if (_dynamicPlaceholderImage == null) {
                 using (var ms = new MemoryStream()) {
                     Resources.Loading.Save(ms, ImageFormat.Gif);
-                    _placeholderImage = Convert.ToBase64String(ms.ToArray());
+                    _dynamicPlaceholderImage = Convert.ToBase64String(ms.ToArray());
                 }
             }
-            return _placeholderImage;
+            return Invariant($"<div id='{elementId}'><img src='data:image/gif;base64, {_dynamicPlaceholderImage}' width='32' height='32' /></div>");
         }
+
+        /// <summary>
+        /// Returns static image for manual sync mode
+        /// </summary>
+        private static string GetStaticPlaceholder(string elementId, string text)
+            => Invariant($"<div id='{elementId}'><code>{text}</code></div>");
 
         private static string GetBlockText(FencedCodeBlock block) {
             var sb = new StringBuilder();

@@ -288,6 +288,15 @@ namespace Microsoft.Markdown.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Code Chunk Output.
+        /// </summary>
+        public static string OutputPlaceholder {
+            get {
+                return ResourceManager.GetString("OutputPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Knit and preview HTML.
         /// </summary>
         public static string PreviewHtmlTooltip {
@@ -311,6 +320,24 @@ namespace Microsoft.Markdown.Editor {
         public static string PreviewWordTooltip {
             get {
                 return ResourceManager.GetString("PreviewWordTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run all chunks above.
+        /// </summary>
+        public static string SuggestedAction_RunAllChunksAbove {
+            get {
+                return ResourceManager.GetString("SuggestedAction_RunAllChunksAbove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run current chunk.
+        /// </summary>
+        public static string SuggestedAction_RunCurrentChunk {
+            get {
+                return ResourceManager.GetString("SuggestedAction_RunCurrentChunk", resourceCulture);
             }
         }
         

@@ -18,7 +18,7 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
     /// for their language context (e.g. R, Markdown, JSON, etc).
     /// </summary>
     public abstract class SuggestedActionBase : ISuggestedAction {
-        protected SuggestedActionBase(ITextBuffer buffer, ITextView view, int position, string displayText) {
+        protected SuggestedActionBase(ITextView view, ITextBuffer buffer, int position, string displayText) {
             TextBuffer = buffer;
             TextView = view;
             Position = position;
@@ -51,20 +51,14 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
         /// </summary>
         public virtual bool HasPreview => false;
 
-        public virtual Task<object> GetPreviewAsync(CancellationToken cancellationToken) {
-            return Task.FromResult<object>(null);
-        }
+        public virtual Task<object> GetPreviewAsync(CancellationToken cancellationToken) => Task.FromResult<object>(null);
 
         public abstract void Invoke(CancellationToken cancellationToken);
 
-        public virtual bool TryGetTelemetryId(out Guid telemetryId) {
-            telemetryId = Guid.Empty;
-            return false;
-        }
+        public abstract bool TryGetTelemetryId(out Guid telemetryId);
 
-        #region IDisposable Support
-        protected virtual void Dispose(bool disposing) {
-        }
+        #region IDisposable
+        protected virtual void Dispose(bool disposing) { }
 
         public void Dispose() {
             Dispose(true);

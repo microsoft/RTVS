@@ -97,10 +97,16 @@ namespace Microsoft.Markdown.Editor.Preview {
             IdleTimeAction.Create(Update, 0, _idleActionTag, _idleTime);
         }
 
+        #region IMarkdownPreview
         public void Update() => UpdateBrowser();
-        public void UpdateChunk() {
+        public void RunCurrentChunk() {
 
         }
+
+        public void RunAllChunksAbove() {
+            
+        }
+        #endregion
 
         private void UpdateBrowser() {
             if (_browserUpdateTask == null) {

@@ -38,8 +38,8 @@ namespace Microsoft.Markdown.Editor.Commands {
                 new PreviewPdfCommand(textView, _workflowProvider, _services),
                 new PreviewWordCommand(textView, _workflowProvider, _services),
                 new AutomaticSyncCommand(textView, _services),
-                new UpdatePreviewCommand(textView, _services),
-                new UpdateChunkCommand(textView, _services)
+                new RunCurrentChunkCommand(textView, _services),
+                new RunAllChunksAboveCommand(textView, _services)
             };
             return commands;
         }

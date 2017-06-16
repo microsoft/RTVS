@@ -200,6 +200,9 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   <data name="ManualUpdateTooltip" xml:space="preserve">
     <value>Update HTML view</value>
   </data>
+  <data name="OutputPlaceholder" xml:space="preserve">
+    <value>R Code Chunk Output</value>
+  </data>
   <data name="PreviewHtmlTooltip" xml:space="preserve">
     <value>Knit and preview HTML</value>
   </data>
@@ -208,6 +211,12 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   </data>
   <data name="PreviewWordTooltip" xml:space="preserve">
     <value>Knit and preview Word file</value>
+  </data>
+  <data name="SuggestedAction_RunAllChunksAbove" xml:space="preserve">
+    <value>Run all chunks above</value>
+  </data>
+  <data name="SuggestedAction_RunCurrentChunk" xml:space="preserve">
+    <value>Run current chunk</value>
   </data>
   <data name="Warning_SaveInUtf8" xml:space="preserve">
     <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>

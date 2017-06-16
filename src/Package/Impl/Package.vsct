@@ -1134,7 +1134,7 @@
       <!-- End Data flyout -->
 
       <!-- Publish flyout -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0100" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdPreviewHtml" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownPreviewGroup"/>
         <Icon guid="ImageCatalogGuid" id="HTMLFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1147,7 +1147,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdPreviewPdf" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownPreviewGroup"/>
         <Icon guid="pdfIconGuid" id="pdfIcon"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -1159,7 +1159,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0300" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdPreviewWord" priority="0x0300" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownPreviewGroup"/>
         <Icon guid="ImageCatalogGuid" id="OfficeWord2013"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1172,9 +1172,9 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidAutomaticSync" priority="0x0100" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdAutomaticSync" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownAutoSyncGroup"/>
-        <Icon guid="ImageCatalogGuid" id="Rerun"/>
+        <Icon guid="ImageCatalogGuid" id="Sync"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1185,29 +1185,29 @@
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidUpdateChunk" priority="0x0200" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownSyncGroup"/>
-        <Icon guid="ImageCatalogGuid" id="UpdatePanel"/>
+        <Icon guid="ImageCatalogGuid" id="RunOutline"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Update &amp;Chunk Preview</ButtonText>
-          <CommandName>Update Chunk Preview</CommandName>
-          <ToolTipText>Evaluate code chunk and update preview pane</ToolTipText>
+          <ButtonText>Run &amp;Current Chunk</ButtonText>
+          <CommandName>Run Current Chunk</CommandName>
+          <ToolTipText>Run current code chunk and update preview pane</ToolTipText>
         </Strings>
       </Button>
       
-      <Button guid="guidMdToolsCmdSet" id="cmdidUpdatePreview" priority="0x0210" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" priority="0x0210" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownSyncGroup"/>
-        <Icon guid="ImageCatalogGuid" id="RunUpdate"/>
+        <Icon guid="ImageCatalogGuid" id="GoToBottom"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText> &amp;Update Preview</ButtonText>
-          <CommandName>Update Preview</CommandName>
-          <ToolTipText>Update the entire preview pane</ToolTipText>
+          <ButtonText>Run &amp;All Chunks Above</ButtonText>
+          <CommandName>Run All Chunks Above</CommandName>
+          <ToolTipText>Run all code chunks above and update preview pane</ToolTipText>
         </Strings>
       </Button>
       <!-- End of Publish flyout -->
@@ -1954,7 +1954,7 @@
     </Groups>
 
     <Buttons>
-      <Button guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x0100" type="Button">
+      <Button guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x0100" type="Button">
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -2073,11 +2073,15 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x206">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x206">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidUpdateChunk" priority="0x207">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" priority="0x207">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" priority="0x208">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -2106,7 +2110,7 @@
     <!-- End R code editor context menu -->
 
     <!-- RMD context menu -->
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x100">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x100">
       <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
     </CommandPlacement>
 
@@ -2301,7 +2305,7 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x0416">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x0416">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -2598,8 +2602,8 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="InteractiveWindow" key1="W" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" mod1="Control" />
@@ -2613,9 +2617,9 @@
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
 
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidAutomaticSync" editor="RmdEditor" key1="Y" mod1="CONTROL SHIFT" />
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidUpdateChunk" editor="RmdEditor" key1="R" mod1="CONTROL SHIFT" />
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidUpdatePreview" editor="RmdEditor" key1="P" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdAutomaticSync" editor="RmdEditor" key1="Y" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" editor="RmdEditor" key1="R" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" editor="RmdEditor" key1="B" mod1="CONTROL SHIFT" />
   </KeyBindings>
 
   <UsedCommands>
@@ -2650,14 +2654,13 @@
       <IDSymbol name="groupRmdRepl" value="136" />
 
       <!-- Preview in RD/RDM -->
-      <IDSymbol name="cmdidPreview" value="600" />
-      <IDSymbol name="cmdidPreviewHtml" value="601" />
-      <IDSymbol name="cmdidPreviewPdf" value="602" />
-      <IDSymbol name="cmdidPreviewWord" value="603" />
-      <IDSymbol name="cmdidRunRChunk" value="611" />
-      <IDSymbol name="cmdidAutomaticSync" value="612" />
-      <IDSymbol name="cmdidUpdatePreview" value="613" />
-      <IDSymbol name="cmdidUpdateChunk" value="614" />
+      <IDSymbol name="icmdPreviewHtml" value="601" />
+      <IDSymbol name="icmdPreviewPdf" value="602" />
+      <IDSymbol name="icmdPreviewWord" value="603" />
+      <IDSymbol name="icmdRunRChunk" value="611" />
+      <IDSymbol name="icmdAutomaticSync" value="612" />
+      <IDSymbol name="icmdRunCurrentChunk" value="613" />
+      <IDSymbol name="icmdRunAllChunksAbove" value="614" />
     </GuidSymbol>
 
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
