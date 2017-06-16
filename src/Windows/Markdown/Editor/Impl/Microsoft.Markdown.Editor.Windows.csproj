@@ -58,11 +58,13 @@
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
     <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
     <Compile Include="Document\IMdEditorDocument.cs" />
+    <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="Preview\Browser.cs" />
+    <Compile Include="Preview\Commands\UpdateChunkCommand.cs" />
     <Compile Include="Preview\IMarkdownPreview.cs" />
     <Compile Include="Preview\PreviewMargin.cs" />
     <Compile Include="Preview\PreviewMarginProvider.cs" />

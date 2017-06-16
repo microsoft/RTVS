@@ -53,7 +53,7 @@ namespace Microsoft.Markdown.Editor.Preview {
                 } else if (_output.Length > 0) {
                     Result = Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>");
                 } else if (_errors.Length > 0) {
-                    Result = Invariant($"<code style='white-space: pre-wrap; color: red'>{_errors.ToString()}</code>");
+                    Result = DisplayErrors ? Invariant($"<code style='white-space: pre-wrap; color: red'>{_errors.ToString()}</code>") : string.Empty;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _output = _errors = null;

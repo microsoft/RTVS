@@ -15,5 +15,6 @@ namespace Microsoft.Markdown.Editor.Commands {
         public const int icmdRunRChunk = 611;
         public const int icmdAutomaticSync = 612;
         public const int icmdUpdatePreview = 613;
+        public const int icmdUpdateChunk = 614;
     }
 }

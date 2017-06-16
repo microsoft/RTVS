@@ -2,18 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -27,7 +23,6 @@ namespace Microsoft.Markdown.Editor.Preview {
         private readonly ITextDocument _document;
         private readonly ITextView _textView;
         private readonly IRMarkdownEditorSettings _settings;
-        private readonly IContainedLanguageHandler _containedLanguageHandler;
 
         private int _lastLineNumber;
         private Task _browserUpdateTask;
@@ -56,9 +51,6 @@ namespace Microsoft.Markdown.Editor.Preview {
             _textView.TextBuffer.Changed += OnTextBufferChanged;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
 
-            var rmdBuffer = _textView.BufferGraph.GetTextBuffers(b => b.ContentType.DisplayName.EqualsOrdinal(MdContentTypeDefinition.ContentType)).First();
-            _containedLanguageHandler = rmdBuffer.GetService<IContainedLanguageHandler>();
-
             textView.AddService(this);
         }
 
@@ -73,8 +65,7 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
 
             var snapshot = _textView.TextBuffer.CurrentSnapshot;
-
-            if (IsCaretInRCode()) {
+            if (_textView.IsCaretInRCode()) {
                 // In R Code. only update if caret line changes
                 var caretPosition = _textView.Caret.Position.BufferPosition;
                 var currentLineNumber = snapshot.GetLineNumberFromPosition(caretPosition);
@@ -82,13 +73,12 @@ namespace Microsoft.Markdown.Editor.Preview {
                     return;
                 }
                 _lastLineNumber = currentLineNumber;
-            }
-            else if (_lastLineNumber < snapshot.LineCount) {
-                    // Did the caret move out?
-                    if (!IsPositionInRCode(snapshot.GetLineFromLineNumber(_lastLineNumber).Start)) {
-                        // No, it did not, do nothing
-                        return;
-                    }
+            } else if (_lastLineNumber < snapshot.LineCount) {
+                // Did the caret move out?
+                if (!_textView.IsPositionInRCode(snapshot.GetLineFromLineNumber(_lastLineNumber).Start)) {
+                    // No, it did not, do nothing
+                    return;
+                }
             }
 
             UpdateOnIdle();
@@ -97,7 +87,7 @@ namespace Microsoft.Markdown.Editor.Preview {
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             // Update as-you-type outside of code blocks only.
             // Code blocks are updated on caret line change
-            if (_settings.AutomaticSync && !IsCaretInRCode()) {
+            if (_settings.AutomaticSync && !_textView.IsCaretInRCode()) {
                 UpdateOnIdle();
             }
         }
@@ -108,6 +98,9 @@ namespace Microsoft.Markdown.Editor.Preview {
         }
 
         public void Update() => UpdateBrowser();
+        public void UpdateChunk() {
+
+        }
 
         private void UpdateBrowser() {
             if (_browserUpdateTask == null) {
@@ -217,8 +210,5 @@ namespace Microsoft.Markdown.Editor.Preview {
                 _settings.PreviewHeight = (int)Browser.Control.ActualHeight;
             }
         }
-
-        private bool IsCaretInRCode() => IsPositionInRCode(_textView.Caret.Position.BufferPosition);
-        private bool IsPositionInRCode(int position) => _containedLanguageHandler.GetCodeBlockOfLocation(position) != null;
     }
 }
