@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -99,12 +100,14 @@ namespace Microsoft.Markdown.Editor.Preview {
 
         #region IMarkdownPreview
         public void Update() => UpdateBrowser();
-        public void RunCurrentChunk() {
-
+        public Task RunCurrentChunkAsync() {
+            var index = _textView.GetCurrentRCodeBlockNumber();
+            return index.HasValue ? Browser.UpdateBlocksAsync(_document.TextBuffer.CurrentSnapshot, index.Value, 1) : Task.CompletedTask;
         }
 
-        public void RunAllChunksAbove() {
-            
+        public Task RunAllChunksAboveAsync() {
+            var index = _textView.GetCurrentRCodeBlockNumber();
+            return index.HasValue ? Browser.UpdateBlocksAsync(_document.TextBuffer.CurrentSnapshot, 0, index.Value) : Task.CompletedTask;
         }
         #endregion
 

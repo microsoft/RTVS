@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.SuggestedActions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
@@ -20,7 +21,7 @@ namespace Microsoft.Markdown.Editor.SuggestedActions {
 
         public override void Invoke(CancellationToken cancellationToken) {
             var preview = TextView.GetService<IMarkdownPreview>();
-            preview?.RunCurrentChunk();
+            preview?.RunCurrentChunkAsync().DoNotWait();
         }
 
         public override bool TryGetTelemetryId(out Guid telemetryId) {

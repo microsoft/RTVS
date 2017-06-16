@@ -14,6 +14,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.Text;
 using mshtml;
+using Microsoft.Languages.Core.Text;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
@@ -91,7 +92,11 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
         }
 
-        public Task UpdateBrowserAsync(ITextSnapshot snapshot) => Task.Run(() => UpdateBrowser(snapshot));
+        public Task UpdateBrowserAsync(ITextSnapshot snapshot) 
+            => Task.Run(() => UpdateBrowser(snapshot));
+
+        public Task UpdateBlocksAsync(ITextSnapshot snapshot, int start, int count)
+            => _documentRenderer.RenderCodeBlocks(_htmlDocument, start, count);
 
         public void UpdateBrowser(ITextSnapshot snapshot) {
             // Generate the HTML document

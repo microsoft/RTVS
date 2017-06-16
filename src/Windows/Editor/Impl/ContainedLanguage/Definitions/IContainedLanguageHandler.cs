@@ -8,11 +8,17 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     public interface IContainedLanguageHandler {
         /// <summary>
+        /// Collection of contained language blocks
+        /// </summary>
+        IReadOnlyTextRangeCollection<ITextRange> LanguageBlocks { get; }
+
+        /// <summary>
         /// Retrieves contained command target for a given location in the buffer.
         /// </summary>
+        /// <param name="textView">Document view</param>
         /// <param name="position">Position in the document buffer</param>
         /// <returns>Command target or null if location appears to be primary</returns>
-        ICommandTarget GetCommandTargetOfLocation(ITextView textView, int bufferPosition);
+        ICommandTarget GetCommandTargetOfLocation(ITextView textView, int position);
 
         /// <summary>
         /// Locates contained language block for a given location.

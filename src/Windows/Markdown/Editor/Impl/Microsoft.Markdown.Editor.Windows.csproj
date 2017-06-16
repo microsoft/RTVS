@@ -65,6 +65,7 @@
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="Preview\Browser.cs" />
     <Compile Include="Preview\Commands\RunAllChunksAboveCommand.cs" />
+    <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
     <Compile Include="Preview\Commands\RunCurrentChunkCommand.cs" />
     <Compile Include="Preview\IMarkdownPreview.cs" />
     <Compile Include="Preview\PreviewMargin.cs" />

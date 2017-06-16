@@ -24,6 +24,12 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         protected abstract void OnTextBufferChanged(object sender, TextContentChangedEventArgs e);
 
         #region IContainedLanguageHandler
+
+        /// <summary>
+        /// Collection of code blocks
+        /// </summary>
+        public IReadOnlyTextRangeCollection<ITextRange> LanguageBlocks => Blocks;
+
         /// <summary>
         /// Retrieves contained command target for a given location in the buffer.
         /// </summary>

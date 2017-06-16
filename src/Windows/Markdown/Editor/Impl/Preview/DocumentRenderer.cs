@@ -3,11 +3,14 @@
 
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using mshtml;
 using Markdig.Renderers;
 using Markdig.Syntax;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Markdown.Editor.Preview {
     /// <summary>
@@ -37,11 +40,12 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
         }
 
-        public void RenderCodeBlocks(HTMLDocument htmlDocument)
-            => _codeBlockRenderer.RenderBlocks(htmlDocument).DoNotWait();
+        public Task RenderCodeBlocks(HTMLDocument htmlDocument)
+            => _codeBlockRenderer.RenderBlocksAsync(htmlDocument);
 
-        public void Dispose() {
-            _codeBlockRenderer.Dispose();
-        }
+        public Task RenderCodeBlocks(HTMLDocument htmlDocument, int start, int count)
+            => _codeBlockRenderer.RenderBlocksAsync(htmlDocument, start, count, CancellationToken.None);
+
+        public void Dispose() => _codeBlockRenderer.Dispose();
     }
 }
