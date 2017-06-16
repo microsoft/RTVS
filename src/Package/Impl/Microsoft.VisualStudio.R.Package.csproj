@@ -1579,6 +1579,7 @@
       <VSIXSourceItem Include="$(OutputPath)\System.IO.FileSystem.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Net.Http.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Net.Http.WinHttpHandler.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Net.Sockets.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Numerics.Vectors.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Reflection.Metadata.dll" />
       <VSIXSourceItem Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll" />

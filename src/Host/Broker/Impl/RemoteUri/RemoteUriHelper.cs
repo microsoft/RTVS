@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
@@ -13,7 +11,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Protocol;
-using Microsoft.AspNetCore.WebSockets.Protocol;
 
 namespace Microsoft.R.Host.Broker.RemoteUri {
     public class RemoteUriHelper {
