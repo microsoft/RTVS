@@ -5,14 +5,14 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using mshtml;
 using Markdig.Renderers;
 using Markdig.Syntax;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Core.Text;
+using Microsoft.Markdown.Editor.Preview.Code;
+using Microsoft.Markdown.Editor.Preview.Parser;
+using mshtml;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Browser {
     /// <summary>
     /// Renders R Markdown document into HTML
     /// </summary>

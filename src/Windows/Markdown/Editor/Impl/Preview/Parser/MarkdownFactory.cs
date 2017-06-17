@@ -7,7 +7,7 @@ using Markdig;
 using Markdig.Syntax;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Parser {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Parsing/MarkdownFactory.cs
     public static class MarkdownFactory {
         private const string AttachedExceptionKey = "attached-exception";

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Code {
     internal sealed class RSessionCallback : IRSessionCallback {
         internal byte[] PlotResult { get; set; }
         internal PlotDeviceProperties PlotDeviceProperties { get; set; } = new PlotDeviceProperties(640, 480, 96);

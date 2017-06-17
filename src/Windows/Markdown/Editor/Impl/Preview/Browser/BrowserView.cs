@@ -12,16 +12,17 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.Markdown.Editor.Preview.Css;
+using Microsoft.Markdown.Editor.Preview.Parser;
 using Microsoft.VisualStudio.Text;
 using mshtml;
-using Microsoft.Languages.Core.Text;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Browser {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/Browser.cs
-    public sealed class Browser : IDisposable {
+    public sealed class BrowserView : IDisposable {
         private static string _htmlTemplate;
 
         private readonly IServiceContainer _services;
@@ -32,7 +33,7 @@ namespace Microsoft.Markdown.Editor.Preview {
         private HTMLDocument _htmlDocument;
         private MarkdownDocument _currentDocument;
 
-        public Browser(string fileName, IServiceContainer services) {
+        public BrowserView(string fileName, IServiceContainer services) {
             Check.ArgumentNull(nameof(fileName), fileName);
             Check.ArgumentNull(nameof(services), services);
 

@@ -11,7 +11,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Code {
     internal enum CodeBlockEvalState {
         Created,
         Evaluated,

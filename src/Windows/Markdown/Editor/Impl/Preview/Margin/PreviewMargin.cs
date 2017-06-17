@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.Markdown.Editor.Preview.Browser;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMargin.cs
     public sealed class PreviewMargin : DockPanel, IWpfTextViewMargin, IMarkdownPreview {
         private static object _idleActionTag;
@@ -28,7 +28,7 @@ namespace Microsoft.Markdown.Editor.Preview {
         private int _lastLineNumber;
         private Task _browserUpdateTask;
 
-        public Browser Browser { get; }
+        public BrowserView Browser { get; }
 
         public PreviewMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
             _idleActionTag = _idleActionTag ?? GetType();
@@ -37,7 +37,7 @@ namespace Microsoft.Markdown.Editor.Preview {
             _document = document;
             _settings = services.GetService<IRMarkdownEditorSettings>();
 
-            Browser = new Browser(_document.FilePath, services);
+            Browser = new BrowserView(_document.FilePath, services);
 
             if (_settings.PreviewPosition == RMarkdownPreviewPosition.Below) {
                 CreateBottomMarginControls();

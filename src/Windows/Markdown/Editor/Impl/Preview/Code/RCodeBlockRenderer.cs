@@ -15,16 +15,14 @@ using Markdig.Syntax;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
+using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using mshtml;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Markdown.Editor.Settings;
-using Microsoft.R.Host.Client.Host;
 using static System.FormattableString;
 
-namespace Microsoft.Markdown.Editor.Preview {
+namespace Microsoft.Markdown.Editor.Preview.Code {
     /// <summary>
     /// Renders R code block output into HTML element
     /// </summary>
@@ -95,6 +93,9 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
         }
 
+        /// <summary>
+        /// Renders set of code blocks into HTML documents
+        /// </summary>
         public async Task RenderBlocksAsync(HTMLDocument htmlDocument, int start, int count, CancellationToken ct) {
             await _evalTask;
             try {
@@ -106,6 +107,9 @@ namespace Microsoft.Markdown.Editor.Preview {
             } catch (OperationCanceledException) { }
         }
 
+        /// <summary>
+        /// Renders code block into HTML document
+        /// </summary>
         private void RenderBlock(HTMLDocument htmlDocument, int blockNumber) {
             var block = _blocks[blockNumber];
             var element = htmlDocument.getElementById(block.HtmlElementId);
@@ -135,11 +139,8 @@ namespace Microsoft.Markdown.Editor.Preview {
                     _blocks.Add(rCodeBlock);
 
                     var echoed = WriteBlockContent(renderer, _blockNumber, text);
-                    // Avoid duplicate code in non-automatic case
-                    if (!echoed || _settings.AutomaticSync) {
-                        // Write placeholder first. We will insert actual data when the evaluation is done.
-                        renderer.Write(GetBlockPlaceholder(elementId, text));
-                    }
+                    // Write placeholder first. We will insert actual data when the evaluation is done.
+                    renderer.Write(GetBlockPlaceholder(elementId, text));
                 }
                 _blockNumber++;
             }
@@ -152,6 +153,7 @@ namespace Microsoft.Markdown.Editor.Preview {
             }
             return false;
         }
+
         private static string GetBlockText(FencedCodeBlock block) {
             var sb = new StringBuilder();
             foreach (var line in block.Lines.Lines) {
