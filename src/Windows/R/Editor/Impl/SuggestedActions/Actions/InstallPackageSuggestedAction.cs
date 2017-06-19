@@ -4,6 +4,7 @@
 using System;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Windows;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
@@ -23,5 +24,6 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
             telemetryId = new Guid(TelemetryId);
             return true;
         }
+        public override ImageMoniker IconMoniker => default(ImageMoniker);
     }
 }

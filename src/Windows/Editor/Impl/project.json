@@ -14,7 +14,10 @@
     "Microsoft.VisualStudio.TextManager.Interop": "7.10.6070",
     "Microsoft.VisualStudio.TextManager.Interop.8.0": "8.0.50727",
     "Microsoft.VisualStudio.ImageCatalog": "15.0.26201",
-    "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": "15.0.25726-Preview5"
+    "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": {
+      "version": "15.0.25726-Preview5",
+      "embedInteropTypes": "true"
+    }
   },
   "frameworks": {
     "net46": {}

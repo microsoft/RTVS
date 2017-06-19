@@ -43,7 +43,7 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
 
         public string DisplayText { get; }
         public string IconAutomationText { get; }
-        public ImageMoniker IconMoniker { get; protected set; }
+        public abstract ImageMoniker IconMoniker { get; }
         public string InputGestureText { get; protected set;}
 
         /// <summary>

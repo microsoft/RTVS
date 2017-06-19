@@ -66,9 +66,9 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// such as name from http://glyphlist.azurewebsites.net/knownmonikers
         /// </summary>
         public object GetImage(string name) {
-            ImageSource ims = GetImageFromResources(name);
+            var ims = GetImageFromResources(name);
             if (ims == null) {
-                ImageMoniker? im = FindKnownMoniker(name);
+                var im = FindKnownMoniker(name);
                 ims = im.HasValue ? GetIconForImageMoniker(im.Value) : null;
             }
             return ims;
@@ -78,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// Given file name returns icon depending on the file extension
         /// </summary>
         public object GetFileIcon(string file) {
-            string ext = Path.GetExtension(file);
+            var ext = Path.GetExtension(file);
             if (_fileExtensionCache.Value.ContainsKey(ext)) {
                 return GetImage(_fileExtensionCache.Value[ext]);
             }
@@ -92,10 +92,10 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             }
 
             ImageMoniker? moniker = null;
-            Type t = typeof(KnownMonikers);
-            PropertyInfo info = t.GetProperty(name, typeof(ImageMoniker));
+            var t = typeof(KnownMonikers);
+            var info = t.GetProperty(name, typeof(ImageMoniker));
             if (info != null) {
-                MethodInfo mi = info.GetGetMethod(nonPublic: false);
+                var mi = info.GetGetMethod(nonPublic: false);
                 moniker = (ImageMoniker)mi.Invoke(null, new object[0]);
                 _monikerCache[name] = moniker.Value;
             }
@@ -104,10 +104,10 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         public ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
-            IVsImageService2 imageService = _services.GetService<IVsImageService2>(typeof(SVsImageService));
+            var imageService = _services.GetService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 
-            ImageAttributes imageAttributes = new ImageAttributes();
+            var imageAttributes = new ImageAttributes();
             imageAttributes.Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags;
             imageAttributes.ImageType = (uint)_UIImageType.IT_Bitmap;
             imageAttributes.Format = (uint)_UIDataFormat.DF_WPF;
@@ -115,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             imageAttributes.LogicalWidth = 16;// IconWidth,
             imageAttributes.StructSize = Marshal.SizeOf(typeof(ImageAttributes));
 
-            IVsUIObject result = imageService.GetImage(imageMoniker, imageAttributes);
+            var result = imageService.GetImage(imageMoniker, imageAttributes);
 
             Object data = null;
             if (result.get_Data(out data) == VSConstants.S_OK) {
@@ -168,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         private static Dictionary<string, string> CreateExtensionCache() {
-            Dictionary<string, string> dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             dict[".r"] = "RFileNode";
             dict[".rproj"] = "RProjectNode";

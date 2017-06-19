@@ -9,15 +9,14 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.Preview;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.SuggestedActions {
     internal sealed class RunChunksAboveSuggestedAction : SuggestedActionBase {
         public RunChunksAboveSuggestedAction(ITextView textView, ITextBuffer textBuffer, int position) :
-            base(textView, textBuffer, position, Resources.SuggestedAction_RunAllChunksAbove) {
-            IconMoniker = KnownMonikers.GoToBottom;
-        }
+            base(textView, textBuffer, position, Resources.SuggestedAction_RunAllChunksAbove) { }
 
         public override void Invoke(CancellationToken cancellationToken) {
             var preview = TextView.GetService<IMarkdownPreview>();
@@ -28,5 +27,7 @@ namespace Microsoft.Markdown.Editor.SuggestedActions {
             telemetryId = MdPackageCommandId.MdCmdSetGuid;
             return true;
         }
+
+        public override ImageMoniker IconMoniker => KnownMonikers.GoToBottom;
     }
 }
