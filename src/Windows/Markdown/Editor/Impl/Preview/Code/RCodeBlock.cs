@@ -37,8 +37,9 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         }
 
         public async Task<string> EvaluateAsync(IRSession session, RSessionCallback callback, CancellationToken ct) {
-            ct.ThrowIfCancellationRequested();
             try {
+                ct.ThrowIfCancellationRequested();
+
                 session.Output += OnSessionOutput;
                 await ExecuteAndCaptureOutputAsync(session, _text, ct);
 
@@ -48,16 +49,20 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 } else if (_output.Length > 0) {
                     Result = Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>");
                 } else if (_errors.Length > 0) {
-                    Result = DisplayErrors ? Invariant($"<code style='white-space: pre-wrap; color: red'>{_errors.ToString()}</code>") : string.Empty;
+                    Result = DisplayErrors ? FormatError(_errors.ToString()) : string.Empty;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _output = _errors = null;
+                Result = FormatError(ex.Message);
+            } finally {
                 session.Output -= OnSessionOutput;
-                Result = ex.Message;
             }
             State = CodeBlockState.Evaluated;
             return Result;
         }
+
+        private string FormatError(string error)
+            => Invariant($"<code style='white-space: pre-wrap; color: red'>{error}</code>");
 
         private async Task ExecuteAndCaptureOutputAsync(IRSession session, string expression, CancellationToken cancellationToken) {
             _output = new StringBuilder();
@@ -93,7 +98,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                             Eval = GetTokenValue(info, tokens, true);
                         }
                     } else if (t.Length == 5 && info.Substring(t.Start, t.Length).EqualsOrdinal("error")) {
-                         DisplayErrors = GetTokenValue(info, tokens, true);
+                        DisplayErrors = GetTokenValue(info, tokens, true);
                     } else if (t.Length == 7 && info.Substring(t.Start, t.Length).EqualsOrdinal("warning")) {
                         DisplayWarnings = GetTokenValue(info, tokens, true);
                     }

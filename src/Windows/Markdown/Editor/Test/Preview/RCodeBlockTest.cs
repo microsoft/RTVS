@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,17 +47,85 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test]
         public async Task SimpleEval() {
+            var session = Substitute.For<IRSession>();
+            var inter = Substitute.For<IRSessionInteraction>();
+            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(inter);
+
             var block = new RCodeBlock(0, null, string.Empty, 0);
-            var session = MakeSessionSubstitute();
             await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
             block.State.Should().Be(CodeBlockState.Evaluated);
         }
 
-        private static IRSession MakeSessionSubstitute() {
+        [Test]
+        public async Task Cancellation() {
+            var session = Substitute.For<IRSession>();
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            var block = new RCodeBlock(0, null, string.Empty, 0);
+            await block.EvaluateAsync(session, new RSessionCallback(), cts.Token);
+            block.Result.Should().Contain("canceled");
+        }
+
+        [Test]
+        public async Task Output() {
             var session = Substitute.For<IRSession>();
             var inter = Substitute.For<IRSessionInteraction>();
-            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(inter);
-            return session;
+
+            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
+            inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => {
+                session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Output, "output"));
+            });
+
+            var block = new RCodeBlock(0, null, string.Empty, 0);
+            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            block.Result.Should().Contain("<code");
+            block.Result.Should().Contain("output");
+            block.Result.Should().NotContain("color: red");
+        }
+
+        [Test]
+        public async Task Error() {
+            var session = Substitute.For<IRSession>();
+            var inter = Substitute.For<IRSessionInteraction>();
+
+            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
+            inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => {
+                session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Error, "error"));
+            });
+
+            var block = new RCodeBlock(0, null, string.Empty, 0);
+            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            block.Result.Should().Contain("<code");
+            block.Result.Should().Contain("error");
+            block.Result.Should().Contain("color: red");
+        }
+
+        [Test]
+        public async Task Exception() {
+            var session = Substitute.For<IRSession>();
+            var inter = Substitute.For<IRSessionInteraction>();
+
+            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
+            inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => throw new RException("disconnected"));
+
+            var block = new RCodeBlock(0, null, string.Empty, 0);
+            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            block.Result.Should().Contain("<code");
+            block.Result.Should().Contain("disconnected");
+            block.Result.Should().Contain("color: red");
+        }
+
+        [Test]
+        public async Task Plot() {
+            var session = Substitute.For<IRSession>();
+            var inter = Substitute.For<IRSessionInteraction>();
+            var cb = new RSessionCallback { PlotResult = new byte[] { 1, 2, 3, 4 } };
+            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
+
+            var block = new RCodeBlock(0, null, string.Empty, 0);
+            await block.EvaluateAsync(session, cb, CancellationToken.None);
+            block.Result.Should().Be("<img src='data:image/gif;base64, AQIDBA==' />");
+            cb.PlotResult.Should().BeNull();
         }
     }
 }

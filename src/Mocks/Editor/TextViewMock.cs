@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
@@ -18,6 +20,11 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         public TextViewMock(ITextBuffer textBuffer) :
             this(textBuffer, 0) {
+        }
+
+        public TextViewMock(IEnumerable<ITextBuffer> textBuffers, int caretPosition): 
+            this(textBuffers.First(), caretPosition) {
+            BufferGraph = new BufferGraphMock(textBuffers);
         }
 
         public TextViewMock(ITextBuffer textBuffer, int caretPosition) {

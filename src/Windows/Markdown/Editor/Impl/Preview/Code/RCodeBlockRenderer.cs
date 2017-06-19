@@ -79,7 +79,9 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                     foreach (var block in blocks.Where(b => b.State == CodeBlockState.Created)) {
                         await block.EvaluateAsync(session, _sessionCallback, ct);
                     }
-                } catch (OperationCanceledException) { }
+                } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    // Exceptions will be output as block evaluation results
+                }
             }, ct);
         }
         #endregion

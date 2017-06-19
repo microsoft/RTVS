@@ -18,10 +18,10 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
             _settings = services.GetService<IRMarkdownEditorSettings>();
         }
 
-        public override CommandStatus Status(Guid @group, int id) 
+        public override CommandStatus Status(Guid group, int id) 
             => CommandStatus.SupportedAndEnabled | (_settings.AutomaticSync ? CommandStatus.Latched : 0);
 
-        public override CommandResult Invoke(Guid @group, int id, object inputArg, ref object outputArg) {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             _settings.AutomaticSync = !_settings.AutomaticSync;
             return CommandResult.Executed;
         }
