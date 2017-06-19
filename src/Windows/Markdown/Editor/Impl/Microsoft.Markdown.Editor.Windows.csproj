@@ -64,15 +64,17 @@
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="Preview\Browser\BrowserView.cs" />
+    <Compile Include="Preview\Code\CodeBlockState.cs" />
     <Compile Include="Preview\Commands\RunAllChunksAboveCommand.cs" />
     <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
     <Compile Include="Preview\Commands\RunCurrentChunkCommand.cs" />
     <Compile Include="Preview\IMarkdownPreview.cs" />
+    <Compile Include="Preview\Margin\PreviewBottomMarginProvider.cs" />
     <Compile Include="Preview\Margin\PreviewMargin.cs" />
-    <Compile Include="Preview\Margin\PreviewMarginProvider.cs" />
+    <Compile Include="Preview\Margin\PreviewMarginProviderBase.cs" />
+    <Compile Include="Preview\Margin\PreviewRightMarginProvider.cs" />
     <Compile Include="Preview\CSS\CssCreationListener.cs" />
     <Compile Include="Preview\Parser\MarkdownFactory.cs" />
-    <Compile Include="Preview\Parser\ParsingEventArgs.cs" />
     <Compile Include="Preview\Browser\DocumentRenderer.cs" />
     <Compile Include="Preview\Code\RCodeBlock.cs" />
     <Compile Include="Preview\Code\RCodeBlockRenderer.cs" />
@@ -139,10 +141,6 @@
     <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
-      <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>

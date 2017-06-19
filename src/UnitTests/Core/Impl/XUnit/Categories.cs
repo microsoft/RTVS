@@ -57,17 +57,22 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public static class Md {
             [ExcludeFromCodeCoverage]
             public class ClassifierAttribute : CategoryAttribute {
-                public ClassifierAttribute() : base("Md.Classifier") { }
+                public ClassifierAttribute() : base("Markdown.Classifier") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class TokenizerAttribute : CategoryAttribute {
-                public TokenizerAttribute() : base("Md.Tokenizer") { }
+                public TokenizerAttribute() : base("Markdown.Tokenizer") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class RCodeAttribute : CategoryAttribute {
-                public RCodeAttribute() : base("Md.RCode") { }
+                public RCodeAttribute() : base("Markdown.RCode") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class PreviewAttribute : CategoryAttribute {
+                public PreviewAttribute() : base("Markdown.Preview") { }
             }
         }
 

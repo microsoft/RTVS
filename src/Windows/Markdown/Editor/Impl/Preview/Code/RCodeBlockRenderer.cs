@@ -64,7 +64,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         #region Evaluation
         private Task EvaluateBlockAsync(IRSession session, int blockNumber, CancellationToken ct) {
             var block = _blocks[blockNumber];
-            block.State = CodeBlockEvalState.Created;
+            block.State = CodeBlockState.Created;
             return block.EvaluateAsync(session, _sessionCallback, ct);
         }
 
@@ -76,7 +76,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 try {
                     var session = await StartSessionAsync(ct);
 
-                    foreach (var block in blocks.Where(b => b.State == CodeBlockEvalState.Created)) {
+                    foreach (var block in blocks.Where(b => b.State == CodeBlockState.Created)) {
                         await block.EvaluateAsync(session, _sessionCallback, ct);
                     }
                 } catch (OperationCanceledException) { }
@@ -88,7 +88,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         public async Task RenderBlocksAsync(HTMLDocument htmlDocument) {
             await _evalTask;
             var blocks = _blocks.ToArray();
-            foreach (var b in blocks.Where(b => b.State == CodeBlockEvalState.Evaluated)) {
+            foreach (var b in blocks.Where(b => b.State == CodeBlockState.Evaluated)) {
                 RenderBlock(htmlDocument, b.BlockNumber);
             }
         }
@@ -115,7 +115,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             var element = htmlDocument.getElementById(block.HtmlElementId);
             if (element != null) {
                 element.innerHTML = block.Result;
-                block.State = CodeBlockEvalState.Rendered;
+                block.State = CodeBlockState.Rendered;
             }
         }
         #endregion

@@ -21,7 +21,6 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private static object _idleActionTag;
 
         private readonly IIdleTimeService _idleTime;
-        private readonly ITextDocument _document;
         private readonly ITextView _textView;
         private readonly IRMarkdownEditorSettings _settings;
 
@@ -30,14 +29,13 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
 
         public BrowserView Browser { get; }
 
-        public PreviewMargin(ITextView textView, ITextDocument document, IServiceContainer services) {
+        public PreviewMargin(ITextView textView, IServiceContainer services) {
             _idleActionTag = _idleActionTag ?? GetType();
 
             _textView = textView;
-            _document = document;
             _settings = services.GetService<IRMarkdownEditorSettings>();
 
-            Browser = new BrowserView(_document.FilePath, services);
+            Browser = new BrowserView(_textView.TextBuffer.GetFileName(), services);
 
             if (_settings.PreviewPosition == RMarkdownPreviewPosition.Below) {
                 CreateBottomMarginControls();
@@ -102,19 +100,19 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         public void Update() => UpdateBrowser();
         public Task RunCurrentChunkAsync() {
             var index = _textView.GetCurrentRCodeBlockNumber();
-            return index.HasValue ? Browser.UpdateBlocksAsync(_document.TextBuffer.CurrentSnapshot, index.Value, 1) : Task.CompletedTask;
+            return index.HasValue ? Browser.UpdateBlocksAsync(_textView.TextBuffer.CurrentSnapshot, index.Value, 1) : Task.CompletedTask;
         }
 
         public Task RunAllChunksAboveAsync() {
             var index = _textView.GetCurrentRCodeBlockNumber();
-            return index.HasValue ? Browser.UpdateBlocksAsync(_document.TextBuffer.CurrentSnapshot, 0, index.Value) : Task.CompletedTask;
+            return index.HasValue ? Browser.UpdateBlocksAsync(_textView.TextBuffer.CurrentSnapshot, 0, index.Value) : Task.CompletedTask;
         }
         #endregion
 
         private void UpdateBrowser() {
             if (_browserUpdateTask == null) {
                 _browserUpdateTask = Browser
-                    .UpdateBrowserAsync(_document.TextBuffer.CurrentSnapshot)
+                    .UpdateBrowserAsync(_textView.TextBuffer.CurrentSnapshot)
                     .ContinueWith(t => _browserUpdateTask = null);
             } else {
                 // Still running, try again later

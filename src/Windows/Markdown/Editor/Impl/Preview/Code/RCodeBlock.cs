@@ -12,11 +12,6 @@ using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
-    internal enum CodeBlockEvalState {
-        Created,
-        Evaluated,
-        Rendered
-    }
     internal sealed class RCodeBlock {
         private readonly string _text;
 
@@ -26,7 +21,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         public int BlockNumber { get; }
         public int Hash { get; }
         public string Result { get; set; }
-        public CodeBlockEvalState State { get; set; } = CodeBlockEvalState.Created;
+        public CodeBlockState State { get; set; } = CodeBlockState.Created;
         public bool Eval { get; private set; } = true;
         public bool DisplayErrors { get; private set; } = true;
         public bool DisplayWarnings { get; private set; } = true;
@@ -60,7 +55,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 session.Output -= OnSessionOutput;
                 Result = ex.Message;
             }
-            State = CodeBlockEvalState.Evaluated;
+            State = CodeBlockState.Evaluated;
             return Result;
         }
 
@@ -83,6 +78,9 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             }
         }
         private void ExtractOptions(string info) {
+            if (string.IsNullOrEmpty(info)) {
+                return;
+            }
             // Lookup 'echo=TRUE'
             var tokens = new TokenStream<RToken>(new RTokenizer().Tokenize(info), RToken.EndOfStreamToken);
             while (!tokens.IsEndOfStream()) {
@@ -110,10 +108,10 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 t = tokens.MoveToNextToken();
                 if (t.TokenType == RTokenType.Logical) {
                     var value = info.Substring(t.Start, t.Length);
-                    if (value.EqualsOrdinal("FALSE")) {
+                    if (value.EqualsOrdinal("FALSE") || value.EqualsOrdinal("F")) {
                         return false;
                     }
-                    if (value.EqualsOrdinal("TRUE")) {
+                    if (value.EqualsOrdinal("TRUE") || value.EqualsOrdinal("T")) {
                         return true;
                     }
                 }

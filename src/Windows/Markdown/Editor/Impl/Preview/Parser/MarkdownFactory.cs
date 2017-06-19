@@ -25,25 +25,21 @@ namespace Microsoft.Markdown.Editor.Preview.Parser {
         public static Exception GetAttachedException(this MarkdownDocument markdownDocument)
             => markdownDocument.GetData(AttachedExceptionKey) as Exception;
 
-        public static MarkdownDocument ParseToMarkdown(this ITextSnapshot snapshot, string file = null) {
+        public static MarkdownDocument ParseToMarkdown(this ITextSnapshot snapshot) {
             lock (_syncRoot) {
                 return _cachedDocuments.GetValue(snapshot, key => {
                     var text = key.GetText();
                     var markdownDocument = ParseToMarkdown(text);
-                    Parsed?.Invoke(snapshot, new ParsingEventArgs(markdownDocument, file, snapshot));
                     return markdownDocument;
                 });
             }
         }
 
-        public static MarkdownDocument ParseToMarkdown(string text, MarkdownPipeline pipeline = null) {
-            // Safe version that will always return a MarkdownDocument even if there is an exception while parsing
+        private static MarkdownDocument ParseToMarkdown(string text) {
             MarkdownDocument doc;
-            pipeline = pipeline ?? Pipeline;
-
             // Try first to parse a document with all exceptions active
             try {
-                doc = Markdig.Markdown.Parse(text, pipeline);
+                doc = Markdig.Markdown.Parse(text, Pipeline);
             } catch (Exception ex) {
                 // If we have an error, remember it
                 doc = new MarkdownDocument { Span = new SourceSpan(0, text.Length - 1) };
@@ -52,7 +48,5 @@ namespace Microsoft.Markdown.Editor.Preview.Parser {
             }
             return doc;
         }
-
-        public static event EventHandler<ParsingEventArgs> Parsed;
     }
 }
