@@ -25,6 +25,11 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
             DisplayText = displayText;
         }
 
+        protected SuggestedActionBase(ITextView view, ITextBuffer buffer, int position, string displayText, ImageMoniker moniker) :
+            this(view, buffer, position, displayText) {
+            IconMoniker = moniker;
+        }
+
         public ITextBuffer TextBuffer { get; }
         public ITextView TextView { get; }
         public int Position { get; }
@@ -38,13 +43,13 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
         /// <summary>
         /// By default, nested actions are not supported.
         /// </summary>
-        public virtual Task<IEnumerable<SuggestedActionSet>> GetActionSetsAsync(CancellationToken cancellationToken) 
+        public virtual Task<IEnumerable<SuggestedActionSet>> GetActionSetsAsync(CancellationToken cancellationToken)
             => Task.FromResult(Enumerable.Empty<SuggestedActionSet>());
 
         public string DisplayText { get; }
         public string IconAutomationText { get; }
-        public abstract ImageMoniker IconMoniker { get; }
-        public string InputGestureText { get; protected set;}
+        public ImageMoniker IconMoniker { get; }
+        public string InputGestureText { get; protected set; }
 
         /// <summary>
         /// By default, Preview is not supported.
