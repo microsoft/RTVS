@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
             Process process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
             process.WaitForExit(250);
-            if (process.HasExited && process.ExitCode < 0) {
+            if (process.HasExited && process.ExitCode != 0) {
                 var message = _ps.MessageFromExitCode(process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) {
                     throw new Win32Exception(message);

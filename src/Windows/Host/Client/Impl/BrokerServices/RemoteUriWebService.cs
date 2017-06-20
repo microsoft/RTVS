@@ -21,6 +21,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
     internal class RemoteUriWebService : IRemoteUriWebService {
         private readonly IActionLog _log;
         private readonly IConsole _console;
+        private const int _receiveBufferSize = 0x1000; // buffer size for ClientWebSocket
 
         public RemoteUriWebService(string baseUri, IActionLog log, IConsole console) {
             PostUri = new Uri(new Uri(baseUri), new Uri("/remoteuri", UriKind.Relative));
@@ -65,8 +66,8 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     if (context.Request.IsWebSocketRequest && response.StatusCode == HttpStatusCode.SwitchingProtocols) {
                         var respStream = response.GetResponseStream();
                         var subProtocol = response.Headers[Constants.Headers.SecWebSocketProtocol];
-                        var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), receiveBufferSize: 65335, useZeroMask: true);
-                        var websocketContext = await context.AcceptWebSocketAsync(subProtocol, receiveBufferSize: 65335, keepAliveInterval: TimeSpan.FromMinutes(10));
+                        var remoteWebSocket = CommonWebSocket.CreateClientWebSocket(respStream, subProtocol, TimeSpan.FromMinutes(10), receiveBufferSize: _receiveBufferSize, useZeroMask: true);
+                        var websocketContext = await context.AcceptWebSocketAsync(subProtocol, receiveBufferSize: _receiveBufferSize, keepAliveInterval: TimeSpan.FromMinutes(10));
                         await WebSocketHelper.SendReceiveAsync(websocketContext.WebSocket, remoteWebSocket, ct);
                     } else {
                         context.Response.StatusCode = (int)response.StatusCode;
