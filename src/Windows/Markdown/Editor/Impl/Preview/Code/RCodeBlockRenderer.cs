@@ -127,16 +127,16 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             renderer.EnsureLine();
 
             var fencedCodeBlock = codeBlock as FencedCodeBlock;
-            if (fencedCodeBlock?.Info != null && fencedCodeBlock.Info.StartsWithIgnoreCase("{r")) {
+            var info = fencedCodeBlock?.Info;
+            if (info != null && (info.StartsWithIgnoreCase("{r") || info.StartsWithIgnoreCase("{ r"))) {
                 var text = GetBlockText(fencedCodeBlock);
-                var hash = text.GetHashCode();
+                var rCodeBlock = new RCodeBlock(_blockNumber, text, fencedCodeBlock.Arguments);
 
-                var result = GetCachedResult(_blockNumber, hash, fencedCodeBlock);
+                var result = GetCachedResult(_blockNumber, rCodeBlock.Hash, fencedCodeBlock);
                 if (result != null) {
                     WriteBlockContent(renderer, _blockNumber, text);
                     renderer.Write(result);
                 } else {
-                    var rCodeBlock = new RCodeBlock(_blockNumber, fencedCodeBlock.Arguments, text, hash);
                     var elementId = rCodeBlock.HtmlElementId;
                     _blocks.Add(rCodeBlock);
 

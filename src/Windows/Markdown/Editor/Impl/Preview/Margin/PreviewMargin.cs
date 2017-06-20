@@ -24,6 +24,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private readonly ITextView _textView;
         private readonly IRMarkdownEditorSettings _settings;
 
+        private bool _textChanged;
         private int _lastLineNumber;
         private Task _browserUpdateTask;
 
@@ -59,6 +60,9 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+            if (!_textChanged) {
+                return;
+            }
             var snapshot = _textView.TextBuffer.CurrentSnapshot;
             if (_textView.IsCaretInRCode()) {
                 // In R Code. only update if caret line changes
@@ -85,6 +89,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             if (!_textView.IsCaretInRCode()) {
                 UpdateOnIdle();
             }
+            _textChanged = true;
         }
 
         private void UpdateOnIdle() {
@@ -107,6 +112,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
 
         private void UpdateBrowser() {
             if (_browserUpdateTask == null) {
+                _textChanged = false;
                 _browserUpdateTask = Browser
                     .UpdateBrowserAsync(_textView.TextBuffer.CurrentSnapshot)
                     .ContinueWith(t => _browserUpdateTask = null);

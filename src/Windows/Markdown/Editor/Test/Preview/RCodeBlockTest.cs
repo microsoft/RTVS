@@ -21,7 +21,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
     public class RCodeBlockTest {
         [Test]
         public void BasicCtor() {
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             block.State.Should().Be(CodeBlockState.Created);
             block.Eval.Should().BeTrue();
             block.DisplayErrors.Should().BeTrue();
@@ -38,7 +38,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
         [InlineData("eval=FALSE", true, false, true, true)]
         [InlineData("error=T, warning=F}", true, true, true, false)]
         public void Options(string arguments, bool echo, bool eval, bool error, bool warning) {
-            var block = new RCodeBlock(0, arguments, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty, arguments);
             block.EchoContent.Should().Be(echo);
             block.Eval.Should().Be(eval);
             block.DisplayErrors.Should().Be(error);
@@ -51,7 +51,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             var inter = Substitute.For<IRSessionInteraction>();
             session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(inter);
 
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
             block.State.Should().Be(CodeBlockState.Evaluated);
         }
@@ -61,7 +61,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             var session = Substitute.For<IRSession>();
             var cts = new CancellationTokenSource();
             cts.Cancel();
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             await block.EvaluateAsync(session, new RSessionCallback(), cts.Token);
             block.Result.Should().Contain("canceled");
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
                 session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Output, "output"));
             });
 
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
             block.Result.Should().Contain("<code");
             block.Result.Should().Contain("output");
@@ -93,7 +93,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
                 session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Error, "error"));
             });
 
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
             block.Result.Should().Contain("<code");
             block.Result.Should().Contain("error");
@@ -108,7 +108,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
             inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => throw new RException("disconnected"));
 
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
             block.Result.Should().Contain("<code");
             block.Result.Should().Contain("disconnected");
@@ -122,7 +122,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             var cb = new RSessionCallback { PlotResult = new byte[] { 1, 2, 3, 4 } };
             session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
 
-            var block = new RCodeBlock(0, null, string.Empty, 0);
+            var block = new RCodeBlock(0, string.Empty);
             await block.EvaluateAsync(session, cb, CancellationToken.None);
             block.Result.Should().Be("<img src='data:image/gif;base64, AQIDBA==' />");
             cb.PlotResult.Should().BeNull();

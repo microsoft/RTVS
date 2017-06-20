@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -30,13 +31,20 @@ namespace Microsoft.R.Editor.Commands {
                     _shell.Services.GetService<IProcessServices>().Start(url);
                     return;
                 }
-                // If this is a Ctrl+Click or double-click then post the select word command.
-                var command = new SelectWordCommand(_wpfTextView, _wpfTextView.TextBuffer);
-                var o = new object();
-                var result = command.Invoke(typeof(VSConstants.VSStd2KCmdID).GUID, (int)VSConstants.VSStd2KCmdID.SELECTCURRENTWORD, null, ref o);
-                if (result.Result == CommandResult.Executed.Result) {
-                    e.Handled = true;
-                    return;
+                if (!_wpfTextView.Caret.InVirtualSpace) {
+
+                    // If this is a Ctrl+Click or double-click then post the select word command.
+                    var point = _wpfTextView.MapDownToR(_wpfTextView.Caret.Position.BufferPosition);
+                    if (point.HasValue) {
+                        var command = new SelectWordCommand(_wpfTextView, point.Value.Snapshot.TextBuffer);
+                        var o = new object();
+                        var result = command.Invoke(typeof(VSConstants.VSStd2KCmdID).GUID,
+                            (int) VSConstants.VSStd2KCmdID.SELECTCURRENTWORD, null, ref o);
+                        if (result.Result == CommandResult.Executed.Result) {
+                            e.Handled = true;
+                            return;
+                        }
+                    }
                 }
             }
             base.PreprocessMouseLeftButtonDown(e);

@@ -44,8 +44,7 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             InitBrowser();
 
             _documentRenderer = new DocumentRenderer(Path.GetFileName(_fileName), _services);
-
-            CssCreationListener.StylesheetUpdated += OnStylesheetUpdated;
+            //CssCreationListener.StylesheetUpdated += OnStylesheetUpdated;
         }
 
         public WebBrowser Control { get; private set; }
@@ -128,15 +127,15 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             });
         }
 
-        private void OnStylesheetUpdated(object sender, EventArgs e) {
-            var link = _htmlDocument?.styleSheets?.item(0) as IHTMLStyleSheet;
-            if (link != null) {
-                link.href = GetCustomStylesheet(_fileName) + "?" + new Guid();
-            }
-        }
+        //private void OnStylesheetUpdated(object sender, EventArgs e) {
+        //    var link = _htmlDocument?.styleSheets?.item(0) as IHTMLStyleSheet;
+        //    if (link != null) {
+        //        link.href = GetCustomStylesheet(_fileName) + "?" + new Guid();
+        //    }
+        //}
 
-        private static string GetCustomStylesheet(string markdownFile)
-            => Path.ChangeExtension(markdownFile, "css");
+        //private static string GetCustomStylesheet(string markdownFile)
+        //    => Path.ChangeExtension(markdownFile, "css");
 
         private string GetPageHtml(string body) {
             if (_htmlTemplate == null) {

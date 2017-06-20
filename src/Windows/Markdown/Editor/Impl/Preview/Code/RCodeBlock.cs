@@ -13,13 +13,13 @@ using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
     internal sealed class RCodeBlock {
-        private readonly string _text;
-
         private StringBuilder _output;
         private StringBuilder _errors;
 
         public int BlockNumber { get; }
+        public string Text { get; }
         public int Hash { get; }
+        public string Arguments { get; }
         public string Result { get; set; }
         public CodeBlockState State { get; set; } = CodeBlockState.Created;
         public bool Eval { get; private set; } = true;
@@ -29,10 +29,11 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
         public string HtmlElementId => Invariant($"rcode_{BlockNumber}_{Hash}");
 
-        public RCodeBlock(int number, string arguments, string text, int hash) {
+        public RCodeBlock(int number, string text, string arguments = null) {
             BlockNumber = number;
-            Hash = hash;
-            _text = text;
+            Text = text;
+            Arguments = arguments ?? string.Empty;
+            Hash = Text.GetHashCode() + Arguments.GetHashCode();
             ExtractOptions(arguments);
         }
 
@@ -41,7 +42,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 ct.ThrowIfCancellationRequested();
 
                 session.Output += OnSessionOutput;
-                await ExecuteAndCaptureOutputAsync(session, _text, ct);
+                await ExecuteAndCaptureOutputAsync(session, Text, ct);
 
                 if (callback.PlotResult != null) {
                     Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' />");
