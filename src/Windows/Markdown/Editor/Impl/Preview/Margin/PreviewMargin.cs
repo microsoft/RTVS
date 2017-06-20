@@ -59,10 +59,6 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            if (!_settings.AutomaticSync) {
-                return;
-            }
-
             var snapshot = _textView.TextBuffer.CurrentSnapshot;
             if (_textView.IsCaretInRCode()) {
                 // In R Code. only update if caret line changes
@@ -86,7 +82,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             // Update as-you-type outside of code blocks only.
             // Code blocks are updated on caret line change
-            if (_settings.AutomaticSync && !_textView.IsCaretInRCode()) {
+            if (!_textView.IsCaretInRCode()) {
                 UpdateOnIdle();
             }
         }
