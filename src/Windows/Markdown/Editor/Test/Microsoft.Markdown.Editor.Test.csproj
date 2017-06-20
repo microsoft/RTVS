@@ -27,10 +27,16 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.props" />
   <ItemGroup>
+    <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -109,8 +115,10 @@
     <Compile Include="ContainedLanguage\RLanguageHandlerTest.cs" />
     <Compile Include="Fixtures\MarkdownEditorServicesFixture.cs" />
     <Compile Include="Fixtures\MarkdownTestFilesFixture.cs" />
+    <Compile Include="Preview\BrowserViewTest.cs" />
     <Compile Include="Preview\CommandsTest.cs" />
     <Compile Include="Preview\MarginProviderTest.cs" />
+    <Compile Include="Preview\PreviewTestHelpers.cs" />
     <Compile Include="Preview\RCodeBlockTest.cs" />
     <Compile Include="Preview\MarkdownFactoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

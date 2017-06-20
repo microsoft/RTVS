@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 
 namespace Microsoft.Markdown.Editor.Preview {
-    internal interface IMarkdownPreview {
+    public interface IMarkdownPreview {
         void Update();
         Task RunCurrentChunkAsync();
         Task RunAllChunksAboveAsync();

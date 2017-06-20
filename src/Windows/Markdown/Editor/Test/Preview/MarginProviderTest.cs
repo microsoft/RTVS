@@ -8,8 +8,6 @@ using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Preview.Margin;
 using Microsoft.Markdown.Editor.Settings;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text.Editor;
@@ -40,22 +38,17 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
             settings.EnablePreview.Returns(true);
             margin = provider.CreateMargin(host, container);
+            margin.Should().BeNull();
+
+            settings.PreviewPosition = RMarkdownPreviewPosition.Below;
+            margin = provider.CreateMargin(host, container);
             margin.Should().NotBeNull();
         }
 
         private static ICoreShell SetupServices(out IWpfTextViewHost host, out IWpfTextViewMargin container, out IRMarkdownEditorSettings settings) {
             var shell = TestCoreShell.CreateSubstitute();
-            settings = Substitute.For<IRMarkdownEditorSettings>();
-            shell.ServiceManager.AddService(settings);
-            var wfp = Substitute.For<IRInteractiveWorkflowProvider>();
-            shell.ServiceManager.AddService(wfp);
-
-            var workflow = Substitute.For<IRInteractiveWorkflow>();
-            wfp.GetOrCreate().Returns(workflow);
-
-            var session = Substitute.For<IRSession>();
-            session.IsHostRunning.Returns(true);
-            workflow.RSessions.GetOrCreate(Arg.Any<string>()).Returns(session);
+            settings = shell.SetupSettingsSubstitute();
+            shell.SetupSessionSubstitute();
 
             host = Substitute.For<IWpfTextViewHost>();
             var tb = new TextBufferMock("", MdContentTypeDefinition.ContentType);
