@@ -8,8 +8,6 @@ namespace Microsoft.Markdown.Editor.Settings {
         bool AutomaticSync { get; set; }
         int PreviewWidth { get; set; }
         int PreviewHeight { get; set; }
-        string CustomStylesheetFileName { get; set; }
-
         void ResetSettings();
     }
 }

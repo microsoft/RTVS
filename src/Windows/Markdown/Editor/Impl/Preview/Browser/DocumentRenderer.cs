@@ -18,9 +18,11 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
     /// </summary>
     internal sealed class DocumentRenderer : IDisposable {
         private readonly RCodeBlockRenderer _codeBlockRenderer;
+        private readonly YamlRenderer _yamlRenderer;
 
         public DocumentRenderer(string documentName, IServiceContainer services) {
             _codeBlockRenderer = new RCodeBlockRenderer(documentName, services);
+            _yamlRenderer = new YamlRenderer();
         }
 
         public string RenderStaticHtml(MarkdownDocument document) {
@@ -30,6 +32,7 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
 
             using (_codeBlockRenderer.StartRendering()) {
                 htmlRenderer.ObjectRenderers.Insert(0, _codeBlockRenderer);
+                htmlRenderer.ObjectRenderers.Insert(0, _yamlRenderer);
 
                 htmlRenderer.UseNonAsciiNoEscape = true;
                 htmlRenderer.Render(document);

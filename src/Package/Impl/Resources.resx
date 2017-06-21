@@ -1269,9 +1269,6 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Right" xml:space="preserve">
     <value>Right</value>
   </data>
-  <data name="Settings_MarkdownCategory_CSS" xml:space="preserve">
-    <value>CSS</value>
-  </data>
   <data name="Settings_MarkdownCategory_Preview" xml:space="preserve">
     <value>Preview</value>
   </data>
@@ -1280,12 +1277,6 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   </data>
   <data name="Settings_Markdown_AutomaticSync_Description" xml:space="preserve">
     <value>Automatically update preview when markdown file changes</value>
-  </data>
-  <data name="Settings_Markdown_CustomStylesheet" xml:space="preserve">
-    <value>Stylesheet</value>
-  </data>
-  <data name="Settings_Markdown_CustomStylesheet_Description" xml:space="preserve">
-    <value>Custom stylesheet to apply to the generated HTML</value>
   </data>
   <data name="Settings_Markdown_EnablePreview" xml:space="preserve">
     <value>Enable preview</value>

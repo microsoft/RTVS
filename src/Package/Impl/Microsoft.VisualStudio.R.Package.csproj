@@ -1478,6 +1478,7 @@
     <ItemGroup>
       <VSIXSourceItem Include="$(OutputPath)\Markdig.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\YamlDotNet.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Caching.Abstractions.dll" />

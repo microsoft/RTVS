@@ -2382,24 +2382,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Stylesheet.
-        /// </summary>
-        public static string Settings_Markdown_CustomStylesheet {
-            get {
-                return ResourceManager.GetString("Settings_Markdown_CustomStylesheet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Custom stylesheet to apply to the generated HTML.
-        /// </summary>
-        public static string Settings_Markdown_CustomStylesheet_Description {
-            get {
-                return ResourceManager.GetString("Settings_Markdown_CustomStylesheet_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enable preview.
         /// </summary>
         public static string Settings_Markdown_EnablePreview {
@@ -2495,15 +2477,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_MarkdownCategory {
             get {
                 return ResourceManager.GetString("Settings_MarkdownCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CSS.
-        /// </summary>
-        public static string Settings_MarkdownCategory_CSS {
-            get {
-                return ResourceManager.GetString("Settings_MarkdownCategory_CSS", resourceCulture);
             }
         }
         

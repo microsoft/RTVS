@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Markdig.Renderers;
@@ -20,6 +19,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using mshtml;
+using Microsoft.Markdown.Editor.Preview.Parser;
 using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
@@ -129,7 +129,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             var fencedCodeBlock = codeBlock as FencedCodeBlock;
             var info = fencedCodeBlock?.Info;
             if (info != null && (info.StartsWithIgnoreCase("{r") || info.StartsWithIgnoreCase("{ r"))) {
-                var text = GetBlockText(fencedCodeBlock);
+                var text = fencedCodeBlock.GetText();
                 var rCodeBlock = new RCodeBlock(_blockNumber, text, fencedCodeBlock.Arguments);
 
                 var result = GetCachedResult(_blockNumber, rCodeBlock.Hash, fencedCodeBlock);
@@ -140,7 +140,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                     var elementId = rCodeBlock.HtmlElementId;
                     _blocks.Add(rCodeBlock);
 
-                    var echoed = WriteBlockContent(renderer, _blockNumber, text);
+                    WriteBlockContent(renderer, _blockNumber, text);
                     // Write placeholder first. We will insert actual data when the evaluation is done.
                     renderer.Write(GetBlockPlaceholder(elementId, text));
                 }
@@ -148,20 +148,10 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             }
         }
 
-        private bool WriteBlockContent(HtmlRenderer renderer, int blockNumber, string text) {
+        private void WriteBlockContent(HtmlRenderer renderer, int blockNumber, string text) {
             if (_blocks[blockNumber].EchoContent) {
                 renderer.Write(Invariant($"<pre class='r'><code>{text}</code></pre>"));
-                return true;
             }
-            return false;
-        }
-
-        private static string GetBlockText(FencedCodeBlock block) {
-            var sb = new StringBuilder();
-            foreach (var line in block.Lines.Lines) {
-                sb.AppendLine(line.ToString());
-            }
-            return sb.ToString().Trim();
         }
         #endregion
 
