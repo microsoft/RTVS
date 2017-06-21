@@ -5,8 +5,8 @@ Priority: optional
 Architecture: amd64
 Depends: libexplain51 (>= 1.4.D001-2), libzip4 (>= 1.0.1-0ubuntu1), \
 dotnet-dev-1.0.4 (>= 1.0.4-1), libc6 (>= 2.23-0ubuntu7), \
-bash (>= 4.3-14ubuntu1.2)
-Suggests: r-base (>= 3.2.0), microsoft-r-open-mro-3.2 (>=3.2.0)
+bash (>= 4.3-14ubuntu1.2), systemd(>= 229-4ubuntu17)
+Suggests: r-base (>= 3.2.0), microsoft-r-open-mro-3.2 (>= 3.2.0)
 Maintainer: rtvs-support@microsoft.com
 Homepage: https://www.visualstudio.com/vs/rtvs/
 Description: R execution environment for R Tools for Visual Studio
