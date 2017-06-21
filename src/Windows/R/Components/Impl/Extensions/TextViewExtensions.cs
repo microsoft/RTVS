@@ -46,10 +46,21 @@ namespace Microsoft.R.Components.Extensions {
              );
         }
 
+        public static SnapshotSpan? MapUpToView(this ITextView textView, ITextSnapshot snapshot, Span span) {
+            var start = textView.MapUpToView(snapshot, span.Start);
+            if (start.HasValue) {
+                var end = textView.MapUpToView(snapshot, span.End);
+                if (end.HasValue) {
+                    return new SnapshotSpan(textView.TextBuffer.CurrentSnapshot, Span.FromBounds(start.Value, end.Value));
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// Determines if given text view is interactive window
         /// </summary>
-        public static bool IsRepl(this ITextView textView) 
-            => textView.TextBuffer.ContentType.TypeName.EqualsIgnoreCase(_replContentTypeName);
+        public static bool IsRepl(this ITextView textView)
+                => textView.TextBuffer.ContentType.TypeName.EqualsIgnoreCase(_replContentTypeName);
     }
 }

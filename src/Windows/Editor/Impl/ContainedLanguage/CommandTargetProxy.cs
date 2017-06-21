@@ -25,18 +25,15 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         private CommandTargetProxy(ITextView textView) => textView.AddService(this);
 
         #region ICommandTarget
-        public CommandStatus Status(Guid group, int id) {
-            return _commandTarget != null ? _commandTarget.Status(group, id) : CommandStatus.NotSupported;
-        }
+        public CommandStatus Status(Guid group, int id) 
+            => _commandTarget?.Status(@group, id) ?? CommandStatus.NotSupported;
 
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            return _commandTarget != null ? _commandTarget.Invoke(group, id, inputArg, ref outputArg) : CommandResult.NotSupported;
-        }
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) => 
+            _commandTarget?.Invoke(@group, id, inputArg, ref outputArg) ?? CommandResult.NotSupported;
 
         public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
             _commandTarget?.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
         }
-
         #endregion
 
         public static void SetCommandTarget(ITextView textView, ICommandTarget target) {

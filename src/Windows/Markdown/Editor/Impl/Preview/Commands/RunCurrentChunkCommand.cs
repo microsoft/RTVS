@@ -12,6 +12,7 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
         public RunCurrentChunkCommand(ITextView textView, IServiceContainer services) :
             base(textView, services, MdPackageCommandId.icmdRunCurrentChunk) { }
 
-        protected override Task ExecuteAsync() => TextView.GetService<IMarkdownPreview>()?.RunCurrentChunkAsync();
+        protected override Task ExecuteAsync() 
+            => TextView.GetService<IMarkdownPreview>()?.RunCurrentChunkAsync() ?? Task.CompletedTask;
     }
 }

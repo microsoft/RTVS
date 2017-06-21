@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Markdown.Editor.Preview.Commands {
     internal abstract class RunChunkCommandBase : ViewCommand {
         protected IRMarkdownEditorSettings Settings { get; }
-        private Task _executingTask;
+        private volatile bool _running;
 
         protected RunChunkCommandBase(ITextView textView, IServiceContainer services, int id) :
             base(textView, new CommandId(MdPackageCommandId.MdCmdSetGuid, id), false) {
@@ -23,6 +23,9 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
+            if (_running) {
+                return CommandStatus.Supported;
+            }
             if (!TextView.TextBuffer.ContentType.TypeName.EqualsOrdinal(MdProjectionContentTypeDefinition.ContentType)) {
                 return CommandStatus.Invisible;
             }
@@ -33,7 +36,10 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
         }
 
         public override CommandResult Invoke(Guid @group, int id, object inputArg, ref object outputArg) {
-            _executingTask = ExecuteAsync();
+            if (!_running) {
+                _running = true;
+                ExecuteAsync().ContinueWith(t => _running = false);
+            }
             return CommandResult.Executed;
         }
 

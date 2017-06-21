@@ -40,10 +40,10 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.SupportedAndEnabled | CommandStatus.Latched);
 
             var o = new object();
-            command.Invoke(Guid.Empty, 0, null, ref o);
+            command.Invoke();
             settings.AutomaticSync.Should().BeFalse();
 
-            command.Invoke(Guid.Empty, 0, null, ref o);
+            command.Invoke();
             settings.AutomaticSync.Should().BeTrue();
         }
 

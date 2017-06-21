@@ -29,11 +29,10 @@ namespace Microsoft.R.Editor.Selection {
                     var snapshot = point.Value.Snapshot;
                     var spanToSelect = RTextStructure.GetWordSpan(snapshot, point.Value);
                     if (spanToSelect.HasValue && spanToSelect.Value.Length > 0) {
-                        var start = TextView.MapUpToView(snapshot, spanToSelect.Value.Start);
-                        var end = TextView.MapUpToView(snapshot, spanToSelect.Value.End);
-                        if (start.HasValue && end.HasValue) {
-                            TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, Span.FromBounds(start.Value, end.Value)), isReversed: false);
-                            TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, spanToSelect.Value.End));
+                        var viewSpan = TextView.MapUpToView(snapshot, spanToSelect.Value);
+                        if (viewSpan.HasValue) {
+                            TextView.Selection.Select(viewSpan.Value, isReversed: false);
+                            TextView.Caret.MoveTo(viewSpan.Value.End);
                             return CommandResult.Executed;
                         }
                     }

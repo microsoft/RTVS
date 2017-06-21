@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.Preview.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMargin.cs
-    public sealed class PreviewMargin : DockPanel, IWpfTextViewMargin, IMarkdownPreview {
+    public sealed class PreviewMargin : Border, IWpfTextViewMargin, IMarkdownPreview {
         private static object _idleActionTag;
 
         private readonly IIdleTimeService _idleTime;
@@ -138,7 +138,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Pixel) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(width, GridUnitType.Pixel), MinWidth = 150 });
             grid.RowDefinitions.Add(new RowDefinition());
-            Children.Add(grid);
+            Child = grid;
 
             grid.Children.Add(Browser.Control);
             Grid.SetColumn(Browser.Control, 2);
@@ -190,7 +190,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             grid.ColumnDefinitions.Add(new ColumnDefinition());
 
             grid.Children.Add(Browser.Control);
-            Children.Add(grid);
+            Child = grid;
 
             Grid.SetColumn(Browser.Control, 0);
             Grid.SetRow(Browser.Control, 2);

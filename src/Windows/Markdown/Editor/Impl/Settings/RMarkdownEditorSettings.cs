@@ -7,12 +7,11 @@ using Microsoft.Markdown.Editor.ContentTypes;
 
 namespace Microsoft.Markdown.Editor.Settings {
     public sealed class RMarkdownEditorSettings : EditorSettings, IRMarkdownEditorSettings {
-        public const string EnablePreviewKey = "EnablePreview";
-        public const string PreviewPositionKey = "PreviewPosition";
-        public const string AutomaticSyncKey = "AutomaticSync";
-        public const string PreviewHeightKey = "PreviewHeight";
-        public const string PreviewWidthKey = "PreviewWidth";
-        public const string CustomStylesheetFileNameKey = "CustomStylesheetFileName";
+        public const string EnablePreviewKey = nameof(EnablePreview);
+        public const string PreviewPositionKey = nameof(PreviewPosition);
+        public const string AutomaticSyncKey = nameof(AutomaticSync);
+        public const string PreviewHeightKey = nameof(PreviewHeight);
+        public const string PreviewWidthKey = nameof(PreviewWidth);
 
         public const RMarkdownPreviewPosition DefaultPosition = RMarkdownPreviewPosition.Right;
         public const int DefaultWidth = 500;
@@ -46,18 +45,12 @@ namespace Microsoft.Markdown.Editor.Settings {
             set => WritableStorage?.Set(PreviewHeightKey, value);
         }
 
-        public string CustomStylesheetFileName {
-            get => Storage.Get(CustomStylesheetFileNameKey, (string)null);
-            set => WritableStorage?.Set(CustomStylesheetFileNameKey, value);
-        }
-
         public override void ResetSettings() {
             EnablePreview = true;
             PreviewPosition = DefaultPosition;
             AutomaticSync = true;
             PreviewHeight = DefaultHeight;
             PreviewWidth = DefaultWidth;
-            CustomStylesheetFileName = null;
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Windows.Input;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
@@ -28,7 +30,7 @@ namespace Microsoft.R.Editor.Commands {
 
                 var url = GetHotUrl(_wpfTextView, e);
                 if (!string.IsNullOrEmpty(url)) {
-                    _shell.Services.GetService<IProcessServices>().Start(url);
+                    _shell.Services.Process().Start(url);
                     return;
                 }
                 if (!_wpfTextView.Caret.InVirtualSpace) {
@@ -38,8 +40,7 @@ namespace Microsoft.R.Editor.Commands {
                     if (point.HasValue) {
                         var command = new SelectWordCommand(_wpfTextView, point.Value.Snapshot.TextBuffer);
                         var o = new object();
-                        var result = command.Invoke(typeof(VSConstants.VSStd2KCmdID).GUID,
-                            (int) VSConstants.VSStd2KCmdID.SELECTCURRENTWORD, null, ref o);
+                        var result = command.Invoke();
                         if (result.Result == CommandResult.Executed.Result) {
                             e.Handled = true;
                             return;
