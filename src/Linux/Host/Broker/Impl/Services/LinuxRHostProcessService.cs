@@ -45,6 +45,15 @@ namespace Microsoft.R.Host.Broker.Services {
             return new UnixProcess(process);
         }
 
+        private string GetLoadLibraryPath(string binPath) {
+            string value = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
+            if (string.IsNullOrEmpty(value)) {
+                return binPath;
+            }
+
+            return $"{binPath}:{value}";
+        }
+
         private IDictionary<string, string> GetHostEnvironment(Interpreter interpreter, string profilePath, string userName) {
             // set required environment variables.
             Dictionary<string, string> environment = new Dictionary<string, string>() {
@@ -53,15 +62,15 @@ namespace Microsoft.R.Host.Broker.Services {
                 { "PWD"                     , profilePath},
                 { "R_HOME"                  , interpreter.RInterpreterInfo.InstallPath},
                 { "USER"                    , Utility.GetUnixUserName(userName)},
+                { "LD_LIBRARY_PATH"         , GetLoadLibraryPath(interpreter.RInterpreterInfo.BinPath)}
             };
 
             // set optional environment variables if available
-            string[] optionalVariables = { "LD_LIBRARY_PATH", "LN_S", "R_ARCH", "R_BROWSER", "R_BZIPCMD", "R_GZIPCMD", "R_LIBS_SITE", "R_INCLUDE_DIR", "R_DOC_DIR", "R_PAPERSIZE", "R_PAPERSIZE_USER", "R_PDFVIEWER", "R_PRINTCMD", "R_RD4PDF", "R_SHARE_DIR", "R_TEXI2DVICMD", "R_UNZIPCMD", "R_ZIPCMD", "SED", "SHELL", "SHLVL", "TAR" };
+            string[] optionalVariables = { "LN_S", "R_ARCH", "R_BROWSER", "R_BZIPCMD", "R_GZIPCMD", "R_LIBS_SITE", "R_INCLUDE_DIR", "R_DOC_DIR", "R_PAPERSIZE", "R_PAPERSIZE_USER", "R_PDFVIEWER", "R_PRINTCMD", "R_RD4PDF", "R_SHARE_DIR", "R_TEXI2DVICMD", "R_UNZIPCMD", "R_ZIPCMD", "SED", "SHELL", "SHLVL", "TAR" };
             foreach(string key in optionalVariables) {
                 SetEnvironmentVaraibleIfAvailable(environment, key);
             }
 
-            // TODO: provide RTVS_LD_LIBRARY_PATH
             return environment;
         }
 
