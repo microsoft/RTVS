@@ -1,0 +1,61 @@
+.TH rtvsd 8
+.SH NAME
+.B rtvsd
+\- a server providing remote R services for R Tools for Visual Studio
+.SH SYNOPSIS
+.B rtvsd 
+[\fIjson\-file\fR]
+.SH DESCRIPTION
+.B rtvsd
+is a web server that handles requests for creation and management of Microsoft.R.Host instances. It also provides information about the execution environment and the current load on the system.
+.SH JSON\-FILE
+The default JSON config file can be found at /etc/rtvs/Microsoft.R.Host.Broker.Config.json
+.TP
+.BR """lifetime""" : {...}
+Options for lifetime management of rtvsd.
+.TP
+.BR """lifetime""" : { """pingTimeout""" : """<time\-out>""" }
+Sets the ping time out in milliseconds.
+.TP
+.BR """lifetime""" : { """parentProcessID""" : """<pid>""" }
+Lifetime of rtvsd will be dependent on the lifetime of the <pid> process.
+.TP
+.BR """logging""" : {...}
+Options for logging from icrosoft.R.Host.Broker.Linux.dll.
+.TP
+.BR """logging""" : { """logFolder""" : """<path>""" }
+Logs will be stored in this folder. Default is TEMP/TMP folder as set by the environment.
+.TP
+.BR """logging""" : { """logHostOutput""" : """<true|false>""" }
+Logs output from Microsoft.R.Host instances if true.
+.TP
+.BR """logging""" : { """logPackets""" : """<true|false>""" }
+Logs all traffic to and from rtvsd.
+.TP
+.BR """r""" : {...}
+Options for detecting or setting R interpreters.
+.TP
+.BR """r""" : { """autoDetect""" : """<true|false>""" }
+Auto detect R interpreters. This option looks for installed CRAN R (>= 3.2) and Microsoft R Open (>= 3.2) packages. Default is true.
+.TP
+.BR """r""" : { """interpreters""" : [ { """name""" : """<interpreter-name>""", """basePath""" : """<path>""" }, ... ] }
+Add custom R interpreters. The format requires a name and the path to where the interpreter is installed. Example, for CRAN R the path is /usr/lib/R.
+Note: CRAN R is detected automatically.
+.TP
+.BR """security""" : {...}
+Options to control access, set SSL certificate.
+.TP
+.BR """security""" : { """allowedGroup""" : """<group-name>""" }
+Only allow users in the <group-name> group. Default is "Users" group.
+.TP
+.BR """security""" : { """x509CertificateName""" : """<cert-name>""" }
+Use this option to pick a certificate from the local machine certificate store. The certificate must support private key.
+.TP
+.BR """security""" : { """x509CertificateFile""" : """path""", """x509CertificatePassword""" : """<password>""" }
+Use this option to provide a certificate file. 
+.TP
+.BR """startup""" : { """name""": """<name>""" }
+Provide a name to identify the service instance.
+.TP
+.BR """urls""" : """https://0.0.0.0:5444"""
+Use this field to change the port used by rtvsd. Default port is 5444.

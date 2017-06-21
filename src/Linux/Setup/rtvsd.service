@@ -1,0 +1,13 @@
+[Unit]
+Description=Remote R Service
+Documentation=man:rtvsd(8)
+Documentation=https://www.visualstudio.com/vs/rtvs/
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/rtvsd
+StandardOutput=null
+Restart=on-failure
+
+[Install]
+Alias=rtvsd.service
