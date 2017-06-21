@@ -1,17 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Markdown.Editor.Preview.Code;
-using Microsoft.Markdown.Editor.Preview.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Text;
 using NSubstitute;
 using Xunit;
 
@@ -19,6 +16,19 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
     [ExcludeFromCodeCoverage]
     [Category.Md.Preview]
     public class RCodeBlockTest {
+        private const string _documentName = "test.rmd";
+        private readonly TestCoreShell _shell;
+        private readonly IRSession _session;
+        private readonly IRSessionInteraction _interaction;
+
+        public RCodeBlockTest() {
+            _shell = TestCoreShell.CreateSubstitute();
+            _session = _shell.SetupSessionSubstitute();
+
+            _interaction = Substitute.For<IRSessionInteraction>();
+            _session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(_interaction));
+        }
+
         [Test]
         public void BasicCtor() {
             var block = new RCodeBlock(0, string.Empty);
@@ -47,37 +57,34 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test]
         public async Task SimpleEval() {
-            var session = Substitute.For<IRSession>();
-            var inter = Substitute.For<IRSessionInteraction>();
-            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(inter);
-
             var block = new RCodeBlock(0, string.Empty);
-            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            var evaluator = new RCodeEvaluator(_documentName, _shell.Services);
+            await evaluator.EvaluateBlockAsync(block, CancellationToken.None);
             block.State.Should().Be(CodeBlockState.Evaluated);
         }
 
         [Test]
         public async Task Cancellation() {
-            var session = Substitute.For<IRSession>();
             var cts = new CancellationTokenSource();
             cts.Cancel();
+
             var block = new RCodeBlock(0, string.Empty);
-            await block.EvaluateAsync(session, new RSessionCallback(), cts.Token);
+            var evaluator = new RCodeEvaluator(_documentName, _shell.Services);
+
+            await evaluator.EvaluateBlockAsync(block, cts.Token);
             block.Result.Should().Contain("canceled");
         }
 
         [Test]
         public async Task Output() {
-            var session = Substitute.For<IRSession>();
-            var inter = Substitute.For<IRSessionInteraction>();
-
-            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
-            inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => {
-                session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Output, "output"));
+            _interaction.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => {
+                _session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Output, "output"));
             });
 
             var block = new RCodeBlock(0, string.Empty);
-            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            var evaluator = new RCodeEvaluator(_documentName, _shell.Services);
+            await evaluator.EvaluateBlockAsync(block, CancellationToken.None);
+
             block.Result.Should().Contain("<code");
             block.Result.Should().Contain("output");
             block.Result.Should().NotContain("color: red");
@@ -85,16 +92,14 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test]
         public async Task Error() {
-            var session = Substitute.For<IRSession>();
-            var inter = Substitute.For<IRSessionInteraction>();
-
-            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
-            inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => {
-                session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Error, "error"));
+            _interaction.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => {
+                _session.Output += Raise.EventWith(new ROutputEventArgs(OutputType.Error, "error"));
             });
 
             var block = new RCodeBlock(0, string.Empty);
-            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            var evaluator = new RCodeEvaluator(_documentName, _shell.Services);
+            await evaluator.EvaluateBlockAsync(block, CancellationToken.None);
+
             block.Result.Should().Contain("<code");
             block.Result.Should().Contain("error");
             block.Result.Should().Contain("color: red");
@@ -102,14 +107,12 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test]
         public async Task Exception() {
-            var session = Substitute.For<IRSession>();
-            var inter = Substitute.For<IRSessionInteraction>();
-
-            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
-            inter.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => throw new RException("disconnected"));
+            _interaction.When(s => s.RespondAsync(Arg.Any<string>())).Do(c => throw new RException("disconnected"));
 
             var block = new RCodeBlock(0, string.Empty);
-            await block.EvaluateAsync(session, new RSessionCallback(), CancellationToken.None);
+            var evaluator = new RCodeEvaluator(_documentName, _shell.Services);
+            await evaluator.EvaluateBlockAsync(block, CancellationToken.None);
+
             block.Result.Should().Contain("<code");
             block.Result.Should().Contain("disconnected");
             block.Result.Should().Contain("color: red");
@@ -117,13 +120,13 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test]
         public async Task Plot() {
-            var session = Substitute.For<IRSession>();
-            var inter = Substitute.For<IRSessionInteraction>();
             var cb = new RSessionCallback { PlotResult = new byte[] { 1, 2, 3, 4 } };
-            session.BeginInteractionAsync(Arg.Any<bool>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(inter));
 
             var block = new RCodeBlock(0, string.Empty);
-            await block.EvaluateAsync(session, cb, CancellationToken.None);
+            var evaluator = new RCodeEvaluator(_documentName, _shell.Services);
+            evaluator.EvalSession.SessionCallback = cb;
+            await evaluator.EvaluateBlockAsync(block, CancellationToken.None);
+
             block.Result.Should().Be("<img src='data:image/gif;base64, AQIDBA==' />");
             cb.PlotResult.Should().BeNull();
         }

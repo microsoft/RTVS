@@ -24,46 +24,52 @@ using NSubstitute;
 namespace Microsoft.Markdown.Editor.Test.Preview {
     [ExcludeFromCodeCoverage]
     [Category.Md.Preview]
-    public class CommandsTest {
+    public sealed class CommandsTest {
+        private readonly ICoreShell _shell;
+        private readonly IRMarkdownEditorSettings _settings;
+
+        public CommandsTest() {
+            SetupSettings(out ICoreShell shell, out IRMarkdownEditorSettings settings);
+            _shell = shell;
+            _settings = settings;
+        }
+
         public void AutomaticSync() {
             var tv = Substitute.For<ITextView>();
-            var shell = TestCoreShell.CreateSubstitute();
-            var settings = shell.SetupSettingsSubstitute();
 
-            var command = new AutomaticSyncCommand(tv, shell.Services);
+            var command = new AutomaticSyncCommand(tv, _shell.Services);
             command.CommandIds.Count.Should().Be(1);
             command.CommandIds[0].Group.Should().Be(MdPackageCommandId.MdCmdSetGuid);
             command.CommandIds[0].Id.Should().Be(MdPackageCommandId.icmdAutomaticSync);
 
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.SupportedAndEnabled);
-            settings.AutomaticSync.Returns(true);
+            _settings.AutomaticSync.Returns(true);
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.SupportedAndEnabled | CommandStatus.Latched);
 
             var o = new object();
             command.Invoke();
-            settings.AutomaticSync.Should().BeFalse();
+            _settings.AutomaticSync.Should().BeFalse();
 
             command.Invoke();
-            settings.AutomaticSync.Should().BeTrue();
+            _settings.AutomaticSync.Should().BeTrue();
         }
 
         [Test]
         public void RunCurrentChunk() {
-            SetupSettings(out ICoreShell shell, out IRMarkdownEditorSettings settings);
             var tb = new TextBufferMock(string.Empty, "inert");
             var tv = new TextViewMock(tb);
 
-            var command = new RunCurrentChunkCommand(tv, shell.Services);
+            var command = new RunCurrentChunkCommand(tv, _shell.Services);
             command.CommandIds.Count.Should().Be(1);
             command.CommandIds[0].Group.Should().Be(MdPackageCommandId.MdCmdSetGuid);
             command.CommandIds[0].Id.Should().Be(MdPackageCommandId.icmdRunCurrentChunk);
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.Invisible);
 
             SetupTextBuffers(out ITextBuffer tbMarkdown, out ITextView textView);
-            command = new RunCurrentChunkCommand(textView, shell.Services);
+            command = new RunCurrentChunkCommand(textView, _shell.Services);
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.Invisible);
 
-            EnableRCode(tbMarkdown, command, settings);
+            EnableRCode(tbMarkdown, command, _settings);
 
             InvokeCommand(textView, command, out IMarkdownPreview preview);
             preview.Received(1).RunCurrentChunkAsync();
@@ -71,21 +77,20 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test]
         public void RunChunksAbove() {
-            SetupSettings(out ICoreShell shell, out IRMarkdownEditorSettings settings);
             var tb = new TextBufferMock(string.Empty, "inert");
             var tv = new TextViewMock(tb);
 
-            var command = new RunAllChunksAboveCommand(tv, shell.Services);
+            var command = new RunAllChunksAboveCommand(tv, _shell.Services);
             command.CommandIds.Count.Should().Be(1);
             command.CommandIds[0].Group.Should().Be(MdPackageCommandId.MdCmdSetGuid);
             command.CommandIds[0].Id.Should().Be(MdPackageCommandId.icmdRunAllChunksAbove);
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.Invisible);
 
             SetupTextBuffers(out ITextBuffer tbMarkdown, out ITextView textView);
-            command = new RunAllChunksAboveCommand(textView, shell.Services);
+            command = new RunAllChunksAboveCommand(textView, _shell.Services);
             command.Status(Guid.Empty, 0).Should().Be(CommandStatus.Invisible);
 
-            EnableRCode(tbMarkdown, command, settings);
+            EnableRCode(tbMarkdown, command, _settings);
 
             InvokeCommand(textView, command, out IMarkdownPreview preview);
             preview.Received(1).RunAllChunksAboveAsync();
@@ -94,7 +99,6 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
         private static void SetupSettings(out ICoreShell shell, out IRMarkdownEditorSettings settings) {
             var testShell = TestCoreShell.CreateSubstitute();
             settings = testShell.SetupSettingsSubstitute();
-            testShell.ServiceManager.AddService(settings);
             shell = testShell;
         }
 

@@ -18,8 +18,11 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
             var session = Substitute.For<IRSession>();
             session.IsHostRunning.Returns(true);
-            workflow.RSessions.GetOrCreate(Arg.Any<string>()).Returns(session);
 
+            var sessionProvider = Substitute.For<IRSessionProvider>();
+            sessionProvider.GetOrCreate(Arg.Any<string>()).Returns(session);
+
+            workflow.RSessions.Returns(sessionProvider);
             return session;
         }
 

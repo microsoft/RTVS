@@ -14,13 +14,11 @@ using Markdig.Syntax;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Markdown.Editor.Settings;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client;
-using mshtml;
 using Microsoft.Markdown.Editor.Preview.Parser;
+using Microsoft.Markdown.Editor.Settings;
+using mshtml;
 using static System.FormattableString;
+using Timer = System.Timers.Timer;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
     /// <summary>
@@ -35,56 +33,26 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         /// and the contents hash.
         /// </summary>
         private readonly List<RCodeBlock> _blocks = new List<RCodeBlock>();
-
-        private readonly IServiceContainer _services;
+        private readonly RCodeEvaluator _evaluator;
         private readonly IRMarkdownEditorSettings _settings;
-        private readonly string _sessionId;
-        private readonly CancellationTokenSource _hostStartCts = new CancellationTokenSource();
-        private readonly RSessionCallback _sessionCallback = new RSessionCallback();
 
         private CancellationTokenSource _blockEvalCts = new CancellationTokenSource();
-        private IRSession _session;
         private int _blockNumber;
         private Task _evalTask = Task.CompletedTask;
 
         public RCodeBlockRenderer(string documentName, IServiceContainer services) {
-            _services = services;
             _settings = services.GetService<IRMarkdownEditorSettings>();
-            _sessionId = Invariant($"({documentName} - {Guid.NewGuid()}");
-            StartSessionAsync(_hostStartCts.Token).DoNotWait();
+            _evaluator = new RCodeEvaluator(documentName, services);
         }
 
         public IDisposable StartRendering() {
             _blockNumber = 0;
             _blockEvalCts?.Cancel();
             _blockEvalCts = new CancellationTokenSource();
-            return Disposable.Create(() => _evalTask = _settings.AutomaticSync ? EvaluateBlocksAsync(_blockEvalCts.Token) : Task.CompletedTask);
+            return Disposable.Create(() => _evalTask = _settings.AutomaticSync
+                    ? _evaluator.EvaluateBlocksAsync(_blocks, _blockEvalCts.Token)
+                    : Task.CompletedTask);
         }
-
-        #region Evaluation
-        private Task EvaluateBlockAsync(IRSession session, int blockNumber, CancellationToken ct) {
-            var block = _blocks[blockNumber];
-            block.State = CodeBlockState.Created;
-            return block.EvaluateAsync(session, _sessionCallback, ct);
-        }
-
-
-        private Task EvaluateBlocksAsync(CancellationToken ct) {
-            var blocks = _blocks.ToArray();
-            //TODO: clear session on cache drop
-            return Task.Run(async () => {
-                try {
-                    var session = await StartSessionAsync(ct);
-
-                    foreach (var block in blocks.Where(b => b.State == CodeBlockState.Created)) {
-                        await block.EvaluateAsync(session, _sessionCallback, ct);
-                    }
-                } catch (Exception ex) when (!ex.IsCriticalException()) {
-                    // Exceptions will be output as block evaluation results
-                }
-            }, ct);
-        }
-        #endregion
 
         #region Rendering
         public async Task RenderBlocksAsync(HTMLDocument htmlDocument) {
@@ -101,9 +69,8 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         public async Task RenderBlocksAsync(HTMLDocument htmlDocument, int start, int count, CancellationToken ct) {
             await _evalTask;
             try {
-                var session = await StartSessionAsync(ct);
                 for (var i = start; i < start + count; i++) {
-                    await EvaluateBlockAsync(session, i, ct);
+                    await _evaluator.EvaluateBlockAsync(_blocks[i], ct);
                     RenderBlock(htmlDocument, i);
                 }
             } catch (OperationCanceledException) { }
@@ -155,21 +122,6 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         }
         #endregion
 
-        #region Session
-        private async Task<IRSession> StartSessionAsync(CancellationToken ct) {
-            if (_session == null) {
-                var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-                _session = workflow.RSessions.GetOrCreate(_sessionId);
-            }
-            if (!_session.IsHostRunning) {
-                var settings = _services.GetService<IRSettings>();
-                await _session.EnsureHostStartedAsync(
-                    new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), _sessionCallback, 3000, ct);
-            }
-
-            return _session;
-        }
-        #endregion
 
         #region Cache
         private string GetCachedResult(int blockNumber, int hash, FencedCodeBlock block) {
@@ -217,8 +169,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
         public void Dispose() {
             _blockEvalCts.Cancel();
-            _hostStartCts.Cancel();
-            _session?.Dispose();
+            _evaluator.Dispose();
         }
     }
 }

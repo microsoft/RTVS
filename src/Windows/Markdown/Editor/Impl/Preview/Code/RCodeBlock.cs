@@ -13,9 +13,6 @@ using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
     internal sealed class RCodeBlock {
-        private StringBuilder _output;
-        private StringBuilder _errors;
-
         public int BlockNumber { get; }
         public string Text { get; }
         public int Hash { get; }
@@ -37,52 +34,6 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             ExtractOptions(arguments);
         }
 
-        public async Task<string> EvaluateAsync(IRSession session, RSessionCallback callback, CancellationToken ct) {
-            try {
-                ct.ThrowIfCancellationRequested();
-
-                session.Output += OnSessionOutput;
-                await ExecuteAndCaptureOutputAsync(session, Text, ct);
-
-                if (callback.PlotResult != null) {
-                    Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' />");
-                    callback.PlotResult = null;
-                } else if (_output.Length > 0) {
-                    Result = Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>");
-                } else if (_errors.Length > 0) {
-                    Result = DisplayErrors ? FormatError(_errors.ToString()) : string.Empty;
-                }
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _output = _errors = null;
-                Result = FormatError(ex.Message);
-            } finally {
-                session.Output -= OnSessionOutput;
-            }
-            State = CodeBlockState.Evaluated;
-            return Result;
-        }
-
-        private string FormatError(string error)
-            => Invariant($"<code style='white-space: pre-wrap; color: red'>{error}</code>");
-
-        private async Task ExecuteAndCaptureOutputAsync(IRSession session, string expression, CancellationToken cancellationToken) {
-            _output = new StringBuilder();
-            _errors = new StringBuilder();
-
-            using (var inter = await session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
-                await inter.RespondAsync(expression);
-            }
-        }
-
-        private void OnSessionOutput(object sender, ROutputEventArgs e) {
-            if (_output != null && _errors != null) {
-                if (e.OutputType == OutputType.Error) {
-                    _errors.Append(e.Message);
-                } else {
-                    _output.Append(e.Message);
-                }
-            }
-        }
         private void ExtractOptions(string info) {
             if (string.IsNullOrEmpty(info)) {
                 return;
