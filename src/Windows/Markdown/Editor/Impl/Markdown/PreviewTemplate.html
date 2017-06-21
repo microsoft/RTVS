@@ -1,8 +1,12 @@
-﻿<!DOCTYPE html>
+﻿<!--
+ Copyright (c) Microsoft Corporation. All rights reserved.
+ Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+<!DOCTYPE html>
 <html lang='en'>
 <head>
-    <meta http-equiv='X-UA-Compatible' content='IE=Edge' />
-    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8" />
     <title>Markdown Preview</title>
     <style>
         body {
@@ -11,6 +15,11 @@
             line-height: 1.42857143;
             color: #333;
             display: block;
+            max-width: 940px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-right: 15px;
+            padding-left: 15px;
         }
 
         h1 {
@@ -68,8 +77,8 @@
         }
     </style>
 </head>
-<body class='markdown-body'>
-    <div id='___markdown-content___'>
+<body class="markdown-body">
+    <div id="___markdown-content___" oncontextmenu="return false;">
         _BODY_
     </div>
 </body>
