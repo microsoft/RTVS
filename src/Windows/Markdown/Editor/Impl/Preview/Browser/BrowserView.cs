@@ -26,9 +26,9 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
         private static string _htmlTemplate;
 
         private readonly IServiceContainer _services;
-        private readonly string _fileName;
         private readonly int _zoomFactor;
         private readonly DocumentRenderer _documentRenderer;
+        private WebBrowserHostUIHandler _uiHandler;
 
         private HTMLDocument _htmlDocument;
         private MarkdownDocument _currentDocument;
@@ -37,13 +37,12 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             Check.ArgumentNull(nameof(fileName), fileName);
             Check.ArgumentNull(nameof(services), services);
 
-            _fileName = fileName;
             _services = services;
 
             _zoomFactor = GetZoomFactor();
             InitBrowser();
 
-            _documentRenderer = new DocumentRenderer(Path.GetFileName(_fileName), _services);
+            _documentRenderer = new DocumentRenderer(Path.GetFileName(fileName), _services);
             //CssCreationListener.StylesheetUpdated += OnStylesheetUpdated;
         }
 
@@ -51,6 +50,7 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
 
         private void InitBrowser() {
             Control = new WebBrowser { HorizontalAlignment = HorizontalAlignment.Stretch };
+            _uiHandler = new WebBrowserHostUIHandler(Control) { IsWebBrowserContextMenuEnabled = false };
 
             Control.LoadCompleted += (s, e) => {
                 Zoom(_zoomFactor);
@@ -92,7 +92,7 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             }
         }
 
-        public Task UpdateBrowserAsync(ITextSnapshot snapshot) 
+        public Task UpdateBrowserAsync(ITextSnapshot snapshot)
             => Task.Run(() => UpdateBrowser(snapshot));
 
         public Task UpdateBlocksAsync(ITextSnapshot snapshot, int start, int count)

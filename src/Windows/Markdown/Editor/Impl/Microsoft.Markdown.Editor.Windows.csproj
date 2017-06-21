@@ -28,6 +28,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -64,6 +65,7 @@
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="Preview\Browser\BrowserView.cs" />
+    <Compile Include="Preview\Browser\WebBrowserHostUIHandler.cs" />
     <Compile Include="Preview\Code\CodeBlockState.cs" />
     <Compile Include="Preview\Commands\RunAllChunksAboveCommand.cs" />
     <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Preview\Margin\PreviewMarginProviderBase.cs" />
     <Compile Include="Preview\Margin\PreviewRightMarginProvider.cs" />
     <Compile Include="Preview\CSS\CssCreationListener.cs" />
+    <Compile Include="Preview\Browser\NativeMethods.cs" />
     <Compile Include="Preview\Parser\Extensions.cs" />
     <Compile Include="Preview\Parser\MarkdownFactory.cs" />
     <Compile Include="Preview\Browser\DocumentRenderer.cs" />
