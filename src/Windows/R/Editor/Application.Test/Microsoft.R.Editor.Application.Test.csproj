@@ -125,6 +125,7 @@
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="IEditorScript.cs" />
+    <Compile Include="Markdown\MarkdownPreviewTest.cs" />
     <Compile Include="Markdown\RmdClassificationTest.cs" />
     <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
@@ -140,6 +141,7 @@
     <None Include="..\..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
     </None>
+    <None Include="Files\Preview01.rmd" />
     <None Include="Files\01.rd" />
     <None Include="Files\01.rmd" />
     <None Include="Files\01.rmd.colors" />
@@ -153,9 +155,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TestShell\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

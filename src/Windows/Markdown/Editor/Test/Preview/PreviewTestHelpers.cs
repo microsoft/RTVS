@@ -1,11 +1,11 @@
-﻿using Microsoft.Common.Core.Test.Fakes.Shell;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using NSubstitute;
-
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.Markdown.Editor.Test.Preview {
     internal static class PreviewTestHelpers {

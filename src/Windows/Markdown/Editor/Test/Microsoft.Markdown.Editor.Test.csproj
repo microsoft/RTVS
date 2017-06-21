@@ -115,6 +115,7 @@
     <Compile Include="ContainedLanguage\RLanguageHandlerTest.cs" />
     <Compile Include="Fixtures\MarkdownEditorServicesFixture.cs" />
     <Compile Include="Fixtures\MarkdownTestFilesFixture.cs" />
+    <Compile Include="Fixtures\TestMarkdownEditorSettings.cs" />
     <Compile Include="Preview\BrowserViewTest.cs" />
     <Compile Include="Preview\CommandsTest.cs" />
     <Compile Include="Preview\MarginProviderTest.cs" />

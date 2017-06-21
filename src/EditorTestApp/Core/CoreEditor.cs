@@ -132,6 +132,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
             ApplyDefaultSettings();
             Control.Content = _wpftextViewHost.HostControl;
+            var margin = _wpftextViewHost.GetTextViewMargin("MarginRightFactory");
 
             var baseController = new BaseController();
             BaseController = baseController;

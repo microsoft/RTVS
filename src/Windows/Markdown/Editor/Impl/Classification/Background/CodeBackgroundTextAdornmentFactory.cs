@@ -15,7 +15,7 @@ namespace Microsoft.Markdown.Editor.Classification.Background {
     internal sealed class CodeBackgroundTextAdornmentFactory : IWpfTextViewCreationListener {
         [SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields", Justification = "MEF")]
         [Export(typeof(AdornmentLayerDefinition))]
-        [Name("CodeBackgroundTextAdornmentFactory")]
+        [Name("CodeBackgroundTextAdornment")]
         [Order(Before = PredefinedAdornmentLayers.Outlining)]
         [TextViewRole(PredefinedTextViewRoles.Document)]
         public AdornmentLayerDefinition EditorAdornmentLayer { get; set; }

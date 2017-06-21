@@ -4,7 +4,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.Common.Core.Services;
+using Microsoft.Markdown.Editor.Test.Fixtures;
 using Microsoft.R.Editor.Test.Fixtures;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Markdown.Editor.Test {
     [ExcludeFromCodeCoverage]
@@ -13,5 +16,10 @@ namespace Microsoft.Markdown.Editor.Test {
             "Microsoft.Markdown.Editor.Windows.dll",
             "Microsoft.Markdown.Editor.Test.dll"
         });
+
+        protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
+            serviceManager.AddService(new TestMarkdownEditorSettings());
+            base.SetupServices(serviceManager, testInput);
+        }
     }
 }
