@@ -119,10 +119,7 @@ namespace Microsoft.R.Host.Broker.Services {
             // usage:
             // Microsoft.R.Host.RunAsUser [-q]
             //    -q: Quiet
-            const string rLaunchBinary = "Microsoft.R.Host.RunAsUser";
-
-            string brokerDir = Path.GetDirectoryName(typeof(Program).GetTypeInfo().Assembly.Location);
-            string rLaunchPath = Path.Combine(brokerDir, rLaunchBinary);
+            const string rLaunchPath = "/usr/lib/rtvs/Microsoft.R.Host.RunAsUser";
 
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = rLaunchPath;

@@ -49,7 +49,7 @@ static constexpr char RTVS_RESPONSE_TYPE_RTVS_ERROR[] = "rtvs-error";
 static constexpr char RTVS_MSG_AUTH_ONLY[] = "AuthOnly";
 static constexpr char RTVS_MSG_AUTH_AND_RUN[] = "AuthAndRun";
 
-static constexpr char RTVS_RHOST_PATH[] = "/usr/bin/Microsoft.R.Host";
+static constexpr char RTVS_RHOST_PATH[] = "/usr/lib/rtvs/Microsoft.R.Host";
 
 std::string read_string(FILE* stream) {
     boost::endian::little_uint32_buf_t data_size;
