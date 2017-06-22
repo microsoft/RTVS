@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\Preview\01.rmd.html" />
+    <Content Include="Files\Preview\02.rmd.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\UnitTests\app.config">
@@ -47,6 +48,7 @@
     </None>
     <None Include="Files\Classification\01.rmd" />
     <None Include="Files\Classification\01.rmd.colors" />
+    <None Include="Files\Preview\02.rmd" />
     <None Include="Files\Preview\01.rmd" />
     <None Include="Files\Tokenization\01.md" />
     <None Include="Files\Tokenization\01.md.tokens" />
