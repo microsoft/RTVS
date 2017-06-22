@@ -218,6 +218,9 @@ namespace Microsoft.R.Support.Help.Functions {
 
         private void UpdateIndex(string functionName, string packageName, string rdData) {
             IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
+            if(functionInfos == null) {
+                return;
+            }
 
             foreach (IFunctionInfo info in functionInfos) {
                 _functionToInfoMap[GetQualifiedName(info.Name, packageName)] = info;
