@@ -15,9 +15,11 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Settings;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.SuggestedActions {
     internal sealed class RmdSuggestedActionsSource : SuggestedActionsSourceBase, ISuggestedActionsSource {
@@ -33,8 +35,11 @@ namespace Microsoft.Markdown.Editor.SuggestedActions {
 
         public static ISuggestedActionsSource Create(ITextView textView, ITextBuffer textBuffer, IServiceContainer services) {
             // Check for detached documents in the interactive window projected buffers
+            var cs = services.GetService<ICompositionService>();
+            var ctrs = services.GetService<IContentTypeRegistryService>();
             var suggestedActionProviders =
-                ComponentLocator<ISuggestedActionProvider>.ImportMany(services.GetService<ICompositionService>()).Select(p => p.Value);
+                ComponentLocatorForContentType<ISuggestedActionProvider, IComponentContentTypes>
+                    .ImportMany(cs, ctrs.GetContentType(MdContentTypeDefinition.ContentType)).Select(p => p.Value);
             return new RmdSuggestedActionsSource(textView, textBuffer, suggestedActionProviders, services);
         }
 

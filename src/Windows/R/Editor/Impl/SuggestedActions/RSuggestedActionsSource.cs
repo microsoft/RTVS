@@ -20,6 +20,7 @@ using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.SuggestedActions {
     internal sealed class RSuggestedActionsSource : SuggestedActionsSourceBase, ISuggestedActionsSource {
@@ -37,8 +38,11 @@ namespace Microsoft.R.Editor.SuggestedActions {
             if (document == null || document.IsClosed) {
                 return null;
             }
+            var cs = services.GetService<ICompositionService>();
+            var ctrs = services.GetService<IContentTypeRegistryService>();
             var suggestedActionProviders =
-                ComponentLocator<ISuggestedActionProvider>.ImportMany(services.GetService<ICompositionService>()).Select(p => p.Value);
+                ComponentLocatorForContentType<ISuggestedActionProvider, IComponentContentTypes>
+                    .ImportMany(cs, ctrs.GetContentType(RContentTypeDefinition.ContentType)).Select(p => p.Value);
             return new RSuggestedActionsSource(textView, textBuffer, suggestedActionProviders, services);
         }
 
