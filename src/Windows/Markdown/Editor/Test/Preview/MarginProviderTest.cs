@@ -16,7 +16,7 @@ using NSubstitute;
 namespace Microsoft.Markdown.Editor.Test.Preview {
     [ExcludeFromCodeCoverage]
     [Category.Md.Preview]
-    public class MarginProviderTest {
+    public sealed class MarginProviderTest {
         [Test(ThreadType.UI)]
         public void RightMarginProviderConstructorTest() {
             var shell = SetupServices(out IWpfTextViewHost host, out IWpfTextViewMargin container, out IRMarkdownEditorSettings settings);

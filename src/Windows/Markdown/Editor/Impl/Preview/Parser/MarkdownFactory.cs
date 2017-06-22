@@ -35,7 +35,7 @@ namespace Microsoft.Markdown.Editor.Preview.Parser {
             }
         }
 
-        private static MarkdownDocument ParseToMarkdown(string text) {
+        public static MarkdownDocument ParseToMarkdown(string text) {
             MarkdownDocument doc;
             // Try first to parse a document with all exceptions active
             try {

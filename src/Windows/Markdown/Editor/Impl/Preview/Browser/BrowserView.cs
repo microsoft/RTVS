@@ -92,8 +92,10 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             }
         }
 
-        public Task UpdateBrowserAsync(ITextSnapshot snapshot)
-            => Task.Run(() => UpdateBrowser(snapshot));
+        public async Task UpdateBrowserAsync(ITextSnapshot snapshot) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            UpdateBrowser(snapshot);
+        }
 
         public Task UpdateBlocksAsync(ITextSnapshot snapshot, int start, int count)
             => _documentRenderer.RenderCodeBlocks(_htmlDocument, start, count);
