@@ -215,11 +215,15 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<string>(script, REvaluationKind.Normal, cancellationToken);
         }
 
+        public static async Task<bool> IsRSessionPlatformWindowsAsync(this IRExpressionEvaluator evaluation, CancellationToken cancellationToken = default(CancellationToken)) {
+            var platformType = await evaluation.GetRSessionPlatformAsync(cancellationToken);
+            return platformType.EqualsIgnoreCase("windows");
+        }
+
         public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
             var cp = $".{codePage}";
             if (codePage == 0) {
-                var platformType = await evaluation.GetRSessionPlatformAsync(cancellationToken);
-                cp = platformType.EqualsIgnoreCase("windows")? ".437": "en_US.UTF-8";
+                cp = await evaluation.IsRSessionPlatformWindowsAsync() ? ".437" : "en_US.UTF-8";
             }
             var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
             await evaluation.ExecuteAsync(script, cancellationToken);

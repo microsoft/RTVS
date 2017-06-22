@@ -155,6 +155,27 @@ namespace Microsoft.R.DataInspection.Test {
 
         [Test]
         [Category.R.DataInspection]
+        public async Task DimWithNames() {
+            const string code =
+@"x <- c(100, 200)
+  dim(x) <- list(a = 1, b = 2)
+";
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile(code)) {
+                await sf.Source(_session);
+
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
+                stackFrames.Should().NotBeEmpty();
+
+                var children = await stackFrames.Last().DescribeChildrenAsync(DimProperty, null);
+                children.Should().ContainSingle(er => er.Name == "x")
+                    .Which.Should().BeAssignableTo<IRValueInfo>()
+                    .Which.Dim.Should().BeEquivalentTo(1L, 2L);
+            }
+        }
+
+        [Test]
+        [Category.R.DataInspection]
         public async Task MultilinePromise() {
             const string code =
 @"f <- function(p, d) {

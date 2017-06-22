@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <RunAsUserName Condition=" '$(RunAsUserName)'=='' ">Microsoft.R.Host.RunAsUser</RunAsUserName>
+    <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(SolutionDir)..\</RootDirectory>
+    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\$(Configuration)\</OutputDirectory>
+    <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\$(Configuration)\$(RunAsUserName)\$(Platform)\</IntermediateOutputDirectory>
+    <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(MSBuildThisFileDirectory)src\</SourceDirectory>
+
+    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
+    <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
+    <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
+
+    <RunAsUserDirectory Condition="'$(RunAsUserDirectory)' == ''">$(MSBuildThisFileDirectory)</RunAsUserDirectory>
+    <RunAsUserSH Condition="'$(RunAsUserSH)' == ''">$(RunAsUserDirectory)build.sh</RunAsUserSH>
+  </PropertyGroup>
+
+  <Target Name="Restore">
+  </Target> 
+
+  <Target Name="Clean">
+    <Delete Files="$(OutputDirectory)$(RunAsUserName)" />
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build">
+  </Target>
+
+  <Target Name="Build">
+    <Exec WorkingDirectory="$(RunAsUserDirectory)" Command="$(RunAsUserSH) -t '$(Configuration)' -a '$(Platform)' -o '$(OutputDirectory)' -i '$(IntermediateOutputDirectory)'"/>
+    <Exec Command="cp $(RunAsUserDirectory)rtvs.pam $(OutputDirectory)"/>
+  </Target>  
+</Project>

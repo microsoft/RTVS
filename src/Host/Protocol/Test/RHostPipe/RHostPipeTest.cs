@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
             var RHostExe = "Microsoft.R.Host.exe";
             var brokerPath = Path.GetDirectoryName(typeof(RHostPipeTest).Assembly.GetAssemblyPath());
             var rhostExePath = Path.Combine(brokerPath, RHostExe);
-            var arguments = Invariant($"--rhost-name \"FuzzTest\"");
+            var arguments = Invariant($"--rhost-name \"FuzzTest\" --rhost-r-dir \"{_interpreter.BinPath}\"");
 
             ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
                 UseShellExecute = false,
@@ -58,7 +58,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
                 StartInfo = psi,
                 EnableRaisingEvents = true,
             };
-            
+
             process.Start();
             process.WaitForExit(250);
 

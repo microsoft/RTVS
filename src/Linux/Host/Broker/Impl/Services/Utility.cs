@@ -29,7 +29,13 @@ namespace Microsoft.R.Host.Broker.Services {
         public static Process AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
             Process proc = CreateRLaunchProcess(ps, false);
             using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
-                var message = new AuthenticateAndRunMessage() { Username = GetUnixUserName(username), Password = password, Arguments = arguments, Environment = environment.Select(e => $"{e.Key}={e.Value}") };
+                var message = new AuthenticateAndRunMessage() {
+                    Username = GetUnixUserName(username),
+                    Password = password,
+                    Arguments = arguments,
+                    Environment = environment.Select(e => $"{e.Key}={e.Value}"),
+                    WorkingDirectory = profileDir
+                };
                 string json = JsonConvert.SerializeObject(message, GetJsonSettings());
                 var jsonBytes = Encoding.UTF8.GetBytes(json);
                 writer.Write(jsonBytes.Length);
@@ -113,10 +119,7 @@ namespace Microsoft.R.Host.Broker.Services {
             // usage:
             // Microsoft.R.Host.RunAsUser [-q]
             //    -q: Quiet
-            const string rLaunchBinary = "Microsoft.R.Host.RunAsUser";
-
-            string brokerDir = Path.GetDirectoryName(typeof(Program).GetTypeInfo().Assembly.Location);
-            string rLaunchPath = Path.Combine(brokerDir, rLaunchBinary);
+            const string rLaunchPath = "/usr/lib/rtvs/Microsoft.R.Host.RunAsUser";
 
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = rLaunchPath;
@@ -144,8 +147,8 @@ namespace Microsoft.R.Host.Broker.Services {
         public static string GetUnixUserName(string source) {
             // This is needed because the windows credential UI uses domain\username format.
             // This will not be required if we can show generic credential UI for Linux remote.
-            // :unix:\<username> format should be used to for local accounts only.
-            const string unixPrefix = ":unix:\\";
+            // <<unix>>\<username> format should be used to for local accounts only.
+            const string unixPrefix = "<<unix>>\\";
             if (source.StartsWithIgnoreCase(unixPrefix)) {
                 return source.Substring(unixPrefix.Length);
             }
