@@ -194,11 +194,13 @@ void start_rhost(const picojson::object& json) {
 
     // first item in the args must always be path to the binary
     std::string pathname(RTVS_RHOST_PATH);
+    logf(log_verbosity::minimal, "Path: %s\n", pathname.c_str());
     argv[0] = calloc_or_exit<char*>(pathname.length() + 1, sizeof **argv);
     memcpy(argv[0], pathname.c_str(), pathname.size());
 
     for (int i = 1; i < (argc - 1); ++i) {
         std::string item(json_args[i - 1].get<std::string>());
+        logf(log_verbosity::minimal, "Args: %s\n", item.c_str());
         argv[i] = calloc_or_exit<char*>(item.length() + 1, sizeof **argv);
         memcpy(argv[i], item.c_str(), item.size());
     }
@@ -216,6 +218,7 @@ void start_rhost(const picojson::object& json) {
 
     for (int i = 0; i < (envc - 1); ++i) {
         std::string env(json_env[i].get<std::string>());
+        logf(log_verbosity::minimal, "Env: %s", env.c_str());
         envp[i] = calloc_or_exit<char*>(env.length() + 1, sizeof **envp);
         memcpy(envp[i], env.c_str(), env.size());
     }
