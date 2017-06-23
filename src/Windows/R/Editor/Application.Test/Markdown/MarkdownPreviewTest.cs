@@ -2,14 +2,20 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Preview.Margin;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using mshtml;
+using Microsoft.Common.Core.Test.Utility;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Markdown {
@@ -37,14 +43,23 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
 
         public Task DisposeAsync() => Task.CompletedTask;
 
-        //[Test]
-        public async Task PreviewAutomatic() {
+        [CompositeTest]
+        [InlineData("Preview01.rmd")]
+        public async Task PreviewAutomatic(string sourceFile) {
             _settings.AutomaticSync = true;
-            const string filename = "Preview01.rmd";
-            var content = _files.LoadDestinationFile("Preview01.rmd");
+            var content = _files.LoadDestinationFile(sourceFile);
+            var baselinePath = Path.Combine(_files.DestinationPath, sourceFile) + ".html";
 
-            using (var script = await _editorHost.StartScript(_services, content, filename, MdContentTypeDefinition.ContentType, _sessionProvider)) {
-                var actual = script.EditorText;
+            using (var script = await _editorHost.StartScript(_services, content, sourceFile, MdContentTypeDefinition.ContentType, _sessionProvider)) {
+                script.DoIdle(500);
+                var margin = script.View.Properties.GetProperty<PreviewMargin>(typeof(PreviewMargin));
+                var control = margin?.Browser?.Control;
+                control.Should().NotBeNull();
+
+                await _services.MainThread().SwitchToAsync();
+                var htmlDoc = (HTMLDocument) control.Document;
+                var actual = htmlDoc.documentElement.outerHTML.Replace("\n", "\r\n");
+                TestFiles.CompareToBaseLine(baselinePath, actual);
             }
         }
     }

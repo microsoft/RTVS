@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Preview.Margin {
     [Export(typeof(IWpfTextViewMarginProvider))]
-    [Name("MarginBottomFactory")]
+    [Name("RMarkdownBottomPreviewPane")]
     [Order(After = PredefinedMarginNames.BottomControl)]
     [MarginContainer(PredefinedMarginNames.Bottom)]
     [ContentType(MdContentTypeDefinition.ContentType)]

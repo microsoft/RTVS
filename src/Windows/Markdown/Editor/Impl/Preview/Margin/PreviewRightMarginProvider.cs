@@ -12,7 +12,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
     // Based on https://github.com/madskristensen/MarkdownEditor/blob/master/src/Margin/BrowserMarginProvider.cs
 
     [Export(typeof(IWpfTextViewMarginProvider))]
-    [Name("MarginRightFactory")]
+    [Name("RMarkdownRightPreviewPane")]
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
     [ContentType(MdContentTypeDefinition.ContentType)]
