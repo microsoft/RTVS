@@ -163,7 +163,9 @@
                                  Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
                                  Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
-                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"/>
+                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
+                                 ToolTip="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
+                                 AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"/>
 
                         <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
                             <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
