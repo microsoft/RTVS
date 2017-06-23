@@ -27,8 +27,6 @@
 
 using namespace rau::log;
 
-FILE *std_input = nullptr, *std_output = nullptr, *std_error;
-
 static constexpr int RTVS_AUTH_OK           = 0;
 static constexpr int RTVS_AUTH_INIT_FAILED = 200;
 static constexpr int RTVS_AUTH_BAD_INPUT   = 201;
@@ -51,7 +49,7 @@ static constexpr char RTVS_RESPONSE_TYPE_RTVS_ERROR[] = "rtvs-error";
 static constexpr char RTVS_MSG_AUTH_ONLY[] = "AuthOnly";
 static constexpr char RTVS_MSG_AUTH_AND_RUN[] = "AuthAndRun";
 
-static constexpr char RTVS_RHOST_PATH[] = "/usr/bin/Microsoft.R.Host.out";
+static constexpr char RTVS_RHOST_PATH[] = "/usr/lib/rtvs/Microsoft.R.Host";
 
 std::string read_string(FILE* stream) {
     boost::endian::little_uint32_buf_t data_size;
@@ -88,7 +86,7 @@ inline void write_json(Arg&& arg, Args&&... args) {
     picojson::array msg;
     msg.push_back(picojson::value(std::forward<Arg>(arg)));
     append_json(msg, std::forward<Args>(args)...);
-    write_string(std_output, picojson::value(msg).serialize());
+    write_string(stdout, picojson::value(msg).serialize());
 }
 
 int rtvs_conv(int num_msg, const pam_message **msgm, pam_response **response, void *appdata_ptr) {
@@ -254,6 +252,7 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
         return err;
     } else if (pid == 0) {
         logf(log_verbosity::traffic, "Child process initialization.\n");
+
         if (!cwd.empty() && change_cwd(cwd.c_str()) == -1) {
             err = errno != 0 ? errno : EXIT_FAILURE;
             logf(log_verbosity::minimal, "Error [chdir]: %s\n", strerror(err));
@@ -278,6 +277,7 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
 
         start_rhost(json);
     } else {
+        logf(log_verbosity::traffic, "Parent waiting for child pid: %d\n", pid);
         int ws = 0;
         pid_t hpid = waitpid(pid, &ws, 0);
         if (hpid < 0) {
@@ -287,8 +287,10 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
 
         if (WIFEXITED(ws)) {
             err = WEXITSTATUS(ws);
-            if (err != 0) {
+            if (err) {
                 logf(log_verbosity::minimal, "Error rhost exited:[%d] %s\n", err, strerror(err));
+            } else {
+                logf(log_verbosity::minimal, "RHost exited.\n");
             }
         } else if (WIFSIGNALED(ws)) {
             logf(log_verbosity::minimal, "Error rhost terminated by a signal: %d\n", WTERMSIG(ws));
@@ -462,7 +464,7 @@ int main(int argc, char **argv) {
     init_log("", fs::temp_directory_path(), logVerb);
 
     picojson::value json_value;
-    std::string json_err = picojson::parse(json_value, read_string(std_input));
+    std::string json_err = picojson::parse(json_value, read_string(stdin));
 
     if (!json_err.empty()) {
         if (!quiet) {

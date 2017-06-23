@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -28,13 +29,22 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
         private readonly Dictionary<string, Type> _editorOptionsPages = new Dictionary<string, Type> {
             { "R Markdown", typeof(RMarkdownOptionsDialog)}
         };
+        private static MdPackage _package;
 
-        public static MdPackage Current { get; private set; }
+        public static MdPackage Current {
+            get {
+                if(_package == null) {
+                    VsAppShell.EnsurePackageLoaded(MdGuidList.MdPackageGuid);
+                    Debug.Assert(_package != null);
+                }
+                return _package;
+            }
+        }
 
         public IEditorSettingsStorage LanguageSettingsStorage { get; private set; }
 
         protected override void Initialize() {
-            Current = this;
+            _package = this;
 
             VsAppShell.EnsureInitialized();
             LoadEditorSettings();

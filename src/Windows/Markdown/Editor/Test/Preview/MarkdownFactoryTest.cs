@@ -12,7 +12,7 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Test.Preview {
     [ExcludeFromCodeCoverage]
     [Category.Md.Preview]
-    public class MarkdownFactoryTest {
+    public sealed class MarkdownFactoryTest {
         [CompositeTest]
         [InlineData("")]
         [InlineData("*text*")]

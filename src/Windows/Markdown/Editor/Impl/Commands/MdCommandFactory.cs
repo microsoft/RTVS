@@ -24,8 +24,7 @@ namespace Microsoft.Markdown.Editor.Commands {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         [ImportingConstructor]
-        public MdCommandFactory(ICoreShell coreShell)
-        {
+        public MdCommandFactory(ICoreShell coreShell) {
             _services = coreShell.Services;
             _workflowProvider = _services.GetService<IRInteractiveWorkflowProvider>();
         }

@@ -39,7 +39,7 @@ namespace Microsoft.Markdown.Editor.Preview.Parser {
                 var themeNode = node as YamlScalarNode;
                 //htmlDocNode.Children.TryGetValue(new YamlScalarNode("highlight"), out YamlNode highlightNode);
 
-                if(!string.IsNullOrEmpty(themeNode?.Value)) {
+                if(!string.IsNullOrEmpty(themeNode?.Value) && !themeNode.Value.EqualsIgnoreCase("null")) {
                     var url = Invariant($"http://bootswatch.com/{themeNode.Value}/bootstrap.min.css");
                     renderer.Write(FormatStyleSheetLink(url));
                 } else {

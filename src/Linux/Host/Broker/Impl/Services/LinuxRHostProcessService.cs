@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
             Process process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
             process.WaitForExit(250);
-            if (process.HasExited && process.ExitCode < 0) {
+            if (process.HasExited && process.ExitCode != 0) {
                 var message = _ps.MessageFromExitCode(process.ExitCode);
                 if (!string.IsNullOrEmpty(message)) {
                     throw new Win32Exception(message);
@@ -45,78 +45,41 @@ namespace Microsoft.R.Host.Broker.Services {
             return new UnixProcess(process);
         }
 
-        private string GetLdLibraryPath(string rBinPath) {
-            string ldLibPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
-            if (string.IsNullOrEmpty(ldLibPath)) {
-                return rBinPath;
+        private string GetLoadLibraryPath(string binPath) {
+            string value = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
+            if (string.IsNullOrEmpty(value)) {
+                return binPath;
             }
-            return $"{rBinPath}:{ldLibPath}";
+
+            return $"{binPath}:{value}";
         }
 
         private IDictionary<string, string> GetHostEnvironment(Interpreter interpreter, string profilePath, string userName) {
-            string siteLibrary = string.Join(":", interpreter.RInterpreterInfo.SiteLibraryDirs);
-
-            // TODO: LD_LIBRARY_PATH should be set in R-Host where we call dlopen.
-            string loadLibraryPath = GetLdLibraryPath(interpreter.RInterpreterInfo.BinPath);
-
+            // set required environment variables.
             Dictionary<string, string> environment = new Dictionary<string, string>() {
                 { "HOME"                    , profilePath},
-                { "LD_LIBRARY_PATH"         , loadLibraryPath},
-                { "LN_S"                    , GetCurrentOrDefault("LN_S")},
                 { "PATH"                    , Environment.GetEnvironmentVariable("PATH")},
                 { "PWD"                     , profilePath},
-                { "R_ARCH"                  , GetCurrentOrDefault("R_ARCH")},
-                { "R_BROWSER"               , GetCurrentOrDefault("R_BROWSER")},
-                { "R_BZIPCMD"               , GetCurrentOrDefault("R_BZIPCMD")},
-                { "R_DOC_DIR"               , interpreter.RInterpreterInfo.DocPath},
-                { "R_GZIPCMD"               , GetCurrentOrDefault("R_GZIPCMD")},
                 { "R_HOME"                  , interpreter.RInterpreterInfo.InstallPath},
-                { "R_INCLUDE_DIR"           , interpreter.RInterpreterInfo.IncludePath},
-                { "R_LIBS_SITE"             , siteLibrary},
-                { "R_PAPERSIZE"             , GetCurrentOrDefault("R_PAPERSIZE")},
-                { "R_PAPERSIZE_USER"        , GetCurrentOrDefault("R_PAPERSIZE_USER")},
-                { "R_PDFVIEWER"             , GetCurrentOrDefault("R_PDFVIEWER")},
-                { "R_PRINTCMD"              , GetCurrentOrDefault("R_PRINTCMD")},
-                { "R_RD4PDF"                , GetCurrentOrDefault("R_RD4PDF")},
-                { "R_SHARE_DIR"             , interpreter.RInterpreterInfo.RShareDir},
-                { "R_TEXI2DVICMD"           , GetCurrentOrDefault("R_TEXI2DVICMD")},
-                { "R_UNZIPCMD"              , GetCurrentOrDefault("R_UNZIPCMD")},
-                { "R_ZIPCMD"                , GetCurrentOrDefault("R_ZIPCMD")},
-                { "SED"                     , GetCurrentOrDefault("SED")},
-                { "SHELL"                   , GetCurrentOrDefault("SHELL")},
-                { "SHLVL"                   , GetCurrentOrDefault("SHLVL")},
-                { "TAR"                     , GetCurrentOrDefault("TAR")},
                 { "USER"                    , Utility.GetUnixUserName(userName)},
+                { "LD_LIBRARY_PATH"         , GetLoadLibraryPath(interpreter.RInterpreterInfo.BinPath)}
             };
+
+            // set optional environment variables if available
+            string[] optionalVariables = { "LN_S", "R_ARCH", "R_BROWSER", "R_BZIPCMD", "R_GZIPCMD", "R_LIBS_SITE", "R_INCLUDE_DIR", "R_DOC_DIR", "R_PAPERSIZE", "R_PAPERSIZE_USER", "R_PDFVIEWER", "R_PRINTCMD", "R_RD4PDF", "R_SHARE_DIR", "R_TEXI2DVICMD", "R_UNZIPCMD", "R_ZIPCMD", "SED", "SHELL", "SHLVL", "TAR" };
+            foreach(string key in optionalVariables) {
+                SetEnvironmentVaraibleIfAvailable(environment, key);
+            }
+
             return environment;
         }
 
-        private static string GetCurrentOrDefault(string key) {
+        private void SetEnvironmentVaraibleIfAvailable(Dictionary<string,string> environment, string key) {
             var value = Environment.GetEnvironmentVariable(key);
-            if (string.IsNullOrEmpty(value) && !_defaultEnvironment.TryGetValue(key, out value)) {
-                return string.Empty;
+            if (!string.IsNullOrEmpty(value)) {
+                environment.Add(key, value);
             }
-            return value;
         }
-        private static readonly IDictionary<string, string> _defaultEnvironment = new Dictionary<string,string>(){
-            { "LN_S"                    , "ln -s"},
-            {"R_ARCH"                  , ""},
-            {"R_BROWSER"               , "xdg-open"},
-            {"R_BZIPCMD"               , "/bin/bzip2"},
-            {"R_GZIPCMD"               , "/bin/gzip -n"},
-            {"R_PAPERSIZE"             , "letter"},
-            {"R_PAPERSIZE_USER"        , "letter"},
-            {"R_PDFVIEWER"             , "/usr/bin/xdg-open"},
-            {"R_PRINTCMD"              , "/usr/bin/lpr"},
-            {"R_RD4PDF"                , "times,inconsolata,hyper"},
-            {"R_TEXI2DVICMD"           , "/usr/bin/texi2dvi"},
-            {"R_UNZIPCMD"              , "/usr/bin/unzip"},
-            {"R_ZIPCMD"                , "/usr/bin/zip"},
-            { "SED"                     , "/bin/sed"},
-            { "SHELL"                   , "/bin/bash"},
-            { "SHLVL"                   , "2"},
-            { "TAR"                     , "/bin/tar"},
-        };
 
         private static IEnumerable<string> ParseArgumentsIntoList(string arguments) {
             List<string> results = new List<string>();

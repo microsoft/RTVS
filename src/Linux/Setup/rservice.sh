@@ -8,16 +8,16 @@
 
 start() {
         initlog -c "echo -n Starting Remote R Server: "
-        dotnet /usr/bin/Microsoft.R.Host.Broker.dll --config "/etc/rtvs/Microsoft.R.Host.Broker.config.json" &
-        touch /var/lock/subsys/Microsoft.R.Host.Broker.dll
-        success $"Microsoft.R.Host.Broker server startup"
+        /usr/bin/rtvsd &&
+        touch /var/lock/subsys/rtvsd
+        success $"Remote R Server startup"
         echo
 }
 
 stop() {
         initlog -c "echo -n Stopping Remote R Server: "
-        killproc /usr/bin/Microsoft.R.Host.Broker.dll
-        rm -f /var/lock/subsys/Microsoft.R.Host.Broker.dll
+        killproc /usr/bin/rtvsd
+        rm -f /var/lock/subsys/rtvsd
         echo
 }
 

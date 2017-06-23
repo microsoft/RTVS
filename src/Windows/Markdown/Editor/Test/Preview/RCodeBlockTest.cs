@@ -15,7 +15,7 @@ using Xunit;
 namespace Microsoft.Markdown.Editor.Test.Preview {
     [ExcludeFromCodeCoverage]
     [Category.Md.Preview]
-    public class RCodeBlockTest {
+    public sealed class RCodeBlockTest {
         private const string _documentName = "test.rmd";
         private readonly TestCoreShell _shell;
         private readonly IRSession _session;

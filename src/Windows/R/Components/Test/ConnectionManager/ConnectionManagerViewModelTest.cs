@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -123,7 +122,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void AddLocalWithSameName_ConnectToSecond() {
-            var connection = _cmvm.LocalConnections.First(c => c.IsUserCreated);
+            var connection = _cmvm.LocalConnections.First();
             var copyName = $"{connection.Name} Copy";
 
             _cmvm.TryEditNew();
@@ -141,7 +140,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public void AddLocal_Connect_Rename() {
-            var connection = _cmvm.LocalConnections.First(c => c.IsUserCreated);
+            var connection = _cmvm.LocalConnections.First();
             var copyName = $"{connection.Name} Copy";
 
             _cmvm.TryEditNew();

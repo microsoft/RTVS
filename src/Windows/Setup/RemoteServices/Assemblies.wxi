@@ -103,6 +103,7 @@
   <File Source="$(var.BinDir)\System.IO.FileSystem.Primitives.dll" />
   <File Source="$(var.BinDir)\System.Net.Http.dll" />
   <File Source="$(var.BinDir)\System.Net.Http.WinHttpHandler.dll" />
+  <File Source="$(var.BinDir)\System.Net.Sockets.dll" />
   <File Source="$(var.BinDir)\System.Numerics.Vectors.dll" />
   <File Source="$(var.BinDir)\System.Reflection.Metadata.dll" />
   <File Source="$(var.BinDir)\System.Runtime.CompilerServices.Unsafe.dll" />

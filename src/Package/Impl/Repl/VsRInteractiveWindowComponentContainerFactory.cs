@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             var toolWindow = (ToolWindowPane)vsWindow2;
             var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow, _shell.Services);
-            var component = new RInteractiveWindowVisualComponent(vsWindow2.InteractiveWindow, componentContainer, sessionProvider, _shell);
+            var component = new RInteractiveWindowVisualComponent(vsWindow2.InteractiveWindow, componentContainer, sessionProvider, _shell.Services);
             componentContainer.Component = component;
 
             RegisterFocusPreservingWindow(toolWindow);
