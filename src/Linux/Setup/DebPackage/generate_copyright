@@ -36,4 +36,6 @@ shift $((OPTIND-1))
 
 (cat "$MIT_LIC_FILE" | awk '/^/ {print " " $0};' > MIT.lic.out) && \
 (cat "$GPL_LIC_FILE" | awk '/^/ {print " " $0};' > GPL.lic.out) && \
-m4 --define=MIT_FILE="MIT.lic.out" --define=GPL_FILE="GPL.lic.out" "$IN_FILE"
+MIT_LIC_OUT=$(cat MIT.lic.out) && \
+GPL_LIC_OUT=$(cat GPL.lic.out) && \
+m4 --define=MIT_FILE="$MIT_LIC_OUT" --define=GPL_FILE="$GPL_LIC_OUT" "$IN_FILE"

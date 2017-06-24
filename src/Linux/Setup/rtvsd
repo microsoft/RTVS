@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [ -z "$1" ]   then
-    dotnet /usr/bin/Microsoft.R.Host.Broker.Linux.dll --config /etc/rtvs/Microsoft.R.Host.Broker.Config.json
+if [ -z "$1" ]; then
+    dotnet /usr/lib/rtvs/Microsoft.R.Host.Broker.Linux.dll --config /etc/rtvs/rtvsd.config.json
 else
-    dotnet /usr/bin/Microsoft.R.Host.Broker.Linux.dll --config $1
+    dotnet /usr/lib/rtvs/Microsoft.R.Host.Broker.Linux.dll --config $1
 fi
