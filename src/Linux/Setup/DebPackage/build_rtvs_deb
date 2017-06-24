@@ -35,7 +35,7 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-# Layout expected by this script
+# Layout of output files as expected by this script
 # ./Release
 # ./Release/netcoreapp1.1/publish
 # ./Release/netcoreapp1.1/rtvsd.config.json
@@ -46,10 +46,10 @@ shift $((OPTIND-1))
 # ./Release/GPL.lic
 # ./Release/rtvs (R files)
 # ./Release/Setup
-# ./Release/Setup/rservice.sh (init.d)
-# ./Release/Setup/rtvsd.service (systemd)
+# ./Release/Setup/rtvsd.service (systemd config)
 # ./Release/Setup/rtvsd (daemon)
 # ./Release/Setup/DebPackage
+# ./Release/Setup/DebPackage/conffiles
 # ./Release/Setup/DebPackage/control.m4
 # ./Release/Setup/DebPackage/changelog.m4
 # ./Release/Setup/DebPackage/changelog.Debian
@@ -68,14 +68,20 @@ mkdir -p ./pkg/debian/usr/share/rtvs
 mkdir -p ./pkg/debian/usr/share/man/man8
 mkdir -p ./pkg/debian/usr/share/doc/rtvs-daemon
 
+# copy R files
+cp -R ./rtvs ./pkg/debian/usr/share/rtvs
+
 # set permissions
-find ./pkg/debian | fakeroot xargs chmod 755 
+find ./pkg/debian -type d | fakeroot xargs chmod 755 
 
 # prepare and place copyright
 ./Setup/DebPackage/generate_copyright -m MIT.lic -g GPL.lic -i ./Setup/DebPackage/copyright.m4 > ./pkg/debian/usr/share/doc/rtvs-daemon/copyright
 
 # prepare and place control file
 m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" ./Setup/DebPackage/control.m4 > ./pkg/debian/DEBIAN/control
+
+# copy conffiles
+cp ./Setup/DebPackage/conffiles ./pkg/debian/DEBIAN
 
 # prepare and place change log
 m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" --define=RTVS_DATE="$RTVS_BUILD_DATE" ./Setup/DebPackage/copyright.m4  > ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
@@ -104,9 +110,6 @@ chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
 chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian.gz && \
 chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
 chmod 644 ./pkg/debian/usr/share/man/man8/rtvsd.8.gz && \
-
-# copy R files
-cp -R ./rtvs ./pkg/debian/usr/share/rtvs
 
 # copy bin files
 cp ./Setup/rtvsd ./pkg/debian/usr/bin && \
