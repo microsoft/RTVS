@@ -35,11 +35,10 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-
 # Layout expected by this script
 # ./Release
 # ./Release/netcoreapp1.1/publish
-# ./Release/netcoreapp1.1/Microsoft.R.Host.Broker.Config.json
+# ./Release/netcoreapp1.1/rtvsd.config.json
 # ./Release/Microsoft.R.Host
 # ./Release/Microsoft.R.Host.RunAsUser
 # ./Release/rtvs.pam
@@ -93,14 +92,14 @@ cp ./rtvs.pam ./pkg/debian/etc/pam.d && \
 mv ./pkg/debian/etc/pam.d/rtvs.pam ./pkg/debian/etc/pam.d/rtvs
 
 # copy config file
-cp ./netcoreapp1.1/Microsoft.R.Host.Broker.Config.json ./pkg/debian/etc/rtvs
+cp ./netcoreapp1.1/rtvsd.config.json ./pkg/debian/etc/rtvs
 
 # copy systemd file
 cp ./Setup/rtvsd.service ./pkg/debian/lib/systemd/system
 
 chmod 644 ./pkg/debian/etc/pam.d/rtvs && \
 chmod 644 ./pkg/debian/lib/systemd/system/rtvsd.service && \
-chmod 644 ./pkg/debian/etc/rtvs/Microsoft.R.Host.Broker.Config.json
+chmod 644 ./pkg/debian/etc/rtvs/rtvsd.config.json
 chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
 chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian.gz && \
 chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
@@ -120,5 +119,5 @@ cp ./Microsoft.R.Host.RunAsUser ./pkg/debian/usr/lib/rtvs && \
 fakeroot chown root:root ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser && \
 fakeroot chmod u+rwxs,g+rx,o+x ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser
 
-RTVS_PKG_NAME="rtvs-daemon_$RTVS_BUILD_VERSION.deb"
+RTVS_PKG_NAME="rtvs-daemon_$RTVS_BUILD_VERSION_amd64.deb"
 fakeroot dpkg-deb --build ./pkg/debian "./pkg/$RTVS_PKG_NAME"
