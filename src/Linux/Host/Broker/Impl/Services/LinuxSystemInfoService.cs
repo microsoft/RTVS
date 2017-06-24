@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.Common.Core;
@@ -126,7 +124,7 @@ namespace Microsoft.R.Host.Broker.Services {
                     maxLoad = Math.Max(maxLoad, load);
                 }
                 return maxLoad;
-            } catch (PlatformNotSupportedException) {
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
                 return 0;
             }
         }
