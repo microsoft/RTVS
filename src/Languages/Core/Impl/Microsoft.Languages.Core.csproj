@@ -1,10 +1,11 @@
 ﻿<Project>
-  <Import Project="..\..\..\R.Settings.Paths.props" />
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <RootNamespace>Microsoft.Languages.Core</RootNamespace>
+    <AssemblyName>Microsoft.Languages.Core</AssemblyName>
   </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.Paths.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
