@@ -44,7 +44,7 @@
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
       <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>

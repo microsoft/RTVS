@@ -19,7 +19,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

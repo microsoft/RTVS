@@ -56,7 +56,7 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>

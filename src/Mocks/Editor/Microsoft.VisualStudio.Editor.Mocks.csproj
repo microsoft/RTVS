@@ -79,7 +79,7 @@
     <Compile Include="WpfTextViewMock.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
