@@ -68,39 +68,39 @@ mkdir -p ./pkg/debian/usr/share/rtvs
 mkdir -p ./pkg/debian/usr/share/man/man8
 mkdir -p ./pkg/debian/usr/share/doc/rtvs-daemon
 
-# copy R files
+echo "copying R files"
 cp -R ./rtvs ./pkg/debian/usr/share/rtvs
 
 # set permissions
 find ./pkg/debian -type d | fakeroot xargs chmod 755 
 
-# prepare and place copyright
+echo "prepare and place copyright"
 ./Setup/DebPackage/generate_copyright -m MIT.lic -g GPL.lic -i ./Setup/DebPackage/copyright.m4 > ./pkg/debian/usr/share/doc/rtvs-daemon/copyright
 
-# prepare and place control file
+echo "prepare and place control file"
 m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" ./Setup/DebPackage/control.m4 > ./pkg/debian/DEBIAN/control
 
-# copy conffiles
+echo "copy conffiles"
 cp ./Setup/DebPackage/conffiles ./pkg/debian/DEBIAN
 
-# prepare and place change log
+echo "prepare and place change log"
 m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" --define=RTVS_DATE="$RTVS_BUILD_DATE" ./Setup/DebPackage/copyright.m4  > ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
 cp ./Setup/DebPackage/changelog.Debian ./pkg/debian/usr/share/doc/rtvs-daemon && \
 gzip --best ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
 gzip --best ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian
 
-# prepare and place man pages
+echo "prepare and place man pages"
 cp ./Setup/DebPackage/rtvsd.8 ./pkg/debian/usr/share/man/man8 && \
 gzip --best ./pkg/debian/usr/share/man/man8/rtvsd.8
 
-# copy pam file
+echo "copy pam file"
 cp ./rtvs.pam ./pkg/debian/etc/pam.d && \
 mv ./pkg/debian/etc/pam.d/rtvs.pam ./pkg/debian/etc/pam.d/rtvs
 
-# copy config file
+echo "copy config file"
 cp ./netcoreapp1.1/rtvsd.config.json ./pkg/debian/etc/rtvs
 
-# copy systemd file
+echo "copy systemd file"
 cp ./Setup/rtvsd.service ./pkg/debian/lib/systemd/system
 
 chmod 644 ./pkg/debian/etc/pam.d/rtvs && \
@@ -111,11 +111,11 @@ chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian.gz && \
 chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
 chmod 644 ./pkg/debian/usr/share/man/man8/rtvsd.8.gz && \
 
-# copy bin files
+echo "copy bin files"
 cp ./Setup/rtvsd ./pkg/debian/usr/bin && \
 fakeroot chmod u+rwx,g+rx,o+x ./pkg/debian/usr/bin/rtvsd
 
-# copy lib files and set permissions
+echo "copy lib files and set permissions"
 cp -R ./netcoreapp1.1/publish/* ./pkg/debian/usr/lib/rtvs && \
 cp ./Microsoft.R.Host ./pkg/debian/usr/lib/rtvs && \
 cp ./Microsoft.R.Host.RunAsUser ./pkg/debian/usr/lib/rtvs && \
