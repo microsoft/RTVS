@@ -1,0 +1,9 @@
+﻿---
+title: Preview 01
+---
+
+```{r}
+summary(cars)
+```
+
+Footer

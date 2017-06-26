@@ -115,6 +115,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Below.
+        /// </summary>
+        public static string Below {
+            get {
+                return ResourceManager.GetString("Below", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to External.
         /// </summary>
         public static string BrowserType_External {
@@ -381,61 +390,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_Microsoft_R_Host_Missing {
             get {
                 return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
-        /// </summary>
-        public static string Error_PackageMissing {
-            get {
-                return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown requires Pandoc. Please install Pandoc for Windows from http://pandoc.org/installing.html.
-        ///    
-        ///Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes..
-        /// </summary>
-        public static string Error_PandocMissingLocal {
-            get {
-                return ResourceManager.GetString("Error_PandocMissingLocal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
-        ///    
-        ///Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes..
-        /// </summary>
-        public static string Error_PandocMissingRemote {
-            get {
-                return ResourceManager.GetString("Error_PandocMissingRemote", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown to PDF requires TeX installation. Please install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
-        ///    
-        ///Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.
-        ///.
-        /// </summary>
-        public static string Error_PdfLatexMissingLocal {
-            get {
-                return ResourceManager.GetString("Error_PdfLatexMissingLocal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown to PDF requires TeX installation. Please contact the remote machine administrator and ask them to install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
-        ///
-        ///Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.
-        ///.
-        /// </summary>
-        public static string Error_PdfLatexMissingRemote {
-            get {
-                return ResourceManager.GetString("Error_PdfLatexMissingRemote", resourceCulture);
             }
         }
         
@@ -769,42 +723,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Info_LocalFilePath {
             get {
                 return ResourceManager.GetString("Info_LocalFilePath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saving published output file: {0}.
-        /// </summary>
-        public static string Info_MarkdownGetOutputFile {
-            get {
-                return ResourceManager.GetString("Info_MarkdownGetOutputFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Finished publishing markdown file: {0}.
-        /// </summary>
-        public static string Info_MarkdownPublishComplete {
-            get {
-                return ResourceManager.GetString("Info_MarkdownPublishComplete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Publishing markdown file: {0}.
-        /// </summary>
-        public static string Info_MarkdownPublishingFile {
-            get {
-                return ResourceManager.GetString("Info_MarkdownPublishingFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sending markdown input file to R: {0}.
-        /// </summary>
-        public static string Info_MarkdownSendingInputFile {
-            get {
-                return ResourceManager.GetString("Info_MarkdownSendingInputFile", resourceCulture);
             }
         }
         
@@ -1425,6 +1343,15 @@ namespace Microsoft.VisualStudio.R.Package {
             get {
                 object obj = ResourceManager.GetObject("RFileNode", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Right.
+        /// </summary>
+        public static string Right {
+            get {
+                return ResourceManager.GetString("Right", resourceCulture);
             }
         }
         
@@ -2437,6 +2364,96 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatic update.
+        /// </summary>
+        public static string Settings_Markdown_AutomaticSync {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_AutomaticSync", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically update preview when markdown file changes.
+        /// </summary>
+        public static string Settings_Markdown_AutomaticSync_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_AutomaticSync_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable preview.
+        /// </summary>
+        public static string Settings_Markdown_EnablePreview {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_EnablePreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables or disables preview of resulting HTML in a browser pane.
+        /// </summary>
+        public static string Settings_Markdown_EnablePreview_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_EnablePreview_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Height.
+        /// </summary>
+        public static string Settings_Markdown_PreviewHeight {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewHeight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview pane height when it is positioned below the editor.
+        /// </summary>
+        public static string Settings_Markdown_PreviewHeight_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewHeight_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Position.
+        /// </summary>
+        public static string Settings_Markdown_PreviewPosition {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines where HTML preview pane appears.
+        /// </summary>
+        public static string Settings_Markdown_PreviewPosition_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewPosition_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Width.
+        /// </summary>
+        public static string Settings_Markdown_PreviewWidth {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewWidth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview pane width when it is positioned at the right side of the editor.
+        /// </summary>
+        public static string Settings_Markdown_PreviewWidth_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_PreviewWidth_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown preview browser.
         /// </summary>
         public static string Settings_MarkdownBrowserType {
@@ -2460,6 +2477,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_MarkdownCategory {
             get {
                 return ResourceManager.GetString("Settings_MarkdownCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview.
+        /// </summary>
+        public static string Settings_MarkdownCategory_Preview {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownCategory_Preview", resourceCulture);
             }
         }
         
@@ -3480,15 +3506,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Warning_RStudioKeyboardShortcuts {
             get {
                 return ResourceManager.GetString("Warning_RStudioKeyboardShortcuts", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?.
-        /// </summary>
-        public static string Warning_SaveInUtf8 {
-            get {
-                return ResourceManager.GetString("Warning_SaveInUtf8", resourceCulture);
             }
         }
         

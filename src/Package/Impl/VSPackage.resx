@@ -117,14 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="106" xml:space="preserve">
-    <value>R</value>
-    <comment>Do not localize (programming language name)</comment>
-  </data>
-  <data name="107" xml:space="preserve">
-    <value>R Markdown</value>
-    <comment>Do not localize (programming language name)</comment>
-  </data>
   <data name="200" xml:space="preserve">
     <value>R Editor</value>
   </data>
@@ -137,14 +129,9 @@
   <data name="20136" xml:space="preserve">
     <value>Advanced</value>
   </data>
-  <data name="20137" xml:space="preserve">
-    <value>Options for automatic formatting and case preferences for all tags, checking tag syntax, paste behavior, outline mode, absolute or static positioning, and Design view settings.</value>
-  </data>
-  <data name="20138" xml:space="preserve">
-    <value>Options for statement completion, word wrap, and line number display.</value>
-  </data>
   <data name="20139" xml:space="preserve">
     <value>Lint</value>
+    <comment>Do not localize (common tool name)</comment>
   </data>
   <data name="300" xml:space="preserve">
     <value>RStudio Project Files (*.rproj);*.rproj</value>

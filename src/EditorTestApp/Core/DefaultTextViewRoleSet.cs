@@ -4,25 +4,22 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Languages.Editor.Application.Core
-{
+namespace Microsoft.Languages.Editor.Application.Core {
     [ExcludeFromCodeCoverage]
-    internal class DefaultTextViewRoleSet : TextViewRoleSet
-    {
-        static private readonly string[] _predefinedRoles = 
-            {
-                PredefinedTextViewRoles.Analyzable, 
+    internal class DefaultTextViewRoleSet : TextViewRoleSet {
+        private static readonly string[] _predefinedRoles = {
+                PredefinedTextViewRoles.Analyzable,
                 PredefinedTextViewRoles.Document,
                 PredefinedTextViewRoles.Editable,
                 PredefinedTextViewRoles.Interactive,
                 PredefinedTextViewRoles.PrimaryDocument,
                 PredefinedTextViewRoles.Structured,
-                PredefinedTextViewRoles.Zoomable
+                PredefinedTextViewRoles.Zoomable,
+                PredefinedTextViewRoles.Debuggable
             };
 
         public DefaultTextViewRoleSet()
-            : base(_predefinedRoles)
-        {
+            : base(_predefinedRoles) {
         }
     }
 }

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Common.Core.UI.Commands {
     public class Command : ICommand {
@@ -44,10 +46,17 @@ namespace Microsoft.Common.Core.UI.Commands {
         public virtual IList<CommandId> CommandIds => _commandIds;
         public virtual CommandStatus Status(Guid group, int id) => CommandStatus.NotSupported;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
+        [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
         public virtual CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) => CommandResult.NotSupported;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#")]
+        [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
+        public virtual CommandResult Invoke() {
+            Debug.Assert(_commandIds.Length == 1, "Default Invoke called on command with multiple ids.");
+            var o = new object();
+            return Invoke(_commandIds[0].Group, _commandIds[0].Id, null, ref o);
+        }
+
+        [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#")]
         public virtual void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
         }
         #endregion

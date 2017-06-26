@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
@@ -24,14 +23,13 @@ namespace Microsoft.R.Editor.Settings {
         public const string ShowTclFunctionsKey = "ShowTclFunctions";
 
         private RFormatOptions _formatOptions = new RFormatOptions();
-        private LintOptions _lintOptions = new LintOptions();
 
         public REditorSettings(ICoreShell coreShell): base(coreShell, RContentTypeDefinition.ContentType) { }
         public REditorSettings(IEditorSettingsStorage storage) : base(storage) { }
 
         public override void ResetSettings() {
             _formatOptions = new RFormatOptions();
-            _lintOptions = new LintOptions();
+            LintOptions = new LintOptions();
             base.ResetSettings();
         }
 
@@ -94,6 +92,6 @@ namespace Microsoft.R.Editor.Settings {
             }
         }
 
-        public LintOptions LintOptions => _lintOptions;
+        public LintOptions LintOptions { get; private set; } = new LintOptions();
     }
 }

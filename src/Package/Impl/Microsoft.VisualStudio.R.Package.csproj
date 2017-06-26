@@ -64,7 +64,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyVersionInfo.cs" />
-    <Compile Include="Browsers\WebBrowserRole.cs" />
     <Compile Include="Commands\AsyncCommandController.cs" />
     <Compile Include="Commands\AsyncCommandRangeToOleMenuCommandShim.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
@@ -195,8 +194,13 @@
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
     <Compile Include="Imaging\ImageService.cs" />
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
+    <Compile Include="Options\Attributes\PreviewPositionTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoTypeConverter.cs" />
+    <Compile Include="Options\Markdown\REditorSettingsStorageProvider.cs" />
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\Markdown\RMarkdownOptionsDialog.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\R\Editor\RLintOptionsDialog.cs">
@@ -376,9 +380,6 @@
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\ProjectIconProvider.cs" />
-    <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
-    <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
-    <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
     <Compile Include="Repl\Commands\Code\PasteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\Code\ExecuteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\History\HistoryNavigationCommand.cs" />
@@ -418,10 +419,6 @@
     </Compile>
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />
-    <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
-    <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
-    <Compile Include="Publishing\Commands\PreviewCommand.cs" />
-    <Compile Include="Publishing\Definitions\PublishFormat.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\R\Tools\RSettingsImplementation.cs" />
@@ -455,7 +452,6 @@
     </Compile>
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
-    <Compile Include="Publishing\Handlers\MdPublishHandler.cs" />
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
@@ -490,8 +486,6 @@
     <Compile Include="SurveyNews\ISurveyNewsFeedClient.cs" />
     <Compile Include="SurveyNews\ISurveyNewsOptions.cs" />
     <Compile Include="SurveyNews\ISurveyNewsService.cs" />
-    <Compile Include="Browsers\IWebBrowserServices.cs" />
-    <Compile Include="Browsers\WebBrowserServices.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeed.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedClient.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedException.cs" />
@@ -1145,14 +1139,17 @@
     <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
       <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
       <Name>Microsoft.Markdown.Editor.Windows</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor.Windows</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
@@ -1479,7 +1476,9 @@
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
+      <VSIXSourceItem Include="$(OutputPath)\Markdig.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\YamlDotNet.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Caching.Abstractions.dll" />
@@ -1603,6 +1602,7 @@
       <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
       <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>

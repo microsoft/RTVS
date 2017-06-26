@@ -16,7 +16,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         private ITextRange _cachedLanguageBlock;
 
         protected ContainedLanguageHandler(ITextBuffer textBuffer) {
-            textBuffer.AddService<IContainedLanguageHandler>(this);
+            textBuffer.AddService(this);
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
         }
@@ -24,6 +24,12 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         protected abstract void OnTextBufferChanged(object sender, TextContentChangedEventArgs e);
 
         #region IContainedLanguageHandler
+
+        /// <summary>
+        /// Collection of code blocks
+        /// </summary>
+        public IReadOnlyTextRangeCollection<ITextRange> LanguageBlocks => Blocks;
+
         /// <summary>
         /// Retrieves contained command target for a given location in the buffer.
         /// </summary>

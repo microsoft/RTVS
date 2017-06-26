@@ -20,7 +20,6 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
 using ContentControl = System.Windows.Controls.ContentControl;
@@ -79,8 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Container?.Show(focus: false, immediate: false);
                 NavigateTo(url);
             } else {
-                var wbs = _services.GetService<IWebBrowserServices>();
-                wbs.OpenBrowser(WebBrowserRole.Shiny, url);
+                _services.Process().Start(url);
             }
         }
 
@@ -101,10 +99,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void CreateBrowser() {
             if (Browser == null) {
-                Browser = new WebBrowser();
-
-                Browser.WebBrowserShortcutsEnabled = true;
-                Browser.IsWebBrowserContextMenuEnabled = true;
+                Browser = new WebBrowser {
+                    WebBrowserShortcutsEnabled = true,
+                    IsWebBrowserContextMenuEnabled = true
+                };
 
                 Browser.Navigating += OnNavigating;
                 Browser.Navigated += OnNavigated;
@@ -215,8 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                var wbs = _services.GetService<IWebBrowserServices>();
-                wbs.OpenBrowser(WebBrowserRole.External, url);
+                _services.Process().Start(url);
             }
         }
 

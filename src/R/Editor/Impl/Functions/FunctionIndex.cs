@@ -211,6 +211,9 @@ namespace Microsoft.R.Editor.Functions {
 
         private void UpdateIndex(string functionName, string packageName, string rdData) {
             var functionInfos = GetFunctionInfosFromRd(packageName, rdData);
+            if (functionInfos == null) {
+                return;
+            }
 
             foreach (var info in functionInfos) {
                 _functionToInfoMap[GetQualifiedName(info.Name, packageName)] = info;

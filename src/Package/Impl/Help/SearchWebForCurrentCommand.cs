@@ -3,10 +3,10 @@
 
 using System;
 using System.Text;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Handle(string item) {
             // Bing: search?q=item+site%3Astackoverflow.com
-            var tokens = _settings.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var tokens = _settings.WebHelpSearchString.Split(new [] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
             var sb = new StringBuilder("https://" + Invariant($"www.bing.com/search?q={Uri.EscapeUriString(item)}"));
             foreach (var t in tokens) {
@@ -44,8 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 sb.Append(Uri.EscapeUriString(t));
             }
 
-            var wbs = Workflow.Shell.GetService<IWebBrowserServices>();
-            wbs.OpenBrowser(WebBrowserRole.Help, sb.ToString());
+            Workflow.Shell.Services.Process().Start(sb.ToString());
         }
     }
 }

@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
@@ -18,6 +20,11 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
 
         public TextViewMock(ITextBuffer textBuffer) :
             this(textBuffer, 0) {
+        }
+
+        public TextViewMock(IEnumerable<ITextBuffer> textBuffers, int caretPosition): 
+            this(textBuffers.First(), caretPosition) {
+            BufferGraph = new BufferGraphMock(textBuffers);
         }
 
         public TextViewMock(ITextBuffer textBuffer, int caretPosition) {
@@ -46,25 +53,22 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
         public double MaxTextRightCoordinate => 100;
 
         public IEditorOptions Options => Substitute.For<IEditorOptions>();
-
-        public PropertyCollection Properties { get; private set; } = new PropertyCollection();
+        public PropertyCollection Properties { get; } = new PropertyCollection();
 
         public ITrackingSpan ProvisionalTextHighlight {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
         }
 
         public ITextViewRoleSet Roles => Substitute.For<ITextViewRoleSet>();
 
-        public ITextSelection Selection { get; private set; }
+        public ITextSelection Selection { get; }
 
-        public ITextBuffer TextBuffer { get; private set; }
+        public ITextBuffer TextBuffer { get; }
 
-        public ITextDataModel TextDataModel { get; private set; }
+        public ITextDataModel TextDataModel { get; }
 
-        public ITextSnapshot TextSnapshot {
-            get { return TextBuffer.CurrentSnapshot; }
-        }
+        public ITextSnapshot TextSnapshot => TextBuffer.CurrentSnapshot;
 
         public ITextViewLineCollection TextViewLines { get; }
 
@@ -77,35 +81,19 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
         public double ViewportTop => 0;
         public double ViewportWidth => 100;
 
-        public IViewScroller ViewScroller {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public IViewScroller ViewScroller => throw new NotImplementedException();
 
-        public ITextSnapshot VisualSnapshot {
-            get { return this.TextSnapshot; }
-        }
+        public ITextSnapshot VisualSnapshot => this.TextSnapshot;
 
         public void Close() {
         }
 
-        public void DisplayTextLineContainingBufferPosition(SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo) {
-        }
+        public void DisplayTextLineContainingBufferPosition(SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo) { }
 
-        public void DisplayTextLineContainingBufferPosition(SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo, double? viewportWidthOverride, double? viewportHeightOverride) {
-        }
-
-        public SnapshotSpan GetTextElementSpan(SnapshotPoint point) {
-            return new SnapshotSpan(this.TextSnapshot, point, 0);
-        }
-
-        public ITextViewLine GetTextViewLineContainingBufferPosition(SnapshotPoint bufferPosition) {
-            throw new NotImplementedException();
-        }
-
-        public void QueueSpaceReservationStackRefresh() {
-        }
+        public void DisplayTextLineContainingBufferPosition(SnapshotPoint bufferPosition, double verticalDistance, ViewRelativePosition relativeTo, double? viewportWidthOverride, double? viewportHeightOverride) { }
+        public SnapshotSpan GetTextElementSpan(SnapshotPoint point) => new SnapshotSpan(this.TextSnapshot, point, 0);
+        public ITextViewLine GetTextViewLineContainingBufferPosition(SnapshotPoint bufferPosition) => throw new NotImplementedException();
+        public void QueueSpaceReservationStackRefresh() { }
 
 #pragma warning disable 0067
         public event EventHandler Closed;

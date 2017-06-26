@@ -8,6 +8,8 @@ using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -64,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
         }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
+            VsAppShell.EnsurePackageLoaded(MdGuidList.MdPackageGuid);
             OleControllerChain.InitEditorInstance(textBuffer, Services);
             base.OnTextBufferCreated(textView, textBuffer);
         }

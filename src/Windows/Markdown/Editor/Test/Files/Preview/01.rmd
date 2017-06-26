@@ -1,0 +1,15 @@
+---
+title: Cars
+output:
+    html_document:
+        theme: cerulean
+---
+
+```{r}
+summary(cars)
+```
+Plots
+
+```{r echo = FALSE}
+plot(cars)
+```

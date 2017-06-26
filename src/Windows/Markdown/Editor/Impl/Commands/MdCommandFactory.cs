@@ -9,6 +9,8 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Preview.Commands;
+using Microsoft.Markdown.Editor.Publishing.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -30,7 +32,13 @@ namespace Microsoft.Markdown.Editor.Commands {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var commands = new List<ICommand>() {
                 new RunRChunkCommand(textView, _workflowProvider.GetOrCreate()),
-                new GotoBraceCommand(textView, textBuffer, _services)
+                new GotoBraceCommand(textView, textBuffer, _services),
+                new PreviewHtmlCommand(textView, _workflowProvider, _services),
+                new PreviewPdfCommand(textView, _workflowProvider, _services),
+                new PreviewWordCommand(textView, _workflowProvider, _services),
+                new AutomaticSyncCommand(textView, _services),
+                new RunCurrentChunkCommand(textView, _services),
+                new RunAllChunksAboveCommand(textView, _services)
             };
             return commands;
         }

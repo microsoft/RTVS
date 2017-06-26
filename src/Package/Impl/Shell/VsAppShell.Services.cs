@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
@@ -69,6 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<IEditorSupport, VsEditorSupport>()
                 .AddService<IImageService, ImageService>()
                 .AddService(new REditorSettings(this))
+                .AddService(new RMarkdownEditorSettings(this))
                 .AddService(new VsEditorViewLocator())
                 .AddService<IStatusBar, VsStatusBar>()
                 .AddService<RPackageToolWindowProvider>()

@@ -699,4 +699,7 @@ This prompt can be suppressed in R Tools | Options.
   <data name="Error_OdbcDriver" xml:space="preserve">
     <value>Connection to SQL database in Azure requires SQL ODBC driver 13.1 or higher. Please install the latest Microsoft ODBC Driver from {0}.</value>
   </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
 </root>

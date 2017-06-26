@@ -170,6 +170,9 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
             options.SetOptionValue<bool>(DefaultTextViewHostOptions.LineNumberMarginId, true);
             options.SetOptionValue<bool>(DefaultTextViewHostOptions.OutliningMarginId, true);
+
+            options.SetOptionValue<bool>(DefaultTextViewHostOptions.HorizontalScrollBarId, true);
+            options.SetOptionValue<bool>(DefaultTextViewHostOptions.VerticalScrollBarId, true);
         }
 
         private void ApplyDefaultSettings() {

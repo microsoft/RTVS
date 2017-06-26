@@ -27,7 +27,7 @@ namespace Microsoft.Markdown.Editor.Commands {
             if (!TextView.TextBuffer.ContentType.TypeName.EqualsOrdinal(MdProjectionContentTypeDefinition.ContentType)) {
                 return CommandStatus.Invisible;
             }
-            return IsInRCode() ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+            return TextView.IsCaretInRCode() ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
@@ -47,12 +47,6 @@ namespace Microsoft.Markdown.Editor.Commands {
                 }
             }
             return CommandResult.Executed;
-        }
-
-        private bool IsInRCode() {
-            var document = TextView.TextBuffer.GetEditorDocument<IMdEditorDocument>();
-            var caret = TextView.GetCaretPosition(document.EditorBuffer);
-            return caret.HasValue;
         }
     }
 }

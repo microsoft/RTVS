@@ -240,9 +240,6 @@
   <data name="Error_MarkdownConversionFailed" xml:space="preserve">
     <value>Markdown conversion failed</value>
   </data>
-  <data name="Error_PackageMissing" xml:space="preserve">
-    <value>This operation requires package {0} which is not installed or has been removed. </value>
-  </data>
   <data name="PlotWindowCommandNoDevice" xml:space="preserve">
     <value>R Plot</value>
   </data>
@@ -657,9 +654,6 @@ Additional information:
   <data name="Error_UnknownMirror" xml:space="preserve">
     <value>'{0}' is not a known CRAN mirror name.</value>
   </data>
-  <data name="Warning_SaveInUtf8" xml:space="preserve">
-    <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>
-  </data>
   <data name="TooltipPlaceholder" xml:space="preserve">
     <value>Fetching data...</value>
   </data>
@@ -698,17 +692,6 @@ Additional information:
   </data>
   <data name="Settings_OsDefaultEncoding" xml:space="preserve">
     <value>(OS Default)</value>
-  </data>
-  <data name="Error_PandocMissingLocal" xml:space="preserve">
-    <value>Publishing markdown requires Pandoc. Please install Pandoc for Windows from http://pandoc.org/installing.html.
-    
-Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes.</value>
-  </data>
-  <data name="Error_PdfLatexMissingLocal" xml:space="preserve">
-    <value>Publishing markdown to PDF requires TeX installation. Please install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
-    
-Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.
-</value>
   </data>
   <data name="HelpSearchTooltip" xml:space="preserve">
     <value>Type text to search for in R Help</value>
@@ -997,29 +980,6 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="SqlPublish_NoSqlToolsVS15" xml:space="preserve">
     <value>This operation requires SQL Data Tools package. Please add Data Storage and Processing workload to your Visual Studio setup.</value>
   </data>
-  <data name="Error_PandocMissingRemote" xml:space="preserve">
-    <value>Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.
-    
-Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes.</value>
-  </data>
-  <data name="Error_PdfLatexMissingRemote" xml:space="preserve">
-    <value>Publishing markdown to PDF requires TeX installation. Please contact the remote machine administrator and ask them to install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.
-
-Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.
-</value>
-  </data>
-  <data name="Info_MarkdownGetOutputFile" xml:space="preserve">
-    <value>Saving published output file: {0}</value>
-  </data>
-  <data name="Info_MarkdownPublishComplete" xml:space="preserve">
-    <value>Finished publishing markdown file: {0}</value>
-  </data>
-  <data name="Info_MarkdownPublishingFile" xml:space="preserve">
-    <value>Publishing markdown file: {0}</value>
-  </data>
-  <data name="Info_MarkdownSendingInputFile" xml:space="preserve">
-    <value>Sending markdown input file to R: {0}</value>
-  </data>
   <data name="Settings_OutliningCategory" xml:space="preserve">
     <value>Outlining</value>
   </data>
@@ -1302,5 +1262,44 @@ Click OK to open MiKTeX download page in the default browser. R Remote Services 
   </data>
   <data name="Settings_Lint_UpperCase_Description" xml:space="preserve">
     <value>Flag object names in UPPERCASE</value>
+  </data>
+  <data name="Below" xml:space="preserve">
+    <value>Below</value>
+  </data>
+  <data name="Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Settings_MarkdownCategory_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="Settings_Markdown_AutomaticSync" xml:space="preserve">
+    <value>Automatic update</value>
+  </data>
+  <data name="Settings_Markdown_AutomaticSync_Description" xml:space="preserve">
+    <value>Automatically update preview when markdown file changes</value>
+  </data>
+  <data name="Settings_Markdown_EnablePreview" xml:space="preserve">
+    <value>Enable preview</value>
+  </data>
+  <data name="Settings_Markdown_EnablePreview_Description" xml:space="preserve">
+    <value>Enables or disables preview of resulting HTML in a browser pane</value>
+  </data>
+  <data name="Settings_Markdown_PreviewHeight" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="Settings_Markdown_PreviewHeight_Description" xml:space="preserve">
+    <value>Preview pane height when it is positioned below the editor</value>
+  </data>
+  <data name="Settings_Markdown_PreviewPosition" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Settings_Markdown_PreviewPosition_Description" xml:space="preserve">
+    <value>Defines where HTML preview pane appears</value>
+  </data>
+  <data name="Settings_Markdown_PreviewWidth" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="Settings_Markdown_PreviewWidth_Description" xml:space="preserve">
+    <value>Preview pane width when it is positioned at the right side of the editor</value>
   </data>
 </root>

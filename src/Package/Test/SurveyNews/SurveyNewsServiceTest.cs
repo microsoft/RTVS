@@ -5,10 +5,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using NSubstitute;
 using Xunit;
@@ -181,17 +182,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
             string navigatedUrl = null;
 
             // Create the test objects
-            var browser = Substitute.For<IWebBrowserServices>();
-            browser.When(x => x.OpenBrowser(Arg.Any<WebBrowserRole>(), Arg.Any<string>(), Arg.Any<bool>())).Do(x => {
-                ((WebBrowserRole)x.Args()[0]).Should().Be(WebBrowserRole.News);
+            var shell = TestCoreShell.CreateSubstitute();
+
+            var ps = shell.Process();
+            ps.When(x => x.Start(Arg.Any<string>())).Do(x => {
                 navigatedUrl = (string)x.Args()[1];
             });
 
             var options = new MockSurveyNewsOptions(policy, lastChecked);
             var feedClient = new MockSurveyNewsFeedClient(feed);
 
+
             // Invoke the real survey/news service
-            var service = new SurveyNewsService(feedClient, options, browser, Substitute.For<ICoreShell>());
+            var service = new SurveyNewsService(feedClient, options, shell);
             await service.CheckSurveyNewsAsync(forceCheck);
 
             // Check that we navigated to the right url (or didn't navigate at all)

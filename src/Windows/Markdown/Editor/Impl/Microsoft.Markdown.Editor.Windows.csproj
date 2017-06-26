@@ -18,6 +18,9 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.props" />
   <ItemGroup>
+    <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -25,6 +28,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -55,10 +59,50 @@
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
     <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
     <Compile Include="Document\IMdEditorDocument.cs" />
+    <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
+    <Compile Include="Preview\Browser\BrowserView.cs" />
+    <Compile Include="Preview\Browser\WebBrowserHostUIHandler.cs" />
+    <Compile Include="Preview\Code\CodeBlockState.cs" />
+    <Compile Include="Preview\Code\EvalSession.cs" />
+    <Compile Include="Preview\Code\RCodeEvaluator.cs" />
+    <Compile Include="Preview\Commands\RunAllChunksAboveCommand.cs" />
+    <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
+    <Compile Include="Preview\Commands\RunCurrentChunkCommand.cs" />
+    <Compile Include="Preview\IMarkdownPreview.cs" />
+    <Compile Include="Preview\Margin\PreviewBottomMarginProvider.cs" />
+    <Compile Include="Preview\Margin\PreviewMargin.cs" />
+    <Compile Include="Preview\Margin\PreviewMarginProviderBase.cs" />
+    <Compile Include="Preview\Margin\PreviewRightMarginProvider.cs" />
+    <Compile Include="Preview\CSS\CssCreationListener.cs" />
+    <Compile Include="Preview\Browser\NativeMethods.cs" />
+    <Compile Include="Preview\Parser\Extensions.cs" />
+    <Compile Include="Preview\Parser\MarkdownFactory.cs" />
+    <Compile Include="Preview\Browser\DocumentRenderer.cs" />
+    <Compile Include="Preview\Code\RCodeBlock.cs" />
+    <Compile Include="Preview\Code\RCodeBlockRenderer.cs" />
+    <Compile Include="Preview\Code\RSessionCallback.cs" />
+    <Compile Include="Preview\CSS\StylesheetUpdatedEventArgs.cs" />
+    <Compile Include="Preview\Commands\AutomaticSyncCommand.cs" />
+    <Compile Include="Preview\Parser\YamlRenderer.cs" />
+    <Compile Include="Publishing\Commands\PreviewCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewHtmlCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewPdfCommand.cs" />
+    <Compile Include="Publishing\Commands\PreviewWordCommand.cs" />
+    <Compile Include="Publishing\IMarkdownFlavorPublishHandler.cs" />
+    <Compile Include="Publishing\PublishFormat.cs" />
+    <Compile Include="Publishing\RmdPublishHandler.cs" />
+    <Compile Include="Settings\IRMarkdownEditorSettings.cs" />
+    <Compile Include="Settings\RMarkdownEditorSettings.cs" />
+    <Compile Include="Settings\RMarkdownPreviewPosition.cs" />
+    <Compile Include="SuggestedActions\RunChunkSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\RunChunksAboveSuggestedAction.cs" />
+    <Compile Include="SuggestedActions\RunChunkSuggestedAction.cs" />
+    <Compile Include="SuggestedActions\RmdSuggestedActionsSource.cs" />
+    <Compile Include="SuggestedActions\RmdSuggestedActionsSourceProvider.cs" />
     <Compile Include="ViewModel\MdEditorViewModel.cs" />
     <Compile Include="ViewModel\MdEditorViewModelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,13 +149,18 @@
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
-      <Name>Microsoft.R.Editor</Name>
+    <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
+      <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
+      <Name>Microsoft.R.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
+      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
+      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
@@ -128,8 +177,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +197,15 @@
       <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
     </FilesToLocalize>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Preview\Images\Loading.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Markdown\PreviewTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

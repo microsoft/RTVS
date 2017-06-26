@@ -224,11 +224,11 @@
         </Strings>
       </Menu>
 
-      <!-- Publish flyout -->
-      <Menu guid="guidRToolsCmdSet" id="publishSubMenu" type="Menu" priority="0x0500">
+      <!-- Markdown flyout -->
+      <Menu guid="guidRToolsCmdSet" id="markdownSubMenu" type="Menu" priority="0x0500">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>P&amp;ublish</ButtonText>
+          <ButtonText>&amp;Markdown</ButtonText>
         </Strings>
       </Menu>
 
@@ -304,10 +304,11 @@
       <Group guid="guidRToolsCmdSet" id="rToolbarDataGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup" priority="0x0400">
-        <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
-      </Group>
-
+      
+      <Group guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0400" />
+      <Group guid="guidRToolsCmdSet" id="markdownAutoSyncGroup" priority="0x0450" />
+      <Group guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0500" />
+      
       <!-- R code editor context menu groups -->
       <!-- R Formatting -->
       <Group guid="guidRToolsCmdSet" id="groupRContextRepl" priority="0x0800">
@@ -488,16 +489,12 @@
       </Group>
       <!--  End REPL context menu -->
 
-      <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0100">
-        <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
+      <Group guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="markdownSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="publishPublishSubMenuGroup" priority="0x0200">
-        <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
-      </Group>
-
-      <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0110">
-        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
+      <Group guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0210">
+        <Parent guid="guidRToolsCmdSet" id="markdownSubMenu"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="feedbackSubMenuGroup" priority="0x0000">
@@ -640,7 +637,7 @@
           <CommandName>NextHistoryEntry</CommandName>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
@@ -1137,8 +1134,8 @@
       <!-- End Data flyout -->
 
       <!-- Publish flyout -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
+      <Button guid="guidMdToolsCmdSet" id="icmdPreviewHtml" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownPreviewGroup"/>
         <Icon guid="ImageCatalogGuid" id="HTMLFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -1146,22 +1143,24 @@
         <Strings>
           <ButtonText>Preview &amp;HTML</ButtonText>
           <CommandName>Preview HTML</CommandName>
+          <ToolTipText>Knit R Markdown into HTML document</ToolTipText>
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
+      <Button guid="guidMdToolsCmdSet" id="icmdPreviewPdf" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownPreviewGroup"/>
         <Icon guid="pdfIconGuid" id="pdfIcon"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Preview &amp;PDF</ButtonText>
           <CommandName>Preview PDF</CommandName>
+          <ToolTipText>Knit R Markdown into Adobe PDF document</ToolTipText>
         </Strings>
       </Button>
 
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup"/>
+      <Button guid="guidMdToolsCmdSet" id="icmdPreviewWord" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownPreviewGroup"/>
         <Icon guid="ImageCatalogGuid" id="OfficeWord2013"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -1169,6 +1168,46 @@
         <Strings>
           <ButtonText>Preview &amp;Word</ButtonText>
           <CommandName>Preview Word</CommandName>
+          <ToolTipText>Knit R Markdown into Microsoft Word document</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMdToolsCmdSet" id="icmdAutomaticSync" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownAutoSyncGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Sync"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText> &amp;Automatic Sync</ButtonText>
+          <CommandName>Automatic Preview Sync</CommandName>
+          <ToolTipText>Toggle automatic preview pane synchronization</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownSyncGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RunOutline"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run &amp;Current Chunk</ButtonText>
+          <CommandName>Run Current Chunk</CommandName>
+          <ToolTipText>Run current code chunk and update preview pane</ToolTipText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" priority="0x0210" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownSyncGroup"/>
+        <Icon guid="ImageCatalogGuid" id="GoToBottom"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run &amp;All Chunks Above</ButtonText>
+          <CommandName>Run All Chunks Above</CommandName>
+          <ToolTipText>Run all code chunks above and update preview pane</ToolTipText>
         </Strings>
       </Button>
       <!-- End of Publish flyout -->
@@ -1900,7 +1939,7 @@
       <Menu guid="guidMdToolsCmdSet" id="previewSubMenu" type="Menu" priority="0x100">
         <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
         <Strings>
-          <ButtonText>Pre&amp;view</ButtonText>
+          <ButtonText>&amp;Preview</ButtonText>
         </Strings>
       </Menu>
       <!-- RD editor context menu -->
@@ -1908,24 +1947,14 @@
 
     <Groups>
       <!-- MD code editor context menu groups -->
-      <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0210">
-        <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
-      </Group>
-
-      <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0220">
-        <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
-      </Group>
-
-      <Group guid="guidMdToolsCmdSet" id="groupPublish" priority="0x0300">
+      <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0200">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
       <!-- End MD code editor context menu groups -->
     </Groups>
 
     <Buttons>
-      <Button guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="Execute"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
+      <Button guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x0100" type="Button">
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -1967,14 +1996,14 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdStopShinyApp" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="rToolbarShinyGroup"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0100">
-      <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0300">
+      <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200">
-      <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownAutoSyncGroup" priority="0x0350">
+      <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0300">
-      <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0400">
+      <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
     </CommandPlacement>
     <!-- End toolbar -->
 
@@ -2044,7 +2073,15 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x206">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x206">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" priority="0x207">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" priority="0x208">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -2073,7 +2110,7 @@
     <!-- End R code editor context menu -->
 
     <!-- RMD context menu -->
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x100">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x100">
       <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
     </CommandPlacement>
 
@@ -2082,6 +2119,10 @@
     </CommandPlacement>
     <!-- End RMD context menu -->
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownAutoSyncGroup" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="markdownSubMenu"/>
+    </CommandPlacement>
+    
     <!-- R history context menu -->
     <CommandPlacement guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
@@ -2113,6 +2154,14 @@
     <!-- RD/RDM code editor context menu -->
     <!-- Clipboard group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
+      <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0210">
+      <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0220">
       <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
     </CommandPlacement>
 
@@ -2256,7 +2305,7 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x0416">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunRChunk" priority="0x0416">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -2553,8 +2602,8 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="InteractiveWindow" key1="W" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
-    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" mod1="Control" />
@@ -2567,6 +2616,10 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdAutomaticSync" editor="RmdEditor" key1="Y" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" editor="RmdEditor" key1="R" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" editor="RmdEditor" key1="B" mod1="CONTROL SHIFT" />
   </KeyBindings>
 
   <UsedCommands>
@@ -2596,16 +2649,18 @@
       <!-- Markdown editor context menu -->
       <IDSymbol name="mdEditorContextMenu" value="300" />
       <IDSymbol name="previewSubMenu" value="130" />
+      <IDSymbol name="groupPreviewSync" value="134" />
       <IDSymbol name="groupPreview" value="135" />
       <IDSymbol name="groupRmdRepl" value="136" />
-      <IDSymbol name="groupPublish" value="145" />
 
       <!-- Preview in RD/RDM -->
-      <IDSymbol name="cmdidPreview" value="600" />
-      <IDSymbol name="cmdidPreviewHtml" value="601" />
-      <IDSymbol name="cmdidPreviewPdf" value="602" />
-      <IDSymbol name="cmdidPreviewWord" value="603" />
-      <IDSymbol name="cmdidRunRChunk" value="611" />
+      <IDSymbol name="icmdPreviewHtml" value="601" />
+      <IDSymbol name="icmdPreviewPdf" value="602" />
+      <IDSymbol name="icmdPreviewWord" value="603" />
+      <IDSymbol name="icmdRunRChunk" value="611" />
+      <IDSymbol name="icmdAutomaticSync" value="612" />
+      <IDSymbol name="icmdRunCurrentChunk" value="613" />
+      <IDSymbol name="icmdRunAllChunksAbove" value="614" />
     </GuidSymbol>
 
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
@@ -2857,13 +2912,12 @@
       <IDSymbol name="rToolbarReplGroup" value="0x0020" />
       <IDSymbol name="rToolbarDataGroup" value="0x0021" />
       <IDSymbol name="rToolbarShinyGroup" value="0x0022" />
-      <IDSymbol name="rToolbarMarkdownGroup" value="0x0023" />
       <IDSymbol name="mainMenuGroup" value="0x0100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
       <IDSymbol name="sessionSubMenu" value="0x2110"/>
       <IDSymbol name="packagesSubMenu" value="0x2120"/>
       <IDSymbol name="dataSubMenu" value="0x2130"/>
-      <IDSymbol name="publishSubMenu" value="0x2150"/>
+      <IDSymbol name="markdownSubMenu" value="0x2150"/>
       <IDSymbol name="windowsSubMenu" value="0x2200"/>
       <IDSymbol name="directorySubMenu" value="0x2210"/>
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
@@ -2879,8 +2933,9 @@
       <IDSymbol name="dataSubMenuDatabaseGroup" value="0x2343"/>
       <IDSymbol name="dataSubMenuSProcGroup" value="0x2344"/>
       <IDSymbol name="dataContextMenuSProcGroup" value="0x2345"/>
-      <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
-      <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
+      <IDSymbol name="markdownPreviewGroup" value="0x2360"/>
+      <IDSymbol name="markdownSyncGroup" value="0x2361"/>
+      <IDSymbol name="markdownAutoSyncGroup" value="0x2362"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>
       <IDSymbol name="feedbackSubMenuGroup" value="0x2390"/>
       <IDSymbol name="rtvsDocsSubMenu" value="0x2391"/>

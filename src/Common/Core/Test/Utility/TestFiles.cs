@@ -8,23 +8,17 @@ using FluentAssertions;
 namespace Microsoft.Common.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class TestFiles {
+        private static readonly char[] _whitespace = { ' ', '\r', '\n', '\t' };
+
         public static void CompareToBaseLine(string baselinefilePath, string actual) {
-            string expected;
+            var expected = File.ReadAllText(baselinefilePath);
 
-            using (var streamReader = new StreamReader(baselinefilePath)) {
-                expected = streamReader.ReadToEnd();
-            }
-
-            // trim whitescpase in the end to avoid false positives b/c file 
+            // Trim whitescpase in the end to avoid false positives b/c file 
             // has extra line break or whitespace at the end.
-            expected = expected.TrimEnd(' ', '\r', '\n', '\t');
-            actual = actual.TrimEnd(' ', '\r', '\n', '\t');
+            expected = expected.TrimEnd(_whitespace);
+            actual = actual.TrimEnd(_whitespace);
 
-            string baseLine;
-            string actualLine;
-            int index;
-            var lineNumber = BaselineCompare.CompareLines(expected, actual, out baseLine, out actualLine, out index);
-
+            var lineNumber = BaselineCompare.CompareLines(expected, actual, out var baseLine, out var actualLine, out var index);
             lineNumber.Should().Be(0, "there should be no difference at line {0}.\r\nExpected:{1}\r\nActual:{2}\r\nDifference at position {3}\r\n", lineNumber, baseLine, actualLine, index);
         }
 

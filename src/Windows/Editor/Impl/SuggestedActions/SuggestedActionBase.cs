@@ -18,11 +18,16 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
     /// for their language context (e.g. R, Markdown, JSON, etc).
     /// </summary>
     public abstract class SuggestedActionBase : ISuggestedAction {
-        public SuggestedActionBase(ITextBuffer buffer, ITextView view, int position, string displayText) {
+        protected SuggestedActionBase(ITextView view, ITextBuffer buffer, int position, string displayText) {
             TextBuffer = buffer;
             TextView = view;
             Position = position;
             DisplayText = displayText;
+        }
+
+        protected SuggestedActionBase(ITextView view, ITextBuffer buffer, int position, string displayText, ImageMoniker moniker) :
+            this(view, buffer, position, displayText) {
+            IconMoniker = moniker;
         }
 
         public ITextBuffer TextBuffer { get; }
@@ -38,34 +43,27 @@ namespace Microsoft.Languages.Editor.SuggestedActions {
         /// <summary>
         /// By default, nested actions are not supported.
         /// </summary>
-        public virtual Task<IEnumerable<SuggestedActionSet>> GetActionSetsAsync(CancellationToken cancellationToken) {
-            return Task.FromResult(Enumerable.Empty<SuggestedActionSet>());
-        }
+        public virtual Task<IEnumerable<SuggestedActionSet>> GetActionSetsAsync(CancellationToken cancellationToken)
+            => Task.FromResult(Enumerable.Empty<SuggestedActionSet>());
 
         public string DisplayText { get; }
         public string IconAutomationText { get; }
-        public ImageMoniker IconMoniker { get; protected set; }
-        public string InputGestureText { get; protected set;}
+        public ImageMoniker IconMoniker { get; }
+        public string InputGestureText { get; protected set; }
 
         /// <summary>
         /// By default, Preview is not supported.
         /// </summary>
         public virtual bool HasPreview => false;
 
-        public virtual Task<object> GetPreviewAsync(CancellationToken cancellationToken) {
-            return Task.FromResult<object>(null);
-        }
+        public virtual Task<object> GetPreviewAsync(CancellationToken cancellationToken) => Task.FromResult<object>(null);
 
         public abstract void Invoke(CancellationToken cancellationToken);
 
-        public virtual bool TryGetTelemetryId(out Guid telemetryId) {
-            telemetryId = Guid.Empty;
-            return false;
-        }
+        public abstract bool TryGetTelemetryId(out Guid telemetryId);
 
-        #region IDisposable Support
-        protected virtual void Dispose(bool disposing) {
-        }
+        #region IDisposable
+        protected virtual void Dispose(bool disposing) { }
 
         public void Dispose() {
             Dispose(true);
