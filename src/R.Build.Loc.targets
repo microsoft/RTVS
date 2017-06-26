@@ -1,4 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+
   <PropertyGroup>
     <OutputFileExtension Condition="'$(OutputType)' == 'Library'">dll</OutputFileExtension>
     <OutputFileExtension Condition="'$(OutputType)' != 'Library'">exe</OutputFileExtension>

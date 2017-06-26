@@ -1,0 +1,7 @@
+﻿{
+  "urls": "https://0.0.0.0:5444",
+  "security": {
+    "X509CertificateFile": "/etc/rtvs/server.pfx",
+    "X509CertificatePassword": "12345"
+  }
+}

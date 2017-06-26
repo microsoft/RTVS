@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.4
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
 EndProject
@@ -18,8 +18,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Protocol.Test", "Host\Protocol\Test\Microsoft.R.Host.Protocol.Test.csproj", "{AD8A000B-320D-4B11-B7FF-95C314A40E7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Interpreters", "R\Interpreters\Impl\Microsoft.R.Interpreters.csproj", "{8445A4FB-4443-432C-94E8-1408559B7F58}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Common.Core", "Common\Core\Impl\Microsoft.Common.Core.csproj", "{8D408909-459F-4853-A36C-745118F99869}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Core.Test", "Common\Core\Test\Microsoft.Common.Core.Test.csproj", "{FC4AAD0A-13B9-49EE-A59C-F03142958170}"
 EndProject
@@ -120,6 +118,8 @@ EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "RemoteServices", "Windows\Setup\RemoteServices\RemoteServices.wixproj", "{9A3D13C0-7685-4C5B-835C-9BFC9E42C0B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WixInstall", "Windows\Setup\WixInstall\WixInstall.csproj", "{02157F86-0C66-4EE3-899B-2B11FF79A66A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Common.Core", "Common\Core\Impl\Microsoft.R.Common.Core.csproj", "{C2A86AAB-A537-418D-A1EF-14540D340CB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -227,18 +227,6 @@ Global
 		{8445A4FB-4443-432C-94E8-1408559B7F58}.Release|x64.Build.0 = Release|Any CPU
 		{8445A4FB-4443-432C-94E8-1408559B7F58}.Release|x86.ActiveCfg = Release|Any CPU
 		{8445A4FB-4443-432C-94E8-1408559B7F58}.Release|x86.Build.0 = Release|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Debug|x64.Build.0 = Debug|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Debug|x86.Build.0 = Debug|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Release|x64.ActiveCfg = Release|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Release|x64.Build.0 = Release|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D408909-459F-4853-A36C-745118F99869}.Release|x86.Build.0 = Release|Any CPU
 		{FC4AAD0A-13B9-49EE-A59C-F03142958170}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC4AAD0A-13B9-49EE-A59C-F03142958170}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC4AAD0A-13B9-49EE-A59C-F03142958170}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -781,6 +769,18 @@ Global
 		{02157F86-0C66-4EE3-899B-2B11FF79A66A}.Release|x64.Build.0 = Debug|Any CPU
 		{02157F86-0C66-4EE3-899B-2B11FF79A66A}.Release|x86.ActiveCfg = Debug|Any CPU
 		{02157F86-0C66-4EE3-899B-2B11FF79A66A}.Release|x86.Build.0 = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Debug|x64.Build.0 = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Debug|x86.Build.0 = Debug|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Release|x64.ActiveCfg = Release|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Release|x64.Build.0 = Release|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Release|x86.ActiveCfg = Release|Any CPU
+		{C2A86AAB-A537-418D-A1EF-14540D340CB1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

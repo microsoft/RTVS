@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+usage(){
+    cat << EOF
+ Usage: $0 [options]
+  OPTIONS:
+     -h                       Print this message.
+     -o dir                   Path to output directory
+     -v rtvs-version-string   rtvs-daemon dpkg version string
+     -d rtvs-date             Date used in package contents
+ Example: build_rtvs_deb -o "/home/user1/RTVS/bin/Release" -v "1.1.30231.4" -d "2017-03-14"
+EOF
+}
+
+OPTIND=1
+
+while getopts "h?o:v:d" opt; do
+    case "$opt" in
+    h|\?)
+        usage
+        exit 0
+        ;;
+    o)
+        OUT_DIR=$OPTARG
+        ;;
+    v)
+        RTVS_BUILD_VERSION=$OPTARG
+        ;;
+    d)
+        RTVS_BUILD_DATE=$OPTARG
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+
+# Layout of output files as expected by this script
+# ./Release
+# ./Release/netcoreapp1.1/publish
+# ./Release/netcoreapp1.1/rtvsd.config.json
+# ./Release/Microsoft.R.Host
+# ./Release/Microsoft.R.Host.RunAsUser
+# ./Release/rtvs.pam
+# ./Release/MIT.lic
+# ./Release/GPL.lic
+# ./Release/rtvs (R files)
+# ./Release/Setup
+# ./Release/Setup/rtvsd.service (systemd config)
+# ./Release/Setup/rtvsd (daemon)
+# ./Release/Setup/DebPackage
+# ./Release/Setup/DebPackage/conffiles
+# ./Release/Setup/DebPackage/control.m4
+# ./Release/Setup/DebPackage/changelog.m4
+# ./Release/Setup/DebPackage/changelog.Debian
+# ./Release/Setup/DebPackage/copyright.m4
+# ./Release/Setup/DebPackage/generate_copyright
+# ./Release/Setup/DebPackage/rtvsd.8
+
+cd "$OUT_DIR"
+mkdir -p ./pkg/debian/DEBIAN
+mkdir -p ./pkg/debian/etc/pam.d
+mkdir -p ./pkg/debian/etc/rtvs
+mkdir -p ./pkg/debian/lib/systemd/system
+mkdir -p ./pkg/debian/usr/bin
+mkdir -p ./pkg/debian/usr/lib/rtvs
+mkdir -p ./pkg/debian/usr/share/rtvs
+mkdir -p ./pkg/debian/usr/share/man/man8
+mkdir -p ./pkg/debian/usr/share/doc/rtvs-daemon
+
+echo "copying R files"
+cp -R ./rtvs ./pkg/debian/usr/share/rtvs
+
+# set permissions
+find ./pkg/debian -type d | fakeroot xargs chmod 755 
+
+echo "prepare and place copyright"
+./Setup/DebPackage/generate_copyright -m MIT.lic -g GPL.lic -i ./Setup/DebPackage/copyright.m4 > ./pkg/debian/usr/share/doc/rtvs-daemon/copyright
+
+echo "prepare and place control file"
+m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" ./Setup/DebPackage/control.m4 > ./pkg/debian/DEBIAN/control
+
+echo "copy conffiles"
+cp ./Setup/DebPackage/conffiles ./pkg/debian/DEBIAN
+
+echo "prepare and place change log"
+m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" --define=RTVS_DATE="$RTVS_BUILD_DATE" ./Setup/DebPackage/copyright.m4  > ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
+cp ./Setup/DebPackage/changelog.Debian ./pkg/debian/usr/share/doc/rtvs-daemon && \
+gzip --best ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
+gzip --best ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian
+
+echo "prepare and place man pages"
+cp ./Setup/DebPackage/rtvsd.8 ./pkg/debian/usr/share/man/man8 && \
+gzip --best ./pkg/debian/usr/share/man/man8/rtvsd.8
+
+echo "copy pam file"
+cp ./rtvs.pam ./pkg/debian/etc/pam.d && \
+mv ./pkg/debian/etc/pam.d/rtvs.pam ./pkg/debian/etc/pam.d/rtvs
+
+echo "copy config file"
+cp ./netcoreapp1.1/rtvsd.config.json ./pkg/debian/etc/rtvs
+
+echo "copy systemd file"
+cp ./Setup/rtvsd.service ./pkg/debian/lib/systemd/system
+
+chmod 644 ./pkg/debian/etc/pam.d/rtvs && \
+chmod 644 ./pkg/debian/lib/systemd/system/rtvsd.service && \
+chmod 644 ./pkg/debian/etc/rtvs/rtvsd.config.json
+chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
+chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian.gz && \
+chmod 644 ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.gz && \
+chmod 644 ./pkg/debian/usr/share/man/man8/rtvsd.8.gz && \
+
+echo "copy bin files"
+cp ./Setup/rtvsd ./pkg/debian/usr/bin && \
+fakeroot chmod u+rwx,g+rx,o+x ./pkg/debian/usr/bin/rtvsd
+
+echo "copy lib files and set permissions"
+cp -R ./netcoreapp1.1/publish/* ./pkg/debian/usr/lib/rtvs && \
+cp ./Microsoft.R.Host ./pkg/debian/usr/lib/rtvs && \
+cp ./Microsoft.R.Host.RunAsUser ./pkg/debian/usr/lib/rtvs && \
+fakeroot chown root:root ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser && \
+fakeroot chmod u+rwxs,g+rx,o+x ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser
+
+RTVS_PKG_NAME="rtvs-daemon_$RTVS_BUILD_VERSION_amd64.deb"
+fakeroot dpkg-deb --build ./pkg/debian "./pkg/$RTVS_PKG_NAME"

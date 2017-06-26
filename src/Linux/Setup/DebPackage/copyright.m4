@@ -12,7 +12,7 @@ Copyright: Microsoft Corporation. All rights reserved.
 License: GPL-2+
 
 License: MIT
-undivert(MIT_FILE)dnl
+MIT_FILE
 
 License: GPL-2+
-undivert(GPL_FILE)dnl
+GPL_FILE

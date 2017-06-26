@@ -5,8 +5,7 @@
   </PropertyGroup>
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\..\..\R.Build.Version.targets" />
-  <Import Project="..\..\..\R.Wix.settings" />
-  <Import Project="..\..\..\R.Wix.Path.settings" />
+  <Import Project="..\..\..\R.Wix.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
