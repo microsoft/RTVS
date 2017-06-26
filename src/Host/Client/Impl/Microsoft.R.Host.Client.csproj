@@ -3,7 +3,7 @@
     <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.R.Host.Client</AssemblyName>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.Paths.props" />
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>

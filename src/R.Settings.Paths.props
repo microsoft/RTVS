@@ -2,7 +2,7 @@
     <!-- Common Build Settings and Configurations -->
     <PropertyGroup>
         <RootDirectory Condition="'$(RootDirectory)' == ''">$(MSBuildThisFileDirectory)..\</RootDirectory>
-        <ObjDirectory>$(RootDirectory)obj\</ObjDirectory>
+        <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)obj\</ObjDirectory>
         <BaseIntermediateOutputPath>$(ObjDirectory)\$(AssemblyName)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\</IntermediateOutputPath>
         <MicroBuild_DoNotStrongNameSign>true</MicroBuild_DoNotStrongNameSign>
