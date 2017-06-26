@@ -42,7 +42,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
