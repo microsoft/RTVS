@@ -250,6 +250,8 @@
     <Compile Include="Sql\Publish\IDacPackageServices.cs" />
     <Compile Include="Sql\Publish\IDacPackageServicesProvider.cs" />
     <Compile Include="StatusBar\IStatusBar.cs" />
+    <Compile Include="StatusBar\IStatusBarProgress.cs" />
+    <Compile Include="StatusBar\StatusBarProgressData.cs" />
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />

@@ -9,8 +9,6 @@ using System.Windows;
 namespace Microsoft.R.Components.StatusBar {
     public interface IStatusBar {
         IDisposable AddItem(UIElement item);
-        Task<string> GetTextAsync(CancellationToken ct = default(CancellationToken));
-        Task SetTextAsync(string text, CancellationToken ct = default(CancellationToken));
-        Task ReportProgressAsync(string message, uint step, uint totalSteps, bool complete = false, CancellationToken ct = default(CancellationToken));
+        Task<IStatusBarProgress> ShowProgressAsync(int totalSteps = 100, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

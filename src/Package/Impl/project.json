@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "System.Threading.Tasks.Dataflow": "4.5.24",
     "Microsoft.Build": "15.3.0-preview-000117-01",
     "Microsoft.Data.ConnectionUI": "15.0.26201",
     "Microsoft.VisualStudio.ComponentModelHost": "15.0.26201",
@@ -12,7 +13,7 @@
       "version": "2.0.0-rc3-61319-01",
       "embedInteropTypes": "true"
     },
-     "Microsoft.VisualStudio.ProjectSystem": "15.0.751",
+    "Microsoft.VisualStudio.ProjectSystem": "15.0.751",
     "Microsoft.VisualStudio.ProjectSystem.SDK.Tools": "15.0.751",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "15.0.7",
     "Microsoft.VisualStudio.Shell.15.0": "15.0.26201",

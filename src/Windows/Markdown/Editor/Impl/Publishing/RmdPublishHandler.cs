@@ -35,26 +35,19 @@ namespace Microsoft.Markdown.Editor.Publishing {
         private async Task RMarkdownRenderAsync(IRSession session, string inputFilePath, string outputFilePath, string format, int codePage, IServiceContainer services) {
             using (var fts = new DataTransferSession(session, services.FileSystem())) {
                 var statusBar = services.GetService<IStatusBar>();
-
-                var currentStatusText = await statusBar.GetTextAsync();
-                await statusBar.ReportProgressAsync(string.Empty, 0, 0);
-
-                try {
-                    // TODO: progress and cancellation handling
-                    await statusBar.ReportProgressAsync(Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0, 3);
+                using (var progress = await statusBar.ShowProgressAsync(3)) {
+                    // TODO: cancellation handling
+                    progress.Report(new StatusBarProgressData(Resources.Info_MarkdownSendingInputFile.FormatInvariant(Path.GetFileName(inputFilePath)), 0));
 
                     var rmd = await fts.SendFileAsync(inputFilePath, true, null, CancellationToken.None);
-                    await statusBar?.ReportProgressAsync(Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1, 3);
+                    progress.Report(new StatusBarProgressData(Resources.Info_MarkdownPublishingFile.FormatInvariant(Path.GetFileName(inputFilePath)), 1));
 
                     var publishResult = await session.EvaluateAsync<ulong>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
 
-                    await statusBar?.ReportProgressAsync(Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2, 3);
+                    progress.Report(new StatusBarProgressData(Resources.Info_MarkdownGetOutputFile.FormatInvariant(Path.GetFileName(outputFilePath)), 2));
                     await fts.FetchFileAsync(new RBlobInfo(publishResult), outputFilePath, true, null, CancellationToken.None);
 
-                    await statusBar?.ReportProgressAsync(Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3, 3);
-                } finally {
-                    await statusBar.ReportProgressAsync(string.Empty, 0, 0, true);
-                    await statusBar.SetTextAsync(currentStatusText);
+                    progress.Report(new StatusBarProgressData(Resources.Info_MarkdownPublishComplete.FormatInvariant(Path.GetFileName(outputFilePath)), 3));
                 }
             }
         }
