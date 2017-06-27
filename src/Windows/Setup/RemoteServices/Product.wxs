@@ -53,7 +53,7 @@
                         Description="Creates Windows User profile for users connecting via R Host Broker" Start="auto" Account="LocalSystem"
                         ErrorControl="critical" Interactive="no" >
           <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
-              ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
+              ServiceInterrogate="yes" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
               ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
           <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
         </ServiceInstall>
@@ -72,7 +72,7 @@
                         Arguments="--start.as service --config &quot;[INSTALLFOLDER]Microsoft.R.Host.Broker.Config.json&quot;">
 
           <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
-              ServiceInterrogate="yes" ServiceChangeConfig="yes" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
+              ServiceInterrogate="yes" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
               ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
           <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
           <ServiceDependency Id="RUserProfileService" Group="no"/>
