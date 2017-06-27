@@ -4,17 +4,16 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Tokens {
-    [ExcludeFromCodeCoverage]  
+    [ExcludeFromCodeCoverage]
+    [Category.R.Tokenizer]
     public class TokenizeBuiltinsTest : TokenizeTestBase<RToken, RTokenType> {
         [Test]
-        [Category.R.Tokenizer]
         public void Tokenize_BuiltIns01() {
-            IReadOnlyTextRangeCollection<RToken> tokens = this.Tokenize("require library switch return", new RTokenizer());
+            var tokens = Tokenize("require library switch return", new RTokenizer());
 
             tokens.Should().HaveCount(4);
             foreach (var token in tokens) {
@@ -23,9 +22,8 @@ namespace Microsoft.R.Core.Test.Tokens {
         }
 
         [Test]
-        [Category.R.Tokenizer]
         public void Tokenize_BuiltIns02() {
-            IReadOnlyTextRangeCollection<RToken> tokens = this.Tokenize("require() library() switch() return()", new RTokenizer());
+            var tokens = Tokenize("require() library() switch() return()", new RTokenizer());
 
             tokens.Should().HaveCount(12);
             for (var i = 0; i < tokens.Count; i += 3) {
