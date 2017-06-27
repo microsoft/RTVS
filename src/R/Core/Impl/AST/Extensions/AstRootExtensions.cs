@@ -31,13 +31,8 @@ namespace Microsoft.R.Core.AST {
             var func = scope.FindFunctionDefinitionByName(itemName, position);
             if (func != null) {
                 return func;
-            } else {
-                var v = scope.FindVariableDefinitionByName(itemName, position);
-                if (v != null) {
-                    return v;
-                }
             }
-            return null;
+            return scope.FindVariableDefinitionByName(itemName, position);
         }
 
         public static bool IsCompleteExpression(this AstRoot expressionAst) {
