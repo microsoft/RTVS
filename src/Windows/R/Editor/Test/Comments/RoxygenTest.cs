@@ -10,8 +10,10 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Comments;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
+using Xunit;
+using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Test.Formatting {
+namespace Microsoft.R.Editor.Test.Comments {
     [ExcludeFromCodeCoverage]
     [Category.R.Documentation]
     public class RoxygenTest {
@@ -60,7 +62,7 @@ x <- function(a) { }");
 
             var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
             RoxygenBlock.TryInsertBlock(eb, ast, 4).Should().BeTrue();
-            string actual = tb.CurrentSnapshot.GetText();
+            var actual = tb.CurrentSnapshot.GetText();
             actual.Should().Be(
 @"#' Title
 #'
@@ -78,7 +80,7 @@ x <- function() { }");
 
             var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
             RoxygenBlock.TryInsertBlock(eb, ast, 4).Should().BeTrue();
-            string actual = tb.CurrentSnapshot.GetText();
+            var actual = tb.CurrentSnapshot.GetText();
             actual.Should().Be(
 @"#' Title
 #'
@@ -93,5 +95,60 @@ x <- function() { }");
 x <-
  function(a=1, b, c=FALSE) { }");
         }
+
+        [CompositeTest]
+        [InlineData("representation")]
+        [InlineData("slots")]
+        public void InsertRoxygenS4(string name) {
+            const string type = "\"float\"";
+            var tb = new TextBufferMock(Invariant($"##\r\nsetClass('Name', {name}(a = 'character', b = \"float\"))"), RContentTypeDefinition.ContentType);
+            var eb = tb.ToEditorBuffer();
+
+            var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
+            RoxygenBlock.TryInsertBlock(eb, ast, 4).Should().BeTrue();
+            var actual = tb.CurrentSnapshot.GetText();
+            actual.Should().Be(
+                Invariant($@"#' Title
+#'
+#' @slot a character
+#' @slot b float
+#'
+#' @return
+#' @export
+#'
+#' @examples
+setClass('Name', {name}(a = 'character', b = {type}))"));
+        }
+
+    public void InsertRoxygenS4Empty() {
+        var tb = new TextBufferMock(Invariant($"##\r\nsetClass('Name', slots())"), RContentTypeDefinition.ContentType);
+        var eb = tb.ToEditorBuffer();
+
+        var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
+        RoxygenBlock.TryInsertBlock(eb, ast, 4).Should().BeTrue();
+        var actual = tb.CurrentSnapshot.GetText();
+        actual.Should().Be(
+            Invariant($@"#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+setClass('Name', slots()"));
     }
+
+    [CompositeTest]
+    [InlineData("setClass")]
+    [InlineData("setClass(")]
+    [InlineData("setClass('foo')")]
+    [InlineData("foo()")]
+    [InlineData("setClass('bar', 'baz')")]
+    public void InsertRoxygenS4Error(string content) {
+        var tb = new TextBufferMock("##\r\n" + content, RContentTypeDefinition.ContentType);
+        var eb = tb.ToEditorBuffer();
+
+        var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
+        RoxygenBlock.TryInsertBlock(eb, ast, 4).Should().BeFalse();
+    }
+}
 }

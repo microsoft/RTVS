@@ -187,7 +187,7 @@ namespace Microsoft.R.Editor.Comments {
                 if (na.DefaultValue != null) {
                     var value = na.Root.TextProvider.GetText(na.DefaultValue);
                     if (!string.IsNullOrEmpty(value)) {
-                        sb.Append(Invariant($" {value}"));
+                        sb.Append(Invariant($" {value.TrimQuotes()}"));
                     }
                 }
                 sb.Append(lineBreak);
