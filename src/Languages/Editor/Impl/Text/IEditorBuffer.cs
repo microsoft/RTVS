@@ -54,8 +54,8 @@ namespace Microsoft.Languages.Editor.Text {
         /// <typeparam name="T">Type of the document to locate</typeparam>
         T GetEditorDocument<T>() where T : class, IEditorDocument;
 
-        void Insert(int position, string text);
-        void Replace(ITextRange range, string text);
-        void Delete(ITextRange range);
+        bool Insert(int position, string text);
+        bool Replace(ITextRange range, string text);
+        bool Delete(ITextRange range);
     }
 }
