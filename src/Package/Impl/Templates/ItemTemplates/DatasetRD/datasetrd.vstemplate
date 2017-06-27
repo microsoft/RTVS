@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>dataset.rd</DefaultName>
-    <SortOrder>12</SortOrder>
+    <SortOrder>4</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">dataset.rd</ProjectItem>

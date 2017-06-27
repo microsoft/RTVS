@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName >markdown.rmd</DefaultName>
-    <SortOrder>20</SortOrder>
+    <SortOrder>1</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">markdown.rmd</ProjectItem>

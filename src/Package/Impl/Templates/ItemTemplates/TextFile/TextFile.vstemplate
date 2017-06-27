@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>TextFile.txt</DefaultName>
-    <SortOrder>33</SortOrder>
+    <SortOrder>39</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem>TextFile.txt</ProjectItem>

@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>XMLSchema.xsd</DefaultName>
-    <SortOrder>35</SortOrder>
+    <SortOrder>43</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem ReplaceParameters="true">XMLSchema.xsd</ProjectItem>

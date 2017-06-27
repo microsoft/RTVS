@@ -9,7 +9,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>StyleSheet.css</DefaultName>
-    <SortOrder>32</SortOrder>
+    <SortOrder>41</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem>StyleSheet.css</ProjectItem>

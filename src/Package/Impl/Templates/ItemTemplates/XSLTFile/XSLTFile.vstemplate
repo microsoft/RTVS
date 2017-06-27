@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>XSLTFile.xslt</DefaultName>
-    <SortOrder>36</SortOrder>
+    <SortOrder>44</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem>XSLTFile.xslt</ProjectItem>
