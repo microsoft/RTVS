@@ -93,6 +93,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             model.Settings.TargetType.Should().Be(PublishTargetType.Project);
             model.TargetHasName.Should().BeTrue();
 
+            await model.SelectTargetTypeAsync(3);
+            model.Settings.TargetType.Should().Be(PublishTargetType.File);
+            model.TargetHasName.Should().BeFalse();
+
             await model.SelectTargetTypeAsync(0);
             model.Settings.TargetType.Should().Be(PublishTargetType.Dacpac);
             model.TargetHasName.Should().BeFalse();

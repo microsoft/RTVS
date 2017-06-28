@@ -21,8 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
     public class SProcPublisherTest {
-        private const string sqlProjectName = "db.sqlproj";
-
         private readonly PackageTestFilesFixture _files;
         private readonly TestCoreShell _shell;
         private readonly IProjectSystemServices _pss;
@@ -31,7 +29,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public SProcPublisherTest(PackageTestFilesFixture files) {
             _files = files;
             _shell = TestCoreShell.CreateSubstitute();
+
+            _shell.ServiceManager.RemoveService<IFileSystem>();
             _shell.ServiceManager.AddService(new WindowsFileSystem());
+
             _pss = Substitute.For<IProjectSystemServices>();
             _dacServices = Substitute.For<IDacPackageServices>();
         }
