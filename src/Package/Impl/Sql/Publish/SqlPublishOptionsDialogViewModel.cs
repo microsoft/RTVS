@@ -54,7 +54,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public IReadOnlyList<string> TargetTypeNames => new string[] {
                 Resources.SqlPublishDialog_TargetTypeDacpac,
                 Resources.SqlPublishDialog_TargetTypeDatabase,
-                Resources.SqlPublishDialog_TargetTypeProject
+                Resources.SqlPublishDialog_TargetTypeProject,
+                Resources.SqlPublishDialog_TargetTypeFile
             };
 
         /// <summary>
@@ -75,8 +76,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             };
 
         public string TargetTooltip {
-            get { return _targetTooltip; }
-            set { SetProperty(ref _targetTooltip, value); }
+            get => _targetTooltip;
+            set => SetProperty(ref _targetTooltip, value);
         }
 
         /// <summary>
@@ -84,8 +85,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Controls enabled/disabled state of OK button.
         /// </summary>
         public bool CanPublish {
-            get { return _canPublish; }
-            set { SetProperty(ref _canPublish, value); }
+            get => _canPublish;
+            set => SetProperty(ref _canPublish, value);
         }
 
         /// <summary>
@@ -94,16 +95,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// has fixed name, same as name of the current project.
         /// </summary>
         public bool TargetHasName {
-            get { return _targetHasName; }
-            set { SetProperty(ref _targetHasName, value); }
+            get => _targetHasName;
+            set => SetProperty(ref _targetHasName, value);
         }
 
         /// <summary>
         /// Controls enabled/disabled state of the table name edit field.
         /// </summary>
         public bool GenerateTable {
-            get { return _generateTable; }
-            set { SetProperty(ref _generateTable, value); }
+            get => _generateTable;
+            set => SetProperty(ref _generateTable, value);
         }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Publishing targets
         /// </summary>
         public IReadOnlyList<string> Targets {
-            get { return _targets; }
+            get => _targets;
             set {
                 _targets.ReplaceWith(value);
                 _selectedTargetIndex = -1;
@@ -152,12 +153,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 TargetTooltip = string.Empty;
                 if (index >= 0) {
                     var name = Targets[index];
-                    if (Settings.TargetType == PublishTargetType.Database) {
-                        Settings.TargetDatabaseConnection = _targetConnections.FirstOrDefault(c => c.Name.EqualsOrdinal(name))?.ConnectionString;
-                        TargetTooltip = Settings.TargetDatabaseConnection;
-                    } else if (Settings.TargetType == PublishTargetType.Project) {
-                        Settings.TargetProject = Targets[index];
-                        TargetTooltip = Settings.TargetProject;
+                    switch (Settings.TargetType) {
+                        case PublishTargetType.Database:
+                            Settings.TargetDatabaseConnection = _targetConnections.FirstOrDefault(c => c.Name.EqualsOrdinal(name))?.ConnectionString;
+                            TargetTooltip = Settings.TargetDatabaseConnection;
+                            break;
+
+                        case PublishTargetType.Project:
+                            Settings.TargetProject = Targets[index];
+                            TargetTooltip = Settings.TargetProject;
+                            break;
+
+                        case PublishTargetType.File:
+                            Settings.TargetProject = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject().Name;
+                            TargetTooltip = Settings.TargetProject;
+                            break;
                     }
                 }
                 _selectedTargetIndex = index;
@@ -187,13 +197,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         public void UpdateState() {
-            TargetHasName = Settings.TargetType != PublishTargetType.Dacpac;
+            TargetHasName = Settings.TargetType == PublishTargetType.Database || Settings.TargetType == PublishTargetType.Project;
             GenerateTable = Settings.CodePlacement == RCodePlacement.Table;
             CanPublish = !GenerateTable || !string.IsNullOrEmpty(Settings.TableName);
-            if (Settings.TargetType != PublishTargetType.Dacpac) {
+            if (Settings.TargetType == PublishTargetType.Database || Settings.TargetType == PublishTargetType.Project) {
                 CanPublish &= Targets?.Count > 0;
             }
-            if(Settings.TargetType == PublishTargetType.Database) {
+            if (Settings.TargetType == PublishTargetType.Database) {
                 CanPublish &= !_noDbConnections;
             }
             if (Settings.TargetType == PublishTargetType.Project) {
@@ -249,7 +259,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private IReadOnlyList<string> GetDatabaseProjects() {
             _noDbProjects = false;
-            var projectMap = new Dictionary<string, EnvDTE.Project>();
             var solution = _pss.GetSolution();
             var projects = new List<string>();
             foreach (EnvDTE.Project project in solution.Projects) {
@@ -288,10 +297,15 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private static PublishTargetType TargetTypeFromName(string name) {
             if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeDacpac)) {
                 return PublishTargetType.Dacpac;
-            } else if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeDatabase)) {
+            }
+            if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeDatabase)) {
                 return PublishTargetType.Database;
-            } else if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeProject)) {
+            }
+            if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeProject)) {
                 return PublishTargetType.Project;
+            }
+            if (name.EqualsOrdinal(Resources.SqlPublishDialog_TargetTypeFile)) {
+                return PublishTargetType.File;
             }
             Debug.Fail("Unknown target type name");
             return PublishTargetType.Dacpac;
