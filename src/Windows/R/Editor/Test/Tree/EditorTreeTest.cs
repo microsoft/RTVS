@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Test.Tree {
 
             if (oldLength == 0 && newText.Length > 0) {
                 textBuffer.Insert(start, newText);
-            } else if (oldLength > 0 && newText.Length > 0) {
+            } else if (oldLength > 0 && !string.IsNullOrEmpty(newText)) {
                 textBuffer.Replace(new TextRange(start, oldLength), newText);
             } else {
                 textBuffer.Delete(new TextRange(start, oldLength));

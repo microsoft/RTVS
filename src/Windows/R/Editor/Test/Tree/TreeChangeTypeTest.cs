@@ -11,6 +11,7 @@ using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.PlatformUI;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Tree {
@@ -27,8 +28,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData(0, 0, 1, " ", TextChangeType.Trivial)]
         [InlineData(1, 1, 0, "", TextChangeType.Trivial)]
         [InlineData(1, 0, 1, "\n", TextChangeType.Trivial)]
-        public void TextChange_EditWhitespaceTest(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
-            string expression = "x <- a + b";
+        public void EditWhitespace(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
+            const string expression = "x <- a + b";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, start, oldLength, newLength, newText)) {
                 tree.PendingChanges.TextChangeType.Should().Be(expected);
@@ -39,8 +40,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData(1, 0, "", TextChangeType.Trivial)]
         [InlineData(1, 2, "a", TextChangeType.Trivial)]
         [InlineData(1, 2, "\"", TextChangeType.Structure)]
-        public void TextChange_EditString(int oldLength, int newLength, string newText, TextChangeType expected) {
-            string expression = "x <- a + \"boo\"";
+        public void EditString(int oldLength, int newLength, string newText, TextChangeType expected) {
+            const string expression = "x <- a + \"boo\"";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, 10, oldLength, newLength, newText)) {
                 tree.PendingChanges.TextChangeType.Should().Be(expected);
@@ -48,8 +49,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         }
 
         [Test]
-        public void TextChange_EditString04() {
-            string expression = "\"boo\"";
+        public void EditString04() {
+            const string expression = "\"boo\"";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, 1, 0, 1, "a")) {
                 tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
@@ -74,8 +75,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData(1, 0, "", TextChangeType.Trivial)]
         [InlineData(1, 1, "a", TextChangeType.Trivial)]
         [InlineData(1, 2, "\n", TextChangeType.Structure)]
-        public void TextChange_EditComment01(int oldLength, int newLength, string newText, TextChangeType expected) {
-            string expression = "x <- a + b # comment";
+        public void EditComment01(int oldLength, int newLength, string newText, TextChangeType expected) {
+            const string expression = "x <- a + b # comment";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, 12, oldLength, newLength, newText)) {
                 tree.PendingChanges.TextChangeType.Should().Be(expected);
@@ -83,8 +84,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         }
 
         [Test]
-        public void TextChange_EditComment04() {
-            string expression = "# comment\n a <- b + c";
+        public void EditComment04() {
+            const string expression = "# comment\n a <- b + c";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, 9, 1, 0, string.Empty)) {
                 tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
@@ -92,8 +93,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         }
 
         [Test]
-        public void TextChange_EditComment05() {
-            string expression = "#";
+        public void EditComment05() {
+            const string expression = "#";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, 1, 0, 1, "a")) {
                 tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
@@ -106,8 +107,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         }
 
         [Test]
-        public void TextChange_CurlyBrace() {
-            string expression = "if(true) {x <- 1} else ";
+        public void CurlyBrace() {
+            const string expression = "if(true) {x <- 1} else ";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, expression.Length, 0, 1, "{")) {
                 tree.IsDirty.Should().BeTrue();
@@ -117,11 +118,23 @@ namespace Microsoft.R.Editor.Test.Tree {
 
         [CompositeTest]
         [InlineData(6, 0, 1, " ", TextChangeType.Structure)]
-        public void TextChange_AddWhitespace(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
-            string expression = "x <- aa";
+        public void AddWhitespace(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
+            const string expression = "x <- aa";
 
             using (var tree = EditorTreeTest.ApplyTextChange(_services, expression, start, oldLength, newLength, newText)) {
                 tree.PendingChanges.TextChangeType.Should().Be(expected);
+            }
+        }
+
+        [CompositeTest]
+        [InlineData("if(true) { } else { }", 12, 0, 1, "\n")]
+        [InlineData("if(true) { } else { }", 12, 0, 2, "\r\n")]
+        [InlineData("if(true) { }\nelse { }", 12, 1, 0, null)]
+        [InlineData("      if(true) { }\nelse { }", 18, 1, 0, null)]
+        public void ElsePosition(string content, int start, int oldLength, int newLength, string text) {
+            using (var tree = EditorTreeTest.ApplyTextChange(_services, content, start, oldLength, newLength, text)) {
+                tree.IsDirty.Should().BeTrue();
+                tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
             }
         }
     }
