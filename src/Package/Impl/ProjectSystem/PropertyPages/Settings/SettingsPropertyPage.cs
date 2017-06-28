@@ -15,27 +15,22 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public SettingsPropertyPage() {
             _control = new SettingsPageControl();
             _control.DirtyStateChanged += OnDirtyStateChanged;
-            this.Load += OnLoad;
+            Load += OnLoad;
         }
 
-        private void OnDirtyStateChanged(object sender, EventArgs e) {
-            IsDirty = _control.IsDirty;
-        }
+        private void OnDirtyStateChanged(object sender, EventArgs e) => IsDirty = _control.IsDirty;
 
         private void OnLoad(object sender, EventArgs e) {
-            this.Controls.Add(_control);
-            this.AutoScroll = true;
+            Controls.Add(_control);
+            AutoScroll = true;
         }
 
         protected override string PropertyPageName => PageName;
 
-        protected override Task OnDeactivate() {
-            return _control.SaveSelectedSettingsFileNameAsync();
-        }
+        protected override Task OnDeactivate() => _control.SaveSelectedSettingsFileNameAsync();
 
-        protected override async Task<int> OnApply() {
-            return await _control.SaveSettingsAsync() ? VSConstants.S_OK : VSConstants.E_FAIL;
-        }
+        protected override async Task<int> OnApply()
+            => await _control.SaveSettingsAsync() ? VSConstants.S_OK : VSConstants.E_FAIL;
 
         protected override async Task OnSetObjects(bool isClosing) {
             if(!isClosing) {

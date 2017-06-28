@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_coreShell, _settings);
 
         public string CurrentFile {
-            get { return _currentFile; }
+            get => _currentFile;
             set {
                 if (value != null && !value.EqualsIgnoreCase(_currentFile)) {
                     try {

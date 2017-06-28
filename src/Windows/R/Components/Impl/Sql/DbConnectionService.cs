@@ -40,7 +40,7 @@ namespace Microsoft.R.Components.Sql {
                         var result = DataConnectionDialog.Show(dlg);
                         switch (result) {
                             case DialogResult.Cancel:
-                                return null;
+                                return odbcConnectionString;
                             case DialogResult.OK:
                                 var sqlString = dlg.ConnectionString;
                                 if (IsSqlAADConnection(sqlString)) {

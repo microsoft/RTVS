@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
@@ -81,32 +82,19 @@ namespace Microsoft.R.Editor.Tree {
             // Check if line break is added to removed on a line with closing } of 'if'
             // so we can full-parse if 'else' position changes relatively to the if
             var snapshot = context.EditorTree.EditorBuffer.CurrentSnapshot;
-            var line = snapshot.GetLineFromPosition(context.PendingChanges.Start);
+            var text = snapshot.GetLineFromPosition(context.PendingChanges.Start).GetText();
 
             // We need to find if any position in the line belong to `if` scope
             // if there is 'else' the same line
-            var text = line.GetText();
-            if (FindKeyword(node.Root, "if", text, line.Start)) {
-                return true;
-            }
-            if (FindKeyword(node.Root, "else", text, line.Start)) {
-                return true;
-            }
-
-            var midPosition = (line.Start + position) / 2;
-            return node.Root.GetNodeOfTypeFromPosition<If>(midPosition) != null;
+            return FindKeyword("if", text) || FindKeyword("else", text);
         }
 
-        private static bool FindKeyword(AstRoot root, string keyword, string text, int textStart) {
-            var index = text.IndexOf(keyword, 0, StringComparison.Ordinal);
-            while (index >= 0) {
-                if (root.GetNodeOfTypeFromPosition<IKeyword>(textStart + index) != null) {
-                    return true;
-                }
-                index = text.IndexOf(keyword, index + keyword.Length, StringComparison.Ordinal);
-            }
-            return false;
-        }
+        private static bool FindKeyword(string keyword, string text)
+            => new RTokenizer()
+                .Tokenize(text)
+                .FirstOrDefault(t => 
+                        t.TokenType == RTokenType.Keyword && 
+                        string.Compare(text, t.Start, keyword, 0, keyword.Length, StringComparison.Ordinal) == 0) != null;
 
         private static bool IsChangeDestructiveForChildNodes(IAstNode node, ITextRange changedRange) {
             if (changedRange.End <= node.Start || changedRange.Start >= node.End) {
