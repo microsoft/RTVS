@@ -19,16 +19,15 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
     [Category.Md.RCode]
     public sealed class MarkdownCodeTest {
-        private readonly ICoreShell _coreShell;
         private readonly ITextBufferFactoryService _tbfs;
         private readonly IClassificationTypeRegistryService _crs;
         private readonly IContentTypeRegistryService _ctrs;
 
         public MarkdownCodeTest(IServiceContainer serviceProvider) {
-            _coreShell = serviceProvider.GetService<ICoreShell>();
-            _crs = _coreShell.GetService<IClassificationTypeRegistryService>();
-            _ctrs = _coreShell.GetService<IContentTypeRegistryService>();
-            _tbfs = _coreShell.GetService<ITextBufferFactoryService>();
+            var coreShell = serviceProvider.GetService<ICoreShell>();
+            _crs = coreShell.GetService<IClassificationTypeRegistryService>();
+            _ctrs = coreShell.GetService<IContentTypeRegistryService>();
+            _tbfs = coreShell.GetService<ITextBufferFactoryService>();
         }
 
         [Test]
@@ -45,7 +44,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             Typing.Delete(textBuffer, 4, 1);
             actual = GetSpans(cls, textBuffer);
-            actual.TrimEnd().Should().Be("[0:13] Markdown Monospace");
+            actual.TrimEnd().Should().Be("[0:13] R Markdown Monospace");
 
             Typing.Type(textBuffer, 4, "R");
             actual = GetSpans(cls, textBuffer);
@@ -59,7 +58,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             Typing.Delete(textBuffer, 0, 1);
             var actual = GetSpans(cls, textBuffer);
-            actual.TrimEnd().Should().Be("[0:2] Markdown Monospace");
+            actual.TrimEnd().Should().Be("[0:2] R Markdown Monospace");
 
             Typing.Type(textBuffer, 1, "`");
             actual = GetSpans(cls, textBuffer);
