@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -88,11 +89,14 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void UserControl_Drop(object sender, DragEventArgs e) {
-            var source = PlotClipboardData.Parse((string)e.Data.GetData(PlotClipboardData.Format));
-            if (source != null) {
-                bool isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
+            var data = e.Data.GetData(PlotClipboardData.Format) as string[];
+            var sources = (data?.Select(PlotClipboardData.Parse) ?? Enumerable.Empty<PlotClipboardData>()).ToArray();
+            if (sources.Length > 0) {
+                var isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
                 try {
-                    Model?.CopyPlotFromAsync(source.DeviceId, source.PlotId, isMove).DoNotWait();
+                    foreach (var source in sources) {
+                        Model?.CopyPlotFromAsync(source.DeviceId, source.PlotId, isMove).DoNotWait();
+                    }
                 } catch (RPlotManagerException ex) {
                     MessageBox.Show(ex.Message, string.Empty, MessageBoxButton.OK, MessageBoxImage.Error);
                 } catch (OperationCanceledException) {
@@ -107,7 +111,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
                 if (source != null) {
                     var targetDeviceId = Model?.Device?.DeviceId;
                     if (targetDeviceId != source.DeviceId) {
-                        bool isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
+                        var isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
                         e.Effects = isMove ? DragDropEffects.Move : DragDropEffects.Copy;
                         e.Handled = true;
                         return;
@@ -133,13 +137,8 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             }
         }
 
-        private void Image_MouseLeave(object sender, MouseEventArgs e) {
-            _dragSurface.MouseLeave(e);
-        }
-
-        private void Image_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-            _dragSurface.MouseDown(e);
-        }
+        private void Image_MouseLeave(object sender, MouseEventArgs e) => _dragSurface.MouseLeave(e);
+        private void Image_PreviewMouseDown(object sender, MouseButtonEventArgs e) => _dragSurface.MouseDown(e);
 
         private void UserControl_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var point = e.GetPosition(this);

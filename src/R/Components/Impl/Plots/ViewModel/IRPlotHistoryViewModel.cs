@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Microsoft.R.Components.Plots.ViewModel {
@@ -28,7 +29,7 @@ namespace Microsoft.R.Components.Plots.ViewModel {
         /// The currently selected plot, ie. commands such as activate,
         /// remove apply to this plot.
         /// </summary>
-        IRPlotHistoryEntryViewModel SelectedPlot { get; set; }
+        IEnumerable<IRPlotHistoryEntryViewModel> SelectedPlots { get; }
 
         /// <summary>
         /// Decrease size of thumbnails by 48 wpf units.

@@ -11,17 +11,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             base(interactiveWorkflow, visualComponent) {
         }
 
-        public CommandStatus Status {
-            get {
-                if (VisualComponent.AutoHide) {
-                    return CommandStatus.SupportedAndEnabled | CommandStatus.Latched;
-                }
+        public override CommandStatus Status
+            => VisualComponent.AutoHide
+                    ? CommandStatus.SupportedAndEnabled | CommandStatus.Latched
+                    : CommandStatus.SupportedAndEnabled;
 
-                return CommandStatus.SupportedAndEnabled;
-            }
-        }
-
-        public Task InvokeAsync() {
+        public override Task InvokeAsync() {
             VisualComponent.AutoHide = !VisualComponent.AutoHide;
             return Task.CompletedTask;
         }

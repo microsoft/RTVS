@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,10 +19,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
         public CommandStatus Status {
             get {
-                if (!IsInLocatorMode && Clipboard.GetDataObject().GetDataPresent(PlotClipboardData.Format)) {
+                var dataObject = Clipboard.GetDataObject();
+                if (dataObject != null && !IsInLocatorMode && dataObject.GetDataPresent(PlotClipboardData.Format)) {
                     return CommandStatus.SupportedAndEnabled;
                 }
-
                 return CommandStatus.Supported;
             }
         }
@@ -29,19 +30,23 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public async Task InvokeAsync() {
             try {
                 if (Clipboard.ContainsData(PlotClipboardData.Format)) {
-                    var source = PlotClipboardData.Parse((string)Clipboard.GetData(PlotClipboardData.Format));
-                    if (source != null) {
+                    var serialized = Clipboard.GetData(PlotClipboardData.Format) as string[];
+                    var sources = (serialized?.Select(PlotClipboardData.Parse) ?? Enumerable.Empty<PlotClipboardData>()).ToArray();
+                    if (sources.Length > 0) {
                         try {
                             if (VisualComponent.Device == null) {
                                 await InteractiveWorkflow.Plots.NewDeviceAsync(VisualComponent.InstanceId);
                             }
 
                             Debug.Assert(VisualComponent.Device != null);
-                            await InteractiveWorkflow.Plots.CopyOrMovePlotFromAsync(source.DeviceId, source.PlotId, VisualComponent.Device, source.Cut);
+                            foreach (var source in sources) {
+                                await InteractiveWorkflow.Plots.CopyOrMovePlotFromAsync(source.DeviceId, source.PlotId,
+                                    VisualComponent.Device, source.Cut);
+                            }
 
                             // If it's a move, clear the clipboard as we don't want
                             // the user to try to paste it again
-                            if (source.Cut) {
+                            if (sources[0].Cut) {
                                 Clipboard.Clear();
                             }
                         } catch (RPlotManagerException ex) {

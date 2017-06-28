@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -14,7 +15,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View.DesignTime {
 
         public Func<IRPlotHistoryEntryViewModel, Task> PlotSelector { get; set; }
 
-        public IRPlotHistoryEntryViewModel SelectedPlot { get; set; }
+        public IEnumerable<IRPlotHistoryEntryViewModel> SelectedPlots { get; set; }
 
         public bool AutoHide { get; set; }
         public int ThumbnailSize { get; set; } = 96;
