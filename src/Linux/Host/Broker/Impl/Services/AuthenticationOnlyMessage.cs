@@ -6,5 +6,6 @@ namespace Microsoft.R.Host.Broker.Services {
         public string Name { get; } = "AuthOnly";
         public string Username { get; set; }
         public string Password { get; set; }
+        public string AllowedGroup { get; set; }
     }
 }

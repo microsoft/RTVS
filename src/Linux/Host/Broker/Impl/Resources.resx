@@ -129,6 +129,9 @@
   <data name="Error_AuthNoInput" xml:space="preserve">
     <value>No input to authenticate.</value>
   </data>
+  <data name="Error_AuthNotAllowed" xml:space="preserve">
+    <value>User does not belong to the allowed group.</value>
+  </data>
   <data name="Error_FailedToRun" xml:space="preserve">
     <value>Command "{0}" failed to run with error: {1}</value>
   </data>
