@@ -12,49 +12,26 @@ using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Extensions;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Variables;
 using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Comments {
+namespace Microsoft.R.Editor.Roxygen {
     public static class RoxygenBlock {
+        private static readonly string[] _s4FunctionNames = { "setClass", "setMethod", "setGeneric" };
+
         /// <summary>
         /// Attempts to insert Roxygen documentation block based
         /// on the user function signature.
         /// </summary>
         public static bool TryInsertBlock(IEditorBuffer editorBuffer, AstRoot ast, int position) {
             // First determine if position is right before the function declaration
-            var snapshot = editorBuffer.CurrentSnapshot;
-            IEditorLine line = null;
-            var lineNumber = snapshot.GetLineNumberFromPosition(position);
-            for (var i = lineNumber; i < snapshot.LineCount; i++) {
-                line = snapshot.GetLineFromLineNumber(i);
-                if (line.Length > 0) {
-                    break;
-                }
-            }
-
-            if (line == null || line.Length == 0) {
-                return false;
-            }
-
-            var offset = line.Length - line.GetText().TrimStart().Length + 1;
-            var linePosition = line.Start + offset;
-            if (linePosition >= snapshot.Length) {
+            var linePosition = DeterminePosition(editorBuffer, position);
+            if (linePosition < 0) {
                 return false;
             }
 
 
-            var fd = ast.FindFunctionDefinition(linePosition, out var v);
-            FunctionCall fc = null;
-
-            if (fd == null) {
-                fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(linePosition);
-                var name = fc.GetFunctionName();
-                if (string.IsNullOrEmpty(name) || !name.EqualsOrdinal("setClass")) {
-                    fc = null;
-                }
-            }
-
-            if (fd == null && fc == null) {
+            if (!DetermineFunction(ast, linePosition, out IFunctionDefinition fd, out IVariable v, out FunctionCall fc)) {
                 return false;
             }
 
@@ -67,12 +44,12 @@ namespace Microsoft.R.Editor.Comments {
                 return false;
             }
 
-            var insertionSpan = GetRoxygenBlockPosition(snapshot, definitionStart);
+            var insertionSpan = GetRoxygenBlockPosition(editorBuffer.CurrentSnapshot, definitionStart);
             if (insertionSpan == null) {
                 return false;
             }
 
-            var lineBreak = snapshot.GetLineFromPosition(position).LineBreak;
+            var lineBreak = editorBuffer.CurrentSnapshot.GetLineFromPosition(position).LineBreak;
             if (string.IsNullOrEmpty(lineBreak)) {
                 lineBreak = "\n";
             }
@@ -91,6 +68,41 @@ namespace Microsoft.R.Editor.Comments {
                 editorBuffer.Replace(insertionSpan, block);
             }
             return true;
+        }
+
+        private static int DeterminePosition(IEditorBuffer editorBuffer, int caretPosition) {
+            var snapshot = editorBuffer.CurrentSnapshot;
+            IEditorLine line = null;
+            var lineNumber = snapshot.GetLineNumberFromPosition(caretPosition);
+            for (var i = lineNumber; i < snapshot.LineCount; i++) {
+                line = snapshot.GetLineFromLineNumber(i);
+                if (line.Length > 0) {
+                    break;
+                }
+            }
+
+            if (line == null || line.Length == 0) {
+                return -1;
+            }
+
+            var offset = line.Length - line.GetText().TrimStart().Length + 1;
+            var linePosition = line.Start + offset;
+
+            return linePosition < snapshot.Length ? linePosition : -1;
+        }
+
+        private static bool DetermineFunction(AstRoot ast, int position, out IFunctionDefinition fd, out IVariable v, out FunctionCall fc) {
+            fd = ast.FindFunctionDefinition(position, out v);
+            fc = null;
+
+            if (fd == null) {
+                fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+                var name = fc.GetFunctionName();
+                if (string.IsNullOrEmpty(name) || !_s4FunctionNames.Contains(name)) {
+                    fc = null;
+                }
+            }
+            return fd != null || fc != null;
         }
 
         private static ITextRange GetRoxygenBlockPosition(IEditorBufferSnapshot snapshot, int definitionStart) {
@@ -147,7 +159,7 @@ namespace Microsoft.R.Editor.Comments {
         /// <summary>
         /// Generates Roxygen block from S3 setClass() call
         /// </summary>
-        private static string GenerateRoxygenBlock(FunctionCall fc, string lineBreak) {
+        private static string GenerateRoxygenBlock(IFunction fc, string lineBreak) {
             //setClass("Test",
             //    representation(
             //        a = "character",
@@ -168,29 +180,23 @@ namespace Microsoft.R.Editor.Comments {
                 return null;
             }).ExcludeDefault().FirstOrDefault();
 
-            if (slotsCall == null) {
-                return string.Empty;
-            }
 
             var sb = new StringBuilder();
             sb.Append(Invariant($"#' Title{lineBreak}"));
             sb.Append(Invariant($"#'{lineBreak}"));
 
             var length = sb.Length;
-            foreach (var a in slotsCall.Arguments) {
-                var na = a as NamedArgument;
-                if (na == null) {
-                    continue;
-                }
-
-                sb.Append(Invariant($"#' @slot {na.Name}"));
-                if (na.DefaultValue != null) {
-                    var value = na.Root.TextProvider.GetText(na.DefaultValue);
-                    if (!string.IsNullOrEmpty(value)) {
-                        sb.Append(Invariant($" {value.TrimQuotes()}"));
+            if (slotsCall != null) {
+                foreach (var na in slotsCall.Arguments.Select(a => a as NamedArgument).ExcludeDefault()) {
+                    sb.Append(Invariant($"#' @slot {na.Name}"));
+                    if (na.DefaultValue != null) {
+                        var value = na.Root.TextProvider.GetText(na.DefaultValue);
+                        if (!string.IsNullOrEmpty(value)) {
+                            sb.Append(Invariant($" {value.TrimQuotes()}"));
+                        }
                     }
+                    sb.Append(lineBreak);
                 }
-                sb.Append(lineBreak);
             }
 
             if (sb.Length > length) {

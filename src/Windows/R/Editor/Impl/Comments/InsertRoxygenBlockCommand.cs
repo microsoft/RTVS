@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Roxygen;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
