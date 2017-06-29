@@ -23,7 +23,7 @@ namespace Microsoft.R.Interpreters.Linux.Test {
             installs.Should().ContainSingle(i => i.Name.StartsWithOrdinal("Microsoft")).Which.Version.Should().Be(new Version(3, 3, 3));
 
             // test CRAN R
-            installs.Should().ContainSingle(i => i.Name.StartsWithOrdinal("R")).Which.Version.Should().Be(new Version(3, 2, 3, 4));
+            installs.Should().ContainSingle(i => i.Name.StartsWithOrdinal("CRAN R")).Which.Version.Should().Be(new Version(3, 2, 3, 4));
         }
 
         [Fact]
