@@ -9,7 +9,7 @@
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
     <!-- 0.1.YMMDD.HHMM -->
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
@@ -24,12 +24,12 @@
     <Revision>$(Time)</Revision>
   </PropertyGroup>
 
-  <!--<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <MajorVersion>1</MajorVersion>
     <MinorVersion>0</MinorVersion>
     <Build>0</Build>
     <Revision>0</Revision>
-  </PropertyGroup>-->
+  </PropertyGroup>
 
   <PropertyGroup>
     <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
