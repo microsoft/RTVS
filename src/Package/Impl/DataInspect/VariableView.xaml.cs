@@ -234,8 +234,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var focus = Keyboard.FocusedElement as FrameworkElement;
             if (focus != null) {
                 var pt = focus.PointToScreen(new Point(1, 1));
-                _services.ShowContextMenu(
-                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
+                _services.UI().ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
             }
         }
 
