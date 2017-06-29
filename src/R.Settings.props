@@ -45,6 +45,10 @@
     <AssemblyOriginatorKeyFile>$(SourceDirectory)FinalPublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(SignType)' != 'real' AND '$(SignType)' != 'test' ">
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>

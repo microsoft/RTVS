@@ -20,13 +20,13 @@ namespace Microsoft.R.Components.Test.History {
     [ExcludeFromCodeCoverage]
     public class RHistoryViewModelTest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
-        private readonly IRHistory _history;
+        private readonly IRHistoryVisual _history;
         private readonly IRHistoryWindowVisualComponent _historyVisualComponent;
         private IDisposable _containerDisposable;
 
         public RHistoryViewModelTest(IServiceContainer services, ContainerHostMethodFixture containerHost) {
             _containerHost = containerHost;
-            _history = services.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate().History;
+            _history = (IRHistoryVisual)services.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate().History;
 
             var containerFactory = services.GetService<IRHistoryVisualComponentContainerFactory>();
             _historyVisualComponent = UIThreadHelper.Instance.Invoke(() => _history.GetOrCreateVisualComponent(containerFactory));

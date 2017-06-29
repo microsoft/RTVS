@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Microsoft.Common.Core;
@@ -17,7 +18,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.R.Components.History.Implementation {
-    internal sealed partial class RHistory : IRHistory {
+    internal sealed partial class RHistory : IRHistoryVisual {
 
         private const string BlockSeparator = "\r\n";
         private const string LineSeparator = "\u00a0";
@@ -299,14 +300,45 @@ namespace Microsoft.R.Components.History.Implementation {
             return string.Join(BlockSeparator, _textViewSelection.SelectedSpans.Select(s => s.GetText()));
         }
 
-        public SnapshotSpan SelectHistoryEntry(int lineNumber) {
+        public IReadOnlyList<string> Search(string entryStart) {
+            var texts = new List<string>();
+            if (!HasEntries) {
+                return texts;
+            }
+
+            entryStart = entryStart.Trim();
+
+            var snapshot = _historyTextBuffer.CurrentSnapshot;
+            var noSearchFilter = string.IsNullOrEmpty(entryStart);
+
+            foreach (var entry in _entries.GetEntries()) {
+                var text = entry.Span.GetText(snapshot).Trim();
+                if (noSearchFilter) {
+                    texts.Add(text);
+                    continue;
+                }
+
+                if (text.StartsWithIgnoreCase(entryStart)) {
+                    texts.Add(text);
+                }
+
+                foreach (var index in text.AllIndexesOfIgnoreCase(entryStart, entryStart.Length)) {
+                    if (text.IsStartOfNewLine(index, ignoreWhitespaces: true)) {
+                        var lineEnd = text.IndexOfAny(CharExtensions.LineBreakChars, index);
+                        texts.Add(text.Substring(index, lineEnd - index));
+                    }
+                }
+            }
+
+            return texts;
+        }
+
+        public void SelectHistoryEntry(int lineNumber) {
             var entry = GetHistoryEntryFromLineNumber(lineNumber);
             if (!entry.IsSelected) {
                 entry.IsSelected = true;
                 OnSelectionChanged();
             }
-
-            return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
         }
 
         public void SelectHistoryEntriesRangeTo(int lineNumber) {
@@ -315,21 +347,18 @@ namespace Microsoft.R.Components.History.Implementation {
             OnSelectionChanged();
         }
 
-        public SnapshotSpan DeselectHistoryEntry(int lineNumber) {
+        public void DeselectHistoryEntry(int lineNumber) {
             var entry = GetHistoryEntryFromLineNumber(lineNumber);
             if (entry.IsSelected) {
                 entry.IsSelected = false;
                 OnSelectionChanged();
             }
-
-            return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
         }
 
-        public SnapshotSpan ToggleHistoryEntrySelection(int lineNumber) {
+        public void ToggleHistoryEntrySelection(int lineNumber) {
             var entry = GetHistoryEntryFromLineNumber(lineNumber);
             entry.IsSelected = !entry.IsSelected;
             OnSelectionChanged();
-            return entry.Span.GetSpan(_historyTextBuffer.CurrentSnapshot);
         }
 
         public void SelectNextHistoryEntry() => Select(_nextEntrySelector);
