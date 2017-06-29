@@ -9,7 +9,7 @@
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  <PropertyGroup>
     <!-- 0.1.YMMDD.HHMM -->
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
@@ -24,12 +24,12 @@
     <Revision>$(Time)</Revision>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' != 'Release'">
+  <!--<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <MajorVersion>1</MajorVersion>
     <MinorVersion>0</MinorVersion>
     <Build>0</Build>
     <Revision>0</Revision>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <PropertyGroup>
     <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>
@@ -37,7 +37,7 @@
     <BuildVersion>$(MajorVersion).$(MinorVersion).$(Build).$(Revision)</BuildVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition="$(GenerateAssemblyVersionInfo)">
+  <ItemGroup>
     <AssemblyVersionAttribute Include="System.Reflection.AssemblyVersionAttribute">
       <_Parameter1>$(AssemblyVersion)</_Parameter1>
     </AssemblyVersionAttribute>
@@ -57,13 +57,15 @@
   <Target Name="GenerateAssemblyInfoFile"
           Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND 
                      '$(MSBuildProjectExtension)'!='.wixproj' AND 
-                     '$(GenerateAssemblyVersionInfo)' == true"
+                     '$(GenerateAssemblyVersionInfo)' == 'true' AND
+                     '$(DesignTimeBuild)' != 'true'" 
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
+      <Output TaskParameter="OutputFile" ItemName="Compile" />
     </WriteCodeFragment>
   </Target>
 
