@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>Settings.R</DefaultName>
-    <SortOrder>0</SortOrder>
+    <SortOrder>6</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">Settings.R</ProjectItem>

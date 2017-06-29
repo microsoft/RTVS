@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>SqlSProc</DefaultName>
-    <SortOrder>0</SortOrder>
+    <SortOrder>8</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem TargetFileName="$fileinputname$.R"

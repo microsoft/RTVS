@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         /// </summary>
         [Export(typeof(IConfigurationSettingUIEditorProvider))]
         [Name(ConnectionStringEditor.ConnectionStringEditorName)]
-        class EditorProvider : IConfigurationSettingUIEditorProvider {
+        private class EditorProvider : IConfigurationSettingUIEditorProvider {
             public Type EditorType => typeof(ConnectionStringEditor);
         }
     }

@@ -55,12 +55,12 @@ namespace Microsoft.Languages.Editor.Text {
 
             // May be top-level projection buffer such as REPL or markdown
             var pb = textBuffer as IProjectionBuffer;
-            document = pb?.SourceBuffers?.Select((tb) => tb.GetService<T>())?.FirstOrDefault(x => x != null);
+            document = pb?.SourceBuffers?.Select(tb => tb.GetService<T>()).FirstOrDefault(x => x != null);
             if (document == null) {
                 var viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
                 if (viewData?.LastActiveView != null) {
                     var controller = ViewController.FromTextView(viewData.LastActiveView);
-                    if (controller != null && controller.TextBuffer != null) {
+                    if (controller?.TextBuffer != null) {
                         document = controller.TextBuffer.GetService<T>();
                     }
                 }

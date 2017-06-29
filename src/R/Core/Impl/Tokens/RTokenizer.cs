@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
@@ -304,15 +305,8 @@ namespace Microsoft.R.Core.Tokens {
             if (s[0] == '`') {
                 AddToken(RTokenType.Identifier, RTokenSubType.None, start, s.Length);
             } else if (Logicals.IsLogical(s)) {
-                // Tell between F and F() 
-                var logical = true;
-                if (s.Length == 1) {
-                    _cs.SkipWhitespace();
-                    if (_cs.CurrentChar == '(') {
-                        logical = false;
-                    }
-                }
-                AddToken(logical ? RTokenType.Logical : RTokenType.Identifier, start, s.Length);
+                // Tell between F and F() and allow T = x or F <- 0.
+                AddToken(VerifyLogical(s) ? RTokenType.Logical : RTokenType.Identifier, start, s.Length);
             } else if (s == "NULL") {
                 AddToken(RTokenType.Null, RTokenSubType.BuiltinConstant, start, s.Length);
             } else if (s == "NA" || s == "NA_character_" || s == "NA_complex_" || s == "NA_integer_" || s == "NA_real_") {
@@ -330,6 +324,36 @@ namespace Microsoft.R.Core.Tokens {
             } else {
                 AddToken(RTokenType.Identifier, start, s.Length);
             }
+        }
+
+        /// <summary>
+        /// Tries to determine if T/F are actually logical values.
+        /// </summary>
+        /// <remarks>This is not 100% reliable during tokenization since T or F may be 
+        /// part of expression such as T &lt;- 0 and then, 100 lines later, `x = T + 2`. 
+        /// However, in the latter case we can leave T/F as logical and let expression
+        /// parser figure out the context.</remarks>
+        private bool VerifyLogical(string s) {
+            if (s.Length == 1) {
+                if (_tokens.Count > 0) {
+                    var prevToken = _tokens[_tokens.Count - 1];
+                    if (prevToken.TokenType == RTokenType.Operator &&
+                        _cs.GetSubstringAt(prevToken.Start, prevToken.Length).EqualsOrdinal("->")) {
+                        // 1 -> T
+                        return false;
+                    }
+                }
+                _cs.SkipWhitespace();
+                switch (_cs.CurrentChar) {
+                    case '(': // F(
+                    case '=': // T = 2
+                        return false;
+                    case '<': // T <- 1
+                        return _cs.NextChar != '-';
+                }
+
+            }
+            return true;
         }
 
         internal string GetIdentifier() {

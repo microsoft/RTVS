@@ -65,9 +65,23 @@ namespace Microsoft.Languages.Editor.Text {
         /// <typeparam name="T">Type of the document to locate</typeparam>
         public T GetEditorDocument<T>() where T : class, IEditorDocument => _textBuffer.GetEditorDocument<T>();
 
-        public void Insert(int position, string text) => _textBuffer.Insert(position, text);
-        public void Replace(ITextRange range, string text) => _textBuffer.Replace(range.ToSpan(), text);
-        public void Delete(ITextRange range) => _textBuffer.Delete(range.ToSpan());
+        public bool Insert(int position, string text) {
+            var snapshot = _textBuffer.CurrentSnapshot;
+            var newSnapshot = _textBuffer.Insert(position, text);
+            return newSnapshot.Version.VersionNumber > snapshot.Version.VersionNumber;
+        }
+
+        public bool Replace(ITextRange range, string text) {
+            var snapshot = _textBuffer.CurrentSnapshot;
+            var newSnapshot = _textBuffer.Replace(range.ToSpan(), text);
+            return newSnapshot.Version.VersionNumber > snapshot.Version.VersionNumber;
+        }
+
+        public bool Delete(ITextRange range) {
+            var snapshot = _textBuffer.CurrentSnapshot;
+            var newSnapshot = _textBuffer.Delete(range.ToSpan());
+            return newSnapshot.Version.VersionNumber > snapshot.Version.VersionNumber;
+        }
 
         public event EventHandler<TextChangeEventArgs> ChangedHighPriority;
         public event EventHandler<TextChangeEventArgs> Changed;

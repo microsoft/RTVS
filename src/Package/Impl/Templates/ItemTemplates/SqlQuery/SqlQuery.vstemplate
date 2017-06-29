@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>SqlQuery.sql</DefaultName>
-    <SortOrder>36</SortOrder>
+    <SortOrder>7</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem>SqlQuery.sql</ProjectItem>

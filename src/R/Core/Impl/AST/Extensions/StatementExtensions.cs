@@ -10,28 +10,23 @@ namespace Microsoft.R.Core.AST {
         /// and if so, returns the function definition and the variable
         /// it is assigned to.
         /// </summary>
-        public static IFunctionDefinition GetVariableOrFunctionDefinition(this IExpressionStatement es, out Variable v) {
+        public static IFunctionDefinition GetVariableOrFunctionDefinition(this IExpressionStatement es, out IVariable v) {
             v = null;
-            if (es == null || es.Expression == null) {
-                return null;
-            }
 
             // Tree:
             //       <-
             //    x      function(a)
             //
             //
-            var c = es.Expression.Children;
-            if (c.Count == 1) {
-                var op = c[0] as IOperator;
-                if (op != null) {
+            var c = es?.Expression?.Children;
+            if (c?.Count == 1) {
+                if (c[0] is IOperator op) {
                     if (op.OperatorType == OperatorType.LeftAssign || op.OperatorType == OperatorType.Equals) {
                         v = op.LeftOperand as Variable;
                         if (v != null) {
                             return op.RightOperand as IFunctionDefinition;
                         }
-                    }
-                    else if (op.OperatorType == OperatorType.RightAssign) {
+                    } else if (op.OperatorType == OperatorType.RightAssign) {
                         v = op.RightOperand as Variable;
                     }
                 }

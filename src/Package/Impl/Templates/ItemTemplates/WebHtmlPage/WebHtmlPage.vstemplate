@@ -9,7 +9,7 @@
       <AppliesTo>RTools</AppliesTo>
       <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
       <DefaultName>HtmlPage.html</DefaultName>
-      <SortOrder>31</SortOrder>
+      <SortOrder>40</SortOrder>
     </TemplateData>
     <TemplateContent>
         <ProjectItem ReplaceParameters="true">HtmlPage.html</ProjectItem>

@@ -177,7 +177,7 @@
     <Compile Include="Completions\FileCompletionProviderTest.cs" />
     <Compile Include="Completions\RFunctionCompletionSourceTest.cs" />
     <Compile Include="Completions\RCompletionTestUtilities.cs" />
-    <Compile Include="Documentation\RoxygenTest.cs" />
+    <Compile Include="Comments\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\AssertionExtensions.cs" />
     <Compile Include="Extensions\RdAssertionExtensions.cs" />

@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public event EventHandler<EventArgs> DirtyStateChanged;
         public bool IsDirty {
-            get { return _isDirty; }
+            get => _isDirty;
             set {
                 if (_isDirty != value) {
                     _isDirty = value;
@@ -74,7 +74,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public async Task SaveSelectedSettingsFileNameAsync() {
-            await _viewModel?.SaveSelectedSettingsFileNameAsync();
+            if (_viewModel != null) {
+                await _viewModel.SaveSelectedSettingsFileNameAsync();
+            }
             IsDirty = false;
         }
 
@@ -129,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                 _selectedIndex = filesList.SelectedIndex = 0;
             } else {
                 filesList.Items.AddRange(files);
-                int index = Array.FindIndex(files, x => x.EqualsIgnoreCase(_viewModel.CurrentFile));
+                var index = Array.FindIndex(files, x => x.EqualsIgnoreCase(_viewModel.CurrentFile));
                 _selectedIndex = filesList.SelectedIndex = index >= 0 ? index : 0;
             }
         }
@@ -143,13 +145,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             UpdatePropertyGrid();
         }
 
-        private void UpdatePropertyGrid() {
-            propertyGrid.SelectedObject = _viewModel.TypeDescriptor;
-        }
+        private void UpdatePropertyGrid() 
+            => propertyGrid.SelectedObject = _viewModel.TypeDescriptor;
 
-        private void SetButtonEnableState() {
-            addSettingButton.Enabled = !string.IsNullOrWhiteSpace(variableName.Text) && !string.IsNullOrWhiteSpace(variableValue.Text);
-        }
+        private void SetButtonEnableState() 
+            => addSettingButton.Enabled = !string.IsNullOrWhiteSpace(variableName.Text) && !string.IsNullOrWhiteSpace(variableValue.Text);
 
         private void OnSelectedFileChanged(object sender, EventArgs e) {
             if (_selectedIndex != filesList.SelectedIndex) {
@@ -158,7 +158,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                     if (answer == MessageButtons.Cancel) {
                         filesList.SelectedIndex = _selectedIndex;
                         return;
-                    } else if (answer == MessageButtons.Yes) {
+                    }
+                    if (answer == MessageButtons.Yes) {
                         _viewModel.SaveAsync().DoNotWait();
                     }
                 }
@@ -195,7 +196,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void SetFont() {
-            this.Font = _shell?.GetUiFont() ?? this.Font;
+            Font = _shell?.GetUiFont() ?? Font;
         }
 
         #region Test support

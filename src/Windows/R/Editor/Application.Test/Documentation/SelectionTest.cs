@@ -24,12 +24,10 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         [Test]
         [Category.Interactive]
         public async Task InsertRoxygenBlock() {
-            string content =
-@"
+            const string content = @"
 x <- function(a,b,c) { }
 ";
-            string expected =
-@"#' Title
+            const string expected = @"#' Title
 #'
 #' @param a
 #' @param b

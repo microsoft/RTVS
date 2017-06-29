@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor {
             return si;
         }
 
-        public static IFunctionDefinition FindFunctionDefinition(this AstRoot ast, int position, out Variable v) {
+        public static IFunctionDefinition FindFunctionDefinition(this AstRoot ast, int position, out IVariable v) {
             v = null;
             var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(position);
             return exp?.GetVariableOrFunctionDefinition(out v);

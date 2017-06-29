@@ -10,7 +10,7 @@
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <DefaultName>XMLFile.xml</DefaultName>
-    <SortOrder>34</SortOrder>
+    <SortOrder>42</SortOrder>
   </TemplateData>
   <TemplateContent>
     <ProjectItem>XMLFile.xml</ProjectItem>

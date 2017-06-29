@@ -50,5 +50,19 @@
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Sql.dll" />
     <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.R.Package.dll" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" Path="ProjectTemplates\EmptyProject" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\DatasetRD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\EmptyRD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\EmptyRMD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\FunctionRD" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\RScript" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\RSettings" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\SqlQuery" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\SqlSProc" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\WebHtmlPage" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\WebStyleSheet" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XMLFile" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XMLSchema" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XSLTFile" />
   </Assets>
 </PackageManifest>

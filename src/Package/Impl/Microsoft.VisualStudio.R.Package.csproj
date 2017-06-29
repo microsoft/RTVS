@@ -1603,11 +1603,50 @@
       <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
-      <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
-        <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ProjectTemplates\EmptyProject\*.*">
+        <VSIXSubPath>ProjectTemplates\EmptyProject</VSIXSubPath>
       </VSIXSourceItem>
-      <VSIXSourceItem Include="$(OutputPath)\ProjectTemplates\**\*.*">
-        <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\DatasetRD\*.*">
+        <VSIXSubPath>ItemTemplates\DatasetRD</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\EmptyRD\*.*">
+        <VSIXSubPath>ItemTemplates\EmptyRD</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\EmptyRMD\*.*">
+        <VSIXSubPath>ItemTemplates\EmptyRMD</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\FunctionRD\*.*">
+        <VSIXSubPath>ItemTemplates\FunctionRD</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\RScript\*.*">
+        <VSIXSubPath>ItemTemplates\RScript</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\RSettings\*.*">
+        <VSIXSubPath>ItemTemplates\RSettings</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\SqlQuery\*.*">
+        <VSIXSubPath>ItemTemplates\SqlQuery</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\SqlSProc\*.*">
+        <VSIXSubPath>ItemTemplates\SqlSProc</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\TextFile\*.*">
+        <VSIXSubPath>ItemTemplates\SqlSProc</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\WebHtmlPage\*.*">
+        <VSIXSubPath>ItemTemplates\WebHtmlPage</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\WebStyleSheet\*.*">
+        <VSIXSubPath>ItemTemplates\WebStyleSheet</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\XMLFile\*.*">
+        <VSIXSubPath>ItemTemplates\XMLFile</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\XMLSchema\*.*">
+        <VSIXSubPath>ItemTemplates\XMLSchema</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Templates\ItemTemplates\XSLTFile\*.*">
+        <VSIXSubPath>ItemTemplates\XSLTFile</VSIXSubPath>
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\RTVS\*.*">
         <VSIXSubPath>RTVS</VSIXSubPath>
