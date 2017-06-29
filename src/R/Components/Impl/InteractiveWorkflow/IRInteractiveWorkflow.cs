@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
@@ -12,11 +13,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IRInteractiveWorkflow : IDisposable {
         ICoreShell Shell { get; }
         IConnectionManager Connections { get; }
-        IRSessionProvider RSessions { get; }
-        IRSession RSession { get; }
+        IConsole Console { get; }
+        IRHistory History { get; }
         IRPackageManager Packages { get; }
         IRPlotManager Plots { get; }
-        IConsole Console { get; }
+        IRSessionProvider RSessions { get; }
+        IRSession RSession { get; }
         IRInteractiveWorkflowOperations Operations { get; }
     }
 }

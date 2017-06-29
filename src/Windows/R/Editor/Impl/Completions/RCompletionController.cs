@@ -24,6 +24,8 @@ namespace Microsoft.R.Editor.Completions {
     /// on what was typed and the current editor context.
     /// </summary>
     public sealed class RCompletionController : CompletionController {
+        public const string IsRHistoryRequest = nameof(IsRHistoryRequest);
+
         private readonly IREditorSettings _settings;
         private ITextBuffer _textBuffer;
         private char _commitChar = '\0';

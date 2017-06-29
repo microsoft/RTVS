@@ -14,11 +14,13 @@ namespace Microsoft.R.Editor.Completions {
         public AstRoot AstRoot { get; }
         public bool InternalFunctions { get; set; }
         public bool AutoShownCompletion { get; }
+        public bool IsRHistoryRequest { get; }
 
-        public RIntellisenseContext(IEditorIntellisenseSession session, IEditorBuffer editorBuffer, AstRoot ast, int position, bool autoShown = true) : 
+        public RIntellisenseContext(IEditorIntellisenseSession session, IEditorBuffer editorBuffer, AstRoot ast, int position, bool autoShown = true, bool isRHistoryRequest = false) : 
             base(session, editorBuffer, position) {
-             AstRoot = ast;
+            AstRoot = ast;
             AutoShownCompletion = autoShown;
+            IsRHistoryRequest = isRHistoryRequest;
         }
     }
 }

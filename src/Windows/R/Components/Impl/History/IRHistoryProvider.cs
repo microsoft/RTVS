@@ -8,8 +8,8 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Components.History {
     public interface IRHistoryProvider {
         IRHistory CreateRHistory(IRInteractiveWorkflowVisual interactiveWorkflow);
-        IRHistory GetAssociatedRHistory(ITextBuffer textBuffer);
-        IRHistory GetAssociatedRHistory(ITextView textView);
+        IRHistoryVisual GetAssociatedRHistory(ITextBuffer textBuffer);
+        IRHistoryVisual GetAssociatedRHistory(ITextView textView);
         IRHistoryFiltering CreateFiltering(IRHistoryWindowVisualComponent visualComponent);
     }
 }

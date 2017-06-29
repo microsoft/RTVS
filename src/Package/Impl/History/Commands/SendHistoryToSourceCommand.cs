@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
         private readonly List<IContentType> _contentTypes = new List<IContentType>();
-        private readonly IRHistory _history;
+        private readonly IRHistoryVisual _history;
 
         public SendHistoryToSourceCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow, IContentTypeRegistryService contentTypeRegistry, IActiveWpfTextViewTracker textViewTracker)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendHistoryToSource, false) {

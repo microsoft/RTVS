@@ -3,18 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Components.History {
     public interface IRHistory : IDisposable {
-        IRHistoryWindowVisualComponent GetOrCreateVisualComponent(IRHistoryVisualComponentContainerFactory componentContainerFactory, int instanceId = 0);
-
         event EventHandler<EventArgs> SelectionChanged;
         event EventHandler<EventArgs> HistoryChanging;
         event EventHandler<EventArgs> HistoryChanged;
-
-        IRHistoryWindowVisualComponent VisualComponent { get; }
 
         bool HasSelectedEntries { get; }
         bool HasEntries { get; }
@@ -23,7 +17,6 @@ namespace Microsoft.R.Components.History {
         bool TryLoadFromFile(string path);
         bool TrySaveToFile(string path);
         void SendSelectedToRepl();
-        void SendSelectedToTextView(ITextView textView);
         void PreviousEntry();
         void NextEntry();
         void CopySelection();
@@ -33,13 +26,12 @@ namespace Microsoft.R.Components.History {
         void ScrollPageDown();
         void ScrollToBottom();
 
-        IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans();
-        IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
         string GetSelectedText();
+        IReadOnlyList<string> Search(string entryStart);
 
-        SnapshotSpan SelectHistoryEntry(int lineNumber);
-        SnapshotSpan DeselectHistoryEntry(int lineNumber);
-        SnapshotSpan ToggleHistoryEntrySelection(int lineNumber);
+        void SelectHistoryEntry(int lineNumber);
+        void DeselectHistoryEntry(int lineNumber);
+        void ToggleHistoryEntrySelection(int lineNumber);
         void SelectNextHistoryEntry();
         void SelectPreviousHistoryEntry();
         void ToggleHistoryEntriesRangeSelectionUp();

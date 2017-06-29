@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -15,8 +16,8 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly IRHistoryProvider _historyProvider;
 
         [ImportingConstructor]
-        public HistoryWindowPaneMouseProcessorProvider(IRHistoryProvider historyProvider) {
-            _historyProvider = historyProvider;
+        public HistoryWindowPaneMouseProcessorProvider(ICoreShell coreShell) {
+            _historyProvider = coreShell.Services.GetService<IRHistoryProvider>();
         }
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) {
