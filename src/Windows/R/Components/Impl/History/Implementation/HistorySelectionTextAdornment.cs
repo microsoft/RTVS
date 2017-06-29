@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly IAdornmentLayer _layer;
         private readonly IWpfTextView _textView;
         private readonly IEditorFormatMap _editorFormatMap;
-        private readonly IRHistory _history;
+        private readonly IRHistoryVisual _history;
 
         private double _lastWidth;
 

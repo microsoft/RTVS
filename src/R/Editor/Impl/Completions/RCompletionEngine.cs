@@ -9,6 +9,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
@@ -38,6 +39,12 @@ namespace Microsoft.R.Editor.Completions.Engine {
             if (ast.Comments.Contains(context.Position)) {
                 // No completion in comments except iif it is Roxygen
                 providers.Add(new RoxygenTagCompletionProvider(_imageService));
+                return providers;
+            }
+
+            if (context.IsRHistoryRequest) {
+                var history = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().History;
+                providers.Add(new RHistoryCompletionProvider(history, _imageService));
                 return providers;
             }
 

@@ -37,7 +37,7 @@ namespace Microsoft.R.Components.Test.History {
         [Category.History]
         public async Task InteractiveWindowIntegration01() {
             var workflow = UIThreadHelper.Instance.Invoke(() => _workflowProvider.GetOrCreate());
-            var history = workflow.History;
+            var history = (IRHistoryVisual)workflow.History;
             var session = workflow.RSession;
             using (await UIThreadHelper.Instance.Invoke(() => workflow.GetOrCreateVisualComponentAsync())) {
                 workflow.ActiveWindow.Should().NotBeNull();
@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.Test.History {
         [Category.History]
         public async Task InteractiveWindowIntegration02() {
             var workflow = _workflowProvider.GetOrCreate();
-            var history = workflow.History;
+            var history = (IRHistoryVisual)workflow.History;
             var session = workflow.RSession;
             using (await workflow.GetOrCreateVisualComponentAsync()) {
                 workflow.ActiveWindow.Should().NotBeNull();

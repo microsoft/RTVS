@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.R.Components.History;
@@ -22,12 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
         private readonly IActiveWpfTextViewTracker _textViewTracker;
 
         [ImportingConstructor]
-        public VsRHistoryCommandFactory(IRHistoryProvider historyProvider,
-            IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider,
+        public VsRHistoryCommandFactory(IRInteractiveWorkflowVisualProvider interactiveWorkflowProvider,
             IContentTypeRegistryService contentTypeRegistry,
-            IActiveWpfTextViewTracker textViewTracker) {
+            IActiveWpfTextViewTracker textViewTracker,
+            ICoreShell shell) {
 
-            _historyProvider = historyProvider;
+            _historyProvider = shell.Services.GetService<IRHistoryProvider>();
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _contentTypeRegistry = contentTypeRegistry;
             _textViewTracker = textViewTracker;

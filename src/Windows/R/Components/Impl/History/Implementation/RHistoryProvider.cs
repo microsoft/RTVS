@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly ITextSearchService2 _textSearchService;
         private readonly IRSettings _settings;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
-        private readonly Dictionary<ITextBuffer, IRHistory> _histories;
+        private readonly Dictionary<ITextBuffer, IRHistoryVisual> _histories;
         private readonly IFileSystem _fs;
 
         public RHistoryProvider(IServiceContainer services) {
@@ -30,19 +30,15 @@ namespace Microsoft.R.Components.History.Implementation {
             _rtfBuilderService = services.GetService<IRtfBuilderService>();
             _textSearchService = services.GetService<ITextSearchService2>();
             _settings = services.GetService<IRSettings>();
-            _histories = new Dictionary<ITextBuffer, IRHistory>();
+            _histories = new Dictionary<ITextBuffer, IRHistoryVisual>();
             _fs = services.FileSystem();
         }
 
-        public IRHistory GetAssociatedRHistory(ITextBuffer textBuffer) {
-            IRHistory history;
-            return _histories.TryGetValue(textBuffer, out history) ? history : null;
-        }
+        public IRHistoryVisual GetAssociatedRHistory(ITextBuffer textBuffer) 
+            => _histories.TryGetValue(textBuffer, out IRHistoryVisual history) ? history : null;
 
-        public IRHistory GetAssociatedRHistory(ITextView textView) {
-            IRHistory history;
-            return _histories.TryGetValue(textView.TextDataModel.DocumentBuffer, out history) ? history : null;
-        }
+        public IRHistoryVisual GetAssociatedRHistory(ITextView textView) 
+            => _histories.TryGetValue(textView.TextDataModel.DocumentBuffer, out IRHistoryVisual history) ? history : null;
 
         public IRHistoryFiltering CreateFiltering(IRHistoryWindowVisualComponent visualComponent) {
             var history = GetAssociatedRHistory(visualComponent.TextView);

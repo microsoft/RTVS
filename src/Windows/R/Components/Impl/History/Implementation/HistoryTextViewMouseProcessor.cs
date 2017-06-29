@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 
 namespace Microsoft.R.Components.History.Implementation {
     internal class HistoryWindowPaneMouseProcessor : MouseProcessorBase, IMouseProcessor2 {
-        private readonly IRHistory _history;
+        private readonly IRHistoryVisual _history;
 
         private TimeSpan _elapsedSinceLastTap;
         private Point _lastTapPosition;
@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly TimeSpan _maximumElapsedDoubleTap = new TimeSpan(0, 0, 0, 0, 600);
         private readonly int _minimumPositionDelta = 30;
 
-        public HistoryWindowPaneMouseProcessor(IRHistory history) {
+        public HistoryWindowPaneMouseProcessor(IRHistoryVisual history) {
             _history = history;
         }
 

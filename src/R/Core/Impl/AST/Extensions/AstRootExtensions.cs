@@ -29,10 +29,7 @@ namespace Microsoft.R.Core.AST {
         public static IAstNode FindItemDefinition(this AstRoot ast, int position, string itemName) {
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
             var func = scope.FindFunctionDefinitionByName(itemName, position);
-            if (func != null) {
-                return func;
-            }
-            return scope.FindVariableDefinitionByName(itemName, position);
+            return func ?? scope.FindVariableDefinitionByName(itemName, position);
         }
 
         public static bool IsCompleteExpression(this AstRoot expressionAst) {

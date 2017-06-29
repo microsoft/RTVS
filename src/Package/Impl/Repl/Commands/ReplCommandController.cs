@@ -73,7 +73,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 if (controller != null) {
                     if (id == (int)VSConstants.VSStd2KCmdID.RETURN) {
                         return HandleEnter(controller);
-                    } else if (id == (int)VSConstants.VSStd2KCmdID.CANCEL) {
+                    }
+
+                    if (id == (int) VSConstants.VSStd2KCmdID.SCROLLUP) {
+                        return HandleCtrlUp(controller);
+                    }
+
+                    if (id == (int)VSConstants.VSStd2KCmdID.CANCEL) {
                         HandleCancel(controller);
                         // Allow VS to continue processing cancel
                     }
@@ -132,6 +138,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var interactiveWorkflowProvider = Services.GetService<IRInteractiveWorkflowProvider>();
             var ops = interactiveWorkflowProvider.GetOrCreate().Operations as IRInteractiveWorkflowOperationsEx;
             ops.ExecuteCurrentExpression(TextView, FormatReplDocument);
+            return CommandResult.Executed;
+        }
+
+        private CommandResult HandleCtrlUp(RCompletionController controller) {
+            TextView.Properties.AddProperty(RCompletionController.IsRHistoryRequest, true);
+            controller.DismissAllSessions();
+            controller.ShowCompletion(false);
             return CommandResult.Executed;
         }
 

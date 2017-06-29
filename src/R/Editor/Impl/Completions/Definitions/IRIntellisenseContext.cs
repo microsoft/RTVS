@@ -8,5 +8,6 @@ namespace Microsoft.Languages.Editor.Completions {
         AstRoot AstRoot { get; }
         bool AutoShownCompletion { get; }
         bool InternalFunctions { get; set; }
+        bool IsRHistoryRequest { get; }
      }
 }
