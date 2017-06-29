@@ -70,6 +70,11 @@ namespace Microsoft.R.Core.Test.Tokens {
         [InlineData("a -> F", 2, RTokenType.Identifier)]
         [InlineData("F = 1", 0, RTokenType.Identifier)]
         [InlineData("F = 2", 0, RTokenType.Identifier)]
+        [InlineData("F =<- 2", 0, RTokenType.Identifier)]
+        [InlineData("T = T", 0, RTokenType.Identifier)]
+        [InlineData("T = T", 2, RTokenType.Logical)]
+        [InlineData("F -> T", 0, RTokenType.Logical)]
+        [InlineData("F -> T", 2, RTokenType.Identifier)]
         public void IdentifierLogicals(string input, int tokenIndex, RTokenType tokenType) {
             var tokens = Tokenize(input, new RTokenizer());
             tokens[tokenIndex].TokenType.Should().Be(tokenType);
