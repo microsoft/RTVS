@@ -186,7 +186,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
 
             var ps = shell.Process();
             ps.When(x => x.Start(Arg.Any<string>())).Do(x => {
-                navigatedUrl = (string)x.Args()[1];
+                navigatedUrl = (string)x.Args()[0];
             });
 
             var options = new MockSurveyNewsOptions(policy, lastChecked);
