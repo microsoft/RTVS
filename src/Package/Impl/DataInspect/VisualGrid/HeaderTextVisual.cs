@@ -67,11 +67,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     break;
 
                 case SortOrderType.Ascending:
-                    _arrowChar = ArrowDown;
+                    _arrowChar = ArrowUp;
                     break;
 
                 case SortOrderType.Descending:
-                    _arrowChar = ArrowUp;
+                    _arrowChar = ArrowDown;
                     break;
             }
             Invalidate();

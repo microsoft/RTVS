@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages"
              xmlns:c="clr-namespace:System;assembly=mscorlib"
+             xmlns:Package="clr-namespace:Microsoft.VisualStudio.R.Package"
              mc:Ignorable="d"
              d:DesignHeight="200" d:DesignWidth="600">
     <local:PropertyPageControl.Resources>
@@ -46,7 +47,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="StartupFileLabel" Content="Startup file" Target="{Binding ElementName=txtStartupFile, Mode=OneWay}" />
+            <Label Grid.Column="0" x:Uid="StartupFileLabel" Content="{x:Static Package:Resources.RunPropertyPage_StartupFile}" Target="{Binding ElementName=txtStartupFile, Mode=OneWay}" />
             <TextBlock Grid.Column="1" Text=":"/>
             <ComboBox Grid.Column="2" SelectedItem="{Binding Path=StartupFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=RFilePaths}"/>
         </Grid>
@@ -54,7 +55,7 @@
         <CheckBox 
             x:Name="chkResetReplOnRun" 
             x:Uid="chkResetReplOnRun"
-            Content="_Reset R Interactive on run"
+            Content="{x:Static Package:Resources.RunPropertyPage_ResetReplOnRun}"
             IsChecked="{Binding Path=ResetReplOnRun, Mode=TwoWay}"/>
 
         <Separator/>
@@ -69,7 +70,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label Grid.Column="0" x:Uid="RemoteProjectPathLabel" Content="Remote Project Path" Target="{Binding ElementName=txtRemoteProjectPath, Mode=OneWay}" />
+            <Label Grid.Column="0" x:Uid="RemoteProjectPathLabel" Content="{x:Static Package:Resources.RunPropertyPage_RemoteProjectPath}" Target="{Binding ElementName=txtRemoteProjectPath, Mode=OneWay}" />
             <TextBlock Grid.Column="1" Text=":" />
             <TextBox Grid.Column="2" x:Name="txtRemoteProjectPath" Text="{Binding Path=RemoteProjectPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <TextBlock Grid.Row="1" Grid.Column="2" >
@@ -83,16 +84,16 @@
         <CheckBox 
             x:Name="chkTransferFilesOnRun" 
             x:Uid="chkTransferFilesOnRun"
-            Content="_Transfer files on run"
+            Content="{x:Static Package:Resources.RunPropertyPage_TransferFilesOnRun}"
             IsChecked="{Binding Path=TransferProjectOnRun, Mode=TwoWay}"/>
 
         <Grid HorizontalAlignment="Stretch" IsEnabled="{Binding ElementName=chkTransferFilesOnRun, Path=IsChecked}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="{StaticResource gridMinColumnWidth}" Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>Ы
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" x:Uid="TransferFilesFilterLabel" Content="Files to transfer" Target="{Binding ElementName=txtTransferFilesFilter, Mode=OneWay}" />
+            <Label Grid.Column="0" x:Uid="TransferFilesFilterLabel" Content="{x:Static Package:Resources.RunPropertyPage_TransferFilesFilter}" Target="{Binding ElementName=txtTransferFilesFilter, Mode=OneWay}" />
             <Label Grid.Column="1" Content=":" />
             <TextBox Grid.Column="2" x:Name="txtTransferFilesFilter" Text="{Binding Path=TransferFilesFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
