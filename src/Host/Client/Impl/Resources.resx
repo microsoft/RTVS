@@ -251,4 +251,7 @@ Please upgrade remote R Services installation to match.</value>
   <data name="Error_RemoteUriNotSupported" xml:space="preserve">
     <value>Remote R requested to open {0}, but only http:// URIs are supported for remote.</value>
   </data>
+  <data name="Error_PingTimedOut" xml:space="preserve">
+    <value>Ping to {0}:{1} timed out.</value>
+  </data>
 </root>
