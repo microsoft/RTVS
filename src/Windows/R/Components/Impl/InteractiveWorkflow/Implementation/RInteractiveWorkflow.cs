@@ -62,7 +62,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _mainThread = coreShell.MainThread();
 
             Shell = coreShell;
-            Console = new InteractiveWindowConsole(this);
+            var console = new InteractiveWindowConsole(this);
+            Console = console;
             RSessions = new RSessionProvider(coreShell.Services, Console);
 
             RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
@@ -84,7 +85,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
                 .Add(RSessions)
                 .Add(Operations)
-                .Add(Connections);
+                .Add(Connections)
+                .Add(console);
         }
 
         private void LastActiveTextViewChanged(object sender, ActiveTextViewChangedEventArgs e) {
