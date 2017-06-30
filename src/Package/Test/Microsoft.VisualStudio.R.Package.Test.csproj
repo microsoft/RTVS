@@ -32,15 +32,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
-  <!--
-  <ItemGroup Condition="'$(VisualStudioVersion)'=='14.0'" >
-    <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Interop.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.V14Only.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll" />
-    <Reference Include="$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.ProjectSystem.Utilities.v14.0.dll" />
-  </ItemGroup>
-  -->
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
@@ -65,17 +56,6 @@
     <Content Include="Files\SqlCode1.inline.baseline.sql" />
     <None Include="project.json" />
   </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)'=='14.0'">
-      <ItemGroup>
-        <ProjectReference Include="..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
-          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
-          <Name>Microsoft.UnitTests.References.14.0</Name>
-        </ProjectReference>
-      </ItemGroup>
-    </When>
-    <When Condition="'$(VisualStudioVersion)'=='15.0'" />
-  </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
@@ -260,18 +240,12 @@
     <Compile Include="Utility\VsRHostScript.cs" />
   </ItemGroup>
   <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="SurveyNews\Feeds\Empty.txt" />
     <Content Include="SurveyNews\Feeds\Invalid.txt" />
     <Content Include="SurveyNews\Feeds\Items.txt" />
     <Content Include="SurveyNews\Feeds\NoItems.txt" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>
