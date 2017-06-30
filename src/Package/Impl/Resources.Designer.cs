@@ -3249,6 +3249,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeFile {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project.
         /// </summary>
         public static string SqlPublishDialog_TargetTypeProject {

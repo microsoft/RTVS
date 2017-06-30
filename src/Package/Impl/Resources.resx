@@ -1302,4 +1302,7 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Settings_Markdown_PreviewWidth_Description" xml:space="preserve">
     <value>Preview pane width when it is positioned at the right side of the editor</value>
   </data>
+  <data name="SqlPublishDialog_TargetTypeFile" xml:space="preserve">
+    <value>File</value>
+  </data>
 </root>

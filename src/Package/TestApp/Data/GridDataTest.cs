@@ -4,9 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -28,10 +31,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             public override string ToString() => $"[{Y}, {X}] = {Value}";
         }
 
+        private readonly IServiceContainer _services;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
         public GridDataTest(IServiceContainer services, TestMethodFixture testMethod) {
+            _services = services;
             _sessionProvider = new RSessionProvider(services);
             _session = _sessionProvider.GetOrCreate(testMethod.FileSystemSafeName);
         }
@@ -39,6 +44,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         public async Task InitializeAsync() {
             await _sessionProvider.TrySwitchBrokerAsync(GetType().Name);
             await _session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
+
+            var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var packages = await workflow.Packages.GetInstalledPackagesAsync();
+            if (!packages.Any(p => p.Package.EqualsIgnoreCase("QuantMod"))) {
+                await workflow.Packages.InstallPackageAsync("QuantMod", null);
+            }
         }
 
         public async Task DisposeAsync() {

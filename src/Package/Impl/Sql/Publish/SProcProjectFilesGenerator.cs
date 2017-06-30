@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var sprocMap = CreateStoredProcedureFiles(settings, sprocFiles, targetFolder, targetProjectItem);
             if (settings.CodePlacement == RCodePlacement.Table) {
                 CreateRCodeTableFile(settings, targetProject, targetFolder, targetProjectItem);
-                CreatePostDeploymentScriptFile(settings, targetProject, targetFolder, targetProjectItem, sprocMap);
+                CreatePostDeploymentScriptFile(settings, targetFolder, targetProjectItem, sprocMap);
             }
         }
 
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// as well as 
         /// </summary>
         private void CreatePostDeploymentScriptFile(SqlSProcPublishSettings settings, 
-            EnvDTE.Project targetProject, string targetFolder, 
+            string targetFolder, 
             EnvDTE.ProjectItem targetProjectItem, SProcMap sprocMap) {
             var postDeploymentScript = Path.Combine(targetFolder, PostDeploymentScriptName);
 

@@ -17,6 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Publish generated files into an existing database project
         /// </summary>
-        Project
+        Project,
+
+        /// <summary>
+        /// Add generated file to the current project
+        /// </summary>
+        File
     }
 }

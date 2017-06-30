@@ -3,8 +3,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.Languages.Editor.Text;
@@ -19,6 +21,7 @@ using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.QuickInfo {
@@ -72,12 +75,13 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             var content = @"x <- select()";
 
             using (new RHostScript(Services)) {
-                //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
-
                 var session = await TriggerSessionAsync(content, 12);
 
                 session.ApplicableSpan.Should().BeNull();
                 session.QuickInfoContent.Should().BeEmpty();
+
+                await EnsurePackageInstalled("MASS");
+                await EnsurePackageInstalled("dplyr");
 
                 await Workflow.RSession.ExecuteAsync("library(MASS)");
                 EventsPump.DoEvents(500);
@@ -100,7 +104,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             var content = @"do()";
 
             using (new RHostScript(Services)) {
-                //await Workflow.RSession.ExecuteAsync("install.packages('dplyr')");
+                await EnsurePackageInstalled("dplyr");
 
                 var session = await TriggerSessionAsync(content, 3);
 
@@ -118,6 +122,13 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
                 session = await TriggerSessionAsync(content, 3);
                 session.QuickInfoContent.Should().BeEmpty();
+            }
+        }
+
+        private async Task EnsurePackageInstalled(string name) {
+            var packages = await Workflow.Packages.GetInstalledPackagesAsync();
+            if (!packages.Any(p => p.Package.EqualsOrdinal(name))) {
+                await Workflow.Packages.InstallPackageAsync(name, null);
             }
         }
 
