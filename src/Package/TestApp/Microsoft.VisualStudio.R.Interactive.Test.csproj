@@ -31,7 +31,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Data\GridDataTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\VariableExplorerTest.cs" />

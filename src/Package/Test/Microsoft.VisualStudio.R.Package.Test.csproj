@@ -179,7 +179,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
     <Compile Include="Feedback\FeedbackCommandTest.cs" />

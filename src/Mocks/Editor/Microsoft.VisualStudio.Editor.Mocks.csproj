@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdornmentLayerMock.cs" />
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BufferGraphMock.cs" />
     <Compile Include="ClassificationTypeMock.cs" />
     <Compile Include="ClassificationTypeRegistryServiceMock.cs" />

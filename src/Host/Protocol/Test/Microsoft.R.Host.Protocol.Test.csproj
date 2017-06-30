@@ -83,7 +83,6 @@
     <Compile Include="..\..\UserProfile\Impl\RUserProfileServicesHelper.cs">
       <Link>RUserProfileServicesHelper.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ProtocolMessage\ProtocolMessageTest.cs" />
     <Compile Include="RHostPipe\RHostPipeTest.cs" />
     <Compile Include="UserProfileServicePipe\UserProfileServiceMock.cs" />
@@ -98,5 +97,5 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

@@ -20,7 +20,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Composition\ContentTypeLocator.cs" />
     <Compile Include="Controller\BaseController.cs" />
     <Compile Include="Controller\BraceCompletionCommandTarget.cs" />

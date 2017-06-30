@@ -114,7 +114,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="ContainedLanguage\RCodeSeparatorCollectionTest.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandlerTest.cs" />
