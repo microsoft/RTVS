@@ -199,6 +199,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ping to {0}:{1} timed out..
+        /// </summary>
+        internal static string Error_PingTimedOut {
+            get {
+                return ResourceManager.GetString("Error_PingTimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This session already has an active client connection.
         /// </summary>
         internal static string Error_PipeAlreadyConnected {
