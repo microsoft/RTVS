@@ -98,6 +98,7 @@
   <File Source="$(var.BinDir)\System.Diagnostics.DiagnosticSource.dll" />
   <File Source="$(var.BinDir)\System.Diagnostics.FileVersionInfo.dll" />
   <File Source="$(var.BinDir)\System.Diagnostics.StackTrace.dll" />
+  <File Source="$(var.BinDir)\System.IO.Compression.dll" />
   <File Source="$(var.BinDir)\System.IO.Compression.ZipFile.dll" />
   <File Source="$(var.BinDir)\System.IO.FileSystem.dll" />
   <File Source="$(var.BinDir)\System.IO.FileSystem.Primitives.dll" />
@@ -117,6 +118,8 @@
   <File Source="$(var.BinDir)\System.Threading.Tasks.Dataflow.dll" />
   <File Source="$(var.BinDir)\System.Threading.Tasks.Extensions.dll" />
   <File Source="$(var.BinDir)\System.Threading.Thread.dll" />
+  <File Source="$(var.BinDir)\System.ValueTuple.dll" />
+  <File Source="$(var.BinDir)\System.Xml.ReaderWriter.dll" />
   <File Source="$(var.BinDir)\System.Xml.XmlDocument.dll" />
   <File Source="$(var.BinDir)\System.Xml.XPath.dll" />
   <File Source="$(var.BinDir)\System.Xml.XPath.XDocument.dll" />
