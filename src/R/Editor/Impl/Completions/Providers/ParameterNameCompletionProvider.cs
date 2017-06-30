@@ -71,11 +71,16 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private static bool ShouldProvideCompletions(IRIntellisenseContext context, out FunctionCall funcCall) {
             // Safety checks
             funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
-            if (funcCall?.OpenBrace == null || funcCall.Arguments == null) {
-                return false;
+            if (funcCall == null && context.Position > 0) {
+                // This may be the case when brace is not closed and position is at the very end.
+                // Try stepping back one character and retry. If we find function call, check that
+                // a) brace is not closed and b) position is indeed at the very end so we avoid
+                // false positive in case of func()|.
+                funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position - 1);
+                return funcCall != null && funcCall.CloseBrace == null && context.Position == funcCall.End;
             }
 
-            if (context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
+            if (funcCall == null || context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
                 return false;
             }
 
