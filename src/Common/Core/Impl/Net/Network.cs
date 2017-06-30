@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Microsoft.R.Common.Core;
 
 namespace Microsoft.Common.Core.Net {
     public static class NetworkExtensions {
@@ -18,20 +18,18 @@ namespace Microsoft.Common.Core.Net {
             }
 
             try {
-                var ping = new Ping();
-                var reply = await ping.SendPingAsync(url.Host, timeout);
-                if (reply.Status != IPStatus.Success) {
-                    return reply.Status.ToString();
-                }
-            } catch (PingException pex) {
-                var pingMessage = pex.InnerException?.Message ?? pex.Message;
-                if (!string.IsNullOrEmpty(pingMessage)) {
-                    return pingMessage;
+                using (TcpClient pingClient = new TcpClient()) {
+                    var pingTask = pingClient.ConnectAsync(url.Host, url.Port);
+                    if (await Task.WhenAny(pingTask, Task.Delay(timeout)) == pingTask) {
+                        await pingTask;
+                    } else {
+                        return Resources.Error_PingTimedOut.FormatInvariant(url.Host, url.Port);
+                    }
+                    return string.Empty;
                 }
             } catch (SocketException sx) {
                 return sx.Message;
             }
-            return string.Empty;
         }
 
         public static bool IsHttps(this Uri url) => url.Scheme.EqualsIgnoreCase("https");
