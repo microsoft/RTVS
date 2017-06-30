@@ -65,7 +65,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ComponentModelMock.cs" />
     <Compile Include="ConnectionPointMock.cs" />
     <Compile Include="DteMock.cs" />

@@ -33,7 +33,6 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
     <Compile Include="Fixtures\HostClientServicesFixture.cs" />

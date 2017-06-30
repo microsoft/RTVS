@@ -47,7 +47,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Dev15CpsAssemblyLoaderAttribute.cs" />
     <Compile Include="Dev14CpsAssemblyLoaderAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
