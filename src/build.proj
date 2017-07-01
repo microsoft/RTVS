@@ -20,7 +20,7 @@
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
     <SolutionProperties Condition="'$(SolutionProperties)' == ''">
       Configuration=$(Configuration);
-      Platform=$(Platform);
+      Platform=Any CPU;
       GenerateAssemblyVersionInfo=true;
       Year=$(Year);Date=$(Date);Time=$(Time);
       SolutionDir=$(SourceDirectory);
