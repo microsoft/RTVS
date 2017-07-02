@@ -12,7 +12,7 @@
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
 
     <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">any cpu</Platform>
+    <Platform>Any CPU</Platform>
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>

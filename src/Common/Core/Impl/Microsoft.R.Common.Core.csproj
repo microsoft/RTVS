@@ -6,6 +6,9 @@
   <Import Project="..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
+  <PropertyGroup>
+    <Platform>Any CPU</Platform>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="project.lock.json" />
   </ItemGroup>
