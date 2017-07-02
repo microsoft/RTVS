@@ -8,6 +8,7 @@
   <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
     <Platform>Any CPU</Platform>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="project.lock.json" />

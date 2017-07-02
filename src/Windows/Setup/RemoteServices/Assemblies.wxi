@@ -124,5 +124,5 @@
   <File Source="$(var.BinDir)\System.Xml.XPath.dll" />
   <File Source="$(var.BinDir)\System.Xml.XPath.XDocument.dll" />
   <File Source="$(var.BinDir)\libuv.dll" />
-  <File Source="$(var.BinDir)\Images\RFile.ico" />
+  <File Source="$(var.BinDir)\RFile.ico" />
 </Include>
