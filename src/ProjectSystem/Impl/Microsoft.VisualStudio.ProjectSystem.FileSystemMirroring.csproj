@@ -17,7 +17,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Extensions\ProjectTreeExtensions.cs" />
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="IO\IMsBuildFileSystemFilter.cs" />

@@ -64,7 +64,6 @@
     <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
     <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerVisual.cs" />

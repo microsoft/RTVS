@@ -9,7 +9,7 @@
   <Import Project="..\..\..\R.Wix311.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform>AnyCPU</Platform>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>9A3D13C0-7685-4C5B-835C-9BFC9E42C0B0</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
@@ -31,13 +31,13 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>
     <Chip>x86</Chip>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Chip>x86</Chip>
     <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>

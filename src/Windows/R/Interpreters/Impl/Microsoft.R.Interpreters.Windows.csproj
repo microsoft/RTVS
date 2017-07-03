@@ -30,7 +30,6 @@
     <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ServicesExtensions.cs" />
     <Compile Include="SqlRClientInstallation.cs" />
     <Compile Include="Resources.Designer.cs">
