@@ -22,7 +22,7 @@
         will fail to load. We also should build as we build in VS and tell MSBUILD to NOT
         infer component bitness from the project that references it. We want all out binaries
         to be IL Only, bitness agnostic. -->
-    <Platform>AnyCPU</Platform>
+    <Platform>Any CPU</Platform>
     <ShouldUnsetParentConfigurationAndPlatform>true</ShouldUnsetParentConfigurationAndPlatform>
     <BuildingSolutionFile>true</BuildingSolutionFile>
     
@@ -44,7 +44,7 @@
     
     <SetupProperties Condition="'$(SetupProperties)' == ''">
       Configuration=$(Configuration);
-      Platform=$(Platform);
+      Platform=x86;
       GenerateAssemblyVersionInfo=false;
       SuppressValidation=true;
       Year=$(Year);
@@ -53,6 +53,7 @@
       BinDirectory=$(OutputDirectory);
       ObjDirectory=$(IntermediateOutputDirectory);
       LibDirectory=$(LibDirectory);
+      DefineSolutionProperties=false;
     </SetupProperties>
   </PropertyGroup>
 

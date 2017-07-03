@@ -8,4 +8,6 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(WixInstallPath)\wix.targets</WixTargetsPath>
     <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(WixInstallPath)\WixTasks.dll</WixTasksPath>
   </PropertyGroup>
+  <!-- Nuget does not like wixproj -->
+  <Target Name="_GenerateRestoreProjectPathWalk" />
 </Project>

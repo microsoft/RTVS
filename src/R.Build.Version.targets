@@ -58,14 +58,14 @@
           Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND 
                      '$(MSBuildProjectExtension)'!='.wixproj' AND 
                      '$(GenerateAssemblyVersionInfo)' == 'true' AND
-                     '$(DesignTimeBuild)' != 'true'" 
+                     '$(DesignTimeBuild)' != 'true'"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
-      <Output TaskParameter="OutputFile" ItemName="Compile" />
+      <Output TaskParameter="OutputFile" ItemName="Compile" Condition="'$(TargetFrameworks)' == '' AND '$(TargetFramework)' == ''"/>
     </WriteCodeFragment>
   </Target>
 
