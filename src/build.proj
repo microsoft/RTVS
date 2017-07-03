@@ -12,15 +12,25 @@
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
 
     <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
-    <Platform>Any CPU</Platform>
-    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
+     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
+    <!-- We always should build Any CPU for consistency across assemblies. Otherwise one 
+        component marked for x86 may lead to its references marked for x86 and same references 
+        may be used for x64 executable. Setup will then package x86 binaries and x64 executable 
+        will fail to load. We also should build as we build in VS and tell MSBUILD to NOT
+        infer component bitness from the project that references it. We want all out binaries
+        to be IL Only, bitness agnostic. -->
+    <Platform>AnyCPU</Platform>
+    <ShouldUnsetParentConfigurationAndPlatform>true</ShouldUnsetParentConfigurationAndPlatform>
+    <BuildingSolutionFile>true</BuildingSolutionFile>
+    
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
     <SolutionProperties Condition="'$(SolutionProperties)' == ''">
       Configuration=$(Configuration);
-      Platform=Any CPU;
+      Platform=$(Platform);
+      ShouldUnsetParentConfigurationAndPlatform=true;
       GenerateAssemblyVersionInfo=true;
       Year=$(Year);Date=$(Date);Time=$(Time);
       SolutionDir=$(SourceDirectory);
@@ -34,7 +44,7 @@
     
     <SetupProperties Condition="'$(SetupProperties)' == ''">
       Configuration=$(Configuration);
-      Platform=x86;
+      Platform=$(Platform);
       GenerateAssemblyVersionInfo=false;
       SuppressValidation=true;
       Year=$(Year);
