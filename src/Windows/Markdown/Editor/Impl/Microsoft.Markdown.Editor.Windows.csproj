@@ -18,6 +18,10 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.props" />
   <ItemGroup>
+    <Reference Include="Markdig, Version=0.12.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\lib\Markdig.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>

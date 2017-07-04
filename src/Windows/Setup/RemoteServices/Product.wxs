@@ -65,6 +65,7 @@
       <Component Id="RemoteRBrokerService" Guid="{8379F8FB-B246-4D99-910A-84580B959BB7}" Win64="yes">
         <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.dll" />
         <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Windows.exe" />
+        <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Windows.exe.config" />
         <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Config.json" />
         <ServiceInstall Id="RemoteRBrokerServiceInstaller" Type="ownProcess" Vital="yes" Name="RRemoteService" DisplayName="R Remote Service"
                         Description="Creates and manages R Host sessions" Start="auto" Account="NT AUTHORITY\NETWORKSERVICE"
