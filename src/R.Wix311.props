@@ -10,4 +10,5 @@
   </PropertyGroup>
   <!-- Nuget does not like wixproj -->
   <Target Name="_GenerateRestoreProjectPathWalk" />
+  <Target Name="_GenerateRestoreGraphProjectEntry" />
 </Project>
