@@ -50,9 +50,9 @@
   </ItemGroup>
 
   <!-- C# -->
-  <Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile" Condition="$(GenerateAssemblyVersionInfo)">
+  <!--<Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile" Condition="$(GenerateAssemblyVersionInfo)">
     <Delete Files="$(AssemblyVersionInfoPath)" />
-  </Target>
+  </Target>-->
 
   <Target Name="GenerateAssemblyInfoFile"
           Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND 
@@ -65,12 +65,12 @@
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
-      <Output TaskParameter="OutputFile" ItemName="Compile" Condition="'$(TargetFrameworks)' == '' AND '$(TargetFramework)' == ''"/>
+      <Output TaskParameter="OutputFile" ItemName="Compile"/>
     </WriteCodeFragment>
   </Target>
-
+  
   <PropertyGroup Condition="$(GenerateAssemblyVersionInfo)">
-    <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
+    <!--<CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>-->
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
 
