@@ -23,8 +23,6 @@
         infer component bitness from the project that references it. We want all out binaries
         to be IL Only, bitness agnostic. -->
     <Platform>Any CPU</Platform>
-    <ShouldUnsetParentConfigurationAndPlatform>true</ShouldUnsetParentConfigurationAndPlatform>
-    <BuildingSolutionFile>true</BuildingSolutionFile>
     
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
     <SolutionProperties Condition="'$(SolutionProperties)' == ''">
