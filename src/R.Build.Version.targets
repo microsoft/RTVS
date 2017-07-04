@@ -50,27 +50,27 @@
   </ItemGroup>
 
   <!-- C# -->
-  <Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile" Condition="$(GenerateAssemblyVersionInfo)">
+  <!--<Target Name="DeleteVersionInfoFile" BeforeTargets="GenerateAssemblyInfoFile" Condition="$(GenerateAssemblyVersionInfo)">
     <Delete Files="$(AssemblyVersionInfoPath)" />
-  </Target>
+  </Target>-->
 
   <Target Name="GenerateAssemblyInfoFile"
           Condition="'$(MSBuildProjectExtension)'!='.vcxproj' AND 
                      '$(MSBuildProjectExtension)'!='.wixproj' AND 
                      '$(GenerateAssemblyVersionInfo)' == 'true' AND
-                     '$(DesignTimeBuild)' != 'true'" 
+                     '$(DesignTimeBuild)' != 'true'"
           Inputs="$(MSBuildProjectFullPath)"
           Outputs="$(AssemblyVersionInfoPath)">
     <WriteCodeFragment AssemblyAttributes="@(AssemblyVersionAttribute)"
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
-      <Output TaskParameter="OutputFile" ItemName="Compile" />
+      <Output TaskParameter="OutputFile" ItemName="Compile"/>
     </WriteCodeFragment>
   </Target>
-
+  
   <PropertyGroup Condition="$(GenerateAssemblyVersionInfo)">
-    <CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
+    <!--<CompileDependsOn>DeleteVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>-->
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
 

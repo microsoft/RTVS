@@ -8,11 +8,6 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
-    <Compile Remove="Text\**" />
-    <EmbeddedResource Remove="Text\**" />
-    <None Remove="Text\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

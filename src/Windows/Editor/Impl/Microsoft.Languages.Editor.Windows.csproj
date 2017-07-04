@@ -17,12 +17,6 @@
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.props" />
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -35,7 +29,6 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BraceMatch\BraceHighlighter.cs" />
     <Compile Include="BraceMatch\BraceHighlightProvider.cs" />
     <Compile Include="BraceMatch\BraceHighlightTag.cs" />
@@ -162,4 +155,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
+  <Import Project="..\..\..\R.Build.Loc.targets" />
 </Project>
