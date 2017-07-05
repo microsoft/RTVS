@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyVersionInfoPath>$(MSBuildProjectDirectory)\AssemblyVersionInfo.cs</AssemblyVersionInfoPath>
+    <AssemblyVersionInfoPath>$(MSBuildThisFileDirectory)\AssemblyVersionInfo.cs</AssemblyVersionInfoPath>
     <!-- Suppress automatic generation of version information. We generate it ourselves
       since we need it for both .NET Core and .NET Desktop -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -65,7 +65,6 @@
                        Language="C#"
                        OutputFile="$(AssemblyVersionInfoPath)">
       <Output TaskParameter="OutputFile" ItemName="FileWrites" />
-      <Output TaskParameter="OutputFile" ItemName="Compile"/>
     </WriteCodeFragment>
   </Target>
   
