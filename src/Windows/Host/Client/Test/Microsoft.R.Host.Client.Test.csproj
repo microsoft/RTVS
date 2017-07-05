@@ -33,7 +33,6 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
     <Compile Include="Fixtures\HostClientServicesFixture.cs" />
@@ -128,21 +127,8 @@
     <None Include="Files\ExportToPdfExpectedResult.pdf" />
     <None Include="project.json" />
   </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

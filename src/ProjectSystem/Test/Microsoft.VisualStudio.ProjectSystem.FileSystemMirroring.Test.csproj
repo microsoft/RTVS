@@ -47,7 +47,6 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Dev15CpsAssemblyLoaderAttribute.cs" />
     <Compile Include="Dev14CpsAssemblyLoaderAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,13 +65,8 @@
     </None>
     <None Include="project.json" />
   </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

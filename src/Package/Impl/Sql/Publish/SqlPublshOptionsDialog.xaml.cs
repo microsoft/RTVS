@@ -85,16 +85,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }).DoNotWait();
         }
 
-        private void TargetList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectTarget(TargetList.SelectedIndex);
-        }
+        private void TargetList_SelectionChanged(object sender, SelectionChangedEventArgs e) 
+            => _model.SelectTarget(TargetList.SelectedIndex);
 
-        private void CodePlacementList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectCodePlacement(CodePlacementList.SelectedIndex);
-        }
+        private void CodePlacementList_SelectionChanged(object sender, SelectionChangedEventArgs e) 
+            => _model.SelectCodePlacement(CodePlacementList.SelectedIndex);
 
-        private void QuoteTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            _model.SelectQuoteType(QuoteTypeList.SelectedIndex);
-        }
+        private void QuoteTypeList_SelectionChanged(object sender, SelectionChangedEventArgs e) 
+            => _model.SelectQuoteType(QuoteTypeList.SelectedIndex);
     }
 }

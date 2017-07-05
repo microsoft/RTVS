@@ -71,7 +71,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], "4 8 1 2");
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         [Category.Plots]
         public async Task LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
@@ -152,7 +152,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStringAttr(shapes[0], "Data", expected);
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         [Category.Plots]
         public async Task TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
@@ -196,13 +196,13 @@ namespace Microsoft.R.Host.Client.Test {
             CheckDoubleAttr(element, "Canvas.Top", top);
         }
 
-        private void CheckStrokeThickness(XElement element, double expected) 
+        private void CheckStrokeThickness(XElement element, double expected)
             => CheckDoubleAttr(element, "StrokeThickness", expected);
 
-        private void CheckStroke(XElement element, string expected) 
+        private void CheckStroke(XElement element, string expected)
             => CheckStringAttr(element, "Stroke", expected);
 
-        private void CheckStrokeDashArray(XElement element, string expected) 
+        private void CheckStrokeDashArray(XElement element, string expected)
             => CheckStringAttr(element, "StrokeDashArray", expected);
 
         private void CheckStringAttr(XElement element, string attributeName, string expected) {

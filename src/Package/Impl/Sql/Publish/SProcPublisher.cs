@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Sql;
@@ -26,22 +27,21 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private const string DacPacExtension = "dacpac";
 
         private readonly OutputWindowLogWriter _outputWindow;
-        private readonly ICoreShell _shell;
         private readonly IProjectSystemServices _pss;
-        private readonly IFileSystem _fs;
+        private readonly IServiceContainer _services;
         private readonly IDacPackageServices _dacServices;
 
-        public SProcPublisher(ICoreShell shell, IProjectSystemServices pss, IFileSystem fs, IDacPackageServices dacServices) {
-            _shell = shell;
+        public SProcPublisher(IServiceContainer services, IProjectSystemServices pss, IDacPackageServices dacServices) {
+            _services = services;
             _pss = pss;
-            _fs = fs;
             _dacServices = dacServices;
-            _outputWindow = new OutputWindowLogWriter(_shell.Services, VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, string.Empty);
+            _outputWindow = new OutputWindowLogWriter(services, VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, string.Empty);
         }
 
         public void Publish(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             switch (settings.TargetType) {
                 case PublishTargetType.Project:
+                case PublishTargetType.File:
                     PublishToProject(settings, sprocFiles);
                     break;
 
@@ -60,30 +60,33 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         private void PublishToDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
-            var dacpacPath = Path.ChangeExtension(project.FullName, DacPacExtension);
-            CreateDacPac(settings, sprocFiles, dacpacPath);
-            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDacPacPublish);
+            if (project != null) {
+                var dacpacPath = Path.ChangeExtension(project.FullName, DacPacExtension);
+                CreateDacPac(settings, sprocFiles, dacpacPath);
+                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL,
+                    SqlTelemetryEvents.SqlDacPacPublish);
+            }
         }
 
         /// <summary>
         /// Packages stored procedures into a DACPAC and then publishes it to the database.
         /// </summary>
         private void PublishToDatabase(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
-            var project = _pss.GetSelectedProject<IVsHierarchy>();
             var dacpacPath = Path.ChangeExtension(Path.GetTempFileName(), DacPacExtension);
 
             CreateDacPac(settings, sprocFiles, dacpacPath);
-            var package = _dacServices.Load(dacpacPath);
+            using (var package = _dacServices.Load(dacpacPath)) {
 
-            var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
-            var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
-            package.Deploy(connection, dbName);
+                var dbName = settings.TargetDatabaseConnection.GetValue(ConnectionStringConverter.OdbcDatabaseKey);
+                var connection = settings.TargetDatabaseConnection.OdbcToSqlClient();
+                package.Deploy(connection, dbName);
 
-            var message = Environment.NewLine + 
-                string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) + 
-                Environment.NewLine;
-            _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
-            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
+                var message = Environment.NewLine +
+                    string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) +
+                    Environment.NewLine;
+                _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
+                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
+            }
         }
 
         /// <summary>
@@ -93,7 +96,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void PublishToProject(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
             Check.ArgumentNull(nameof(settings), settings.TargetProject);
             var targetProject = _pss.GetProject(settings.TargetProject);
-            var generator = new SProcProjectFilesGenerator(_pss, _fs);
+            var generator = new SProcProjectFilesGenerator(_pss, _services.FileSystem());
+            targetProject = targetProject ?? _pss.GetActiveProject();
             generator.Generate(settings, sprocFiles, targetProject);
             RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
         }
@@ -101,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void CreateDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string dacpacPath) {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
-                var g = new SProcScriptGenerator(_fs);
+                var g = new SProcScriptGenerator(_services.FileSystem());
                 var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
                 var builder = _dacServices.GetBuilder();
                 builder.Build(dacpacPath, project.Name, sprocMap.Scripts);

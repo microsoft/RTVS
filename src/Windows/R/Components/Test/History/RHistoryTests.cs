@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.History {
     [ExcludeFromCodeCoverage]
+    [Category.History]
     public class RHistoryTests {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly ITextBuffer _textBuffer;
@@ -24,7 +25,6 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         [CompositeTest]
-        [Category.History]
         [InlineData(new [] { " ", "\r\n", " \r\n " }, "")]
         [InlineData(new [] { "x <- 1" }, "x <- 1")]
         [InlineData(new [] { "x <- 1\r\ny <- 2" }, "x <- 1\r\ny <- 2")]
@@ -58,7 +58,6 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         [CompositeTest]
-        [Category.History]
         [InlineData(true, new[] { "x <- 1" }, 0, "x <- 1")]
         [InlineData(false, new[] { "x <- 1" }, 0, "x <- 1")]
         [InlineData(true, new[] { "x <- 1", "y <- 2" }, 0, "x <- 1")]
@@ -122,6 +121,40 @@ namespace Microsoft.R.Components.Test.History {
             history.GetSelectedText().Should().Be(expected);
             history.GetSelectedHistoryEntrySpans().Should().ContainSingle()
                 .Which.GetText().Should().Be(expected);
+        }
+
+        private const string Search_F1 = @"f1 <- function(a, b) { 
+    g <- g1(a, b)
+    f <- f2(a, b)
+}";
+        private const string Search_F1_Line1 = "f1 <- function(a, b) {";
+        private const string Search_F1_Line2 = "g <- g1(a, b)";
+        private const string Search_F1_Line3 = "f <- f2(a, b)";
+        private const string Search_F1_Line4 = "}";
+        private const string Search_F2 = @"f2 <- function(a, b) {}";
+        private const string Search_G1 = @"g1 <- function(a, b) {}";
+
+        [CompositeTest]
+        [InlineData(new[] { Search_F1, Search_G1, Search_F2 }, "  ", true, new[] { Search_F1, Search_G1, Search_F2 })]
+        [InlineData(new[] { Search_F1, Search_G1, Search_F2 }, "  ", false, new[] { Search_F1_Line1, Search_F1_Line2, Search_F1_Line3, Search_F1_Line4, Search_G1, Search_F2 })]
+        [InlineData(new[] { "  " + Search_F1, "  " + Search_G1, "  " + Search_F2 }, "  ", true, new[] { Search_F1, Search_G1, Search_F2 })]
+        [InlineData(new[] { "  " + Search_F1, "  " + Search_G1, "  " + Search_F2 }, "  ", false, new[] { Search_F1_Line1, Search_F1_Line2, Search_F1_Line3, Search_F1_Line4, Search_G1, Search_F2 })]
+        [InlineData(new[] { Search_F1, Search_G1, Search_F2 }, "f", true, new[] { Search_F1, Search_F1_Line3, Search_F2 })]
+        [InlineData(new[] { Search_F1, Search_G1, Search_F2 }, "f", false, new[] { Search_F1_Line1, Search_F1_Line3, Search_F2 })]
+        [InlineData(new[] { "  " + Search_F1 + "  ", "  " + Search_G1 + "  ", "  " + Search_F2 + "  " }, "f", true, new[] { Search_F1, Search_F1_Line3, Search_F2 })]
+        [InlineData(new[] { "  " + Search_F1 + "  ", "  " + Search_G1 + "  ", "  " + Search_F2 + "  " }, "f", false, new[] { Search_F1_Line1, Search_F1_Line3, Search_F2 })]
+        [InlineData(new[] { Search_F1, Search_G1, Search_F2 }, "g", true, new[] { Search_F1_Line2, Search_G1 })]
+        [InlineData(new[] { Search_F1, Search_G1, Search_F2 }, "g", false, new[] { Search_F1_Line2, Search_G1 })]
+        [InlineData(new[] { "  " + Search_F1 + "  ", "  " + Search_G1 + "  ", "  " + Search_F2 + "  " }, "g", true, new[] { Search_F1_Line2, Search_G1 })]
+        [InlineData(new[] { "  " + Search_F1 + "  ", "  " + Search_G1 + "  ", "  " + Search_F2 + "  " }, "g", false, new[] { Search_F1_Line2, Search_G1 })]
+        public void Search(string[] entries, string entryStart, bool isMultiline, string[] expected) {
+            var settings = new RSettingsStub { MultilineHistorySelection = isMultiline };
+            var history = new RHistory(_interactiveWorkflow, _textBuffer, null, settings, null, null, () => { });
+            foreach (var entry in entries) {
+                history.AddToHistory(entry);
+            }
+
+            history.Search(entryStart).Should().Equal(expected);
         }
     }
 }

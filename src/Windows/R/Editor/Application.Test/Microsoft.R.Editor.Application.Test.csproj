@@ -13,7 +13,6 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.props" />
@@ -116,7 +115,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="Documentation\SelectionTest.cs" />
     <Compile Include="Fixtures\EditorAppTestFilesFixture.cs" />
@@ -153,15 +151,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Files\Preview01.rmd.html" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

@@ -57,6 +57,19 @@ shift $((OPTIND-1))
 # ./Release/Setup/DebPackage/generate_copyright
 # ./Release/Setup/DebPackage/rtvsd.8
 
+echo "Setting deb package version"
+CURRENT_YEAR=$(date +%Y)
+RTVS_DEV_YEAR=`expr $CURRENT_YEAR - 2014`
+RTVS_BUILDNUM=$RTVS_DEV_YEAR$(date +%m%d)
+RTVS_REVISION=$(date +%H%M)
+RTVS_VERSION=$RTVS_VERSION_MAJOR_MINOR.$RTVS_BUILDNUM.$RTVS_REVISION
+RTVS_BUILD_DATE=$(date +%Y-%m-%d)
+RTVS_PKG_NAME="rtvs-daemon_$RTVS_VERSION_amd64.deb"
+
+echo "Remote R Version: $RTVS_VERSION"
+echo "Remote R Build date: $RTVS_BUILD_DATE"
+
+
 cd "$OUT_DIR"
 mkdir -p ./pkg/debian/DEBIAN
 mkdir -p ./pkg/debian/etc/pam.d
@@ -78,13 +91,13 @@ echo "prepare and place copyright"
 ./Setup/DebPackage/generate_copyright -m MIT.lic -g GPL.lic -i ./Setup/DebPackage/copyright.m4 > ./pkg/debian/usr/share/doc/rtvs-daemon/copyright
 
 echo "prepare and place control file"
-m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" ./Setup/DebPackage/control.m4 > ./pkg/debian/DEBIAN/control
+m4 --define=RTVS_VERSION="$RTVS_VERSION" ./Setup/DebPackage/control.m4 > ./pkg/debian/DEBIAN/control
 
 echo "copy conffiles"
 cp ./Setup/DebPackage/conffiles ./pkg/debian/DEBIAN
 
 echo "prepare and place change log"
-m4 --define=RTVS_VERSION="$RTVS_BUILD_VERSION" --define=RTVS_DATE="$RTVS_BUILD_DATE" ./Setup/DebPackage/copyright.m4  > ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
+m4 --define=RTVS_VERSION="$RTVS_VERSION" --define=RTVS_DATE="$RTVS_BUILD_DATE" ./Setup/DebPackage/copyright.m4  > ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
 cp ./Setup/DebPackage/changelog.Debian ./pkg/debian/usr/share/doc/rtvs-daemon && \
 gzip --best ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
 gzip --best ./pkg/debian/usr/share/doc/rtvs-daemon/changelog.Debian
@@ -122,5 +135,6 @@ cp ./Microsoft.R.Host.RunAsUser ./pkg/debian/usr/lib/rtvs && \
 fakeroot chown root:root ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser && \
 fakeroot chmod u+rwxs,g+rx,o+x ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser
 
-RTVS_PKG_NAME="rtvs-daemon_$RTVS_BUILD_VERSION_amd64.deb"
-fakeroot dpkg-deb --build ./pkg/debian "./pkg/$RTVS_PKG_NAME"
+echo "Building deb package"
+fakeroot dpkg-deb --build ./pkg/debian "./pkg/$RTVS_PKG_NAME" && \
+echo "Package name: $RTVS_PKG_NAME"

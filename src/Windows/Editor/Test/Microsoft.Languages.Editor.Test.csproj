@@ -43,7 +43,6 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ContainedLanguage\CommandTargetProxyTest.cs" />
     <Compile Include="Helpers\HelpersTest.cs" />
     <Compile Include="Idle\IdleTaskQueueTest.cs" />
@@ -104,12 +103,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\..\UnitTests\app.config">
       <Link>app.config</Link>
       <SubType>Designer</SubType>
@@ -119,11 +112,5 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

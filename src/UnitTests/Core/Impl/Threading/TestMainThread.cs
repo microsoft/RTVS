@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 
@@ -21,12 +22,14 @@ namespace Microsoft.UnitTests.Core.Threading {
         public void Dispose() => _onDispose();
 
         public void Post(Action action, CancellationToken cancellationToken) {
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken);
             var bl = _blockingLoop.Value;
             if (bl != null) {
                 bl.Post(action);
             } else {
-                UIThreadHelper.Instance.InvokeAsync(action, cts.Token).DoNotWait();
+                var token = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token;
+                var registration = token.Register(action, false);
+                var task = UIThreadHelper.Instance.InvokeAsync(action);
+                registration.UnregisterOnCompletion(task);
             }
         }
 

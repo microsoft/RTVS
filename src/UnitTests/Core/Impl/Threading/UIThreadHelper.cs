@@ -86,12 +86,12 @@ namespace Microsoft.UnitTests.Core.Threading {
             exception?.Throw();
         }
 
-        public async Task InvokeAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task InvokeAsync(Action action) {
             ExceptionDispatchInfo exception;
             if (Thread == Thread.CurrentThread) {
                 exception = CallSafe(action);
             } else {
-                exception = await _application.Dispatcher.InvokeAsync(() => CallSafe(action), DispatcherPriority.Normal, cancellationToken);
+                exception = await _application.Dispatcher.InvokeAsync(() => CallSafe(action), DispatcherPriority.Normal);
             }
             exception?.Throw();
         }

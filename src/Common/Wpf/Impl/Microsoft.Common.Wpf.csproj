@@ -26,6 +26,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xaml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -34,9 +36,11 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="Collections\BatchObservableCollection.cs" />
+    <Compile Include="Controls\ExpandCollapseAutomationPeer.cs" />
+    <Compile Include="Controls\ExpandCollapseButton.cs" />
+    <Compile Include="Controls\ExpandCollapseMode.cs" />
     <Compile Include="Controls\Overlay.cs" />
     <Compile Include="Extensions\VisualTreeExtensions.cs" />
     <Compile Include="Imaging\BitmapImageFactory.cs" />
@@ -44,16 +48,11 @@
     <Compile Include="LambdaConverter\LambdaConverter.cs" />
     <Compile Include="LambdaConverter\LambdaExtension.cs" />
     <Compile Include="LambdaConverter\LambdaProperties.cs" />
+    <Compile Include="LambdaConverter\StyleSetterExtension.cs" />
     <Compile Include="Selectors\TypeDataTemplateSelector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.csproj">

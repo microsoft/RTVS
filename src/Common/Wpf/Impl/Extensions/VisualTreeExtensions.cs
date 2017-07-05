@@ -26,6 +26,34 @@ namespace Microsoft.Common.Wpf.Extensions {
             return null;
         }
 
+        public static T GetParentOfType<T>(this DependencyObject o) where T : DependencyObject {
+            while (o != null) {
+                var parent = VisualTreeHelper.GetParent(o);
+                var typedParent = parent as T;
+                if (typedParent != null) {
+                    return typedParent;
+                }
+                o = parent;
+            }
+
+            return null;
+        }
+
+        public static IEnumerable<T> GetChildrenOfType<T>(this DependencyObject o) where T : DependencyObject {
+            var queue = new Queue<DependencyObject>();
+            queue.Enqueue(o);
+            while (queue.Count > 0) {
+                foreach (var child in EnumerateVisualChildren(queue.Dequeue())) {
+                    var typedChild = child as T;
+                    if (typedChild != null) {
+                        yield return typedChild;
+                    } else {
+                        queue.Enqueue(child);
+                    }
+                }
+            }
+        }
+
         public static T FindNextVisualSiblingOfType<T>(DependencyObject o) where T : DependencyObject {
             var parent = VisualTreeHelper.GetParent(o);
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);

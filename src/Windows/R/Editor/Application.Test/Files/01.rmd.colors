@@ -1,6 +1,6 @@
-[0:6] Markdown Monospace
-[8:6] Markdown Italic Text
-[71:8] Markdown Bold Text
+[0:6] R Markdown Monospace
+[8:6] R Markdown Italic Text
+[71:8] R Markdown Bold Text
 [24:2] keyword
 [27:4] keyword
 [39:2] operator

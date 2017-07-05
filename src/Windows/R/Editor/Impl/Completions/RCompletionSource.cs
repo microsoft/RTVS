@@ -67,7 +67,16 @@ namespace Microsoft.R.Editor.Completions {
         /// <param name="completionSets">Completion sets to add to</param>
         /// <param name="ast">Document abstract syntax tree</param>
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
-            var context = new RIntellisenseContext(new EditorIntellisenseSession(session, _services), _textBuffer.ToEditorBuffer(), ast, position);
+            var textViewProperties = session.TextView.Properties;
+            if (textViewProperties.TryGetProperty(RCompletionController.IsRHistoryRequest, out bool isRHistoryRequest)) {
+                textViewProperties.RemoveProperty(RCompletionController.IsRHistoryRequest);
+            }
+
+            var context = new RIntellisenseContext(new EditorIntellisenseSession(session, _services)
+                , _textBuffer.ToEditorBuffer()
+                , ast
+                , position
+                , isRHistoryRequest: isRHistoryRequest);
             var providers = _completionEngine.GetCompletionForLocation(context);
 
             // Position is in R as is the applicable spa, so no need to map down

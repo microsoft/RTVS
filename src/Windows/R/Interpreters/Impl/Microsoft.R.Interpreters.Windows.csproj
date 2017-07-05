@@ -30,7 +30,6 @@
     <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ServicesExtensions.cs" />
     <Compile Include="SqlRClientInstallation.cs" />
     <Compile Include="Resources.Designer.cs">
@@ -44,12 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">

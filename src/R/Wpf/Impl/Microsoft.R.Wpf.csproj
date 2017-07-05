@@ -30,7 +30,6 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="Brushes.cs" />
     <Compile Include="Controls\IconWithOverlay.xaml.cs">
@@ -56,12 +55,6 @@
       <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

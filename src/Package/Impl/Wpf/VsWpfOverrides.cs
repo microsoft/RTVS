@@ -30,12 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             OverrideStyleKeys();
         }
 
-        private static void OverrideBrushes()
-        {
-            if (SystemParameters.HighContrast) {
-                return; // Use system theme colors
-            }
-
+        private static void OverrideBrushes() {
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
             Brushes.ButtonFaceBrushKey = EnvironmentColors.SystemButtonFaceBrushKey;
@@ -134,6 +129,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             Brushes.TreeViewBackgroundTextBrushKey = TreeViewColors.BackgroundTextBrushKey;
             Brushes.TreeViewSelectedItemActiveBrushKey = TreeViewColors.SelectedItemActiveBrushKey;
             Brushes.TreeViewSelectedItemActiveTextBrushKey = TreeViewColors.SelectedItemActiveTextBrushKey;
+            Brushes.TreeViewSelectedItemInactiveBrushKey = TreeViewColors.SelectedItemInactiveBrushKey;
+            Brushes.TreeViewSelectedItemInactiveTextBrushKey = TreeViewColors.SelectedItemInactiveTextBrushKey;
             Brushes.TreeViewGlyphBrushKey = TreeViewColors.GlyphBrushKey;
             Brushes.TreeViewGlyphMouseOverBrushKey = TreeViewColors.GlyphMouseOverBrushKey;
 

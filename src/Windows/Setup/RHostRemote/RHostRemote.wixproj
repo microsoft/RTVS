@@ -6,9 +6,10 @@
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\..\..\R.Build.Version.targets" />
   <Import Project="..\..\..\R.Wix.props" />
+  <Import Project="..\..\..\R.Wix311.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform>AnyCPU</Platform>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
@@ -30,13 +31,13 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>
     <Chip>x86</Chip>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86'">
     <Chip>x86</Chip>
     <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>

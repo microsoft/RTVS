@@ -70,6 +70,7 @@ add.details <- function(repo.available, repo.url) {
     tryCatch({
         pkg.rds.path <- download.packages.rds(repo.url)
         repo.details <- read.packages.rds(pkg.rds.path)
+        repo.details <- repo.details[!duplicated(repo.details$Package),]
         repo.available.with.details <- merge(repo.available, repo.details, by = 'Package', all.x = TRUE)
 
         # merged data frame lost its row names, so add them back

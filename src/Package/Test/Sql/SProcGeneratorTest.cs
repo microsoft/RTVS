@@ -22,15 +22,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         private const string sqlProjectName = "db.sqlproj";
 
         private readonly PackageTestFilesFixture _files;
-        private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
         private readonly EnvDTE.Project _project;
 
         public SProcGeneratorTest(PackageTestFilesFixture files) {
             _files = files;
-            _coreShell = Substitute.For<ICoreShell>();
             _pss = Substitute.For<IProjectSystemServices>();
-
             _project = Substitute.For<EnvDTE.Project>();
             _project.FullName.Returns(Path.Combine(_files.DestinationPath, sqlProjectName));
         }

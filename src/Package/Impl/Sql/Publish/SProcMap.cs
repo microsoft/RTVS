@@ -9,8 +9,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private readonly Dictionary<string, string> _map = new Dictionary<string, string>();
 
         public string this[string name] {
-            get { return _map[name]; }
-            set { _map[name] = value; }
+            get => _map[name];
+            set => _map[name] = value;
         }
 
         public IEnumerable<string> Scripts => _map.Values;

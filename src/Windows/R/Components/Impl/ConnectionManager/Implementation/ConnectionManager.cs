@@ -40,7 +40,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private readonly IRInstallationService _installationService;
         private readonly object _syncObj = new object();
         private volatile bool _isFirstConnectionAttempt = true;
-        private bool _disposed;
 
         public bool IsConnected { get; private set; }
         public bool IsRunning { get; private set; }
@@ -93,22 +92,13 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void AddToStatusBar(FrameworkElement element, object dataContext) {
-            lock (_syncObj) {
-                // This only happens in tests when fixture is disposed
-                // from background thread and main thread completion comes late.
-                // TODO: Figure out of this can be improved in the test framework.
-                if (!_disposed) {
-                    element.DataContext = dataContext;
-                    _disposableBag.Add(_statusBar.AddItem(element));
-                }
+            if (_disposableBag.TryAdd(_statusBar.AddItem(element))) {
+                element.DataContext = dataContext;
             }
         }
 
         public void Dispose() {
-            lock (_syncObj) {
-                _disposed = true;
-                _disposableBag.TryDispose();
-            }
+            _disposableBag.TryDispose();
         }
 
         public IConnectionManagerVisualComponent GetOrCreateVisualComponent(int instanceId = 0) {

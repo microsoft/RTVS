@@ -15,7 +15,7 @@ namespace Microsoft.Languages.Editor.Completions {
     /// Base completion controller. Not language specific.
     /// </summary>
     public abstract class CompletionController : IIntellisenseController {
-        public const string AutoShownCompletion = "AutoShownCompletion";
+        public const string AutoShownCompletion = nameof(AutoShownCompletion);
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
         public ITextView TextView { get; private set; }

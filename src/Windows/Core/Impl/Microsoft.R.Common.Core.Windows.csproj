@@ -30,7 +30,6 @@
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="Composition\INamedExport.cs" />
     <Compile Include="Composition\NamedExportLocator.cs" />
     <Compile Include="Extensions\CompositionBatchExtensions.cs" />
@@ -84,12 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
-      <Authenticode>Microsoft</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

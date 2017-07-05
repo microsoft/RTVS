@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IProjectSystemServices _projectSystemServices;
         private readonly IProjectConfigurationSettingsProvider _projectConfigurationSettingsProvider;
 
-        public ConfigurationSettingCommand(
+        protected ConfigurationSettingCommand(
                 int id, string settingNameTemplate,
                 IProjectSystemServices pss,
                 IProjectConfigurationSettingsProvider pcsp,
@@ -36,10 +36,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             if (configuredProject != null) {
                 using (var access = await _projectConfigurationSettingsProvider.OpenProjectSettingsAccessAsync(configuredProject)) {
                     name = access.Settings.FindNextAvailableSettingName(_settingNameTemplate);
-                    var s = new ConfigurationSetting(name, value ?? name, ConfigurationSettingValueType.String);
-                    s.EditorType = ConnectionStringEditor.ConnectionStringEditorName;
-                    s.Category = ConnectionStringEditor.ConnectionStringEditorCategory;
-                    s.Description = Resources.ConnectionStringDescription;
+                    var s = new ConfigurationSetting(name, value ?? name, ConfigurationSettingValueType.String) {
+                        EditorType = ConnectionStringEditor.ConnectionStringEditorName,
+                        Category = ConnectionStringEditor.ConnectionStringEditorCategory,
+                        Description = Resources.ConnectionStringDescription
+                    };
                     access.Settings.Add(s);
                 }
             }

@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.History.Implementation {
     internal class RHistoryFiltering : IRHistoryFiltering {
         private const string IntraTextAdornmentBufferKey = "IntraTextAdornmentBuffer";
 
-        private readonly IRHistory _history;
+        private readonly IRHistoryVisual _history;
         private readonly IRSettings _settings;
         private readonly ITextSearchService2 _textSearchService;
         private readonly ITextView _textView;
@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.History.Implementation {
 
         private string _searchPattern;
 
-        public RHistoryFiltering(IRHistory history, IRHistoryWindowVisualComponent visualComponent, IRSettings settings, ITextSearchService2 textSearchService) {
+        public RHistoryFiltering(IRHistoryVisual history, IRHistoryWindowVisualComponent visualComponent, IRSettings settings, ITextSearchService2 textSearchService) {
             _history = history;
             _history.HistoryChanging += HistoryChanging;
             _history.HistoryChanged += HistoryChanged;

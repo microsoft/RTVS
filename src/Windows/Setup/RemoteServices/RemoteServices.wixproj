@@ -6,9 +6,10 @@
   <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\..\..\R.Build.Version.targets" />
   <Import Project="..\..\..\R.Wix.props" />
+  <Import Project="..\..\..\R.Wix311.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform>x86</Platform>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>9A3D13C0-7685-4C5B-835C-9BFC9E42C0B0</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
@@ -66,29 +67,15 @@
     <Content Include="Feature.wxi" />
     <Content Include="Definitions.wxi" />
     <Content Include="project.json" />
-    <Content Include="RFile.ico" />
+    <Content Include="RFile.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="RtvsPackage.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
-      <Name>Microsoft.R.Host.Broker</Name>
-      <Project>{29e4fc48-39fb-45a1-b641-3e98e7d6ceef}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
-      <Name>Microsoft.R.Host.Client.Windows</Name>
-      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\RHostRemote\RHostRemote.wixproj">
-      <Name>SetupRHostRemote</Name>
-      <Project>{4aa5ce64-5be2-414c-8ad9-e3110e490dc4}</Project>
+    <ProjectReference Include="..\WixInstall\WixInstall.csproj">
+      <Name>WixInstall</Name>
+      <Project>{02157f86-0c66-4ee3-899b-2b11ff79a66a}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>

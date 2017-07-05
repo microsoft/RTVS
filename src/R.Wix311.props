@@ -1,0 +1,14 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <WixVersion>3.11.0</WixVersion>
+    <WIX Condition="'$(NuGetPackageRoot)' != '' ">$(NuGetPackageRoot)Wix\$(WixVersion)</WIX>
+    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
+    <WIX Condition="'$(WIX)' == ''">$(NugetDirectory)Wix\$(WixVersion)</WIX>
+    <WixInstallPath Condition=" '$(WixInstallPath)' == '' ">$(WIX)\tools</WixInstallPath>
+    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(WixInstallPath)\wix.targets</WixTargetsPath>
+    <WixTasksPath Condition=" '$(WixTasksPath)' == '' ">$(WixInstallPath)\WixTasks.dll</WixTasksPath>
+  </PropertyGroup>
+  <!-- Nuget does not like wixproj -->
+  <Target Name="_GenerateRestoreProjectPathWalk" />
+  <Target Name="_GenerateRestoreGraphProjectEntry" />
+</Project>

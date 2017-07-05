@@ -1385,6 +1385,51 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remote Project Path.
+        /// </summary>
+        public static string RunPropertyPage_RemoteProjectPath {
+            get {
+                return ResourceManager.GetString("RunPropertyPage_RemoteProjectPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Reset R Interactive on run.
+        /// </summary>
+        public static string RunPropertyPage_ResetReplOnRun {
+            get {
+                return ResourceManager.GetString("RunPropertyPage_ResetReplOnRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Startup file.
+        /// </summary>
+        public static string RunPropertyPage_StartupFile {
+            get {
+                return ResourceManager.GetString("RunPropertyPage_StartupFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files to transfer.
+        /// </summary>
+        public static string RunPropertyPage_TransferFilesFilter {
+            get {
+                return ResourceManager.GetString("RunPropertyPage_TransferFilesFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Transfer files on run.
+        /// </summary>
+        public static string RunPropertyPage_TransferFilesOnRun {
+            get {
+                return ResourceManager.GetString("RunPropertyPage_TransferFilesOnRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|.
         /// </summary>
         public static string SaveAsFilterMD {
@@ -3245,6 +3290,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SqlPublishDialog_TargetTypeDatabase {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_TargetTypeDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string SqlPublishDialog_TargetTypeFile {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetTypeFile", resourceCulture);
             }
         }
         

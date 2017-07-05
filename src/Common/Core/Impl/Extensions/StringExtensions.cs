@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -21,6 +22,43 @@ namespace Microsoft.Common.Core {
         public static int LastIndexOfIgnoreCase(this string s, string searchFor) => s.LastIndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
         public static int LastIndexOfIgnoreCase(this string s, string searchFor, int startIndex) => s.LastIndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
         public static bool ContainsIgnoreCase(this string s, string prefix) => s.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0;
+
+        public static IEnumerable<int> AllIndexesOfIgnoreCase(this string s, string value, int startIndex = 0, bool allowOverlap = false) {
+            var i = startIndex;
+            while (i < s.Length) {
+                i = s.IndexOf(value, i, StringComparison.OrdinalIgnoreCase);
+                if (i < 0) {
+                    break;
+                }
+
+                yield return i;
+                i = allowOverlap ? i + value.Length : i + 1;
+            }
+        }
+
+        public static bool IsStartOfNewLine(this string s, int index, bool ignoreWhitespaces = false) {
+            if (index < 0 || index >= s.Length) {
+                return false;
+            }
+
+            if (s[index].IsLineBreak()) {
+                return false;
+            }
+
+            while (index > 0) {
+                index--;
+                var ch = s[index];
+                if (ch.IsLineBreak()) {
+                    return true;
+                }
+
+                if (!ignoreWhitespaces || !char.IsWhiteSpace(ch)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         public static string TrimQuotes(this string s) {
             if (s.Length > 0) {

@@ -6,7 +6,7 @@
     <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
     <BinDirectory Condition="'$(BinDirectory)' == ''">$(RootDirectory)bin\</BinDirectory>
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)obj\</ObjDirectory>
-    <SourceDirectory Condition="'$(SourceDirectory)' == ''">$(RootDirectory)src\</SourceDirectory>
+    <SourceDirectory>$(RootDirectory)src\</SourceDirectory>
     <MicroBuildPluginDirectory Condition=" '$(MicroBuildPluginDirectory)' == '' ">$(RootDirectory)\NugetPackages\</MicroBuildPluginDirectory>
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
     <!-- We do not strong name sign in desktop builds -->
@@ -43,6 +43,10 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>$(SourceDirectory)FinalPublicKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SignType)' != 'real' AND '$(SignType)' != 'test' ">
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

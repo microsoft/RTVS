@@ -10,6 +10,7 @@
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              wpf:LambdaProperties.ImportedNamespaces="Microsoft.R.Components.Plots.ViewModel"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.Plots.Implementation.View.DesignTime"
+             xmlns:controls="clr-namespace:Microsoft.Common.Wpf.Controls;assembly=Microsoft.R.Common.Wpf"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPlotHistoryViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="2000" d:DesignWidth="600"
@@ -59,11 +60,9 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type GroupItem}">
                                         <StackPanel>
-                                            <ToggleButton x:Name="Expander" IsChecked="True" Content="{Binding Path=Name}" Style="{StaticResource ExpandCollapseToggleStyle}"/>
-                                            <ItemsPresenter Margin="4" 
-                                                            Visibility="{Binding ElementName=Expander, Path=IsChecked, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
-                                            <Separator Margin="8 4 8 8"
-                                                       Foreground="{DynamicResource {x:Static rwpf:Brushes.BorderBrushKey}}"/>
+                                            <controls:ExpandCollapseButton x:Name="Expander" IsExpanded="True" Content="{Binding Path=Name}" Style="{StaticResource ExpandCollapseButtonStyle}"/>
+                                            <ItemsPresenter Margin="4" Visibility="{Binding ElementName=Expander, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+                                            <Separator Margin="8 4 8 8" Foreground="{DynamicResource {x:Static rwpf:Brushes.BorderBrushKey}}"/>
                                         </StackPanel>
                                     </ControlTemplate>
                                 </Setter.Value>

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,6 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Wpf.Themes;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -32,7 +32,7 @@ using static Microsoft.R.DataInspection.REvaluationResultProperties;
 using Brushes = Microsoft.R.Wpf.Brushes;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public partial class VariableView : UserControl, ICommandTarget, IDisposable {
+    public partial class VariableView : IDisposable {
         private readonly IRSettings _settings;
         private readonly IServiceContainer _services;
         private readonly IUIService _ui;
@@ -53,12 +53,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             InitializeComponent();
             SetImageBackground();
+            FocusManager.SetFocusedElement(this, RootTreeGrid);
 
             _aggregator = _services.GetService<IObjectDetailsViewerAggregator>();
             SetRootNode(VariableViewModel.Ellipsis);
 
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
+            RootTreeGrid.SelectionChanged += RootTreeGrid_SelectionChanged;
 
             var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _session = workflow.RSession;
@@ -80,6 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public void Dispose() {
             RootTreeGrid.Sorting -= RootTreeGrid_Sorting;
+            RootTreeGrid.SelectionChanged -= RootTreeGrid_SelectionChanged;
             _environmentProvider?.Dispose();
         }
 
@@ -98,6 +101,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             _rootNode.Sort();
             e.Handled = true;
+        }
+
+        private void RootTreeGrid_SelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs) {
+            _ui.UpdateCommandStatus();
         }
 
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -156,7 +163,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (row != null) {
                 SelectRow(row);
                 var pt = PointToScreen(e.GetPosition(this));
-                _services.ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                _services.ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
                 e.Handled = true;
             }
         }
@@ -169,7 +176,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             cell.Focus();
         }
 
-        protected override void OnPreviewKeyDown(KeyEventArgs e) {
+        private void OnItemsChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            if (RootTreeGrid.Items.Count > 0 && RootTreeGrid.SelectedIndex == -1) {
+                RootTreeGrid.SetCurrentItem(0);
+            }
+        }
+
+        private void OnPreviewKeyDown(object sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
                     // Track that we've seen key down here so when key up
@@ -195,19 +208,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                     break;
             }
-            base.OnPreviewKeyDown(e);
         }
 
-        private void ShowContextMenu() {
-            var focus = Keyboard.FocusedElement as FrameworkElement;
-            if (focus != null) {
-                var pt = focus.PointToScreen(new Point(1, 1));
-                _services.ShowContextMenu(
-                    new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
-            }
-        }
-
-        protected override void OnPreviewKeyUp(KeyEventArgs e) {
+        private void OnPreviewKeyUp(object sender, KeyEventArgs e) {
             // Prevent Enter from being passed to WPF control
             // when user hits it in the context menu
             if (e.Key == Key.Enter && _keyDownSeen) {
@@ -225,7 +228,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     selection.IsExpanded = !selection.IsExpanded;
                 }
             }
-            base.OnPreviewKeyUp(e);
+        }
+
+        private void ShowContextMenu() {
+            var focus = Keyboard.FocusedElement as FrameworkElement;
+            if (focus != null) {
+                var pt = focus.PointToScreen(new Point(1, 1));
+                _services.UI().ShowContextMenu(new CommandId(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y);
+            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
@@ -250,7 +260,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private Task DeleteCurrentVariableAsync() {
+        public Task DeleteCurrentVariableAsync() {
             var env = EnvironmentComboBox.SelectedItem as REnvironment;
             var model = GetCurrentSelectedModel();
             return model != null ? model.DeleteAsync(env?.EnvironmentExpression) : Task.CompletedTask;
@@ -312,77 +322,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
         #endregion
-
-        #region ICommandTarget
-        public CommandStatus Status(Guid group, int id) {
-            if (group == VSConstants.GUID_VSStandardCommandSet97) {
-                switch ((VSConstants.VSStd97CmdID)id) {
-                    case VSConstants.VSStd97CmdID.Copy:
-                    case VSConstants.VSStd97CmdID.Delete:
-                        return CommandStatus.SupportedAndEnabled;
-                }
-            } else if (group == RGuidList.RCmdSetGuid) {
-                var model = GetCurrentSelectedModel();
-                if (model != null) {
-                    switch (id) {
-                        case (int)RContextMenuId.VariableExplorer:
-                        case RPackageCommandId.icmdCopyValue:
-                            return CommandStatus.SupportedAndEnabled;
-                        case RPackageCommandId.icmdShowDetails:
-                            return model.CanShowDetail ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
-                        case RPackageCommandId.icmdOpenInCsvApp:
-                            return model.CanShowOpenCsv ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
-                    }
-                }
-            }
-            return CommandStatus.Invisible;
-        }
-
-        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var model = GetCurrentSelectedModel();
-            if (model != null) {
-                if (group == VSConstants.GUID_VSStandardCommandSet97) {
-                    switch ((VSConstants.VSStd97CmdID)id) {
-                        case VSConstants.VSStd97CmdID.Copy:
-                            CopyEntry(model);
-                            break;
-                        case VSConstants.VSStd97CmdID.Delete:
-                            DeleteCurrentVariableAsync().DoNotWait();
-                            break;
-                    }
-                } else if (group == RGuidList.RCmdSetGuid) {
-                    switch (id) {
-                        case RPackageCommandId.icmdCopyValue:
-                            CopyValue(model);
-                            break;
-                        case RPackageCommandId.icmdShowDetails:
-                            model?.ShowDetailCommand.Execute(model);
-                            break;
-                        case RPackageCommandId.icmdOpenInCsvApp:
-                            model?.OpenInCsvAppCommand.Execute(model);
-                            break;
-                    }
-                }
-            }
-            return CommandResult.Executed;
-        }
-
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) { }
-        #endregion
-
-        private VariableViewModel GetCurrentSelectedModel() {
-            var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
+        
+        public VariableViewModel GetCurrentSelectedModel() {
+            var selection = RootTreeGrid.SelectedItem as ObservableTreeNode;
             return selection?.Model?.Content as VariableViewModel;
         }
 
-        private void CopyEntry(VariableViewModel model) {
+        public void CopyEntry(VariableViewModel model) {
             if (model != null) {
                 string data = Invariant($"{model.Name} {model.Value} {model.Class} {model.TypeName}");
                 SetClipboardData(data);
             }
         }
 
-        private void CopyValue(VariableViewModel model) {
+        public void CopyValue(VariableViewModel model) {
             if (model != null) {
                 SetClipboardData(model.Value);
             }

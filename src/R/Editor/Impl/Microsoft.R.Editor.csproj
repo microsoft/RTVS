@@ -8,11 +8,6 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
-    <Compile Remove="Text\**" />
-    <EmbeddedResource Remove="Text\**" />
-    <None Remove="Text\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -47,5 +42,5 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" Condition="'$(Configuration)'=='Debug'" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

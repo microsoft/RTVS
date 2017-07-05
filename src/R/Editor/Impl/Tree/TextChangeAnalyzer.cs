@@ -1,10 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Tokens;
 
@@ -47,7 +51,7 @@ namespace Microsoft.R.Editor.Tree {
 
             if (string.IsNullOrWhiteSpace(change.OldText) && string.IsNullOrWhiteSpace(change.NewText)) {
                 // In R there is no line continuation so expression may change when user adds or deletes line breaks.
-                var lineBreakSensitive = node is If;
+                var lineBreakSensitive = IsLineBreakSensitive(context, node);
                 if (lineBreakSensitive) {
                     var oldLineText = change.OldTextProvider.GetText(new TextRange(change.Start, change.OldLength));
                     var newLineText = change.NewTextProvider.GetText(new TextRange(change.Start, change.NewLength));
@@ -63,6 +67,34 @@ namespace Microsoft.R.Editor.Tree {
             }
             return TextChangeType.Structure;
         }
+
+        private static bool IsLineBreakSensitive(TextChangeContext context, IAstNode node) {
+            if (node is If) {
+                return true;
+            }
+
+            var position = context.PendingChanges.Start;
+            var candidate = node.Root.GetNodeOfTypeFromPosition<If>(position);
+            if (candidate != null) {
+                return true;
+            }
+
+            // Check if line break is added to removed on a line with closing } of 'if'
+            // so we can full-parse if 'else' position changes relatively to the if
+            var snapshot = context.EditorTree.EditorBuffer.CurrentSnapshot;
+            var text = snapshot.GetLineFromPosition(context.PendingChanges.Start).GetText();
+
+            // We need to find if any position in the line belong to `if` scope
+            // if there is 'else' the same line
+            return FindKeyword("if", text) || FindKeyword("else", text);
+        }
+
+        private static bool FindKeyword(string keyword, string text)
+            => new RTokenizer()
+                .Tokenize(text)
+                .FirstOrDefault(t => 
+                        t.TokenType == RTokenType.Keyword && 
+                        string.Compare(text, t.Start, keyword, 0, keyword.Length, StringComparison.Ordinal) == 0) != null;
 
         private static bool IsChangeDestructiveForChildNodes(IAstNode node, ITextRange changedRange) {
             if (changedRange.End <= node.Start || changedRange.Start >= node.End) {

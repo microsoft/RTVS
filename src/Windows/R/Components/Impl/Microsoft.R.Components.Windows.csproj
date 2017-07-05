@@ -64,7 +64,6 @@
     <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
-    <Compile Include="AssemblyVersionInfo.cs" />
     <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
     <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerVisual.cs" />
@@ -103,6 +102,7 @@
     <Compile Include="Help\Commands\HelpRefreshCommand.cs" />
     <Compile Include="Help\IHelpVisualComponent.cs" />
     <Compile Include="Help\IHelpVisualComponentContainerFactory.cs" />
+    <Compile Include="History\ConnectionManagerExtensions.cs" />
     <Compile Include="History\Implementation\HistorySelectionTextAdornment.cs" />
     <Compile Include="History\Implementation\HistorySelectionTextAdornmentFactory.cs" />
     <Compile Include="History\Implementation\HistoryTextViewMouseProcessor.cs" />
@@ -117,11 +117,11 @@
     <Compile Include="History\Implementation\RHistoryProvider.cs" />
     <Compile Include="History\Implementation\RHistoryWindowVisualComponent.cs" />
     <Compile Include="History\Implementation\SinglelineRHistoryEntries.cs" />
-    <Compile Include="History\IRHistory.cs" />
     <Compile Include="History\IRHistoryEntries.cs" />
     <Compile Include="History\IRHistoryEntry.cs" />
     <Compile Include="History\IRHistoryFiltering.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
+    <Compile Include="History\IRHistoryVisual.cs" />
     <Compile Include="History\IRHistoryVisualComponent .cs" />
     <Compile Include="History\IRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryCommandIds.cs" />

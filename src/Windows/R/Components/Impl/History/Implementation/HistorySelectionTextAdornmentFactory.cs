@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -21,9 +22,9 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly IRHistoryProvider _historyProvider;
 
         [ImportingConstructor]
-        public HistorySelectionTextAdornmentFactory(IEditorFormatMapService editorFormatMapService, IRHistoryProvider historyProvider) {
+        public HistorySelectionTextAdornmentFactory(IEditorFormatMapService editorFormatMapService, ICoreShell shell) {
             _editorFormatMapService = editorFormatMapService;
-            _historyProvider = historyProvider;
+            _historyProvider = shell.Services.GetService<IRHistoryProvider>();
         }
 
         public void TextViewCreated(IWpfTextView textView) {
