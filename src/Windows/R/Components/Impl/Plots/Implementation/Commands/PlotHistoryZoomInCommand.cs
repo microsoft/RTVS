@@ -11,17 +11,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             base(interactiveWorkflow, visualComponent) {
         }
 
-        public CommandStatus Status {
-            get {
-                if (VisualComponent.CanIncreaseThumbnailSize) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
+        public override CommandStatus Status 
+            => VisualComponent.CanIncreaseThumbnailSize 
+                ? CommandStatus.SupportedAndEnabled 
+                : CommandStatus.Supported;
 
-                return CommandStatus.Supported;
-            }
-        }
-
-        public Task InvokeAsync() {
+        public override Task InvokeAsync() {
             VisualComponent.IncreaseThumbnailSize();
             return Task.CompletedTask;
         }

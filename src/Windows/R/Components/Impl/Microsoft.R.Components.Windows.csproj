@@ -46,7 +46,10 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\GlobalAssemblyInfo.cs">
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs">
+      <Link>Properties\AssemblyVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Application\Configuration\ConfigurationSettingAttributeNames.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistorySelectionCommand.cs" />
     <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryEntryViewModel.cs" />
     <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryViewModel.cs" />
     <Compile Include="Plots\Implementation\View\DragSurface.cs" />

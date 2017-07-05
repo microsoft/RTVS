@@ -19,8 +19,8 @@ using Microsoft.Common.Core.Services;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     public class VariableRHostScript : RHostScript {
+        private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
         private VariableViewModel _globalEnv;
-        private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
         public VariableRHostScript(IServiceContainer services)
             : base(services) { }

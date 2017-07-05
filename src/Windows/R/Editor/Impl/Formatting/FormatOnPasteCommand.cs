@@ -80,8 +80,8 @@ namespace Microsoft.R.Editor.Formatting {
                     var formatter = new RangeFormatter(Services);
                     formatter.FormatRange(TextView.ToEditorView(), editorBuffer,
                         new TextRange(insertionPoint.Value, text.Length));
-                    return CommandResult.Executed;
                 }
+                return CommandResult.Executed;
             }
             return CommandResult.NotSupported;
         }

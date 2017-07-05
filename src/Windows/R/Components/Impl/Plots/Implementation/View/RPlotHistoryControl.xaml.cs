@@ -13,9 +13,8 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
     /// <summary>
     /// Interaction logic for RPlotHistoryControl.xaml
     /// </summary>
-    public partial class RPlotHistoryControl : UserControl {
-        private IRPlotHistoryViewModel ViewModel => (IRPlotHistoryViewModel)DataContext;
-        private DragSurface _dragSurface = new DragSurface();
+    public partial class RPlotHistoryControl {
+        private readonly DragSurface _dragSurface = new DragSurface();
 
         /// <summary>
         /// Show context menu at the specified point, which is relative
@@ -29,7 +28,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void item_MouseDoubleClick(object sender, MouseEventArgs e) {
-            var entry = (IRPlotHistoryEntryViewModel)(((ListViewItem)sender).Content);
+            var entry = (IRPlotHistoryEntryViewModel)((ListViewItem)sender).Content;
             ActivatePlot(entry);
         }
 
@@ -38,16 +37,15 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
                 var entry = (IRPlotHistoryEntryViewModel)(((ListViewItem)sender).Content);
                 ActivatePlot(entry);
             } else if (e.Key == Key.Apps || (e.SystemKey == Key.F10 && (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)) {
-                ListViewItem item = (ListViewItem)sender;
+                var item = (ListViewItem)sender;
                 var point = item.TranslatePoint(new Point(1, 1), this);
                 ContextMenuRequested?.Invoke(this, new PointEventArgs(point));
                 e.Handled = true;
             }
         }
 
-        private void ActivatePlot(IRPlotHistoryEntryViewModel entry) {
-            entry.ActivatePlotAsync().DoNotWait();
-        }
+        private void ActivatePlot(IRPlotHistoryEntryViewModel entry) 
+            => entry.ActivatePlotAsync().DoNotWait();
 
         private void HistoryListView_MouseMove(object sender, MouseEventArgs e) {
             if (_dragSurface.IsMouseMoveStartingDrag(e)) {
@@ -62,13 +60,8 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             _dragSurface.MouseMove(e);
         }
 
-        private void HistoryListView_MouseLeave(object sender, MouseEventArgs e) {
-            _dragSurface.MouseLeave(e);
-        }
-
-        private void HistoryListView_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-            _dragSurface.MouseDown(e);
-        }
+        private void HistoryListView_MouseLeave(object sender, MouseEventArgs e) => _dragSurface.MouseLeave(e);
+        private void HistoryListView_PreviewMouseDown(object sender, MouseButtonEventArgs e) => _dragSurface.MouseDown(e);
 
         private void HistoryListView_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             var point = e.GetPosition(this);

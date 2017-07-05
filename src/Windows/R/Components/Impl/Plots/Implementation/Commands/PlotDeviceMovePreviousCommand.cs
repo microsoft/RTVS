@@ -13,16 +13,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             base(interactiveWorkflow, visualComponent) {
         }
 
-        public CommandStatus Status {
-            get {
-                if (VisualComponent.ActivePlotIndex > 0 &&
-                    !IsInLocatorMode) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-
-                return CommandStatus.Supported;
-            }
-        }
+        public CommandStatus Status
+            => VisualComponent.ActivePlotIndex > 0 && !IsInLocatorMode 
+                    ? CommandStatus.SupportedAndEnabled 
+                    : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
             try {

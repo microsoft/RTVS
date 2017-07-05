@@ -5,19 +5,21 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
+using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.ViewModel;
 
 namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
     public class RPlotHistoryViewModel : BindableBase, IRPlotHistoryViewModel {
+        private readonly RPlotHistoryControl _control;
         private readonly IRPlotManager _plotManager;
         private readonly IMainThread _mainThread;
         private readonly DisposableBag _disposableBag;
-        private IRPlotHistoryEntryViewModel _selectedPlot;
         private int _thumbnailSize = DefaultThumbnailSize;
 
         internal const int MinThumbnailSize = 48;
@@ -25,10 +27,12 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         private const int DefaultThumbnailSize = 96;
         private const int ThumbnailSizeIncrement = 48;
 
-        public RPlotHistoryViewModel(IRPlotManager plotManager, IMainThread mainThread) {
+        public RPlotHistoryViewModel(RPlotHistoryControl control, IRPlotManager plotManager, IMainThread mainThread) {
+            Check.ArgumentNull(nameof(control), control);
             Check.ArgumentNull(nameof(plotManager), plotManager);
             Check.ArgumentNull(nameof(mainThread), mainThread);
 
+            _control = control;
             _plotManager = plotManager;
             _mainThread = mainThread;
 
@@ -51,16 +55,20 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
         public bool ShowWatermark => Entries.Count == 0;
 
-        public ObservableCollection<IRPlotHistoryEntryViewModel> Entries { get; } = new ObservableCollection<IRPlotHistoryEntryViewModel>();
+        public ObservableCollection<IRPlotHistoryEntryViewModel> Entries { get; } =
+            new ObservableCollection<IRPlotHistoryEntryViewModel>();
 
-        public IRPlotHistoryEntryViewModel SelectedPlot {
-            get { return _selectedPlot; }
-            set { SetProperty(ref _selectedPlot, value); }
+        public IEnumerable<IRPlotHistoryEntryViewModel> SelectedPlots {
+            get {
+                foreach (var item in _control.HistoryListView.SelectedItems) {
+                    yield return (IRPlotHistoryEntryViewModel)item;
+                }
+            }
         }
 
         public int ThumbnailSize {
-            get { return _thumbnailSize; }
-            set { SetProperty(ref _thumbnailSize, value); }
+            get => _thumbnailSize;
+            set => SetProperty(ref _thumbnailSize, value);
         }
 
         public void DecreaseThumbnailSize() {
@@ -81,13 +89,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
 
         public void SelectEntry(IRPlot plot) {
             _mainThread.Assert();
-
-            foreach (var entry in Entries) {
-                if (entry.Plot == plot) {
-                    SelectedPlot = entry;
-                    break;
-                }
-            }
+            _control.HistoryListView.SelectedItem = Entries.FirstOrDefault(e => e.Plot == plot);
         }
 
         public void Dispose() {

@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -44,7 +45,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _workflow = services.GetService<IRInteractiveWorkflowVisualProvider>().GetOrCreate();
             _plotDeviceVisualComponentContainerFactory = services.GetService<TestRPlotDeviceVisualComponentContainerFactory>();
             _plotHistoryVisualComponentContainerFactory = services.GetService<IRPlotHistoryVisualComponentContainerFactory>();
-             _testMethod = testMethod.MethodInfo;
+            _testMethod = testMethod.MethodInfo;
             _remoteBroker = remoteBroker;
             _testFiles = testFiles;
             _ui = _workflow.Shell.UI() as TestUIServices;
@@ -891,7 +892,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 historyCommands.ActivatePlot.Should().BeDisabled();
 
                 // Select and activate the first plot
-                historyVC.SelectedPlot = _plotManager.ActiveDevice.GetPlotAt(0);
+                historyVC.SelectedPlots = new[] { _plotManager.ActiveDevice.GetPlotAt(0) };
                 historyCommands.ActivatePlot.Should().BeEnabled();
                 var plotReceivedTask = EventTaskSources.IRPlotDevice.PlotAddedOrUpdated.Create(_plotManager.ActiveDevice);
                 await historyCommands.ActivatePlot.InvokeAsync();
@@ -929,7 +930,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 var device2Commands = new RPlotDeviceCommands(_workflow, device2VC);
                 var plot2 = device2.ActivePlot;
 
-                historyVC.SelectedPlot = plot1;
+                historyVC.SelectedPlots = new[] { plot1 };
 
                 historyCommands.Copy.Should().BeEnabled();
                 await historyCommands.Copy.InvokeAsync();
@@ -972,11 +973,11 @@ namespace Microsoft.R.Components.Test.Plots {
                 var device2VC = _plotManager.GetPlotVisualComponent(device2);
                 var plot2 = device2.ActivePlot;
 
-                historyVC.SelectedPlot = null;
+                historyVC.SelectedPlots = Enumerable.Empty<IRPlot>();
                 historyCommands.Remove.Should().BeDisabled();
 
                 // Select the only plot in device 1 and remove it
-                historyVC.SelectedPlot = plot1;
+                historyVC.SelectedPlots = new[] { plot1 };
                 historyCommands.Remove.Should().BeEnabled();
                 var plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device1);
                 await historyCommands.Remove.InvokeAsync();
@@ -990,7 +991,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 _plotManager.ActiveDevice.Should().Be(device2);
 
                 // Select the only plot in device 2 and remove it
-                historyVC.SelectedPlot = plot2;
+                historyVC.SelectedPlots = new[] { plot2 };
                 historyCommands.Remove.Should().BeEnabled();
                 plotRemovedTask = EventTaskSources.IRPlotDevice.PlotRemoved.Create(device2);
                 await historyCommands.Remove.InvokeAsync();

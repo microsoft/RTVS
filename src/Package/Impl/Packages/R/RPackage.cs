@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
@@ -108,6 +109,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             { "R Lint", typeof(RLintOptionsDialog)},
         };
         private IPackageIndex _packageIndex;
+        private IFileSystem _fs;
 
         protected override void Initialize() {
             Current = this;
@@ -119,6 +121,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             CranMirrorList.Download();
             base.Initialize();
+
+            _fs = Services.FileSystem();
 
             ProjectIconProvider.LoadProjectImages(Services);
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
@@ -140,7 +144,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             LogCleanup.Cancel();
             ProjectIconProvider.Close();
-            CsvAppFileIO.Close(Services.FileSystem());
+
+            if (_fs != null) {
+                CsvAppFileIO.Close(_fs);
+            }
 
             RtvsTelemetry.Current?.Dispose();
             VsAppShell.Terminate();
