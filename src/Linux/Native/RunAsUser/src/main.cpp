@@ -31,7 +31,6 @@ static constexpr int RTVS_AUTH_OK           = 0;
 static constexpr int RTVS_AUTH_INIT_FAILED = 200;
 static constexpr int RTVS_AUTH_BAD_INPUT   = 201;
 static constexpr int RTVS_AUTH_NO_INPUT    = 202;
-static constexpr int RTVS_AUTH_NOT_ALLOWED = 203;
 
 static constexpr char RTVS_JSON_MSG_NAME[] = "name";
 static constexpr char RTVS_JSON_MSG_USERNAME[] = "username";
@@ -462,7 +461,7 @@ int authenticate_and_run(const picojson::object& json) {
             bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_group)) != user_groups.end();
             if (!user_allowed) {
                 logf(log_verbosity::minimal, "Error: User [%s] is not in the allowed group [%s]\n", user_name, allowed_group.c_str());
-                return RTVS_AUTH_NOT_ALLOWED;
+                return EACCES;
             }
         }
 

@@ -139,8 +139,6 @@ namespace Microsoft.R.Host.Broker.Services {
                     return Resources.Error_AuthBadInput;
                 case 202:
                     return Resources.Error_AuthNoInput;
-                case 203:
-                    return Resources.Error_AuthNotAllowed;
                 default:
                     return exitcode.ToString();
             }
