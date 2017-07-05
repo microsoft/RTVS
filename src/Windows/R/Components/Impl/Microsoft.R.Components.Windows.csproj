@@ -144,6 +144,7 @@
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\PlotHistoryCommand.cs" />
+    <Compile Include="Plots\Implementation\Commands\PlotHistorySelectionCommand.cs" />
     <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryEntryViewModel.cs" />
     <Compile Include="Plots\Implementation\View\DesignTime\DesignTimeRPlotHistoryViewModel.cs" />
     <Compile Include="Plots\Implementation\View\DragSurface.cs" />

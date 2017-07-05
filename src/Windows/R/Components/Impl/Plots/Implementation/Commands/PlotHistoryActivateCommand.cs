@@ -6,7 +6,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryActivateCommand : PlotHistoryCommand, IAsyncCommand {
+    internal sealed class PlotHistoryActivateCommand : PlotHistorySelectionCommand, IAsyncCommand {
         public PlotHistoryActivateCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
             base(interactiveWorkflow, visualComponent) {
         }

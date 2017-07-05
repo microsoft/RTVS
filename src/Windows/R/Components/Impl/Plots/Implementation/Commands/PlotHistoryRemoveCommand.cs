@@ -8,7 +8,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryRemoveCommand : PlotHistoryCommand, IAsyncCommand {
+    internal sealed class PlotHistoryRemoveCommand : PlotHistorySelectionCommand, IAsyncCommand {
         public PlotHistoryRemoveCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent) :
             base(interactiveWorkflow, visualComponent) {
         }

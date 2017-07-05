@@ -19,15 +19,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             VisualComponent = visualComponent;
         }
 
-        public virtual CommandStatus Status {
-            get {
-                var selection = VisualComponent.SelectedPlots.ToArray();
-                if (selection.Length > 0 && selection.All(p => !p.ParentDevice.LocatorMode)) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-                return CommandStatus.Supported;
-            }
-        }
+        public virtual CommandStatus Status => CommandStatus.NotSupported;
 
         protected virtual bool CanInvoke() => true;
 

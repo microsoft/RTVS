@@ -10,7 +10,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Components.Plots.Implementation.Commands {
-    internal sealed class PlotHistoryCutCopyCommand : PlotHistoryCommand, IAsyncCommand {
+    internal sealed class PlotHistoryCutCopyCommand : PlotHistorySelectionCommand, IAsyncCommand {
         private readonly bool _cut;
 
         public PlotHistoryCutCopyCommand(IRInteractiveWorkflow interactiveWorkflow, IRPlotHistoryVisualComponent visualComponent, bool cut) :
