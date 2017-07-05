@@ -116,13 +116,8 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         private static Process CreateRLaunchProcess(IProcessServices ps, bool authenticateOnly) {
-            // usage:
-            // Microsoft.R.Host.RunAsUser [-q]
-            //    -q: Quiet
-            const string rLaunchPath = "/usr/lib/rtvs/Microsoft.R.Host.RunAsUser";
-
             ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = rLaunchPath;
+            psi.FileName = UnixProcessServices.RunAsUserBinPath;
             psi.Arguments = authenticateOnly ? "" : "-q";
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;

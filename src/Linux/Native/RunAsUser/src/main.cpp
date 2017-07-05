@@ -301,6 +301,8 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
             err = ws;
         }
     }
+
+    return err;
 }
 
 int authenticate_and_run(const picojson::object& json) {
@@ -479,15 +481,20 @@ int authenticate_and_run(const picojson::object& json) {
 int main(int argc, char **argv) {
     int option = 0;
     bool quiet = false;
+    bool kill_mode = false;
+    char* pid_arg;
 #if NDEBUG
     log_verbosity logVerb = log_verbosity::traffic;
 #else
     log_verbosity logVerb = log_verbosity::normal;
 #endif
-    while ((option = getopt(argc, argv, "q")) != -1) {
+    while ((option = getopt(argc, argv, "qk:")) != -1) {
         switch (option) {
         case 'q':
             quiet = true;
+        case 'k':
+            kill_mode = true;
+            pid_arg = optarg;
         default:
             break;
         }
@@ -497,6 +504,16 @@ int main(int argc, char **argv) {
         flush_log();
     });
     init_log("", fs::temp_directory_path(), logVerb);
+
+    if (kill_mode) { // kill the selected process and return.
+        pid_t kill_pid = static_cast<pid_t>(atoi(pid_arg));
+        int err = 0;
+        if (kill(kill_pid, 9) == -1) { // SIGKILL
+            err = errno;
+            logf(log_verbosity::minimal, "Error [kill]:[%d] %s\n", err, strerror(err));
+        }
+        return 0;
+    }
 
     picojson::value json_value;
     std::string json_err = picojson::parse(json_value, read_string(stdin));

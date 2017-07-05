@@ -40,6 +40,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <unistd.h>
+#include <signal.h>
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <boost/endian/buffers.hpp>

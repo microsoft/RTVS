@@ -42,7 +42,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 throw new Win32Exception(process.ExitCode);
             }
 
-            return new UnixProcess(process);
+            return new UnixProcess(_ps, process);
         }
 
         private string GetLoadLibraryPath(string binPath) {

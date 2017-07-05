@@ -20,5 +20,12 @@ namespace Microsoft.Common.Core.OS {
         public Process Start(string path) {
             return Process.Start(path);
         }
+
+        // usage:
+        // Microsoft.R.Host.RunAsUser [-q]
+        //    -q: Quiet
+        //    -k <pid> : kill process
+        private const string runAsUserPath = "/usr/lib/rtvs/Microsoft.R.Host.RunAsUser";
+        public static string RunAsUserBinPath => runAsUserPath;
     }
 }

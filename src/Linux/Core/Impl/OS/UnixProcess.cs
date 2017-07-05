@@ -2,16 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace Microsoft.Common.Core.OS {
     public class UnixProcess : IProcess {
         private readonly Process _process;
-        public UnixProcess(Process process) {
+        private readonly IProcessServices _ps;
+        public UnixProcess(IProcessServices ps, Process process) {
+            _ps = ps;
             _process = process;
         }
 
@@ -36,9 +35,17 @@ namespace Microsoft.Common.Core.OS {
             }
         }
 
-
         public void Kill() {
-            _process.Kill();
+            // This is needed because broker user cannot kill process running as another user.
+            KillProcess(_ps, _process.Id);
+        }
+
+        private static void KillProcess(IProcessServices ps, int pid) {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = UnixProcessServices.RunAsUserBinPath;
+            psi.Arguments = "-k {pid}";
+            Process proc = ps.Start(psi);
+            proc.WaitForExit(1000);
         }
     }
 }
