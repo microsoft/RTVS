@@ -451,25 +451,15 @@ int authenticate_and_run(const picojson::object& json) {
             gid_t allowed_gid = gp->gr_gid;
 
             int ngroups = 1000;
-            gid_t *user_groups = calloc_or_exit<gid_t*>(ngroups, sizeof(gid_t));
-            SCOPE_WARDEN(_auth_scope_exit, {
-                if (user_groups) {
-                    free(user_groups);
-                }
-            });
-            if (getgrouplist(user_name, user_gid, user_groups, &ngroups) == -1) {
+            std::vector<gid_t> user_groups(ngroups);
+            if (getgrouplist(user_name, user_gid, user_groups.data(), &ngroups) == -1) {
                 err = errno;
                 logf(log_verbosity::minimal, "Error [getgrouplist]:[%d] %s\n", err, strerror(err));
                 return err;
             }
 
-            bool user_allowed = false;
-            for (int j = 0; j < ngroups; j++) {
-                if (allowed_gid == user_groups[j]) {
-                    user_allowed = true;
-                }
-            }
-
+            user_groups.resize(ngroups);
+            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_group)) != user_groups.end();
             if (!user_allowed) {
                 logf(log_verbosity::minimal, "Error: User [%s] is not in the allowed group [%s]\n", user_name, allowed_group.c_str());
                 return RTVS_AUTH_NOT_ALLOWED;

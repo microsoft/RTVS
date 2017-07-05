@@ -40,8 +40,5 @@ namespace Microsoft.R.Host.Broker.Services {
             }
             return Task.FromResult<ClaimsPrincipal>(null);
         }
-
-
-
     }
 }
