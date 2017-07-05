@@ -321,6 +321,9 @@
   <data name="PackageManager_PackageUpdateWarning" xml:space="preserve">
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
   </data>
+  <data name="PackageManager_VerticalSplitter" xml:space="preserve">
+    <value>Vertical splitter</value>
+  </data>
   <data name="ConnectionManager_LocalConnections" xml:space="preserve">
     <value>Local</value>
   </data>

@@ -60,7 +60,9 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type GroupItem}">
                                         <StackPanel>
-                                            <controls:ExpandCollapseButton x:Name="Expander" IsExpanded="True" Content="{Binding Path=Name}" Style="{StaticResource ExpandCollapseButtonStyle}"/>
+                                            <controls:ExpandCollapseButton x:Name="Expander" IsExpanded="True" 
+                                                                           Content="{Binding Path=Name}" Style="{StaticResource ExpandCollapseButtonStyle}"
+                                                                           AutomationProperties.Name="{Binding Path=Name}"/>
                                             <ItemsPresenter Margin="4" Visibility="{Binding ElementName=Expander, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
                                             <Separator Margin="8 4 8 8" Foreground="{DynamicResource {x:Static rwpf:Brushes.BorderBrushKey}}"/>
                                         </StackPanel>
