@@ -43,7 +43,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\AssemblyVersionInfo.cs">
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
