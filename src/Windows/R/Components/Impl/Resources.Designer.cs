@@ -288,20 +288,11 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collapse list of local R installations.
+        ///   Looks up a localized string similar to Local R installations.
         /// </summary>
-        public static string ConnectionManager_LocalConnections_Collapse {
+        public static string ConnectionManager_LocalConnections_Tooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_LocalConnections_Collapse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Expand list of local R installations.
-        /// </summary>
-        public static string ConnectionManager_LocalConnections_Expand {
-            get {
-                return ResourceManager.GetString("ConnectionManager_LocalConnections_Expand", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_LocalConnections_Tooltip", resourceCulture);
             }
         }
         
@@ -360,20 +351,11 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Collapse list of remote workspaces.
+        ///   Looks up a localized string similar to Remote R installations.
         /// </summary>
-        public static string ConnectionManager_RemoteConnections_Collapse {
+        public static string ConnectionManager_RemoteConnections_Tooltip {
             get {
-                return ResourceManager.GetString("ConnectionManager_RemoteConnections_Collapse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Expand list of remote workspaces.
-        /// </summary>
-        public static string ConnectionManager_RemoteConnections_Expand {
-            get {
-                return ResourceManager.GetString("ConnectionManager_RemoteConnections_Expand", resourceCulture);
+                return ResourceManager.GetString("ConnectionManager_RemoteConnections_Tooltip", resourceCulture);
             }
         }
         

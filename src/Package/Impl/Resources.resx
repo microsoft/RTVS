@@ -1305,4 +1305,19 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="SqlPublishDialog_TargetTypeFile" xml:space="preserve">
     <value>File</value>
   </data>
+  <data name="RunPropertyPage_StartupFile" xml:space="preserve">
+    <value>Startup file</value>
+  </data>
+  <data name="RunPropertyPage_ResetReplOnRun" xml:space="preserve">
+    <value>_Reset R Interactive on run</value>
+  </data>
+  <data name="RunPropertyPage_RemoteProjectPath" xml:space="preserve">
+    <value>Remote Project Path</value>
+  </data>
+  <data name="RunPropertyPage_TransferFilesOnRun" xml:space="preserve">
+    <value>_Transfer files on run</value>
+  </data>
+  <data name="RunPropertyPage_TransferFilesFilter" xml:space="preserve">
+    <value>Files to transfer</value>
+  </data>
 </root>

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
@@ -35,9 +36,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             Uri = null;
         }
 
-        public override Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
+        public override async Task ShowHelpAsync(string url, CancellationToken cancellationToken) {
             Reset();
-            return UIThreadHelper.Instance.InvokeAsync(() => Component.Navigate(url), cancellationToken);
+            await UIThreadHelper.Instance.MainThread.SwitchToAsync(cancellationToken);
+            Component.Navigate(url);
         }
 
         public async Task WaitForReadyAndRenderedAsync(Action<int> idleAction, string testName) {

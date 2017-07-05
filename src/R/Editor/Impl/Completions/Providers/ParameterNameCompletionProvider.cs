@@ -32,11 +32,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-            FunctionCall funcCall;
             var functionGlyph = _imageService.GetImage(ImageType.ValueType);
 
-            // Safety checks
-            if (!ShouldProvideCompletions(context, out funcCall)) {
+            // Get AST function call for the parameter completion
+            var funcCall = GetFunctionCall(context);
+            if (funcCall == null) {
                 return completions;
             }
 
@@ -68,18 +68,27 @@ namespace Microsoft.R.Editor.Completions.Providers {
         }
         #endregion
 
-        private static bool ShouldProvideCompletions(IRIntellisenseContext context, out FunctionCall funcCall) {
+        private static FunctionCall GetFunctionCall(IRIntellisenseContext context) {
             // Safety checks
-            funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
-            if (funcCall?.OpenBrace == null || funcCall.Arguments == null) {
-                return false;
+            var funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
+            if (funcCall == null && context.Position > 0) {
+                // This may be the case when brace is not closed and the position is at the very end.
+                // Try stepping back one character and retry. If we find the function call, check that
+                // indeed a) brace is not closed and b) position is  at the very end of the function
+                // signature in order to avoid false positive in case of func()|.
+                funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position - 1);
+                if (funcCall == null || funcCall.CloseBrace != null || context.Position != funcCall.End) {
+                    return null;
+                }
+
+                return funcCall;
             }
 
-            if (context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
-                return false;
+            if (funcCall == null || context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
+                return null;
             }
 
-            return true;
+            return funcCall;
         }
 
         /// <summary>

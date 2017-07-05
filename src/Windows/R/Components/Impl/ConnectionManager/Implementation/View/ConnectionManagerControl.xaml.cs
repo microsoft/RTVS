@@ -23,9 +23,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
             _theme = services.GetService<IThemeUtilities>();
             var ui = services.UI();
-            if (ui != null) {
-                ui.UIThemeChanged += OnUIThemeChanged;
-            }
+            ui.UIThemeChanged += OnUIThemeChanged;
             SetImageBackground();
         }
 

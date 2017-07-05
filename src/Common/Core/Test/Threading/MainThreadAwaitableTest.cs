@@ -16,7 +16,7 @@ namespace Microsoft.Common.Core.Test.Threading {
         private readonly IMainThread _mainThread;
 
         public MainThreadAwaitableTest() {
-            _mainThread = new TestMainThread(UIThreadHelper.Instance);
+            _mainThread = UIThreadHelper.Instance.MainThread;
         }
 
         [Test]
@@ -65,17 +65,6 @@ namespace Microsoft.Common.Core.Test.Threading {
 
             Action a = () => awaitable.GetAwaiter().GetResult();
             a.ShouldThrow<OperationCanceledException>();
-        }
-        
-        private sealed class TestMainThread : IMainThread {
-            private readonly UIThreadHelper _threadHelper;
-
-            public TestMainThread(UIThreadHelper threadHelper) {
-                _threadHelper = threadHelper;
-            }
-
-            public int ThreadId => _threadHelper.Thread.ManagedThreadId;
-            public void Post(Action action, CancellationToken cancellationToken) => _threadHelper.InvokeAsync(action, cancellationToken).DoNotWait();
         }
     }
 }

@@ -37,11 +37,11 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter TrueIsCrossCursor { get; } = LambdaConverter.Create<bool>(x => x ? Cursors.Cross : Cursors.Arrow);
         public static IValueConverter TrueIsBold { get; } = LambdaConverter.Create<bool>(x => x ? FontWeights.Bold : FontWeights.Normal);
 
-        public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(x => x.Any());
-        public static IMultiValueConverter AnyIsHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Hidden : Visibility.Visible);
-        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Visible : Visibility.Hidden);
-        public static IMultiValueConverter AnyIsCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Collapsed : Visibility.Visible);
-        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any() ? Visibility.Visible : Visibility.Collapsed);
+        public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x));
+        public static IMultiValueConverter AnyIsHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Hidden : Visibility.Visible);
+        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Hidden);
+        public static IMultiValueConverter AnyIsCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Collapsed : Visibility.Visible);
+        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Collapsed);
         public static IMultiValueConverter All { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x));
         public static IMultiValueConverter AllIsHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Hidden : Visibility.Visible);
         public static IMultiValueConverter AllIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.All(x => x) ? Visibility.Visible : Visibility.Hidden);

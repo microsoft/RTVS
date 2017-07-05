@@ -35,7 +35,23 @@ namespace Microsoft.R.Host.Client {
         string Prompt { get; }
         bool IsHostRunning { get; }
         Task HostStarted { get; }
+
+        /// <summary>
+        /// The session is remote
+        /// </summary>
         bool IsRemote { get; }
+
+        /// <summary>
+        /// Session is currently processing user request.
+        /// </summary>
+        bool IsProcessing { get; }
+
+        /// <summary>
+        /// Session is currently at the prompt from user code
+        /// such as readline() or swirl()
+        /// </summary>
+        bool IsReadingUserInput { get; }
+
         bool RestartOnBrokerSwitch { get; set; }
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));

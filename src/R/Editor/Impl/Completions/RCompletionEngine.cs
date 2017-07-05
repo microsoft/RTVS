@@ -108,11 +108,8 @@ namespace Microsoft.R.Editor.Completions.Engine {
             if (IsPackageListCompletion(context.EditorBuffer, context.Position)) {
                 providers.Add(new PackagesCompletionProvider(packageIndex, _imageService));
             } else {
-                if (ast.IsInFunctionArgumentName<FunctionCall>(context.Position)) {
-                    var functionIndex = _services.GetService<IFunctionIndex>();
-                    providers.Add(new ParameterNameCompletionProvider(functionIndex, _imageService));
-                }
-
+                var functionIndex = _services.GetService<IFunctionIndex>();
+                providers.Add(new ParameterNameCompletionProvider(functionIndex, _imageService));
                 providers.Add(new KeywordCompletionProvider(_services));
                 providers.Add(new PackageFunctionCompletionProvider(_services));
                 providers.Add(new UserVariablesCompletionProvider(_imageService));

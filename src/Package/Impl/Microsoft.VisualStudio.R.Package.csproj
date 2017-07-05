@@ -73,6 +73,9 @@
     <Compile Include="Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
     <Compile Include="DataInspect\Commands\SessionCommand.cs" />
+    <Compile Include="DataInspect\Commands\CopyVariableCommand.cs" />
+    <Compile Include="DataInspect\Commands\CopyVariableValueCommand.cs" />
+    <Compile Include="DataInspect\Commands\VariableCommandBase.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
       <DependentUpon>EnterUrl.xaml</DependentUpon>
     </Compile>
@@ -97,14 +100,17 @@
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="DataInspect\Definitions\ViewerCapabilities.cs" />
     <Compile Include="DataInspect\Definitions\REnvironmentKind.cs" />
+    <Compile Include="DataInspect\Commands\DeleteVariableCommand.cs" />
     <Compile Include="DataInspect\Office\CsvAppFileIO.cs" />
     <Compile Include="DataInspect\Definitions\IREnvironment.cs" />
+    <Compile Include="DataInspect\Commands\OpenVariableInCsvCommand.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
     <Compile Include="DataInspect\REnvironmentsChangedEventArgs.cs" />
     <Compile Include="DataInspect\REnvironmentProvider.cs" />
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridDataProvider.cs" />
+    <Compile Include="DataInspect\Commands\ShowVariableDetailsCommand.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\VariableSearchTask.cs" />
     <Compile Include="DataInspect\Viewers\DebugObjectEvaluator.cs" />

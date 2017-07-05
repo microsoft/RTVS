@@ -25,6 +25,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             Authors = "Microsoft Corporation";
             LibraryPath = "~/LibPath"; 
             RepositoryUri = new Uri("https://cran.rstudio.com");
+            RepositoryText = "https://cran.rstudio.com";
             Built = "R 3.3.0; ; 2016-02-16 11:24:44 UTC; windows";
             AccessibleDescription = "Accessible description";
 
