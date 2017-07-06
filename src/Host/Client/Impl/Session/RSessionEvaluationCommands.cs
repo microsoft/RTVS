@@ -221,10 +221,17 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
-            var cp = $".{codePage}";
-            if (codePage == 0 && !await evaluation.IsRSessionPlatformWindowsAsync(cancellationToken)) {
-                cp = "en_US.UTF-8";
+            string cp = null;
+            if (codePage == 0) {
+                // Non-Windows defaults to UTF-8, on Windows leave default alone.
+                if (!await evaluation.IsRSessionPlatformWindowsAsync(cancellationToken)) {
+                    cp = "en_US.UTF-8";
+                }
             }
+            else {
+                cp = Invariant($".{codePage}");
+            }
+
             if (!string.IsNullOrEmpty(cp)) {
                 var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
                 await evaluation.ExecuteAsync(script, cancellationToken);
