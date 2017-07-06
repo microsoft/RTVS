@@ -33,6 +33,8 @@
 #include <string>
 #include <mutex>
 #include <thread>
+#include <vector>
+#include <algorithm>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <pwd.h>

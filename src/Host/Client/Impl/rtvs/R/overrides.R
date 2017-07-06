@@ -88,15 +88,17 @@ suppress_ui <- function() {
     # TODO: provide localized replacement.
     not_supported <- function(...) { stop('Not supported') }
     
-    # Suppress Windows UI 
-    # http://astrostatistics.psu.edu/datasets/R/html/utils/html/winMenus.html
-    replace_function('bringToTop', 'grDevices', not_supported);
-    replace_function('winMenuAdd', 'utils', not_supported);
-    replace_function('winMenuAddItem', 'utils', not_supported);
-    replace_function('winMenuDel', 'utils', not_supported);
-    replace_function('winMenuDelItem', 'utils', not_supported);
-    replace_function('winMenuNames', 'utils', not_supported);
-    replace_function('winMenuItems', 'utils', not_supported);
+    if (tolower(.Platform$OS.type) == "windows"){
+        # Suppress Windows UI 
+        # http://astrostatistics.psu.edu/datasets/R/html/utils/html/winMenus.html
+        replace_function('bringToTop', 'grDevices', not_supported);
+        replace_function('winMenuAdd', 'utils', not_supported);
+        replace_function('winMenuAddItem', 'utils', not_supported);
+        replace_function('winMenuDel', 'utils', not_supported);
+        replace_function('winMenuDelItem', 'utils', not_supported);
+        replace_function('winMenuNames', 'utils', not_supported);
+        replace_function('winMenuItems', 'utils', not_supported);
+    }
 }
 
 

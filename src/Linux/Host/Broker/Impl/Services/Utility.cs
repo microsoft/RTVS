@@ -46,7 +46,7 @@ namespace Microsoft.R.Host.Broker.Services {
             return proc;
         }
 
-        public static bool AuthenticateUser(ILogger<IAuthenticationService> logger, IProcessServices ps,  string username, string password, out string profileDir) {
+        public static bool AuthenticateUser(ILogger<IAuthenticationService> logger, IProcessServices ps,  string username, string password, string allowedGroup, out string profileDir) {
             bool retval = false;
             Process proc = null;
             string userDir = string.Empty;
@@ -54,7 +54,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 proc = CreateRLaunchProcess(ps, true);
                 using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true))
                 using (BinaryReader reader = new BinaryReader(proc.StandardOutput.BaseStream, Encoding.UTF8, true)) {
-                    var message = new AuthenticationOnlyMessage() { Username = GetUnixUserName(username), Password = password };
+                    var message = new AuthenticationOnlyMessage() { Username = GetUnixUserName(username), Password = password, AllowedGroup = allowedGroup };
                     string json = JsonConvert.SerializeObject(message, GetJsonSettings());
                     var jsonBytes = Encoding.UTF8.GetBytes(json);
                     writer.Write(jsonBytes.Length);

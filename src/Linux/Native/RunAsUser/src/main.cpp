@@ -38,6 +38,7 @@ static constexpr char RTVS_JSON_MSG_PASSWORD[] = "password";
 static constexpr char RTVS_JSON_MSG_ARGS[] = "arguments";
 static constexpr char RTVS_JSON_MSG_ENV[] = "environment";
 static constexpr char RTVS_JSON_MSG_CWD[] = "workingDirectory";
+static constexpr char RTVS_JSON_MSG_GRP[] = "allowedGroup";
 
 static constexpr char RTVS_RESPONSE_TYPE_PAM_INFO[] = "pam-info";
 static constexpr char RTVS_RESPONSE_TYPE_PAM_ERROR[] = "pam-error";
@@ -423,12 +424,6 @@ int authenticate_and_run(const picojson::object& json) {
 
     logf(log_verbosity::minimal, "PAM authentication succeeded for %s\n", pam_user);
 
-    if (auth_only) {
-        std::string user_home = get_user_home(pam_user);
-        write_json(RTVS_RESPONSE_TYPE_RTVS_RESULT, user_home);
-        return err;
-    }
-
     // Have to set errno to 0 as per man pages for getpwnam
     errno = 0;
     struct passwd *pw = getpwnam(pam_user);
@@ -438,8 +433,45 @@ int authenticate_and_run(const picojson::object& json) {
         return err;
     }
 
+    char *user_name = strdup(pw->pw_name);
+    gid_t user_gid = pw->pw_gid;
+    uid_t user_id = pw->pw_uid;
+
+    if (auth_only) {
+        std::string allowed_group(json[RTVS_JSON_MSG_GRP].get<std::string>());
+        if (!allowed_group.empty()) {
+            struct group *gp = getgrnam(allowed_group.c_str());
+            if (!gp) {
+                err = errno;
+                logf(log_verbosity::minimal, "Error [getgrnam]:[%d] %s\n", err, strerror(err));
+                return err;
+            }
+
+            gid_t allowed_gid = gp->gr_gid;
+
+            int ngroups = 1000;
+            std::vector<gid_t> user_groups(ngroups);
+            if (getgrouplist(user_name, user_gid, user_groups.data(), &ngroups) == -1) {
+                err = errno;
+                logf(log_verbosity::minimal, "Error [getgrouplist]:[%d] %s\n", err, strerror(err));
+                return err;
+            }
+
+            user_groups.resize(ngroups);
+            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_group)) != user_groups.end();
+            if (!user_allowed) {
+                logf(log_verbosity::minimal, "Error: User [%s] is not in the allowed group [%s]\n", user_name, allowed_group.c_str());
+                return EACCES;
+            }
+        }
+
+        std::string user_home = get_user_home(pam_user);
+        write_json(RTVS_RESPONSE_TYPE_RTVS_RESULT, user_home);
+        return err;
+    }
+
     // we get here only for Authenticate and Run case
-    err = run_rhost(json, pw->pw_name, pw->pw_gid, pw->pw_uid);
+    err = run_rhost(json, user_name, user_gid, user_id);
     return err;
 }
 
