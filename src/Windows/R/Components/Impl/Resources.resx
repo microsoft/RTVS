@@ -169,13 +169,13 @@
     <value>Warning: Interactive Window is disconnected from R Session, so there is no information about loaded packages.</value>
   </data>
   <data name="PackageManager_CantLoadAvailablePackages_NoConnection" xml:space="preserve">
-    <value>Error: Can't get list of available packages because connection to workspace failed.</value>
+    <value>Error: Can't get list of available packages because your R session is not running right now. Use the Workspaces window (R Tools | Windows | Workspaces) to start a new R session.</value>
   </data>
   <data name="PackageManager_CantLoadInstalledPackages_NoConnection" xml:space="preserve">
-    <value>Error: Can't get list of installed packages because connection to workspace failed.</value>
+    <value>Error: Can't get list of installed packages because your R session is not running right now. Use the Workspaces window (R Tools | Windows | Workspaces) to start a new R session.</value>
   </data>
   <data name="PackageManager_CantLoadLoadedPackages_NoConnection" xml:space="preserve">
-    <value>Error: Can't get list of loaded packages because connection to workspace failed.</value>
+    <value>Error: Can't get list of loaded packages because your R session is not running right now. Use the Workspaces window (R Tools | Windows | Workspaces) to start a new R session.</value>
   </data>
   <data name="PackageManager_CantLoadPackageNoRSession" xml:space="preserve">
     <value>Error: Package {0} can't be loaded because Interactive Window is disconnected from R session.</value>
@@ -320,6 +320,9 @@
   </data>
   <data name="PackageManager_PackageUpdateWarning" xml:space="preserve">
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
+  </data>
+  <data name="PackageManager_VerticalSplitter" xml:space="preserve">
+    <value>Vertical splitter</value>
   </data>
   <data name="ConnectionManager_LocalConnections" xml:space="preserve">
     <value>Local</value>

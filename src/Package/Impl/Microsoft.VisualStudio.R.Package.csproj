@@ -200,6 +200,9 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
+    <Compile Include="InfoBar\InfoBarEvents.cs" />
+    <Compile Include="InfoBar\VsInfoBar.cs" />
+    <Compile Include="InfoBar\VsInfoBarProvider.cs" />
     <Compile Include="Imaging\ImageService.cs" />
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\PreviewPositionTypeConverter.cs" />

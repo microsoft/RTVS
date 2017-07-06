@@ -1269,6 +1269,9 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Right" xml:space="preserve">
     <value>Right</value>
   </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
   <data name="Settings_MarkdownCategory_Preview" xml:space="preserve">
     <value>Preview</value>
   </data>

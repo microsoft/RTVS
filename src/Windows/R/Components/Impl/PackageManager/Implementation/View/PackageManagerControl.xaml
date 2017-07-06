@@ -15,35 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <view:PackageManagerResources />
             </ResourceDictionary.MergedDictionaries>
-            <Style x:Key="LinkButtonStyle" TargetType="{x:Type Button}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <TextBlock TextDecorations="Underline">
-                            <ContentPresenter />
-                            </TextBlock>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextKey}}" />
-                <Setter Property="Cursor" Value="Hand" />
-                <Setter Property="Margin" Value="5,0"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextHoverKey}}" />
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-            <Style x:Key="StatusMessageTextBlockStyle" TargetType="TextBlock">
-                <Setter Property="TextTrimming" Value="WordEllipsis"/>
-                <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="3,0"/>
-                <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.InfoTextKey}}" />
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -55,22 +26,8 @@
                     <Binding ElementName="RootContent" Path="MinWidth" />
                 </MultiBinding>
             </DockPanel.MaxWidth>
-            <Grid DockPanel.Dock="Top" Background="{DynamicResource {x:Static rwpf:Brushes.InfoBackgroundKey}}" Margin="0" Height="22"
-                  Visibility="{Binding Path=FirstError, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="*" MinWidth="50"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="16"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" x:Name="MultiSourceErrorStatusMessageTextBlock" Style="{StaticResource StatusMessageTextBlockStyle}" Text="{Binding Path=FirstError, Mode=OneWay}" />
-                <Button Grid.Column="2" x:Name="ButtonDismiss" VerticalAlignment="Center" Content="{x:Static components:Resources.Dismiss}"
-                            Click="ButtonDismiss_Click" Style="{StaticResource LinkButtonStyle}"/>
-                <Button Grid.Column="3" x:Name="ButtonDismissAll" VerticalAlignment="Center" Content="{x:Static components:Resources.DismissAll}" 
-                            Visibility="{Binding Path=HasMultipleErrors, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
-                            Click="ButtonDismissAll_Click" Style="{StaticResource LinkButtonStyle}"/>
-            </Grid>
+            <Border DockPanel.Dock="Top" x:Name="InfoBarControlHost" VerticalAlignment="Center" HorizontalAlignment="Stretch" MinHeight="22" Margin="0"
+                    Visibility="{Binding Path=HasErrors, Mode=OneWay, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}" />
             <Grid DockPanel.Dock="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="14" />
@@ -136,7 +93,9 @@
                     </Grid>
 
                     <GridSplitter Grid.Column="1" Width="4" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" />
+                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" 
+                                  BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}"
+                                  AutomationProperties.Name="{x:Static components:Resources.PackageManager_VerticalSplitter}"/>
 
                     <!-- right side -->
                     <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" 

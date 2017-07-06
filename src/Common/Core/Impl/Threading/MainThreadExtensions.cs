@@ -11,6 +11,7 @@ namespace Microsoft.Common.Core.Threading {
 
         public static bool CheckAccess(this IMainThread mainThread)
             => Thread.CurrentThread.ManagedThreadId == mainThread.ThreadId;
+
         public static void ExecuteOrPost(this IMainThread mainThread, Action action, CancellationToken cancellationToken = default(CancellationToken)) {
             if (mainThread.CheckAccess()) {
                 action();

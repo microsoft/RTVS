@@ -14,8 +14,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         bool IsLoading { get; }
         bool ShowPackageManagerDisclaimer { get; set; }
 
-        string FirstError { get; }
-        bool HasMultipleErrors { get; }
+        bool HasErrors { get; }
         bool IsRemoteSession { get; }
 
         Task SwitchToAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken));
@@ -29,7 +28,5 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         Task LoadAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken));
         Task UnloadAsync(IRPackageViewModel package, CancellationToken cancellationToken = default(CancellationToken));
         Task DefaultActionAsync(CancellationToken cancellationToken = default(CancellationToken));
-        void DismissErrorMessage();
-        void DismissAllErrorMessages();
     }
 }

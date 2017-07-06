@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Components.InfoBar;
 using Microsoft.R.Components.PackageManager.Implementation.ViewModel;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Search;
@@ -17,18 +18,22 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly ISearchControl _searchControl;
 
         public RPackageManagerVisualComponent(IRPackageManager packageManager, IVisualComponentContainer<IRPackageManagerVisualComponent> container, ISearchControlProvider searchControlProvider, IServiceContainer services) {
-            _viewModel = new RPackageManagerViewModel(packageManager, services);
             Container = container;
-            var control = new PackageManagerControl(services) {
-                DataContext = _viewModel,
-            };
+            var control = new PackageManagerControl(services);
             Control = control;
+
+            var infoBarProvider = services.GetService<IInfoBarProvider>();
+            var infoBar = infoBarProvider.Create(control.InfoBarControlHost);
+            _viewModel = new RPackageManagerViewModel(packageManager, infoBar, services);
+            
             var searchControlSettings = new SearchControlSettings {
                 SearchCategory = SearchCategory,
                 MinWidth = (uint)control.SearchControlHost.MinWidth,
                 MaxWidth = uint.MaxValue
             };
             _searchControl = searchControlProvider.Create(control.SearchControlHost, _viewModel, searchControlSettings);
+
+            control.DataContext = _viewModel;
         }
 
         public void Dispose() {

@@ -43,7 +43,9 @@
                      Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
                      Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" 
                      IsReadOnly="True" AutomationProperties.Name="{x:Static pkg:Resources.Tab_InputFile}"/>
-            <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." Click="FileOpenButton_Click" VerticalAlignment="Center"
+            <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." 
+                    AutomationProperties.Name="{x:Static pkg:Resources.Browse}"
+                    Click="FileOpenButton_Click" VerticalAlignment="Center"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" MinHeight="22" MinWidth="22" 
                     FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" 
                     Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}"/>
