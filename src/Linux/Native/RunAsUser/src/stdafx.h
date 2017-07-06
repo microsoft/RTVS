@@ -48,6 +48,7 @@
 #include <libexplain/fork.h>
 #include <libexplain/waitpid.h>
 #include <libexplain/execve.h>
+#include <libexplain/execv.h>
 
 #include "boost/filesystem.hpp"
 

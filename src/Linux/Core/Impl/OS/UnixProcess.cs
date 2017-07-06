@@ -4,6 +4,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Common.Core.OS {
     public class UnixProcess : IProcess {
@@ -41,11 +44,16 @@ namespace Microsoft.Common.Core.OS {
         }
 
         private static void KillProcess(IProcessServices ps, int pid) {
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = UnixProcessServices.RunAsUserBinPath;
-            psi.Arguments = "-k {pid}";
-            Process proc = ps.Start(psi);
-            proc.WaitForExit(1000);
+            KillProcessMessage kpm = new KillProcessMessage() { ProcessId = pid };
+            string json = JsonConvert.SerializeObject(kpm, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            Process proc = UnixProcessServices.CreateRunAsUserProcess(ps, true);
+            using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
+                var jsonBytes = Encoding.UTF8.GetBytes(json);
+                writer.Write(jsonBytes.Length);
+                writer.Write(jsonBytes);
+                writer.Flush();
+                proc.WaitForExit(1000);
+            }
         }
     }
 }
