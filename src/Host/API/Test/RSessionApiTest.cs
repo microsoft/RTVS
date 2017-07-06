@@ -44,15 +44,14 @@ namespace Microsoft.R.Host.Client.Test.Session {
             result.Should().Be(2);
 
             Process.GetProcesses()
-                .Any(p => p.ProcessName.EqualsIgnoreCase("Microsoft.R.Host.Broker.exe"))
+                .Any(p => p.ProcessName.EqualsIgnoreCase("Microsoft.R.Host.Broker"))
                 .Should()
                 .BeTrue();
 
             RHostSession.TerminateBroker();
-            _session.IsHostRunning.Should().BeFalse();
 
             Process.GetProcesses()
-                .Any(p => p.ProcessName.EqualsIgnoreCase("Microsoft.R.Host.Broker.exe"))
+                .Any(p => p.ProcessName.EqualsIgnoreCase("Microsoft.R.Host.Broker"))
                 .Should()
                 .BeFalse();
         }
