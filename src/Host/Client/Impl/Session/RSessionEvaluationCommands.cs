@@ -221,12 +221,21 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
-            var cp = $".{codePage}";
+            string cp = null;
             if (codePage == 0) {
-                cp = await evaluation.IsRSessionPlatformWindowsAsync() ? ".437" : "en_US.UTF-8";
+                // Non-Windows defaults to UTF-8, on Windows leave default alone.
+                if (!await evaluation.IsRSessionPlatformWindowsAsync(cancellationToken)) {
+                    cp = "en_US.UTF-8";
+                }
             }
-            var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
-            await evaluation.ExecuteAsync(script, cancellationToken);
+            else {
+                cp = Invariant($".{codePage}");
+            }
+
+            if (!string.IsNullOrEmpty(cp)) {
+                var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
+                await evaluation.ExecuteAsync(script, cancellationToken);
+            }
         }
 
         public static Task OverrideFunctionAsync(this IRExpressionEvaluator evaluation, string name, string ns) {

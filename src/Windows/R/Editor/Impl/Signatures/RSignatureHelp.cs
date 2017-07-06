@@ -66,14 +66,14 @@ namespace Microsoft.R.Editor.Signatures {
         /// Current parameter for this signature.
         /// </summary>
         public IParameter CurrentParameter {
-            get => new RSignatureHelpParameter(this, FunctionSignatureHelp.CurrentParameter);
+            get => FunctionSignatureHelp.CurrentParameter != null ? new RSignatureHelpParameter(this, FunctionSignatureHelp.CurrentParameter) : null;
             set => FunctionSignatureHelp.CurrentParameter = (value as RSignatureHelpParameter)?.SignatureParameterHelp;
         }
         #endregion
 
         private void OnCurrentParameterChanged(object sender, SignatureParameterChangedEventArgs e) {
-            var prevParameter = new RSignatureHelpParameter(this, e.PreviousParameter);
-            var newParameter = new RSignatureHelpParameter(this, e.NewParameter);
+            var prevParameter = e.PreviousParameter != null ? new RSignatureHelpParameter(this, e.PreviousParameter) : null;
+            var newParameter = e.NewParameter != null ? new RSignatureHelpParameter(this, e.NewParameter) : null;
             CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(prevParameter, newParameter));
         }
     }
