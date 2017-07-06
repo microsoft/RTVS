@@ -222,11 +222,13 @@ grDevices::deviceIsInteractive('ide')
 
         public static async Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage, CancellationToken cancellationToken = default(CancellationToken)) {
             var cp = $".{codePage}";
-            if (codePage == 0) {
-                cp = await evaluation.IsRSessionPlatformWindowsAsync() ? ".437" : "en_US.UTF-8";
+            if (codePage == 0 && !await evaluation.IsRSessionPlatformWindowsAsync(cancellationToken)) {
+                cp = "en_US.UTF-8";
             }
-            var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
-            await evaluation.ExecuteAsync(script, cancellationToken);
+            if (!string.IsNullOrEmpty(cp)) {
+                var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cp}')");
+                await evaluation.ExecuteAsync(script, cancellationToken);
+            }
         }
 
         public static Task OverrideFunctionAsync(this IRExpressionEvaluator evaluation, string name, string ns) {
