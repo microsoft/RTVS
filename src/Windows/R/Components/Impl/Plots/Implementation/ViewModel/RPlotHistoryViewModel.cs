@@ -58,13 +58,8 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         public ObservableCollection<IRPlotHistoryEntryViewModel> Entries { get; } =
             new ObservableCollection<IRPlotHistoryEntryViewModel>();
 
-        public IEnumerable<IRPlotHistoryEntryViewModel> SelectedPlots {
-            get {
-                foreach (var item in _control.HistoryListView.SelectedItems) {
-                    yield return (IRPlotHistoryEntryViewModel)item;
-                }
-            }
-        }
+        public IEnumerable<IRPlotHistoryEntryViewModel> SelectedPlots 
+            => _control.HistoryListView.SelectedItems.Cast<IRPlotHistoryEntryViewModel>();
 
         public int ThumbnailSize {
             get => _thumbnailSize;

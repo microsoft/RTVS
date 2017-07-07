@@ -22,9 +22,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             var selection = VisualComponent.SelectedPlots.ToList();
             if (selection.Count > 0) {
                 try {
-                    var data = selection.Select(p => PlotClipboardData.Serialize(new PlotClipboardData(p.ParentDevice.DeviceId, p.PlotId, _cut))).ToArray();
-                    Clipboard.Clear();
-                    Clipboard.SetData(PlotClipboardData.Format, data);
+                    PlotClipboardData.ToClipboard(selection);
                 } catch (ExternalException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 }

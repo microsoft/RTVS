@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -44,15 +46,14 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             }
         }
 
-        private void ActivatePlot(IRPlotHistoryEntryViewModel entry) 
+        private void ActivatePlot(IRPlotHistoryEntryViewModel entry)
             => entry.ActivatePlotAsync().DoNotWait();
 
         private void HistoryListView_MouseMove(object sender, MouseEventArgs e) {
             if (_dragSurface.IsMouseMoveStartingDrag(e)) {
-                var entry = GetSourceListViewItem((DependencyObject)e.OriginalSource)?.DataContext as IRPlotHistoryEntryViewModel;
-                if (entry != null) {
-                    var data = PlotClipboardData.Serialize(new PlotClipboardData(entry.Plot.ParentDevice.DeviceId, entry.Plot.PlotId, false));
-                    var obj = new DataObject(PlotClipboardData.Format, data);
+                var plots = (DataContext as IRPlotHistoryViewModel)?.SelectedPlots?.Select(x => x.Plot).ToArray();
+                if (plots != null && plots.Length > 0) {
+                    var obj = PlotClipboardData.ToDataObject(plots);
                     DragDrop.DoDragDrop(HistoryListView, obj, DragDropEffects.Copy | DragDropEffects.Move);
                     return;
                 }
@@ -61,24 +62,36 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void HistoryListView_MouseLeave(object sender, MouseEventArgs e) => _dragSurface.MouseLeave(e);
-        private void HistoryListView_PreviewMouseDown(object sender, MouseButtonEventArgs e) => _dragSurface.MouseDown(e);
 
-        private void HistoryListView_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            var point = e.GetPosition(this);
-            ContextMenuRequested?.Invoke(this, new PointEventArgs(point));
+        private void HistoryListView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            _dragSurface.MouseDown(e);
+            var count = SelectedPlots.Count();
+            if (count == 0) {
+                return; // Allow selection
+            }
+
+            var control = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            if (!control) {
+                // Regular click clear selection then reselects
+                HistoryListView.SelectedItems.Clear();
+            }
         }
 
-        private static ListViewItem GetSourceListViewItem(DependencyObject obj) {
-            do {
-                var item = obj as ListViewItem;
-                if (item != null) {
-                    return item;
-                }
+        private void HistoryListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e) => e.Handled = true;
 
-                obj = VisualTreeHelper.GetParent(obj);
-            } while (obj != null);
+        private void HistoryListView_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var point = e.GetPosition(this);
+            ContextMenuRequested?.Invoke(this, new PointEventArgs(point));
+            e.Handled = true;
+        }
 
-            return null;
+        private void HistoryListView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) => e.Handled = true;
+
+        private IEnumerable<IRPlot> SelectedPlots {
+            get {
+                var selection = (DataContext as IRPlotHistoryViewModel)?.SelectedPlots;
+                return selection?.Select(p => p.Plot) ?? Enumerable.Empty<IRPlot>();
+            }
         }
     }
 }
