@@ -199,8 +199,7 @@ void start_rhost(const picojson::object& json) {
     // first item in the args must always be path to the binary
     std::string pathname(RTVS_RHOST_PATH);
     logf(log_verbosity::minimal, "Path: %s\n", pathname.c_str());
-    argv[0] = calloc_or_exit<char*>(pathname.size() + 1, sizeof **argv);
-    memcpy(argv[0], pathname.c_str(), pathname.size());
+    argv[0] = strdup(pathname.c_str());
 
     for (int i = 1; i < (argc - 1); ++i) {
         std::string item(json_args[i - 1].get<std::string>());
@@ -487,15 +486,9 @@ int kill_process(int pid) {
     std::string arg2(carg2); // SIGKILL
 
     std::string kill_path(RTVS_KILL_PATH);
-    args[0] = calloc_or_exit<char*>(kill_path.size() + 1, sizeof(char));
-    memcpy(args[0], kill_path.c_str(), kill_path.size());
-
-    args[1] = calloc_or_exit<char*>(arg1.size() + 1, sizeof(char));
-    memcpy(args[1], arg1.c_str(), arg1.size());
-
-    args[2] = calloc_or_exit<char*>(arg2.size() + 1, sizeof(char));
-    memcpy(args[2], arg2.c_str(), arg2.size());
-
+    args[0] = strdup(kill_path.c_str());
+    args[1] = strdup(arg1.c_str());
+    args[2] = strdup(arg2.c_str());
     args[3] = NULL;
 
     int pid = fork();
