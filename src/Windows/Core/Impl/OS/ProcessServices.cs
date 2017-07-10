@@ -10,5 +10,8 @@ namespace Microsoft.Common.Core.OS {
         public Process Start(string path) => Process.Start(path);
 
         public string MessageFromExitCode(int processExitCode) => ErrorCodeConverter.MessageFromErrorCode(processExitCode);
+
+        public void Kill(IProcess process) => process.Kill();
+        public void Kill(int pid) => (Process.GetProcessById(pid)).Kill();
     }
 }

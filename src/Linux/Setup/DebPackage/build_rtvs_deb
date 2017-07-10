@@ -64,7 +64,7 @@ RTVS_BUILDNUM=$RTVS_DEV_YEAR$(date +%m%d)
 RTVS_REVISION=$(date +%H%M)
 RTVS_VERSION=$RTVS_VERSION_MAJOR_MINOR.$RTVS_BUILDNUM.$RTVS_REVISION
 RTVS_BUILD_DATE=$(date +%Y-%m-%d)
-RTVS_PKG_NAME="rtvs-daemon_$RTVS_VERSION_amd64.deb"
+RTVS_PKG_NAME="rtvs-daemon_"$RTVS_VERSION"_amd64.deb"
 
 echo "Remote R Version: $RTVS_VERSION"
 echo "Remote R Build date: $RTVS_BUILD_DATE"

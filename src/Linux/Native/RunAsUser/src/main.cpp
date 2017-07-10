@@ -39,6 +39,7 @@ static constexpr char RTVS_JSON_MSG_ARGS[] = "arguments";
 static constexpr char RTVS_JSON_MSG_ENV[] = "environment";
 static constexpr char RTVS_JSON_MSG_CWD[] = "workingDirectory";
 static constexpr char RTVS_JSON_MSG_GRP[] = "allowedGroup";
+static constexpr char RTVS_JSON_MSG_PID[] = "processId";
 
 static constexpr char RTVS_RESPONSE_TYPE_PAM_INFO[] = "pam-info";
 static constexpr char RTVS_RESPONSE_TYPE_PAM_ERROR[] = "pam-error";
@@ -49,8 +50,10 @@ static constexpr char RTVS_RESPONSE_TYPE_RTVS_ERROR[] = "rtvs-error";
 
 static constexpr char RTVS_MSG_AUTH_ONLY[] = "AuthOnly";
 static constexpr char RTVS_MSG_AUTH_AND_RUN[] = "AuthAndRun";
+static constexpr char RTVS_MSG_KILL_PROCESS[] = "KillProcess";
 
 static constexpr char RTVS_RHOST_PATH[] = "/usr/lib/rtvs/Microsoft.R.Host";
+static constexpr char RTVS_KILL_PATH[] = "/bin/kill";
 
 std::string read_string(FILE* stream) {
     boost::endian::little_uint32_buf_t data_size;
@@ -185,7 +188,7 @@ T calloc_or_exit(size_t count, size_t size) {
 }
 
 void start_rhost(const picojson::object& json) {
-    logf(log_verbosity::traffic, "Gathering RHost arguments.\n");
+    logf(log_verbosity::traffic, "Gathering Microsoft.R.Host arguments.\n");
     // construct arguments
     picojson::array json_args(json[RTVS_JSON_MSG_ARGS].get<picojson::array>());
 
@@ -196,20 +199,18 @@ void start_rhost(const picojson::object& json) {
     // first item in the args must always be path to the binary
     std::string pathname(RTVS_RHOST_PATH);
     logf(log_verbosity::minimal, "Path: %s\n", pathname.c_str());
-    argv[0] = calloc_or_exit<char*>(pathname.size() + 1, sizeof **argv);
-    memcpy(argv[0], pathname.c_str(), pathname.size());
+    argv[0] = strdup(pathname.c_str());
 
     for (int i = 1; i < (argc - 1); ++i) {
         std::string item(json_args[i - 1].get<std::string>());
         logf(log_verbosity::minimal, "Args: %s\n", item.c_str());
-        argv[i] = calloc_or_exit<char*>(item.size() + 1, sizeof **argv);
-        memcpy(argv[i], item.c_str(), item.size());
+        argv[i] = strdup(item.c_str());
     }
 
     // explicit null for the end of arguments
     argv[argc - 1] = NULL;
 
-    logf(log_verbosity::traffic, "Building RHost environment.\n");
+    logf(log_verbosity::traffic, "Building Microsoft.R.Host environment.\n");
     // construct environment
     picojson::array json_env = json[RTVS_JSON_MSG_ENV].get<picojson::array>();
 
@@ -220,14 +221,13 @@ void start_rhost(const picojson::object& json) {
     for (int i = 0; i < (envc - 1); ++i) {
         std::string env(json_env[i].get<std::string>());
         logf(log_verbosity::minimal, "Env: %s", env.c_str());
-        envp[i] = calloc_or_exit<char*>(env.size() + 1, sizeof **envp);
-        memcpy(envp[i], env.c_str(), env.size());
+        envp[i] = strdup(env.c_str());
     }
 
     // explicit null for the end of enironment
     envp[envc - 1] = NULL;
 
-    logf(log_verbosity::traffic, "Starting RHost Process\n");
+    logf(log_verbosity::traffic, "Starting Microsoft.R.Host Process\n");
     execve(RTVS_RHOST_PATH, argv, envp);
     int err = errno;
     logf(log_verbosity::minimal, "Error [execve]: %s\n", explain_errno_execve(err, RTVS_RHOST_PATH, argv, envp));
@@ -292,15 +292,17 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
         if (WIFEXITED(ws)) {
             err = WEXITSTATUS(ws);
             if (err) {
-                logf(log_verbosity::minimal, "Error rhost exited:[%d] %s\n", err, strerror(err));
+                logf(log_verbosity::minimal, "Error Microsoft.R.Host exited:[%d] %s\n", err, strerror(err));
             } else {
-                logf(log_verbosity::minimal, "RHost exited.\n");
+                logf(log_verbosity::minimal, "Microsoft.R.Host exited normally.\n");
             }
         } else if (WIFSIGNALED(ws)) {
-            logf(log_verbosity::minimal, "Error rhost terminated by a signal: %d\n", WTERMSIG(ws));
+            logf(log_verbosity::minimal, "Error Microsoft.R.Host terminated by a signal: %d\n", WTERMSIG(ws));
             err = ws;
         }
     }
+
+    return err;
 }
 
 int authenticate_and_run(const picojson::object& json) {
@@ -458,7 +460,7 @@ int authenticate_and_run(const picojson::object& json) {
             }
 
             user_groups.resize(ngroups);
-            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_group)) != user_groups.end();
+            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_gid)) != user_groups.end();
             if (!user_allowed) {
                 logf(log_verbosity::minimal, "Error: User [%s] is not in the allowed group [%s]\n", user_name, allowed_group.c_str());
                 return EACCES;
@@ -475,23 +477,63 @@ int authenticate_and_run(const picojson::object& json) {
     return err;
 }
 
+int kill_process(int pid) {
+    int err = 0;
+    char** args = calloc_or_exit<char**>(4, sizeof(char*));
+    std::string arg1("-9"); // SIGKILL
+    char carg2[100] = {}; // pid
+    sprintf(carg2, "%d", pid);
+    std::string arg2(carg2); // SIGKILL
 
+    std::string kill_path(RTVS_KILL_PATH);
+    args[0] = strdup(kill_path.c_str());
+    args[1] = strdup(arg1.c_str());
+    args[2] = strdup(arg2.c_str());
+    args[3] = NULL;
+
+    int pid = fork();
+    if (pid == -1) {
+        err = errno;
+        logf(log_verbosity::minimal, "Error [fork]: %s\n", explain_errno_fork(err));
+        return err;
+    } 
+    
+    if (pid == 0) {
+        execv(RTVS_KILL_PATH, args);
+        int err = errno;
+        logf(log_verbosity::minimal, "Error [execv]: %s\n", explain_errno_execv(err, RTVS_KILL_PATH, args));
+        _exit(err);
+    } else {
+        logf(log_verbosity::traffic, "Parent waiting for child pid: %d\n", pid);
+        int ws = 0;
+        pid_t hpid = waitpid(pid, &ws, 0);
+        if (hpid < 0) {
+            err = errno;
+            logf(log_verbosity::minimal, "Error [waitpid]: %s\n", explain_errno_waitpid(err, pid, ws, 0));
+        }
+
+        if (WIFEXITED(ws)) {
+            err = WEXITSTATUS(ws);
+            if (err) {
+                logf(log_verbosity::minimal, "Error kill exited:[%d] %s\n", err, strerror(err));
+            } else {
+                logf(log_verbosity::minimal, "kill exited normally.\n");
+            }
+        } else if (WIFSIGNALED(ws)) {
+            logf(log_verbosity::minimal, "Error kill terminated by a signal: %d\n", WTERMSIG(ws));
+            err = ws;
+        }
+    }
+
+    return err;
+}
 int main(int argc, char **argv) {
-    int option = 0;
-    bool quiet = false;
+    bool quiet = getopt(argc, argv, "q") == 'q';
 #if NDEBUG
     log_verbosity logVerb = log_verbosity::traffic;
 #else
     log_verbosity logVerb = log_verbosity::normal;
 #endif
-    while ((option = getopt(argc, argv, "q")) != -1) {
-        switch (option) {
-        case 'q':
-            quiet = true;
-        default:
-            break;
-        }
-    }
 
     SCOPE_WARDEN(_main_exit, {
         flush_log();
@@ -518,7 +560,9 @@ int main(int argc, char **argv) {
     picojson::object json = json_value.get<picojson::object>();
     std::string msg_name(json[RTVS_JSON_MSG_NAME].get<std::string>());
 
-    if (msg_name == RTVS_MSG_AUTH_ONLY || msg_name == RTVS_MSG_AUTH_AND_RUN) {
+    if (msg_name == RTVS_MSG_KILL_PROCESS) {
+        return kill_process((int)json[RTVS_JSON_MSG_PID].get<double>());
+    } else if (msg_name == RTVS_MSG_AUTH_ONLY || msg_name == RTVS_MSG_AUTH_AND_RUN) {
         return authenticate_and_run(json);
     } else {
         if (!quiet) {

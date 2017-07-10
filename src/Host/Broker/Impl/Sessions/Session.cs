@@ -132,8 +132,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _sessionLogger.LogTrace("Killing host process for session '{0}'.", Id);
 
             try {
-                _process?.Kill();
-            } catch (Exception ex) {
+                if (!(_process?.HasExited).Value) {
+                    _process?.Kill();
+                }
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _sessionLogger.LogError(0, ex, "Failed to kill host process for session '{0}'.", Id);
                 throw;
             }
