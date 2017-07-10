@@ -27,7 +27,7 @@ namespace Microsoft.R.Host.Broker.Services {
         private const string RtvsError = "rtvs-error";
 
         public static Process AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
-            Process proc = UnixProcessServices.CreateRunAsUserProcess(ps, true);
+            Process proc = CreateRunAsUserProcess(ps, true);
             using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
                 var message = new AuthenticateAndRunMessage() {
                     Username = GetUnixUserName(username),
@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Broker.Services {
             Process proc = null;
             string userDir = string.Empty;
             try {
-                proc = UnixProcessServices.CreateRunAsUserProcess(ps, false);
+                proc = CreateRunAsUserProcess(ps, false);
                 using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true))
                 using (BinaryReader reader = new BinaryReader(proc.StandardOutput.BaseStream, Encoding.UTF8, true)) {
                     var message = new AuthenticationOnlyMessage() { Username = GetUnixUserName(username), Password = password, AllowedGroup = allowedGroup };
@@ -143,6 +143,17 @@ namespace Microsoft.R.Host.Broker.Services {
             return new JsonSerializerSettings {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
+        }
+
+        private static Process CreateRunAsUserProcess(IProcessServices ps, bool quietMode) {
+        ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = PathConstants.RunAsUserBinPath;
+            psi.Arguments = quietMode ? "-q" : "";
+            psi.RedirectStandardError = true;
+            psi.RedirectStandardInput = true;
+            psi.RedirectStandardOutput = true;
+
+            return ps.Start(psi);
         }
     }
 }

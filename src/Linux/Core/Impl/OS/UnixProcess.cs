@@ -4,9 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Common.Core.OS {
     public class UnixProcess : IProcess {
@@ -40,20 +37,7 @@ namespace Microsoft.Common.Core.OS {
 
         public void Kill() {
             // This is needed because broker user cannot kill process running as another user.
-            KillProcess(_ps, _process.Id);
-        }
-
-        private static void KillProcess(IProcessServices ps, int pid) {
-            KillProcessMessage kpm = new KillProcessMessage() { ProcessId = pid };
-            string json = JsonConvert.SerializeObject(kpm, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-            Process proc = UnixProcessServices.CreateRunAsUserProcess(ps, true);
-            using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
-                var jsonBytes = Encoding.UTF8.GetBytes(json);
-                writer.Write(jsonBytes.Length);
-                writer.Write(jsonBytes);
-                writer.Flush();
-                proc.WaitForExit(1000);
-            }
+            _ps.Kill(_process.Id);
         }
     }
 }

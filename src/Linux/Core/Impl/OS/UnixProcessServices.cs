@@ -3,6 +3,10 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Common.Core.OS {
     public class UnixProcessServices : IProcessServices {
@@ -21,20 +25,29 @@ namespace Microsoft.Common.Core.OS {
             return Process.Start(path);
         }
 
-        // usage:
-        // Microsoft.R.Host.RunAsUser [-q]
-        //    -q: Quiet
-        private const string RunAsUserBinPath = "/usr/lib/rtvs/Microsoft.R.Host.RunAsUser";
+        public void Kill(IProcess process) {
+            Kill(process.Id);
+        }
 
-        public static Process CreateRunAsUserProcess(IProcessServices ps, bool quietMode) {
+        public void Kill(int pid) {
             ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = RunAsUserBinPath;
-            psi.Arguments = quietMode ? "-q" : "";
+            psi.FileName = PathConstants.RunAsUserBinPath;
+            psi.Arguments = "-q";
             psi.RedirectStandardError = true;
             psi.RedirectStandardInput = true;
             psi.RedirectStandardOutput = true;
 
-            return ps.Start(psi);
+            var proc = Process.Start(psi);
+
+            KillProcessMessage kpm = new KillProcessMessage() { ProcessId = pid };
+            string json = JsonConvert.SerializeObject(kpm, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
+                var jsonBytes = Encoding.UTF8.GetBytes(json);
+                writer.Write(jsonBytes.Length);
+                writer.Write(jsonBytes);
+                writer.Flush();
+                proc.WaitForExit(1000);
+            }
         }
     }
 }
