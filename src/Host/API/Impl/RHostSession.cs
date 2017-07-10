@@ -28,6 +28,8 @@ namespace Microsoft.R.Host.Client {
     /// Represents running R session
     /// </summary>
     public sealed partial class RHostSession : IRHostSession {
+        private static LocalBrokerClient _brokerClient;
+
         private readonly IRSession _session;
         private readonly DisposableBag _disposableBag;
         private IRHostSessionCallback _userSessionCallback;
@@ -75,9 +77,19 @@ namespace Microsoft.R.Host.Client {
                 url = engine.InstallPath;
             }
 
-            var ci = BrokerConnectionInfo.Create(name, url);
-            var bc = new LocalBrokerClient(name, ci, new CoreServices(), new NullConsole());
-            return new RHostSession(new RSession(0, name, bc, new NullLock(), () => { }));
+            if (_brokerClient == null) {
+                var ci = BrokerConnectionInfo.Create(name, url);
+                _brokerClient = new LocalBrokerClient(name, ci, new CoreServices(), new NullConsole());
+            }
+            return new RHostSession(new RSession(0, name, _brokerClient, new NullLock(), () => { }));
+        }
+
+        /// <summary>
+        /// Terminates broker process. If any sessions are active, they will terminated as well.
+        /// </summary>
+        public static void TerminateBroker() {
+            _brokerClient?.Dispose();
+            _brokerClient = null;
         }
 
         private RHostSession(IRSession session) {

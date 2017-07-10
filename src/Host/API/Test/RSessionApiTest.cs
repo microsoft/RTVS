@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -40,6 +42,18 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             var result = await _session.EvaluateAsync<int>("1+1");
             result.Should().Be(2);
+
+            Process.GetProcesses()
+                .Any(p => p.ProcessName.EqualsIgnoreCase("Microsoft.R.Host.Broker"))
+                .Should()
+                .BeTrue();
+
+            RHostSession.TerminateBroker();
+
+            Process.GetProcesses()
+                .Any(p => p.ProcessName.EqualsIgnoreCase("Microsoft.R.Host.Broker"))
+                .Should()
+                .BeFalse();
         }
 
         [Test]
