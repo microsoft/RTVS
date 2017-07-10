@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
     /// Provider of items for VS error list
     /// </summary>
     public sealed class VsTaskListProvider : ErrorListProvider {
-        private static Guid _taskListProviderGuid = new Guid("FE76E4B5-D946-4508-B0BA-B59CA995AAC0");
+        private static readonly Guid _taskListProviderGuid = new Guid("FE76E4B5-D946-4508-B0BA-B59CA995AAC0");
 
         private readonly Dictionary<IEditorTaskListItem, VsTaskItem> _itemMap = new Dictionary<IEditorTaskListItem, VsTaskItem>();
         private readonly IServiceContainer _services;
@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
                 var vsTask = new VsTaskItem(task, _source, _services);
                 _itemMap[task] = vsTask;
 
-                this.Tasks.Add(vsTask);
+                Tasks.Add(vsTask);
             }
 
             _dirty = true;
@@ -58,9 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
         private void OnTasksRemoved(object sender, TasksListItemsChangedEventArgs e) {
             SuspendRefresh();
             foreach (var task in e.Tasks) {
-                VsTaskItem vsTask;
-                if (_itemMap.TryGetValue(task, out vsTask)) {
-                    this.Tasks.Remove(vsTask);
+                if (_itemMap.TryGetValue(task, out var vsTask)) {
+                    Tasks.Remove(vsTask);
                     _itemMap.Remove(task);
                 }
             }
@@ -97,21 +96,15 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
             base.Dispose(disposing);
         }
 
-        private void OnIdle(object sender, EventArgs eventArgs) {
-            FlushTasks();
-        }
+        private void OnIdle(object sender, EventArgs eventArgs) => FlushTasks();
 
         internal void FlushTasks() {
             if (_dirty) {
                 _dirty = false;
 
-                SuspendRefresh();
-
-                foreach (VsTaskItem vsTaskItem in this.Tasks) {
+                foreach (VsTaskItem vsTaskItem in Tasks) {
                     vsTaskItem.Update();
                 }
-
-                ResumeRefresh();
             }
         }
     }

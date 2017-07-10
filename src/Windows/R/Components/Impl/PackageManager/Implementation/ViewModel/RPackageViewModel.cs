@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Wpf;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.R.Common.Core.UI;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
@@ -86,61 +86,61 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public string Name { get; }
 
         public string Title {
-            get { return _title; }
-            private set { SetProperty(ref _title, value); }
+            get => _title;
+            private set => SetProperty(ref _title, value);
         }
 
         public string Description {
-            get { return _description; }
-            private set { SetProperty(ref _description, value); }
+            get => _description;
+            private set => SetProperty(ref _description, value);
         }
 
         public string LatestVersion {
-            get { return _latestVersion; }
-            private set { SetProperty(ref _latestVersion, value); }
+            get => _latestVersion;
+            private set => SetProperty(ref _latestVersion, value);
         }
 
         public string InstalledVersion {
-            get { return _installedVersion; }
-            private set { SetProperty(ref _installedVersion, value); }
+            get => _installedVersion;
+            private set => SetProperty(ref _installedVersion, value);
         }
 
         public string Authors {
-            get { return _authors; }
-            private set { SetProperty(ref _authors, value); }
+            get => _authors;
+            private set => SetProperty(ref _authors, value);
         }
 
         public string License { get; private set; }
 
         public ICollection<string> Urls {
-            get { return _urls; }
-            private set { SetProperty(ref _urls, value); }
+            get => _urls;
+            private set => SetProperty(ref _urls, value);
         }
 
         public bool NeedsCompilation { get; private set; }
 
         public bool IsRemoteSession {
-            get { return _isRemoteSession; }
-            private set { SetProperty(ref _isRemoteSession, value); }
+            get => _isRemoteSession;
+            private set => SetProperty(ref _isRemoteSession, value);
         }
         public string LibraryPath {
-            get { return _libraryPath; }
-            private set { SetProperty(ref _libraryPath, value); }
+            get => _libraryPath;
+            private set => SetProperty(ref _libraryPath, value);
         }
 
         public string RepositoryText {
-            get { return _repositoryText; }
-            private set { SetProperty(ref _repositoryText, value); }
+            get => _repositoryText;
+            private set => SetProperty(ref _repositoryText, value);
         }
 
         public Uri RepositoryUri {
-            get { return _repositoryUri; }
-            private set { SetProperty(ref _repositoryUri, value); }
+            get => _repositoryUri;
+            private set => SetProperty(ref _repositoryUri, value);
         }
 
         public string Built {
-            get { return _built; }
-            private set { SetProperty(ref _built, value); }
+            get => _built;
+            private set => SetProperty(ref _built, value);
         }
 
         public string Depends { get; private set; }
@@ -148,38 +148,38 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public string Suggests { get; private set; }
 
         public bool IsUpdateAvailable {
-            get { return _isUpdateAvailable; }
-            private set { SetProperty(ref _isUpdateAvailable, value); }
+            get => _isUpdateAvailable;
+            private set => SetProperty(ref _isUpdateAvailable, value);
         }
 
         public bool IsInstalled {
-            get { return _isInstalled; }
-            set { SetProperty(ref _isInstalled, value); }
+            get => _isInstalled;
+            set => SetProperty(ref _isInstalled, value);
         }
 
         public bool IsLoaded {
-            get { return _isLoaded; }
-            set { SetProperty(ref _isLoaded, value); }
+            get => _isLoaded;
+            set => SetProperty(ref _isLoaded, value);
         }
 
         public bool CanBeUninstalled {
-            get { return _canBeUninstalled; }
-            set { SetProperty(ref _canBeUninstalled, value); }
+            get => _canBeUninstalled;
+            set => SetProperty(ref _canBeUninstalled, value);
         }
 
         public bool HasDetails {
-            get { return _hasDetails; }
-            private set { SetProperty(ref _hasDetails, value); }
+            get => _hasDetails;
+            private set => SetProperty(ref _hasDetails, value);
         }
 
         public bool IsChecked {
-            get { return _isChecked; }
-            set { SetProperty(ref _isChecked, value); }
+            get => _isChecked;
+            set => SetProperty(ref _isChecked, value);
         }
 
         public bool IsChanging {
-            get { return _isChanging; }
-            set { SetProperty(ref _isChanging, value); }
+            get => _isChanging;
+            set => SetProperty(ref _isChanging, value);
         }
 
         public RPackageViewModel(string name, IRPackageManagerViewModel owner) {

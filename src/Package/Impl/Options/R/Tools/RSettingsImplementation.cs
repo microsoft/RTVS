@@ -12,7 +12,7 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
@@ -60,13 +60,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public YesNo ShowWorkspaceSwitchConfirmationDialog {
-            get { return _showConfirmationDialogWhenSwitch; }
-            set { SetProperty(ref _showConfirmationDialogWhenSwitch, value); }
+            get => _showConfirmationDialogWhenSwitch;
+            set => SetProperty(ref _showConfirmationDialogWhenSwitch, value);
         }
 
         public YesNo ShowSaveOnResetConfirmationDialog {
-            get { return _showShowSaveOnResetConfirmationDialog; }
-            set { SetProperty(ref _showShowSaveOnResetConfirmationDialog, value); }
+            get => _showShowSaveOnResetConfirmationDialog;
+            set => SetProperty(ref _showShowSaveOnResetConfirmationDialog, value);
         }
 
         /// <summary>
@@ -74,57 +74,57 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// 'C:\Program Files\R\R-3.2.2' without bin\x64
         /// </summary>
         public YesNoAsk LoadRDataOnProjectLoad {
-            get { return _loadRDataOnProjectLoad; }
-            set { SetProperty(ref _loadRDataOnProjectLoad, value); }
+            get => _loadRDataOnProjectLoad;
+            set => SetProperty(ref _loadRDataOnProjectLoad, value);
         }
 
         public YesNoAsk SaveRDataOnProjectUnload {
-            get { return _saveRDataOnProjectUnload; }
-            set { SetProperty(ref _saveRDataOnProjectUnload, value); }
+            get => _saveRDataOnProjectUnload;
+            set => SetProperty(ref _saveRDataOnProjectUnload, value);
         }
 
         public bool AlwaysSaveHistory {
-            get { return _alwaysSaveHistory; }
-            set { SetProperty(ref _alwaysSaveHistory, value); }
+            get => _alwaysSaveHistory;
+            set => SetProperty(ref _alwaysSaveHistory, value);
         }
 
         public bool ClearFilterOnAddHistory {
-            get { return _clearFilterOnAddHistory; }
-            set { SetProperty(ref _clearFilterOnAddHistory, value); }
+            get => _clearFilterOnAddHistory;
+            set => SetProperty(ref _clearFilterOnAddHistory, value);
         }
 
         public bool MultilineHistorySelection {
-            get { return _multilineHistorySelection; }
-            set { SetProperty(ref _multilineHistorySelection, value); }
+            get => _multilineHistorySelection;
+            set => SetProperty(ref _multilineHistorySelection, value);
         }
 
         public bool ShowPackageManagerDisclaimer {
-            get { return _showPackageManagerDisclaimer; }
-            set { SetProperty(ref _showPackageManagerDisclaimer, value); }
+            get => _showPackageManagerDisclaimer;
+            set => SetProperty(ref _showPackageManagerDisclaimer, value);
         }
 
         public string CranMirror {
-            get { return _cranMirror; }
-            set { SetProperty(ref _cranMirror, value); }
+            get => _cranMirror;
+            set => SetProperty(ref _cranMirror, value);
         }
 
         public int RCodePage {
-            get { return _codePage; }
-            set { SetProperty(ref _codePage, value); }
+            get => _codePage;
+            set => SetProperty(ref _codePage, value);
         }
 
         public ConnectionInfo[] Connections {
-            get { return _connections; }
-            set { SetProperty(ref _connections, value); }
+            get => _connections;
+            set => SetProperty(ref _connections, value);
         }
 
         public ConnectionInfo LastActiveConnection {
-            get { return _lastActiveConnection; }
-            set { SetProperty(ref _lastActiveConnection, value); }
+            get => _lastActiveConnection;
+            set => SetProperty(ref _lastActiveConnection, value);
         }
 
         public string WorkingDirectory {
-            get { return _workingDirectory; }
+            get => _workingDirectory;
             set {
                 var newDirectory = value;
                 var newDirectoryIsRoot = newDirectory.Length >= 2 && newDirectory[newDirectory.Length - 2] == Path.VolumeSeparatorChar;
@@ -145,63 +145,63 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public IEnumerable<string> WorkingDirectoryList { get; set; } = Enumerable.Empty<string>();
         public HelpBrowserType HelpBrowserType {
-            get { return _helpBrowserType; }
-            set { SetProperty(ref _helpBrowserType, value); }
+            get => _helpBrowserType;
+            set => SetProperty(ref _helpBrowserType, value);
         }
 
         public bool ShowDotPrefixedVariables {
-            get { return _showDotPrefixedVariables; }
-            set { SetProperty(ref _showDotPrefixedVariables, value); }
+            get => _showDotPrefixedVariables;
+            set => SetProperty(ref _showDotPrefixedVariables, value);
         }
 
         public SurveyNewsPolicy SurveyNewsCheck {
-            get { return _surveyNewsCheck; }
-            set { SetProperty(ref _surveyNewsCheck, value); }
+            get => _surveyNewsCheck;
+            set => SetProperty(ref _surveyNewsCheck, value);
         }
 
         public DateTime SurveyNewsLastCheck {
-            get { return _surveyNewsLastCheck; }
-            set { SetProperty(ref _surveyNewsLastCheck, value); }
+            get => _surveyNewsLastCheck;
+            set => SetProperty(ref _surveyNewsLastCheck, value);
         }
 
         public string SurveyNewsFeedUrl {
-            get { return _surveyNewsFeedUrl; }
-            set { SetProperty(ref _surveyNewsFeedUrl, value); }
+            get => _surveyNewsFeedUrl;
+            set => SetProperty(ref _surveyNewsFeedUrl, value);
         }
 
         public string SurveyNewsIndexUrl {
-            get { return _surveyNewsIndexUrl; }
-            set { SetProperty(ref _surveyNewsIndexUrl, value); }
+            get => _surveyNewsIndexUrl;
+            set => SetProperty(ref _surveyNewsIndexUrl, value);
         }
 
         public bool EvaluateActiveBindings {
-            get { return _evaluateActiveBindings; }
-            set { SetProperty(ref _evaluateActiveBindings, value); }
+            get => _evaluateActiveBindings;
+            set => SetProperty(ref _evaluateActiveBindings, value);
         }
 
         public string WebHelpSearchString {
-            get { return _webHelpSearchString; }
-            set { SetProperty(ref _webHelpSearchString, value); }
+            get => _webHelpSearchString;
+            set => SetProperty(ref _webHelpSearchString, value);
         }
 
         public BrowserType WebHelpSearchBrowserType {
-            get { return _webHelpSearchBrowserType; }
-            set { SetProperty(ref _webHelpSearchBrowserType, value); }
+            get => _webHelpSearchBrowserType;
+            set => SetProperty(ref _webHelpSearchBrowserType, value);
         }
 
         public BrowserType HtmlBrowserType {
-            get { return _htmlBrowserType; }
-            set { SetProperty(ref _htmlBrowserType, value); }
+            get => _htmlBrowserType;
+            set => SetProperty(ref _htmlBrowserType, value);
         }
 
         public BrowserType MarkdownBrowserType {
-            get { return _markdownBrowserType; }
-            set { SetProperty(ref _markdownBrowserType, value); }
+            get => _markdownBrowserType;
+            set => SetProperty(ref _markdownBrowserType, value);
         }
 
         public LogVerbosity LogVerbosity {
-            get { return _logVerbosity; }
-            set { SetProperty(ref _logVerbosity, value); }
+            get => _logVerbosity;
+            set => SetProperty(ref _logVerbosity, value);
         }
 
         public bool ShowRToolbar { get; set; } = true;

@@ -12,8 +12,8 @@ using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
-using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
+using Microsoft.R.Common.Core.UI;
 using Microsoft.R.Components.InfoBar;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -70,22 +70,22 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public bool IsRemoteSession => _packageManager.IsRemoteSession;
 
         public IRPackageViewModel SelectedPackage {
-            get { return _selectedPackage; }
-            private set { SetProperty(ref _selectedPackage, value); }
+            get => _selectedPackage;
+            private set => SetProperty(ref _selectedPackage, value);
         }
 
         public bool IsLoading {
-            get { return _isLoading; }
-            private set { SetProperty(ref _isLoading, value); }
+            get => _isLoading;
+            private set => SetProperty(ref _isLoading, value);
         }
 
         public bool HasErrors {
-            get { return _hasErrors; }
-            private set { SetProperty(ref _hasErrors, value); }
+            get => _hasErrors;
+            private set => SetProperty(ref _hasErrors, value);
         }
 
         public bool ShowPackageManagerDisclaimer {
-            get { return _settings.ShowPackageManagerDisclaimer; }
+            get => _settings.ShowPackageManagerDisclaimer;
             set {
                 _settings.ShowPackageManagerDisclaimer = value;
                 OnPropertyChanged();

@@ -12,8 +12,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
     internal sealed partial class LintValidator : IRDocumentValidator {
         // https://cran.rstudio.com/web/packages/lintr/lintr.pdf
 
-        private static readonly Func<IAstNode, LintOptions, IValidationError>[] _singleCheckers =
-            new Func<IAstNode, LintOptions, IValidationError>[] {
+        private static readonly Func<IAstNode, LintOptions, IValidationError>[] _singleCheckers = {
                 AssignmentCheck,
                 CommaSpacesCheck,
                 InfixOperatorsSpacesCheck,
@@ -28,19 +27,16 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 TrueFalseNamesCheck
             };
 
-        private static readonly Func<IAstNode, LintOptions, IEnumerable<IValidationError>>[] _multipleCheckers =
-            new Func<IAstNode, LintOptions, IEnumerable<IValidationError>>[] {
+        private static readonly Func<IAstNode, LintOptions, IEnumerable<IValidationError>>[] _multipleCheckers = {
                 NameCheck
             };
 
-        private static readonly Func<CharacterStream, LintOptions, IValidationError>[] _whitespaceCharCheckers =
-            new Func<CharacterStream, LintOptions, IValidationError>[] {
+        private static readonly Func<CharacterStream, LintOptions, IValidationError>[] _whitespaceCharCheckers = {
                 TabCheck,
-                TrailingWhitespaceCheck,
+                TrailingWhitespaceCheck
             };
 
-        private static readonly Func<ITextProvider, LintOptions, IEnumerable<IValidationError>>[] _whitespaceFileCheckers =
-            new Func<ITextProvider, LintOptions, IEnumerable<IValidationError>>[] {
+        private static readonly Func<ITextProvider, LintOptions, IEnumerable<IValidationError>>[] _whitespaceFileCheckers = {
                 TrailingBlankLinesCheck,
                 LineLengthCheck
             };

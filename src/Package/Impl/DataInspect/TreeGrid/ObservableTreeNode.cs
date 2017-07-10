@@ -13,7 +13,7 @@ using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Core.UI;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {

@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Core.UI;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Information {

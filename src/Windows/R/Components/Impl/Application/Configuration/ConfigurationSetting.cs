@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Core.UI;
 
 namespace Microsoft.R.Components.Application.Configuration {
     public sealed class ConfigurationSetting : BindableBase, IConfigurationSetting {
@@ -14,28 +15,28 @@ namespace Microsoft.R.Components.Application.Configuration {
         public string Name { get; internal set; }
 
         public string Value {
-            get { return _value; }
-            set { SetProperty(ref _value, value, "Value"); }
+            get => _value;
+            set => SetProperty(ref _value, value);
         }
 
         public ConfigurationSettingValueType ValueType {
-            get { return _valueType; }
-            set { SetProperty(ref _valueType, value, "ValueType"); }
+            get => _valueType;
+            set => SetProperty(ref _valueType, value);
         }
 
         public string Category {
-            get { return _category; }
-            set { SetProperty(ref _category, value, "Category"); }
+            get => _category;
+            set => SetProperty(ref _category, value);
         }
 
         public string Description {
-            get { return _description; }
-            set { SetProperty(ref _description, value, "Description"); }
+            get => _description;
+            set => SetProperty(ref _description, value);
         }
 
         public string EditorType {
-            get { return _editorType; }
-            set { SetProperty(ref _editorType, value, "EditorType"); }
+            get => _editorType;
+            set => SetProperty(ref _editorType, value);
         }
 
         public ConfigurationSetting(): this(null) { }

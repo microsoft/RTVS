@@ -83,18 +83,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(_langPrefs != null);
         }
 
-        /// <summary>
-        /// Called when VS resets default settings through "Tools|Import/Export Settings"
-        /// </summary>
-        public void ResetSettings() {
-            // LangPrefs will be reset by VS, this code doesn't need to do it
-
-            _booleanSettings.Clear();
-            _integerSettings.Clear();
-            _stringSettings.Clear();
-
-            SettingsChanged?.Invoke(this, EventArgs.Empty);
-        }
 
         #region IEditorSettingsStorage
         public T Get<T>(string name, T defaultValue) {
@@ -155,6 +143,19 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         #endregion
 
         #region IWritableEditorSettingsStorage
+        /// <summary>
+        /// Called when VS resets default settings through "Tools|Import/Export Settings"
+        /// </summary>
+        public void ResetSettings() {
+            // LangPrefs will be reset by VS, this code doesn't need to do it
+
+            _booleanSettings.Clear();
+            _integerSettings.Clear();
+            _stringSettings.Clear();
+
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public void Set<T>(string name, T value) {
             if (value is string) {
                 SetString(name, (string)(object)value);
@@ -167,13 +168,15 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             }
         }
 
+        public void RaiseSettingsChanged() => SettingsChanged?.Invoke(this, EventArgs.Empty);
+
         private void SetString(string name, string value) {
             // Not allowed to save null strings
             value = value ?? string.Empty;
 
             if (!_stringSettings.ContainsKey(name) || !value.Equals(_stringSettings[name], StringComparison.Ordinal)) {
                 _stringSettings[name] = value;
-                SettingsChanged?.Invoke(this, EventArgs.Empty);
+                RaiseSettingsChanged();
             }
         }
 
@@ -212,7 +215,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 default:
                     if (!_integerSettings.ContainsKey(name) || value != _integerSettings[name]) {
                         _integerSettings[name] = value;
-                        SettingsChanged?.Invoke(this, EventArgs.Empty);
+                        RaiseSettingsChanged();
                     }
                     break;
             }
@@ -246,7 +249,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 default:
                     if (!_booleanSettings.ContainsKey(name) || value != _booleanSettings[name]) {
                         _booleanSettings[name] = value;
-                        SettingsChanged?.Invoke(this, EventArgs.Empty);
+                        RaiseSettingsChanged();
                     }
                     break;
             }

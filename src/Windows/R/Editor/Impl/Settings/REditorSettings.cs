@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.ComponentModel;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Components.ContentTypes;
@@ -24,14 +26,27 @@ namespace Microsoft.R.Editor.Settings {
 
         private RFormatOptions _formatOptions = new RFormatOptions();
 
-        public REditorSettings(ICoreShell coreShell): base(coreShell, RContentTypeDefinition.ContentType) { }
-        public REditorSettings(IEditorSettingsStorage storage) : base(storage) { }
+        public REditorSettings(ICoreShell coreShell) : base(coreShell, RContentTypeDefinition.ContentType) {
+            CreateLintOptions();
+        }
+
+        public REditorSettings(IEditorSettingsStorage storage) : base(storage) {
+            CreateLintOptions();
+        }
 
         public override void ResetSettings() {
             _formatOptions = new RFormatOptions();
-            LintOptions = new LintOptions();
+            CreateLintOptions();
             base.ResetSettings();
         }
+
+        private void CreateLintOptions() {
+            LintOptions = new LintOptions();
+            LintOptions.PropertyChanged += _OnLintOptionsPropertyChanged;
+        }
+
+        private void _OnLintOptionsPropertyChanged(object sender, PropertyChangedEventArgs e) 
+            => WritableStorage?.RaiseSettingsChanged();
 
         public bool FormatOnPaste {
             get => Storage.Get(FormatOnPasteKey, true);
@@ -92,6 +107,6 @@ namespace Microsoft.R.Editor.Settings {
             }
         }
 
-        public LintOptions LintOptions { get; private set; } = new LintOptions();
+        public LintOptions LintOptions { get; private set; }
     }
 }

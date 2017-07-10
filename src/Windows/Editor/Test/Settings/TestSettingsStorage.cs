@@ -24,6 +24,7 @@ namespace Microsoft.Language.Editor.Test.Settings {
         #endregion
 
         public void ResetSettings() { }
+        public void RaiseSettingsChanged() { }
         public void Dispose() { }
 
 #pragma warning disable 67

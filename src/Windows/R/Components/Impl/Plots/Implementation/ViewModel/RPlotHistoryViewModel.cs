@@ -5,12 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Core.UI;
 using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Plots.ViewModel;
 

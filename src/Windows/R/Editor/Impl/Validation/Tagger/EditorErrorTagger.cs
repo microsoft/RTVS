@@ -77,13 +77,13 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             => textBuffer.GetService<EditorErrorTagger>();
 
         private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
-            foreach (IAstNode node in e.Nodes) {
+            foreach (var node in e.Nodes) {
                 _errorTags.RemoveTagsForNode(node);
             }
         }
 
         private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
-            if (e.UpdateType != TreeUpdateType.PositionsOnly) {
+            if (e.UpdateType != TreeUpdateType.PositionsOnly || _settings.LintOptions.Enabled) {
                 RemoveAllTags();
             }
         }

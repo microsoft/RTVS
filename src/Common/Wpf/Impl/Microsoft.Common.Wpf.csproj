@@ -35,7 +35,6 @@
   <ItemGroup>
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="BindableBase.cs" />
     <Compile Include="Collections\BatchObservableCollection.cs" />
     <Compile Include="Controls\ExpandCollapseAutomationPeer.cs" />
     <Compile Include="Controls\ExpandCollapseButton.cs" />
