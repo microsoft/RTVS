@@ -122,10 +122,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
             ClientToHostWorker(_process.StandardInput, hostEnd).DoNotWait();
             HostToClientWorker(_process.StandardOutput, hostEnd).DoNotWait();
-
-            // ToDo: Remove this after https://github.com/Microsoft/RTVS/issues/3626 
-            HostToClientErrorWorker(_process.StandardError, _process.Id, 
-                (processid, errdata) => outputLogger?.LogTrace(Resources.Trace_ErrorDataReceived, processid, errdata)).DoNotWait();
         }
 
         public void KillHost() {
@@ -150,21 +146,6 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
 
             return _pipe.ConnectClient();
-        }
-
-        private async Task HostToClientErrorWorker(Stream stream, int processid, Action<int, string> opp) {
-            using (StreamReader reader = new StreamReader(stream)) {
-                while (true) {
-                    try {
-                        string data = await reader.ReadLineAsync();
-                        if (data != null && data.Length > 0) {
-                            opp?.Invoke(processid, data);
-                        }
-                    } catch (IOException) {
-                        break;
-                    }
-                }
-            }
         }
 
         private async Task ClientToHostWorker(Stream stream, IMessagePipeEnd pipe) {
