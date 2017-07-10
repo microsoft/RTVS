@@ -8,11 +8,12 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.R.Host.Protocol;
 using Microsoft.Extensions.Logging;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class LinuxSystemInfoService : ISystemInfoService {
@@ -93,6 +94,12 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         public double GetNetworkLoad() {
+            if (RuntimeInformation.OSDescription.Contains("Microsoft")) {
+                // We are on Windows Subsystem for Linux. Return 0 here due to bug:
+                // https://github.com/dotnet/corefx/issues/22048
+                return 0;
+            }
+
             try {
                 if (!NetworkInterface.GetIsNetworkAvailable()) {
                     return 0;
