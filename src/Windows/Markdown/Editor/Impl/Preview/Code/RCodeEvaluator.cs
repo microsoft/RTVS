@@ -81,9 +81,9 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             _output = new StringBuilder();
             _errors = new StringBuilder();
 
-            using (var inter = await session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
-                await inter.RespondAsync(expression);
-            }
+            try {
+                await session.ExecuteAsync(expression, cancellationToken: cancellationToken);
+            } catch(RException) { }
         }
 
         private void OnSessionOutput(object sender, ROutputEventArgs e) {
