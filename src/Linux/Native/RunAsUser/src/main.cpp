@@ -188,7 +188,7 @@ T calloc_or_exit(size_t count, size_t size) {
 }
 
 void start_rhost(const picojson::object& json) {
-    logf(log_verbosity::traffic, "Gathering RHost arguments.\n");
+    logf(log_verbosity::traffic, "Gathering Microsoft.R.Host arguments.\n");
     // construct arguments
     picojson::array json_args(json[RTVS_JSON_MSG_ARGS].get<picojson::array>());
 
@@ -205,14 +205,13 @@ void start_rhost(const picojson::object& json) {
     for (int i = 1; i < (argc - 1); ++i) {
         std::string item(json_args[i - 1].get<std::string>());
         logf(log_verbosity::minimal, "Args: %s\n", item.c_str());
-        argv[i] = calloc_or_exit<char*>(item.size() + 1, sizeof **argv);
-        memcpy(argv[i], item.c_str(), item.size());
+        argv[i] = strdup(item.c_str());
     }
 
     // explicit null for the end of arguments
     argv[argc - 1] = NULL;
 
-    logf(log_verbosity::traffic, "Building RHost environment.\n");
+    logf(log_verbosity::traffic, "Building Microsoft.R.Host environment.\n");
     // construct environment
     picojson::array json_env = json[RTVS_JSON_MSG_ENV].get<picojson::array>();
 
@@ -223,14 +222,13 @@ void start_rhost(const picojson::object& json) {
     for (int i = 0; i < (envc - 1); ++i) {
         std::string env(json_env[i].get<std::string>());
         logf(log_verbosity::minimal, "Env: %s", env.c_str());
-        envp[i] = calloc_or_exit<char*>(env.size() + 1, sizeof **envp);
-        memcpy(envp[i], env.c_str(), env.size());
+        envp[i] = strdup(env.c_str());
     }
 
     // explicit null for the end of enironment
     envp[envc - 1] = NULL;
 
-    logf(log_verbosity::traffic, "Starting RHost Process\n");
+    logf(log_verbosity::traffic, "Starting Microsoft.R.Host Process\n");
     execve(RTVS_RHOST_PATH, argv, envp);
     int err = errno;
     logf(log_verbosity::minimal, "Error [execve]: %s\n", explain_errno_execve(err, RTVS_RHOST_PATH, argv, envp));
@@ -295,12 +293,12 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
         if (WIFEXITED(ws)) {
             err = WEXITSTATUS(ws);
             if (err) {
-                logf(log_verbosity::minimal, "Error rhost exited:[%d] %s\n", err, strerror(err));
+                logf(log_verbosity::minimal, "Error Microsoft.R.Host exited:[%d] %s\n", err, strerror(err));
             } else {
-                logf(log_verbosity::minimal, "RHost exited normally.\n");
+                logf(log_verbosity::minimal, "Microsoft.R.Host exited normally.\n");
             }
         } else if (WIFSIGNALED(ws)) {
-            logf(log_verbosity::minimal, "Error rhost terminated by a signal: %d\n", WTERMSIG(ws));
+            logf(log_verbosity::minimal, "Error Microsoft.R.Host terminated by a signal: %d\n", WTERMSIG(ws));
             err = ws;
         }
     }
@@ -463,7 +461,7 @@ int authenticate_and_run(const picojson::object& json) {
             }
 
             user_groups.resize(ngroups);
-            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_group)) != user_groups.end();
+            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_gid)) != user_groups.end();
             if (!user_allowed) {
                 logf(log_verbosity::minimal, "Error: User [%s] is not in the allowed group [%s]\n", user_name, allowed_group.c_str());
                 return EACCES;
@@ -505,7 +503,9 @@ int kill_process(int pid) {
         err = errno;
         logf(log_verbosity::minimal, "Error [fork]: %s\n", explain_errno_fork(err));
         return err;
-    } else if (pid == 0) {
+    } 
+    
+    if (pid == 0) {
         execv(RTVS_KILL_PATH, args);
         int err = errno;
         logf(log_verbosity::minimal, "Error [execv]: %s\n", explain_errno_execv(err, RTVS_KILL_PATH, args));
@@ -535,22 +535,12 @@ int kill_process(int pid) {
     return err;
 }
 int main(int argc, char **argv) {
-    int option = 0;
-    bool quiet = false;
+    bool quiet = getopt(argc, argv, "q") == 'q';
 #if NDEBUG
     log_verbosity logVerb = log_verbosity::traffic;
 #else
     log_verbosity logVerb = log_verbosity::normal;
 #endif
-    while ((option = getopt(argc, argv, "q")) != -1) {
-        switch (option) {
-        case 'q':
-            quiet = true;
-            break;
-        default:
-            break;
-        }
-    }
 
     SCOPE_WARDEN(_main_exit, {
         flush_log();
