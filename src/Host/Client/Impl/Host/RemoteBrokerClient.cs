@@ -92,6 +92,7 @@ namespace Microsoft.R.Host.Client.Host {
                     return _certificateValidationResult.Value;
                 }
 
+                Log.Write(LogVerbosity.Minimal, MessageCategory.General, Resources.Trace_SSLPolicyErrors.FormatInvariant(sslPolicyErrors));
                 var hashString = GetCertHashString(certificate.GetCertHash());
                 if (_certificateHash == null || !_certificateHash.EqualsOrdinal(hashString)) {
                     Log.Write(LogVerbosity.Minimal, MessageCategory.Warning, Resources.Trace_UntrustedCertificate.FormatInvariant(certificate.Subject));

@@ -259,4 +259,7 @@ Please upgrade remote R Services installation to match.</value>
   <data name="Error_PingTimedOut" xml:space="preserve">
     <value>Ping to {0}:{1} timed out.</value>
   </data>
+  <data name="Trace_SSLPolicyErrors" xml:space="preserve">
+    <value>SSL Policy Errors: {0}</value>
+  </data>
 </root>
