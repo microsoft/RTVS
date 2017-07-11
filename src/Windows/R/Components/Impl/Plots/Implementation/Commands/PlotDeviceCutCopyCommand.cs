@@ -17,25 +17,17 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             _cut = cut;
         }
 
-        public CommandStatus Status {
-            get {
-                if (HasCurrentPlot && !IsInLocatorMode) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-
-                return CommandStatus.Supported;
-            }
-        }
+        public CommandStatus Status
+            => HasCurrentPlot && !IsInLocatorMode
+                ? CommandStatus.SupportedAndEnabled
+                : CommandStatus.Supported;
 
         public Task InvokeAsync() {
             try {
-                var data = PlotClipboardData.Serialize(new PlotClipboardData(VisualComponent.Device.DeviceId, VisualComponent.Device.ActivePlot.PlotId, _cut));
-                Clipboard.Clear();
-                Clipboard.SetData(PlotClipboardData.Format, data);
+                PlotClipboardData.ToClipboard(VisualComponent.Device.DeviceId, VisualComponent.Device.ActivePlot.PlotId, _cut);
             } catch (ExternalException ex) {
                 InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
             }
-
             return Task.CompletedTask;
         }
     }

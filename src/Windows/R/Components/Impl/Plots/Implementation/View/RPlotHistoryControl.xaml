@@ -50,8 +50,10 @@
                   BorderThickness="0"
                   MouseMove="HistoryListView_MouseMove"
                   MouseLeave="HistoryListView_MouseLeave"
-                  PreviewMouseDown="HistoryListView_PreviewMouseDown"
-                  MouseRightButtonUp="HistoryListView_MouseRightButtonUp">
+                  PreviewMouseLeftButtonDown="HistoryListView_PreviewMouseLeftButtonDown"
+                  PreviewMouseLeftButtonUp="HistoryListView_PreviewMouseLeftButtonUp"
+                  PreviewMouseRightButtonUp="HistoryListView_PreviewMouseRightButtonUp"
+                  PreviewMouseRightButtonDown="HistoryListView_PreviewMouseRightButtonDown">
             <ListView.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>

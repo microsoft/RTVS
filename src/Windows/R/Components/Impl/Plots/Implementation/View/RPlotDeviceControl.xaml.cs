@@ -13,7 +13,7 @@ using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation.View {
-    public partial class RPlotDeviceControl : UserControl {
+    public partial class RPlotDeviceControl {
         // Anything below 200 pixels at fixed 96dpi is impractical, and prone to rendering errors
         private const int MinPixelWidth = 200;
         private const int MinPixelHeight = 200;
@@ -89,8 +89,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void UserControl_Drop(object sender, DragEventArgs e) {
-            var data = e.Data.GetData(PlotClipboardData.Format) as string[];
-            var sources = (data?.Select(PlotClipboardData.Parse) ?? Enumerable.Empty<PlotClipboardData>()).ToArray();
+            var sources = PlotClipboardData.FromDataObject(e.Data).ToArray();
             if (sources.Length > 0) {
                 var isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
                 try {
@@ -106,31 +105,24 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         }
 
         private void UserControl_DragEnter(object sender, DragEventArgs e) {
-            if (e.Data.GetDataPresent(PlotClipboardData.Format)) {
-                var source = PlotClipboardData.Parse((string)e.Data.GetData(PlotClipboardData.Format));
-                if (source != null) {
-                    var targetDeviceId = Model?.Device?.DeviceId;
-                    if (targetDeviceId != source.DeviceId) {
-                        var isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
-                        e.Effects = isMove ? DragDropEffects.Move : DragDropEffects.Copy;
-                        e.Handled = true;
-                        return;
-                    }
-                }
+            var plots = PlotClipboardData.FromDataObject(e.Data);
+            var targetDeviceId = Model?.Device?.DeviceId;
+            if (targetDeviceId != null && plots.All(p => p.DeviceId == targetDeviceId)) {
+                var isMove = (e.KeyStates & DragDropKeyStates.ShiftKey) != 0;
+                e.Effects = isMove ? DragDropEffects.Move : DragDropEffects.Copy;
+                e.Handled = true;
+                return;
             }
 
             e.Effects = DragDropEffects.None;
             e.Handled = true;
         }
 
-        private void UserControl_DragOver(object sender, DragEventArgs e) {
-            UserControl_DragEnter(sender, e);
-        }
+        private void UserControl_DragOver(object sender, DragEventArgs e) => UserControl_DragEnter(sender, e);
 
         private void Image_MouseMove(object sender, MouseEventArgs e) {
             if (_dragSurface.IsMouseMoveStartingDrag(e)) {
-                var data = PlotClipboardData.Serialize(new PlotClipboardData(Model.Device.DeviceId, Model.Device.ActivePlot.PlotId, false));
-                var obj = new DataObject(PlotClipboardData.Format, data);
+                var obj = PlotClipboardData.ToDataObject(Model.Device.DeviceId, Model.Device.ActivePlot.PlotId);
                 DragDrop.DoDragDrop(this, obj, DragDropEffects.Copy | DragDropEffects.Move);
             } else {
                 _dragSurface.MouseMove(e);
