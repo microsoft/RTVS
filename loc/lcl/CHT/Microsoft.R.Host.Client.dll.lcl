@@ -161,7 +161,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[遠端 R 要求開啟 {0}，但僅對遠端支援 http:// URI。]]></Val>
+            <Val><![CDATA[遠端 R 已要求開啟 {0}，但對遠端僅支援 http:// URI。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -361,7 +361,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30520.1101]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +382,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30520.1101]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +418,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30520.1101]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
