@@ -161,7 +161,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[远程 R 请求打开 {0}，但远程仅支持 http:// URI。]]></Val>
+            <Val><![CDATA[远程 R 请求打开 {0}，但远程连接仅支持 http:// URI。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -197,7 +197,7 @@
         <Str Cat="Text">
           <Val><![CDATA[HTTP server for remote stopped with following exception:]D;]A;{0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[用于远程的 HTTP 服务器停止，显示以下异常:]D;]A;{0}]]></Val>
+            <Val><![CDATA[用于远程连接的 HTTP 服务器停止，显示以下异常:]D;]A;{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -361,7 +361,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +382,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +418,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
