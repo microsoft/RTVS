@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+if getent passwd rtvssvc > /dev/null; then
+    echo >&2 "Not removing rtvssvc system account and group to preserve id from reuse for audit purposes."
+fi

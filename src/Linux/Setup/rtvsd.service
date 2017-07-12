@@ -8,6 +8,8 @@ Type=notify
 ExecStart=/usr/bin/rtvsd
 StandardOutput=null
 Restart=on-failure
+User=rtvssvc
+Group=rtvssvc
 
 [Install]
 Alias=rtvsd.service
