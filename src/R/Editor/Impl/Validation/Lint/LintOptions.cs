@@ -1,47 +1,33 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Common.Core.UI;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Validation.Lint {
     public sealed class LintOptions: BindableBase {
-        private bool _enabled;
-        private bool _camelCase = true;
-        private bool _snakeCase;
-        private bool _pascalCase = true;
-        private bool _upperCase = true;
-        private bool _multipleDots = true;
-        private bool _nameLength;
-        private int _maxNameLength = 32;
+        private readonly Func<IEditorSettingsStorage> _storageAccess;
+        private IEditorSettingsStorage _storage;
 
-        private bool _trueFalseNames = true;
-        private bool _assignmentType = true;
+        private IEditorSettingsStorage Storage => _storage ?? (_storage = _storageAccess());
+        private IWritableEditorSettingsStorage WritableStorage => Storage as IWritableEditorSettingsStorage;
 
-        private bool _spacesAroundComma = true;
-        private bool _spacesAroundOperators = true;
-        private bool _closeCurlySeparateLine = true;
-        private bool _spaceBeforeOpenBrace = true;
-        private bool _spacesInsideParenthesis = true;
-        private bool _noSpaceAfterFunctionName = true;
-        private bool _openCurlyPosition = true;
+        public LintOptions(Func<IEditorSettingsStorage> storageAccess) {
+            Check.ArgumentNull(nameof(storageAccess), storageAccess);
+            _storageAccess = storageAccess; // Storage is delay-created after package loads
+        }
 
-        private bool _noTabs = true;
-        private bool _trailingWhitespace = true;
-        private bool _trailingBlankLines = true;
-
-        private bool _doubleQuotes = true;
-        private bool _lineLength;
-        private int _maxLineLength = 80;
-
-        private bool _semicolons = true;
-        private bool _multipleStatements = true;
+        private string GetKey(string optionName) => Invariant($"LintR_{optionName}");
 
         /// <summary>
         /// Enable LintR-like checks
         /// </summary>
         public bool Enabled {
-            get => _enabled;
-            set => SetProperty(ref _enabled, value);
+            get => Storage.Get(GetKey(nameof(Enabled)), false);
+            set => WritableStorage?.Set(GetKey(nameof(Enabled)), value);
         }
 
         #region Naming
@@ -49,64 +35,64 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Flag camel-case names
         /// </summary>
         public bool CamelCase {
-            get => _camelCase;
-            set => SetProperty(ref _camelCase, value);
+            get => Storage.Get(GetKey(nameof(CamelCase)), true);
+            set => WritableStorage?.Set(GetKey(nameof(CamelCase)), value);
         }
 
         /// <summary>
         /// Flag snake_case
         /// </summary>
         public bool SnakeCase {
-            get => _snakeCase;
-            set => SetProperty(ref _snakeCase, value);
+            get => Storage.Get(GetKey(nameof(SnakeCase)), false);
+            set => WritableStorage?.Set(GetKey(nameof(SnakeCase)), value);
         }
 
         /// <summary>
         /// Flag Pascal-case names
         /// </summary>
         public bool PascalCase {
-            get => _pascalCase;
-            set => SetProperty(ref _pascalCase, value);
+            get => Storage.Get(GetKey(nameof(PascalCase)), true);
+            set => WritableStorage?.Set(GetKey(nameof(PascalCase)), value);
         }
 
         /// <summary>
         /// Flag UPPERCASE names
         /// </summary>
         public bool UpperCase {
-            get => _upperCase;
-            set => SetProperty(ref _upperCase, value);
+            get => Storage.Get(GetKey(nameof(UpperCase)), true);
+            set => WritableStorage?.Set(GetKey(nameof(UpperCase)), value);
         }
 
         /// <summary>
         /// Flag names with.multiple.dots.
         /// </summary>
         public bool MultipleDots {
-            get => _multipleDots;
-            set => SetProperty(ref _multipleDots, value);
+            get => Storage.Get(GetKey(nameof(MultipleDots)), true);
+            set => WritableStorage?.Set(GetKey(nameof(MultipleDots)), value);
         }
 
         /// <summary>
         /// Verify that name lengths are below the limit
         /// </summary>
         public bool NameLength {
-            get => _nameLength;
-            set => SetProperty(ref _nameLength, value);
+            get => Storage.Get(GetKey(nameof(NameLength)), false);
+            set => WritableStorage?.Set(GetKey(nameof(NameLength)), value);
         }
 
         /// <summary>
         /// Max name length
         /// </summary>
         public int MaxNameLength {
-            get => _maxNameLength;
-            set => SetProperty(ref _maxNameLength, value);
+            get => Storage.Get(GetKey(nameof(MaxNameLength)), 32);
+            set => WritableStorage?.Set(GetKey(nameof(MaxNameLength)), value);
         }
 
         /// <summary>
         /// Flag 'T' or 'F' used instead of 'TRUE' and 'FALSE'
         /// </summary>
         public bool TrueFalseNames {
-            get => _trueFalseNames;
-            set => SetProperty(ref _trueFalseNames, value);
+            get => Storage.Get(GetKey(nameof(TrueFalseNames)), true);
+            set => WritableStorage?.Set(GetKey(nameof(TrueFalseNames)), value);
         }
         #endregion
 
@@ -115,8 +101,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Check that ’&lt;-’ is always used for assignment
         /// </summary>
         public bool AssignmentType {
-            get => _assignmentType;
-            set => SetProperty(ref _assignmentType, value);
+            get => Storage.Get(GetKey(nameof(AssignmentType)), true);
+            set => WritableStorage?.Set(GetKey(nameof(AssignmentType)), value);
         }
         #endregion
 
@@ -127,8 +113,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// command and ] or ]] is required.
         /// </summary>
         public bool SpacesAroundComma {
-            get => _spacesAroundComma;
-            set => SetProperty(ref _spacesAroundComma, value);
+            get => Storage.Get(GetKey(nameof(SpacesAroundComma)), true);
+            set => WritableStorage?.Set(GetKey(nameof(SpacesAroundComma)), value);
         }
 
         /// <summary>
@@ -136,24 +122,24 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// it is a named parameter assignment
         /// </summary>
         public bool SpacesAroundOperators {
-            get => _spacesAroundOperators;
-            set => SetProperty(ref _spacesAroundOperators, value);
+            get => Storage.Get(GetKey(nameof(SpacesAroundOperators)), true);
+            set => WritableStorage?.Set(GetKey(nameof(SpacesAroundOperators)), value);
         }
 
         /// <summary>
         /// Check that } is on a separate line unless followed by 'else'
         /// </summary>
         public bool CloseCurlySeparateLine {
-            get => _closeCurlySeparateLine;
-            set => SetProperty(ref _closeCurlySeparateLine, value);
+            get => Storage.Get(GetKey(nameof(CloseCurlySeparateLine)), true);
+            set => WritableStorage?.Set(GetKey(nameof(CloseCurlySeparateLine)), value);
         }
 
         /// <summary>
         /// Open brace must have space before it unless it is a function call.
         /// </summary>
         public bool SpaceBeforeOpenBrace {
-            get => _spaceBeforeOpenBrace;
-            set => SetProperty(ref _spaceBeforeOpenBrace, value);
+            get => Storage.Get(GetKey(nameof(SpaceBeforeOpenBrace)), true);
+            set => WritableStorage?.Set(GetKey(nameof(SpaceBeforeOpenBrace)), value);
         }
 
         /// <summary>
@@ -161,16 +147,16 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// unless ] or ]] is preceded by a comma as in x[1, ]
         /// </summary>
         public bool SpacesInsideParenthesis {
-            get => _spacesInsideParenthesis;
-            set => SetProperty(ref _spacesInsideParenthesis, value);
+            get => Storage.Get(GetKey(nameof(SpacesInsideParenthesis)), true);
+            set => WritableStorage?.Set(GetKey(nameof(SpacesInsideParenthesis)), value);
         }
 
         /// <summary>
         /// Verify that there is no space after the function name.
         /// </summary>
         public bool NoSpaceAfterFunctionName {
-            get => _noSpaceAfterFunctionName;
-            set => SetProperty(ref _noSpaceAfterFunctionName, value);
+            get => Storage.Get(GetKey(nameof(NoSpaceAfterFunctionName)), true);
+            set => WritableStorage?.Set(GetKey(nameof(NoSpaceAfterFunctionName)), value);
         }
 
         /// <summary>
@@ -178,8 +164,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// and is followed by a new line.
         /// </summary>
         public bool OpenCurlyPosition {
-            get => _openCurlyPosition;
-            set => SetProperty(ref _openCurlyPosition, value);
+            get => Storage.Get(GetKey(nameof(OpenCurlyPosition)), true);
+            set => WritableStorage?.Set(GetKey(nameof(OpenCurlyPosition)), value);
         }
         #endregion
 
@@ -188,24 +174,24 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Verify there are no tabs in the file
         /// </summary>
         public bool NoTabs {
-            get => _noTabs;
-            set => SetProperty(ref _noTabs, value);
+            get => Storage.Get(GetKey(nameof(NoTabs)), true);
+            set => WritableStorage?.Set(GetKey(nameof(NoTabs)), value);
         }
 
         /// <summary>
         /// Check there is no trailing whitespace in lines
         /// </summary>
         public bool TrailingWhitespace {
-            get => _trailingWhitespace;
-            set => SetProperty(ref _trailingWhitespace, value);
+            get => Storage.Get(GetKey(nameof(TrailingWhitespace)), true);
+            set => WritableStorage?.Set(GetKey(nameof(TrailingWhitespace)), value);
         }
 
         /// <summary>
         /// Verify there is no trailing blank lines in the file.
         /// </summary>
         public bool TrailingBlankLines {
-            get => _trailingBlankLines;
-            set => SetProperty(ref _trailingBlankLines, value);
+            get => Storage.Get(GetKey(nameof(TrailingBlankLines)), true);
+            set => WritableStorage?.Set(GetKey(nameof(TrailingBlankLines)), value);
         }
         #endregion
 
@@ -214,8 +200,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Verify that only double quotes are used around strings
         /// </summary>
         public bool DoubleQuotes {
-            get => _doubleQuotes;
-            set => SetProperty(ref _doubleQuotes, value);
+            get => Storage.Get(GetKey(nameof(DoubleQuotes)), true);
+            set => WritableStorage?.Set(GetKey(nameof(DoubleQuotes)), value);
         }
         #endregion
 
@@ -224,16 +210,16 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Check line lengths in the file
         /// </summary>
         public bool LineLength {
-            get => _lineLength;
-            set => SetProperty(ref _lineLength, value);
+            get => Storage.Get(GetKey(nameof(LineLength)), false);
+            set => WritableStorage?.Set(GetKey(nameof(LineLength)), value);
         }
 
         /// <summary>
         /// Max line length
         /// </summary>
         public int MaxLineLength {
-            get => _maxLineLength;
-            set => SetProperty(ref _maxLineLength, value);
+            get => Storage.Get(GetKey(nameof(MaxLineLength)), 80);
+            set => WritableStorage?.Set(GetKey(nameof(MaxLineLength)), value);
         }
         #endregion
 
@@ -242,16 +228,16 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Flag semicolons in the file
         /// </summary>
         public bool Semicolons {
-            get => _semicolons;
-            set => SetProperty(ref _semicolons, value);
+            get => Storage.Get(GetKey(nameof(Semicolons)), true);
+            set => WritableStorage?.Set(GetKey(nameof(Semicolons)), value);
         }
 
         /// <summary>
         /// Flag multiple statements in the same line
         /// </summary>
         public bool MultipleStatements {
-            get => _multipleStatements;
-            set => SetProperty(ref _multipleStatements, value);
+            get => Storage.Get(GetKey(nameof(MultipleStatements)), true);
+            set => WritableStorage?.Set(GetKey(nameof(MultipleStatements)), value);
         }
         #endregion
     }

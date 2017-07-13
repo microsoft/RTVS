@@ -22,7 +22,6 @@ namespace Microsoft.Languages.Editor.Application.Packages {
         #region IWritableEditorSettingsStorage Members
         public void Set<T>(string name, T value) => _settings[name] = value;
         public void ResetSettings() { }
-        public void RaiseSettingsChanged() { }
         public void Dispose() { }
         #endregion
     }

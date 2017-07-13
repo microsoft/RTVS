@@ -168,15 +168,13 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             }
         }
 
-        public void RaiseSettingsChanged() => SettingsChanged?.Invoke(this, EventArgs.Empty);
-
         private void SetString(string name, string value) {
             // Not allowed to save null strings
             value = value ?? string.Empty;
 
             if (!_stringSettings.ContainsKey(name) || !value.Equals(_stringSettings[name], StringComparison.Ordinal)) {
                 _stringSettings[name] = value;
-                RaiseSettingsChanged();
+                SettingsChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -215,7 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 default:
                     if (!_integerSettings.ContainsKey(name) || value != _integerSettings[name]) {
                         _integerSettings[name] = value;
-                        RaiseSettingsChanged();
+                        SettingsChanged?.Invoke(this, EventArgs.Empty);
                     }
                     break;
             }
@@ -249,7 +247,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 default:
                     if (!_booleanSettings.ContainsKey(name) || value != _booleanSettings[name]) {
                         _booleanSettings[name] = value;
-                        RaiseSettingsChanged();
+                        SettingsChanged?.Invoke(this, EventArgs.Empty);
                     }
                     break;
             }

@@ -41,12 +41,8 @@ namespace Microsoft.R.Editor.Settings {
         }
 
         private void CreateLintOptions() {
-            LintOptions = new LintOptions();
-            LintOptions.PropertyChanged += _OnLintOptionsPropertyChanged;
+            LintOptions = new LintOptions(() => Storage);
         }
-
-        private void _OnLintOptionsPropertyChanged(object sender, PropertyChangedEventArgs e) 
-            => WritableStorage?.RaiseSettingsChanged();
 
         public bool FormatOnPaste {
             get => Storage.Get(FormatOnPasteKey, true);

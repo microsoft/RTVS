@@ -10,7 +10,5 @@ namespace Microsoft.Languages.Editor.Settings {
     public interface IWritableEditorSettingsStorage : IEditorSettingsStorage {
         void ResetSettings();
         void Set<T>(string name, T value);
-
-        void RaiseSettingsChanged();
     }
 }
