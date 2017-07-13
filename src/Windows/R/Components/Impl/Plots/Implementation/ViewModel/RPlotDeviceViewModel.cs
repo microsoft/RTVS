@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
-using Microsoft.R.Common.Core.UI;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Host.Client;
 

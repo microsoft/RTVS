@@ -49,6 +49,10 @@
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+      <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
+      <Name>Microsoft.Common.Wpf</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>

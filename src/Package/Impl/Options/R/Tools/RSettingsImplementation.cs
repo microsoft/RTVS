@@ -12,7 +12,7 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Common.Core.UI;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.SurveyNews;

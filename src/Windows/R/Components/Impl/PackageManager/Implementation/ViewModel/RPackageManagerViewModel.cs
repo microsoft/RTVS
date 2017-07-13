@@ -13,7 +13,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
-using Microsoft.R.Common.Core.UI;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.InfoBar;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;

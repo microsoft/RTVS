@@ -15,8 +15,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public string SelectedConnection {
-            get { return _selectedConnection; }
-            set { SetProperty(ref _selectedConnection, value); }
+            get => _selectedConnection;
+            set => SetProperty(ref _selectedConnection, value);
         }
 
         public void ShowContextMenu(Point point) 

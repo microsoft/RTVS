@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Common.Core.UI;
+using Microsoft.R.Common.Wpf.Controls;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal abstract class ConnectionStatusBaseViewModel : BindableBase, IDisposable {

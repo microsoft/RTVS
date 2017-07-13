@@ -4,11 +4,10 @@
 using System;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Languages.Editor.Settings;
-using Microsoft.R.Common.Core.UI;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Validation.Lint {
-    public sealed class LintOptions: BindableBase {
+    public sealed class LintOptions {
         private readonly Func<IEditorSettingsStorage> _storageAccess;
         private IEditorSettingsStorage _storage;
 
