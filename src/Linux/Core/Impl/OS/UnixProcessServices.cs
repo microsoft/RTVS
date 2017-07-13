@@ -3,6 +3,10 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Common.Core.OS {
     public class UnixProcessServices : IProcessServices {
@@ -19,6 +23,31 @@ namespace Microsoft.Common.Core.OS {
 
         public Process Start(string path) {
             return Process.Start(path);
+        }
+
+        public void Kill(IProcess process) {
+            Kill(process.Id);
+        }
+
+        public void Kill(int pid) {
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = PathConstants.RunAsUserBinPath;
+            psi.Arguments = "-q";
+            psi.RedirectStandardError = true;
+            psi.RedirectStandardInput = true;
+            psi.RedirectStandardOutput = true;
+
+            var proc = Process.Start(psi);
+
+            KillProcessMessage kpm = new KillProcessMessage() { ProcessId = pid };
+            string json = JsonConvert.SerializeObject(kpm, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
+                var jsonBytes = Encoding.UTF8.GetBytes(json);
+                writer.Write(jsonBytes.Length);
+                writer.Write(jsonBytes);
+                writer.Flush();
+                proc.WaitForExit(1000);
+            }
         }
     }
 }

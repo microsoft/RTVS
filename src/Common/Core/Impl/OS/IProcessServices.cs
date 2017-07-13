@@ -8,5 +8,7 @@ namespace Microsoft.Common.Core.OS {
         Process Start(ProcessStartInfo psi);
         Process Start(string path);
         string MessageFromExitCode(int processExitCode);
+        void Kill(IProcess process);
+        void Kill(int pid);
     }
 }
