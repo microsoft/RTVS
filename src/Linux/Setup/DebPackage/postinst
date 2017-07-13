@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+case "$1" in
+    configure)
+        if ! getent group rtvssvc > /dev/null; then
+            addgroup --quiet --system rtvssvc
+        fi
+
+        if ! getent passwd rtvssvc > /dev/null; then
+            adduser --system --ingroup rtvssvc --home /home/rtvssvc rtvssvc --gecos "Remote R Services Daemon"
+        fi
+
+        chown -R rtvssvc:rtvssvc /home/rtvssvc
+    ;;
+esac
+
+exit 0

@@ -477,12 +477,12 @@ int authenticate_and_run(const picojson::object& json) {
     return err;
 }
 
-int kill_process(int pid) {
+int kill_process(int kill_pid) {
     int err = 0;
     char** args = calloc_or_exit<char**>(4, sizeof(char*));
     std::string arg1("-9"); // SIGKILL
     char carg2[100] = {}; // pid
-    sprintf(carg2, "%d", pid);
+    sprintf(carg2, "%d", kill_pid);
     std::string arg2(carg2); // SIGKILL
 
     std::string kill_path(RTVS_KILL_PATH);

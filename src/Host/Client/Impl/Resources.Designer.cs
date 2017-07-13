@@ -435,6 +435,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SSL Policy Errors: {0}.
+        /// </summary>
+        internal static string Trace_SSLPolicyErrors {
+            get {
+                return ResourceManager.GetString("Trace_SSLPolicyErrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The supplied TLS certificate is not trusted: {0}.
         /// </summary>
         internal static string Trace_UntrustedCertificate {
