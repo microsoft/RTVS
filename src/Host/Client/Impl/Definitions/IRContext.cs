@@ -14,8 +14,11 @@ namespace Microsoft.R.Host.Client {
 
     public static class RContextExtensions {
         public static bool IsBrowser(this IReadOnlyList<IRContext> contexts) {
-            return contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart))
-                .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
+            bool isBrowser = contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart)).FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
+            if (!isBrowser) {
+                isBrowser = contexts.Skip(1).SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart)).FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
+            }
+            return isBrowser;
         }
     }
 }
