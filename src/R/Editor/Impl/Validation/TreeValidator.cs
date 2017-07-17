@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Errors;
@@ -30,7 +29,7 @@ namespace Microsoft.R.Editor.Validation {
     /// </summary>
     public sealed class TreeValidator {
         private static readonly BooleanSwitch _traceValidation = new BooleanSwitch("traceRValidation", "Trace R validation events in debug window.");
-        private static int _validationDelay = 300;
+        private const int _validationDelay = 300;
 
         public BooleanSwitch TraceValidation => _traceValidation;
 
@@ -49,6 +48,7 @@ namespace Microsoft.R.Editor.Validation {
 
         private CancellationTokenSource _cts;
         private bool _syntaxCheckEnabled;
+        private bool _lintCheckEnabled;
         private bool _advisedToIdleTime;
         private DateTime _idleRequestTime = DateTime.UtcNow;
 
@@ -65,7 +65,6 @@ namespace Microsoft.R.Editor.Validation {
 #endif
 
             _editorTree = editorTree;
-            _editorTree.NodesRemoved += OnNodesRemoved;
             _editorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _editorTree.Closing += OnTreeClose;
 
@@ -77,6 +76,7 @@ namespace Microsoft.R.Editor.Validation {
             // cause it fire Changed notification in some cases.
             _settings.SettingsChanged += OnSettingsChanged;
             _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
+            _lintCheckEnabled = _settings.LintOptions.Enabled;
 
             // We don't want to start validation right away since it may 
             // interfere with the editor perceived startup performance.
@@ -129,15 +129,22 @@ namespace Microsoft.R.Editor.Validation {
 
         #region Settings change handler
         private void OnSettingsChanged(object sender, EventArgs e) {
-            bool syntaxCheckWasEnabled = _syntaxCheckEnabled;
+            var syntaxCheckWasEnabled = _syntaxCheckEnabled;
+            var lintCheckWasEnabled = _lintCheckEnabled;
 
             _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
-            if (syntaxCheckWasEnabled && !_syntaxCheckEnabled) {
+            _lintCheckEnabled = _settings.LintOptions.Enabled;
+
+            var optionsChanged = (syntaxCheckWasEnabled ^ _syntaxCheckEnabled) ||
+                                 (lintCheckWasEnabled ^ _lintCheckEnabled);
+
+            if (optionsChanged) {
+                // This will clear error list so any errors that were produced
+                // by validators that were turned off will go away.
                 StopValidation();
-            } else if (!syntaxCheckWasEnabled && _syntaxCheckEnabled) {
-                StartValidation();
             }
 
+            StartValidation(); // Checks _syntaxCheckEnabled
             Cleared?.Invoke(this, EventArgs.Empty);
         }
         #endregion
@@ -175,21 +182,6 @@ namespace Microsoft.R.Editor.Validation {
         }
 
         #region Tree event handlers
-        /// <summary>
-        /// Listens to 'nodes removed' event which fires when user
-        /// deletes text that generated AST nodes or pastes over
-        /// new content. This allows validator to remove related
-        /// errors from the task list quickly so they don't linger
-        /// until the next validation pass.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnNodesRemoved(object sender, TreeNodesRemovedEventArgs e) {
-            if (_syntaxCheckEnabled) {
-                ClearResults();
-            }
-        }
-
         private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
             // We run validation on all updates since there 
             // may be whitespace checkers like lint
@@ -202,7 +194,6 @@ namespace Microsoft.R.Editor.Validation {
 
             StopValidation();
 
-            _editorTree.NodesRemoved -= OnNodesRemoved;
             _editorTree.UpdateCompleted -= OnTreeUpdateCompleted;
             _editorTree.Closing -= OnTreeClose;
 

@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Microsoft.R.Wpf {
+namespace Microsoft.R.Common.Wpf.Controls {
     /// <summary>
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.
     /// </summary>
-    public abstract class BindableBase : INotifyPropertyChanged
-    {
+    public abstract class BindableBase : INotifyPropertyChanged {
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
@@ -45,8 +44,9 @@ namespace Microsoft.R.Wpf {
         /// <param name="propertyName">Name of the property used to notify listeners. This
         /// value is optional and can be provided automatically when invoked from compilers
         /// that support <see cref="CallerMemberNameAttribute"/>.</param>
-        protected void OnPropertyChanged(string propertyName) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            var eventHandler = PropertyChanged;
+            eventHandler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

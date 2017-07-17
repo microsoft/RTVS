@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.Plots.ViewModel;
 using Microsoft.R.Host.Client;
 
@@ -42,23 +42,23 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public object PlotImage {
-            get { return _plotImage; }
-            private set { SetProperty(ref _plotImage, value); }
+            get => _plotImage;
+            private set => SetProperty(ref _plotImage, value);
         }
 
         public bool LocatorMode {
-            get { return _locatorMode; }
-            private set { SetProperty(ref _locatorMode, value); }
+            get => _locatorMode;
+            private set => SetProperty(ref _locatorMode, value);
         }
 
         public bool ShowWatermark {
-            get { return _showWatermark; }
-            private set { SetProperty(ref _showWatermark, value); }
+            get => _showWatermark;
+            private set => SetProperty(ref _showWatermark, value);
         }
 
         public bool ShowError {
-            get { return _showError; }
-            private set { SetProperty(ref _showError, value); }
+            get => _showError;
+            private set => SetProperty(ref _showError, value);
         }
 
         public string DeviceName {
@@ -71,9 +71,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             }
         }
 
-        public bool IsDeviceActive {
-            get { return _device != null && _device == _plotManager.ActiveDevice; }
-        }
+        public bool IsDeviceActive => _device != null && _device == _plotManager.ActiveDevice;
 
         public void Assign(IRPlotDevice device) {
             _mainThread.Assert();

@@ -13,7 +13,7 @@ using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -35,9 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private IComparer<ObservableTreeNode> _comparer;
         private IComparer<ITreeNode> _modelComparer;
         private IComparer<ITreeNode> ModelComparer {
-            get {
-                return _modelComparer;
-            }
+            get => _modelComparer;
             set {
                 _modelComparer = value;
                 _comparer = Comparer<ObservableTreeNode>.Create((v1, v2) => _modelComparer.Compare(v1.Model, v2.Model));
@@ -49,16 +47,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// true for non-leaf node, false for leaf node
         /// </summary>
         public bool HasChildren {
-            get { return _hasChildren; }
-            set { SetProperty<bool>(ref _hasChildren, value); }
+            get => _hasChildren;
+            set => SetProperty<bool>(ref _hasChildren, value);
         }
 
         private bool _isVisible = true;
         public bool IsVisible {
-            get { return _isVisible; }
-            set {
-                SetProperty(ref _isVisible, value);
-            }
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
         }
 
 
@@ -67,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Indicate this node expand to show children
         /// </summary>
         public bool IsExpanded {
-            get { return _isExpanded; }
+            get => _isExpanded;
             set {
                 if (_isExpanded == value) {
                     return;
@@ -90,10 +86,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Visibility of this node
         /// </summary>
         public Visibility Visibility {
-            get { return _visibility; }
-            set {
-                SetProperty<Visibility>(ref _visibility, value);
-            }
+            get => _visibility;
+            set => SetProperty<Visibility>(ref _visibility, value);
         }
 
         /// <summary>
@@ -122,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         private ITreeNode _model;
         public ITreeNode Model {
-            get { return _model; }
+            get => _model;
             set {
                 var newModel = value;
 
@@ -147,8 +141,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Content when any error happens internally
         /// </summary>
         public object ErrorContent {
-            get { return _errorContent; }
-            set { SetProperty(ref _errorContent, value); }
+            get => _errorContent;
+            set => SetProperty(ref _errorContent, value);
         }
 
         /// <summary>

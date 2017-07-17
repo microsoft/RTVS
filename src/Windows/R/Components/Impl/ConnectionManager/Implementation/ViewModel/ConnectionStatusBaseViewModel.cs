@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Wpf.Controls;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal abstract class ConnectionStatusBaseViewModel : BindableBase, IDisposable {
@@ -48,23 +48,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool IsConnected {
-            get { return _isConnected; }
-            set { SetProperty(ref _isConnected, value); }
+            get => _isConnected;
+            set => SetProperty(ref _isConnected, value);
         }
 
         public bool IsRunning {
-            get { return _isRunning; }
-            set { SetProperty(ref _isRunning, value); }
+            get => _isRunning;
+            set => SetProperty(ref _isRunning, value);
         }
 
         public bool IsActive {
-            get { return _isActive; }
-            set { SetProperty(ref _isActive, value); }
+            get => _isActive;
+            set => SetProperty(ref _isActive, value);
         }
 
         public bool IsRemote {
-            get { return _isRemote; }
-            set { SetProperty(ref _isRemote, value); }
+            get => _isRemote;
+            set => SetProperty(ref _isRemote, value);
         }
     }
 }

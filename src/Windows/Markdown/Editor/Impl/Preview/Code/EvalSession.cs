@@ -21,18 +21,21 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             _services = services;
             _sessionId = Invariant($"({documentName} - {Guid.NewGuid()}");
             _sessionStart = StartSessionAsync(_hostStartCts.Token);
+
+            SessionCallback = new RSessionCallback {
+                PlotDeviceProperties = new PlotDeviceProperties(800, 600, 96)
+            };
         }
 
         public IRSession RSession { get; private set; }
 
-        public RSessionCallback SessionCallback { get; internal set; } = new RSessionCallback();
+        public RSessionCallback SessionCallback { get; internal set; }
 
         public async Task<IRSession> StartSessionAsync(CancellationToken ct) {
             if (RSession == null) {
                 var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
                 RSession = workflow.RSessions.GetOrCreate(_sessionId);
-            }
-            else {
+            } else {
                 await _sessionStart;
             }
 

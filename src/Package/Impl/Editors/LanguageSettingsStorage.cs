@@ -83,18 +83,6 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(_langPrefs != null);
         }
 
-        /// <summary>
-        /// Called when VS resets default settings through "Tools|Import/Export Settings"
-        /// </summary>
-        public void ResetSettings() {
-            // LangPrefs will be reset by VS, this code doesn't need to do it
-
-            _booleanSettings.Clear();
-            _integerSettings.Clear();
-            _stringSettings.Clear();
-
-            SettingsChanged?.Invoke(this, EventArgs.Empty);
-        }
 
         #region IEditorSettingsStorage
         public T Get<T>(string name, T defaultValue) {
@@ -155,6 +143,19 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         #endregion
 
         #region IWritableEditorSettingsStorage
+        /// <summary>
+        /// Called when VS resets default settings through "Tools|Import/Export Settings"
+        /// </summary>
+        public void ResetSettings() {
+            // LangPrefs will be reset by VS, this code doesn't need to do it
+
+            _booleanSettings.Clear();
+            _integerSettings.Clear();
+            _stringSettings.Clear();
+
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public void Set<T>(string name, T value) {
             if (value is string) {
                 SetString(name, (string)(object)value);

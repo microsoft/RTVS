@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
 
