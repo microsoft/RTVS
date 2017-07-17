@@ -104,5 +104,11 @@ namespace Microsoft.R.Components.Settings {
         /// Controls visibility of R Toolbar
         /// </summary>
         bool ShowRToolbar { get; set; }
+
+        /// <summary>
+        /// Controls visibility of the host load meter control
+        /// (CPU/Memory/Network load display).
+        /// </summary>
+        bool ShowHostLoadMeter { get; set; }
     }
 }

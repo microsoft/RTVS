@@ -205,6 +205,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         public bool ShowRToolbar { get; set; } = true;
+        public bool ShowHostLoadMeter { get; set; }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
             List<string> list = new List<string>(WorkingDirectoryList ?? Enumerable.Empty<string>());

@@ -2706,6 +2706,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show machine load indicator.
+        /// </summary>
+        public static string Settings_ShowHostLoadMeter {
+            get {
+                return ResourceManager.GetString("Settings_ShowHostLoadMeter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Controls visibility of the CPU/Memory/Network load indicator in the status bar. The indicator incurs network traffic and can be swiitched off in remote metered scenarios. Requires restart of the Visual Studio..
+        /// </summary>
+        public static string Settings_ShowHostLoadMeter_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShowHostLoadMeter_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show internal functions.
         /// </summary>
         public static string Settings_ShowInternalFunctions {

@@ -7,13 +7,13 @@ using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.ConnectionManager {
     public class Connection : ConnectionInfo, IConnection {
-        public static Connection Create(ISecurityService securityService, IConnectionInfo connectionInfo) {
-            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments);
+        public static Connection Create(ISecurityService securityService, IConnectionInfo connectionInfo, bool fetchHostLoad) {
+            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, connectionInfo.Name, connectionInfo.Path, connectionInfo.RCommandLineArguments, fetchHostLoad);
             return new Connection(brokerConnectionInfo, connectionInfo);
         }
 
-        public static Connection Create(ISecurityService securityService, string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, name, path, rCommandLineArguments);
+        public static Connection Create(ISecurityService securityService, string name, string path, string rCommandLineArguments, bool isUserCreated, bool fetchHostLoad) {
+            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, name, path, rCommandLineArguments, fetchHostLoad);
             return new Connection(brokerConnectionInfo, path, isUserCreated);
         }
 

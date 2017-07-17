@@ -70,6 +70,12 @@ namespace Microsoft.R.Components.Test.Stubs {
         /// </summary>
         public bool ShowRToolbar { get; set; } = true;
 
+        /// <summary>
+        /// Controls visibility of the host load meter control
+        /// (CPU/Memory/Network load display).
+        /// </summary>
+        public bool ShowHostLoadMeter { get; set; }
+
         public void Dispose() { }
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
