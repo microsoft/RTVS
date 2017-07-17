@@ -1883,7 +1883,7 @@
             <Val><![CDATA[正在将工作区自动保存到图像“{0}”...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image "{0}" ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1895,7 +1895,7 @@
             <Val><![CDATA[要删除自动保存的工作区图像“{0}”吗?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image "{0}"?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1907,7 +1907,7 @@
             <Val><![CDATA[正在删除自动保存的工作区图像“{0}”。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1919,7 +1919,7 @@
             <Val><![CDATA[未能从自动保存的图像“{0}”加载工作区。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1931,7 +1931,7 @@
             <Val><![CDATA[已从自动保存的图像“{0}”加载工作区。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1943,7 +1943,7 @@
             <Val><![CDATA[已终止上一个 R 会话，并且已将其全局工作区保存到图像“{0}”。要重新加载吗?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "{0}". Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

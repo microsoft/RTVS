@@ -1883,7 +1883,7 @@
             <Val><![CDATA[Arbeitsbereich wird automatisch in Image "{0}" gespeichert...]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Autosaving workspace to image "%s" ...]]></Val>
+            <Val><![CDATA[Autosaving workspace to image "{0}" ...]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1895,7 +1895,7 @@
             <Val><![CDATA[Möchten Sie das automatisch gespeicherte Arbeitsbereichsimage "{0}" löschen?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Delete autosaved workspace image "%s"?]]></Val>
+            <Val><![CDATA[Delete autosaved workspace image "{0}"?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1907,7 +1907,7 @@
             <Val><![CDATA[Das automatisch gespeicherte Arbeitsbereichsimage "{0}" wird gelöscht.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Deleting autosaved workspace image "%s".]]></Val>
+            <Val><![CDATA[Deleting autosaved workspace image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1919,7 +1919,7 @@
             <Val><![CDATA[Fehler beim Laden des Arbeitsbereichs aus dem automatisch gespeicherten Image "{0}".]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to load workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Failed to load workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1931,7 +1931,7 @@
             <Val><![CDATA[Der Arbeitsbereich wurde aus dem automatisch gespeicherten Image "{0}" geladen.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Loaded workspace from autosaved image "%s".]]></Val>
+            <Val><![CDATA[Loaded workspace from autosaved image "{0}".]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -1943,7 +1943,7 @@
             <Val><![CDATA[Die vorherige R-Sitzung wurde beendet, und der zugehörige globale Arbeitsbereich wurde in das Image "{0}" gespeichert. Möchten Sie den Arbeitsbereich neu laden?]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "%s". Would you like to reload it?]]></Val>
+            <Val><![CDATA[Previous R session terminated, and its global workspace has been saved to image "{0}". Would you like to reload it?]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
