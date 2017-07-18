@@ -61,11 +61,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _installationService = _shell.GetService<IRInstallationService>();
 
             _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell.Services);
-            _hostLoadIndicatorViewModel = new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
+            if (settings.ShowHostLoadMeter) {
+                _hostLoadIndicatorViewModel =
+                    new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
+            }
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
                 .Add(_statusBarViewModel)
-                .Add(_hostLoadIndicatorViewModel)
+                .Add(_hostLoadIndicatorViewModel ?? Disposable.Empty)
                 .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged)
                 .Add(() => _interactiveWorkflow.RSession.Connected -= SessionConnected)
                 .Add(() => _interactiveWorkflow.RSession.Disconnected -= SessionDisconnected)
@@ -88,7 +91,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private async Task CompleteInitializationAsync() {
             await _shell.SwitchToMainThreadAsync();
             AddToStatusBar(new ConnectionStatusBar(), _statusBarViewModel);
-            AddToStatusBar(new HostLoadIndicator(), _hostLoadIndicatorViewModel);
+            if (_hostLoadIndicatorViewModel != null) {
+                AddToStatusBar(new HostLoadIndicator(), _hostLoadIndicatorViewModel);
+            }
         }
 
         private void AddToStatusBar(FrameworkElement element, object dataContext) {
@@ -112,14 +117,17 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public IConnection AddOrUpdateConnection(IConnectionInfo connectionInfo) {
-            var newConnection = Connection.Create(_securityService, connectionInfo);
+            var newConnection = Connection.Create(_securityService, connectionInfo, _settings.ShowHostLoadMeter);
             var connection = _connections.AddOrUpdate(newConnection.Name, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
             UpdateRecentConnections();
             return connection;
         }
 
         public IConnection GetOrAddConnection(string name, string path, string rCommandLineArguments, bool isUserCreated) {
-            var connection = GetConnection(name) ?? _connections.GetOrAdd(name, Connection.Create(_securityService, name, path, rCommandLineArguments, isUserCreated));
+            var connection = GetConnection(name) 
+                ?? _connections.GetOrAdd(name, 
+                    Connection.Create(_securityService, name, path, rCommandLineArguments, isUserCreated, _settings.ShowHostLoadMeter));
+
             UpdateRecentConnections();
             return connection;
         }
@@ -148,7 +156,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public Task TestConnectionAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
             var brokerConnectionInfo = (connection as IConnection)?.BrokerConnectionInfo
-                ?? BrokerConnectionInfo.Create(_securityService, connection.Name, connection.Path, connection.RCommandLineArguments);
+                ?? BrokerConnectionInfo.Create(_securityService, connection.Name, connection.Path, connection.RCommandLineArguments, _settings.ShowHostLoadMeter);
             return _sessionProvider.TestBrokerConnectionAsync(connection.Name, brokerConnectionInfo, cancellationToken);
         }
 
@@ -203,7 +211,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo)
             => _connections.TryGetValue(connectionInfo.Name, out var connection)
                ? connection
-               : Connection.Create(_securityService, connectionInfo);
+               : Connection.Create(_securityService, connectionInfo, _settings.ShowHostLoadMeter);
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
             if (oldConnection != null && newConnection.Equals(oldConnection)) {
@@ -220,7 +228,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             return _settings.Connections
-                .Select(c => (IConnection)Connection.Create(_securityService, c))
+                .Select(c => (IConnection)Connection.Create(_securityService, c, _settings.ShowHostLoadMeter))
                 .ToDictionary(k => k.Name);
         }
 
@@ -262,7 +270,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             // Add newly installed engines
             foreach (var e in localEngines) {
                 if (!connections.Values.Any(x => x.Path.PathEquals(e.InstallPath))) {
-                    connections[e.Name] = Connection.Create(_securityService, e.Name, e.InstallPath, string.Empty, isUserCreated: false);
+                    connections[e.Name] = Connection.Create(_securityService, e.Name, e.InstallPath, string.Empty, false, _settings.ShowHostLoadMeter);
                 }
             }
 

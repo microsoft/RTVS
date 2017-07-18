@@ -68,6 +68,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set => _holder.SetValue(value);
         }
 
+        [LocCategory(nameof(Resources.Settings_WorkspaceCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_ShowHostLoadMeter))]
+        [LocDescription(nameof(Resources.Settings_ShowHostLoadMeter_Description))]
+        [DefaultValue(false)]
+        public bool ShowHostLoadMeter {
+            get => _holder.GetValue(true);
+            set => _holder.SetValue(value);
+        }
+
         [LocCategory(nameof(Resources.Settings_HistoryCategory))]
         [CustomLocDisplayName(nameof(Resources.Settings_AlwaysSaveHistory))]
         [LocDescription(nameof(Resources.Settings_AlwaysSaveHistory_Description))]
@@ -228,7 +237,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// Holds settings (name/values) while they are being edited. We don't 
         /// want to apply changes to the actual settings until user clicks OK.
         /// </summary>
-        class SettingsHolder {
+        private class SettingsHolder {
             private readonly IRSettings _settings;
             private readonly IDictionary<string, object> _dict;
 
@@ -238,8 +247,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
 
             public T GetValue<T>(T defaultValue, [CallerMemberName] string name = null) {
-                object value;
-                return _dict.TryGetValue(name, out value) ? (T)value : default(T);
+                return _dict.TryGetValue(name, out var value) ? (T)value : defaultValue;
             }
 
             public T GetValue<T>([CallerMemberName] string name = null) => GetValue<T>(default(T), name);

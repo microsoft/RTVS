@@ -17,8 +17,9 @@ namespace Microsoft.R.Host.Client.Host {
         public string RCommandLineArguments { get; }
         public string InterpreterId { get; }
         public string CredentialAuthority => GetCredentialAuthority(Name);
+        public bool FetchHostLoad { get; }
 
-        public static BrokerConnectionInfo Create(ISecurityService securityService, string name, string path, string rCommandLineArguments = null) {
+        public static BrokerConnectionInfo Create(ISecurityService securityService, string name, string path, string rCommandLineArguments, bool fetchHostLoad) {
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
             if (!Uri.TryCreate(path, UriKind.Absolute, out Uri uri)) {
@@ -26,11 +27,11 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             return uri.IsFile 
-                ? new BrokerConnectionInfo(name, uri, rCommandLineArguments, string.Empty, false, string.Empty) 
-                : CreateRemote(name, uri, securityService, rCommandLineArguments);
+                ? new BrokerConnectionInfo(name, uri, rCommandLineArguments, string.Empty, false, string.Empty, fetchHostLoad) 
+                : CreateRemote(name, uri, securityService, rCommandLineArguments, fetchHostLoad);
         }
 
-        private static BrokerConnectionInfo CreateRemote(string name, Uri uri, ISecurityService securityService, string rCommandLineArguments) {
+        private static BrokerConnectionInfo CreateRemote(string name, Uri uri, ISecurityService securityService, string rCommandLineArguments, bool fetchHostLoad) {
             var fragment = uri.Fragment;
             var interpreterId = string.IsNullOrEmpty(fragment) ? string.Empty : fragment.Substring(1);
             var ub = new UriBuilder(uri) {
@@ -40,10 +41,10 @@ namespace Microsoft.R.Host.Client.Host {
             };
             uri = ub.Uri;
             var username = securityService.GetUserName(GetCredentialAuthority(name));
-            return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username);
+            return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username, fetchHostLoad);
         }
 
-        private BrokerConnectionInfo(string name, Uri uri, string rCommandLineArguments, string interpreterId, bool isRemote, string username) {
+        private BrokerConnectionInfo(string name, Uri uri, string rCommandLineArguments, string interpreterId, bool isRemote, string username, bool fetchHostLoad) {
             Name = name;
             IsValid = true;
             Uri = uri;
@@ -53,6 +54,7 @@ namespace Microsoft.R.Host.Client.Host {
                 ? string.Empty 
                 : $"{rCommandLineArguments}/{interpreterId}/{username}".GetSHA256FileSystemSafeHash();
             IsRemote = isRemote;
+            FetchHostLoad = fetchHostLoad;
         }
 
         private static string GetCredentialAuthority(string name) {

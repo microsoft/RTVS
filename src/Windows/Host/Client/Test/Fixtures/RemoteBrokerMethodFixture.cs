@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
                 securityServiceStub.GetUserCredentialsHandler = (authority, workspaceName) => Credentials.Create(UserName, _remoteBrokerFixture.Password);
             }
 
-            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, _testName, _remoteBrokerFixture.Address);
+            var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, _testName, _remoteBrokerFixture.Address, null, false);
             return sessionProvider.TrySwitchBrokerAsync(_testName, brokerConnectionInfo);
         }
     }

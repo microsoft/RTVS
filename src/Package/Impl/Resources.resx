@@ -1323,4 +1323,10 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="RunPropertyPage_TransferFilesFilter" xml:space="preserve">
     <value>Files to transfer</value>
   </data>
+  <data name="Settings_ShowHostLoadMeter" xml:space="preserve">
+    <value>Show machine load indicator</value>
+  </data>
+  <data name="Settings_ShowHostLoadMeter_Description" xml:space="preserve">
+    <value>Controls visibility of the CPU/Memory/Network load indicator in the status bar. The indicator incurs network traffic and can be swiitched off in remote metered scenarios. Requires restart of the Visual Studio.</value>
+  </data>
 </root>

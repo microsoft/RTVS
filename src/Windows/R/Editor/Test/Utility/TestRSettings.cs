@@ -131,6 +131,8 @@ namespace Microsoft.R.Editor.Test.Utility {
 
         public bool ShowRToolbar { get; set; } = true;
 
+        public bool ShowHostLoadMeter { get; set; }
+
         #region IRPersistentSettings
         public void LoadSettings() { }
         public Task SaveSettingsAsync() => Task.CompletedTask;

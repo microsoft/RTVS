@@ -100,8 +100,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private void DisposeSession(string sessionId) {
-            RSession session;
-            if (_sessions.TryRemove(sessionId, out session)) {
+            if (_sessions.TryRemove(sessionId, out var session)) {
                 session.Connected -= RSessionOnConnected;
             }
         }
@@ -208,7 +207,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                 // First switch broker proxy so that all new sessions are created for the new broker
                 var oldBroker = _brokerProxy.Set(brokerClient);
-                if (_updateHostLoadLoopTask == null) {
+                if (_updateHostLoadLoopTask == null && connectionInfo.FetchHostLoad) {
                     _updateHostLoadLoopTask = UpdateHostLoadLoopAsync();
                 }
 
@@ -345,7 +344,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (!connectionInfo.IsValid) {
                 var installSvc = _services.GetService<IRInstallationService>();
                 var path = installSvc.GetCompatibleEngines().FirstOrDefault()?.InstallPath;
-                connectionInfo = BrokerConnectionInfo.Create(_services.Security(), connectionInfo.Name, path);
+                connectionInfo = BrokerConnectionInfo.Create(_services.Security(), connectionInfo.Name, path, null, false);
             }
 
             if (!connectionInfo.IsValid) {

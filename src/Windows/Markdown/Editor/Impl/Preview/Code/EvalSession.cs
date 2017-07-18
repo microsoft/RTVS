@@ -19,7 +19,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
         public EvalSession(string documentName, IServiceContainer services) {
             _services = services;
-            _sessionId = Invariant($"({documentName} - {Guid.NewGuid()}");
+            _sessionId = Invariant($"{documentName} - {Guid.NewGuid()}");
             _sessionStart = StartSessionAsync(_hostStartCts.Token);
 
             SessionCallback = new RSessionCallback {

@@ -10,7 +10,6 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Information {
     public sealed class HostLoadIndicatorViewModel : BindableBase, IDisposable {
-        private readonly IRSessionProvider _sessionProvider;
         private readonly IMainThread _mainThread;
         private readonly DisposableBag _disposableBag;
 
@@ -36,12 +35,12 @@ namespace Microsoft.R.Components.Information {
         }
 
         public HostLoadIndicatorViewModel(IRSessionProvider sessionProvider, IMainThread mainThread) {
-            _sessionProvider = sessionProvider;
+            var sessionProvider1 = sessionProvider;
             _mainThread = mainThread;
             _disposableBag = DisposableBag.Create<HostLoadIndicatorViewModel>()
-                .Add(() => _sessionProvider.HostLoadChanged -= OnHostLoadChanged);
+                .Add(() => sessionProvider1.HostLoadChanged -= OnHostLoadChanged);
 
-            _sessionProvider.HostLoadChanged += OnHostLoadChanged;
+            sessionProvider1.HostLoadChanged += OnHostLoadChanged;
         }
 
         private void OnHostLoadChanged(object sender, HostLoadChangedEventArgs e) {
