@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Validation.Errors;

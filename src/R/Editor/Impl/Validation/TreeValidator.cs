@@ -75,8 +75,8 @@ namespace Microsoft.R.Editor.Validation {
             // since accessing the host application (VS) settings object may 
             // cause it fire Changed notification in some cases.
             _settings.SettingsChanged += OnSettingsChanged;
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
-            _lintCheckEnabled = _settings.LintOptions.Enabled;
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings, out _lintCheckEnabled);
+            _lintCheckEnabled &= _settings.LintOptions.Enabled;
 
             // We don't want to start validation right away since it may 
             // interfere with the editor perceived startup performance.
@@ -132,8 +132,8 @@ namespace Microsoft.R.Editor.Validation {
             var syntaxCheckWasEnabled = _syntaxCheckEnabled;
             var lintCheckWasEnabled = _lintCheckEnabled;
 
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
-            _lintCheckEnabled = _settings.LintOptions.Enabled;
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings, out _lintCheckEnabled);
+            _lintCheckEnabled &= _settings.LintOptions.Enabled;
 
             var optionsChanged = (syntaxCheckWasEnabled ^ _syntaxCheckEnabled) ||
                                  (lintCheckWasEnabled ^ _lintCheckEnabled);
@@ -149,12 +149,14 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer, IREditorSettings settings) {
+        public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer, IREditorSettings settings, out bool lintEnabled) {
             var document = editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 var view = document.PrimaryView;
+                lintEnabled = view != null && !view.IsRepl();
                 return view != null && view.IsRepl() ? settings.SyntaxCheckInRepl : settings.SyntaxCheckEnabled;
             }
+            lintEnabled = false;
             return false;
         }
 

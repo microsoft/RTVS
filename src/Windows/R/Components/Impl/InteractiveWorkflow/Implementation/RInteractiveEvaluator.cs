@@ -33,7 +33,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IConsole _console;
         private readonly CountdownDisposable _evaluatorRequest;
         private readonly IFileSystem _fs;
-        private CarriageReturnProcessor _crProcessor;
+        private InteractiveWindowWriter _windowWriter;
         private int _terminalWidth = 80;
         private IInteractiveWindow _currentWindow;
         private bool _brokerChanging;
@@ -74,7 +74,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public void Dispose() {
             _disposableBag.TryDispose();
-            _crProcessor?.Dispose();
+            _windowWriter?.Dispose();
             if (CurrentWindow != null) {
                 CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
             }
@@ -210,12 +210,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             get => _currentWindow;
             set {
                 if (_currentWindow != null) {
-                    CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+                    _currentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
                 }
                 _currentWindow = value;
                 if (_currentWindow != null) {
                     _currentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                    _crProcessor = new CarriageReturnProcessor(_coreShell.Services, _currentWindow);
+                    _windowWriter = new InteractiveWindowWriter(_coreShell.MainThread(), _currentWindow);
                 }
             }
         }
@@ -281,13 +281,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void Write(string message) {
             if (CurrentWindow != null && !string.IsNullOrEmpty(message)) {
-                _crProcessor.ProcessMessage(message);
+                _windowWriter.WriteMessage(message);
             }
         }
 
         private void WriteError(string message) {
             if (CurrentWindow != null && !string.IsNullOrEmpty(message)) {
-                _crProcessor.ProcessError(message);
+                _windowWriter.WriteError(message);
             }
         }
 
@@ -302,7 +302,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private void VisualElement_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
-            int width = (int)(e.NewSize.Width / CurrentWindow.TextView.FormattedLineSource.ColumnWidth);
+            var width = (int)(e.NewSize.Width / CurrentWindow.TextView.FormattedLineSource.ColumnWidth);
             // From R docs:  Valid values are 10...10000 with default normally 80.
             _terminalWidth = Math.Max(10, Math.Min(10000, width));
 
@@ -324,8 +324,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             message = message.TrimEnd(CharExtensions.LineBreakChars);
 
             // Trim and count leading new lines in the message
-            int newLineLength = Environment.NewLine.Length;
-            int nlInMessage = 0;
+            var newLineLength = Environment.NewLine.Length;
+            var nlInMessage = 0;
             while (message.StartsWithOrdinal(Environment.NewLine) && message.Length > newLineLength) {
                 nlInMessage++;
                 message = message.Substring(newLineLength, message.Length - newLineLength);
@@ -335,8 +335,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // Count line breaks in the beginning of the message and at the end 
                 // of the line text buffer and ensure no more than 2.
                 var snapshot = CurrentWindow.CurrentLanguageBuffer.CurrentSnapshot;
-                int nlInBuffer = 0;
-                for (int i = snapshot.Length - newLineLength; i >= 0; i -= newLineLength) {
+                var nlInBuffer = 0;
+                for (var i = snapshot.Length - newLineLength; i >= 0; i -= newLineLength) {
                     if (!snapshot.GetText(i, newLineLength).EqualsOrdinal(Environment.NewLine)) {
                         break;
                     }
@@ -344,7 +344,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 // allow no more than 2 combined
-                for (int i = 0; i < Math.Min(2, nlInBuffer + nlInMessage); i++) {
+                for (var i = 0; i < Math.Min(2, nlInBuffer + nlInMessage); i++) {
                     message = Environment.NewLine + message;
                 }
             }

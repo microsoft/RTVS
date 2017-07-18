@@ -35,12 +35,17 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.CloseCurlySeparateLine) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.CloseCurlyBrace) {
                     var tp = node.Root.TextProvider;
-                    var result = HasLineTextBeforePosition(tp, node.Start);
+                    var result = HasLineTextBeforePosition(tp, node.Start, out var lineBreakIndex);
                     if (!result) {
                         var text = GetLineTextAfterPosition(tp, node.Start);
                         result = text.Length > 0 && !text.Trim().StartsWithOrdinal("else");
                     }
                     if (result) {
+                        // Special case {r in R Markdown
+                        var text = GetLineTextAfterPosition(tp, lineBreakIndex).TrimStart();
+                        if (text.StartsWithIgnoreCase("{r") || text.StartsWithIgnoreCase("{ r")) {
+                            return null;
+                        }
                         return new ValidationWarning(node, Resources.Lint_CloseCurlySeparateLine, ErrorLocation.Token);
                     }
                 }
@@ -85,7 +90,11 @@ namespace Microsoft.R.Editor.Validation.Lint {
             if (options.OpenCurlyPosition) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.OpenCurlyBrace) {
                     var tp = node.Root.TextProvider;
-                    if (!HasLineTextBeforePosition(tp, node.Start) || !tp.IsNewLineAfterPosition(node.End)) {
+                    // Special case {r in R Markdown
+                    if(tp.Length > t.End && char.ToLowerInvariant(tp[t.End]) == 'r') {
+                        return null;
+                    }
+                    if (!HasLineTextBeforePosition(tp, node.Start, out var unused) || !tp.IsNewLineAfterPosition(node.End)) {
                         return new ValidationWarning(node, Resources.Lint_OpenCurlyPosition, ErrorLocation.Token);
                     }
                 }
@@ -262,20 +271,11 @@ namespace Microsoft.R.Editor.Validation.Lint {
         private static bool HasMultipleDots(string text)
             => text.Length > 0 && text.Count(x => x == '.') > 1;
 
-        private static bool HasLineTextBeforePosition(ITextProvider tp, int position) {
+        private static bool HasLineTextBeforePosition(ITextIterator tp, int position, out int lineBreakIndex) {
+            lineBreakIndex = 0;
             for (var i = position - 1; i >= 0; i--) {
-                if (tp[i] == '\n' || tp[i] == '\r') {
-                    break;
-                }
-                if (!char.IsWhiteSpace(tp[i])) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        private static bool HasLineTextAfterPosition(ITextProvider tp, int position) {
-            for (var i = position + 1; i < tp.Length; i++) {
-                if (tp[i] == '\n' || tp[i] == '\r') {
+                if (tp[i].IsLineBreak()) {
+                    lineBreakIndex = i;
                     break;
                 }
                 if (!char.IsWhiteSpace(tp[i])) {
@@ -287,12 +287,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
 
         private static string GetLineTextAfterPosition(ITextProvider tp, int position) {
             var i = position + 1;
-            for (; i < tp.Length; i++) {
-                if (tp[i] == '\n' || tp[i] == '\r') {
-                    break;
-                }
-            }
-            return tp.GetText(TextRange.FromBounds(i + 1, i));
+            for (; i < tp.Length && !tp[i].IsLineBreak(); i++) { }
+            return tp.GetText(TextRange.FromBounds(position + 1, i));
         }
     }
 }
