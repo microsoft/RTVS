@@ -50,7 +50,6 @@ namespace Microsoft.R.Editor.Test.Roxygen {
         [InlineData("x <- 1;", 6, 1, "Lint_Semicolons", "Semicolons")]
         [InlineData("x <- 1; # comment", 6, 1, "Lint_Semicolons", "Semicolons")]
         [InlineData("x <- 1; # comment\ny <- 2", 6, 1, "Lint_Semicolons", "Semicolons")]
-        [InlineData("x <- 1;y <- 2", 7, 6, "Lint_MultipleStatementsInLine", "MultipleStatements")]
         [InlineData("f(,,,)", 0, 0, null, null)]
         [InlineData("x <- T", 5, 1, "Lint_TrueFalseNames", "TrueFalseNames")]
         [InlineData("x <- F", 5, 1, "Lint_TrueFalseNames", "TrueFalseNames")]
@@ -70,7 +69,11 @@ namespace Microsoft.R.Editor.Test.Roxygen {
         [InlineData("if (TRUE) {\n}", 0, 0, null, null)]
         [InlineData("if (TRUE) {\n  x <- 1 }", 21, 1, "Lint_CloseCurlySeparateLine", "CloseCurlySeparateLine")]
         [InlineData("if (TRUE) {\n  x <- 1\n}", 0, 0, null, null)]
-        [InlineData("if (TRUE) {\n  x <- 1\n} else {", 0, 0, null, null)]
+        [InlineData("if (TRUE) {\n  x <- 1\n} else {\n", 0, 0, null, null)]
+        [InlineData("x=1", 1, 1, "Lint_Assignment", "AssignmentType")]
+        [InlineData("1:10", 0, 0, null, null)]
+        [InlineData("a::b", 0, 0, null, null)]
+        [InlineData("a:::b", 0, 0, null, null)]
         public async Task Validate(string content, int start, int length, string message, string propertyName) {
 
             var prop = propertyName != null ? _options.GetType().GetProperty(propertyName) : null;
@@ -99,6 +102,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
         [InlineData("x[1,]", new[] { 3, 4 }, new[] { 1, 1 }, new[] { "Lint_CommaSpaces", "Lint_NoSpaceBetweenCommaAndClosingBracket" })]
         [InlineData("x[[1,]]", new[] { 4, 5 }, new[] { 1, 2 }, new[] { "Lint_CommaSpaces", "Lint_NoSpaceBetweenCommaAndClosingBracket" })]
         [InlineData("if (TRUE) { x <- 1 }", new[] { 10, 19 }, new[] { 1, 1 }, new[] { "Lint_OpenCurlyPosition", "Lint_CloseCurlySeparateLine" })]
+        [InlineData("x <- 1;y <- 2", new [] { 6, 7 }, new [] { 1, 6 }, new [] {"Lint_Semicolons", "Lint_MultipleStatementsInLine", })]
         public async Task Validate2(string content, int[] start, int[] length, string[] message) {
 
             var ast = RParser.Parse(content);

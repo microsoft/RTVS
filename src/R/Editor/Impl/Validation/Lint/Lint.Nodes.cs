@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     }
                     if (result) {
                         // Special case {r in R Markdown
-                        var text = GetLineTextAfterPosition(tp, lineBreakIndex).TrimStart();
+                        var text = GetLineTextAfterPosition(tp, lineBreakIndex - 1).TrimStart();
                         if (text.StartsWithIgnoreCase("{r") || text.StartsWithIgnoreCase("{ r")) {
                             return null;
                         }
@@ -76,13 +76,19 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 if (node is IOperator op && !op.IsUnary && op is TokenOperator to) {
                     var tp = node.Root.TextProvider;
                     var t = to.OperatorToken;
-                    if (!tp.IsWhitespaceBeforePosition(t.Start) || !tp.IsWhitespaceAfterPosition(t.End - 1)) {
-                        return new ValidationWarning(t, Resources.Lint_OperatorSpaces, ErrorLocation.Token);
+                    var text = tp.GetText(t);
+                    if (!IsOperatorWithoutSpaces(text)) { // Special case @, $, :, :: and :::
+                        if (!tp.IsWhitespaceBeforePosition(t.Start) || !tp.IsWhitespaceAfterPosition(t.End - 1)) {
+                            return new ValidationWarning(t, Resources.Lint_OperatorSpaces, ErrorLocation.Token);
+                        }
                     }
                 }
             }
             return null;
         }
+
+        private static bool IsOperatorWithoutSpaces(string text)
+            => text.StartsWithOrdinal(":") || text.EqualsOrdinal("$") || text.EqualsOrdinal("@") || text.EqualsOrdinal("=");
 
         private static IValidationError OpenCurlyPositionCheck(IAstNode node, LintOptions options) {
             // open_curly_linter: check that opening curly braces are never on their own line 
@@ -91,7 +97,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.OpenCurlyBrace) {
                     var tp = node.Root.TextProvider;
                     // Special case {r in R Markdown
-                    if(tp.Length > t.End && char.ToLowerInvariant(tp[t.End]) == 'r') {
+                    if (tp.Length > t.End && char.ToLowerInvariant(tp[t.End]) == 'r') {
                         return null;
                     }
                     if (!HasLineTextBeforePosition(tp, node.Start, out var unused) || !tp.IsNewLineAfterPosition(node.End)) {
