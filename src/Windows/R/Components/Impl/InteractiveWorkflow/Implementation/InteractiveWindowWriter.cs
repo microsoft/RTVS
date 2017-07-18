@@ -33,7 +33,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Task.Run(async () => await OutputProcessingTask()).DoNotWait();
         }
 
-        public void Dispose() => _disposed = true;
+        public void Dispose() {
+            _messageQueue.Dispose();
+            _disposed = true;
+        }
 
         public void WriteMessage(string message) => _messageQueue.Enqueue(message, false);
         public void WriteError(string message) => _messageQueue.Enqueue(message, true);
@@ -52,7 +55,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         _interactiveWindow.Write(m.Text);
                     }
                 }
-                _interactiveWindow.FlushOutput();
             }
         }
 
@@ -113,7 +115,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        private int GetDifference(string oldText, string newText, out string difference) {
+        private static int GetDifference(string oldText, string newText, out string difference) {
             difference = string.Empty;
             if (newText.Length < oldText.Length) {
                 return -1;
@@ -132,7 +134,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             return index;
         }
 
-        private class Message {
+        internal class Message {
             public string Text;
             public bool IsError;
 
@@ -141,7 +143,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             public bool IsPlainText() => !MovesCaretBack() && !ContainsLineFeed();
         }
 
-        private class MessageQueue {
+        internal class MessageQueue : IDisposable {
             private readonly List<Message> _messages = new List<Message>();
             private readonly ManualResetEventSlim _messagesAvailable = new ManualResetEventSlim(false);
             private readonly object _lock = new object();
@@ -164,7 +166,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         if (_lastCRMessageIndex >= 0) {
                             _messages.RemoveRange(_lastCRMessageIndex, _messages.Count - _lastCRMessageIndex);
                         }
-                        _lastCRMessageIndex = _messages.Count + 1;
+                        _lastCRMessageIndex = _messages.Count;
                     } else if (m.ContainsLineFeed()) {
                         _lastCRMessageIndex = -1;
                     }
@@ -177,6 +179,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             public async Task<IEnumerable<Message>> WaitForMessagesAsync() {
                 await TaskUtilities.SwitchToBackgroundThread();
                 _messagesAvailable.Wait();
+                await Task.Delay(200); // Throttle output a bit to reduce flicker
 
                 lock (_lock) {
                     var array = _messages.ToArray();
@@ -185,6 +188,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     _messagesAvailable.Reset();
                     return array;
                 }
+            }
+
+            public void Dispose() {
+                _messagesAvailable.Set();
             }
         }
     }
