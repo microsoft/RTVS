@@ -207,7 +207,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public IInteractiveWindow CurrentWindow {
-            get { return _currentWindow; }
+            get => _currentWindow;
             set {
                 if (_currentWindow != null) {
                     CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
@@ -215,16 +215,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 _currentWindow = value;
                 if (_currentWindow != null) {
                     _currentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                    _crProcessor = new CarriageReturnProcessor(_coreShell, _currentWindow);
+                    _crProcessor = new CarriageReturnProcessor(_coreShell.Services, _currentWindow);
                 }
             }
         }
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message.ToUnicodeQuotes()).DoNotWait();
+                Write(args.Message.ToUnicodeQuotes());
             } else {
-                WriteError(args.Message.ToUnicodeQuotes()).DoNotWait();
+                WriteError(args.Message.ToUnicodeQuotes());
             }
         }
 
@@ -279,17 +279,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
 
-        private async Task Write(string message) {
-            if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
-                await _coreShell.SwitchToMainThreadAsync();
-                CurrentWindow?.Write(message);
+        private void Write(string message) {
+            if (CurrentWindow != null && !string.IsNullOrEmpty(message)) {
+                _crProcessor.ProcessMessage(message);
             }
         }
 
-        private async Task WriteError(string message) {
-            if (CurrentWindow != null && !_crProcessor.ProcessMessage(message)) {
-                await _coreShell.SwitchToMainThreadAsync();
-                CurrentWindow?.WriteError(message);
+        private void WriteError(string message) {
+            if (CurrentWindow != null && !string.IsNullOrEmpty(message)) {
+                _crProcessor.ProcessError(message);
             }
         }
 
