@@ -9,6 +9,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
@@ -17,7 +18,7 @@ using Microsoft.R.Editor.Validation.Errors;
 
 namespace Microsoft.R.Editor.Validation.Lint {
     internal partial class LintValidator {
-        private static IValidationError AssignmentCheck(IAstNode node, LintOptions options) {
+        private static IValidationError AssignmentCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             if (options.AssignmentType) {
                 // assignment_linter: checks that ’<-’ is always used for assignment
                 if (node is IOperator op && op.OperatorType == OperatorType.Equals) {
@@ -29,7 +30,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError CloseCurlySeparateLineCheck(IAstNode node, LintOptions options) {
+        private static IValidationError CloseCurlySeparateLineCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // closed_curly_linter: check that closed curly braces should always be 
             // on their own line unless they follow an else
             if (options.CloseCurlySeparateLine) {
@@ -42,8 +43,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     }
                     if (result) {
                         // Special case {r in R Markdown
-                        var text = GetLineTextAfterPosition(tp, lineBreakIndex - 1).TrimStart();
-                        if (text.StartsWithIgnoreCase("{r") || text.StartsWithIgnoreCase("{ r")) {
+                        if (projectedBuffer && IsRMarkdownBlock(node)) {
                             return null;
                         }
                         return new ValidationWarning(node, Resources.Lint_CloseCurlySeparateLine, ErrorLocation.Token);
@@ -53,7 +53,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError CommaSpacesCheck(IAstNode node, LintOptions options) {
+        private static IValidationError CommaSpacesCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // commas_linter: check that all commas are followed by spaces, 
             // but do not have spaces before them unless followed by a closing brace
             var warning = false;
@@ -70,7 +70,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return warning ? new ValidationWarning(node, Resources.Lint_CommaSpaces, ErrorLocation.Token) : null;
         }
 
-        private static IValidationError InfixOperatorsSpacesCheck(IAstNode node, LintOptions options) {
+        private static IValidationError InfixOperatorsSpacesCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // infix_spaces_linter: check that all infix operators have spaces around them.
             if (options.SpacesAroundOperators) {
                 if (node is IOperator op && !op.IsUnary && op is TokenOperator to) {
@@ -90,14 +90,14 @@ namespace Microsoft.R.Editor.Validation.Lint {
         private static bool IsOperatorWithoutSpaces(string text)
             => text.StartsWithOrdinal(":") || text.EqualsOrdinal("$") || text.EqualsOrdinal("@") || text.EqualsOrdinal("=");
 
-        private static IValidationError OpenCurlyPositionCheck(IAstNode node, LintOptions options) {
+        private static IValidationError OpenCurlyPositionCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // open_curly_linter: check that opening curly braces are never on their own line 
             // and are always followed by a newline
             if (options.OpenCurlyPosition) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.OpenCurlyBrace) {
                     var tp = node.Root.TextProvider;
                     // Special case {r in R Markdown
-                    if (tp.Length > t.End && char.ToLowerInvariant(tp[t.End]) == 'r') {
+                    if (projectedBuffer && IsRMarkdownBlock(node)) {
                         return null;
                     }
                     if (!HasLineTextBeforePosition(tp, node.Start, out var unused) || !tp.IsNewLineAfterPosition(node.End)) {
@@ -108,7 +108,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError DoubleQuotesCheck(IAstNode node, LintOptions options) {
+        private static IValidationError DoubleQuotesCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // open_curly_linter: check that opening curly braces are never on their own line and are
             // always followed by a newline
             if (options.DoubleQuotes) {
@@ -121,7 +121,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError SpaceBeforeOpenBraceCheck(IAstNode node, LintOptions options) {
+        private static IValidationError SpaceBeforeOpenBraceCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // spaces_left_parentheses_linter: check that all left parentheses have a space 
             // before them unless they are in a function call.
             if (options.SpaceBeforeOpenBrace && node is TokenNode t) {
@@ -135,7 +135,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError SpacesInsideParenthesisCheck(IAstNode node, LintOptions options) {
+        private static IValidationError SpacesInsideParenthesisCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // There should be no space after (, [ or [[ and no space before ), ] or ]]
             // unless ] or ]] is preceded by a comma as in x[1, ]
             if (options.SpacesInsideParenthesis && node is TokenNode t) {
@@ -181,7 +181,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError SpaceAfterFunctionNameCheck(IAstNode node, LintOptions options) {
+        private static IValidationError SpaceAfterFunctionNameCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             if (options.NoSpaceAfterFunctionName && node is FunctionCall fc) {
                 var tp = node.Root.TextProvider;
                 if (fc.RightOperand is Variable v && tp.IsWhitespaceAfterPosition(v.End - 1)) {
@@ -191,14 +191,14 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError SemicolonCheck(IAstNode node, LintOptions options) {
+        private static IValidationError SemicolonCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             if (options.Semicolons && node is TokenNode t && t.Token.TokenType == RTokenType.Semicolon) {
                 return new ValidationWarning(node, Resources.Lint_Semicolons, ErrorLocation.Token);
             }
             return null;
         }
 
-        private static IValidationError MultipleStatementsCheck(IAstNode node, LintOptions options) {
+        private static IValidationError MultipleStatementsCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             if (options.MultipleStatements && node is TokenNode t && t.Token.TokenType == RTokenType.Semicolon) {
                 var tp = node.Root.TextProvider;
                 if (!tp.IsNewLineAfterPosition(node.End)) {
@@ -217,7 +217,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError TrueFalseNamesCheck(IAstNode node, LintOptions options) {
+        private static IValidationError TrueFalseNamesCheck(IAstNode node, LintOptions options, bool projectedBuffer) {
             // Use TRUE and FALSE instead of T and F
             if (options.TrueFalseNames) {
                 if (node is TokenNode t && t.Token.TokenType == RTokenType.Logical) {
@@ -263,16 +263,16 @@ namespace Microsoft.R.Editor.Validation.Lint {
         }
 
         private static bool IsCamelCase(string text)
-            => text.Length > 0 && char.IsLower(text[0]) && text.Any(x => char.IsUpper(x));
+            => text.Length > 0 && char.IsLower(text[0]) && text.Any(char.IsUpper);
 
         private static bool IsPascalCase(string text)
-            => text.Length > 0 && char.IsUpper(text[0]) && text.Any(x => char.IsLower(x));
+            => text.Length > 0 && char.IsUpper(text[0]) && text.Any(char.IsLower);
 
         private static bool IsSnakeCase(string text)
             => text.Length > 0 && text.Any(x => x == '_');
 
         private static bool IsUpperCase(string text)
-            => text.Length > 0 && !text.Any(x => char.IsLower(x));
+            => text.Length > 0 && !text.Any(char.IsLower);
 
         private static bool HasMultipleDots(string text)
             => text.Length > 0 && text.Count(x => x == '.') > 1;
@@ -295,6 +295,14 @@ namespace Microsoft.R.Editor.Validation.Lint {
             var i = position + 1;
             for (; i < tp.Length && !tp[i].IsLineBreak(); i++) { }
             return tp.GetText(TextRange.FromBounds(position + 1, i));
+        }
+
+        private static bool IsRMarkdownBlock(IAstNode node) {
+            if (node.Parent is IScope scope) {
+                var text = GetLineTextAfterPosition(node.Root.TextProvider, scope.OpenCurlyBrace.Start - 1).TrimStart();
+                return text.StartsWithIgnoreCase("{r") || text.StartsWithIgnoreCase("{ r");
+            }
+            return false;
         }
     }
 }

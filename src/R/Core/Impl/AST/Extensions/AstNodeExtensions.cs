@@ -9,13 +9,11 @@ namespace Microsoft.R.Core.AST {
         /// Locates enclosing scope for a given node
         /// </summary>
         public static IScope GetEnclosingScope(this IAstNode node) {
-            var gs = node as GlobalScope;
-            if (gs != null) {
+            if (node is GlobalScope gs) {
                 return gs;
             }
 
-            var root = node as AstRoot;
-            if (root != null) {
+            if (node is AstRoot root) {
                 return root.Children.Count > 0 ? root.Children[0] as IScope : null;
             }
 

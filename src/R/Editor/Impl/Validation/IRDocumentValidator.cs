@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Validation {
         /// <summary>
         /// Called by validation manager when validation session is about to begin.
         /// </summary>
-        void OnBeginValidation(IREditorSettings settings);
+        void OnBeginValidation(IREditorSettings settings, bool projectedBuffer);
 
         /// <summary>
         /// Called by validation manager/aggregator when validation session is completed.
@@ -31,6 +31,6 @@ namespace Microsoft.R.Editor.Validation {
         /// Checks file whitespace (typically Lint-type or style type checkers.
         /// </summary>
         /// <returns>A collection of validation errors</returns>
-        IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider text, bool projectedBuffer);
+        IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider text);
     }
 }

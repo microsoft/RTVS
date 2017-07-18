@@ -151,6 +151,10 @@ namespace Microsoft.R.Editor.Test.Roxygen {
 
         [CompositeTest]
         [InlineData("x <- 1\n\n", 0, 0, null, "TrailingBlankLines")]
+        [InlineData("{r x = 1, y = 2}", 0, 0, null, "OpenCurlyPosition")]
+        [InlineData("{ r x = 1, y = 2}", 0, 0, null, "OpenCurlyPosition")]
+        [InlineData("{r x = 1, y = 2}", 0, 0, null, "CloseCurlySeparateLine")]
+        [InlineData("{ r x = 1, y = 2}", 0, 0, null, "CloseCurlySeparateLine")]
         public async Task Projected(string content, int start, int length, string message, string propertyName) {
 
             var prop = propertyName != null ? _options.GetType().GetProperty(propertyName) : null;

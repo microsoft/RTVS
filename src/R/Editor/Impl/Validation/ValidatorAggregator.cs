@@ -45,9 +45,9 @@ namespace Microsoft.R.Editor.Validation {
         public Task RunAsync(AstRoot ast, bool projectedBuffer, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
             _tcs = new TaskCompletionSource<bool>();
             try {
-                BeginValidation(_settings);
+                BeginValidation(_settings, projectedBuffer);
                 _validationTask = Task.Run(() => {
-                    var outcome = Validate(ast, projectedBuffer, ct);
+                    var outcome = Validate(ast, ct);
                     foreach (var o in outcome) {
                         results.Enqueue(o);
                     }
@@ -66,12 +66,12 @@ namespace Microsoft.R.Editor.Validation {
         public bool Busy => _validationTask != null;
         #endregion
 
-        private IEnumerable<IValidationError> Validate(AstRoot ast, bool projectedBuffer, CancellationToken ct) {
+        private IEnumerable<IValidationError> Validate(AstRoot ast, CancellationToken ct) {
             var context = new ValidationContext(ct);
             ast.Accept(this, context);
             foreach (var v in _validators) {
                 context.CancellationToken.ThrowIfCancellationRequested();
-                context.Errors.AddRange(v.ValidateWhitespace(ast.TextProvider, projectedBuffer));
+                context.Errors.AddRange(v.ValidateWhitespace(ast.TextProvider));
             }
             return context.Errors;
         }
@@ -87,9 +87,9 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        private void BeginValidation(IREditorSettings settings) {
+        private void BeginValidation(IREditorSettings settings, bool projectedBuffer) {
             foreach (var v in _validators) {
-                v.OnBeginValidation(settings);
+                v.OnBeginValidation(settings, projectedBuffer);
             }
         }
 
@@ -103,7 +103,6 @@ namespace Microsoft.R.Editor.Validation {
         private class ValidationContext {
             public CancellationToken CancellationToken { get; }
             public List<IValidationError> Errors { get; }
-
             public ValidationContext(CancellationToken ct) {
                 CancellationToken = ct;
                 Errors = new List<IValidationError>();
