@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 TrailingWhitespaceCheck
             };
 
-        private static readonly Func<ITextProvider, LintOptions, IEnumerable<IValidationError>>[] _whitespaceFileCheckers = {
+        private static readonly Func<ITextProvider, LintOptions, bool, IEnumerable<IValidationError>>[] _whitespaceFileCheckers = {
                 TrailingBlankLinesCheck,
                 LineLengthCheck
             };
@@ -71,12 +71,12 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Checks file whitespace (typically Lint-type or style type checkers.
         /// </summary>
         /// <returns>A collection of validation errors</returns>
-        public IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider tp) {
+        public IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider tp, bool projectedBuffer) {
             if (!_settings.LintOptions.Enabled) {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 
-            var warnings = _whitespaceFileCheckers.SelectMany(c => c(tp, _settings.LintOptions)).ToList();
+            var warnings = _whitespaceFileCheckers.SelectMany(c => c(tp, _settings.LintOptions, projectedBuffer)).ToList();
             var cs = new CharacterStream(tp);
             while (!cs.IsEndOfStream()) {
                 if (cs.IsWhiteSpace()) {

@@ -28,8 +28,8 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IEnumerable<IValidationError> TrailingBlankLinesCheck(ITextProvider tp, LintOptions options) {
-            if (options.TrailingBlankLines && tp.Length > 1) {
+        private static IEnumerable<IValidationError> TrailingBlankLinesCheck(ITextProvider tp, LintOptions options, bool projectedBuffer) {
+            if (options.TrailingBlankLines && !projectedBuffer && tp.Length > 1) {
                 // trailing_blank_lines_linter: check there are no trailing blank lines
                 var trailingWhitespace = string.Empty;
                 int i;
@@ -63,7 +63,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return Enumerable.Empty<IValidationError>();
         }
 
-        private static IEnumerable<IValidationError> LineLengthCheck(ITextProvider tp, LintOptions options) {
+        private static IEnumerable<IValidationError> LineLengthCheck(ITextProvider tp, LintOptions options, bool projectedBuffer) {
             if (!options.LineLength || tp.Length <= 1) {
                 return Enumerable.Empty<IValidationError>();
             }
@@ -72,7 +72,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             var start = 0;
             for (var i = 0; i < tp.Length + 1; i++) {
                 var ch = i < tp.Length ? tp[i] : '\0';
-                if (ch == '\r' || ch == '\n' || ch == '\0') {
+                if (ch.IsLineBreak() || ch == '\0') {
                     var length = i - start;
                     if (length > options.MaxLineLength) {
                         list.Add(new ValidationWarning(new TextRange(start, length), Resources.Lint_LineTooLong.FormatInvariant(length, options.MaxLineLength), ErrorLocation.Token));

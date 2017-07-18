@@ -31,6 +31,6 @@ namespace Microsoft.R.Editor.Validation {
         /// Checks file whitespace (typically Lint-type or style type checkers.
         /// </summary>
         /// <returns>A collection of validation errors</returns>
-        IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider text);
+        IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider text, bool projectedBuffer);
     }
 }
