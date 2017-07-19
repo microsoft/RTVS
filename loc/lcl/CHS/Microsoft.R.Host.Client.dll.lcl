@@ -139,6 +139,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_PingTimedOut" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ping to {0}:{1} timed out.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ping 至 {0}:{1} 已超时。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Error_PipeAlreadyConnected" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This session already has an active client connection]]></Val>
@@ -361,7 +370,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30627.1321]]></Val>
+        <Val><![CDATA[1.1.30717.934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +391,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30627.1321]]></Val>
+        <Val><![CDATA[1.1.30717.0934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +427,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30627.1321]]></Val>
+        <Val><![CDATA[1.1.30717.0934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
