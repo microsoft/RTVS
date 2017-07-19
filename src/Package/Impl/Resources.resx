@@ -1329,4 +1329,13 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Settings_ShowHostLoadMeter_Description" xml:space="preserve">
     <value>Controls visibility of the CPU/Memory/Network load indicator in the status bar. The indicator incurs network traffic and can be swiitched off in remote metered scenarios. Requires restart of the Visual Studio.</value>
   </data>
+  <data name="Settings_Settings_SmartIndentByArgument_Description" xml:space="preserve">
+    <value>In smart indent mode align caret by the first function argument</value>
+  </data>
+  <data name="Settings_SmartIndentByArgument" xml:space="preserve">
+    <value>By function argument</value>
+  </data>
+  <data name="Settings_SmartIndentCategory" xml:space="preserve">
+    <value>Smart indent</value>
+  </data>
 </root>

@@ -6,6 +6,9 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Validation.Lint;
 
 namespace Microsoft.R.Editor {
+    /// <summary>
+    /// <see cref="IREditorSettings"/>
+    /// </summary>
     public interface IWritableREditorSettings : IWritableEditorSettings {
         bool FormatOnPaste { get; set; }
         bool FormatScope { get; set; }
@@ -13,10 +16,10 @@ namespace Microsoft.R.Editor {
         bool CommitOnEnter { get; set; }
         bool ShowCompletionOnFirstChar { get; set; }
         bool ShowCompletionOnTab { get; set; }
-        bool SendToReplOnCtrlEnter { get; set; }
         bool SyntaxCheckInRepl { get; set; }
         bool PartialArgumentNameMatch { get; set; }
         bool EnableOutlining { get; set; }
+        bool SmartIndentByArgument { get; set; }
         RFormatOptions FormatOptions { get; }
         LintOptions LintOptions { get; }
     }

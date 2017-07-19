@@ -159,6 +159,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             set => _settings.FormatScope = value;
         }
 
+        [LocCategory("Settings_SmartIndentCategory")]
+        [CustomLocDisplayName("Settings_SmartIndentByArgument")]
+        [LocDescription("Settings_Settings_SmartIndentByArgument_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool SmartIndentByArgument {
+            get => _settings.SmartIndentByArgument;
+            set => _settings.SmartIndentByArgument = value;
+        }
+
         [LocCategory("Settings_ReplCategory")]
         [CustomLocDisplayName("Settings_ReplSyntaxCheck")]
         [LocDescription("Settings_ReplSyntaxCheck_Description")]

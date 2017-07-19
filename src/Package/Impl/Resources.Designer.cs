@@ -2688,6 +2688,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In smart indent mode align caret by the first function argument.
+        /// </summary>
+        public static string Settings_Settings_SmartIndentByArgument_Description {
+            get {
+                return ResourceManager.GetString("Settings_Settings_SmartIndentByArgument_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show dot-prefixed variables.
         /// </summary>
         public static string Settings_ShowDotPrefixedVariables {
@@ -2792,6 +2801,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_ShowWorkspaceSwitchConfirmationDialog_Description {
             get {
                 return ResourceManager.GetString("Settings_ShowWorkspaceSwitchConfirmationDialog_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to By function argument.
+        /// </summary>
+        public static string Settings_SmartIndentByArgument {
+            get {
+                return ResourceManager.GetString("Settings_SmartIndentByArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smart indent.
+        /// </summary>
+        public static string Settings_SmartIndentCategory {
+            get {
+                return ResourceManager.GetString("Settings_SmartIndentCategory", resourceCulture);
             }
         }
         

@@ -126,25 +126,9 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // Pick narrowest function. This happens when function definition appears
                 // inside the argument list such as list(a = function(...)).
                 var fc = fc2 ?? fc1;
-                if (fc?.Arguments != null && fc.OpenBrace != null) {
-                    if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
-                        // We only want to indent here if position is in arguments and not in the function scope.
-                        if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                            if (originalIndentSizeInSpaces < 0) {
-                                // Indent one level deeper from the function definition line.
-                                var fcLine = line.Snapshot.GetLineFromPosition(fc.Start);
-                                if (fcLine.LineNumber == prevLine.LineNumber) {
-                                    int fcIndentSize = IndentBuilder.TextIndentInSpaces(fcLine.GetText(), settings.TabSize);
-                                    if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? line.Start : line.End)) {
-                                        fcIndentSize += settings.IndentSize;
-                                    }
-                                    return fcIndentSize;
-                                }
-                                return GetBlockIndent(line, settings);
-                            }
-                            return originalIndentSizeInSpaces;
-                        }
-                    }
+                var indent = IndentFromFunctionCall(fc, prevLine, line, settings, formatting, originalIndentSizeInSpaces);
+                if(indent.HasValue) {
+                    return indent.Value;
                 }
             }
 
@@ -255,7 +239,7 @@ namespace Microsoft.R.Editor.SmartIndent {
 
             // See if previous line is incomplete statement. If it is incomplete,
             // it is not actually in the AST since expression parser has failed.
-            if(ast.Errors.Any(e => prevLine.Contains(e.Start))) {
+            if (ast.Errors.Any(e => prevLine.Contains(e.Start))) {
                 // Tokenize the line
                 var tokens = new RTokenizer().Tokenize(prevLine.GetText());
                 var lastTokenType = tokens.Count > 0 ? tokens[tokens.Count - 1].TokenType : RTokenType.Unknown;
@@ -265,6 +249,42 @@ namespace Microsoft.R.Editor.SmartIndent {
             }
 
             return 0;
+        }
+
+        private static int? IndentFromFunctionCall(IFunction fc, IEditorLine prevLine, IEditorLine currentLine, IREditorSettings settings, bool formatting, int originalIndentSizeInSpaces) {
+            var snapshot = currentLine.Snapshot;
+            if (fc?.Arguments == null || fc.OpenBrace == null) {
+                return null;
+            }
+            if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
+                // We only want to indent here if position is in arguments and not in the function scope.
+                if (currentLine.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && currentLine.Start >= fc.CloseBrace.End)) {
+                    if (originalIndentSizeInSpaces >= 0) {
+                        return originalIndentSizeInSpaces;
+                    }
+
+                    // Indent one level deeper from the function definition line.
+                    var fcLine = snapshot.GetLineFromPosition(fc.Start);
+                    if (fcLine.LineNumber == prevLine.LineNumber) {
+                        var fcIndentSize = IndentBuilder.TextIndentInSpaces(fcLine.GetText(), settings.TabSize);
+                        if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? currentLine.Start : currentLine.End)) {
+                            if (settings.SmartIndentByArgument) {
+                                var arg = fc.Arguments.FirstOrDefault();
+                                var indent = arg != null
+                                    ? arg.Start - snapshot.GetLineFromPosition(arg.Start).Start
+                                    : fc.OpenBrace.Start - snapshot.GetLineFromPosition(fc.OpenBrace.Start).Start;
+
+                                fcIndentSize = IndentBuilder.GetIndentString(indent, settings.IndentType, settings.TabSize).Length;
+                            } else {
+                                fcIndentSize += settings.IndentSize;
+                            }
+                        }
+                        return fcIndentSize;
+                    }
+                    return GetBlockIndent(currentLine, settings);
+                }
+            }
+            return null;
         }
 
         public static int InnerIndentSizeFromNode(IEditorBuffer editorBuffer, IAstNode node, RFormatOptions options) {
