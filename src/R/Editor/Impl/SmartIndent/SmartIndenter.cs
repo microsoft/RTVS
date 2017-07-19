@@ -11,6 +11,7 @@ using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 
 namespace Microsoft.R.Editor.SmartIndent {
@@ -125,7 +126,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // Pick narrowest function. This happens when function definition appears
                 // inside the argument list such as list(a = function(...)).
                 var fc = fc2 ?? fc1;
-                if (fc != null && fc.Arguments != null && fc.OpenBrace != null) {
+                if (fc?.Arguments != null && fc.OpenBrace != null) {
                     if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
                         // We only want to indent here if position is in arguments and not in the function scope.
                         if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
@@ -241,6 +242,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             }
 
             // Try locate the scope itself, if any
+
             if (scope?.OpenCurlyBrace != null) {
                 if (scope.CloseCurlyBrace != null) {
                     var endOfScopeLine = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(scope.CloseCurlyBrace.Start);
@@ -249,6 +251,17 @@ namespace Microsoft.R.Editor.SmartIndent {
                     }
                 }
                 return InnerIndentSizeFromNode(editorBuffer, scope, settings.FormatOptions);
+            }
+
+            // See if previous line is incomplete statement. If it is incomplete,
+            // it is not actually in the AST since expression parser has failed.
+            if(ast.Errors.Any(e => prevLine.Contains(e.Start))) {
+                // Tokenize the line
+                var tokens = new RTokenizer().Tokenize(prevLine.GetText());
+                var lastTokenType = tokens.Count > 0 ? tokens[tokens.Count - 1].TokenType : RTokenType.Unknown;
+                if (lastTokenType == RTokenType.Operator || lastTokenType == RTokenType.Comma) {
+                    return InnerIndentSizeFromNode(editorBuffer, scope, settings.FormatOptions);
+                }
             }
 
             return 0;
