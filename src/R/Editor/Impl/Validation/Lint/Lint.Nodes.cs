@@ -38,8 +38,12 @@ namespace Microsoft.R.Editor.Validation.Lint {
                     var tp = node.Root.TextProvider;
                     var result = HasLineTextBeforePosition(tp, node.Start, out var lineBreakIndex);
                     if (!result) {
-                        var text = GetLineTextAfterPosition(tp, node.Start);
-                        result = text.Length > 0 && !text.Trim().StartsWithOrdinal("else");
+                        var text = GetLineTextAfterPosition(tp, node.Start).TrimStart();
+                        if (text.Length > 0) {
+                            result = !text.StartsWithOrdinal(",") &&
+                                     !text.StartsWithOrdinal(")") &&
+                                     !text.StartsWithOrdinal("else");
+                        }
                     }
                     if (result) {
                         // Special case {r in R Markdown

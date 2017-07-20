@@ -74,6 +74,8 @@ namespace Microsoft.R.Editor.Test.Roxygen {
         [InlineData("1:10", 0, 0, null, null)]
         [InlineData("a::b", 0, 0, null, null)]
         [InlineData("a:::b", 0, 0, null, null)]
+        [InlineData("if({\n})", 0, 0, null, "CloseCurlySeparateLine")]
+        [InlineData("a({}, {x})", 0, 0, null, "CloseCurlySeparateLine")]
         public async Task Validate(string content, int start, int length, string message, string propertyName) {
 
             var prop = propertyName != null ? _options.GetType().GetProperty(propertyName) : null;

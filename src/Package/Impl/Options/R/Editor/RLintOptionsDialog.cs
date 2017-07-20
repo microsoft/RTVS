@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         [LocCategory("Settings_LintCategory_Naming")]
         [CustomLocDisplayName("Settings_Lint_CamelCase")]
         [LocDescription("Settings_Lint_CamelCase_Description")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool CamelCase {
             get => _options.CamelCase;
             set => _options.CamelCase = value;

@@ -1338,4 +1338,10 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Settings_SmartIndentCategory" xml:space="preserve">
     <value>Smart indent</value>
   </data>
+  <data name="Settings_BreakMultipleStatements" xml:space="preserve">
+    <value>Statements on separate lines</value>
+  </data>
+  <data name="Settings_BreakMultipleStatements_Description" xml:space="preserve">
+    <value>When there multiple statements on the same line, break them into separate lines.</value>
+  </data>
 </root>

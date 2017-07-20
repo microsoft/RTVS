@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// Flag camel-case names
         /// </summary>
         public bool CamelCase {
-            get => Storage.Get(GetKey(nameof(CamelCase)), true);
+            get => Storage.Get(GetKey(nameof(CamelCase)), false);
             set => WritableStorage?.Set(GetKey(nameof(CamelCase)), value);
         }
 

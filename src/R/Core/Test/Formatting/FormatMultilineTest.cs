@@ -20,8 +20,8 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("{\n  x <- \n    if(TRUE) {\n   z\n}\n}", "{\n  x <-\n    if (TRUE) {\n      z\n    }\n}")]
         [InlineData("x <-function(a,\n    b){\n z\n}", "x <- function(a,\n    b) {\n  z\n}")]
         public void Multiline(string original, string expected) {
-            RFormatter f = new RFormatter();
-            string actual = f.Format(original);
+            var f = new RFormatter();
+            var actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
@@ -31,8 +31,20 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("{\nx <-1\n# comment\n # comment\n         # comment\n y<-2\n}",
                     "{\n  x <- 1\n  # comment\n  # comment\n  # comment\n  y <- 2\n}")]
         public void Comments(string original, string expected) {
-            RFormatter f = new RFormatter();
-            string actual = f.Format(original);
+            var f = new RFormatter();
+            var actual = f.Format(original);
+            actual.Should().Be(expected);
+        }
+
+        [CompositeTest]
+        [InlineData("x <-1;y<-2", true, "x <- 1;\ny <- 2")]
+        [InlineData("x <-1;y<-2", false, "x <- 1; y <- 2")]
+        [InlineData("x <-1;\ny<-2", true, "x <- 1;\ny <- 2")]
+        [InlineData("x <-1;\ny<-2", false, "x <- 1;\ny <- 2")]
+        public void Statements(string original, bool breakMultipleStatements, string expected) {
+            var options = new RFormatOptions { BreakMultipleStatements = breakMultipleStatements };
+            var f = new RFormatter(options);
+            var actual = f.Format(original);
             actual.Should().Be(expected);
         }
     }

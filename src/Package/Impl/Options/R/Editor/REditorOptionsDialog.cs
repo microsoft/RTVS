@@ -159,6 +159,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             set => _settings.FormatScope = value;
         }
 
+        [LocCategory("Settings_FormattingCategory")]
+        [CustomLocDisplayName("Settings_BreakMultipleStatements")]
+        [LocDescription("Settings_BreakMultipleStatements_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool BreakMultipleStatements {
+            get => _settings.FormatOptions.BreakMultipleStatements;
+            set => _settings.FormatOptions.BreakMultipleStatements = value;
+        }
+
         [LocCategory("Settings_SmartIndentCategory")]
         [CustomLocDisplayName("Settings_SmartIndentByArgument")]
         [LocDescription("Settings_Settings_SmartIndentByArgument_Description")]

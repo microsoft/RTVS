@@ -1599,6 +1599,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Statements on separate lines.
+        /// </summary>
+        public static string Settings_BreakMultipleStatements {
+            get {
+                return ResourceManager.GetString("Settings_BreakMultipleStatements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When there multiple statements on the same line, break them into separate lines..
+        /// </summary>
+        public static string Settings_BreakMultipleStatements_Description {
+            get {
+                return ResourceManager.GetString("Settings_BreakMultipleStatements_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset search filter.
         /// </summary>
         public static string Settings_ClearFilterOnAddHistory {
