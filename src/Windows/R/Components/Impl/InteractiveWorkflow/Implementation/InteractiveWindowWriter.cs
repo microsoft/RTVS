@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly MessageQueue _messageQueue = new MessageQueue();
         private readonly IMainThread _mainThread;
         private readonly IInteractiveWindow _interactiveWindow;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private volatile bool _disposed;
 
         private int _currentLineStart = -1;
@@ -30,10 +31,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public InteractiveWindowWriter(IMainThread mainThread, IInteractiveWindow interactiveWindow) {
             _mainThread = mainThread;
             _interactiveWindow = interactiveWindow;
-            Task.Run(async () => await OutputProcessingTask()).DoNotWait();
+            OutputProcessingTask().DoNotWait();
         }
 
         public void Dispose() {
+            _cts.Cancel();
             _messageQueue.Dispose();
             _disposed = true;
         }
@@ -43,8 +45,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private async Task OutputProcessingTask() {
             while (!_disposed) {
-                var messages = await _messageQueue.WaitForMessagesAsync();
-                await _mainThread.SwitchToAsync();
+                var messages = await _messageQueue.WaitForMessagesAsync(_cts.Token);
+                await _mainThread.SwitchToAsync(_cts.Token);
 
                 foreach (var m in messages) {
                     if (m.IsError) {
@@ -145,7 +147,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         internal class MessageQueue : IDisposable {
             private readonly List<Message> _messages = new List<Message>();
-            private readonly ManualResetEventSlim _messagesAvailable = new ManualResetEventSlim(false);
+            private readonly AsyncManualResetEvent _messagesAvailable = new AsyncManualResetEvent();
             private readonly object _lock = new object();
             private int _lastCRMessageIndex = -1;
 
@@ -176,11 +178,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
             }
 
-            public async Task<IEnumerable<Message>> WaitForMessagesAsync() {
+            public async Task<IEnumerable<Message>> WaitForMessagesAsync(CancellationToken ct) {
                 await TaskUtilities.SwitchToBackgroundThread();
-                _messagesAvailable.Wait();
-                await Task.Delay(200); // Throttle output a bit to reduce flicker
 
+                await _messagesAvailable.WaitAsync(ct);
+                if(ct.IsCancellationRequested) {
+                    return Enumerable.Empty<Message>();
+                }
+
+                await Task.Delay(200, ct); // Throttle output a bit to reduce flicker
                 lock (_lock) {
                     var array = _messages.ToArray();
                     _messages.Clear();
