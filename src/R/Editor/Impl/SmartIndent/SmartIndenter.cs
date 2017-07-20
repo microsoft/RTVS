@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
@@ -78,6 +79,9 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// <param name="line">Line to find the indent for</param>
         /// <param name="settings">Editor settings</param>
         /// <param name="ast">Optional AST</param>
+        /// <param name="originalIndentSizeInSpaces">
+        /// Original (user) indentation in spaces. Used to preserve custom function argument alignment.
+        /// </param>
         /// <param name="formatting">
         /// Indicates if current call is from formatter or 
         /// from the core editor for indentation when user typed Enter.
@@ -86,7 +90,6 @@ namespace Microsoft.R.Editor.SmartIndent {
         public static int GetSmartIndent(IEditorLine line, IREditorSettings settings, AstRoot ast = null,
                                          int originalIndentSizeInSpaces = -1, bool formatting = false) {
             var editorBuffer = line.Snapshot.EditorBuffer;
-            IEditorLine prevLine = null;
 
             if (line.LineNumber == 0) {
                 // Nothing to indent at the first line
@@ -109,7 +112,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             // First try based on the previous line. We will try start of the line
             // like in 'if(...)' { in order to locate 'if' and then, if nothing is found,
             // try end of the line as in 'x <- function(...) {'
-            prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
+            var prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
             var prevLineText = prevLine.GetText();
             if (prevLineText.Trim().Equals("else", StringComparison.Ordinal)) {
                 // Quick short circuit for new 'else' since it is not in the ASt yet.
@@ -127,7 +130,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // inside the argument list such as list(a = function(...)).
                 var fc = fc2 ?? fc1;
                 var indent = IndentFromFunctionCall(fc, prevLine, line, settings, formatting, originalIndentSizeInSpaces);
-                if(indent.HasValue) {
+                if (indent.HasValue) {
                     return indent.Value;
                 }
             }
@@ -237,50 +240,64 @@ namespace Microsoft.R.Editor.SmartIndent {
                 return InnerIndentSizeFromNode(editorBuffer, scope, settings.FormatOptions);
             }
 
-            // See if previous line is incomplete statement. If it is incomplete,
-            // it is not actually in the AST since expression parser has failed.
+            return IndentByIncompleteStatement(ast, prevLine, scope, settings) ?? 0;
+        }
+
+        private static int? IndentByIncompleteStatement(AstRoot ast, IEditorLine prevLine, IAstNode scope, IREditorSettings settings) {
+            // See if previous line is incomplete statement. If it is indeed incomplete,
+            // it is not in the AST since the expression parser has failed.
             if (ast.Errors.Any(e => prevLine.Contains(e.Start))) {
                 // Tokenize the line
                 var tokens = new RTokenizer().Tokenize(prevLine.GetText());
                 var lastTokenType = tokens.Count > 0 ? tokens[tokens.Count - 1].TokenType : RTokenType.Unknown;
                 if (lastTokenType == RTokenType.Operator || lastTokenType == RTokenType.Comma) {
-                    return InnerIndentSizeFromNode(editorBuffer, scope, settings.FormatOptions);
+                    return InnerIndentSizeFromNode(prevLine.Snapshot.EditorBuffer, scope, settings.FormatOptions);
                 }
             }
-
-            return 0;
+            return null;
         }
 
         private static int? IndentFromFunctionCall(IFunction fc, IEditorLine prevLine, IEditorLine currentLine, IREditorSettings settings, bool formatting, int originalIndentSizeInSpaces) {
             var snapshot = currentLine.Snapshot;
             if (fc?.Arguments == null || fc.OpenBrace == null) {
+                // No arguments or somehow open brace is missing
                 return null;
             }
+
             if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
                 // We only want to indent here if position is in arguments and not in the function scope.
                 if (currentLine.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && currentLine.Start >= fc.CloseBrace.End)) {
                     if (originalIndentSizeInSpaces >= 0) {
+                        // Preserve user indentation
                         return originalIndentSizeInSpaces;
                     }
 
                     // Indent one level deeper from the function definition line.
                     var fcLine = snapshot.GetLineFromPosition(fc.Start);
                     if (fcLine.LineNumber == prevLine.LineNumber) {
+                        // Determine current base indent of the line (leading whitespace)
                         var fcIndentSize = IndentBuilder.TextIndentInSpaces(fcLine.GetText(), settings.TabSize);
                         if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? currentLine.Start : currentLine.End)) {
+                            // Depending on options indent a) one level deeper or b) by first argument or c) by opening brace + 1
                             if (settings.SmartIndentByArgument) {
-                                var arg = fc.Arguments.FirstOrDefault();
+                                // Last argument in the incomplete function is stub. We need real one.
+                                var arg = fc.Arguments.Count > 0 ? fc.Arguments[fc.Arguments.Count - 1] : null;
+                                if (arg is StubArgument) {
+                                    arg = fc.Arguments.Count > 1 ? fc.Arguments[fc.Arguments.Count - 2] : null;
+                                }
                                 var indent = arg != null
                                     ? arg.Start - snapshot.GetLineFromPosition(arg.Start).Start
-                                    : fc.OpenBrace.Start - snapshot.GetLineFromPosition(fc.OpenBrace.Start).Start;
+                                    : fc.OpenBrace.Start - snapshot.GetLineFromPosition(fc.OpenBrace.Start).Start + 1;
 
                                 fcIndentSize = IndentBuilder.GetIndentString(indent, settings.IndentType, settings.TabSize).Length;
                             } else {
+                                // Default indent is one level deeper
                                 fcIndentSize += settings.IndentSize;
                             }
                         }
                         return fcIndentSize;
                     }
+                    // If all fails, indent based on the previous line
                     return GetBlockIndent(currentLine, settings);
                 }
             }
