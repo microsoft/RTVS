@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
@@ -36,7 +37,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 IEnumerable<InteractiveWindowWriter.Message> messages = null;
 
                 var t = Task.Run(async () => {
-                    messages = await mq.WaitForMessagesAsync();
+                    messages = await mq.WaitForMessagesAsync(CancellationToken.None);
                 });
 
                 t.Wait(100);
@@ -62,7 +63,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 mq.Enqueue("\rtest4", false);
                 mq.Enqueue(" test8", false);
 
-                var messages = (await mq.WaitForMessagesAsync()).Select(m => m.Text);
+                var messages = (await mq.WaitForMessagesAsync(CancellationToken.None)).Select(m => m.Text);
                 messages.Should().ContainInOrder(
                     "start1", "start2\n", "\rtest1 test2", "test3\n", "\rtest4 test8"
                 );
