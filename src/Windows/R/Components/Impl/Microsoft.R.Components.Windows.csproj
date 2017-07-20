@@ -142,7 +142,7 @@
     <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowVisualProvider.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowVisual.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\CarriageReturnProcessor.cs" />
+    <Compile Include="InteractiveWorkflow\Implementation\InteractiveWindowWriter.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisual.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />

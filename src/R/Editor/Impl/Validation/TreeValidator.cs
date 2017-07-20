@@ -49,6 +49,7 @@ namespace Microsoft.R.Editor.Validation {
         private CancellationTokenSource _cts;
         private bool _syntaxCheckEnabled;
         private bool _lintCheckEnabled;
+        private bool _projectedBuffer;
         private bool _advisedToIdleTime;
         private DateTime _idleRequestTime = DateTime.UtcNow;
 
@@ -75,8 +76,8 @@ namespace Microsoft.R.Editor.Validation {
             // since accessing the host application (VS) settings object may 
             // cause it fire Changed notification in some cases.
             _settings.SettingsChanged += OnSettingsChanged;
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
-            _lintCheckEnabled = _settings.LintOptions.Enabled;
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings, out _lintCheckEnabled, out _projectedBuffer);
+            _lintCheckEnabled &= _settings.LintOptions.Enabled;
 
             // We don't want to start validation right away since it may 
             // interfere with the editor perceived startup performance.
@@ -132,8 +133,8 @@ namespace Microsoft.R.Editor.Validation {
             var syntaxCheckWasEnabled = _syntaxCheckEnabled;
             var lintCheckWasEnabled = _lintCheckEnabled;
 
-            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings);
-            _lintCheckEnabled = _settings.LintOptions.Enabled;
+            _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.EditorBuffer, _settings, out _lintCheckEnabled, out _projectedBuffer);
+            _lintCheckEnabled &= _settings.LintOptions.Enabled;
 
             var optionsChanged = (syntaxCheckWasEnabled ^ _syntaxCheckEnabled) ||
                                  (lintCheckWasEnabled ^ _lintCheckEnabled);
@@ -149,12 +150,16 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer, IREditorSettings settings) {
+        public static bool IsSyntaxCheckEnabled(IEditorBuffer editorBuffer, IREditorSettings settings, out bool lintEnabled, out bool projectedBuffer) {
             var document = editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 var view = document.PrimaryView;
+                lintEnabled = view != null && !view.IsRepl();
+                projectedBuffer = view != null && view.EditorBuffer != editorBuffer;
                 return view != null && view.IsRepl() ? settings.SyntaxCheckInRepl : settings.SyntaxCheckEnabled;
             }
+            projectedBuffer = false;
+            lintEnabled = false;
             return false;
         }
 
@@ -166,7 +171,7 @@ namespace Microsoft.R.Editor.Validation {
                 }
                 // Run all validators
                 _cts = new CancellationTokenSource();
-                _aggregator.RunAsync(_editorTree.AstRoot, ValidationResults, _cts.Token).DoNotWait();
+                _aggregator.RunAsync(_editorTree.AstRoot, _projectedBuffer, ValidationResults, _cts.Token).DoNotWait();
             }
         }
 

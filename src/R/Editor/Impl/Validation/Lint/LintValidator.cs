@@ -12,7 +12,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
     internal sealed partial class LintValidator : IRDocumentValidator {
         // https://cran.rstudio.com/web/packages/lintr/lintr.pdf
 
-        private static readonly Func<IAstNode, LintOptions, IValidationError>[] _singleCheckers = {
+        private static readonly Func<IAstNode, LintOptions, bool, IValidationError>[] _singleCheckers = {
                 AssignmentCheck,
                 CommaSpacesCheck,
                 InfixOperatorsSpacesCheck,
@@ -36,15 +36,17 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 TrailingWhitespaceCheck
             };
 
-        private static readonly Func<ITextProvider, LintOptions, IEnumerable<IValidationError>>[] _whitespaceFileCheckers = {
+        private static readonly Func<ITextProvider, LintOptions, bool, IEnumerable<IValidationError>>[] _whitespaceFileCheckers = {
                 TrailingBlankLinesCheck,
                 LineLengthCheck
             };
 
         private IREditorSettings _settings;
+        private bool _projectedBuffer;
 
-        public void OnBeginValidation(IREditorSettings settings) {
+        public void OnBeginValidation(IREditorSettings settings, bool projectedBuffer) {
             _settings = settings;
+            _projectedBuffer = projectedBuffer;
         }
 
         public void OnEndValidation() { }
@@ -54,14 +56,9 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 
-            var warnings = new List<IValidationError>();
-            // Unrolled since most return nulls.
-            foreach (var c in _singleCheckers) {
-                var result = c(node, _settings.LintOptions);
-                if (result != null) {
-                    warnings.Add(result);
-                }
-            }
+            var warnings = _singleCheckers
+                .Select(c => c(node, _settings.LintOptions, _projectedBuffer))
+                .Where(result => result != null).ToList();
 
             warnings.AddRange(_multipleCheckers.SelectMany(m => m(node, _settings.LintOptions)));
             return warnings;
@@ -76,17 +73,17 @@ namespace Microsoft.R.Editor.Validation.Lint {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 
-            var warnings = _whitespaceFileCheckers.SelectMany(c => c(tp, _settings.LintOptions)).ToList();
+            var warnings = _whitespaceFileCheckers
+                            .SelectMany(c => c(tp, _settings.LintOptions, _projectedBuffer))
+                            .ToList();
+
             var cs = new CharacterStream(tp);
             while (!cs.IsEndOfStream()) {
                 if (cs.IsWhiteSpace()) {
                     // Unrolled since most return nulls.
-                    foreach (var c in _whitespaceCharCheckers) {
-                        var result = c(cs, _settings.LintOptions);
-                        if (result != null) {
-                            warnings.Add(result);
-                        }
-                    }
+                    warnings.AddRange(_whitespaceCharCheckers
+                                        .Select(c => c(cs, _settings.LintOptions))
+                                        .Where(result => result != null));
                 }
                 cs.MoveToNextChar();
             }

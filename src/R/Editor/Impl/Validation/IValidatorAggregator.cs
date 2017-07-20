@@ -9,7 +9,7 @@ using Microsoft.R.Editor.Validation.Errors;
 
 namespace Microsoft.R.Editor.Validation {
     public interface IValidatorAggregator {
-        Task RunAsync(AstRoot ast, ConcurrentQueue<IValidationError> results, CancellationToken ct);
+        Task RunAsync(AstRoot ast, bool projectedBuffer, ConcurrentQueue<IValidationError> results, CancellationToken ct);
         bool Busy { get; }
     }
 }

@@ -86,6 +86,7 @@
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="History\RHistoryViewModelTest.cs" />
     <Compile Include="Information\HostLoadIndicatorViewModelTest.cs" />
+    <Compile Include="InteractiveWorkflow\InteractiveWindowWriterTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveEvaluatorTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="Mef\MefCompositionTests.cs" />

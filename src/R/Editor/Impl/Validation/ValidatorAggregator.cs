@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Validation.Errors;
@@ -43,10 +42,10 @@ namespace Microsoft.R.Editor.Validation {
         /// Launches AST and file validation / syntax check.
         /// The process runs asyncronously.
         /// </summary>
-        public Task RunAsync(AstRoot ast, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
+        public Task RunAsync(AstRoot ast, bool projectedBuffer, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
             _tcs = new TaskCompletionSource<bool>();
             try {
-                BeginValidation(_settings);
+                BeginValidation(_settings, projectedBuffer);
                 _validationTask = Task.Run(() => {
                     var outcome = Validate(ast, ct);
                     foreach (var o in outcome) {
@@ -88,9 +87,9 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        private void BeginValidation(IREditorSettings settings) {
+        private void BeginValidation(IREditorSettings settings, bool projectedBuffer) {
             foreach (var v in _validators) {
-                v.OnBeginValidation(settings);
+                v.OnBeginValidation(settings, projectedBuffer);
             }
         }
 
@@ -104,7 +103,6 @@ namespace Microsoft.R.Editor.Validation {
         private class ValidationContext {
             public CancellationToken CancellationToken { get; }
             public List<IValidationError> Errors { get; }
-
             public ValidationContext(CancellationToken ct) {
                 CancellationToken = ct;
                 Errors = new List<IValidationError>();

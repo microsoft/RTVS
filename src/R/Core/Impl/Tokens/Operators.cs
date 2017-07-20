@@ -27,8 +27,7 @@ namespace Microsoft.R.Core.Tokens {
                 // In case of broken or partially typed operators
                 // make sure we terminate at whitespace or end of the line
                 // so in 'x <- y % z' '% z' is not an operator.
-                int start = cs.Position;
-                int length;
+                var start = cs.Position;
 
                 cs.MoveToNextChar();
 
@@ -36,7 +35,7 @@ namespace Microsoft.R.Core.Tokens {
                     if (cs.CurrentChar == '%') {
                         cs.MoveToNextChar();
 
-                        length = cs.Position - start;
+                        var length = cs.Position - start;
                         cs.Position = start;
 
                         return length;
@@ -57,9 +56,9 @@ namespace Microsoft.R.Core.Tokens {
 
         private static int Get3CharOrShorterOperatorLength(CharacterStream cs) {
             if (cs.DistanceFromEnd >= 3) {
-                string threeLetterCandidate = cs.GetSubstringAt(cs.Position, 3);
+                var threeLetterCandidate = cs.GetSubstringAt(cs.Position, 3);
                 if (threeLetterCandidate.Length == 3) {
-                    int index = Array.BinarySearch<string>(_threeChars, threeLetterCandidate);
+                    var index = Array.BinarySearch<string>(_threeChars, threeLetterCandidate);
                     if (index >= 0) {
                         return 3;
                     }
@@ -71,10 +70,10 @@ namespace Microsoft.R.Core.Tokens {
 
         internal static int Get2CharOrShorterOperatorLength(CharacterStream cs) {
             if (cs.DistanceFromEnd >= 2) {
-                string twoLetterCandidate = cs.GetSubstringAt(cs.Position, 2);
+                var twoLetterCandidate = cs.GetSubstringAt(cs.Position, 2);
 
                 if (twoLetterCandidate.Length == 2) {
-                    int index = Array.BinarySearch<string>(_twoChars, twoLetterCandidate);
+                    var index = Array.BinarySearch<string>(_twoChars, twoLetterCandidate);
                     if (index >= 0) {
                         return 2;
                     }
@@ -103,17 +102,12 @@ namespace Microsoft.R.Core.Tokens {
                 case '?':
                 case ':': // sequence operator
                     return 1;
-
-                default:
-                    break;
             }
-
             return 0;
         }
 
         // must be sorted
-        internal static string[] _twoChars = new string[]
-            {
+        internal static string[] _twoChars = {
             "!=",
             "%%",
             "&&",
@@ -130,8 +124,7 @@ namespace Microsoft.R.Core.Tokens {
             };
 
         // must be sorted
-        internal static string[] _threeChars = new string[]
-        {
+        internal static string[] _threeChars = {
             "%*%",
             "%/%",
             ":::",
