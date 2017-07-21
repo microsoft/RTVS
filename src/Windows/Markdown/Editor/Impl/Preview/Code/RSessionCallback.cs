@@ -10,7 +10,8 @@ using Microsoft.R.Host.Client;
 namespace Microsoft.Markdown.Editor.Preview.Code {
     internal sealed class RSessionCallback : IRSessionCallback {
         internal byte[] PlotResult { get; set; }
-        internal PlotDeviceProperties PlotDeviceProperties { get; set; } = new PlotDeviceProperties(640, 480, 96);
+        internal PlotDeviceProperties PlotDeviceProperties { get; set; } 
+            = new PlotDeviceProperties(800, 600, 96); // Typical RMD Document has CSS width of 900
 
         public string CranUrlFromName(string name) => "https://cran.rstudio.com";
 

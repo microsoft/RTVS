@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
@@ -41,8 +43,10 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
             if (!RSession.IsHostRunning) {
                 var settings = _services.GetService<IRSettings>();
-                await RSession.EnsureHostStartedAsync(
-                    new RHostStartupInfo(settings.CranMirror, codePage: settings.RCodePage), SessionCallback, 3000, ct);
+                await RSession.EnsureHostStartedAsync(new RHostStartupInfo(), SessionCallback, 3000, ct);
+                await RSession.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(settings.CranMirror), ct);
+                await RSession.SetCodePageAsync(settings.RCodePage, ct);
+                await RSession.SetVsGraphicsDeviceAsync();
             }
 
             return RSession;

@@ -120,7 +120,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             _infos = infos;
             _lastPosition = -1;
 
-            broker.TriggerQuickInfo(session.TextView);
+            _services.MainThread().Post(() => broker.TriggerQuickInfo(session.TextView));
         }
 
         #region IDisposable
