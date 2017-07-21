@@ -1,0 +1,13 @@
+﻿{
+  "dependencies": {
+    "Docker.DotNet": "2.124.3",
+    "MicroBuild.Core": "0.2.0",
+    "Newtonsoft.Json": "10.0.3"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}
