@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Settings;
+using Microsoft.R.Containers;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
@@ -78,7 +79,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
-                .AddEditorServices();
+                .AddEditorServices()
+                .AddWindowsContainerServices();
             // TODO: add more
 
             _application = new VsApplication(_services);

@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyProduct("R Tools for Visual Studio")]
 [assembly: AssemblyDescription("")]
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD1_6 && !NETCOREAPP1_1
 [assembly: NeutralResourcesLanguage("en", UltimateResourceFallbackLocation.MainAssembly)]
 #endif
 
