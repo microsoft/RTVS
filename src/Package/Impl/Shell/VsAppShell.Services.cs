@@ -77,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<RPackageToolWindowProvider>()
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
-                .AddWindowsRComponentstServices()
+                .AddWindowsRComponentsServices()
                 .AddEditorServices();
             // TODO: add more
 
