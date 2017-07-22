@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Docker.DotNet.Models;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Newtonsoft.Json.Linq;
 
@@ -30,12 +27,12 @@ namespace Microsoft.R.Containers.Docker {
             return await ExecuteCommandAsync(ps, dockerInfo.Docker, $"{command} {commandOptions}", -1, ct);
         }
 
-        public static Task<string> RepositoryLoginAsync(this LocalDocker dockerInfo, IProcessServices ps, AuthConfig auth, CancellationToken ct) {
-            return dockerInfo.RepositoryLoginAsync(ps, auth.Username, auth.Password, auth.ServerAddress, ct);
+        public static Task<string> RepositoryLoginAsync(this LocalDocker dockerInfo, IProcessServices ps, RepositoryCredentials auth, CancellationToken ct) {
+            return dockerInfo.RepositoryLoginAsync(ps, auth.Username, auth.Password, auth.RepositoryServer, ct);
         }
 
-        public static Task<string> RepositoryLogoutAsync(this LocalDocker dockerInfo, IProcessServices ps, AuthConfig auth, CancellationToken ct) {
-            return dockerInfo.RepositoryLogoutAsync(ps, auth.ServerAddress, ct);
+        public static Task<string> RepositoryLogoutAsync(this LocalDocker dockerInfo, IProcessServices ps, RepositoryCredentials auth, CancellationToken ct) {
+            return dockerInfo.RepositoryLogoutAsync(ps, auth.RepositoryServer, ct);
         }
 
         public static async Task<string> RepositoryLogoutAsync(this LocalDocker dockerInfo, IProcessServices ps, string server, CancellationToken ct) {

@@ -13,8 +13,8 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
-using static System.FormattableString;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Containers.Docker {
     public class WindowsDockerService : IContainerService {

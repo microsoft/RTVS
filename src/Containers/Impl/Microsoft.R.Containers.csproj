@@ -12,9 +12,6 @@
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Docker.DotNet" Version="2.124.3" />
-    <PackageReference Include="Docker.DotNet.BasicAuth" Version="2.124.3" />
-    <PackageReference Include="Docker.DotNet.X509" Version="2.124.3" />
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>

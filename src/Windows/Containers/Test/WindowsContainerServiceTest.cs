@@ -54,6 +54,8 @@ namespace Microsoft.R.Containers.Windows.Test {
 
         [Test]
         public async Task CleanImageDownloadTest() {
+            WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
+
             var param = new ContainerCreateParameters();
             param.Image = "hello-world";
             param.Tag = "latest";
@@ -61,7 +63,6 @@ namespace Microsoft.R.Containers.Windows.Test {
             string imageName = $"{param.Image}:{param.Tag}";
             await DeleteImageAsync(imageName);
 
-            WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             await svc.StartContainerAsync(container, CancellationToken.None);
 
