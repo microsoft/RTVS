@@ -82,6 +82,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class ContainersAttribute : CategoryAttribute {
+            public ContainersAttribute() : base("Containers") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class ConfigurationAttribute : CategoryAttribute {
             public ConfigurationAttribute() : base("Configuration") { }
         }

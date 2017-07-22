@@ -67,8 +67,8 @@ namespace Microsoft.R.Containers.Docker {
             return null;
         }
 
-        public async Task<IEnumerable<string>> ListContainersAsync(CancellationToken ct) {
-            string output = await _docker.ListContainersAsync(_ps, true, ct);
+        public async Task<IEnumerable<string>> ListContainersAsync(bool allContainers, CancellationToken ct) {
+            string output = await _docker.ListContainersAsync(_ps, allContainers, ct);
             var ids = output.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             List<string> containerIds = new List<string>();
             foreach(string id in ids) {
@@ -80,7 +80,9 @@ namespace Microsoft.R.Containers.Docker {
         }
 
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
-            await _docker.RepositoryLoginAsync(_ps, createParams.ImageSourceAuth, ct);
+            if(createParams.ImageSourceAuth != null) {
+                await _docker.RepositoryLoginAsync(_ps, createParams.ImageSourceAuth, ct);
+            }
             try {
                 await _docker.PullImageAsync(_ps, $"{createParams.Image}:{createParams.Tag}", ct);
 
@@ -94,7 +96,9 @@ namespace Microsoft.R.Containers.Docker {
             } catch (Exception) {
                 throw;
             } finally {
-                await _docker.RepositoryLogoutAsync(_ps, createParams.ImageSourceAuth, ct);
+                if (createParams.ImageSourceAuth != null) {
+                    await _docker.RepositoryLogoutAsync(_ps, createParams.ImageSourceAuth, ct);
+                }
             }
         }
 

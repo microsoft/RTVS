@@ -9,7 +9,7 @@ namespace Microsoft.R.Containers {
     public interface IContainerService {
         ContainerServiceStatus GetServiceStatus();
         Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct);
-        Task<IEnumerable<string>> ListContainersAsync(CancellationToken ct);
+        Task<IEnumerable<string>> ListContainersAsync(bool allContainers, CancellationToken ct);
         Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct);
         Task DeleteContainerAsync(IContainer container, CancellationToken ct);
         Task StartContainerAsync(IContainer container, CancellationToken ct);
