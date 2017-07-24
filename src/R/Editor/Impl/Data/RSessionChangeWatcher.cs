@@ -7,11 +7,12 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Data {
     public abstract class RSessionChangeWatcher {
-        protected IRInteractiveWorkflow Workflow { get; }
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        protected IRInteractiveWorkflow Workflow => _workflowProvider.GetOrCreate();
         protected IRSession Session { get; private set; }
 
         protected RSessionChangeWatcher(IRInteractiveWorkflowProvider workflowProvider) {
-            Workflow = workflowProvider.GetOrCreate();
+            _workflowProvider = workflowProvider;
         }
 
         public void Initialize() {

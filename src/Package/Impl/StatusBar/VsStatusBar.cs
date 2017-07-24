@@ -45,9 +45,14 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         #region IStatusBar
-        public IDisposable AddItem(UIElement element) {
+        public IDisposable AddItem(Func<UIElement> itemFactory, object dataContext) {
             _services.MainThread().CheckAccess();
             EnsureItemsControlCreated();
+
+            var element = itemFactory();
+            if(element is FrameworkElement fe) {
+                fe.DataContext = dataContext;
+            }
 
             _itemsControl.Items.Insert(0, element);
             return Disposable.Create(() => _services.MainThread().Post(() => _itemsControl.Items.Remove(element)));
