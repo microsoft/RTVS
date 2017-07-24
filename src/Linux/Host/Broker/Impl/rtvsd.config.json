@@ -1,8 +1,10 @@
 ﻿{
-  "urls": "https://0.0.0.0:5444",
+  "logging": { "logFolder": "/tmp" },
   "security": {
+    "allowedGroup": "",
     "X509CertificateFile": "/etc/rtvs/server.pfx",
-    "X509CertificatePassword": "12345",
-    "allowedGroup":  ""
-  }
+    "X509CertificatePassword": "12345"
+  },
+  "startup": { "name": "rtvsd" },
+  "urls": "https://0.0.0.0:5444"
 }
