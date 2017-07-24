@@ -30,18 +30,18 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly DirtyEventSource _availablePackagesEvent;
 
         public event EventHandler LoadedPackagesInvalidated {
-            add { _loadedPackagesEvent.Event += value; }
-            remove { _loadedPackagesEvent.Event -= value; }
+            add => _loadedPackagesEvent.Event += value;
+            remove => _loadedPackagesEvent.Event -= value;
         }
 
         public event EventHandler InstalledPackagesInvalidated {
-            add { _installedPackagesEvent.Event += value; }
-            remove { _installedPackagesEvent.Event -= value; }
+            add => _installedPackagesEvent.Event += value;
+            remove => _installedPackagesEvent.Event -= value;
         }
 
         public event EventHandler AvailablePackagesInvalidated {
-            add { _availablePackagesEvent.Event += value; }
-            remove { _availablePackagesEvent.Event -= value; }
+            add => _availablePackagesEvent.Event += value;
+            remove => _availablePackagesEvent.Event -= value;
         }
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
@@ -140,6 +140,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             try {
+                ;
+                await _interactiveWorkflow.RSessions.TrySwitchBrokerAsync(nameof(RPackageManager));
                 await _session.EnsureHostStartedAsync(new RHostStartupInfo(), null, cancellationToken: cancellationToken);
                 await _session.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(_settings.CranMirror), cancellationToken);
                 await _session.SetCodePageAsync(_settings.RCodePage, cancellationToken);
