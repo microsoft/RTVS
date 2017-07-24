@@ -46,6 +46,7 @@
     <Compile Include="Fixtures\RemoteBrokerFixture.cs" />
     <Compile Include="Fixtures\RemoteBrokerMethodFixture.cs" />
     <Compile Include="Fixtures\RemoteBrokerProcess.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
     <Compile Include="Session\RSessionTest.Blobs.cs" />
     <Compile Include="StackTracing\CallStackTest.cs" />
