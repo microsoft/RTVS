@@ -280,15 +280,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                         if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? currentLine.Start : currentLine.End)) {
                             // Depending on options indent a) one level deeper or b) by first argument or c) by opening brace + 1
                             if (settings.SmartIndentByArgument) {
-                                // Last argument in the incomplete function is stub. We need real one.
-                                var arg = fc.Arguments.Count > 0 ? fc.Arguments[fc.Arguments.Count - 1] : null;
-                                if (arg is StubArgument) {
-                                    arg = fc.Arguments.Count > 1 ? fc.Arguments[fc.Arguments.Count - 2] : null;
-                                }
-                                var indent = arg != null
-                                    ? arg.Start - snapshot.GetLineFromPosition(arg.Start).Start
-                                    : fc.OpenBrace.Start - snapshot.GetLineFromPosition(fc.OpenBrace.Start).Start + 1;
-
+                                var indent = GetIndentFromArguments(fc, prevLine);
                                 fcIndentSize = IndentBuilder.GetIndentString(indent, settings.IndentType, settings.TabSize).Length;
                             } else {
                                 // Default indent is one level deeper
@@ -344,6 +336,20 @@ namespace Microsoft.R.Editor.SmartIndent {
             var lineText = line.GetText();
             var leadingWhitespace = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
             return IndentBuilder.TextIndentInSpaces(leadingWhitespace, options.TabSize);
+        }
+
+        private static int GetIndentFromArguments(IFunction fc, IEditorLine prevLine) {
+            // Fetch first argument on the previous line or first artument of the function
+            // x < function(a,
+            //              |
+            // x < function(a,
+            //                 b, c
+            //                 |
+            var arg = fc.Arguments.FirstOrDefault(a => !(a is StubArgument) && prevLine.Contains(a.Start));
+            var snapshot = prevLine.Snapshot;
+            return arg != null
+                ? arg.Start - snapshot.GetLineFromPosition(arg.Start).Start
+                : fc.OpenBrace.Start - snapshot.GetLineFromPosition(fc.OpenBrace.Start).Start + 1;
         }
     }
 }
