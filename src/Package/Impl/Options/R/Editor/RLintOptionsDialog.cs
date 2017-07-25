@@ -234,8 +234,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         [LocDescription("Settings_Lint_Semicolons_Description")]
         [DefaultValue(false)]
         public bool Semicolons {
-            get => _options.LineLength;
-            set => _options.LineLength = value;
+            get => _options.Semicolons;
+            set => _options.Semicolons = value;
         }
 
         [LocCategory("Settings_LintCategory_Statements")]
