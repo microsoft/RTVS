@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 
@@ -204,7 +205,7 @@ namespace Microsoft.R.Components.Plots {
         /// <exception cref="OperationCanceledException">
         /// The session was reset, etc. this can be silenced.
         /// </exception>
-        Task ExportToPdfAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight);
+        Task ExportToPdfAsync(IRPlot plot, string pdfDevice, string paper, string outputFilePath, double inchWidth, double inchHeight);
 
         /// <summary>
         /// Execute code in the session to change the active graphics device.

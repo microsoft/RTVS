@@ -219,6 +219,13 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <Style  TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
     <Style x:Key="ToolWindowButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>

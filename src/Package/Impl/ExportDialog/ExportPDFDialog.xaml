@@ -1,0 +1,92 @@
+﻿<ui:PlatformDialogWindow x:Class="Microsoft.VisualStudio.R.Package.ExportDialog.ExportPDFDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
+        xmlns:ui="clr-namespace:Microsoft.VisualStudio.R.Package.Wpf"
+        xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+        xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.ExportDialog"
+        xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components.Windows"
+        mc:Ignorable="d"  x:Name="Self"
+        ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
+        Title="{x:Static pkg:Resources.ExportPDFDialog_Title}" 
+        VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+        Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
+        Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
+        SizeToContent="WidthAndHeight">
+    <ui:PlatformDialogWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <wpf:CommonResources />
+            </ResourceDictionary.MergedDictionaries>
+            <local:PDFPaperSizeConverter x:Key="pdfPaperSizeConverter"></local:PDFPaperSizeConverter>
+        </ResourceDictionary>
+    </ui:PlatformDialogWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition  Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_PdfSize}" VerticalAlignment="Center" Margin="10,5"/>
+            <ComboBox Grid.Row="0" Grid.Column="2" Name="PdfSizeComboBox" AllowDrop="True"  Width="100" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="0"  ItemsSource="{Binding Path=PDFPapers}" SelectedValue="{Binding SelectedPDFPaperType}" DisplayMemberPath="PaperName">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="AutomationProperties.Name" Value="{Binding PaperName}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
+            <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Orientation}" VerticalAlignment="Center" Margin="10,5"/>
+            <ComboBox Grid.Row="1" Grid.Column="2" Name="OrientationCombobox"  AllowDrop="True" Width="100" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="3" ItemsSource="{Binding Orientations}" SelectedItem="{Binding SelectedOrientation}">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="AutomationProperties.Name" Value="{Binding SelectedOrientation}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
+            <TextBox Grid.Row="0" Grid.Column="3" x:Name="VariableWidthBox" HorizontalAlignment="Left" TextWrapping="Wrap"  VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,5" KeyboardNavigation.TabIndex="1"
+                         IsEnabled="{Binding Path=SelectedPDFPaperType,Converter={StaticResource pdfPaperSizeConverter}}" Text="{Binding Path=SelectedPDFPaperType.PaperWidth,Mode=TwoWay,UpdateSourceTrigger=LostFocus}" LostFocus="VariableWidthTextBox_LostFocus"></TextBox>
+            <TextBlock Grid.Row="0" Grid.Column="4"  Text="{x:Static pkg:Resources.Label_X}" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="0" Grid.Column="5" x:Name="VariableHeightBox" HorizontalAlignment="Left"  TextWrapping="Wrap"  VerticalAlignment="Center" Width="80" VerticalContentAlignment="Center" Margin="10,5" KeyboardNavigation.TabIndex="2"
+                         IsEnabled="{Binding Path=SelectedPDFPaperType,Converter={StaticResource pdfPaperSizeConverter}}" Text="{Binding Path=SelectedPDFPaperType.PaperHeight,Mode=TwoWay,UpdateSourceTrigger=LostFocus}" LostFocus="VariableHeightTextBox_LostFocus"></TextBox>
+            <TextBlock Grid.Row="0" Grid.Column="6" Text="{x:Static pkg:Resources.Label_Inches}" VerticalAlignment="Center" Margin="10,5"/>
+            <TextBlock Grid.Row="1" Grid.Column="3" FontWeight="Bold" Text="{x:Static pkg:Resources.Label_Options}" VerticalAlignment="Center" Margin="10,5"/>
+            <ComboBox Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="2" Name="OptionsCombobox" AllowDrop="True" Width="138" Height="25" Margin="10,5" KeyboardNavigation.TabIndex="4" ItemsSource="{Binding PrintOptions}" SelectedItem="{Binding SelectedDevice}">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ComboBoxItem}">
+                        <Setter Property="AutomationProperties.Name" Value="{Binding SelectedDevice}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
+        </Grid>
+        <Separator Grid.Row="1"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Name="ViewPlotCheckbox" Content="{x:Static pkg:Resources.CheckBox_ViewPlot}" Grid.Column="0" Margin="10,5" KeyboardNavigation.TabIndex="5" IsChecked="{Binding ViewPlotAfterSaving, UpdateSourceTrigger = PropertyChanged, Mode = TwoWay}" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
+                <Button x:Name="SaveButton" Content="{x:Static components:Resources.Save}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10"  KeyboardNavigation.TabIndex="6" Click="SaveButton_Click" IsDefault="True" IsEnabled="{Binding IsSaveEnabled,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <Button x:Name="CancelButton" Content="{x:Static components:Resources.Cancel}" HorizontalAlignment="Right"  VerticalAlignment="Top" Width="75"  Margin="10"  KeyboardNavigation.TabIndex="7" Click="CancelButton_Click" IsCancel="True"/>
+            </StackPanel>
+        </Grid>
+
+
+    </Grid>
+</ui:PlatformDialogWindow>

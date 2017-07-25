@@ -151,6 +151,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maintain Aspect Ratio.
+        /// </summary>
+        public static string CheckBox_AspectRatio {
+            get {
+                return ResourceManager.GetString("CheckBox_AspectRatio", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View plot after saving.
+        /// </summary>
+        public static string CheckBox_ViewPlot {
+            get {
+                return ResourceManager.GetString("CheckBox_ViewPlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose Directory.
         /// </summary>
         public static string ChooseDirectory {
@@ -192,6 +210,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string CollectingSystemEvents {
             get {
                 return ResourceManager.GetString("CollectingSystemEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string Combobox_Custom {
+            get {
+                return ResourceManager.GetString("Combobox_Custom", resourceCulture);
             }
         }
         
@@ -471,6 +498,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnknownMirror {
             get {
                 return ResourceManager.GetString("Error_UnknownMirror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Image.
+        /// </summary>
+        public static string ExportImageDialog_Title {
+            get {
+                return ResourceManager.GetString("ExportImageDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export PDF.
+        /// </summary>
+        public static string ExportPDFDialog_Title {
+            get {
+                return ResourceManager.GetString("ExportPDFDialog_Title", resourceCulture);
             }
         }
         
@@ -853,11 +898,56 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Height:.
+        /// </summary>
+        public static string label_Height {
+            get {
+                return ResourceManager.GetString("label_Height", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to inches.
+        /// </summary>
+        public static string Label_Inches {
+            get {
+                return ResourceManager.GetString("Label_Inches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name:.
         /// </summary>
         public static string Label_Name {
             get {
                 return ResourceManager.GetString("Label_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string Label_Options {
+            get {
+                return ResourceManager.GetString("Label_Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orientation:.
+        /// </summary>
+        public static string Label_Orientation {
+            get {
+                return ResourceManager.GetString("Label_Orientation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PDF Size:.
+        /// </summary>
+        public static string Label_PdfSize {
+            get {
+                return ResourceManager.GetString("Label_PdfSize", resourceCulture);
             }
         }
         
@@ -894,6 +984,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Label_URL {
             get {
                 return ResourceManager.GetString("Label_URL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Width:.
+        /// </summary>
+        public static string label_Width {
+            get {
+                return ResourceManager.GetString("label_Width", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to x.
+        /// </summary>
+        public static string Label_X {
+            get {
+                return ResourceManager.GetString("Label_X", resourceCulture);
             }
         }
         

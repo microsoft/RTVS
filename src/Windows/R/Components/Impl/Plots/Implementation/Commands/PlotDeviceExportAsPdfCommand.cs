@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -24,24 +25,28 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         }
 
         public async Task InvokeAsync() {
-            var fd = InteractiveWorkflow.Shell.FileDialog();
-            var filePath = fd.ShowSaveFileDialog(Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
-            if (!string.IsNullOrEmpty(filePath)) {
+            IRPlotExportDialogs plotExportDialogs = (IRPlotExportDialogs)InteractiveWorkflow.Shell.FileDialog();
+            ExportArguments exportPdfArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
+            ExportPdfParameters exportPdfParameters = plotExportDialogs.ShowExportPdfDialog(exportPdfArguments, Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
+           
+            if (!string.IsNullOrEmpty(exportPdfParameters?.FilePath)) {
                 try {
                     await InteractiveWorkflow.Plots.ExportToPdfAsync(
                         VisualComponent.ActivePlot,
-                        filePath,
-                        PixelsToInches(VisualComponent.Device.PixelWidth),
-                        PixelsToInches(VisualComponent.Device.PixelHeight));
+                        exportPdfParameters.RInternalPdfDevice,
+                        exportPdfParameters.RInternalPaperName,
+                        exportPdfParameters.FilePath,
+                        exportPdfParameters.WidthInInches,
+                        exportPdfParameters.HeightInInches);
+                    if(exportPdfParameters.ViewPlot) {
+                        var process = new ProcessServices();
+                        process.Start(exportPdfParameters.FilePath);
+                    }
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {
                 }
             }
-        }
-
-        private static double PixelsToInches(int pixels) {
-            return pixels / 96.0;
         }
     }
 }
