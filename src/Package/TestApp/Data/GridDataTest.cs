@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     // TODO: determine and remove any duplicates from EvaluationWrapperTest.
     // TODO: move this to Microsoft.R.Host.Client.Test after removing GridData dependencies on Package.
     [ExcludeFromCodeCoverage]
+    [Category.R.DataGrid]
     public class GridDataTest : IAsyncLifetime {
         private struct GridElement<T> {
             public long X, Y;
@@ -46,6 +47,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             await _session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
 
             var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+            await workflow.RSessions.TrySwitchBrokerAsync(nameof(GridDataTest));
+
             var packages = await workflow.Packages.GetInstalledPackagesAsync();
             if (!packages.Any(p => p.Package.EqualsIgnoreCase("QuantMod"))) {
                 await workflow.Packages.InstallPackageAsync("QuantMod", null);
@@ -59,15 +62,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         private static IEnumerable<T> ToEnumerable<T>(IRange<T> range) {
             long start = range.Range.Start, end = start + range.Range.Count;
-            for (long i = start; i < end; ++i) {
+            for (var i = start; i < end; ++i) {
                 yield return range[i];
             }
         }
 
         private void ShouldEqual<T>(IGrid<T> actual, T[,] expected) {
             var expectedElements = new List<GridElement<T>>();
-            for (int y = 0; y <= expected.GetUpperBound(0); ++y) {
-                for (int x = 0; x <= expected.GetUpperBound(1); ++x) {
+            for (var y = 0; y <= expected.GetUpperBound(0); ++y) {
+                for (var x = 0; x <= expected.GetUpperBound(1); ++x) {
                     expectedElements.Add(new GridElement<T> {
                         X = x + actual.Range.Columns.Start,
                         Y = y + actual.Range.Rows.Start,
@@ -77,8 +80,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             }
 
             var actualElements = new List<GridElement<T>>();
-            foreach (int y in actual.Range.Rows.GetEnumerable()) {
-                foreach (int x in actual.Range.Columns.GetEnumerable()) {
+            foreach (var y in actual.Range.Rows.GetEnumerable()) {
+                foreach (var x in actual.Range.Columns.GetEnumerable()) {
                     actualElements.Add(new GridElement<T> {
                         X = x,
                         Y = y,
@@ -115,12 +118,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         /// The number of rows and columns that are fetched is the same as the number of elements
         /// in <paramref name="expected"/>, not counting the row and column headers. For example,
         /// if <paramref name="expected"/> is a 3x4 array, a 2x3 slice is fetched, with the top left
-        /// corner specified by <paramref name="firstRow"/> and <paramref name="firstColumnt"/>.
+        /// corner specified by <paramref name="firstRow"/> and <paramref name="firstColumn"/>.
         /// </para>
         /// <para>
         /// <c>rtvs:::grid_data</c> sorts the entire dataset first, and only then slices it.
         /// </para>
-        /// <remarks>
+        /// </remarks>
         private async Task Test(
             string expression,
             int firstRow,
@@ -128,26 +131,26 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             string[,] expected,
             int[] sort = null
         ) {
-            int height = expected.GetUpperBound(0) + 1;
-            int width = expected.GetUpperBound(1) + 1;
+            var height = expected.GetUpperBound(0) + 1;
+            var width = expected.GetUpperBound(1) + 1;
 
             height.Should().BeGreaterOrEqualTo(1);
             width.Should().BeGreaterOrEqualTo(1);
             expected[0, 0].Should().BeNull();
 
             var expectedRowHeaders = new List<string>();
-            for (int y = 1; y < height; ++y) {
+            for (var y = 1; y < height; ++y) {
                 expectedRowHeaders.Add(expected[y, 0]);
             }
 
             var expectedColumnHeaders = new List<string>();
-            for (int x = 1; x < width; ++x) {
+            for (var x = 1; x < width; ++x) {
                 expectedColumnHeaders.Add(expected[0, x]);
             }
 
             var expectedValues = new string[height - 1, width - 1];
-            for (int y = 1; y < height; ++y) {
-                for (int x = 1; x < width; ++x) {
+            for (var y = 1; y < height; ++y) {
+                for (var x = 1; x < width; ++x) {
                     expectedValues[y - 1, x - 1] = expected[y, x];
                 }
             }
@@ -164,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 }
             }
 
-            var data = await GridDataSource.GetGridDataAsync(_session, expression, range, order);
+            var data = await _session.GetGridDataAsync(expression, range, order);
 
             ToEnumerable(data.RowHeader).Should().Equal(expectedRowHeaders);
             ToEnumerable(data.ColumnHeader).Should().Equal(expectedColumnHeaders);
@@ -176,7 +179,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         [Test]
-        [Category.R.DataGrid]
         public Task DataFrameGrid() => Test("iris", 48, 3, new[,] {
             { null, "Petal.Length", "Petal.Width",  "Species" },
             { "48", "1.4",          "0.2",          "setosa" },
@@ -187,7 +189,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task DataFrameNAGrid() => Test("df.test <- data.frame(c(1, as.integer(NA)), c(2.0, as.double(NA)), c(as.Date('2011-12-31'), as.Date(NA)))", 1, 1, new[,] {
             { null, "c.1..as.integer.NA..", "c.2..as.double.NA..",  "c.as.Date..2011.12.31....as.Date.NA.." },
             { "1",  "1",                    "2",                    "2011-12-31" },
@@ -195,7 +196,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task DataFrameSortedGrid() => Test("iris", 48, 3, new[,] {
             { null, "Petal.Length", "Petal.Width",  "Species" },
             { "24", "1.7",          "0.5",          "setosa" },
@@ -208,7 +208,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         // Tibble-like objects are collections that, when sliced with [], always return
         // result of the same shape, even if it's only one row or one column.
         [Test]
-        [Category.R.DataGrid]
         public Task TibbleLikeGrid() => Test(@"local({
                 attach(as.environment(list(`[.tibble` = function(x, row, col, drop = TRUE)  {
                     class(x) <- NULL
@@ -232,7 +231,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task MatrixGrid() => Test("matrix(1:20, 5, 4)", 2, 2, new[,] {
             { null,     "[,2]",     "[,3]" },
             { "[2,]",   "7",        "12" },
@@ -241,7 +239,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task MatrixSortedGrid() => Test("matrix(1:20, 5, 4)", 2, 2, new[,] {
             { null,     "[,2]",     "[,3]" },
             { "[2,]",   "9",        "14" },
@@ -250,7 +247,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }, sort: new[] { -2 });
 
         [Test]
-        [Category.R.DataGrid]
         public Task MatrixCharSortedGrid() => Test("matrix(c('a', 'b', 'c', 1, 1, 2), 3, 2)", 1, 1, new[,] {
             { null,     "[,1]",     "[,2]" },
             { "[1,]",   "c",        "2" },
@@ -268,7 +264,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task VectorGrid() => Test("1:10", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "2"  },
@@ -277,7 +272,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task VectorSortedGrid() => Test("1:10", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "9"  },
@@ -286,7 +280,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }, sort: new[] { -1 });
 
         [Test]
-        [Category.R.DataGrid]
         public Task ListGrid() => Test("as.list(1:10)", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "2"  },
@@ -304,7 +297,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task NonArray1DGrid() => Test("local({ a <- 1:10; dim(a) <- 10; a })", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "2"  },
@@ -313,7 +305,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task ArraySortedGrid() => Test("array(1:10)", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "9"  },
@@ -322,7 +313,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }, sort: new[] { -1 });
 
         [Test]
-        [Category.R.DataGrid]
         public Task FactorGrid() => Test("factor(1:3)", 1, 1, new[,] {
             { null,     "[]" },
             { "[1]",    "1"  },
@@ -331,7 +321,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task GridUnsortableColumn() => Test("matrix(list(2, 'a', 1, 20, 10, 20), 3, 2)", 1, 1, new[,] {
             { null,     "[,1]",     "[,2]" },
             { "[1,]",   "2",        "20" },
@@ -340,7 +329,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }, sort: new[] { 1, 2 });
 
         [Test]
-        [Category.R.DataGrid]
         public Task ExternalPtrGrid() => Test("matrix(list(1, .Internal(address(2)), 3, 4), 2, 2)", 1, 1, new[,] {
             { null,     "[,1]",             "[,2]" },
             { "[1,]",   "1",                "3" },
@@ -348,7 +336,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task TimeseriesVectorGrid() => Test("ts(c(1,2,3,4,5,6), start=2000, frequency=4)", 1, 1, new[,] {
             { null,      "[]" },
             { "2000.00", "1" },
@@ -360,7 +347,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public Task TimeseriesMatrixGrid() => Test("ts(matrix(c(1,2,3,4,5,6), ncol=2), start=2000, frequency=4)", 1, 1, new[,] {
             { null,      "Series 1", "Series 2" },
             { "2000.00", "1",    "4" },
@@ -369,7 +355,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         });
 
         [Test]
-        [Category.R.DataGrid]
         public async Task QuantmodGrid() {
             try {
                 await _session.EvaluateAsync("quantmod::getSymbols", REvaluationKind.NoResult);
