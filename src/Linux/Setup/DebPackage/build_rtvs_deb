@@ -97,8 +97,8 @@ echo "copy conffiles"
 cp ./Setup/DebPackage/conffiles ./pkg/debian/DEBIAN
 
 echo "copy prerm and postinst"
-cp ./Setup/DebPackage/{prerm,postinst} .pkg/debian/DEBIAN && \
-fakeroot chmod u+rwx,g+rx,o+x .pkg/debian/DEBIAN/{prerm,postinst}
+cp ./Setup/DebPackage/{prerm,postinst} ./pkg/debian/DEBIAN && \
+fakeroot chmod u+rwx,g+rx,o+x ./pkg/debian/DEBIAN/{prerm,postinst}
 
 echo "prepare and place change log"
 m4 --define=RTVS_VERSION="$RTVS_VERSION" --define=RTVS_DATE="$RTVS_BUILD_DATE" ./Setup/DebPackage/copyright.m4  > ./pkg/debian/usr/share/doc/rtvs-daemon/changelog && \
