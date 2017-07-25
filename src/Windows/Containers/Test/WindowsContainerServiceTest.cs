@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.R.Containers.Docker;
@@ -18,10 +19,9 @@ namespace Microsoft.R.Containers.Windows.Test {
     public class WindowsContainerTests {
         [Test]
         public async Task CreateAndDeleteContainerTest() {
+            await TaskUtilities.SwitchToBackgroundThread();
             WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
-            var param = new ContainerCreateParameters();
-            param.Image = "docker.io/kvnadig/rtvs-linux";
-            param.Tag = "latest";
+            var param = new ContainerCreateParameters("docker.io/kvnadig/rtvs-linux", "latest");
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             var container2 = await svc.GetContainerAsync(container.Id, CancellationToken.None);
             container.Id.Should().Be(container2.Id);
@@ -32,10 +32,9 @@ namespace Microsoft.R.Containers.Windows.Test {
 
         [Test]
         public async Task StartStopContainerTest() {
+            await TaskUtilities.SwitchToBackgroundThread();
             WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
-            var param = new ContainerCreateParameters();
-            param.Image = "docker.io/kvnadig/rtvs-linux";
-            param.Tag = "latest";
+            var param = new ContainerCreateParameters("docker.io/kvnadig/rtvs-linux", "latest");
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             await svc.StartContainerAsync(container, CancellationToken.None);
 
@@ -54,12 +53,10 @@ namespace Microsoft.R.Containers.Windows.Test {
 
         [Test]
         public async Task CleanImageDownloadTest() {
+            await TaskUtilities.SwitchToBackgroundThread();
             WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
 
-            var param = new ContainerCreateParameters();
-            param.Image = "hello-world";
-            param.Tag = "latest";
-
+            var param = new ContainerCreateParameters("hello-world", "latest");
             string imageName = $"{param.Image}:{param.Tag}";
             await DeleteImageAsync(imageName);
 
