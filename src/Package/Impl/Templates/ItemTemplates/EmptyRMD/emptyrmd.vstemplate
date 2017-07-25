@@ -9,7 +9,7 @@
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-    <DefaultName >markdown.rmd</DefaultName>
+    <DefaultName >Markdown.Rmd</DefaultName>
     <SortOrder>1</SortOrder>
   </TemplateData>
   <TemplateContent>

@@ -19,6 +19,7 @@ using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
+    [Category.Plots]
     [Collection(CollectionNames.NonParallel)]
     public class XamlGraphicsDeviceTest {
         private const string Ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
@@ -44,8 +45,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private double H(double percentY) => DefaultHeight * percentY;
 
-        [Test]
-        [Category.Plots]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         public async Task Line() {
             var code = @"grid.segments(.01, .1, .99, .1)";
             var doc = await GridTest(code);
@@ -58,8 +58,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test]
-        [Category.Plots]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         public async Task LineCustomLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty='4812',lwd=5,col='Blue'))";
             var doc = await GridTest(code);
@@ -72,7 +71,6 @@ namespace Microsoft.R.Host.Client.Test {
         }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
-        [Category.Plots]
         public async Task LineSolidLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=1))";
             var doc = await GridTest(code);
@@ -84,8 +82,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test]
-        [Category.Plots]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         public async Task LineDashedLineType() {
             var code = @"grid.segments(.01, .1, .99, .1, gp=gpar(lty=2))";
             var doc = await GridTest(code);
@@ -97,7 +94,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], "4 4");
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         [Category.Plots]
         public async Task Polygon() {
             var code = @"grid.polygon(x=c(0,0.5,1,0.5),y=c(0.5,1,0.5,0))";
@@ -110,8 +107,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckStrokeDashArray(shapes[0], null);
         }
 
-        [Test]
-        [Category.Plots]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         public async Task Circle() {
             var code = @"grid.circle(0.5, 0.5, 0.2)";
             var doc = await GridTest(code);
@@ -121,8 +117,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.2), Y(0.5) - W(0.2));
         }
 
-        [Test]
-        [Category.Plots]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         public async Task Rectangle() {
             var code = @"grid.rect(0.5, 0.5, 0.3, 0.4)";
             var doc = await GridTest(code);
@@ -132,8 +127,7 @@ namespace Microsoft.R.Host.Client.Test {
             CheckCanvasLeftTop(shapes[0], X(0.5) - H(0.15), Y(0.5) - W(0.2));
         }
 
-        [Test]
-        [Category.Plots]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
         public async Task Path() {
             var code = @"grid.path(c(.1, .1, .9, .9, .2, .2, .8, .8), c(.1, .9, .9, .1, .2, .8, .8, .2), id=rep(1:2,each=4), rule='winding', gp=gpar(filled.contour='grey'))";
             var doc = await GridTest(code);
@@ -153,7 +147,6 @@ namespace Microsoft.R.Host.Client.Test {
         }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/3667")]
-        [Category.Plots]
         public async Task TextXmlEscape() {
             var code = "grid.text('hello<>&\"', 0.1, 0.3)";
             var doc = await GridTest(code);

@@ -18,9 +18,13 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [Category.R.SmartIndent]
     public class SmartIndentTest {
         private readonly IServiceContainer _services;
+        private readonly ISmartIndentProvider _provider;
 
         public SmartIndentTest(IServiceContainer services) {
             _services = services;
+
+            var locator = _services.GetService<IContentTypeServiceLocator>();
+            _provider = locator.GetService<ISmartIndentProvider>(RContentTypeDefinition.ContentType);
         }
 
         [CompositeTest]
@@ -48,28 +52,48 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("if (x > 1) {\n\n}", 2, 0)]
         [InlineData("while (TRUE) {\n    if (x > 1) {\n\n    }\n}", 4, 0)]
         [InlineData("if (x > 1) {\r\n\r\n}", 1, 4)]
-        [InlineData("x <- function(a,\n", 1, 4)]
-        [InlineData("func(a,\n", 1, 4)]
         [InlineData("if (TRUE)\n    x <- 1\n\n", 3, 0)]
         [InlineData("repeat\r\n    if (x > 1)\r\n", 2, 8)]
         [InlineData("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3, 4)]
         [InlineData("if (x > 1)\n", 1, 4)]
         [InlineData("x <- function(a) {\n  if(TRUE)\n\n}", 2, 6)]
         [InlineData("function(a) { a }\n", 1, 0)]
-        [InlineData("x <- func(\n    z = list(\n", 2, 8)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n", 3, 12)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
+        [InlineData("x <- \n", 1, 4)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
         public void Scope(string content, int lineNum, int expectedIndent) {
-            var editorView = TextViewTest.MakeTextView(content, 0, out AstRoot ast);
-            var document = new EditorDocumentMock(new EditorTreeMock(editorView.EditorBuffer, ast));
+            var tv = MakeTextView(content);
+            var indenter = _provider.CreateSmartIndent(tv);
 
-            var locator = _services.GetService<IContentTypeServiceLocator>();
-            var provider = locator.GetService<ISmartIndentProvider>(RContentTypeDefinition.ContentType);
-            var tv = editorView.As<ITextView>();
-            var indenter = provider.CreateSmartIndent(tv);
             var indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));
             indent.Should().HaveValue().And.Be(expectedIndent);
+        }
+
+        [CompositeTest]
+        [InlineData("func(a,\n", false, 1, 4)]
+        [InlineData("func(\n", true, 1, 5)]
+        [InlineData("func(a,\n", true, 1, 5)]
+        [InlineData("func(a,\n       b\n", true, 2, 7)]
+        [InlineData("func(a,\n       b\n", false, 2, 7)]
+        [InlineData("x <- function(a,\n", true, 1, 14)]
+        [InlineData("x <- function(a,\n", false, 1, 4)]
+        [InlineData("x <- func(\n          z = list(\n", true, 2, 19)]
+        public void Arguments(string content, bool alignByArguments, int lineNum, int expectedIndent) {
+            _services.GetService<IWritableREditorSettings>().SmartIndentByArgument = alignByArguments;
+
+            var tv = MakeTextView(content);
+            var indenter = _provider.CreateSmartIndent(tv);
+
+            var indent = indenter.GetDesiredIndentation(tv.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));
+            indent.Should().HaveValue().And.Be(expectedIndent);
+        }
+
+        private ITextView MakeTextView(string content) {
+            var editorView = TextViewTest.MakeTextView(content, 0, out AstRoot ast);
+            var document = new EditorDocumentMock(new EditorTreeMock(editorView.EditorBuffer, ast));
+            return editorView.As<ITextView>();
         }
     }
 }

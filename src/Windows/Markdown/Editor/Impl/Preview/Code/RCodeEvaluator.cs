@@ -82,10 +82,10 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             _errors = new StringBuilder();
 
             try {
-                using (var inter = await session.BeginInteractionAsync(isVisible: false, cancellationToken: cancellationToken)) {
+                using (var inter = await session.BeginInteractionAsync(true, cancellationToken)) {
                     await inter.RespondAsync(expression);
                 }
-            } catch (RException) { }
+            } catch (OperationCanceledException) { }
         }
 
         private void OnSessionOutput(object sender, ROutputEventArgs e) {

@@ -1365,4 +1365,19 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="CheckBox_ViewPlot" xml:space="preserve">
     <value>View plot after saving</value>
   </data>
+  <data name="Settings_Settings_SmartIndentByArgument_Description" xml:space="preserve">
+    <value>In smart indent mode align caret by the first function argument</value>
+  </data>
+  <data name="Settings_SmartIndentByArgument" xml:space="preserve">
+    <value>By function argument</value>
+  </data>
+  <data name="Settings_SmartIndentCategory" xml:space="preserve">
+    <value>Smart indent</value>
+  </data>
+  <data name="Settings_BreakMultipleStatements" xml:space="preserve">
+    <value>Statements on separate lines</value>
+  </data>
+  <data name="Settings_BreakMultipleStatements_Description" xml:space="preserve">
+    <value>When there multiple statements on the same line, break them into separate lines.</value>
+  </data>
 </root>

@@ -7,15 +7,15 @@
     <ProjectType>R</ProjectType>
     <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
     <CreateNewFolder>true</CreateNewFolder>
-    <DefaultName>rproject</DefaultName>
+    <DefaultName>RProject</DefaultName>
     <ProvideDefaultName>true</ProvideDefaultName>
     <CreateInPlace>true</CreateInPlace>
     <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
   </TemplateData>
   <TemplateContent>
-    <Project TargetFileName="$safeprojectname$.rproj" File="rproject.rproj" ReplaceParameters="true">
+    <Project TargetFileName="$safeprojectname$.Rproj" File="RProject.Rproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName=".Rhistory">.Rhistory</ProjectItem>
-      <ProjectItem OpenInEditor="true">script.R</ProjectItem>
+      <ProjectItem OpenInEditor="true">Script.R</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

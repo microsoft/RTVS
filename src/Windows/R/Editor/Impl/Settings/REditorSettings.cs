@@ -17,12 +17,10 @@ namespace Microsoft.R.Editor.Settings {
         public const string CommitOnEnterKey = "CommitOnEnter";
         public const string CompletionOnFirstCharKey = "CompletionOnFirstChar";
         public const string CompletionOnTabKey = "CompletionOnTab";
-        public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnter";
         public const string SyntaxCheckInReplKey = "SyntaxCheckInRepl";
         public const string PartialArgumentNameMatchKey = "PartialArgumentNameMatch";
         public const string EnableOutliningKey = "EnableOutlining";
-        public const string ShowInternalFunctionsKey = "ShowInternalFunctions";
-        public const string ShowTclFunctionsKey = "ShowTclFunctions";
+        public const string SmartIndentByArgumentKey = "SmartIndentByArgument";
 
         private RFormatOptions _formatOptions = new RFormatOptions();
 
@@ -74,11 +72,6 @@ namespace Microsoft.R.Editor.Settings {
             set => WritableStorage?.Set(CompletionOnTabKey, value);
         }
 
-        public bool SendToReplOnCtrlEnter {
-            get => Storage.Get(SendToReplOnCtrlEnterKey, true);
-            set => WritableStorage?.Set(SendToReplOnCtrlEnterKey, value);
-        }
-
         public bool SyntaxCheckInRepl {
             get => Storage.Get(SyntaxCheckInReplKey, false);
             set => WritableStorage?.Set(SyntaxCheckInReplKey, value);
@@ -92,6 +85,11 @@ namespace Microsoft.R.Editor.Settings {
         public bool EnableOutlining {
             get => Storage.Get(EnableOutliningKey, true);
             set => WritableStorage?.Set(EnableOutliningKey, value);
+        }
+
+        public bool SmartIndentByArgument {
+            get => Storage.Get(SmartIndentByArgumentKey, true);
+            set => WritableStorage?.Set(SmartIndentByArgumentKey, value);
         }
 
         public RFormatOptions FormatOptions {

@@ -72,7 +72,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
             log.Should().Contain("CommitOnEnter");
             log.Should().Contain("CommitOnSpace");
             log.Should().Contain("FormatOnPaste");
-            log.Should().Contain("SendToReplOnCtrlEnter");
             log.Should().Contain("ShowCompletionOnFirstChar");
             log.Should().Contain("SignatureHelpEnabled");
             log.Should().Contain("CompletionEnabled");

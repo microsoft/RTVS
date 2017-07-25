@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Microsoft.R.Components.StatusBar {
     public interface IStatusBar {
-        IDisposable AddItem(UIElement item);
+        IDisposable AddItem(Func<UIElement> itemFactory, object dataContext);
         Task<IStatusBarProgress> ShowProgressAsync(int totalSteps = 100, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

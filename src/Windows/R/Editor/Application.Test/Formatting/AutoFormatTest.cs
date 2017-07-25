@@ -149,7 +149,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                var expected = "x <- function(a,\r\n    b)\r\n{\r\n    a\r\n}";
+                var expected = "x <- function(a,\r\n             b)\r\n{\r\n    a\r\n}";
                 var actual = script.EditorText;
                 actual.Should().Be(expected);
             }
@@ -238,7 +238,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("zzzz(a=1,{ENTER}");
                 script.DoIdle(300);
                 script.Type("ba=2");
-                var expected = "zzzz(a = 1,\r\n    ba=2)";
+                var expected = "zzzz(a = 1,\r\n     ba=2)";
 
                 var actual = script.EditorText;
                 actual.Should().Be(expected);
@@ -274,7 +274,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         public async Task R_AutoFormatFunctonArguments01() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
-                var text = "x <-function (x,{ENTER}y,{ENTER}wt= NULL){ENTER}";
+                const string text = "x <-function (x,{ENTER}y,{ENTER}wt= NULL){ENTER}";
 
                 script.Type(text);
                 script.DoIdle(300);
@@ -282,8 +282,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 var actual = script.EditorText;
                 var expected =
 "x <- function(x,\r\n" +
-"    y,\r\n" +
-"    wt = NULL)\r\n";
+"              y,\r\n" +
+"              wt = NULL)\r\n";
                 actual.Should().Be(expected);
             }
         }
@@ -291,7 +291,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         public async Task R_AutoFormatFunctonArguments02() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
-                var text = "x <-function (x,y,{ENTER}wt= NULL){ENTER}";
+                const string text = "x <-function (x,y,{ENTER}wt= NULL){ENTER}";
 
                 script.Type(text);
                 script.DoIdle(300);
@@ -299,7 +299,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 var actual = script.EditorText;
                 var expected =
 "x <- function(x, y,\r\n" +
-"    wt = NULL)\r\n";
+"              wt = NULL)\r\n";
                 actual.Should().Be(expected);
             }
         }
@@ -307,7 +307,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         public async Task R_AutoFormatFuncionDefinition01() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
-                var text = "x <-function (x,y,{ENTER}wt= NULL){{ENTER}";
+                const string text = "x <-function (x,y,{ENTER}wt= NULL){{ENTER}";
                 _settings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type(text);
@@ -318,7 +318,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 var actual = script.EditorText;
                 var expected =
 "x <- function(x, y,\r\n" +
-"    wt = NULL) {\r\n" +
+"              wt = NULL) {\r\n" +
 "    a\r\n" +
 "}";
                 actual.Should().Be(expected);
@@ -340,16 +340,25 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 var expected =
 "library(abind)\r\n" +
 "x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,\r\n" +
-"    yname = NULL) {\r\n" +
+"              yname = NULL) {\r\n" +
 "    abind(a, )\r\n" +
 "}";
                 actual.Should().Be(expected);
             }
         }
 
-        [Test]
-        public async Task R_AutoFormatFuncionDefinition03() {
+        [CompositeTest]
+        [InlineData(true,
+@"x <- function(x, y,
+             a, b,
+             c, d)")]
+        [InlineData(false,
+@"x <- function(x, y,
+   a, b,
+   c, d)")]
+        public async Task R_AutoFormatFuncionDefinition03(bool option, string expected) {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
+                _services.GetService<IWritableREditorSettings>().SmartIndentByArgument = option;
                 var text1 = "x <-function(x, y,{ENTER}";
                 var text2 = "a,b,";
                 var text3 = "c, d)";
@@ -365,10 +374,6 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type(text3);
 
                 var actual = script.EditorText;
-                var expected =
-"x <- function(x, y,\r\n" +
-"   a, b,\r\n" +
-"   c, d)";
                 actual.Should().Be(expected);
             }
         }

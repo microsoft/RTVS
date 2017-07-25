@@ -179,7 +179,7 @@
                     },
                     {
                       "Name": "Padding",
-                      "Value": "4,4,4,4"
+                      "Value": "6,3,5,3"
                     },
                     {
                       "Name": "DataContext",
@@ -490,7 +490,7 @@
                             },
                             {
                               "Name": "Margin",
-                              "Value": "4,4,4,4"
+                              "Value": "6,3,5,3"
                             },
                             {
                               "Name": "HorizontalAlignment",
@@ -2872,7 +2872,7 @@
                                                                                           "Children": []
                                                                                         },
                                                                                         {
-                                                                                          "Name": "ToggleButton",
+                                                                                          "Name": "ExpandCollapseButton",
                                                                                           "Properties": [
                                                                                             {
                                                                                               "Name": "Content",
@@ -2880,11 +2880,11 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "ContentTemplate",
-                                                                                              "Value": "null"
+                                                                                              "Value": "System.Windows.DataTemplate"
                                                                                             },
                                                                                             {
                                                                                               "Name": "Padding",
-                                                                                              "Value": "1,1,1,1"
+                                                                                              "Value": "0,0,0,0"
                                                                                             },
                                                                                             {
                                                                                               "Name": "DataContext",
@@ -2925,7 +2925,7 @@
                                                                                               "Properties": [
                                                                                                 {
                                                                                                   "Name": "Padding",
-                                                                                                  "Value": "5,5,5,5"
+                                                                                                  "Value": "0,0,0,0"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "DataContext",
@@ -2933,7 +2933,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Name",
-                                                                                                  "Value": ""
+                                                                                                  "Value": "Border"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Margin",
@@ -2962,19 +2962,15 @@
                                                                                               ],
                                                                                               "Children": [
                                                                                                 {
-                                                                                                  "Name": "Path",
+                                                                                                  "Name": "StackPanel",
                                                                                                   "Properties": [
-                                                                                                    {
-                                                                                                      "Name": "Data",
-                                                                                                      "Value": "M0,0L0,6 6,0z"
-                                                                                                    },
                                                                                                     {
                                                                                                       "Name": "DataContext",
                                                                                                       "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Name",
-                                                                                                      "Value": "ExpandPath"
+                                                                                                      "Value": ""
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Margin",
@@ -3001,7 +2997,181 @@
                                                                                                       "Value": "Visible"
                                                                                                     }
                                                                                                   ],
-                                                                                                  "Children": []
+                                                                                                  "Children": [
+                                                                                                    {
+                                                                                                      "Name": "Rectangle",
+                                                                                                      "Properties": [
+                                                                                                        {
+                                                                                                          "Name": "DataContext",
+                                                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Name",
+                                                                                                          "Value": "Collapsed"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Margin",
+                                                                                                          "Value": "0,0,0,0"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "HorizontalAlignment",
+                                                                                                          "Value": "Stretch"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "VerticalAlignment",
+                                                                                                          "Value": "Stretch"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ToolTip",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ContextMenu",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Visibility",
+                                                                                                          "Value": "Visible"
+                                                                                                        }
+                                                                                                      ],
+                                                                                                      "Children": []
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "Name": "Rectangle",
+                                                                                                      "Properties": [
+                                                                                                        {
+                                                                                                          "Name": "DataContext",
+                                                                                                          "Value": "Variable x, Type: integer, Value: int [1:10] 1 2 3 4 5 6 7 8 9 10"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Name",
+                                                                                                          "Value": "Expanded"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Margin",
+                                                                                                          "Value": "0,0,0,0"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "HorizontalAlignment",
+                                                                                                          "Value": "Stretch"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "VerticalAlignment",
+                                                                                                          "Value": "Stretch"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ToolTip",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ContextMenu",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Visibility",
+                                                                                                          "Value": "Collapsed"
+                                                                                                        }
+                                                                                                      ],
+                                                                                                      "Children": []
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "Name": "ContentPresenter",
+                                                                                                      "Properties": [
+                                                                                                        {
+                                                                                                          "Name": "Content",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ContentTemplate",
+                                                                                                          "Value": "System.Windows.DataTemplate"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "DataContext",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Name",
+                                                                                                          "Value": ""
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Margin",
+                                                                                                          "Value": "1,0,0,0"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "HorizontalAlignment",
+                                                                                                          "Value": "Stretch"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "VerticalAlignment",
+                                                                                                          "Value": "Center"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ToolTip",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ContextMenu",
+                                                                                                          "Value": "null"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "Visibility",
+                                                                                                          "Value": "Visible"
+                                                                                                        }
+                                                                                                      ],
+                                                                                                      "Children": [
+                                                                                                        {
+                                                                                                          "Name": "TextBlock",
+                                                                                                          "Properties": [
+                                                                                                            {
+                                                                                                              "Name": "Text",
+                                                                                                              "Value": ""
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Padding",
+                                                                                                              "Value": "0,0,0,0"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "TextAlignment",
+                                                                                                              "Value": "Left"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "DataContext",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Name",
+                                                                                                              "Value": ""
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Margin",
+                                                                                                              "Value": "0,0,0,0"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "HorizontalAlignment",
+                                                                                                              "Value": "Stretch"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "VerticalAlignment",
+                                                                                                              "Value": "Stretch"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "ToolTip",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "ContextMenu",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Visibility",
+                                                                                                              "Value": "Visible"
+                                                                                                            }
+                                                                                                          ],
+                                                                                                          "Children": []
+                                                                                                        }
+                                                                                                      ]
+                                                                                                    }
+                                                                                                  ]
                                                                                                 }
                                                                                               ]
                                                                                             }
@@ -4347,6 +4517,48 @@
                                       ],
                                       "Children": [
                                         {
+                                          "Name": "Border",
+                                          "Properties": [
+                                            {
+                                              "Name": "Padding",
+                                              "Value": "0,0,0,0"
+                                            },
+                                            {
+                                              "Name": "DataContext",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "Name",
+                                              "Value": ""
+                                            },
+                                            {
+                                              "Name": "Margin",
+                                              "Value": "0,0,0,0"
+                                            },
+                                            {
+                                              "Name": "HorizontalAlignment",
+                                              "Value": "Stretch"
+                                            },
+                                            {
+                                              "Name": "VerticalAlignment",
+                                              "Value": "Stretch"
+                                            },
+                                            {
+                                              "Name": "ToolTip",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "ContextMenu",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "Visibility",
+                                              "Value": "Visible"
+                                            }
+                                          ],
+                                          "Children": []
+                                        },
+                                        {
                                           "Name": "RepeatButton",
                                           "Properties": [
                                             {
@@ -4408,7 +4620,7 @@
                                                 },
                                                 {
                                                   "Name": "Name",
-                                                  "Value": ""
+                                                  "Value": "border"
                                                 },
                                                 {
                                                   "Name": "Margin",
@@ -4453,7 +4665,7 @@
                                                     },
                                                     {
                                                       "Name": "Name",
-                                                      "Value": ""
+                                                      "Value": "contentPresenter"
                                                     },
                                                     {
                                                       "Name": "Margin",
@@ -4486,7 +4698,7 @@
                                                       "Properties": [
                                                         {
                                                           "Name": "Data",
-                                                          "Value": "F1M16,18.3112487792969L27.203125,29.2956237792969 27.203125,36.8424987792969 16,26.1393737792969 4.796875,36.8424987792969 4.796875,29.2956237792969 16,18.3112487792969z"
+                                                          "Value": "M0,4C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4z"
                                                         },
                                                         {
                                                           "Name": "DataContext",
@@ -4494,11 +4706,11 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
+                                                          "Value": "ArrowTop"
                                                         },
                                                         {
                                                           "Name": "Margin",
-                                                          "Value": "3,3,3,3"
+                                                          "Value": "3,4,3,3"
                                                         },
                                                         {
                                                           "Name": "HorizontalAlignment",
@@ -4591,7 +4803,7 @@
                                                 },
                                                 {
                                                   "Name": "Name",
-                                                  "Value": ""
+                                                  "Value": "border"
                                                 },
                                                 {
                                                   "Name": "Margin",
@@ -4636,7 +4848,7 @@
                                                     },
                                                     {
                                                       "Name": "Name",
-                                                      "Value": ""
+                                                      "Value": "contentPresenter"
                                                     },
                                                     {
                                                       "Name": "Margin",
@@ -4669,7 +4881,7 @@
                                                       "Properties": [
                                                         {
                                                           "Name": "Data",
-                                                          "Value": "F1M4.796875,16.1237487792969L16,26.8268737792969 27.203125,16.1237487792969 27.203125,23.6706237792969 16,34.6549987792969 4.796875,23.6706237792969 4.796875,16.1237487792969z"
+                                                          "Value": "M0,2.5C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5z"
                                                         },
                                                         {
                                                           "Name": "DataContext",
@@ -4677,11 +4889,11 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
+                                                          "Value": "ArrowBottom"
                                                         },
                                                         {
                                                           "Name": "Margin",
-                                                          "Value": "3,3,3,3"
+                                                          "Value": "3,4,3,3"
                                                         },
                                                         {
                                                           "Name": "HorizontalAlignment",

@@ -579,7 +579,7 @@
     <EmbeddedResource Include="Resources\SQLFileNode.png" />
     <EmbeddedResource Include="Resources\RdFileNode.png" />
     <EmbeddedResource Include="Resources\RDataFile.png" />
-    <Content Include="Templates\ItemTemplates\EmptyRD\document.rd">
+    <Content Include="Templates\ItemTemplates\EmptyRD\Document.Rd">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1215,7 +1215,7 @@
     </Content>
     <Content Include="SurveyNews\NoSurveyNewsFeed.html" />
     <Content Include="SurveyNews\ReadmeStyle.css" />
-    <Content Include="Templates\ProjectTemplates\EmptyProject\script.R">
+    <Content Include="Templates\ProjectTemplates\EmptyProject\Script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1224,11 +1224,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\markdown.rmd">
+    <Content Include="Templates\NewItem\Markdown.Rmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\script.R">
+    <Content Include="Templates\NewItem\Script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1240,15 +1240,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\dataset.rd">
+    <Content Include="Templates\NewItem\Dataset.Rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\document.rd">
+    <Content Include="Templates\NewItem\Document.Rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\function.rd">
+    <Content Include="Templates\NewItem\Function.rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1282,7 +1282,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\ProjectTemplates\EmptyProject\rproject.Rproj">
+    <Content Include="Templates\ProjectTemplates\EmptyProject\RProject.Rproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1292,7 +1292,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\ItemTemplates\RScript\script.R">
+    <Content Include="Templates\ItemTemplates\RScript\Script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1303,10 +1303,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\ItemTemplates\FunctionRD\function.rd">
+    <None Include="Templates\ItemTemplates\FunctionRD\Function.Rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    </None>
     <Content Include="Templates\ItemTemplates\FunctionRD\functionrd.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1314,7 +1313,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\ItemTemplates\DatasetRD\dataset.rd">
+    <Content Include="Templates\ItemTemplates\DatasetRD\Dataset.Rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1324,7 +1323,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\ItemTemplates\EmptyRMD\markdown.rmd">
+    <Content Include="Templates\ItemTemplates\EmptyRMD\Markdown.Rmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

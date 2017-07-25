@@ -30,18 +30,18 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly DirtyEventSource _availablePackagesEvent;
 
         public event EventHandler LoadedPackagesInvalidated {
-            add { _loadedPackagesEvent.Event += value; }
-            remove { _loadedPackagesEvent.Event -= value; }
+            add => _loadedPackagesEvent.Event += value;
+            remove => _loadedPackagesEvent.Event -= value;
         }
 
         public event EventHandler InstalledPackagesInvalidated {
-            add { _installedPackagesEvent.Event += value; }
-            remove { _installedPackagesEvent.Event -= value; }
+            add => _installedPackagesEvent.Event += value;
+            remove => _installedPackagesEvent.Event -= value;
         }
 
         public event EventHandler AvailablePackagesInvalidated {
-            add { _availablePackagesEvent.Event += value; }
-            remove { _availablePackagesEvent.Event -= value; }
+            add => _availablePackagesEvent.Event += value;
+            remove => _availablePackagesEvent.Event -= value;
         }
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }

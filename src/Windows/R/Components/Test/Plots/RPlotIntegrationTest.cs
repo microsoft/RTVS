@@ -726,7 +726,7 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.PreviousPlot.Should().BeDisabled();
         }
 
-        [Test(ThreadType.UI, Skip = "https://github.com/Microsoft/RTVS/issues/2939")]
+        [Test(ThreadType.UI)]
         public async Task LocatorCommand() {
             _plotDeviceVisualComponentContainerFactory.DeviceProperties = new PlotDeviceProperties(360, 360, 96);
 

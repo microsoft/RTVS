@@ -90,16 +90,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private async Task CompleteInitializationAsync() {
             await _shell.SwitchToMainThreadAsync();
-            AddToStatusBar(new ConnectionStatusBar(), _statusBarViewModel);
+            AddToStatusBar(() => new ConnectionStatusBar(), _statusBarViewModel);
             if (_hostLoadIndicatorViewModel != null) {
-                AddToStatusBar(new HostLoadIndicator(), _hostLoadIndicatorViewModel);
+                AddToStatusBar(() => new HostLoadIndicator(), _hostLoadIndicatorViewModel);
             }
         }
 
-        private void AddToStatusBar(FrameworkElement element, object dataContext) {
-            if (_disposableBag.TryAdd(_statusBar.AddItem(element))) {
-                element.DataContext = dataContext;
-            }
+        private void AddToStatusBar(Func<FrameworkElement> itemFactory, object dataContext) {
+            _disposableBag.TryAdd(_statusBar.AddItem(itemFactory, dataContext));
         }
 
         public void Dispose() {

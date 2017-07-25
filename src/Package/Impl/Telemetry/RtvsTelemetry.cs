@@ -156,7 +156,6 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 CommitOnEnter = _editorSettings.CommitOnEnter,
                                 CommitOnSpace = _editorSettings.CommitOnSpace,
                                 FormatOnPaste = _editorSettings.FormatOnPaste,
-                                SendToReplOnCtrlEnter = _editorSettings.SendToReplOnCtrlEnter,
                                 ShowCompletionOnFirstChar = _editorSettings.ShowCompletionOnFirstChar,
                                 SignatureHelpEnabled = _editorSettings.SignatureHelpEnabled,
                                 CompletionEnabled = _editorSettings.CompletionEnabled,

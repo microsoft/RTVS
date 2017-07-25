@@ -78,7 +78,9 @@ namespace Microsoft.R.Core.Formatting {
 
                 case RTokenType.Semicolon:
                     AppendToken(leadingSpace: false, trailingSpace: true);
-                    SoftLineBreak();
+                    if (_tokens.IsLineBreakAfter(_textProvider, _tokens.Position) || _options.BreakMultipleStatements) {
+                        SoftLineBreak();
+                    }
                     break;
 
                 case RTokenType.Operator:

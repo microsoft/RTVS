@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var settings = new SqlSProcPublishSettings(_storage);
             var model = await SqlPublishOptionsDialogViewModel.CreateAsync(settings, _coreShell, _pss, _pcsp);
 
-            model.TargetTypeNames.Should().HaveCount(3);
+            model.TargetTypeNames.Should().HaveCount(4);
             model.SelectedTargetTypeIndex.Should().Be(0);
 
             model.QuoteTypeNames.Should().HaveCount(3);
