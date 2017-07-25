@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.Plots;
 
 namespace Microsoft.VisualStudio.R.Package.ExportDialog {

@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Common.Wpf;
+using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.Plots;
+
 
 namespace Microsoft.VisualStudio.R.Package.ExportDialog {
 
