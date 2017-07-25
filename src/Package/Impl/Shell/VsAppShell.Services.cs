@@ -66,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(exportProvider)
                 .AddService(compositionCatalog)
                 .AddService(new VsUIServices(this))
+                .AddService(new VsPlotExportDialog(this))
                 .AddService(platformServices)
                 .AddService<IEditorSupport, VsEditorSupport>()
                 .AddService<IImageService, ImageService>()

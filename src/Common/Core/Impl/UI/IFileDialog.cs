@@ -15,7 +15,6 @@ namespace Microsoft.Common.Core.UI {
         /// <summary>
         /// Shows the browse directory dialog.
         /// </summary>
-        /// <param name="filter"></param>
         /// <param name="initialPath"></param>
         /// <param name="title"></param>
         /// <returns>Full path to the directory selected, or <c>null</c>.</returns>

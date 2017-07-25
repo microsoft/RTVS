@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -14,20 +13,13 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             : base(interactiveWorkflow, visualComponent) {
         }
 
-        public CommandStatus Status {
-            get {
-                if (HasCurrentPlot && !IsInLocatorMode) {
-                    return CommandStatus.SupportedAndEnabled;
-                }
-
-                return CommandStatus.Supported;
-            }
-        }
+        public CommandStatus Status
+            => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
-            IRPlotExportDialogs plotExportDialogs = (IRPlotExportDialogs)InteractiveWorkflow.Shell.FileDialog();
-            ExportArguments exportPdfArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
-            ExportPdfParameters exportPdfParameters = plotExportDialogs.ShowExportPdfDialog(exportPdfArguments, Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
+            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialogs>();
+            var exportPdfArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
+            var exportPdfParameters = plotExportDialogs.ShowExportPdfDialog(exportPdfArguments, Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
            
             if (!string.IsNullOrEmpty(exportPdfParameters?.FilePath)) {
                 try {
@@ -39,8 +31,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                         exportPdfParameters.WidthInInches,
                         exportPdfParameters.HeightInInches);
                     if(exportPdfParameters.ViewPlot) {
-                        var process = new ProcessServices();
-                        process.Start(exportPdfParameters.FilePath);
+                        InteractiveWorkflow.Shell.Process().Start(exportPdfParameters.FilePath);
                     }
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);

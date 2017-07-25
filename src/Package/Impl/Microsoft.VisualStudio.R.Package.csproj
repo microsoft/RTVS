@@ -152,12 +152,12 @@
     <Compile Include="ExportDialog\ExportImageDialog.xaml.cs">
       <DependentUpon>ExportImageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExportDialog\ExportImageViewModel.cs" />
     <Compile Include="ExportDialog\ExportPDFDialog.xaml.cs">
       <DependentUpon>ExportPDFDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExportDialog\PDFPaperSizeConverter.cs" />
-    <Compile Include="ExportDialog\ExportImageViewModel.cs" />
     <Compile Include="ExportDialog\ExportPdfViewModel.cs" />
+    <Compile Include="ExportDialog\PDFPaperSizeConverter.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
     <Compile Include="Commands\R\InstallRClientCommand.cs" />
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
@@ -252,6 +252,7 @@
     </Compile>
     <Compile Include="Shell\CompositionCatalog.cs" />
     <Compile Include="Shell\Services\VsApplication.cs" />
+    <Compile Include="Shell\Services\VsPlotExportDialog.cs" />
     <Compile Include="Shell\VsAppShell.Test.cs" />
     <Compile Include="Shell\VsAppShell.Lifetime.cs" />
     <Compile Include="Shell\Editor\VsEditorSupport.cs" />
@@ -1452,13 +1453,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-     <Page Include="ExportDialog\ExportImageDialog.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="ExportDialog\ExportImageDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="ExportDialog\ExportPDFDialog.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Feedback\SendMailFallbackWindow.xaml">
       <SubType>Designer</SubType>
