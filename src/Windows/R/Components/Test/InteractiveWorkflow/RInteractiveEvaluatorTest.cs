@@ -50,7 +50,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 window.Operations.ClearView();
                 var result = await eval.ExecuteCodeAsync(new string(new char[10000]) + "\r\n");
                 result.Should().Be(ExecutionResult.Failure);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 string text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.Should().Contain(string.Format(Microsoft.R.Components.Resources.InputIsTooLong, 4096));
 
@@ -61,27 +61,27 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("z" + Environment.NewLine);
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.TrimEnd().TrimEnd((char)0).Should().Be("[1] \"電話帳 全米のお\"");
 
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("Encoding(z)\n");
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.TrimEnd().Should().Be("[1] \"UTF-8\"");
 
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("x <- c(1:10)\n");
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.Should().Be(string.Empty);
 
                 window.Operations.ClearView();
                 await eval.ResetAsync(initialize: false);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.Should()
                     .Contain(Resources.rtvs_AutosavingWorkspace.Substring(0, 8))
@@ -103,34 +103,34 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 window.Operations.ClearView();
                 var result = await eval.ExecuteCodeAsync("w <- dQuote('text')" + Environment.NewLine);
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
 
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("w" + Environment.NewLine);
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 var text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.TrimEnd().Should().Be("[1] \"“text”\"");
 
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("e <- dQuote('абвг')" + Environment.NewLine);
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.Should().Be(string.Empty);
 
                 window.Operations.ClearView();
                 result = await eval.ExecuteCodeAsync("e" + Environment.NewLine);
                 result.Should().Be(ExecutionResult.Success);
-                await FlushOutputAsync(window);
+                FlushOutput(window);
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.TrimEnd().TrimEnd((char)0).Should().Be("[1] \"“абвг”\"");
             }
         }
 
-        private async Task FlushOutputAsync(IInteractiveWindow window) {
+        private void FlushOutput(IInteractiveWindow window) {
             // Give interactive window writer time to process message queue
-            await Task.Delay(400);
+            UIThreadHelper.Instance.DoEvents(400);
             window.FlushOutput();
         }
     }
