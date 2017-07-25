@@ -35,7 +35,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             snapshot.GetText().Returns("Text **bold** text");
             _browser.UpdateBrowser(snapshot);
 
-            UIThreadHelper.Instance.DoEvents();
+            UIThreadHelper.Instance.DoEvents(400);
 
             var htmlDocument = (HTMLDocument)_browser.Control.Document;
             var element = htmlDocument.getElementById("___markdown-content___");

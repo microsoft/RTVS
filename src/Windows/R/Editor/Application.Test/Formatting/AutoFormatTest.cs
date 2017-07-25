@@ -350,12 +350,12 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [CompositeTest]
         [InlineData(true,
 @"x <- function(x, y,
-                a, b,
-                c, d)")]
+             a, b,
+             c, d)")]
         [InlineData(false,
 @"x <- function(x, y,
-    a, b,
-    c, d)")]
+   a, b,
+   c, d)")]
         public async Task R_AutoFormatFuncionDefinition03(bool option, string expected) {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType)) {
                 _services.GetService<IWritableREditorSettings>().SmartIndentByArgument = option;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
@@ -12,6 +13,7 @@ using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 
@@ -280,8 +282,10 @@ namespace Microsoft.R.Editor.SmartIndent {
                         if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? currentLine.Start : currentLine.End)) {
                             // Depending on options indent a) one level deeper or b) by first argument or c) by opening brace + 1
                             if (settings.SmartIndentByArgument) {
-                                var indent = GetIndentFromArguments(fc, prevLine);
-                                fcIndentSize = IndentBuilder.GetIndentString(indent, settings.IndentType, settings.TabSize).Length;
+                                var indent = GetIndentFromArguments(fc, prevLine, settings);
+                                fcIndentSize = indent.HasValue
+                                    ? IndentBuilder.GetIndentString(indent.Value, settings.IndentType, settings.TabSize).Length
+                                    : fcIndentSize + settings.IndentSize;
                             } else {
                                 // Default indent is one level deeper
                                 fcIndentSize += settings.IndentSize;
@@ -338,18 +342,50 @@ namespace Microsoft.R.Editor.SmartIndent {
             return IndentBuilder.TextIndentInSpaces(leadingWhitespace, options.TabSize);
         }
 
-        private static int GetIndentFromArguments(IFunction fc, IEditorLine prevLine) {
+        private static int? GetIndentFromArguments(IFunction fc, IEditorLine prevLine, IREditorSettings settings) {
             // Fetch first argument on the previous line or first artument of the function
             // x < function(a,
             //              |
             // x < function(a,
             //                 b, c
             //                 |
-            var arg = fc.Arguments.FirstOrDefault(a => !(a is StubArgument) && prevLine.Contains(a.Start));
             var snapshot = prevLine.Snapshot;
-            return arg != null
-                ? arg.Start - snapshot.GetLineFromPosition(arg.Start).Start
-                : fc.OpenBrace.Start - snapshot.GetLineFromPosition(fc.OpenBrace.Start).Start + 1;
+            var offset = 0;
+
+            // If previous line contains start of the function call, format it
+            // so whitespace is correct and we can determine proper indentation
+            // based on the argument or the opening brace
+            if (prevLine.Contains(fc.Start)) {
+                var start = snapshot.GetLineFromPosition(fc.Start).Start;
+                var end = snapshot.GetLineFromPosition(fc.End).End;
+                var fcText = snapshot.GetText(TextRange.FromBounds(start, end));
+
+                // Remember current indentation since formatter will remove it
+                var currentIndent = IndentBuilder.TextIndentInSpaces(fcText, settings.TabSize);
+                var formattedLineText = new RFormatter().Format(fcText);
+                // Restore leading indent
+                formattedLineText = IndentBuilder.GetIndentString(currentIndent, settings.IndentType, settings.TabSize) + formattedLineText;
+
+                var ast = RParser.Parse(formattedLineText);
+                var newFc = ast.FindFirstElement(n => n is IFunction) as IFunction;
+                if (newFc != null) {
+                    offset = prevLine.Start;
+                }
+                fc = newFc;
+            }
+
+            if (fc != null) {
+                var arg = fc.Arguments.FirstOrDefault(a => !(a is StubArgument) && prevLine.Contains(a.Start + offset));
+
+                if (arg != null) {
+                    var argPosition = arg.Start + offset;
+                    return argPosition - snapshot.GetLineFromPosition(argPosition).Start;
+                }
+
+                var bracePosition = fc.OpenBrace.Start + offset;
+                return bracePosition - snapshot.GetLineFromPosition(bracePosition).Start + 1;
+            }
+            return null;
         }
     }
 }

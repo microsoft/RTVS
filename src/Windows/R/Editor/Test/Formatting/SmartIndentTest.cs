@@ -79,7 +79,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("func(a,\n       b\n", false, 2, 7)]
         [InlineData("x <- function(a,\n", true, 1, 14)]
         [InlineData("x <- function(a,\n", false, 1, 4)]
-        [InlineData("x <- func(\n    z = list(\n", true, 2, 13)]
+        [InlineData("x <- func(\n          z = list(\n", true, 2, 19)]
         public void Arguments(string content, bool alignByArguments, int lineNum, int expectedIndent) {
             _services.GetService<IWritableREditorSettings>().SmartIndentByArgument = alignByArguments;
 

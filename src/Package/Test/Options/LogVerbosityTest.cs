@@ -9,10 +9,12 @@ using FluentAssertions;
 using Microsoft.Common.Core.Logging;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [ExcludeFromCodeCoverage]
     [Category.R.Settings]
+    [Collection(CollectionNames.NonParallel)]   // Since they call VsAppShell and that causes composition
     public class LogVerbosityConverterTest {
         private static readonly string[] _permittedSettings = {
             Resources.LoggingLevel_None,
