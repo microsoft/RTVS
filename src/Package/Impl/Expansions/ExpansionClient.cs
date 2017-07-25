@@ -169,20 +169,25 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
                 var textBuffer = vsTextLines.ToITextBuffer(_services);
                 var range = TextRange.FromBounds(startPos, endPos);
-                // Do not format standalone operators
+
+                var point = textBuffer.CurrentSnapshot.CreateTrackingPoint(range.End, PointTrackingMode.Positive);
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
-                if (CanFormat(text)) {
-                    var formatter = new RangeFormatter(_services);
-                    formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
+
+                var formatter = new RangeFormatter(_services);
+                formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
+
+                // Do not trim whitespace after standalone operators
+                if (IsStandaloneOperator(text)) {
+                    textBuffer.Insert(point.GetPosition(textBuffer.CurrentSnapshot), " ");
                 }
             }
             return VSConstants.S_OK;
         }
 
-        private bool CanFormat(string text) {
-            var tokens = (new RTokenizer()).Tokenize(text);
-            return tokens.Count != 1 || tokens[0].TokenType != RTokenType.Operator;
-       }
+        private static bool IsStandaloneOperator(string text) {
+            var tokens = new RTokenizer().Tokenize(text);
+            return tokens.Count == 1 && tokens[0].TokenType == RTokenType.Operator;
+        }
 
         public int GetExpansionFunction(MSXML.IXMLDOMNode xmlFunctionNode, string bstrFieldName, out IVsExpansionFunction pFunc) {
             pFunc = null;
