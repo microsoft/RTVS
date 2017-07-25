@@ -292,13 +292,13 @@ namespace Microsoft.R.Components.Plots.Implementation {
         }
 
         public Task ExportToBitmapAsync(IRPlot plot, string deviceName, string outputFilePath, int pixelWidth, int pixelHeight, int resolution) =>
-            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToBitmapAsync(plot.ParentDevice.DeviceId, plot.PlotId, deviceName, outputFilePath, pixelWidth, pixelHeight, resolution));
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToBitmapAsync(plot.ParentDevice.DeviceId, plot.PlotId, deviceName, pixelWidth, pixelHeight, resolution));
 
         public Task ExportToMetafileAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight, int resolution) =>
-            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToMetafileAsync(plot.ParentDevice.DeviceId, plot.PlotId, outputFilePath, inchWidth, inchHeight, resolution));
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportPlotToMetafileAsync(plot.ParentDevice.DeviceId, plot.PlotId, inchWidth, inchHeight, resolution));
 
-        public Task ExportToPdfAsync(IRPlot plot, string outputFilePath, double inchWidth, double inchHeight) =>
-            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(plot.ParentDevice.DeviceId, plot.PlotId, outputFilePath, inchWidth, inchHeight));
+        public Task ExportToPdfAsync(IRPlot plot, string pdfDevice, string paper, string outputFilePath, double inchWidth, double inchHeight) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(plot.ParentDevice.DeviceId, plot.PlotId, pdfDevice, paper, inchWidth, inchHeight));
 
         public async Task ActivateDeviceAsync(IRPlotDevice device) {
             Debug.Assert(device != null);

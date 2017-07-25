@@ -638,8 +638,8 @@ rtvs:::export_to_image(device_id, rtvs:::graphics.ide.getactiveplotid(device_id)
 
                 string script = String.Format(@"
 device_id <- rtvs:::graphics.ide.getactivedeviceid()
-rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1})
-", width, height);
+rtvs:::export_to_pdf(device_id, rtvs:::graphics.ide.getactiveplotid(device_id), {0}, {1}, {2}, {3})
+", "pdf", width, height, ("special").ToRStringLiteral());
                 var blobid = await session.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
                 using (DataTransferSession dts = new DataTransferSession(session, new WindowsFileSystem())) {
                     await dts.FetchFileAsync(new RBlobInfo(blobid), filePath, true, null, CancellationToken.None);

@@ -181,18 +181,29 @@ grDevices::deviceIsInteractive('ide')
             var script = @"rtvs:::packages.libpaths()";
             return evaluation.EvaluateAsync<string[]>(script, REvaluationKind.Normal, cancellationToken);
         }
-        public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
+        public static Task<ulong> ExportPlotToBitmapAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string deviceName, int widthInPixels, int heightInPixels, int resolution) {
             var script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<ulong> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
+        public static Task<ulong> ExportPlotToMetafileAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, double widthInInches, double heightInInches, int resolution) {
             var script = Invariant($"rtvs:::export_to_image({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
-        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string outputFilePath, double widthInInches, double heightInInches) {
-            var script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
+        public static Task<ulong> ExportToPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string pdfDevice, string paper, double inchWidth, double inchHeight) {
+            return (pdfDevice == "cairo_pdf") ?
+                ExportToCairoPdfAsync(evaluation, deviceId, plotId, pdfDevice, inchWidth, inchHeight) :
+                ExportToDefaultPdfAsync(evaluation, deviceId, plotId, pdfDevice, paper, inchWidth, inchHeight);
+        }
+
+        private static Task<ulong> ExportToCairoPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string pdfDevice, double inchWidth, double inchHeight) {
+            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {pdfDevice}, {inchWidth}, {inchHeight})");
+            return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
+        }
+
+        private static Task<ulong> ExportToDefaultPdfAsync(this IRExpressionEvaluator evaluation, Guid deviceId, Guid plotId, string pdfDevice, string paper, double inchWidth, double inchHeight) {
+            string script = Invariant($"rtvs:::export_to_pdf({deviceId.ToString().ToRStringLiteral()}, {plotId.ToString().ToRStringLiteral()}, {pdfDevice}, {inchWidth}, {inchHeight}, {paper.ToRStringLiteral()})");
             return evaluation.EvaluateAsync<ulong>(script, REvaluationKind.Normal);
         }
 
