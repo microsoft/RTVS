@@ -242,21 +242,53 @@ namespace Microsoft.R.Editor.SmartIndent {
                 return InnerIndentSizeFromNode(editorBuffer, scope, settings.FormatOptions);
             }
 
-            return IndentByIncompleteStatement(ast, prevLine, scope, settings) ?? 0;
+            return IndentByIncompleteStatement(ast, line, prevLine, scope, settings);
         }
 
-        private static int? IndentByIncompleteStatement(AstRoot ast, IEditorLine prevLine, IAstNode scope, IREditorSettings settings) {
-            // See if previous line is incomplete statement. If it is indeed incomplete,
-            // it is not in the AST since the expression parser has failed.
+        private static int IndentByIncompleteStatement(AstRoot ast, IEditorLine currentLine, IEditorLine prevLine, IAstNode scope, IREditorSettings settings) {
+            // See if [ENTER] was hit in a middle of a statement. If it was hit in the first line of the statement,
+            // indent one level deeper. Otherwise use block indent based on the previous line indent.
+            //  x <-[ENTER]
+            //    |
+            //      1
+            //
+            //  x <-[ENTER]
+            //    |
+            //
+            //  x <-
+            //          a +[ENTER]
+            //          |
+            var snapshot = prevLine.Snapshot;
+            var statement = ast.GetNodeOfTypeFromPosition<IStatement>(prevLine.End);
+            if (statement != null) {
+                return prevLine.Contains(statement.Start)
+                        ? InnerIndentSizeFromNode(snapshot.EditorBuffer, scope, settings.FormatOptions)
+                        : GetBlockIndent(currentLine, settings);
+            }
+
+            // The statement may be incomplete and hence expression parser failed
+            // and there is no statement in the AST.
             if (ast.Errors.Any(e => prevLine.Contains(e.Start))) {
-                // Tokenize the line
-                var tokens = new RTokenizer().Tokenize(prevLine.GetText());
-                var lastTokenType = tokens.Count > 0 ? tokens[tokens.Count - 1].TokenType : RTokenType.Unknown;
-                if (lastTokenType == RTokenType.Operator || lastTokenType == RTokenType.Comma) {
-                    return InnerIndentSizeFromNode(prevLine.Snapshot.EditorBuffer, scope, settings.FormatOptions);
+                if (LineHasContinuation(prevLine)) {
+                    // We need to determine if last line was the first in the statement
+                    // or is it itself a continuation.
+                    if (prevLine.LineNumber > 0) {
+                        var prevPrevLine = snapshot.GetLineFromLineNumber(prevLine.LineNumber);
+                        if(LineHasContinuation(prevPrevLine)) {
+                            return GetBlockIndent(currentLine, settings);
+                        }
+                    }
+                    return InnerIndentSizeFromNode(snapshot.EditorBuffer, scope, settings.FormatOptions);
                 }
             }
-            return null;
+            return 0;
+        }
+
+        private static bool LineHasContinuation(IEditorLine line) {
+            var tokenizer = new RTokenizer();
+            var tokens = tokenizer.Tokenize(line.GetText());
+            var lastTokenType = tokens.Count > 0 ? tokens[tokens.Count - 1].TokenType : RTokenType.Unknown;
+            return lastTokenType == RTokenType.Operator || lastTokenType == RTokenType.Comma;
         }
 
         private static int? IndentFromFunctionCall(IFunction fc, IEditorLine prevLine, IEditorLine currentLine, IREditorSettings settings, bool formatting, int originalIndentSizeInSpaces) {
