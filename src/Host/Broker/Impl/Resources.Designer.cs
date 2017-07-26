@@ -134,6 +134,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Client disconnected from R session due to error: {0}.
+        /// </summary>
+        internal static string Error_ClientToHostConnectionFailed {
+            get {
+                return ResourceManager.GetString("Error_ClientToHostConnectionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Config file load failed: {0}.
         /// </summary>
         internal static string Error_ConfigLoadFailed {
@@ -175,6 +184,24 @@ namespace Microsoft.R.Host.Broker {
         internal static string Error_FailedRInstallationData {
             get {
                 return ResourceManager.GetString("Error_FailedRInstallationData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client failed to disconnect gracefully: {0}.
+        /// </summary>
+        internal static string Error_GracefulDisconnectFailed {
+            get {
+                return ResourceManager.GetString("Error_GracefulDisconnectFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R session disconnected from client due to error: {0}.
+        /// </summary>
+        internal static string Error_HostToClientConnectionFailed {
+            get {
+                return ResourceManager.GetString("Error_HostToClientConnectionFailed", resourceCulture);
             }
         }
         
