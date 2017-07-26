@@ -13,6 +13,6 @@
     <SortOrder>4</SortOrder>
   </TemplateData>
   <TemplateContent>
-    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">dataset.rd</ProjectItem>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">Dataset.Rd</ProjectItem>
   </TemplateContent>
 </VSTemplate>
