@@ -207,4 +207,13 @@
   <data name="Trace_ServerUrlsToPipeDone" xml:space="preserve">
     <value>Wrote 'urls' to pipe '{0}'</value>
   </data>
+  <data name="Error_GracefulDisconnectFailed" xml:space="preserve">
+    <value>Client failed to disconnect gracefully: {0}</value>
+  </data>
+  <data name="Error_ClientToHostConnectionFailed" xml:space="preserve">
+    <value>Client disconnected from R session due to error: {0}</value>
+  </data>
+  <data name="Error_HostToClientConnectionFailed" xml:space="preserve">
+    <value>R session disconnected from client due to error: {0}</value>
+  </data>
 </root>
