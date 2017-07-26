@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Validation {
         /// <summary>
         /// Called by validation manager when validation session is about to begin.
         /// </summary>
-        void OnBeginValidation(IREditorSettings settings, bool projectedBuffer);
+        void OnBeginValidation(IREditorSettings settings, bool projectedBuffer, bool linterEnabled);
 
         /// <summary>
         /// Called by validation manager/aggregator when validation session is completed.
