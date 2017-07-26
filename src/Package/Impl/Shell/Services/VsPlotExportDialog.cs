@@ -7,7 +7,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.VisualStudio.R.Package.ExportDialog;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    internal class VsPlotExportDialog : IRPlotExportDialogs {
+    internal class VsPlotExportDialog : IRPlotExportDialog {
         private readonly ICoreShell _shell;
 
         public VsPlotExportDialog(ICoreShell shell) {

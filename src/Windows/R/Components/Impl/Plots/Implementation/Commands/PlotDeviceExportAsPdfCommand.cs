@@ -17,7 +17,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
-            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialogs>();
+            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialog>();
             var exportPdfArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
             var exportPdfParameters = plotExportDialogs.ShowExportPdfDialog(exportPdfArguments, Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
            
