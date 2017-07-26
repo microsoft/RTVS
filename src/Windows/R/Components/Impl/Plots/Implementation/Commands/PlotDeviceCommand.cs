@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -15,16 +14,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             VisualComponent = visualComponent;
         }
 
-        protected bool IsInLocatorMode {
-            get {
-                return VisualComponent.Device?.LocatorMode ?? false;
-            }
-        }
-
-        protected bool HasCurrentPlot {
-            get {
-                return VisualComponent.HasPlot;
-            }
-        }
+        protected bool IsInLocatorMode => VisualComponent.Device?.LocatorMode ?? false;
+        protected bool HasCurrentPlot => VisualComponent.HasPlot;
     }
 }

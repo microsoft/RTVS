@@ -193,7 +193,6 @@ namespace Microsoft.R.Components.Test.Plots {
 
         [Test(ThreadType.UI)]
         public async Task DeviceResize() {
-            var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
             var plot1to10larger = await GetExpectedImageAsync("bmp", 650, 550, 96, "plot1-10larger", "plot(1:10)");
 
             await InitializeGraphicsDevice();
@@ -221,7 +220,7 @@ namespace Microsoft.R.Components.Test.Plots {
             // Resizing device 1 should not have changed the active device
             _plotManager.ActiveDevice.Should().Be(device2);
 
-            var bs = _plotManager.ActiveDevice.ActivePlot.Image as BitmapSource;
+            var bs = device1VC.ActivePlot.Image as BitmapSource;
             bs.Should().HaveSamePixels(plot1to10larger);
         }
 
