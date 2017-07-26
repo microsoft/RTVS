@@ -20,13 +20,13 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         private readonly Task _sessionStart;
 
         public EvalSession(string documentName, IServiceContainer services) {
-            _services = services;
-            _sessionId = Invariant($"{documentName} - {Guid.NewGuid()}");
-            _sessionStart = StartSessionAsync(_hostStartCts.Token);
-
             SessionCallback = new RSessionCallback {
                 PlotDeviceProperties = new PlotDeviceProperties(800, 600, 96)
             };
+
+            _services = services;
+            _sessionId = Invariant($"{documentName} - {Guid.NewGuid()}");
+            _sessionStart = StartSessionAsync(_hostStartCts.Token);
         }
 
         public IRSession RSession { get; private set; }
