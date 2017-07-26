@@ -82,7 +82,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
             prop?.SetValue(_options, true);
 
             var ast = RParser.Parse(content);
-            await _validator.RunAsync(ast, false, _results, CancellationToken.None);
+            await _validator.RunAsync(ast, false, true, _results, CancellationToken.None);
             _results.Should().HaveCount(length > 0 ? 1 : 0);
 
             if (length > 0) {
@@ -96,7 +96,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
             if (prop != null) {
                 prop.SetValue(_options, false);
                 var r = new ConcurrentQueue<IValidationError>();
-                await _validator.RunAsync(ast, false, r, CancellationToken.None);
+                await _validator.RunAsync(ast, false, true, r, CancellationToken.None);
                 r.Should().BeEmpty();
             }
         }
@@ -109,7 +109,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
         public async Task Validate2(string content, int[] start, int[] length, string[] message) {
 
             var ast = RParser.Parse(content);
-            await _validator.RunAsync(ast, false, _results, CancellationToken.None);
+            await _validator.RunAsync(ast, false, true, _results, CancellationToken.None);
             _results.Should().HaveCount(start.Length);
 
             for (var i = 0; i < start.Length; i++) {
@@ -133,7 +133,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
             propLimit?.SetValue(_options, maxLength);
 
             var ast = RParser.Parse(content);
-            await _validator.RunAsync(ast, false, _results, CancellationToken.None);
+            await _validator.RunAsync(ast, false, true, _results, CancellationToken.None);
             _results.Should().HaveCount(1);
 
             _results.TryPeek(out IValidationError e);
@@ -146,7 +146,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
             if (prop != null) {
                 prop.SetValue(_options, false);
                 var r = new ConcurrentQueue<IValidationError>();
-                await _validator.RunAsync(ast, false, r, CancellationToken.None);
+                await _validator.RunAsync(ast, false, true, r, CancellationToken.None);
                 r.Should().BeEmpty();
             }
         }
@@ -163,7 +163,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
             prop?.SetValue(_options, true);
 
             var ast = RParser.Parse(content);
-            await _validator.RunAsync(ast, true, _results, CancellationToken.None);
+            await _validator.RunAsync(ast, true, true, _results, CancellationToken.None);
             _results.Should().BeEmpty();
         }
     }
