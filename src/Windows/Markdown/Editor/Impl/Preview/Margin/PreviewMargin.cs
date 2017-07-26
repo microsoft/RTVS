@@ -94,11 +94,17 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
 
         private void UpdateOnIdle() {
             IdleTimeAction.Cancel(_idleActionTag);
-            IdleTimeAction.Create(Update, 0, _idleActionTag, _idleTime);
+            IdleTimeAction.Create(() => Update(force: true), 0, _idleActionTag, _idleTime);
         }
 
         #region IMarkdownPreview
-        public void Update() => UpdateBrowser();
+
+        public void Update(bool force) {
+            if (_textChanged || force) {
+                UpdateBrowser();
+            }
+        }
+
         public Task RunCurrentChunkAsync() {
             var index = _textView.GetCurrentRCodeBlockNumber();
             return index.HasValue ? Browser.UpdateBlocksAsync(_textView.TextBuffer.CurrentSnapshot, index.Value, 1) : Task.CompletedTask;
@@ -118,7 +124,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
                     .ContinueWith(t => _browserUpdateTask = null);
             } else {
                 // Still running, try again later
-                IdleTimeAction.Create(Update, 500, _idleActionTag, _idleTime);
+                IdleTimeAction.Create(() => Update(true), 500, _idleActionTag, _idleTime);
             }
         }
 
