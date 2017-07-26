@@ -522,8 +522,8 @@ namespace Microsoft.R.Components.Test.Plots {
                 _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
                 var image = BitmapImageFactory.Load(outputFilePath);
-                image.PixelWidth.Should().Be(600);
-                image.PixelHeight.Should().Be(500);
+                image.PixelWidth.Should().Be(640);
+                image.PixelHeight.Should().Be(480);
                 ((int)Math.Round(image.DpiX)).Should().Be(96);
                 ((int)Math.Round(image.DpiY)).Should().Be(96);
             }
