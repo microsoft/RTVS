@@ -13,12 +13,17 @@ namespace Microsoft.R.Containers {
         public ContainerCreateParameters(string image, string tag) {
             Image = image;
             Tag = tag;
+            StartOptions = string.Empty;
+            ImageSourceCredentials = null;
+            Command = string.Empty;
         }
 
         public ContainerCreateParameters(string image, string tag, string startOptions) {
             Image = image;
             Tag = tag;
             StartOptions = startOptions;
+            ImageSourceCredentials = null;
+            Command = string.Empty;
         }
 
         public ContainerCreateParameters(string image, string tag, string startOptions, string command) {
@@ -26,6 +31,7 @@ namespace Microsoft.R.Containers {
             Tag = tag;
             StartOptions = startOptions;
             Command = command;
+            ImageSourceCredentials = null;
         }
 
         public ContainerCreateParameters(string image, string tag, string startOptions, RepositoryCredentials imageSourceCreadentials, string command) {
