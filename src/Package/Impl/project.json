@@ -1,7 +1,6 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "System.Threading.Tasks.Dataflow": "4.5.24",
     "Microsoft.Build": "15.3.0-preview-000117-01",
     "Microsoft.Data.ConnectionUI": "15.0.26201",
     "Microsoft.VisualStudio.ComponentModelHost": "15.0.26201",
@@ -9,6 +8,10 @@
     "Microsoft.VisualStudio.Debugger.Interop.14.0": "15.0.25726-Preview5",
     "Microsoft.VisualStudio.ImageCatalog": "15.0.26201",
     "Microsoft.VisualStudio.Imaging": "15.0.26201",
+    "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": {
+      "version": "15.0.25726-Preview5",
+      "embedInteropTypes": "true"
+    },
     "Microsoft.VisualStudio.InteractiveWindow": {
       "version": "2.0.0-rc3-61319-01",
       "embedInteropTypes": "true"
@@ -35,11 +38,9 @@
     "System.IO.Compression": "4.3.0",
     "System.IO.Compression.ZipFile": "4.3.0",
     "System.Net.Http.WinHttpHandler": "4.3.0",
-    "VSSDK.DTE.8": "8.0.4",
-    "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": {
-      "version": "15.0.25726-Preview5",
-      "embedInteropTypes": "true"
-    }
+    "System.Threading.Tasks.Dataflow": "4.5.24",
+    "System.ValueTuple": "4.3.0",
+    "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {
     "net46": {}

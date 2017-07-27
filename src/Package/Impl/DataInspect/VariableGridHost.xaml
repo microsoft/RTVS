@@ -15,6 +15,10 @@
                           GridLinesBrush="{DynamicResource {x:Static rwpf:Brushes.GridLineBrushKey}}"
                           HeaderLinesBrush="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
                           GridBackground="{DynamicResource {x:Static rwpf:Brushes.TreeViewBackgroundBrushKey}}"
-                          HeaderBackground="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsDefaultBrushKey}}"/>
+                          HeaderBackground="{DynamicResource {x:Static rwpf:Brushes.HeaderColorsDefaultBrushKey}}"
+                          HeaderFontFamily="{DynamicResource {x:Static rwpf:FontKeys.CaptionFontFamilyKey}}"
+                          HeaderFontSize="{DynamicResource {x:Static rwpf:FontKeys.CaptionFontSizeKey}}"
+                          FontFamily="{DynamicResource {x:Static rwpf:FontKeys.EnvironmentFontFamilyKey}}"
+                          FontSize="{DynamicResource {x:Static rwpf:FontKeys.EnvironmentFontSizeKey}}"/>
     </Grid>
 </UserControl>

@@ -36,12 +36,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// on fields changes sorting for the actual data grid.
         /// </summary>
         public bool Header {
-            get { return (bool)GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => (bool)GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
-        public static readonly DependencyProperty HeaderProperty =
-            DependencyProperty.Register("Header", typeof(bool), typeof(VisualGrid), new PropertyMetadata(false));
+        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(nameof(Header), typeof(bool), typeof(VisualGrid), new PropertyMetadata(false));
 
         /// <summary>
         /// Fires when sorting order changes
@@ -54,29 +53,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public static readonly DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(typeof(VisualGrid),
                                                         new FrameworkPropertyMetadata(new FontFamily("Segoe UI"), FrameworkPropertyMetadataOptions.Inherits,
-                                                        new PropertyChangedCallback(OnTypefaceParametersChanged)));
+                                                        OnTypefaceParametersChanged));
         [Localizability(LocalizationCategory.Font)]
         public FontFamily FontFamily {
-            get { return (FontFamily)GetValue(FontFamilyProperty); }
-            set { SetValue(FontFamilyProperty, value); }
+            get => (FontFamily)GetValue(FontFamilyProperty);
+            set => SetValue(FontFamilyProperty, value);
         }
 
         public static readonly DependencyProperty FontSizeProperty = TextElement.FontSizeProperty.AddOwner(typeof(VisualGrid),
                                                        new FrameworkPropertyMetadata(12.0, FrameworkPropertyMetadataOptions.Inherits,
-                                                       new PropertyChangedCallback(OnTypefaceParametersChanged)));
+                                                       OnTypefaceParametersChanged));
         [TypeConverter(typeof(FontSizeConverter))]
         public double FontSize {
-            get { return (double)GetValue(FontSizeProperty); }
-            set { SetValue(FontSizeProperty, value); }
+            get => (double)GetValue(FontSizeProperty);
+            set => SetValue(FontSizeProperty, value);
         }
 
         public static readonly DependencyProperty FontWeightProperty = TextElement.FontWeightProperty.AddOwner(typeof(VisualGrid),
                                                        new FrameworkPropertyMetadata(FontWeights.Normal, FrameworkPropertyMetadataOptions.Inherits,
-                                                       new PropertyChangedCallback(OnTypefaceParametersChanged)));
+                                                       OnTypefaceParametersChanged));
         [TypeConverter(typeof(FontWeightConverter))]
         public FontWeight FontWeight {
-            get { return (FontWeight)GetValue(FontWeightProperty); }
-            set { SetValue(FontWeightProperty, value); }
+            get => (FontWeight)GetValue(FontWeightProperty);
+            set => SetValue(FontWeightProperty, value);
         }
 
         private static void OnTypefaceParametersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((VisualGrid)d)._typeFace = null;

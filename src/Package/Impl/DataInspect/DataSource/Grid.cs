@@ -34,12 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public T this[long rowIndex, long columnIndex] {
-            get {
-                return _list[ListIndex(rowIndex, columnIndex)];
-            }
-            set {
-                _list[ListIndex(rowIndex, columnIndex)] = value;
-            }
+            get => _list[ListIndex(rowIndex, columnIndex)];
+            set => _list[ListIndex(rowIndex, columnIndex)] = value;
         }
 
         public GridRange Range { get; }

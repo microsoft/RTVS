@@ -125,14 +125,19 @@
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerProvider.cs" />
     <Compile Include="DataInspect\Viewers\ViewerBase.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixView.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewAutomationPeer.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewAutomationPeerScrollProvider.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewCellAutomationPeer.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewCellFocus.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewHeaderAutomationPeer.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewHeaderFocus.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewItemAutomationPeer.cs" />
     <Compile Include="DataInspect\VisualGrid\SortOrderType.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
     <Compile Include="DataInspect\VisualGrid\IPoints.cs" />
-    <Compile Include="DataInspect\VisualGrid\MatrixView.xaml.cs">
-      <DependentUpon>MatrixView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollDirection.cs" />
@@ -1086,6 +1091,8 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
@@ -1456,10 +1463,6 @@
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DataInspect\VisualGrid\MatrixView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="ExportDialog\ExportImageDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

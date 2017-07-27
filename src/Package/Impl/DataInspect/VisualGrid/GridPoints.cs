@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -53,26 +54,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public event EventHandler<PointChangedEventArgs> PointChanged;
 
         private ScrollDirection _scrolledDirection = ScrollDirection.None;
-        private void OnPointChanged() {
-            if (_scrolledDirection != ScrollDirection.None
-                && PointChanged != null) {
 
+        private void OnPointChanged() {
+            var handler = PointChanged;
+
+            if (_scrolledDirection != ScrollDirection.None && handler != null) {
                 if (_scrolledDirection.HasFlag(ScrollDirection.Horizontal)) {
                     EnsureXPositions();
                 }
+
                 if (_scrolledDirection.HasFlag(ScrollDirection.Vertical)) {
                     EnsureYPositions();
                 }
 
-                PointChanged(this, new PointChangedEventArgs(_scrolledDirection));
+                handler(this, new PointChangedEventArgs(_scrolledDirection));
             }
 
             _scrolledDirection = ScrollDirection.None;
         }
 
-        public DeferNotification DeferChangeNotification(bool suppressNotification) {
-            return new DeferNotification(this, suppressNotification);
-        }
+        public IDisposable DeferChangeNotification(bool suppressNotification) 
+            => suppressNotification ? Disposable.Empty : Disposable.Create(OnPointChanged);
 
         public static double MinItemWidth => 40.0;
         public static double MinItemHeight => 10.0;
@@ -191,6 +193,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return new PointAccessor(this, scrollDirection);
         }
 
+        public Rect GetBounds(long rowIndex, long columnIndex) 
+            => new Rect(xPosition(columnIndex), yPosition(rowIndex), GetWidth(columnIndex), GetHeight(rowIndex));
+
         public double xPosition(long xIndex) {
             EnsureXPositions();
             return _xPositions[xIndex] - HorizontalComputedOffset;
@@ -249,7 +254,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public long xIndex(double position) {
+        public long GetColumn(double position) {
             EnsureXPositions();
             long index = Index(position, _xPositions);
 
@@ -257,7 +262,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return Math.Min(index, _columnCount - 1);
         }
 
-        public long yIndex(double position) {
+        public long GetRow(double position) {
             EnsureYPositions();
             long index = Index(position, _yPositions);
 
@@ -286,8 +291,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public GridRange ComputeDataViewport(Rect visualViewport) {
-            long columnStart = Math.Max(0, xIndex(visualViewport.X));
-            long rowStart = Math.Max(0, yIndex(visualViewport.Y));
+            long columnStart = Math.Max(0, GetColumn(visualViewport.X));
+            long rowStart = Math.Max(0, GetRow(visualViewport.Y));
 
             Debug.Assert(HorizontalComputedOffset >= _xPositions[columnStart]);
             Debug.Assert(VerticalComputedOffset >= _yPositions[rowStart]);
@@ -376,24 +381,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #endregion
 
         #region internal utility class
-
-        public class DeferNotification : IDisposable {
-            private GridPoints _gridPoints;
-            private bool _suppressNotification;
-
-            public DeferNotification(GridPoints gridPoints, bool suppressNotification) {
-                _gridPoints = gridPoints;
-                _suppressNotification = suppressNotification;
-            }
-
-            public void Dispose() {
-                if (!_suppressNotification && _gridPoints != null) {
-                    _gridPoints.OnPointChanged();
-
-                    _gridPoints = null;
-                }
-            }
-        }
 
         class PointAccessor : IPoints {
             public PointAccessor(GridPoints points, ScrollDirection scrollDirection) {
