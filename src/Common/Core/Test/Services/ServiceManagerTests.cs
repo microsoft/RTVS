@@ -44,7 +44,7 @@ namespace Microsoft.Common.Core.Test.Services {
         [Test]
         public void DoubleAdd() {
             _serviceManager.AddService<I1>(new C1());
-            
+
             Action a = () => _serviceManager.AddService<I1>(new C1());
             a.ShouldThrow<InvalidOperationException>();
         }
@@ -56,9 +56,62 @@ namespace Microsoft.Common.Core.Test.Services {
             _serviceManager.RemoveService(s);
             _serviceManager.GetService<I1>().Should().BeNull();
 
-            _serviceManager.AddService(s as I1);
+            _serviceManager.AddService((I1) s);
             _serviceManager.RemoveService<I1>();
             _serviceManager.GetService<I1>().Should().BeNull();
+        }
+
+        [Test]
+        public void AddRemoveDerived() {
+            var d = new Derived(_serviceManager);
+            _serviceManager.GetService<Derived>().Should().NotBeNull();
+            _serviceManager.GetService<Base>().Should().NotBeNull();
+            _serviceManager.GetService<I1>().Should().NotBeNull();
+            _serviceManager.GetService<I2>().Should().NotBeNull();
+
+            d.Dispose();
+            _serviceManager.GetService<Derived>().Should().BeNull();
+            _serviceManager.GetService<Base>().Should().BeNull();
+            _serviceManager.GetService<I1>().Should().BeNull();
+            _serviceManager.GetService<I2>().Should().BeNull();
+        }
+
+        [Test]
+        public void AddRemoveLazy01() {
+            _serviceManager.AddService<I2, Derived>();
+            _serviceManager.GetService<Derived>().Should().NotBeNull();
+            _serviceManager.GetService<I2>().Should().NotBeNull();
+            _serviceManager.GetService<Base>().Should().NotBeNull();
+            _serviceManager.GetService<I1>().Should().NotBeNull();
+
+            _serviceManager.RemoveService<I1>();
+
+            _serviceManager.GetService<Derived>().Should().BeNull();
+            _serviceManager.GetService<Base>().Should().BeNull();
+            _serviceManager.GetService<I1>().Should().BeNull();
+            _serviceManager.GetService<I2>().Should().BeNull();
+        }
+
+        [Test]
+        public void AddRemoveLazy02() {
+            _serviceManager.AddService<I2, Derived>();
+            _serviceManager.RemoveService<Base>();
+
+            _serviceManager.GetService<Derived>().Should().BeNull();
+            _serviceManager.GetService<Base>().Should().BeNull();
+            _serviceManager.GetService<I1>().Should().BeNull();
+            _serviceManager.GetService<I2>().Should().BeNull();
+        }
+
+        [Test]
+        public void AddRemoveLazy03() {
+            _serviceManager.AddService<I2, Derived>();
+            _serviceManager.RemoveService<Derived>();
+
+            _serviceManager.GetService<Derived>().Should().BeNull();
+            _serviceManager.GetService<Base>().Should().BeNull();
+            _serviceManager.GetService<I1>().Should().BeNull();
+            _serviceManager.GetService<I2>().Should().BeNull();
         }
 
         [Test]
@@ -92,10 +145,26 @@ namespace Microsoft.Common.Core.Test.Services {
             a.ShouldNotThrow<ObjectDisposedException>();
         }
 
-        private interface I1 {}
-        private interface I2 {}
+        private interface I1 { }
+        private interface I2 { }
 
-        private class C1 : I1 {}
-        private class C2 : I2 {}
+        private class C1 : I1 { }
+        private class C2 : I2 { }
+
+        private class Base : I1, IDisposable {
+            private readonly IServiceManager _sm;
+            protected Base(): this(null) { }
+
+            protected Base(IServiceManager sm) {
+                _sm = sm;
+                _sm?.AddService(this);
+            }
+            public void Dispose() {
+                _sm?.RemoveService(this);
+            }
+        }
+        private class Derived : Base, I2 {
+            public Derived(IServiceManager sm) : base(sm) { }
+        }
     }
 }

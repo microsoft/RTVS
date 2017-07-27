@@ -28,7 +28,7 @@ namespace Microsoft.Common.Core.Services {
         public virtual IServiceManager AddService<T>(T service, Type type = null) where T : class {
             _disposeToken.ThrowIfDisposed();
 
-            type = type ?? typeof(T);
+            type = type ?? service.GetType();
             Check.ArgumentNull(nameof(service), service);
             Check.InvalidOperation(() => _s.TryAdd(type, service), $"Service of type {type} already exists");
 
@@ -71,7 +71,19 @@ namespace Microsoft.Common.Core.Services {
 
         public virtual void RemoveService(object service) => _s.TryRemove(service.GetType(), out object dummy);
 
-        public virtual void RemoveService<T>() => _s.TryRemove(typeof(T), out object dummy);
+        public virtual void RemoveService<T>() {
+            var type = typeof(T);
+            if (!_s.TryRemove(type, out object dummy)) {
+                var implementor = _s.FirstOrDefault(kvp => type.GetTypeInfo().IsAssignableFrom(kvp.Key));
+                if (implementor.Key != null && _s.TryRemove(implementor.Key, out dummy)) {
+                    return;
+                }
+                var lazy = _s.FirstOrDefault(kvp => kvp.Value is Lazy<T>);
+                if (lazy.Key != null) {
+                    _s.TryRemove(lazy.Key, out dummy);
+                }
+            }
+        }
 
         public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
 
