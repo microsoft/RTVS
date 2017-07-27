@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             serviceManager
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
-                .AddWindowsRComponentstServices()
+                .AddWindowsRComponentsServices()
                 .AddEditorServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService(new EditorSupportMock())

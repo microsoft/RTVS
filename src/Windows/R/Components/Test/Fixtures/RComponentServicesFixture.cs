@@ -36,7 +36,7 @@ namespace Microsoft.R.Components.Test.Fixtures {
             serviceManager
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
-                .AddWindowsRComponentstServices()
+                .AddWindowsRComponentsServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRPlotExportDialog, TestPlotExportDialog>()
                 .AddService<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
