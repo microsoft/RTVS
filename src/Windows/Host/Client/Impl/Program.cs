@@ -179,7 +179,7 @@ namespace Microsoft.R.Host.Client {
             public CoreShell(string programName) {
                 _serviceManager = new ServiceManager()
                     .AddService(new MaxLoggingPermissions())
-                    .AddService(s => new Logger(programName, Path.GetTempPath(), s));
+                    .AddService(new Logger(programName, Path.GetTempPath(), _serviceManager));
             }
 
             public IServiceContainer Services => _serviceManager;

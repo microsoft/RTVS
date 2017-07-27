@@ -17,11 +17,8 @@ namespace Microsoft.R.Editor.Functions {
     public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
         private readonly IIntellisenseRSession _host;
 
-        public static IFunctionRdDataProvider CreateService(IServiceContainer services)
-            => new FunctionRdDataProvider(services.GetService<IIntellisenseRSession>());
-
-        public FunctionRdDataProvider(IIntellisenseRSession host) {
-            _host = host;
+        public FunctionRdDataProvider(IServiceContainer services) {
+            _host = services.GetService<IIntellisenseRSession>();
         }
 
         /// <summary>

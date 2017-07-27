@@ -40,11 +40,8 @@ namespace Microsoft.R.Editor.Functions {
         public static IEnumerable<string> PreloadedPackages { get; } = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
-        public static IPackageIndex CreateService(IServiceContainer services) {
-            var intellisenseSession = services.GetService<IIntellisenseRSession>();
-            var functionIndex = services.GetService<IFunctionIndex>();
-            return new PackageIndex(services, intellisenseSession, functionIndex);
-        }
+        public PackageIndex(IServiceContainer services) : this(
+            services, services.GetService<IIntellisenseRSession>(), services.GetService<IFunctionIndex>()) { }
 
         public PackageIndex(IServiceContainer services, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _host = host;
