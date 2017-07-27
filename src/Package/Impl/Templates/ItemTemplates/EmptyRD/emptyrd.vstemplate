@@ -13,6 +13,6 @@
     <SortOrder>2</SortOrder>
   </TemplateData>
   <TemplateContent>
-    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">document.rd</ProjectItem>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">Document.Rd</ProjectItem>
   </TemplateContent>
 </VSTemplate>

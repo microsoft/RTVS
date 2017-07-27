@@ -4,10 +4,12 @@
 using System.Collections.Generic;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.StubFactories;
+using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
@@ -36,6 +38,7 @@ namespace Microsoft.R.Components.Test.Fixtures {
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentstServices()
                 .AddService<IStatusBar, TestStatusBar>()
+                .AddService<IRPlotExportDialog, TestPlotExportDialog>()
                 .AddService<IRSettings>(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
         }
     }

@@ -13,6 +13,6 @@
     <SortOrder>0</SortOrder>
   </TemplateData>
   <TemplateContent>
-    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">script.R</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">Script.R</ProjectItem>
   </TemplateContent>
 </VSTemplate>

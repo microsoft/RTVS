@@ -42,10 +42,10 @@ namespace Microsoft.R.Editor.Validation {
         /// Launches AST and file validation / syntax check.
         /// The process runs asyncronously.
         /// </summary>
-        public Task RunAsync(AstRoot ast, bool projectedBuffer, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
+        public Task RunAsync(AstRoot ast, bool projectedBuffer, bool linterEnabled, ConcurrentQueue<IValidationError> results, CancellationToken ct) {
             _tcs = new TaskCompletionSource<bool>();
             try {
-                BeginValidation(_settings, projectedBuffer);
+                BeginValidation(_settings, projectedBuffer, linterEnabled);
                 _validationTask = Task.Run(() => {
                     var outcome = Validate(ast, ct);
                     foreach (var o in outcome) {
@@ -87,9 +87,9 @@ namespace Microsoft.R.Editor.Validation {
         }
         #endregion
 
-        private void BeginValidation(IREditorSettings settings, bool projectedBuffer) {
+        private void BeginValidation(IREditorSettings settings, bool projectedBuffer, bool linterEnabled) {
             foreach (var v in _validators) {
-                v.OnBeginValidation(settings, projectedBuffer);
+                v.OnBeginValidation(settings, projectedBuffer, linterEnabled);
             }
         }
 

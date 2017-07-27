@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled:CommandStatus.Supported;
 
         public async Task InvokeAsync() {
-            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialogs>();
+            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialog>();
             var exportImageArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
             var exportImageParameters = plotExportDialogs.ShowExportImageDialog(exportImageArguments, Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
             if (!string.IsNullOrEmpty(exportImageParameters?.FilePath)) {

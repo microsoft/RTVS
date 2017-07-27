@@ -17,8 +17,8 @@ using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Commands;
-using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.Fakes.VisualComponentFactories;
+using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -63,7 +63,7 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestFileDialog FileDialog => _workflow.Shell.FileDialog() as TestFileDialog;
+        private TestPlotExportDialog ExportDialog => _workflow.Shell.GetService<IRPlotExportDialog>() as TestPlotExportDialog;
 
         [Test(ThreadType.UI)]
         public async Task AllCommandsDisabledWhenNoPlot() {
@@ -489,7 +489,7 @@ namespace Microsoft.R.Components.Test.Plots {
             });
 
             var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot.pdf");
-            FileDialog.SaveFilePath = outputFilePath;
+            ExportDialog.SaveFilePath = outputFilePath;
 
             var deviceVC = _plotManager.GetPlotVisualComponent(_plotManager.ActiveDevice);
             var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
@@ -510,7 +510,7 @@ namespace Microsoft.R.Components.Test.Plots {
 
             foreach (var ext in new string[] { "bmp", "jpg", "jpeg", "png", "tif", "tiff" }) {
                 var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot." + ext);
-                FileDialog.SaveFilePath = outputFilePath;
+                ExportDialog.SaveFilePath = outputFilePath;
 
                 var deviceVC = _plotManager.GetPlotVisualComponent(_plotManager.ActiveDevice);
                 var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
@@ -522,8 +522,8 @@ namespace Microsoft.R.Components.Test.Plots {
                 _ui.LastShownErrorMessage.Should().BeNullOrEmpty();
 
                 var image = BitmapImageFactory.Load(outputFilePath);
-                image.PixelWidth.Should().Be(600);
-                image.PixelHeight.Should().Be(500);
+                image.PixelWidth.Should().Be(640);
+                image.PixelHeight.Should().Be(480);
                 ((int)Math.Round(image.DpiX)).Should().Be(96);
                 ((int)Math.Round(image.DpiY)).Should().Be(96);
             }
@@ -540,7 +540,7 @@ namespace Microsoft.R.Components.Test.Plots {
             // dialog is what determines the image format. When it's an
             // unsupported format, we show an error msg.
             var outputFilePath = _testFiles.GetDestinationPath("ExportedPlot.unsupportedextension");
-            FileDialog.SaveFilePath = outputFilePath;
+            ExportDialog.SaveFilePath = outputFilePath;
 
             var deviceVC = _plotManager.GetPlotVisualComponent(_plotManager.ActiveDevice);
             var deviceCommands = new RPlotDeviceCommands(_workflow, deviceVC);
@@ -548,7 +548,7 @@ namespace Microsoft.R.Components.Test.Plots {
             deviceCommands.ExportAsImage.Should().BeEnabled();
             await deviceCommands.ExportAsImage.InvokeAsync();
 
-            File.Exists(FileDialog.SaveFilePath).Should().BeFalse();
+            File.Exists(ExportDialog.SaveFilePath).Should().BeFalse();
             _ui.LastShownErrorMessage.Should().Contain(".unsupportedextension");
         }
 

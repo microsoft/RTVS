@@ -53,7 +53,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 await ExecuteAndCaptureOutputAsync(session, block.Text, ct);
 
                 if (callback.PlotResult != null) {
-                    block.Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' />");
+                    block.Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' style='display:block; margin: 0 auto; text-align: center;' />");
                     callback.PlotResult = null;
                 } else if (_output.Length > 0) {
                     block.Result = Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>");

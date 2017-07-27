@@ -43,16 +43,18 @@ namespace Microsoft.R.Editor.Validation.Lint {
 
         private IREditorSettings _settings;
         private bool _projectedBuffer;
+        private bool _linterEnabled;
 
-        public void OnBeginValidation(IREditorSettings settings, bool projectedBuffer) {
+        public void OnBeginValidation(IREditorSettings settings, bool projectedBuffer, bool linterEnabled) {
             _settings = settings;
             _projectedBuffer = projectedBuffer;
+            _linterEnabled = linterEnabled & settings.LintOptions.Enabled;
         }
 
         public void OnEndValidation() { }
 
         public IReadOnlyCollection<IValidationError> ValidateElement(IAstNode node) {
-            if (!_settings.LintOptions.Enabled) {
+            if (!_linterEnabled) {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 
@@ -69,7 +71,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
         /// </summary>
         /// <returns>A collection of validation errors</returns>
         public IReadOnlyCollection<IValidationError> ValidateWhitespace(ITextProvider tp) {
-            if (!_settings.LintOptions.Enabled) {
+            if (!_linterEnabled) {
                 return Enumerable.Empty<IValidationError>().ToList();
             }
 

@@ -110,6 +110,7 @@
     <Compile Include="StubFactories\RSettingsStubFactory.cs" />
     <Compile Include="StubFactories\RtfBuilderServiceStubFactory.cs" />
     <Compile Include="StubFactories\TextSearchServiceStubFactory.cs" />
+    <Compile Include="Stubs\TestPlotExportDialog.cs" />
     <Compile Include="Stubs\RSettingsStub.cs" />
     <Compile Include="Stubs\VisualComponents\VisualComponentContainerStub.cs" />
     <Compile Include="Fixtures\TestFilesFixture.cs" />

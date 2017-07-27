@@ -297,10 +297,10 @@ namespace Microsoft.R.Editor.Validation.Lint {
         }
 
         private static bool IsCamelCase(string text)
-            => text.Length > 0 && char.IsLower(text[0]) && text.Any(char.IsUpper) && !IsSnakeCase(text);
+            => text.Length > 0 && char.IsLower(text[0]) && text.Any(char.IsUpper) && !IsSnakeCase(text) && text.All(c => c != '.');
 
         private static bool IsPascalCase(string text)
-            => text.Length > 0 && char.IsUpper(text[0]) && text.Any(char.IsLower) && !IsSnakeCase(text);
+            => text.Length > 0 && char.IsUpper(text[0]) && text.Any(char.IsLower) && !IsSnakeCase(text) && text.All(c => c != '.');
 
         private static bool IsSnakeCase(string text)
             => text.Length > 0 && text.Any(x => x == '_');

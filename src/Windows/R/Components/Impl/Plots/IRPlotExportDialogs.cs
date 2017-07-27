@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Components.Plots {
-    public interface IRPlotExportDialogs {
+    public interface IRPlotExportDialog {
         /// <summary>
         /// Show the export image dialog box.
         /// </summary>

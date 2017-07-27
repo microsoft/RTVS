@@ -5,6 +5,7 @@ using System;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text.Editor;
@@ -23,6 +24,9 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             _settings.AutomaticSync = !_settings.AutomaticSync;
+            if (_settings.AutomaticSync) {
+                TextView.GetService<IMarkdownPreview>().Update(force: true);
+            }
             return CommandResult.Executed;
         }
     }

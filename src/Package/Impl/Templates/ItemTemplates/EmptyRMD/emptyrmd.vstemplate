@@ -13,6 +13,6 @@
     <SortOrder>1</SortOrder>
   </TemplateData>
   <TemplateContent>
-    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">markdown.rmd</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">Markdown.Rmd</ProjectItem>
   </TemplateContent>
 </VSTemplate>

@@ -171,7 +171,7 @@ namespace Microsoft.R.Editor.Validation {
                 }
                 // Run all validators
                 _cts = new CancellationTokenSource();
-                _aggregator.RunAsync(_editorTree.AstRoot, _projectedBuffer, ValidationResults, _cts.Token).DoNotWait();
+                _aggregator.RunAsync(_editorTree.AstRoot, _projectedBuffer, _lintCheckEnabled, ValidationResults, _cts.Token).DoNotWait();
             }
         }
 
