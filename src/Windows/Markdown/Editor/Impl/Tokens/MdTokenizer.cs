@@ -156,7 +156,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
             _cs.Advance(leadingSeparatorLength);
 
             // block in R: '''{r qplot, x=y, ...}
-            bool rLanguage = block && IsAtRCodeBlockSignature(out leadingSeparatorLength);
+            bool rLanguage = block && IsAtRCodeBlockSignature();
             bool rInline = !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
             if (rInline) {
                 leadingSeparatorLength = 2; // include 'R'
@@ -204,8 +204,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
             return false;
         }
 
-        private bool IsAtRCodeBlockSignature(out int leadingSeparatorLength) {
-            leadingSeparatorLength = 0;
+        private bool IsAtRCodeBlockSignature() {
             if (_cs.CurrentChar != '{') {
                 return false;
             }
@@ -215,9 +214,6 @@ namespace Microsoft.Markdown.Editor.Tokens {
             _cs.SkipWhitespace();
 
             var block = _cs.CurrentChar == 'r' || _cs.CurrentChar == 'R';
-            if (block) {
-                leadingSeparatorLength = _cs.Position - start + 1;
-            }
             _cs.Position = start;
             return block;
         }

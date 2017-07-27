@@ -11,14 +11,13 @@ using System.Threading.Tasks;
 using Markdig.Renderers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Preview.Parser;
 using Microsoft.Markdown.Editor.Settings;
+using Microsoft.Markdown.Editor.Utility;
 using mshtml;
 using static System.FormattableString;
-using Timer = System.Timers.Timer;
 
 namespace Microsoft.Markdown.Editor.Preview.Code {
     /// <summary>
@@ -95,7 +94,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
             var fencedCodeBlock = codeBlock as FencedCodeBlock;
             var info = fencedCodeBlock?.Info;
-            if (info != null && (info.StartsWithIgnoreCase("{r") || info.StartsWithIgnoreCase("{ r"))) {
+            if (info != null && MarkdownUtility.GetRCodeBlockSeparatorLength(info, out int start)) {
                 var text = fencedCodeBlock.GetText();
                 var rCodeBlock = new RCodeBlock(_blockNumber, text, fencedCodeBlock.Arguments);
 

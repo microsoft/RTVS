@@ -68,7 +68,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             foreach (var t in rCodeTokens) {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
-                _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```r{ or `r
+                _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```{r or `r
                 if (t.IsWellFormed) {
                     // Count backticks
                     Blocks.Add(TextRange.FromBounds(t.Start + t.LeadingSeparatorLength, t.End - t.TrailingSeparatorLength));
