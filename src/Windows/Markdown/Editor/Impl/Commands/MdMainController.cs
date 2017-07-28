@@ -52,6 +52,12 @@ namespace Microsoft.Markdown.Editor.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            var status = NonRoutedStatus(@group, id, null);
+            if ((status & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled) {
+                // Priority to overrides (i.e. if supported, format document first goes to the primary language)
+                return base.Invoke(group, id, inputArg, ref outputArg);
+            }
+
             var containedCommandTarget = GetContainedCommandTarget();
             if (containedCommandTarget != null) {
                 _workaround = _workaround ?? new BraceCompletionWorkaround223902(TextView);

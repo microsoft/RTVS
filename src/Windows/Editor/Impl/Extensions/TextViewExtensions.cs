@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -11,11 +12,13 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextViewExtensions {
+        [DebuggerStepThrough]
         public static IEditorView ToEditorView(this ITextView textView) => EditorView.FromTextView(textView);
 
         /// <summary>
         /// Retrieves service manager attached to the text view
         /// </summary>
+        [DebuggerStepThrough]
         public static IServiceManager Services(this ITextView textView) {
             var view = textView.ToEditorView();
             return view?.Services;
@@ -44,6 +47,7 @@ namespace Microsoft.Languages.Editor.Text {
         public static SnapshotPoint? GetCaretPosition(this ITextView textView, ITextBuffer textBuffer = null)
             => textView.GetCaretPosition(textBuffer?.ContentType.TypeName);
 
+        [DebuggerStepThrough]
         public static SnapshotPoint? GetCaretPosition(this ITextView textView, IEditorBuffer editorBuffer = null)
             => textView.GetCaretPosition(editorBuffer?.As<ITextBuffer>());
 

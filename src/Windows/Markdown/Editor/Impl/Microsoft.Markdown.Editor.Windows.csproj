@@ -71,6 +71,7 @@
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
+    <Compile Include="Formatting\FormatDocumentCommand.cs" />
     <Compile Include="Preview\Browser\BrowserView.cs" />
     <Compile Include="Preview\Browser\WebBrowserHostUIHandler.cs" />
     <Compile Include="Preview\Code\CodeBlockState.cs" />

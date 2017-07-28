@@ -233,6 +233,15 @@ namespace Microsoft.Markdown.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Format Document.
+        /// </summary>
+        public static string FormatDocument {
+            get {
+                return ResourceManager.GetString("FormatDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Saving published output file: {0}.
         /// </summary>
         public static string Info_MarkdownGetOutputFile {

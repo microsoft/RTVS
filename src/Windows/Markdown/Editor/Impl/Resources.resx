@@ -181,6 +181,9 @@ Click OK to open MiKTeX download page in the default browser. You may need to re
 Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.
 </value>
   </data>
+  <data name="FormatDocument" xml:space="preserve">
+    <value>Format Document</value>
+  </data>
   <data name="Info_MarkdownGetOutputFile" xml:space="preserve">
     <value>Saving published output file: {0}</value>
   </data>

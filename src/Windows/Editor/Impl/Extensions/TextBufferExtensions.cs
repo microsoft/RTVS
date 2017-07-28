@@ -17,11 +17,13 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class TextBufferExtensions {
+        [DebuggerStepThrough]
         public static IEditorBuffer ToEditorBuffer(this ITextBuffer textBuffer) => EditorBuffer.FromTextBuffer(textBuffer);
 
         /// <summary>
         /// Retrieves service manager attached to the text buffer
         /// </summary>
+        [DebuggerStepThrough]
         public static IServiceManager Services(this ITextBuffer textBuffer) {
             var editorBuffer = textBuffer.ToEditorBuffer();
             return editorBuffer?.Services;
