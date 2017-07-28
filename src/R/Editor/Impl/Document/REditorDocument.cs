@@ -18,8 +18,10 @@ namespace Microsoft.R.Editor.Document {
         private readonly IServiceContainer _services;
         private readonly TreeValidator _validator;
 
-        public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, IExpressionTermFilter termFilter = null) {
+        public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, bool isRepl, IExpressionTermFilter termFilter = null) {
             EditorBuffer = editorBuffer;
+            IsRepl = isRepl;
+
             _services = services;
 
             EditorBuffer.Services.AddService(this);
@@ -55,6 +57,11 @@ namespace Microsoft.R.Editor.Document {
         /// Editor parse tree (object model)
         /// </summary>
         public IREditorTree EditorTree { get; private set; }
+
+        /// <summary>
+        /// Document represents content in the interactive window
+        /// </summary>
+        public bool IsRepl { get; }
 
         /// <summary>
         /// Closes the document

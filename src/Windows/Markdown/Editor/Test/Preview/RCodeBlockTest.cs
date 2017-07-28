@@ -127,7 +127,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             evaluator.EvalSession.SessionCallback = cb;
             await evaluator.EvaluateBlockAsync(block, CancellationToken.None);
 
-            block.Result.Should().Be("<img src='data:image/gif;base64, AQIDBA==' />");
+            block.Result.Should().Be("<img src='data:image/gif;base64, AQIDBA==' style='display:block; margin: 0 auto; text-align: center;' />");
             cb.PlotResult.Should().BeNull();
         }
     }
