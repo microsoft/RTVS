@@ -14,6 +14,7 @@ using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using TextRange = Microsoft.Languages.Core.Text.TextRange;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
     internal sealed class RLanguageHandler : ContainedLanguageHandler {

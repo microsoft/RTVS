@@ -273,7 +273,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                     // We need to determine if last line was the first in the statement
                     // or is it itself a continuation.
                     if (prevLine.LineNumber > 0) {
-                        var prevPrevLine = snapshot.GetLineFromLineNumber(prevLine.LineNumber);
+                        var prevPrevLine = snapshot.GetLineFromLineNumber(prevLine.LineNumber - 1);
                         if(LineHasContinuation(prevPrevLine)) {
                             return GetBlockIndent(currentLine, settings);
                         }

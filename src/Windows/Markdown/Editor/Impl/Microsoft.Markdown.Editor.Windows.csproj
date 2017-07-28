@@ -25,6 +25,7 @@
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Internal, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -104,6 +105,8 @@
     <Compile Include="Settings\IRMarkdownEditorSettings.cs" />
     <Compile Include="Settings\RMarkdownEditorSettings.cs" />
     <Compile Include="Settings\RMarkdownPreviewPosition.cs" />
+    <Compile Include="SmartIndent\SmartIndent.cs" />
+    <Compile Include="SmartIndent\SmartIndentProvider.cs" />
     <Compile Include="SuggestedActions\RunChunkSuggestedActionProvider.cs" />
     <Compile Include="SuggestedActions\RunChunksAboveSuggestedAction.cs" />
     <Compile Include="SuggestedActions\RunChunkSuggestedAction.cs" />
