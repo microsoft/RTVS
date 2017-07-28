@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Services {
 
             type = type ?? service.GetType();
             Check.ArgumentNull(nameof(service), service);
-            Check.InvalidOperation(() => _s.TryAdd(type, service), $"Service of type {type} already exists");
+           _s.TryAdd(type, service); // Ignore if service added second time
 
             return this;
         }

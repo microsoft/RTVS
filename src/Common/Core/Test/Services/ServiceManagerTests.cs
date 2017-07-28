@@ -36,14 +36,6 @@ namespace Microsoft.Common.Core.Test.Services {
         }
 
         [Test]
-        public void DoubleAdd() {
-            _serviceManager.AddService<I1>(new C1());
-
-            Action a = () => _serviceManager.AddService<I1>(new C1());
-            a.ShouldThrow<InvalidOperationException>();
-        }
-
-        [Test]
         public void AddRemove() {
             var s = new C1();
             _serviceManager.AddService(s);
