@@ -16,7 +16,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
-    internal sealed class RemoteBrokerClient : BrokerClient {
+    public sealed class RemoteBrokerClient : BrokerClient {
         private readonly IConsole _console;
         private readonly IServiceContainer _services;
         private readonly object _verificationLock = new object();

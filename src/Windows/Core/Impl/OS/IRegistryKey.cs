@@ -5,6 +5,7 @@ using System;
 
 namespace Microsoft.Common.Core.OS {
     public interface IRegistryKey : IDisposable {
+        string[] GetValueNames();
         object GetValue(string name);
         void SetValue(string name, object value);
         string[] GetSubKeyNames();

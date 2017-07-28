@@ -35,12 +35,16 @@
   <ItemGroup>
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="Automation\AutomationPropertyChangedBase.cs" />
     <Compile Include="Controls\BindableBase.cs" />
     <Compile Include="Collections\BatchObservableCollection.cs" />
     <Compile Include="Controls\ExpandCollapseAutomationPeer.cs" />
     <Compile Include="Controls\ExpandCollapseButton.cs" />
     <Compile Include="Controls\ExpandCollapseMode.cs" />
     <Compile Include="Controls\Overlay.cs" />
+    <Compile Include="Extensions\DoubleExtensions.cs" />
+    <Compile Include="Extensions\RectExtensions.cs" />
+    <Compile Include="Extensions\VisualExtensions.cs" />
     <Compile Include="Extensions\VisualTreeExtensions.cs" />
     <Compile Include="Imaging\BitmapImageFactory.cs" />
     <Compile Include="LambdaConverter\ILambdaConverterProvider.cs" />
@@ -59,6 +63,7 @@
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

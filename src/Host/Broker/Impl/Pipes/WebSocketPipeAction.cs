@@ -8,15 +8,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Common.Core;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Broker.Pipes {
     public class WebSocketPipeAction : IActionResult {
         private readonly string _id;
         private readonly IMessagePipeEnd _pipe;
+        private readonly ILogger _logger;
 
-        public WebSocketPipeAction(string id, IMessagePipeEnd pipe) {
+        public WebSocketPipeAction(string id, IMessagePipeEnd pipe, ILogger logger) {
             _id = id;
             _pipe = pipe;
+            _logger = logger;
         }
 
         public async Task ExecuteResultAsync(ActionContext actionContext) {
@@ -40,8 +44,12 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
                     if (completed == pipeToWs) {
                         // If the pipe end is exhausted, tell the client that there's no more messages to follow,
-                        // so that it can gracefully disconnect from its end. 
-                        await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", context.RequestAborted);
+                        // so that it can gracefully disconnect from its end.
+                        try {
+                            await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", context.RequestAborted);
+                        } catch(OperationCanceledException ocx) {
+                            _logger.LogError(Resources.Error_GracefulDisconnectFailed.FormatInvariant(ocx.Message));
+                        }
                     } else {
                         // If the client disconnected, then just cancel any outstanding reads from the pipe.
                         cts.Cancel();

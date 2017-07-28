@@ -12,6 +12,7 @@ using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.R.Host.Broker.Sessions {
     [Authorize(Policy = Policies.RUser)]
@@ -19,10 +20,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
     public class SessionsController : Controller {
         private readonly InterpreterManager _interpManager;
         private readonly SessionManager _sessionManager;
+        private readonly ILogger<Session> _sessionLogger;
 
-        public SessionsController(InterpreterManager interpManager, SessionManager sessionManager) {
+        public SessionsController(InterpreterManager interpManager, SessionManager sessionManager, ILogger<Session> sessionLogger) {
             _interpManager = interpManager;
             _sessionManager = sessionManager;
+            _sessionLogger = sessionLogger;
         }
 
         [HttpGet]
@@ -84,7 +87,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 return new ApiErrorResult(BrokerApiError.PipeAlreadyConnected);
             }
 
-            return new WebSocketPipeAction(id, pipe);
+            return new WebSocketPipeAction(id, pipe, _sessionLogger);
         }
     }
 }

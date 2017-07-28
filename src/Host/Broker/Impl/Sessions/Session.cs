@@ -151,20 +151,21 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private async Task ClientToHostWorker(Stream stream, IMessagePipeEnd pipe) {
             using (stream) {
                 while (true) {
-                    byte[] message;
                     try {
+                        byte[] message;
                         message = await pipe.ReadAsync(_applicationLifetime.ApplicationStopping);
-                    } catch (PipeDisconnectedException) {
-                        break;
-                    }
 
-                    var sizeBuf = BitConverter.GetBytes(message.Length);
-                    try {
+                        var sizeBuf = BitConverter.GetBytes(message.Length);
+
                         await stream.WriteAsync(sizeBuf, 0, sizeBuf.Length);
                         await stream.WriteAsync(message, 0, message.Length);
                         await stream.FlushAsync();
-                    } catch (IOException) {
-                        break;
+                    } catch (PipeDisconnectedException pdx) {
+                        _sessionLogger.LogError(Resources.Error_ClientToHostConnectionFailed.FormatInvariant(pdx.Message));
+                        KillHost();
+                    } catch (IOException iox) {
+                        _sessionLogger.LogError(Resources.Error_ClientToHostConnectionFailed.FormatInvariant(iox.Message));
+                        KillHost();
                     }
                 }
             }
@@ -173,17 +174,25 @@ namespace Microsoft.R.Host.Broker.Sessions {
         private async Task HostToClientWorker(Stream stream, IMessagePipeEnd pipe) {
             var sizeBuf = new byte[sizeof(int)];
             while (true) {
-                if (!await FillFromStreamAsync(stream, sizeBuf)) {
-                    break;
-                }
-                int size = BitConverter.ToInt32(sizeBuf, 0);
+                try {
+                    if (!await FillFromStreamAsync(stream, sizeBuf)) {
+                        break;
+                    }
+                    int size = BitConverter.ToInt32(sizeBuf, 0);
 
-                var message = new byte[size];
-                if (!await FillFromStreamAsync(stream, message)) {
-                    break;
-                }
+                    var message = new byte[size];
+                    if (!await FillFromStreamAsync(stream, message)) {
+                        break;
+                    }
 
-                pipe.Write(message);
+                    pipe.Write(message);
+                } catch (PipeDisconnectedException pdx) {
+                    _sessionLogger.LogError(Resources.Error_HostToClientConnectionFailed.FormatInvariant(pdx.Message));
+                    KillHost();
+                } catch (IOException iox) {
+                    _sessionLogger.LogError(Resources.Error_HostToClientConnectionFailed.FormatInvariant(iox.Message));
+                    KillHost();
+                }
             }
         }
 

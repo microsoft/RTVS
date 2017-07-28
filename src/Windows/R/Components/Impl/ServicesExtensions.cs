@@ -9,7 +9,7 @@ using Microsoft.R.Components.History.Implementation;
 
 namespace Microsoft.R.Components {
     public static class ServicesExtensions {
-        public static IServiceManager AddWindowsRComponentstServices(this IServiceManager serviceManager) => serviceManager
+        public static IServiceManager AddWindowsRComponentsServices(this IServiceManager serviceManager) => serviceManager
             .AddService<IConnectionManagerProvider, ConnectionManagerProvider>()
             .AddService<IRHistoryProvider, RHistoryProvider>();
     }

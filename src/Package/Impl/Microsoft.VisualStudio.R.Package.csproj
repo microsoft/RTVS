@@ -88,6 +88,7 @@
     <Compile Include="DataInspect\DataSource\DelegateList.cs" />
     <Compile Include="DataInspect\DataSource\Grid.cs" />
     <Compile Include="DataInspect\DataSource\GridDataSource.cs" />
+    <Compile Include="DataInspect\DataSource\GridIndex.cs" />
     <Compile Include="DataInspect\DataSource\IGrid.cs" />
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
@@ -125,14 +126,17 @@
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerProvider.cs" />
     <Compile Include="DataInspect\Viewers\ViewerBase.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixView.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewAutomationPeer.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewAutomationPeerScrollProvider.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewCellAutomationPeer.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewHeaderAutomationPeer.cs" />
+    <Compile Include="DataInspect\VisualGrid\MatrixViewItemAutomationPeer.cs" />
     <Compile Include="DataInspect\VisualGrid\SortOrderType.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
     <Compile Include="DataInspect\VisualGrid\IPoints.cs" />
-    <Compile Include="DataInspect\VisualGrid\MatrixView.xaml.cs">
-      <DependentUpon>MatrixView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollDirection.cs" />
@@ -1086,6 +1090,8 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
@@ -1098,9 +1104,17 @@
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Containers\Impl\Microsoft.R.Containers.csproj">
+      <Project>{baea19c5-e1f7-4580-ae19-9fb3c890570b}</Project>
+      <Name>Microsoft.R.Containers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Containers\Impl\Microsoft.R.Containers.Windows.csproj">
+      <Project>{8ed6ef0a-08a9-4f77-8ec1-f1630aad2ddb}</Project>
+      <Name>Microsoft.R.Containers.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
@@ -1448,10 +1462,6 @@
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DataInspect\VisualGrid\MatrixView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="ExportDialog\ExportImageDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

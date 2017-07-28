@@ -10,9 +10,10 @@ using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
-using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Wpf.Extensions;
+using static Microsoft.VisualStudio.R.Package.DataInspect.GridUpdateType;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -23,10 +24,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private readonly CancellationTokenSource _cancelSource;
         private readonly MatrixView _owner;
+        private readonly IServiceContainer _services;
         private readonly Task _handlerTask;
 
-        public VisualGridScroller(MatrixView owner) {
+        public VisualGridScroller(MatrixView owner, IServiceContainer services) {
             _owner = owner;
+            _services = services;
             if (_owner.ColumnHeader != null) {
                 _owner.ColumnHeader.SortOrderChanged += OnSortOrderChanged;
             }
@@ -40,24 +43,53 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public GridPoints Points => _owner.Points;
         public VisualGrid ColumnHeader => _owner.ColumnHeader;
         public VisualGrid RowHeader => _owner.RowHeader;
-        public VisualGrid DataGrid => _owner.Data;
+        private VisualGrid DataGrid => _owner.Data;
+        public GridRange DataViewport { get; private set; }
+        public IGridData<string> Data { get; private set; }
+
         public IGridProvider<string> DataProvider => _owner.DataProvider;
         internal void StopScroller() => _cancelSource.Cancel();
 
-        internal void EnqueueCommand(GridUpdateType code, double param) {
-            _scrollCommands.Post(new ScrollCommand(code, param));
+        public async Task ScrollIntoViewAsync(long row, long column, CancellationToken cancellationToken = default(CancellationToken)) {
+            var viewportRect = new Rect(DataGrid.RenderSize);
+            var focusRect = Points.GetBounds(row, column);
+            while (!viewportRect.ContainsOrCloseTo(focusRect)) {
+                Points.HorizontalOffset += focusRect.Right.GreaterThan(viewportRect.Width)
+                    ? focusRect.Right - viewportRect.Width
+                    : focusRect.Left.LessThan(0) ? focusRect.Left : 0;
+                Points.VerticalOffset += focusRect.Bottom.GreaterThan(viewportRect.Height)
+                    ? focusRect.Bottom - viewportRect.Height
+                    : focusRect.Top.LessThan(0) ? focusRect.Top : 0;
+
+                await DrawVisualsAsync(ScrollIntoView, false, cancellationToken, _owner.ColumnHeader?.SortOrder);
+
+                viewportRect = new Rect(DataGrid.RenderSize);
+                focusRect = Points.GetBounds(row, column);
+            }
         }
 
-        internal void EnqueueCommand(GridUpdateType code, double offset, ThumbTrack track) {
-            _scrollCommands.Post(new ScrollCommand(code, offset, track));
-        }
+        internal void EnqueueCommand(GridUpdateType code, object param) => _scrollCommands.Post(new ScrollCommand(code, param));
 
-        internal void EnqueueCommand(GridUpdateType code, Size size) {
-            _scrollCommands.Post(new ScrollCommand(code, size));
-        }
-
-        private static GridUpdateType[] RepeatSkip = new GridUpdateType[] { GridUpdateType.SizeChange, GridUpdateType.SetHorizontalOffset, GridUpdateType.SetVerticalOffset, GridUpdateType.Refresh };
-        private static GridUpdateType[] RepeatAccum = new GridUpdateType[] { GridUpdateType.MouseWheel, GridUpdateType.LineUp, GridUpdateType.LineDown, GridUpdateType.PageUp, GridUpdateType.PageDown, GridUpdateType.LineLeft, GridUpdateType.LineRight, GridUpdateType.PageLeft, GridUpdateType.PageRight };
+        private static readonly GridUpdateType[] RepeatSkip = { SizeChange, SetHorizontalOffset, SetVerticalOffset, Refresh };
+        private static readonly GridUpdateType[] RepeatAccum = {
+            MouseWheel,
+            LineUp,
+            LineDown,
+            PageUp,
+            PageDown,
+            LineLeft,
+            LineRight,
+            PageLeft,
+            PageRight,
+            FocusUp,
+            FocusDown,
+            FocusPageUp,
+            FocusPageDown,
+            FocusLeft,
+            FocusRight,
+            HeaderFocusLeft,
+            HeaderFocusRight
+        };
 
         private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -97,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         batch.Clear();
                     }
                 } catch (Exception ex) {
-                    VsAppShell.Current.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
+                    _services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
                     batch.Clear();
                 }
             }
@@ -108,74 +140,105 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
-            bool drawVisual = true;
-            bool suppress = false;
+            var suppress = false;
             switch (cmd.UpdateType) {
-                case GridUpdateType.LineUp:
-                    Points.VerticalOffset -= Points.AverageItemHeight * (double)cmd.Param;
+                case LineUp:
+                    Points.VerticalOffset -= Points.AverageItemHeight * (int)cmd.Param;
                     break;
-                case GridUpdateType.LineDown:
-                    Points.VerticalOffset += Points.AverageItemHeight * (double)cmd.Param;
+                case LineDown:
+                    Points.VerticalOffset += Points.AverageItemHeight * (int)cmd.Param;
                     break;
-                case GridUpdateType.LineLeft:
-                    Points.HorizontalOffset -= Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
+                case LineLeft:
+                    Points.HorizontalOffset -= Points.AverageItemHeight * (int)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
-                case GridUpdateType.LineRight:
-                    Points.HorizontalOffset += Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
+                case LineRight:
+                    Points.HorizontalOffset += Points.AverageItemHeight * (int)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
-                case GridUpdateType.PageUp:
-                    Points.VerticalOffset -= Points.ViewportHeight * (double)cmd.Param;
+                case PageUp:
+                    Points.VerticalOffset -= Points.ViewportHeight * (int)cmd.Param;
                     break;
-                case GridUpdateType.PageDown:
-                    Points.VerticalOffset += Points.ViewportHeight * (double)cmd.Param;
+                case PageDown:
+                    Points.VerticalOffset += Points.ViewportHeight * (int)cmd.Param;
                     break;
-                case GridUpdateType.PageLeft:
-                    Points.HorizontalOffset -= Points.ViewportWidth * (double)cmd.Param;
+                case PageLeft:
+                    Points.HorizontalOffset -= Points.ViewportWidth * (int)cmd.Param;
                     break;
-                case GridUpdateType.PageRight:
-                    Points.HorizontalOffset += Points.ViewportWidth * (double)cmd.Param;
+                case PageRight:
+                    Points.HorizontalOffset += Points.ViewportWidth * (int)cmd.Param;
                     break;
-                case GridUpdateType.SetHorizontalOffset: {
-                        var args = (Tuple<double, ThumbTrack>)cmd.Param;
-                        Points.HorizontalOffset = args.Item1 * (Points.HorizontalExtent - Points.ViewportWidth);
-                        suppress = args.Item2 == ThumbTrack.Track;
+                case SetHorizontalOffset: {
+                        var (offset, thumbtrack) = ((double, ThumbTrack))cmd.Param;
+                        Points.HorizontalOffset = offset * (Points.HorizontalExtent - Points.ViewportWidth);
+                        suppress = thumbtrack == ThumbTrack.Track;
                     }
                     break;
-                case GridUpdateType.SetVerticalOffset: {
-                        var args = (Tuple<double, ThumbTrack>)cmd.Param;
-                        Points.VerticalOffset = args.Item1 * (Points.VerticalExtent - Points.ViewportHeight);
-                        suppress = args.Item2 == ThumbTrack.Track;
+                case SetVerticalOffset: {
+                        var (offset, thumbtrack) = ((double, ThumbTrack))cmd.Param;
+                        Points.VerticalOffset = offset * (Points.VerticalExtent - Points.ViewportHeight);
+                        suppress = thumbtrack == ThumbTrack.Track;
                     }
                     break;
-                case GridUpdateType.MouseWheel:
-                    Points.VerticalOffset -= (double)cmd.Param;
+                case MouseWheel:
+                    Points.VerticalOffset -= (int)cmd.Param;
                     break;
-                case GridUpdateType.SizeChange:
+                case SizeChange:
                     Points.ViewportWidth = ((Size)cmd.Param).Width;
                     Points.ViewportHeight = ((Size)cmd.Param).Height;
                     break;
-                case GridUpdateType.Refresh:
-                case GridUpdateType.Sort:
+                case Refresh:
+                case Sort:
                     break;
-                case GridUpdateType.Invalid:
+                case FocusUp:
+                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - (long)cmd.Param, 0), DataGrid.SelectedIndex.Column);
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case FocusDown:
+                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + (long)cmd.Param, DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case FocusLeft:
+                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Max(DataGrid.SelectedIndex.Column - (long)cmd.Param, 0));
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case FocusRight:
+                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Min(DataGrid.SelectedIndex.Column + (long)cmd.Param, DataProvider.RowCount - 1));
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case FocusPageUp:
+                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - (long)cmd.Param, 0), DataGrid.SelectedIndex.Column);
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case FocusPageDown:
+                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + (long)cmd.Param, DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case SetFocus:
+                    DataGrid.SelectedIndex = (GridIndex) cmd.Param;
+                    await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case HeaderFocusLeft:
+                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Max(ColumnHeader.SelectedIndex.Column - (long)cmd.Param, 0));
+                    await BringFocusedHeaderIntoViewAsync(token);
+                    return;
+                case HeaderFocusRight:
+                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Min(ColumnHeader.SelectedIndex.Column + (long)cmd.Param, DataProvider.RowCount - 1));
+                    await BringFocusedHeaderIntoViewAsync(token);
+                    return;
+                case SetHeaderFocus:
+                    ColumnHeader.SelectedIndex = (GridIndex) cmd.Param;
+                    await BringFocusedHeaderIntoViewAsync(token);
+                    return;
+                case Invalid:
                 default:
-                    drawVisual = false;
-                    break;
+                    return;
             }
 
-            if (drawVisual) {
-                await DrawVisualsAsync(cmd.UpdateType, suppress, token, _owner.ColumnHeader?.SortOrder);
-            }
+            await DrawVisualsAsync(cmd.UpdateType, suppress, token, _owner.ColumnHeader?.SortOrder);
         }
 
         private async Task DrawVisualsAsync(GridUpdateType updateType, bool suppressNotification, CancellationToken token, ISortOrder sortOrder) {
-            Rect visualViewport = new Rect(
-                    Points.HorizontalOffset,
-                    Points.VerticalOffset,
-                    Points.ViewportWidth,
-                    Points.ViewportHeight);
-
-            GridRange newViewport = Points.ComputeDataViewport(visualViewport);
+            var visualViewport = new Rect(Points.HorizontalOffset, Points.VerticalOffset, Points.ViewportWidth, Points.ViewportHeight);
+            var newViewport = Points.ComputeDataViewport(visualViewport);
 
             if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
                 return;
@@ -188,9 +251,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     throw new InvalidOperationException("Couldn't fetch grid data");
                 }
 
-                if (!data.Grid.Range.Contains(newViewport)
-                    || !data.ColumnHeader.Range.Contains(newViewport.Columns)
-                    || !data.RowHeader.Range.Contains(newViewport.Rows)) {
+                if (!data.Grid.Range.Contains(newViewport) ||
+                    !data.ColumnHeader.Range.Contains(newViewport.Columns) ||
+                    !data.RowHeader.Range.Contains(newViewport.Rows)) {
                     throw new InvalidOperationException("Couldn't acquire enough data");
                 }
 
@@ -198,53 +261,99 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             } catch (OperationCanceledException) { }
         }
 
-        private async Task DrawVisualsAsync(
-            GridRange dataViewport,
-            IGridData<string> data,
-            GridUpdateType updateType,
-            Rect visualViewport,
-            bool suppressNotification,
-            CancellationToken token) {
+        private async Task DrawVisualsAsync(GridRange dataViewport, IGridData<string> data, GridUpdateType updateType, Rect visualViewport, bool suppressNotification, CancellationToken token) {
+            await _services.MainThread().SwitchToAsync(token);
 
-            await VsAppShell.Current.SwitchToMainThreadAsync(token);
+            DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row, DataProvider.RowCount - 1), Math.Min(DataGrid.SelectedIndex.Column, DataProvider.ColumnCount - 1));
+            var columnsData = new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true);
+            var rowsData = new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false);
+            var cellsData = data.Grid;
 
-            using (var deferal = Points.DeferChangeNotification(suppressNotification)) {
+            using (Points.DeferChangeNotification(suppressNotification)) {
                 // measure points
-                ColumnHeader?.MeasurePoints(
+                ColumnHeader.MeasurePoints(
                     Points.GetAccessToPoints(ColumnHeader.ScrollDirection),
                     new GridRange(new Range(0, 1), dataViewport.Columns),
-                    new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true),
+                    columnsData,
                     updateType);
 
-                RowHeader?.MeasurePoints(
+                RowHeader.MeasurePoints(
                     Points.GetAccessToPoints(RowHeader.ScrollDirection),
                     new GridRange(dataViewport.Rows, new Range(0, 1)),
-                    new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false),
-                    updateType == GridUpdateType.Sort ? GridUpdateType.Refresh : updateType);
+                    rowsData,
+                    updateType == Sort ? Refresh : updateType);
 
-                DataGrid?.MeasurePoints(
+                DataGrid.MeasurePoints(
                     Points.GetAccessToPoints(DataGrid.ScrollDirection),
                     dataViewport,
-                    data.Grid,
-                    updateType == GridUpdateType.Sort ? GridUpdateType.Refresh : updateType);
+                    cellsData,
+                    updateType == Sort ? Refresh : updateType);
 
                 // adjust Offset in case of overflow
-                if ((Points.HorizontalOffset + visualViewport.Width).GreaterThanOrClose(Points.HorizontalExtent)) {
+                if ((Points.HorizontalOffset + visualViewport.Width).GreaterOrCloseTo(Points.HorizontalExtent)) {
                     Points.HorizontalOffset = Points.HorizontalExtent - visualViewport.Width;
                 }
-                if ((Points.VerticalOffset + visualViewport.Height).GreaterThanOrClose(Points.VerticalExtent)) {
+                if ((Points.VerticalOffset + visualViewport.Height).GreaterOrCloseTo(Points.VerticalExtent)) {
                     Points.VerticalOffset = Points.VerticalExtent - visualViewport.Height;
                 }
 
+                if (updateType == ScrollIntoView) {
+                    AdjustFocusedCellOffset(visualViewport);
+                }
+
                 // arrange and draw gridline
-                ColumnHeader?.ArrangeVisuals(Points.GetAccessToPoints(ColumnHeader.ScrollDirection));
-                RowHeader?.ArrangeVisuals(Points.GetAccessToPoints(RowHeader.ScrollDirection));
-                DataGrid?.ArrangeVisuals(Points.GetAccessToPoints(DataGrid.ScrollDirection));
+                ColumnHeader.ArrangeVisuals(Points.GetAccessToPoints(ColumnHeader.ScrollDirection));
+                RowHeader.ArrangeVisuals(Points.GetAccessToPoints(RowHeader.ScrollDirection));
+                DataGrid.ArrangeVisuals(Points.GetAccessToPoints(DataGrid.ScrollDirection));
 
                 Points.ViewportHeight = DataGrid.RenderSize.Height;
                 Points.ViewportWidth = DataGrid.RenderSize.Width;
             }
+
+            DataViewport = dataViewport;
+            Data = data;
+            _owner.AutomationPeer?.Update();
         }
+
+        private void AdjustFocusedCellOffset(Rect visualViewport) {
+            var focusRect = Points.GetBounds(DataGrid.SelectedIndex.Row, DataGrid.SelectedIndex.Column);
+            if (!visualViewport.ContainsOrCloseTo(focusRect) && visualViewport.IntersectsWith(focusRect)) {
+                if (focusRect.Top.LessThan(0)) {
+                    Points.VerticalOffset += focusRect.Top;
+                } else if (focusRect.Bottom.GreaterThan(visualViewport.Height)) {
+                    Points.VerticalOffset += focusRect.Bottom - visualViewport.Height;
+                }
+
+                if (focusRect.Left.LessThan(0)) {
+                    Points.HorizontalOffset += focusRect.Left;
+                } else if (focusRect.Right.GreaterThan(visualViewport.Width)) {
+                    Points.HorizontalOffset += focusRect.Right - visualViewport.Width;
+                }
+            }
+        }
+
+        private Task BringFocusedCellIntoViewAsync(CancellationToken cancellationToken) {
+            var focusRect = Points.GetBounds(DataGrid.SelectedIndex.Row, DataGrid.SelectedIndex.Column);
+            var viewportSize = new Size(Math.Min(DataGrid.ActualWidth, Points.ViewportWidth), Math.Min(DataGrid.ActualHeight, Points.ViewportHeight));
+            return BringIntoViewAsync(focusRect, viewportSize, DataGrid.SelectedIndex.Row, DataGrid.SelectedIndex.Column, cancellationToken);
+        }
+
+        private Task BringFocusedHeaderIntoViewAsync(CancellationToken cancellationToken) {
+            var column = ColumnHeader.SelectedIndex.Column;
+            var headerFocusRect = new Rect(Points.xPosition(column), 0, Points.GetWidth(column), Points.ColumnHeaderHeight);
+            var viewportSize = new Size(Math.Min(DataGrid.ActualWidth, Points.ViewportWidth), Points.ColumnHeaderHeight);
+            return BringIntoViewAsync(headerFocusRect, viewportSize, DataGrid.SelectedIndex.Row, ColumnHeader.SelectedIndex.Column, cancellationToken);
+        }
+
+        private async Task BringIntoViewAsync(Rect focusRect, Size viewportSize, long row, long column, CancellationToken cancellationToken) {
+            if (new Rect(viewportSize).ContainsOrCloseTo(focusRect)) {
+                var visualViewport = new Rect(Points.HorizontalOffset, Points.VerticalOffset, Points.ViewportWidth, Points.ViewportHeight);
+                await DrawVisualsAsync(DataViewport, Data, ScrollIntoView, visualViewport, false, cancellationToken);
+            } else {
+                await ScrollIntoViewAsync(row, column, cancellationToken);
+            }
+        }
+
         private void OnSortOrderChanged(object sender, EventArgs e) {
             if (_owner?.Data == null || _owner.ColumnHeader == null) {
                 return;
