@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new VsEditorViewLocator())
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
-                .AddWindowsRComponentstServices()
+                .AddWindowsRComponentsServices()
                 // OLE and VS specifics
                 .AddService(new TestStatusBar())
                 .AddService(new VsRegisterProjectGeneratorsMock(), typeof(SVsRegisterProjectTypes))

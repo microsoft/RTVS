@@ -9,22 +9,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Range of integers
     /// </summary>
-    [DebuggerDisplay("[{Start},{_end})")]
+    [DebuggerDisplay("[{Start},{End})")]
     public struct Range {
-        long _end;
-
         public Range(long start, long count) {
             Start = start;
             Count = count;
-            _end = start + count;
+            End = start + count;
         }
 
         public long Start { get; }
-
         public long Count { get; }
+        public long End { get; }
 
         public bool Contains(long value) {
-            return (value >= Start) && (value < _end);
+            return value >= Start && value < End;
         }
 
         public bool Contains(Range other) {
@@ -32,16 +30,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return false;
             }
 
-            return (other.Start <= this.Start) && (other._end >= this._end);
+            return other.Start <= Start && other.End >= End;
         }
 
         public IEnumerable<long> GetEnumerable(bool ascending = true) {
             if (ascending) {
-                for (long i = Start; i < _end; i++) {
+                for (long i = Start; i < End; i++) {
                     yield return i;
                 }
             } else {
-                for (long i = _end - 1; i >= Start; i--) {
+                for (long i = End - 1; i >= Start; i--) {
                     yield return i;
                 }
             }

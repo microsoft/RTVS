@@ -9,7 +9,6 @@ namespace Microsoft.R.Containers {
         public string StartOptions { get; }
         public string Command { get; }
 
-
         public ContainerCreateParameters(string image, string tag) {
             Image = image;
             Tag = tag;
