@@ -50,8 +50,12 @@ namespace Microsoft.R.Editor.Formatting {
                 }
             }
 
-            // Expand span to include the entire line
+            // Expand span to include the entire line unless position is 
+            // at the very end of the line. In the latter case use next line.
             var startLine = snapshot.GetLineFromPosition(start);
+            if (startLine.End == start && startLine.LineNumber < snapshot.LineCount) {
+                startLine = snapshot.GetLineFromLineNumber(startLine.LineNumber + 1);
+            }
             var endLine = snapshot.GetLineFromPosition(end);
 
             // In case of formatting of multiline expressions formatter needs
