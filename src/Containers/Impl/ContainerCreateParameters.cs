@@ -9,8 +9,29 @@ namespace Microsoft.R.Containers {
         public string StartOptions { get; }
         public string Command { get; }
 
-        public ContainerCreateParameters(string image, string tag, string startOptions = null, string command = null) 
-            : this(image, tag, startOptions, null, command) {}
+        public ContainerCreateParameters(string image, string tag) {
+            Image = image;
+            Tag = tag;
+            StartOptions = string.Empty;
+            ImageSourceCredentials = null;
+            Command = string.Empty;
+        }
+
+        public ContainerCreateParameters(string image, string tag, string startOptions) {
+            Image = image;
+            Tag = tag;
+            StartOptions = startOptions;
+            ImageSourceCredentials = null;
+            Command = string.Empty;
+        }
+
+        public ContainerCreateParameters(string image, string tag, string startOptions, string command) {
+            Image = image;
+            Tag = tag;
+            StartOptions = startOptions;
+            Command = command;
+            ImageSourceCredentials = null;
+        }
 
         public ContainerCreateParameters(string image, string tag, string startOptions, RepositoryCredentials imageSourceCreadentials, string command) {
             Image = image;
