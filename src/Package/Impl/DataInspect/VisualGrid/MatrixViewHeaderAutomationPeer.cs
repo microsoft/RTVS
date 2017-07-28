@@ -37,10 +37,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override string GetClassNameCore() => "MatrixViewHeader";
 
-        protected override bool IsKeyboardFocusableCore() => Owner.FocusedHeader.Focusable;
+        protected override bool IsKeyboardFocusableCore() => Owner.Focusable;
 
         protected override bool HasKeyboardFocusCore()
-            => Owner.FocusedHeader.Column == Column && Owner.FocusedHeader.IsKeyboardFocused;
+            => Owner.ColumnHeader.SelectedIndex.Column == Column && Owner.ColumnHeader.HasKeyboardFocus;
 
         protected override string GetAutomationIdCore() => $"{Owner.AutomationPeer.GetAutomationId()}_{Column}";
 
@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         // See http://msdn.microsoft.com/en-us/library/ms742202.aspx
         protected override bool IsContentElementCore() => false;
 
-        protected override void SetFocusCore() => Owner.Scroller.EnqueueCommand(GridUpdateType.SetHeaderFocus, Column);
+        protected override void SetFocusCore() => Owner.SetHeaderFocus(Column);
 
         public void Invoke() {}
 

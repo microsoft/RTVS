@@ -15,19 +15,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         internal VisualGrid Owner { get; }
 
-        private ScrollDirection ScrollDirection  => Owner.ScrollDirection;
-
         public double GridLineThickness => 1.0;
 
         public Brush GridLineBrush { get; set; } = Brushes.Black;
 
-        public void Draw(
-            GridRange range,
-            IPoints points) {
+        public void Draw(GridRange range, IPoints points) {
 
-            DrawingContext drawingContext = RenderOpen();
-            DoubleCollection xCollection = new DoubleCollection();
-            DoubleCollection yCollection = new DoubleCollection();
+            var drawingContext = RenderOpen();
+            var xCollection = new DoubleCollection();
+            var yCollection = new DoubleCollection();
 
             try {
                 // vertical line

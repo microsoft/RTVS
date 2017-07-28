@@ -47,10 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override string GetClassNameCore() => "MatrixViewCell";
 
-        protected override bool IsKeyboardFocusableCore() => Owner.FocusedCell.Focusable;
+        protected override bool IsKeyboardFocusableCore() => Owner.Focusable;
 
         protected override bool HasKeyboardFocusCore() 
-            => Owner.FocusedCell.Column == Column && Owner.FocusedCell.Row == Row && Owner.FocusedCell.IsKeyboardFocused;
+            => Owner.Data.SelectedIndex.Equals((Row, Column)) && Owner.Data.HasKeyboardFocus;
 
         protected override string GetAutomationIdCore() => $"{Owner.AutomationPeer.GetAutomationId()}_{Row}_{Column}";
 

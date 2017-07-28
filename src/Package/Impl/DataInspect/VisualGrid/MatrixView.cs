@@ -45,8 +45,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VisualGrid ColumnHeader { get; }
         public VisualGrid RowHeader { get; }
         public VisualGrid Data { get; }
-        public MatrixViewCellFocus FocusedCell { get; }
-        public MatrixViewHeaderFocus FocusedHeader { get; }
         public ScrollBar HorizontalScrollBar { get; }
         public ScrollBar VerticalScrollBar { get; }
 
@@ -112,10 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RightBottomCorner = new Border {
                 MinWidth = 10,
                 MinHeight = 10
-            }.Bind(Border.BackgroundProperty, nameof(Background), HorizontalScrollBar);
-
-            FocusedCell = new MatrixViewCellFocus(this);
-            FocusedHeader = new MatrixViewHeaderFocus(this);
+            }.Bind(Border.BackgroundProperty, nameof(Background), HorizontalScrollBar);;
 
             Content = new Grid {
                 Background = Brushes.Transparent,
@@ -128,9 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     VerticalScrollBar.SetGridPosition(1, 2),
                     LeftBottomCorner.SetGridPosition(2, 0),
                     HorizontalScrollBar.SetGridPosition(2, 1),
-                    RightBottomCorner.SetGridPosition(2, 2),
-                    FocusedHeader.SetGridPosition(0, 1),
-                    FocusedCell.SetGridPosition(1, 1)
+                    RightBottomCorner.SetGridPosition(2, 2)
                 },
                 ColumnDefinitions = {
                     new ColumnDefinition { Width = GridLength.Auto },
@@ -144,10 +137,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             };
 
-            FocusManager.SetFocusedElement(this, FocusedCell);
+            FocusVisualStyle = new Style();
             DataContext = this;
-
-            Focusable = false;
         }
 
         internal void Initialize(IGridProvider<string> dataProvider) {
@@ -197,8 +188,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void SetCellFocus(long row, long column) {
-            FocusedCell.Focus();
-            Scroller.EnqueueCommand(GridUpdateType.SetFocus, (row, column));
+            Data.HasKeyboardFocus = true;
+            ColumnHeader.HasKeyboardFocus = false;
+            Scroller.EnqueueCommand(GridUpdateType.SetFocus, new GridIndex(row, column));
+        }
+
+        public void SetHeaderFocus(long column) {
+            Data.HasKeyboardFocus = false;
+            ColumnHeader.HasKeyboardFocus = true;
+            Scroller.EnqueueCommand(GridUpdateType.SetHeaderFocus, new GridIndex(0, column));
         }
 
         public bool CanSort {
@@ -258,7 +256,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #region GridBackground
 
         public static readonly DependencyProperty GridBackgroundProperty =
-            DependencyProperty.Register(nameof(GridBackground), typeof(Brush), typeof(MatrixView), new FrameworkPropertyMetadata(Brushes.Black, OnGridBackgroundPropertyChanged));
+            DependencyProperty.Register(nameof(GridBackground), typeof(Brush), typeof(MatrixView), new FrameworkPropertyMetadata(Brushes.Transparent, OnGridBackgroundPropertyChanged));
 
         public Brush GridBackground {
             get => (Brush)GetValue(GridBackgroundProperty);
@@ -266,7 +264,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private static void OnGridBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            if (e.OldValue != e.NewValue) {
+            if (!Equals(e.OldValue, e.NewValue)) {
                 ((MatrixView)d).OnGridBackgroundPropertyChanged((Brush)e.NewValue);
             }
         }
@@ -276,6 +274,63 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             // VisualGrid uses OnRender to paint background color, InvalidateVisual will call it
             Data.InvalidateVisual();
+
+            Refresh();
+        }
+
+        #endregion
+        
+        #region GridSelectedBackground
+
+        public static readonly DependencyProperty GridSelectedBackgroundProperty =
+            DependencyProperty.Register(nameof(GridSelectedBackground), typeof(Brush), typeof(MatrixView), new FrameworkPropertyMetadata(Brushes.Transparent, OnGridSelectedBackgroundPropertyChanged));
+
+        public Brush GridSelectedBackground {
+            get => (Brush)GetValue(GridSelectedBackgroundProperty);
+            set => SetValue(GridSelectedBackgroundProperty, value);
+        }
+
+        private static void OnGridSelectedBackgroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (!Equals(e.OldValue, e.NewValue)) {
+                ((MatrixView)d).OnGridSelectedBackgroundPropertyChanged((Brush)e.NewValue);
+            }
+        }
+
+        private void OnGridSelectedBackgroundPropertyChanged(Brush gridSelectedBackgroundBrush) {
+            Data.SelectedBackground = gridSelectedBackgroundBrush;
+            ColumnHeader.SelectedBackground = gridSelectedBackgroundBrush;
+
+            // VisualGrid uses OnRender to paint background color, InvalidateVisual will call it
+            Data.InvalidateVisual();
+            ColumnHeader.InvalidateVisual();
+
+            Refresh();
+        }
+
+        #endregion
+
+        #region GridSelectedForeground
+
+        public static readonly DependencyProperty GridSelectedForegroundProperty =
+            DependencyProperty.Register(nameof(GridSelectedForeground), typeof(Brush), typeof(MatrixView), new FrameworkPropertyMetadata(Brushes.Black, OnGridSelectedForegroundPropertyChanged));
+
+        public Brush GridSelectedForeground {
+            get => (Brush)GetValue(GridSelectedForegroundProperty);
+            set => SetValue(GridSelectedForegroundProperty, value);
+        }
+
+        private static void OnGridSelectedForegroundPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            if (!Equals(e.OldValue, e.NewValue)) {
+                ((MatrixView)d).OnGridSelectedForegroundPropertyChanged((Brush)e.NewValue);
+            }
+        }
+
+        private void OnGridSelectedForegroundPropertyChanged(Brush gridSelectedForegroundBrush) {
+            Data.SelectedForeground = gridSelectedForegroundBrush;
+            ColumnHeader.SelectedForeground = gridSelectedForegroundBrush;
+
+            Data.InvalidateVisual();
+            ColumnHeader.InvalidateVisual();
 
             Refresh();
         }
@@ -340,23 +395,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        protected override AutomationPeer OnCreateAutomationPeer() {
-            var peer = new MatrixViewAutomationPeer(this);
-            peer.Update();
-            return peer;
+        protected override AutomationPeer OnCreateAutomationPeer() => new MatrixViewAutomationPeer(this);
+
+        protected override void OnGotFocus(RoutedEventArgs e) {
+            base.OnGotFocus(e);
+            if (!Data.HasKeyboardFocus && !ColumnHeader.HasKeyboardFocus) {
+                Data.HasKeyboardFocus = true;
+                Refresh();
+            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
-            e.Handled = true;
-            if (e.Key == Key.Home) {
-                Scroller?.EnqueueCommand(GridUpdateType.SetVerticalOffset, (0.0, ThumbTrack.None));
-            } else if (e.Key == Key.End) {
-                Scroller?.EnqueueCommand(GridUpdateType.SetVerticalOffset, (1.0, ThumbTrack.None));
+            if (HandleKeyDown(e.Key)) {
+                e.Handled = true;
             } else {
-                e.Handled = false;
-            }
-
-            if (!e.Handled) {
                 base.OnKeyDown(e);
             }
         }
@@ -365,9 +417,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.OnRenderSizeChanged(sizeInfo);
 
             // null if not Initialized yet
-            if (Scroller != null) {
-                Scroller.EnqueueCommand(GridUpdateType.SizeChange, Data.RenderSize);
-            }
+            Scroller?.EnqueueCommand(GridUpdateType.SizeChange, Data.RenderSize);
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e) {
@@ -382,6 +432,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+            Keyboard.Focus(this);
             var point = e.GetPosition(ColumnHeader);
             if (IsInsideHeader(point)) {
                 var column = Points.GetColumn(point.X);
@@ -397,6 +448,54 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             base.OnMouseLeftButtonDown(e);
+        }
+
+        private bool HandleKeyDown(Key key) {
+            switch (key) {
+                case Key.Tab:
+                    if (Data.HasKeyboardFocus) {
+                        Data.HasKeyboardFocus = false;
+                        ColumnHeader.HasKeyboardFocus = true;
+                        SetHeaderFocus(ColumnHeader.SelectedIndex.Column);
+                    } else {
+                        Data.HasKeyboardFocus = true;
+                        ColumnHeader.HasKeyboardFocus = false;
+                        SetCellFocus(Data.SelectedIndex.Row, Data.SelectedIndex.Column);
+                    }
+                    return true;
+                case Key.Home:
+                    Scroller?.EnqueueCommand(GridUpdateType.SetVerticalOffset, (0.0, ThumbTrack.None));
+                    return true;
+                case Key.End:
+                    Scroller?.EnqueueCommand(GridUpdateType.SetVerticalOffset, (1.0, ThumbTrack.None));
+                    return true;
+                case Key.Up:
+                    Scroller?.EnqueueCommand(GridUpdateType.FocusUp, 1L);
+                    return true;
+                case Key.Down:
+                    Scroller?.EnqueueCommand(GridUpdateType.FocusDown, 1L);
+                    return true;
+                case Key.Right when Data.HasKeyboardFocus:
+                    Scroller?.EnqueueCommand(GridUpdateType.FocusRight, 1L);
+                    return true;
+                case Key.Right when ColumnHeader.HasKeyboardFocus:
+                    Scroller?.EnqueueCommand(GridUpdateType.HeaderFocusRight, 1L);
+                    return true;
+                case Key.Left when Data.HasKeyboardFocus:
+                    Scroller?.EnqueueCommand(GridUpdateType.FocusLeft, 1L);
+                    return true;
+                case Key.Left when ColumnHeader.HasKeyboardFocus:
+                    Scroller?.EnqueueCommand(GridUpdateType.HeaderFocusLeft, 1L);
+                    return true;
+                case Key.PageUp:
+                    Scroller?.EnqueueCommand(GridUpdateType.FocusPageUp, 1L);
+                    return true;
+                case Key.PageDown:
+                    Scroller?.EnqueueCommand(GridUpdateType.FocusPageDown, 1L);
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private void VerticalScrollBar_Scroll(object sender, ScrollEventArgs e) {

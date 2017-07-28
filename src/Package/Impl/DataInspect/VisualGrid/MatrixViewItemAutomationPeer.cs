@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Owner = owner;
         }
 
-        public void SetValue(string value) {
+        public void SetValue(string value, bool suppressRaiseEvent) {
             if (_value.EqualsOrdinal(value)) {
                 return;
             }
@@ -28,12 +28,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var oldValue = _value;
             _value = value;
             IsRealized = true;
-            RaisePropertyChangedEvent(ValuePatternIdentifiers.ValueProperty, oldValue, value);
+            if (!suppressRaiseEvent) {
+                RaisePropertyChangedEvent(ValuePatternIdentifiers.ValueProperty, oldValue, value);
+            }
         }
 
-        public void ClearValue() {
+        public void ClearValue(bool suppressRaiseEvent) {
+            var oldValue = _value;
             _value = null;
             IsRealized = false;
+            if (!suppressRaiseEvent) {
+                RaisePropertyChangedEvent(ValuePatternIdentifiers.ValueProperty, oldValue, null);
+            }
         }
 
         protected override string GetAcceleratorKeyCore() => string.Empty;

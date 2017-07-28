@@ -38,6 +38,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             set => _list[ListIndex(rowIndex, columnIndex)] = value;
         }
 
+        public bool TryGet(GridIndex index, out T value) {
+            if (Range.Contains(index)) {
+                value = this[index.Row, index.Column];
+                return true;
+            }
+
+            value = default(T);
+            return false;
+        }
+
         public GridRange Range { get; }
 
         private int ListIndex(long rowIndex, long columnIndex) {

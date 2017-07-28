@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -31,6 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _services = services;
             _rSession = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             _rSession.Mutated += RSession_Mutated;
+
+            FocusManager.SetFocusedElement(this, VariableGrid);
         }
 
         public void CleanUp() => _rSession.Mutated -= RSession_Mutated;

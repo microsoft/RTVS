@@ -88,6 +88,7 @@
     <Compile Include="DataInspect\DataSource\DelegateList.cs" />
     <Compile Include="DataInspect\DataSource\Grid.cs" />
     <Compile Include="DataInspect\DataSource\GridDataSource.cs" />
+    <Compile Include="DataInspect\DataSource\GridIndex.cs" />
     <Compile Include="DataInspect\DataSource\IGrid.cs" />
     <Compile Include="DataInspect\DataSource\IGridProvider.cs" />
     <Compile Include="DataInspect\DataSource\IIndexedItem.cs" />
@@ -129,9 +130,7 @@
     <Compile Include="DataInspect\VisualGrid\MatrixViewAutomationPeer.cs" />
     <Compile Include="DataInspect\VisualGrid\MatrixViewAutomationPeerScrollProvider.cs" />
     <Compile Include="DataInspect\VisualGrid\MatrixViewCellAutomationPeer.cs" />
-    <Compile Include="DataInspect\VisualGrid\MatrixViewCellFocus.cs" />
     <Compile Include="DataInspect\VisualGrid\MatrixViewHeaderAutomationPeer.cs" />
-    <Compile Include="DataInspect\VisualGrid\MatrixViewHeaderFocus.cs" />
     <Compile Include="DataInspect\VisualGrid\MatrixViewItemAutomationPeer.cs" />
     <Compile Include="DataInspect\VisualGrid\SortOrderType.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />

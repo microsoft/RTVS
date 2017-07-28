@@ -28,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _headers = new Dictionary<int, WeakReference<MatrixViewHeaderAutomationPeer>>();
             _cells = new Dictionary<(int row, int column), WeakReference<MatrixViewCellAutomationPeer>>();
             ScrollProvider = new MatrixViewAutomationPeerScrollProvider(owner);
+            Update(true);
         }
 
         protected override Rect GetBoundingRectangleCore() {
@@ -50,7 +51,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRawElementProviderSimple GetItem(int row, int column)
             => ProviderFromPeer(GetOrCreateCell(row, column));
 
-        public void Update() {
+        public void Update() => Update(false);
+        
+        private void Update(bool suppressRaiseEvents) {
             var scroller = _owner.Scroller;
             var oldVisibleRange = _visibleRange;
             _visibleRange = scroller?.DataViewport ?? new GridRange(new Range(0, 0), new Range(0, 0));
@@ -62,13 +65,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             foreach (var automationPeer in GetChildren()) {
                 switch (automationPeer) {
                     case MatrixViewCellAutomationPeer cellAutomationPeer when _visibleRange.Contains(cellAutomationPeer.Row, cellAutomationPeer.Column):
-                        cellAutomationPeer.SetValue(scroller?.CellsData[cellAutomationPeer.Row, cellAutomationPeer.Column]);
+                        cellAutomationPeer.SetValue(scroller?.Data.Grid[cellAutomationPeer.Row, cellAutomationPeer.Column], suppressRaiseEvents);
                         break;
                     case MatrixViewHeaderAutomationPeer headerAutomationPeer when _visibleRange.Contains(_visibleRange.Rows.Start, headerAutomationPeer.Column):
-                        headerAutomationPeer.SetValue(scroller?.ColumnsData[0, headerAutomationPeer.Column]);
+                        headerAutomationPeer.SetValue(scroller?.Data.ColumnHeader[headerAutomationPeer.Column], suppressRaiseEvents);
                         break;
                     case MatrixViewItemAutomationPeer itemAutomationPeer:
-                        itemAutomationPeer.ClearValue();
+                        itemAutomationPeer.ClearValue(suppressRaiseEvents);
                         break;
                 }
             }

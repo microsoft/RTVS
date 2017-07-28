@@ -19,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private SortOrder _sortOrder = new SortOrder();
         private GridRange _dataViewport;
         private Grid<TextVisual> _visualGrid;
+        private GridIndex _selectedIndex;
 
         public VisualGrid() {
             _visualChildren = new VisualCollection(this);
@@ -31,6 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Focusable = true;
         }
 
+        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(nameof(Header), typeof(bool), typeof(VisualGrid), new PropertyMetadata(false));
+
         /// <summary>
         /// If true, the object is assumed to be a grid header and clicking
         /// on fields changes sorting for the actual data grid.
@@ -39,8 +42,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get => (bool)GetValue(HeaderProperty);
             set => SetValue(HeaderProperty, value);
         }
-
-        public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(nameof(Header), typeof(bool), typeof(VisualGrid), new PropertyMetadata(false));
 
         /// <summary>
         /// Fires when sorting order changes
@@ -81,6 +82,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private static void OnTypefaceParametersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((VisualGrid)d)._typeFace = null;
 
         private Typeface _typeFace;
+        private bool _hasKeyboardFocus = false;
+
         private Typeface Typeface {
             get {
                 if (_typeFace == null) {
@@ -105,7 +108,45 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public Brush Foreground { get; set; } = Brushes.Black;
         public Brush Background { get; set; } = Brushes.Transparent;
-        public Brush AlternateBackground { get; set; } = Brushes.Transparent;
+        public Brush SelectedForeground { get; set; } = Brushes.Black;
+        public Brush SelectedBackground { get; set; } = Brushes.Transparent;
+
+        public bool HasKeyboardFocus {
+            get => _hasKeyboardFocus;
+            set {
+                if (value == _hasKeyboardFocus) {
+                    return;
+                }
+
+                _hasKeyboardFocus = value;
+                var visualGrid = _visualGrid;
+                if (visualGrid != null && visualGrid.TryGet(_selectedIndex, out TextVisual visual)) {
+                    visual.IsFocused = value;
+                }
+            }
+        }
+
+        public GridIndex SelectedIndex {
+            get => _selectedIndex;
+            set {
+                if (value == _selectedIndex) {
+                    return;
+                }
+
+                var visualGrid = _visualGrid;
+                if (visualGrid != null && visualGrid.TryGet(_selectedIndex, out TextVisual visual)) {
+                    visual.IsSelected = false;
+                    visual.IsFocused = false;
+                }
+
+                _selectedIndex = value;
+
+                if (visualGrid != null && visualGrid.TryGet(_selectedIndex, out visual)) {
+                    visual.IsSelected = true;
+                    visual.IsFocused = HasKeyboardFocus;
+                }
+            }
+        }
 
         public void Clear() {
             _visualChildren.Clear();
@@ -122,9 +163,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 foreach (int r in newViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
 
-                    visual.Draw();
-                    points.Width[c] = visual.Size.Width + (visual.Margin * 2) + GridLineThickness;
-                    points.Height[r] = visual.Size.Height + (visual.Margin * 2) + GridLineThickness;
+                    visual.Measure();
+                    points.Width[c] = visual.Size.Width + visual.Margin * 2 + GridLineThickness;
+                    points.Height[r] = visual.Size.Height + visual.Margin * 2 + GridLineThickness;
 
                     _visualChildren.Add(_visualGrid[r, c]);
                 }
@@ -169,7 +210,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             visual.Text = data[r, c];
             visual.Typeface = Typeface;
             visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
+            visual.Background = Background;
             visual.Foreground = Foreground;
+            visual.SelectedBackground = SelectedBackground;
+            visual.SelectedForeground = SelectedForeground;
+            visual.IsFocused = HasKeyboardFocus;
+            visual.IsSelected = SelectedIndex.Row == r && SelectedIndex.Column == c;
         }
 
         internal void ArrangeVisuals(IPoints points) {
@@ -182,12 +228,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     double cellX = points.xPosition[c];
                     double cellY = points.yPosition[r];
-                    double cellW = points.Width[c];
-                    double cellH = points.Height[r];
-                    visual.CellBounds = new Rect(cellX, cellY, cellW, cellH);
+                    double cellWidth = points.Width[c];
+                    double cellHeight = points.Height[r];
 
                     bool alignRight = visual.TextAlignment == TextAlignment.Right;
-                    double x = cellX + (alignRight ? (cellW - visual.Size.Width - visual.Margin - GridLineThickness) : visual.Margin);
+                    double x = cellX + (alignRight ? (cellWidth - visual.Size.Width - visual.Margin - GridLineThickness) : visual.Margin);
                     double y = cellY + visual.Margin;
 
                     var transform = visual.Transform as TranslateTransform;
@@ -200,6 +245,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     visual.X = x;
                     visual.Y = y;
+                    visual.CellBounds = new Rect(cellX - x, cellY - y, cellWidth - 1, cellHeight - 1);
                     visual.Draw();
                 }
             }
@@ -211,7 +257,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Width = points.Width[0];
             }
 
-            _gridLine?.Draw(_dataViewport, points);
+            _gridLine.Draw(_dataViewport, points);
         }
 
         protected override int VisualChildrenCount {

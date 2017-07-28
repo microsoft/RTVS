@@ -18,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public bool Contains(long row, long column) => Rows.Contains(row) && Columns.Contains(column);
+        public bool Contains(GridIndex index) => Rows.Contains(index.Row) && Columns.Contains(index.Column);
         public bool Contains(GridRange other) => Rows.Contains(other.Rows) && Columns.Contains(other.Columns);
     }
 }

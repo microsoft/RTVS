@@ -8,15 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
-using System.Windows.Automation.Peers;
-using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf.Extensions;
-using Microsoft.VisualStudio.R.Package.Shell;
 using static Microsoft.VisualStudio.R.Package.DataInspect.GridUpdateType;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -49,20 +45,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VisualGrid RowHeader => _owner.RowHeader;
         private VisualGrid DataGrid => _owner.Data;
         public GridRange DataViewport { get; private set; }
-        public IGrid<string> ColumnsData { get; private set; }
-        public IGrid<string> RowsData { get; private set; }
-        public IGrid<string> CellsData { get; private set; }
+        public IGridData<string> Data { get; private set; }
 
-
-        private MatrixViewCellFocus FocusedCell => _owner.FocusedCell;
-        private MatrixViewHeaderFocus FocusedHeader => _owner.FocusedHeader;
         public IGridProvider<string> DataProvider => _owner.DataProvider;
         internal void StopScroller() => _cancelSource.Cancel();
 
         public async Task ScrollIntoViewAsync(long row, long column, CancellationToken cancellationToken = default(CancellationToken)) {
             var viewportRect = new Rect(DataGrid.RenderSize);
             var focusRect = Points.GetBounds(row, column);
-            while (!viewportRect.Contains(focusRect)) {
+            while (!viewportRect.ContainsOrCloseTo(focusRect)) {
                 Points.HorizontalOffset += focusRect.Right.GreaterThan(viewportRect.Width)
                     ? focusRect.Right - viewportRect.Width
                     : focusRect.Left.LessThan(0) ? focusRect.Left : 0;
@@ -95,7 +86,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             FocusPageUp,
             FocusPageDown,
             FocusLeft,
-            FocusRight
+            FocusRight,
+            HeaderFocusLeft,
+            HeaderFocusRight
         };
 
         private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
@@ -147,31 +140,31 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
-            bool suppress = false;
+            var suppress = false;
             switch (cmd.UpdateType) {
                 case LineUp:
-                    Points.VerticalOffset -= Points.AverageItemHeight * (double)cmd.Param;
+                    Points.VerticalOffset -= Points.AverageItemHeight * (int)cmd.Param;
                     break;
                 case LineDown:
-                    Points.VerticalOffset += Points.AverageItemHeight * (double)cmd.Param;
+                    Points.VerticalOffset += Points.AverageItemHeight * (int)cmd.Param;
                     break;
                 case LineLeft:
-                    Points.HorizontalOffset -= Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
+                    Points.HorizontalOffset -= Points.AverageItemHeight * (int)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
                 case LineRight:
-                    Points.HorizontalOffset += Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
+                    Points.HorizontalOffset += Points.AverageItemHeight * (int)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
                 case PageUp:
-                    Points.VerticalOffset -= Points.ViewportHeight * (double)cmd.Param;
+                    Points.VerticalOffset -= Points.ViewportHeight * (int)cmd.Param;
                     break;
                 case PageDown:
-                    Points.VerticalOffset += Points.ViewportHeight * (double)cmd.Param;
+                    Points.VerticalOffset += Points.ViewportHeight * (int)cmd.Param;
                     break;
                 case PageLeft:
-                    Points.HorizontalOffset -= Points.ViewportWidth * (double)cmd.Param;
+                    Points.HorizontalOffset -= Points.ViewportWidth * (int)cmd.Param;
                     break;
                 case PageRight:
-                    Points.HorizontalOffset += Points.ViewportWidth * (double)cmd.Param;
+                    Points.HorizontalOffset += Points.ViewportWidth * (int)cmd.Param;
                     break;
                 case SetHorizontalOffset: {
                         var (offset, thumbtrack) = ((double, ThumbTrack))cmd.Param;
@@ -186,7 +179,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                     break;
                 case MouseWheel:
-                    Points.VerticalOffset -= (double)cmd.Param;
+                    Points.VerticalOffset -= (int)cmd.Param;
                     break;
                 case SizeChange:
                     Points.ViewportWidth = ((Size)cmd.Param).Width;
@@ -196,34 +189,44 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case Sort:
                     break;
                 case FocusUp:
-                    FocusedCell.Row = Math.Max(FocusedCell.Row - (long)cmd.Param, 0);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - (long)cmd.Param, 0), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusDown:
-                    FocusedCell.Row = Math.Min(FocusedCell.Row + (long)cmd.Param, DataProvider.RowCount - 1);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + (long)cmd.Param, DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusLeft:
-                    FocusedCell.Column = Math.Max(FocusedCell.Column - (long)cmd.Param, 0);
+                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Max(DataGrid.SelectedIndex.Column - (long)cmd.Param, 0));
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusRight:
-                    FocusedCell.Column = Math.Min(FocusedCell.Column + (long)cmd.Param, DataProvider.ColumnCount - 1);
+                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Min(DataGrid.SelectedIndex.Column + (long)cmd.Param, DataProvider.RowCount - 1));
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusPageUp:
-                    FocusedCell.Row = Math.Max(FocusedCell.Row - (long)cmd.Param, 0);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - (long)cmd.Param, 0), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusPageDown:
-                    FocusedCell.Row = Math.Min(FocusedCell.Row + (long)cmd.Param, DataProvider.RowCount - 1);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + (long)cmd.Param, DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case SetFocus:
-                    var (row, column) = ((long, long)) cmd.Param;
-                    FocusedCell.Row = Math.Min(Math.Max(row, 0), DataProvider.RowCount - 1);
-                    FocusedCell.Column = Math.Min(Math.Max(column, 0), DataProvider.ColumnCount - 1);
+                    DataGrid.SelectedIndex = (GridIndex) cmd.Param;
                     await BringFocusedCellIntoViewAsync(token);
+                    return;
+                case HeaderFocusLeft:
+                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Max(ColumnHeader.SelectedIndex.Column - (long)cmd.Param, 0));
+                    await BringFocusedHeaderIntoViewAsync(token);
+                    return;
+                case HeaderFocusRight:
+                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Min(ColumnHeader.SelectedIndex.Column + (long)cmd.Param, DataProvider.RowCount - 1));
+                    await BringFocusedHeaderIntoViewAsync(token);
+                    return;
+                case SetHeaderFocus:
+                    ColumnHeader.SelectedIndex = (GridIndex) cmd.Param;
+                    await BringFocusedHeaderIntoViewAsync(token);
                     return;
                 case Invalid:
                 default:
@@ -238,11 +241,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var newViewport = Points.ComputeDataViewport(visualViewport);
 
             if (newViewport.Rows.Count < 1 || newViewport.Columns.Count < 1) {
-                await _services.MainThread().SwitchToAsync(token);
-
-                FocusedCell.Row = 0;
-                FocusedCell.Column = 0;
-                FocusedCell.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -266,10 +264,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task DrawVisualsAsync(GridRange dataViewport, IGridData<string> data, GridUpdateType updateType, Rect visualViewport, bool suppressNotification, CancellationToken token) {
             await _services.MainThread().SwitchToAsync(token);
 
-            FocusedCell.Row = Math.Min(FocusedCell.Row, DataProvider.RowCount - 1);
-            FocusedCell.Column = Math.Min(FocusedCell.Column, DataProvider.ColumnCount - 1);
-            FocusedCell.Visibility = Visibility.Visible;
-
+            DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row, DataProvider.RowCount - 1), Math.Min(DataGrid.SelectedIndex.Column, DataProvider.ColumnCount - 1));
             var columnsData = new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true);
             var rowsData = new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false);
             var cellsData = data.Grid;
@@ -313,26 +308,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 Points.ViewportHeight = DataGrid.RenderSize.Height;
                 Points.ViewportWidth = DataGrid.RenderSize.Width;
-
-                var dataGridFocusRect = Points.GetBounds(FocusedCell.Row, FocusedCell.Column);
-                ArrangeFrameworkElement(FocusedCell, dataGridFocusRect, DataGrid.RenderSize);
-                FocusedCell.Value = cellsData[FocusedCell.Row, FocusedCell.Column];
-
-                var headerFocusRect = new Rect(Points.xPosition(FocusedHeader.Column), 0, Points.GetWidth(FocusedHeader.Column), Points.ColumnHeaderHeight);
-                ArrangeFrameworkElement(FocusedHeader, headerFocusRect, ColumnHeader.RenderSize);
-                FocusedHeader.Value = columnsData[0, FocusedHeader.Column];
             }
 
             DataViewport = dataViewport;
-            ColumnsData = columnsData;
-            RowsData = rowsData;
-            CellsData = cellsData;
+            Data = data;
             _owner.AutomationPeer?.Update();
         }
 
         private void AdjustFocusedCellOffset(Rect visualViewport) {
-            var focusRect = Points.GetBounds(FocusedCell.Row, FocusedCell.Column);
-            if (!visualViewport.Contains(focusRect) && visualViewport.IntersectsWith(focusRect)) {
+            var focusRect = Points.GetBounds(DataGrid.SelectedIndex.Row, DataGrid.SelectedIndex.Column);
+            if (!visualViewport.ContainsOrCloseTo(focusRect) && visualViewport.IntersectsWith(focusRect)) {
                 if (focusRect.Top.LessThan(0)) {
                     Points.VerticalOffset += focusRect.Top;
                 } else if (focusRect.Bottom.GreaterThan(visualViewport.Height)) {
@@ -347,26 +332,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private async Task BringFocusedCellIntoViewAsync(CancellationToken token) {
-            var focusRect = Points.GetBounds(FocusedCell.Row, FocusedCell.Column);
-            var viewportRect = new Rect(DataGrid.RenderSize);
-            if (viewportRect.Contains(focusRect)) {
-                await _services.MainThread().SwitchToAsync();
-                ArrangeFrameworkElement(FocusedCell, focusRect, DataGrid.RenderSize);
-            } else {
-                await ScrollIntoViewAsync(FocusedCell.Column, FocusedCell.Row, token);
-            }
+        private Task BringFocusedCellIntoViewAsync(CancellationToken cancellationToken) {
+            var focusRect = Points.GetBounds(DataGrid.SelectedIndex.Row, DataGrid.SelectedIndex.Column);
+            var viewportSize = new Size(Math.Min(DataGrid.ActualWidth, Points.ViewportWidth), Math.Min(DataGrid.ActualHeight, Points.ViewportHeight));
+            return BringIntoViewAsync(focusRect, viewportSize, DataGrid.SelectedIndex.Row, DataGrid.SelectedIndex.Column, cancellationToken);
         }
 
-        private void ArrangeFrameworkElement(FrameworkElement fe, Rect rect, Size viewport) {
-            var intersection = Rect.Intersect(rect, new Rect(viewport));
-            if (intersection.IsEmpty) {
-                fe.Visibility = Visibility.Hidden;
+        private Task BringFocusedHeaderIntoViewAsync(CancellationToken cancellationToken) {
+            var column = ColumnHeader.SelectedIndex.Column;
+            var headerFocusRect = new Rect(Points.xPosition(column), 0, Points.GetWidth(column), Points.ColumnHeaderHeight);
+            var viewportSize = new Size(Math.Min(DataGrid.ActualWidth, Points.ViewportWidth), Points.ColumnHeaderHeight);
+            return BringIntoViewAsync(headerFocusRect, viewportSize, DataGrid.SelectedIndex.Row, ColumnHeader.SelectedIndex.Column, cancellationToken);
+        }
+
+        private async Task BringIntoViewAsync(Rect focusRect, Size viewportSize, long row, long column, CancellationToken cancellationToken) {
+            if (new Rect(viewportSize).ContainsOrCloseTo(focusRect)) {
+                var visualViewport = new Rect(Points.HorizontalOffset, Points.VerticalOffset, Points.ViewportWidth, Points.ViewportHeight);
+                await DrawVisualsAsync(DataViewport, Data, ScrollIntoView, visualViewport, false, cancellationToken);
             } else {
-                fe.Visibility = Visibility.Visible;
-                fe.Margin = new Thickness(intersection.Left, intersection.Top, 0, 0);
-                fe.Width = intersection.Width;
-                fe.Height = intersection.Height;
+                await ScrollIntoViewAsync(row, column, cancellationToken);
             }
         }
 
