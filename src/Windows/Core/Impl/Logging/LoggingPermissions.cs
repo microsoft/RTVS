@@ -30,9 +30,9 @@ namespace Microsoft.Common.Core.Logging {
         private readonly ITelemetryService _telemetryService;
         private readonly IRegistry _registry;
 
+        private readonly LogVerbosity? _registryVerbosity;
+        private readonly int? _registryFeedbackSetting;
         private LogVerbosity _currentVerbosity;
-        private LogVerbosity? _registryVerbosity;
-        private int? _registryFeedbackSetting;
 
         public LoggingPermissions(IServiceContainer services) {
             _telemetryService = services.Telemetry();

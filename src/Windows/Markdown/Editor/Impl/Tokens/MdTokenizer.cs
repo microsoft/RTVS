@@ -137,7 +137,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
         }
 
         protected bool HandleBackTick() {
-            if (_cs.NextChar == '`' && _cs.LookAhead(2) == '`' && (_cs.Position == 0 || _cs.PrevChar == '\n' || _cs.PrevChar == '\r')) {
+            if (_cs.NextChar == '`' && _cs.LookAhead(2) == '`' && (_cs.Position == 0 || _cs.PrevChar.IsLineBreak())) {
                 return HandleCode(block: true);
             }
 
@@ -151,14 +151,12 @@ namespace Microsoft.Markdown.Editor.Tokens {
 
         protected bool HandleCode(bool block) {
             int ticksStart = _cs.Position;
-            int leadingSeparatorLength;
-            int trailingSeparatorLength;
 
-            leadingSeparatorLength = block ? 3 : 1;
+            var leadingSeparatorLength = block ? 3 : 1;
             _cs.Advance(leadingSeparatorLength);
 
             // block in R: '''{r qplot, x=y, ...}
-            bool rLanguage = block && (_cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R'));
+            bool rLanguage = block && IsAtRCodeBlockSignature();
             bool rInline = !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
             if (rInline) {
                 leadingSeparatorLength = 2; // include 'R'
@@ -173,6 +171,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
                 bool endOfInline = !block && _cs.CurrentChar == '`';
                 bool eof = _cs.Position == _cs.Length - 1; // handle unclosed code block as if it ends at EOF
 
+                int trailingSeparatorLength;
                 if (endOfBlock) {
                     _cs.SkipLineBreak();
                     trailingSeparatorLength = 3;
@@ -203,6 +202,20 @@ namespace Microsoft.Markdown.Editor.Tokens {
                 _cs.MoveToNextChar();
             }
             return false;
+        }
+
+        private bool IsAtRCodeBlockSignature() {
+            if (_cs.CurrentChar != '{') {
+                return false;
+            }
+
+            var start = _cs.Position;
+            _cs.MoveToNextChar();
+            _cs.SkipWhitespace();
+
+            var block = _cs.CurrentChar == 'r' || _cs.CurrentChar == 'R';
+            _cs.Position = start;
+            return block;
         }
 
         protected bool HandleMonospace() {

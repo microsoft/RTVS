@@ -10,6 +10,7 @@ using Xunit;
 
 namespace Microsoft.Markdown.Editor.Test.Tokens {
     [ExcludeFromCodeCoverage]
+    [Category.Md.Tokenizer]
     public class TokenizeMdBlockTest : TokenizeTestBase<MarkdownToken, MarkdownTokenType> {
         [CompositeTest]
         [InlineData(
@@ -26,7 +27,6 @@ block```
 block
 ```
 ", 31)]
-        [Category.Md.Tokenizer]
         public void CodeBlock01(string text, int length) {
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);
@@ -44,7 +44,10 @@ block
 @"```{r}
 
 ", 10)]
-        [Category.Md.Tokenizer]
+        [InlineData(
+@"```{ r }
+
+", 12)]
         public void CodeBlock02(string text, int length) {
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);
@@ -54,7 +57,6 @@ block
         }
 
         [CompositeTest]
-        [Category.Md.Tokenizer]
         [InlineData(@"`r x <- 1`", 2, 1)]
         [InlineData(@"`rtoken`", 0, 0)]
         public void CodeBlock03(string content, int leadingSeparatorLength, int trailingSeparatorLength) {
@@ -77,7 +79,6 @@ block
         [InlineData("```block\r", 9)]
         [InlineData("```block\r\n", 10)]
         [InlineData("```block` ```", 13)]
-        [Category.Md.Tokenizer]
         public void CodeBlock04(string text, int length) {
             var tokens = Tokenize(text, new MdTokenizer());
             tokens.Should().HaveCount(1);

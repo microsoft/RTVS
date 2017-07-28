@@ -32,10 +32,8 @@ namespace Microsoft.R.Editor.Data {
         private readonly Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
         private bool _updating;
 
-        public static IVariablesProvider CreateService(IServiceContainer services)
-            => new WorkspaceVariableProvider(services.GetService<IRInteractiveWorkflowProvider>());
-
-        public WorkspaceVariableProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
+        public WorkspaceVariableProvider(IServiceContainer services) : 
+            base(services.GetService<IRInteractiveWorkflowProvider>()) { }
 
         #region IVariablesProvider
         /// <summary>

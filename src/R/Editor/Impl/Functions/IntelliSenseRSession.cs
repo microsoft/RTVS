@@ -32,8 +32,6 @@ namespace Microsoft.R.Editor.Functions {
         private volatile IEnumerable<string> _loadedPackages;
         private volatile Task _updateTask;
 
-        public static IIntellisenseRSession CreateService(IServiceContainer services) => new IntelliSenseRSession(services);
-
         public IntelliSenseRSession(IServiceContainer services) {
             Services = services;
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();

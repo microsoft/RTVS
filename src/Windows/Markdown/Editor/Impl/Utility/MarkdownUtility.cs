@@ -19,8 +19,7 @@ namespace Microsoft.Markdown.Editor.Utility {
         /// </remarks>
         public static string GetRContentFromMarkdownCodeBlock(string content) {
             // Locate start of the block
-            var start = content.IndexOfIgnoreCase("{r");
-            if (start >= 0) {
+            if (GetRCodeBlockSeparatorLength(content, out int start)) {
                 // Locate the closing curly brace
                 var bc = new BraceCounter<char>('{', '}');
                 var end = start;
@@ -46,6 +45,18 @@ namespace Microsoft.Markdown.Editor.Utility {
                 }
             }
             return content;
+        }
+
+        public static bool GetRCodeBlockSeparatorLength(string content, out int openCurlyIndex) {
+            openCurlyIndex = content.IndexOf('{');
+
+            if (openCurlyIndex >= 0) {
+                var end = openCurlyIndex + 1;
+                for (; end < content.Length && char.IsWhiteSpace(content[end]); end++) { }
+
+                return end < content.Length && (content[end] == 'r' || content[end] == 'R');
+            }
+            return false;
         }
     }
 }

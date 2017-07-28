@@ -42,11 +42,8 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
-        public static IFunctionIndex CreateService(IServiceContainer services) {
-            var intellisenseSession = services.GetService<IIntellisenseRSession>();
-            var dataProvider = services.GetService<IFunctionRdDataProvider>();
-            return new FunctionIndex(services, dataProvider, intellisenseSession);
-        }
+        public FunctionIndex(IServiceContainer services): 
+            this(services, services.GetService<IFunctionRdDataProvider>(), services.GetService<IIntellisenseRSession>()) { }
 
         public FunctionIndex(IServiceContainer services, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
             Services = services;

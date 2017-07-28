@@ -15,11 +15,5 @@ namespace Microsoft.Common.Core.Services {
         /// Enumerates all available services
         /// </summary>
         IEnumerable<Type> AllServices { get; }
-
-        /// <summary>
-        /// Returns collection of services impelementing T
-        /// </summary>
-        /// <typeparam name="T">Service type</typeparam>
-        IEnumerable<T> GetServices<T>() where T : class;
     }
 }
