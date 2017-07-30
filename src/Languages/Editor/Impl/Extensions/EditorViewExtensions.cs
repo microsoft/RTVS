@@ -13,7 +13,7 @@ namespace Microsoft.Languages.Editor {
         /// <summary>
         /// Adds service to this instance of the view
         /// </summary>
-        public static void AddService<T>(this IEditorView editorView, T service) where T : class => editorView.Services.AddService<T>(service);
+        public static void AddService<T>(this IEditorView editorView, object service) => editorView.Services.AddService(service);
         
         /// <summary>
         /// Removes service from the instance of the view

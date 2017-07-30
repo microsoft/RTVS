@@ -26,6 +26,16 @@ namespace Microsoft.Common.Core.Test.Services {
         }
 
         [Test]
+        public void DoubleAdd()
+        {
+            var service = new C1();
+            _serviceManager.AddService(service);
+
+            Action a = () => _serviceManager.AddService(new C1());
+            a.ShouldThrow<InvalidOperationException>();
+        }
+
+        [Test]
         public void ServiceOfTypeLazyObject() {
             _serviceManager
                 .AddService(new Lazy<object>())
@@ -109,10 +119,10 @@ namespace Microsoft.Common.Core.Test.Services {
             _serviceManager.AddService(instance);
             _serviceManager.Dispose();
 
-            Action a = () => _serviceManager.AddService<I1>(new C1());
+            Action a = () => _serviceManager.AddService(new C1());
             a.ShouldThrow<ObjectDisposedException>();
 
-            a = () => _serviceManager.AddService<I2>(new C2());
+            a = () => _serviceManager.AddService(new C2());
             a.ShouldThrow<ObjectDisposedException>();
 
             a = () => _serviceManager.AddService<C2>();

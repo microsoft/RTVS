@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Disposables;
+using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Services {
     public class ServiceManager : IServiceManager {
@@ -18,20 +19,19 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Add service to the service manager container
         /// </summary>
-        /// <typeparam name="T">Service type</typeparam>
         /// <param name="service">Service instance</param>
         /// <param name="type">
         /// Optional type to register the instance for. In Visual Studio
         /// some global services are registered as 'SVsService` while
         /// actual interface type is IVsService.
         /// </param>
-        public virtual IServiceManager AddService<T>(T service, Type type = null) where T : class {
+        public virtual IServiceManager AddService(object service, Type type = null) {
             _disposeToken.ThrowIfDisposed();
 
             type = type ?? service.GetType();
             Check.ArgumentNull(nameof(service), service);
-           _s.TryAdd(type, service); // Ignore if service added second time
-
+            Check.InvalidOperation(() => _s.GetOrAdd(type, service) == service, 
+                Invariant($"Another instance of service of type {type} already added"));
             return this;
         }
 
