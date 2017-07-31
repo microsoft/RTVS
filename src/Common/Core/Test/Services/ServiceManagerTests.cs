@@ -52,8 +52,9 @@ namespace Microsoft.Common.Core.Test.Services {
             _serviceManager.RemoveService(s);
             _serviceManager.GetService<I1>().Should().BeNull();
 
-            _serviceManager.AddService((I1) s);
-            _serviceManager.RemoveService<I1>();
+            I1 i1 = s;
+            _serviceManager.AddService(i1);
+            _serviceManager.RemoveService(i1);
             _serviceManager.GetService<I1>().Should().BeNull();
         }
 
@@ -73,44 +74,26 @@ namespace Microsoft.Common.Core.Test.Services {
         }
 
         [Test]
-        public void AddRemoveLazy01() {
-            _serviceManager.AddService<I2, Derived>();
-            _serviceManager.RemoveService<I2>();
-
-            _serviceManager.GetService<I1>().Should().BeNull();
-            _serviceManager.GetService<I2>().Should().BeNull();
-        }
-
-        [Test]
-        public void AddRemoveLazy02() {
-            _serviceManager.AddService<I2, Derived>();
-            _serviceManager.RemoveService<I1>();
-
-            _serviceManager.GetService<I1>().Should().BeNull();
-            _serviceManager.GetService<I2>().Should().BeNull();
-        }
-
-        [Test]
         public void AddRemoveLazy03() {
-            _serviceManager.AddService<I2, Derived>();
-            _serviceManager.RemoveService<Base>();
+            _serviceManager.AddService<Derived>();
+            _serviceManager.RemoveService(_serviceManager.GetService<Base>());
 
             _serviceManager.GetService<I1>().Should().BeNull();
             _serviceManager.GetService<I2>().Should().BeNull();
         }
 
         [Test]
-        public void AddLazy01() {
+        public void AddByInterface01() {
             _serviceManager.AddService<I2, Derived>();
-            _serviceManager.GetService<I1>().Should().NotBeNull();
+            _serviceManager.GetService<I1>().Should().BeNull();
             _serviceManager.GetService<I2>().Should().NotBeNull();
         }
 
         [Test]
-        public void AddLazy02() {
+        public void AddByInterface02() {
             _serviceManager.AddService<I2, Derived>();
             _serviceManager.GetService<I2>().Should().NotBeNull();
-            _serviceManager.GetService<I1>().Should().NotBeNull();
+            _serviceManager.GetService<I1>().Should().BeNull();
         }
 
         [Test]

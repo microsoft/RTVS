@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _files = files;
             _shell = TestCoreShell.CreateSubstitute();
 
-            _shell.ServiceManager.RemoveService<IFileSystem>();
+            _shell.ServiceManager.RemoveService(_shell.ServiceManager.GetService<IFileSystem>());
             _shell.ServiceManager.AddService(new WindowsFileSystem());
 
             _pss = Substitute.For<IProjectSystemServices>();
