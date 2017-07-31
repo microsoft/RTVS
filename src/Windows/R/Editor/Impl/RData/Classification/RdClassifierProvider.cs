@@ -13,6 +13,7 @@ namespace Microsoft.R.Editor.RData.Classification {
     internal sealed class ClassifierProvider : IClassifierProvider {
         private readonly IClassificationTypeRegistryService _ctrs;
 
+        [ImportingConstructor]
         public ClassifierProvider(IClassificationTypeRegistryService ctrs) {
             _ctrs = ctrs;
         }

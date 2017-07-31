@@ -11,7 +11,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <summary>
         /// Adds service to this instance of the text buffer
         /// </summary>
-        public static void AddService<T>(this IEditorBuffer editorBuffer, T service) where T : class => editorBuffer.Services.AddService<T>(service);
+        public static void AddService(this IEditorBuffer editorBuffer, object service) => editorBuffer.Services.AddService(service);
 
         /// <summary>
         /// Removes service from this instance of the text buffer

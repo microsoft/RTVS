@@ -9,10 +9,8 @@ using Microsoft.Languages.Editor.Settings;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Options.Markdown;
-using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -20,8 +18,9 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [Guid(MdGuidList.MdPackageGuidString)]
     [ProvideLanguageExtension(MdGuidList.MdLanguageServiceGuidString, MdContentTypeDefinition.FileExtension)]
-    [ProvideEditorExtension(typeof(MdEditorFactory), ".rmd", 0x32, NameResourceID = 107)]
-    [ProvideLanguageService(typeof(MdLanguageService), MdContentTypeDefinition.LanguageName, 107, ShowSmartIndent = false)]
+    [ProvideEditorExtension(typeof(MdEditorFactory), MdContentTypeDefinition.FileExtension, 0x32, NameResourceID = 107)]
+    [ProvideLanguageService(typeof(MdLanguageService), MdContentTypeDefinition.LanguageName, 107, 
+        ShowSmartIndent = false, ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, DefaultToInsertSpaces = true)]
     [ProvideEditorFactory(typeof(MdEditorFactory), 107, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
     [ProvideEditorLogicalView(typeof(MdEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
     [ProvideLanguageEditorOptionPage(typeof(RMarkdownOptionsDialog), MdContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]

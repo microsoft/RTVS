@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.R.Editor.Undo {
-    internal sealed class MassiveChange : IDisposable {
+    public sealed class MassiveChange : IDisposable {
         private readonly ITextUndoTransaction _transaction;
         private readonly ITextBuffer _textBuffer;
 

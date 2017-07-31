@@ -50,8 +50,12 @@ namespace Microsoft.R.Editor.Formatting {
                 }
             }
 
-            // Expand span to include the entire line
+            // Expand span to include the entire line unless position is 
+            // at the very end of the line. In the latter case use next line.
             var startLine = snapshot.GetLineFromPosition(start);
+            if (startLine.Length > 0 && startLine.End == start && startLine.LineNumber < snapshot.LineCount) {
+                startLine = snapshot.GetLineFromLineNumber(startLine.LineNumber + 1);
+            }
             var endLine = snapshot.GetLineFromPosition(end);
 
             // In case of formatting of multiline expressions formatter needs
@@ -83,34 +87,30 @@ namespace Microsoft.R.Editor.Formatting {
             var formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // There may be inserted line breaks after {
-            // Apply formatted text without indentation. We then will update the parse tree 
-            // so we can calculate proper line indents from the AST via the smart indenter.
-            if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
-                // Extract existing indent before applying changes. Existing indent
-                // may be used by the smart indenter for function argument lists.
-                var startLine = snapshot.GetLineFromPosition(formatRange.Start);
-                var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), _settings.IndentSize);
+                                                  // Extract existing indent before applying changes. Existing indent
+                                                  // may be used by the smart indenter for function argument lists.
+            var startLine = snapshot.GetLineFromPosition(formatRange.Start);
+            var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), _settings.IndentSize);
 
-                var selectionTracker = GetSelectionTracker(editorView, editorBuffer, formatRange);
-                var tokenizer = new RTokenizer();
-                var oldTokens = tokenizer.Tokenize(spanText);
-                var newTokens = tokenizer.Tokenize(formattedText);
+            var selectionTracker = GetSelectionTracker(editorView, editorBuffer, formatRange);
+            var tokenizer = new RTokenizer();
+            var oldTokens = tokenizer.Tokenize(spanText);
+            var newTokens = tokenizer.Tokenize(formattedText);
 
-                var wsChangeHandler = _services.GetService<IIncrementalWhitespaceChangeHandler>();
-                wsChangeHandler.ApplyChange(
-                    editorBuffer,
-                    new TextStream(spanText), new TextStream(formattedText),
-                    oldTokens, newTokens,
-                    formatRange,
-                    Microsoft.R.Editor.Resources.AutoFormat, selectionTracker,
-                    () => {
-                        var ast = UpdateAst(editorBuffer);
-                        // Apply indentation
-                        IndentLines(editorBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, originalIndentSizeInSpaces);
-                    });
+            var wsChangeHandler = _services.GetService<IIncrementalWhitespaceChangeHandler>();
+            wsChangeHandler.ApplyChange(
+                editorBuffer,
+                new TextStream(spanText), new TextStream(formattedText),
+                oldTokens, newTokens,
+                formatRange,
+                Microsoft.R.Editor.Resources.AutoFormat, selectionTracker,
+                () => {
+                    var ast = UpdateAst(editorBuffer);
+                    // Apply indentation
+                    IndentLines(editorBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, originalIndentSizeInSpaces);
+                });
 
-                return true;
-            }
+            return true;
 
             return false;
         }
@@ -211,7 +211,7 @@ namespace Microsoft.R.Editor.Formatting {
             return provider?.CreateSelectionTracker(editorView, editorBuffer, formatRange) ?? new DefaultSelectionTracker(editorView);
         }
 
-        private sealed class DefaultSelectionTracker: ISelectionTracker {
+        private sealed class DefaultSelectionTracker : ISelectionTracker {
             public DefaultSelectionTracker(IEditorView editorView) {
                 EditorView = editorView;
             }

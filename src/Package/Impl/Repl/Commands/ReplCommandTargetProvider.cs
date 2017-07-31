@@ -89,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                     var doc = tb.GetEditorDocument<IREditorDocument>();
                     if (doc == null) {
                         var eb = EditorBuffer.Create(tb, _shell.GetService<ITextDocumentFactoryService>());
-                        new REditorDocument(eb, _shell.Services);
+                        new REditorDocument(eb, services: _shell.Services, isRepl: true);
                     }
                 }
             }

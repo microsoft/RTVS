@@ -266,20 +266,18 @@ namespace Microsoft.R.Editor.SmartIndent {
                         : GetBlockIndent(currentLine, settings);
             }
 
-            // The statement may be incomplete and hence expression parser failed
-            // and there is no statement in the AST.
-            if (ast.Errors.Any(e => prevLine.Contains(e.Start))) {
-                if (LineHasContinuation(prevLine)) {
-                    // We need to determine if last line was the first in the statement
-                    // or is it itself a continuation.
-                    if (prevLine.LineNumber > 0) {
-                        var prevPrevLine = snapshot.GetLineFromLineNumber(prevLine.LineNumber);
-                        if(LineHasContinuation(prevPrevLine)) {
-                            return GetBlockIndent(currentLine, settings);
-                        }
+            // The statement may be incomplete and hence expression parser
+            // failed and hence there is no statement node in the AST.
+            if (LineHasContinuation(prevLine)) {
+                // We need to determine if last line was the first in the statement
+                // or is it itself a continuation.
+                if (prevLine.LineNumber > 0) {
+                    var prevPrevLine = snapshot.GetLineFromLineNumber(prevLine.LineNumber - 1);
+                    if (LineHasContinuation(prevPrevLine)) {
+                        return GetBlockIndent(currentLine, settings);
                     }
-                    return InnerIndentSizeFromNode(snapshot.EditorBuffer, scope, settings.FormatOptions);
                 }
+                return InnerIndentSizeFromNode(snapshot.EditorBuffer, scope, settings.FormatOptions);
             }
             return 0;
         }

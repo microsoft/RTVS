@@ -14,6 +14,7 @@ using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using TextRange = Microsoft.Languages.Core.Text.TextRange;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
     internal sealed class RLanguageHandler : ContainedLanguageHandler {
@@ -68,7 +69,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             foreach (var t in rCodeTokens) {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
-                _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```r{ or `r
+                _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```{r or `r
                 if (t.IsWellFormed) {
                     // Count backticks
                     Blocks.Add(TextRange.FromBounds(t.Start + t.LeadingSeparatorLength, t.End - t.TrailingSeparatorLength));

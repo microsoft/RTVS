@@ -52,9 +52,8 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 _compositionContainer.Compose(batch);
 
                 AddService(new TestCompositionCatalog(_compositionContainer));
-                AddService<ExportProvider>(_compositionContainer);
-                AddService<ICompositionService>(_compositionContainer);
-
+                AddService(_compositionContainer);
+ 
                 return this;
             }
 

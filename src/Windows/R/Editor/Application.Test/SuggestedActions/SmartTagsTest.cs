@@ -45,7 +45,8 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
 
                 sets.Should().NotBeNull();
                 sets.Should().BeEmpty();
-                session.Dismiss();
+
+                script.Invoke(() => session.Dismiss());
                 script.DoIdle(200);
 
                 script.MoveRight(2);

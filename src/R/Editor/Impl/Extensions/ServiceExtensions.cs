@@ -9,10 +9,10 @@ namespace Microsoft.R.Editor {
     public static class ServiceExtensions {
         public static IServiceManager AddEditorServices(this IServiceManager serviceManager)
             => serviceManager
-                .AddService(IntelliSenseRSession.CreateService)
-                .AddService(FunctionRdDataProvider.CreateService)
-                .AddService(FunctionIndex.CreateService)
-                .AddService(PackageIndex.CreateService)
-                .AddService(WorkspaceVariableProvider.CreateService);
+                .AddService<IntelliSenseRSession>()
+                .AddService<FunctionRdDataProvider>()
+                .AddService<FunctionIndex>()
+                .AddService<PackageIndex>()
+                .AddService<WorkspaceVariableProvider>();
     }
 }

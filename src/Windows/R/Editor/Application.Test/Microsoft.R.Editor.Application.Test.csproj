@@ -133,6 +133,8 @@
     <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="IEditorScript.cs" />
     <Compile Include="Markdown\MarkdownPreviewTest.cs" />
+    <Compile Include="Markdown\MarkdownFormatTest.cs" />
+    <Compile Include="Markdown\MarkdownSmartIndentTest.cs" />
     <Compile Include="Markdown\RmdClassificationTest.cs" />
     <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />

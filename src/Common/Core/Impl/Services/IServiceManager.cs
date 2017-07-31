@@ -8,14 +8,20 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Adds service instance
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="service">Service instance</param>
         /// <param name="type">
         /// Optional type to register the instance for. In Visual Studio
         /// some global services are registered as 'SVsService` while
         /// actual interface type is IVsService.
         /// </param>
-        IServiceManager AddService<T>(T service, Type type = null) where T : class;
+        IServiceManager AddService(object service, Type type = null);
+
+        /// <summary>
+        /// Adds on-demand created service
+        /// </summary>
+        IServiceManager AddService<TService, TImplementation>()
+            where TService : class
+            where TImplementation : class, TService;
 
         /// <summary>
         /// Adds on-demand created service

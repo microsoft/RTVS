@@ -50,11 +50,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             // Don't push syntax errors to the Error List in transient
             // documents such as in document attached to a projected buffer
             // in the R interactive window
-            if (_taskList != null) {
-                var view = _document.PrimaryView;
-                if (view != null && !view.IsRepl()) {
-                    _taskList.AddTaskSource(this);
-                }
+            if (_taskList != null && !_document.IsRepl) {
+                _taskList.AddTaskSource(this);
             }
 
             var validator = _document.EditorBuffer.GetService<TreeValidator>();

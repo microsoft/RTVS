@@ -149,7 +149,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                var expected = "x <- function(a,\r\n             b)\r\n{\r\n    a\r\n}";
+                var expected = "x <- function(a,\r\n              b)\r\n{\r\n    a\r\n}";
                 var actual = script.EditorText;
                 actual.Should().Be(expected);
             }
@@ -404,9 +404,9 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 var actual = script.EditorText;
                 var expected =
 @"x
-<- 1";
+    <- 1";
                 actual.Should().Be(expected);
-                script.View.Caret.Position.BufferPosition.Position.Should().Be(3);
+                script.View.Caret.Position.BufferPosition.Position.Should().Be(7);
             }
         }
 

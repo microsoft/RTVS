@@ -14,6 +14,11 @@ namespace Microsoft.R.Editor.Document {
         IREditorTree EditorTree { get; }
 
         /// <summary>
+        /// Document represents content in the interactive window
+        /// </summary>
+        bool IsRepl { get; }
+
+        /// <summary>
         /// Tells document that massive change to text buffer is about to commence.
         /// Document will then stop tracking text buffer changes, will suspend
         /// it's parser and the classifier and remove all elements. Document 

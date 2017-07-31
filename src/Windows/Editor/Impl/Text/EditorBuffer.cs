@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
@@ -57,12 +58,14 @@ namespace Microsoft.Languages.Editor.Text {
         /// Returns underlying platform object such as ITextBuffer in Visual Studio.
         /// May return null if there is no underlying implementation.
         /// </summary>
+        [DebuggerStepThrough]
         public T As<T>() where T : class => _textBuffer as T;
 
         /// <summary>
         /// Attempts to locate associated editor document. Implementation depends on the platform.
         /// </summary>
         /// <typeparam name="T">Type of the document to locate</typeparam>
+        [DebuggerStepThrough]
         public T GetEditorDocument<T>() where T : class, IEditorDocument => _textBuffer.GetEditorDocument<T>();
 
         public bool Insert(int position, string text) {
@@ -105,6 +108,7 @@ namespace Microsoft.Languages.Editor.Text {
         }
         #endregion
 
+        [DebuggerStepThrough]
         private void OnTextBufferChangedHighPriority(object sender, TextContentChangedEventArgs e) 
             => ChangedHighPriority?.Invoke(this, new TextChangeEventArgs(e.ToTextChange()));
 
@@ -114,6 +118,7 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
+        [DebuggerStepThrough]
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
             => Changed?.Invoke(this, new TextChangeEventArgs(e.ToTextChange()));
     }

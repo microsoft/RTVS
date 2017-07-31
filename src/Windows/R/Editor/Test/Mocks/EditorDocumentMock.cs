@@ -31,6 +31,8 @@ namespace Microsoft.R.Editor.Test.Mocks {
 
         public IREditorTree EditorTree { get; private set; }
 
+        public bool IsRepl => false;
+
         public void Close() { }
 
         public bool IsTransient => false;

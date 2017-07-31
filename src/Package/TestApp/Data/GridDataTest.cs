@@ -354,7 +354,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "2000.50", "3",    "6" },
         });
 
-        [Test]
+        [Test(Skip= "https://stackoverflow.com/questions/44015838/cant-download-data-from-yahoo-finance-using-quantmod-in-r")]
         public async Task QuantmodGrid() {
             try {
                 await _session.EvaluateAsync("quantmod::getSymbols", REvaluationKind.NoResult);

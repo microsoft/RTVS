@@ -11,8 +11,8 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// <summary>
         /// Gets the desired indentation of editor line.
         /// </summary>
-        /// <returns>The number of spaces to place at the start of the line, or null if there is no
-        //     desired indentation.</returns>
+        /// <returns>The number of spaces to place at the start of the line, 
+        /// or null if there is no desired indentation.</returns>
         int? GetDesiredIndentation(IEditorLine line);
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Formatting;
 using Microsoft.Markdown.Editor.Preview.Commands;
 using Microsoft.Markdown.Editor.Publishing.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -38,7 +39,8 @@ namespace Microsoft.Markdown.Editor.Commands {
                 new PreviewWordCommand(textView, _workflowProvider, _services),
                 new AutomaticSyncCommand(textView, _services),
                 new RunCurrentChunkCommand(textView, _services),
-                new RunAllChunksAboveCommand(textView, _services)
+                new RunAllChunksAboveCommand(textView, _services),
+                new FormatDocumentCommand(textView, textBuffer, _services)
             };
             return commands;
         }
