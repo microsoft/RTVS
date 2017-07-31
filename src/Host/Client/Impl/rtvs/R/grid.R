@@ -136,7 +136,7 @@ grid_data <- function(x, rows, cols, row_selector) {
             # For numeric vectors, we want to apply format() to the whole thing at once,
             # so that it can determine the number of decimal places accordingly - e.g.
             # for c(1.5, 2, 3.04), we want the output to be "1.50 2.00 3.04".
-            rn <- format(rn, trim = TRUE, justify = "none")
+            rn <- lapply(format(rn, trim = TRUE, justify = "none"), function(s) if(s=="NA") NULL else s)
         }
         x.rownames <- sapply(rn, grid_header_format, USE.NAMES = FALSE);
     }
