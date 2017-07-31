@@ -38,23 +38,12 @@ namespace Microsoft.Common.Core.Services {
         /// <summary>
         /// Adds on-demand created service
         /// </summary>
-        public virtual IServiceManager AddService<TService, TImplementation>()
-            where TService : class
-            where TImplementation : class, TService
-            => AddLazyService(typeof(TService), typeof(TImplementation), null);
-
-        /// <summary>
-        /// Adds on-demand created service
-        /// </summary>
         /// <param name="factory">Service factory</param>
-        public IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class
-            => AddLazyService(typeof(T), typeof(T), s => factory(this));
-
-        private IServiceManager AddLazyService(Type serviceType, Type implementationType, Func<IServiceManager, object> factory) {
+        public virtual IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class {
             _disposeToken.ThrowIfDisposed();
 
-            var lazy = new LazyService(implementationType, this, factory);
-            Check.InvalidOperation(() => _s.TryAdd(serviceType, lazy), $"Service of type {serviceType} already exists");
+            var lazy = new Lazy<object>(() => factory(this));
+            Check.InvalidOperation(() => _s.TryAdd(typeof(T), lazy), $"Service of type {typeof(T)} already exists");
             return this;
         }
 
@@ -77,48 +66,30 @@ namespace Microsoft.Common.Core.Services {
                 value = _s.FirstOrDefault(kvp => type.GetTypeInfo().IsAssignableFrom(kvp.Key)).Value;
             }
 
-            if (value is T) {
-                return (T)CheckDisposed(value);
-            }
-
-            if (value is LazyService ls) {
-                return (T)CheckDisposed(ls.Instance);
-            }
-
-            var ti = type.GetTypeInfo();
-            value = _s.FirstOrDefault(kvp => {
-                var lzs = kvp.Value as LazyService;
-                return lzs != null && ti.IsAssignableFrom(lzs.ImplementationType);
-            }).Value;
-
-            return (T)CheckDisposed((value as LazyService)?.Instance);
+            return (T)CheckDisposed(value as T ?? (value as Lazy<object>)?.Value);
         }
 
-        public virtual void RemoveService(object service) => RemoveService(service.GetType());
-        public virtual void RemoveService<T>() => RemoveService(typeof(T));
-
-        private void RemoveService(Type type) {
-            if (_s.TryRemove(type, out object dummy)) {
-                return;
-            }
-
-            var ti = type.GetTypeInfo();
-            var implementor = _s.FirstOrDefault(kvp => ti.IsAssignableFrom(kvp.Key));
-            if (implementor.Key != null && _s.TryRemove(implementor.Key, out dummy)) {
-                return;
-            }
-
-            var lazy = _s.FirstOrDefault(kvp => {
-                var lzs = kvp.Value as LazyService;
-                return lzs != null && ti.IsAssignableFrom(lzs.ImplementationType);
-            });
-
-            if (lazy.Key != null) {
-                _s.TryRemove(lazy.Key, out dummy);
-            }
-        }
+        public virtual void RemoveService(object service) => _s.TryRemove(service.GetType(), out object dummy);
 
         public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
+
+        public virtual IEnumerable<T> GetServices<T>() where T : class {
+            if (_disposeToken.IsDisposed) {
+                yield break;
+            }
+
+            var type = typeof(T);
+            foreach (var value in _s.Values.OfType<T>()) {
+                CheckDisposed(value);
+                yield return value;
+            }
+
+            // Perhaps someone is asking for IFoo that is implemented on class Bar 
+            // but Bar was added as Bar, not as IFoo
+            foreach (var kvp in _s.Where(kvp => kvp.Value is Lazy<object> && type.GetTypeInfo().IsAssignableFrom(kvp.Key))) {
+                yield return (T)CheckDisposed(((Lazy<object>)kvp.Value).Value);
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private object CheckDisposed(object service) {
@@ -130,61 +101,17 @@ namespace Microsoft.Common.Core.Services {
         }
 
         #region IDisposable
-
         public void Dispose() {
             if (_disposeToken.TryMarkDisposed()) {
                 foreach (var service in _s.Values) {
-                    if (service is LazyService lzs && lzs.IsInstanceCreated) {
-                        (lzs.Instance as IDisposable)?.Dispose();
+                    if (service is Lazy<object> lazy && lazy.IsValueCreated) {
+                        (lazy.Value as IDisposable)?.Dispose();
                     } else {
                         (service as IDisposable)?.Dispose();
                     }
                 }
             }
         }
-
         #endregion
-
-        private class LazyService {
-            private readonly IServiceManager _sm;
-            private readonly Lazy<object> _instance;
-
-            public Type ImplementationType { get; }
-            public object Instance => _instance.Value;
-            public bool IsInstanceCreated => _instance.IsValueCreated;
-
-            public LazyService(Type implementationType, IServiceManager sm, Func<IServiceManager, object> factory) {
-                ImplementationType = implementationType;
-                _sm = sm;
-                _instance = factory != null
-                                ? new Lazy<object>(() => factory(_sm))
-                                : new Lazy<object>(CreateFactory);
-            }
-
-            private object CreateFactory() {
-                try {
-                    var constructors = ImplementationType.GetTypeInfo().DeclaredConstructors
-                        .Where(c => c.IsPublic)
-                        .ToList();
-
-                    foreach (var constructor in constructors) {
-                        var parameters = constructor.GetParameters();
-                        if (parameters.Length == 1 &&
-                               (typeof(IServiceContainer) == parameters[0].ParameterType ||
-                                typeof(IServiceManager) == parameters[0].ParameterType)) {
-                            return constructor.Invoke(new object[] { _sm });
-                        }
-                    }
-
-                    foreach (var constructor in constructors) {
-                        if (constructor.GetParameters().Length == 0) {
-                            return constructor.Invoke(new object[0]);
-                        }
-                    }
-                } catch (TargetInvocationException) { }
-
-                throw new InvalidOperationException($"Type {ImplementationType} should have either default constructor or constructor that accepts IServiceContainer");
-            }
-        }
     }
 }

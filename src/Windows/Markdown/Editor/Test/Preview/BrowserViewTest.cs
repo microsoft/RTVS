@@ -23,7 +23,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             shell.SetupSettingsSubstitute();
             shell.SetupSessionSubstitute();
 
-            shell.ServiceManager.RemoveService<IFileSystem>();
+            shell.ServiceManager.RemoveService(shell.ServiceManager.GetService<IFileSystem>());
             shell.ServiceManager.AddService(new FileSystem());
 
             _browser = new BrowserView("file", shell.Services);

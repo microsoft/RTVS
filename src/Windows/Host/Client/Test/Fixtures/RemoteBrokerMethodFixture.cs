@@ -16,6 +16,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         private readonly RemoteBrokerFixture _remoteBrokerFixture;
         private readonly IServiceContainer _services;
         private string _testName;
+        private string _assemblyName;
 
         public RemoteBrokerMethodFixture(RemoteBrokerFixture remoteBrokerFixture, IServiceContainer services) {
             _remoteBrokerFixture = remoteBrokerFixture;
@@ -24,22 +25,25 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
 
         public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             _testName = testInput.FileSytemSafeName;
-            return _remoteBrokerFixture.EnsureBrokerStartedAsync(testInput.TestClass.Assembly.GetName().Name);
+            _assemblyName = testInput.TestClass.Assembly.GetName().Name;
+            return _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName);
         }
 
         public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
             return Task.CompletedTask;
         }
 
-        public Task<bool> ConnectAsync(IRSessionProvider sessionProvider) {
+        public async Task<bool> ConnectAsync(IRSessionProvider sessionProvider) {
             var securityService = _services.GetService<ISecurityService>();
             if (securityService is SecurityServiceStub securityServiceStub) { 
                 securityServiceStub.GetUserNameHandler = s => UserName;
                 securityServiceStub.GetUserCredentialsHandler = (authority, workspaceName) => Credentials.Create(UserName, _remoteBrokerFixture.Password);
             }
 
+            await _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName);
+
             var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, _testName, _remoteBrokerFixture.Address, null, false);
-            return sessionProvider.TrySwitchBrokerAsync(_testName, brokerConnectionInfo);
+            return await sessionProvider.TrySwitchBrokerAsync(_testName, brokerConnectionInfo);
         }
     }
 }
