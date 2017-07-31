@@ -369,5 +369,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 { "2016-03-28", "54.21",     "54.29",     "53.33",    "53.54",      "17025100",    "52.16797" },
             });
         }
+
+        [Test]
+        public Task MatrixNA() => Test("matrix(c(1, 2, 3, 4, NA, NaN, 7, 8, 9, 10), 2, 5, dimnames = list(r = c('r1', NA), c = c('a', 'b', NA, 'd', NA)))", 1, 1, new[,] {
+            {   null, "a", "b", "[,3]", "d", "[,5]"},
+            {   "r1", "1", "3",   "NA", "7",    "9"},
+            { "[2,]", "2", "4",  "NaN", "8",   "10"}
+        });
     }
 }

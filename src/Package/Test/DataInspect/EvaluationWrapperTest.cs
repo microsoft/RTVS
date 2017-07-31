@@ -199,38 +199,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        public async Task MatrixNATest() {
-            var script = "matrix.na.header <- matrix(c(1, 2, 3, 4, NA, NaN, 7, 8, 9, 10), 2, 5, dimnames = list(r = c('r1', NA), c = c('a', 'b', NA, 'd', NA)))";
-            var expectation = new VariableExpectation() { Name = "matrix.na.header", Value = "num [1:2, 1:5] 1 2 3 4 NA NaN 7 8 9 10", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
-
-            var evaluation = (VariableViewModel)await _hostScript.EvaluateAndAssert(
-                script,
-                expectation,
-                VariableRHostScript.AssertEvaluationWrapper);
-
-            var rowRange = new Range(0, 2);
-            var columnRange = new Range(2, 3);
-            var grid = await _hostScript.Session.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
-
-            grid.ColumnHeader.Range.Should().Be(columnRange);
-            grid.ColumnHeader[2].Should().Be("[,1]");
-            grid.ColumnHeader[3].Should().Be("d");
-            grid.ColumnHeader[4].Should().Be("[,3]");
-
-            grid.RowHeader.Range.Should().Be(rowRange);
-            grid.RowHeader[0].Should().Be("r1");
-            grid.RowHeader[1].Should().Be("[2,]");
-
-            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 2].Should().Be("NA");
-            grid.Grid[0, 3].Should().Be("7");
-            grid.Grid[0, 4].Should().Be("9");
-            grid.Grid[1, 2].Should().Be("NaN");
-            grid.Grid[1, 3].Should().Be("8");
-            grid.Grid[1, 4].Should().Be("10");
-        }
-
-        [Test]
         public async Task MatrixOneRowColumnTest() {
             var script1 = "matrix.singlerow <- matrix(1:3, nrow=1);";
             var expectation1 = new VariableExpectation() {
