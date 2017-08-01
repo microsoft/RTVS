@@ -405,6 +405,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        protected override void OnLostFocus(RoutedEventArgs e) {
+            base.OnLostFocus(e);
+            Data.HasKeyboardFocus = false;
+            ColumnHeader.HasKeyboardFocus = false;
+        }
+
         protected override void OnKeyDown(KeyEventArgs e) {
             if (HandleKeyDown(e.Key)) {
                 e.Handled = true;
@@ -436,6 +442,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var point = e.GetPosition(ColumnHeader);
             if (IsInsideHeader(point)) {
                 var column = Points.GetColumn(point.X);
+                SetHeaderFocus(column);
+                var addToSort = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+                ColumnHeader.ToggleSort(new GridIndex(0, column), addToSort);
                 e.Handled = true;
                 return;
             }

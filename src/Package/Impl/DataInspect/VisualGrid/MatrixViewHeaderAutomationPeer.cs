@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override void SetFocusCore() => Owner.SetHeaderFocus(Column);
 
-        public void Invoke() {}
+        public void Invoke() => Owner.ColumnHeader.ToggleSort(new GridIndex(0, Column), false);
 
         protected override Rect GetVisibleRect() {
             var left = Points.xPosition(Column);
