@@ -5737,7 +5737,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Source Editor]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[D&üzenleyiciyi Yürütmek için Gönder]]></Val>
+              <Val><![CDATA[D&üzenleyiciyi Yürütmek için Aç]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
