@@ -3,9 +3,6 @@
     "FluentAssertions": "4.19.2",
     "MicroBuild.Core": "0.2.0",
     "NSubstitute": "2.0.3",
-    "System.Diagnostics.DiagnosticSource": "4.4.0",
-    "System.Net.Http": "4.3.2",
-    "System.Net.Http.WinHttpHandler": "4.3.1",
     "xunit": "2.2.0",
     "xunit.runner.visualstudio": "2.2.0"
   },
