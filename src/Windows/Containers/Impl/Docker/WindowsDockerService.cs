@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
 using static System.FormattableString;
@@ -19,10 +20,12 @@ namespace Microsoft.R.Containers.Docker {
         const string DockerServiceName = "Docker for Windows";
         private readonly IFileSystem _fs;
         private readonly IProcessServices _ps;
+        private readonly IActionLogWriter _outputLogWriter;
 
-        public WindowsDockerService(IFileSystem fs, IProcessServices ps, IRegistry registryService):base (GetLocalDocker(registryService, fs), ps) {
+        public WindowsDockerService(IFileSystem fs, IProcessServices ps, IRegistry registryService, IActionLogWriter logWriter = null) : base (GetLocalDocker(registryService, fs), ps, logWriter) {
             _fs = fs;
             _ps = ps;
+            _outputLogWriter = logWriter;
         }
 
         public ContainerServiceStatus GetServiceStatus() {

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -17,13 +18,15 @@ namespace Microsoft.R.Containers.Docker {
     public abstract class LocalDockerService : IDockerService {
         private readonly IProcessServices _ps;
         private readonly LocalDocker _docker;
+        private readonly IActionLogWriter _outputLogWriter;
         private readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
         private readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
         private int _defaultTimeout = 5000;
 
-        public LocalDockerService(LocalDocker docker, IProcessServices ps) {
+        public LocalDockerService(LocalDocker docker, IProcessServices ps, IActionLogWriter logWriter) {
             _docker = docker;
             _ps = ps;
+            _outputLogWriter = logWriter;
         }
 
         public async Task<IEnumerable<string>> ListContainersAsync(bool getAll = true, CancellationToken ct = default(CancellationToken)) {
@@ -138,8 +141,19 @@ namespace Microsoft.R.Containers.Docker {
             string output = await process.StandardOutput.ReadToEndAsync();
             string error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error)) {
+                try {
+                    _outputLogWriter?.Write(MessageCategory.Error, error);
+                } catch(Exception ex) when (!ex.IsCriticalException()) {
+                }
+
                 throw new ContainerException(error);
             }
+
+            try {
+                _outputLogWriter?.Write(MessageCategory.General, output);
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+            }
+
             return output;
         }
     }

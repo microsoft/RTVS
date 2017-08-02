@@ -3,18 +3,17 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Threading;
-using Newtonsoft.Json.Linq;
-using System.IO;
-using static System.FormattableString;
 
+
+using static System.FormattableString;
 namespace Microsoft.R.Containers.Docker {
     public class LinuxDockerService : LocalDockerService, IContainerService {
         const string DockerCePackageName = "docker-ce";
@@ -25,7 +24,7 @@ namespace Microsoft.R.Containers.Docker {
         private readonly IProcessServices _ps;
 
 
-        public LinuxDockerService(IFileSystem fs, IProcessServices ps): base(GetLocalDocker(fs), ps) {
+        public LinuxDockerService(IFileSystem fs, IProcessServices ps, IActionLogWriter logWriter = null) : base(GetLocalDocker(fs), ps, logWriter) {
             _fs = fs;
             _ps = ps;
         }
