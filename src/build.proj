@@ -8,6 +8,7 @@
     <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
     <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\</IntermediateOutputDirectory>
     <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
+    <LocDirectory Condition="'$(LocDirectory)' == ''">$(RootDirectory)loc\</LocDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
 
@@ -35,6 +36,7 @@
       BinDirectory=$(OutputDirectory);
       ObjDirectory=$(IntermediateOutputDirectory);
       LibDirectory=$(LibDirectory);
+      LocDirectory=$(LocDirectory);
     </SolutionProperties>
   
     <SetupRemote Condition="'$(SetupRemote)' == ''">$(SourceDirectory)Windows\Setup\RemoteServices\RemoteServices.wixproj</SetupRemote>
@@ -51,6 +53,7 @@
       BinDirectory=$(OutputDirectory);
       ObjDirectory=$(IntermediateOutputDirectory);
       LibDirectory=$(LibDirectory);
+      LocDirectory=$(LocDirectory);
       DefineSolutionProperties=false;
     </SetupProperties>
   </PropertyGroup>
