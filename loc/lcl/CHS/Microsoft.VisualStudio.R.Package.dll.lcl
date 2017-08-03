@@ -1712,7 +1712,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Expanded braces]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[展开的大括号]]></Val>
+            <Val><![CDATA[展开大括号]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1883,7 +1883,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Format scope on }]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[键入 } 后设置范围的格式]]></Val>
+            <Val><![CDATA[键入 } 后将范围格式化]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2315,7 +2315,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Space after comma]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[逗号后空格]]></Val>
+            <Val><![CDATA[在逗号后添加空格]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2351,7 +2351,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Space before {]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{ 前的空格]]></Val>
+            <Val><![CDATA[在{ 前添加空格]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2360,7 +2360,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Determines if formatter should be adding space before opening curly brace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[确定是否应在打开大括号前为格式化程序添加空格]]></Val>
+            <Val><![CDATA[确定格式化程序是否应在左大括号{ 前添加空格]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2369,7 +2369,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Spaces around =]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[= 周围的空格]]></Val>
+            <Val><![CDATA[在 = 前后添加空格]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
