@@ -22,7 +22,7 @@
 
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
     <ItemGroup>
-      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.$(OutputFileExtension)">
+      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
         <Authenticode>Microsoft</Authenticode>
         <StrongName>StrongName</StrongName>
       </FilesToSign>
