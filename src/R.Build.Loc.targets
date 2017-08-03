@@ -10,7 +10,7 @@
   <ItemGroup>
     <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).$(OutputFileExtension)">
       <!--Required: Files to be localized -->
-      <TranslationFile>$(LocDirectory)lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <TranslationFile>$(LocDirectory)lcl\{Lang}\$(AssemblyName).$(OutputFileExtension).lcl</TranslationFile>
       <!--Required: translation file-->
       <LciCommentFile>$(LocDirectory)lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
       <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
