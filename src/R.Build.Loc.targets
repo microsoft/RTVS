@@ -9,9 +9,9 @@
   <ItemGroup>
     <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).$(OutputFileExtension)">
       <!--Required: Files to be localized -->
-      <TranslationFile>$(SourceDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <TranslationFile>$(RootDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
       <!--Required: translation file-->
-      <LciCommentFile>$(SourceDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
+      <LciCommentFile>$(RootDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
       <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
     </FilesToLocalize>
     <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
