@@ -44,7 +44,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} is missing from the installation directory.]D;]A;Please reinstall Data Science workload or repair the Visual Studio installation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} não está no diretório de instalação.]D;]A;Reinstale a carga de trabalho do Data Science ou repare a instalação do Visual Studio.]]></Val>
+            <Val><![CDATA[{0} não está no diretório de instalação.]D;]A;Reinstale a carga de trabalho da Ciência de Dados ou repare a instalação do Visual Studio.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -197,7 +197,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to create HTTP server for remote {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falha ao criar servidor HTTP para {0} remoto.]]></Val>
+            <Val><![CDATA[Falha ao criar servidor HTTP para {0} remota]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -206,7 +206,7 @@
         <Str Cat="Text">
           <Val><![CDATA[HTTP server for remote stopped with following exception:]D;]A;{0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O servidor HTTP para uso remoto foi encerrado com a seguinte exceção:]D;]A;{0}]]></Val>
+            <Val><![CDATA[O servidor HTTP para conexão remota foi encerrado com a seguinte exceção:]D;]A;{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -260,7 +260,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to set options(): {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falha ao definir opções(): {0}]]></Val>
+            <Val><![CDATA[Falha ao definir options(): {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -370,7 +370,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.934]]></Val>
+        <Val><![CDATA[1.1.30719.1703]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -391,7 +391,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.0934]]></Val>
+        <Val><![CDATA[1.1.30719.1703]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -427,7 +427,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.0934]]></Val>
+        <Val><![CDATA[1.1.30719.1703]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
