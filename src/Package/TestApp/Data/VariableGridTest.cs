@@ -52,9 +52,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
                 var grid = await VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
                 await UIThreadHelper.Instance.InvokeAsync(() => {
-                    grid.ToggleSort(header, false);
+                    grid.ToggleSort(new GridIndex(0, header.ColumnIndex), false);
                     DoIdle(200);
-                    grid.ToggleSort(header, false);
+                    grid.ToggleSort(new GridIndex(0, header.ColumnIndex), false);
                 });
                 DoIdle(200);
 
@@ -74,14 +74,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
                 var grid = await VisualTreeTestExtensions.FindFirstVisualChildOfType<VisualGrid>(script.Control);
                 await UIThreadHelper.Instance.InvokeAsync(async () => {
-                    grid.ToggleSort(header, false);
+                    grid.ToggleSort(new GridIndex(0, header.ColumnIndex), false);
                     DoIdle(200);
 
                     header = await VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // disp
-                    grid.ToggleSort(header, add: true);
+                    grid.ToggleSort(new GridIndex(0, header.ColumnIndex), add: true);
 
                     header = await VisualTreeTestExtensions.FindNextVisualSiblingOfType<HeaderTextVisual>(header); // hp
-                    grid.ToggleSort(header, add: true);
+                    grid.ToggleSort(new GridIndex(0, header.ColumnIndex), add: true);
 
                     DoIdle(200);
                 });
