@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override Rect GetBoundingRectangleCore() {
             var bounds = new Rect(Points.xPosition(Column), 0, Points.GetWidth(Column), Points.ColumnHeaderHeight);
-            return new Rect(Owner.PointToScreen(bounds.TopLeft), Owner.PointToScreen(bounds.BottomRight));
+            return new Rect(Owner.ColumnHeader.PointToScreen(bounds.TopLeft), Owner.ColumnHeader.PointToScreen(bounds.BottomRight));
         }
 
         protected override string GetClassNameCore() => "MatrixViewHeader";
