@@ -8,6 +8,7 @@
     <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
     <IntermediateOutputDirectory Condition=" '$(IntermediateOutputDirectory)'=='' ">$(RootDirectory)obj\</IntermediateOutputDirectory>
     <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)lib\</LibDirectory>
+    <LocDirectory Condition="'$(LocDirectory)' == ''">$(RootDirectory)loc\</LocDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
     <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix\1.0.15100801\</WixDirectory>
@@ -30,8 +31,8 @@
     <WixCATargetsPath Condition="'$(WixCATargetsPath)' == ''">$(WixBinSdkDirectory)wix.ca.targets</WixCATargetsPath>
     <RHostMsi Condition="'$(RHostMsi)' == ''">RHost_$(Year)$(Date)$(Time).msi</RHostMsi>
 
-    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);LibDirectory=$(LibDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
-    <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SetupProperties>
+    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);LibDirectory=$(LibDirectory);LocDirectory=$(LocDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
+    <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);BinDirectory=$(OutputDirectory);ObjDirectory=$(IntermediateOutputDirectory);LocDirectory=$(LocDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SetupProperties>
   </PropertyGroup>
 
   <Target Name="ResetNuget">

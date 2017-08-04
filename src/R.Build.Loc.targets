@@ -2,14 +2,15 @@
   <PropertyGroup>
     <OutputFileExtension Condition="'$(OutputType)' == 'Library'">dll</OutputFileExtension>
     <OutputFileExtension Condition="'$(OutputType)' != 'Library'">exe</OutputFileExtension>
+    <LocDirectory Condition="'$(LocDirectory)' == ''">$(SourceDirectory)..\loc</LocDirectory>
   </PropertyGroup>
 
   <ItemGroup>
     <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).$(OutputFileExtension)">
       <!--Required: Files to be localized -->
-      <TranslationFile>$(SourceDirectory)loc\lcl\{Lang}\$(AssemblyName).lcl</TranslationFile>
+      <TranslationFile>$(LocDirectory)lcl\{Lang}\$(AssemblyName).$(OutputFileExtension).lcl</TranslationFile>
       <!--Required: translation file-->
-      <LciCommentFile>$(SourceDirectory)loc\lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
+      <LciCommentFile>$(LocDirectory)lci\$(AssemblyName).$(OutputFileExtension).lci</LciCommentFile>
       <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
     </FilesToLocalize>
     <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
@@ -20,7 +21,7 @@
 
   <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
     <ItemGroup>
-      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.$(OutputFileExtension)">
+      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
         <Authenticode>Microsoft</Authenticode>
         <StrongName>StrongName</StrongName>
       </FilesToSign>
