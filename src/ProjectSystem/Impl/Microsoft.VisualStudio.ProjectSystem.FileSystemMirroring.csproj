@@ -100,24 +100,8 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
-    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
-      <InProject>false</InProject>
-    </SignFilesDependsOn>
-  </ItemGroup>
-  <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).dll.lcl</TranslationFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
-    </FilesToLocalize>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\R.Build.Version.targets" />
-  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
-    <ItemGroup>
-      <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
-        <Authenticode>Microsoft</Authenticode>
-        <StrongName>StrongName</StrongName>
-      </FilesToSign>
-    </ItemGroup>
-  </Target>
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
 </Project>

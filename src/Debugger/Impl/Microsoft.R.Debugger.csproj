@@ -101,15 +101,6 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).dll">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).dll.lcl</TranslationFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
-    </FilesToLocalize>
-    <SignFilesDependsOn Include="GatherLocalizedOutputsForSigning">
-      <InProject>false</InProject>
-    </SignFilesDependsOn>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
