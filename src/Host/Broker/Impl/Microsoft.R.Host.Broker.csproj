@@ -180,12 +180,6 @@
     </SignFilesDependsOn>
   </ItemGroup>
   <ItemGroup>
-    <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).exe">
-      <TranslationFile>$(SourceDirectory)..\loc\lcl\{Lang}\$(AssemblyName).exe.lcl</TranslationFile>
-      <SettingsFile>$(LSBuildRoot)\MCP_excludeBaml.lss</SettingsFile>
-    </FilesToLocalize>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="RBrokerServiceInstaller.resx">
       <DependentUpon>RBrokerServiceInstaller.cs</DependentUpon>
     </EmbeddedResource>
