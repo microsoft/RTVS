@@ -10,8 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Protocol;
 
@@ -21,6 +21,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly IServiceContainer _services;
         private readonly object _verificationLock = new object();
         private readonly CancellationToken _cancellationToken;
+        private readonly IRSessionProvider _sessionProvider;
 
         private string _certificateHash;
         private bool? _certificateValidationResult;
@@ -32,11 +33,12 @@ namespace Microsoft.R.Host.Client.Host {
 #endif
         }
 
-        public RemoteBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
+        public RemoteBrokerClient(string name, IRSessionProvider sessionProvider, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
             : base(name, connectionInfo, new RemoteCredentialsDecorator(connectionInfo.CredentialAuthority, connectionInfo.Name, services), console, services) {
             _console = console;
             _services = services;
             _cancellationToken = cancellationToken;
+            _sessionProvider = sessionProvider;
 
             CreateHttpClient(connectionInfo.Uri);
             HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
@@ -55,12 +57,18 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public override async Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
-            if (!url.StartsWithIgnoreCase("http://")) {
+            if (!url.StartsWithIgnoreCase("http://") && !url.StartsWithIgnoreCase("file://") && !url.StartsWithIgnoreCase("/")) {
                 _console.WriteError(string.Format(Resources.Error_RemoteUriNotSupported, url));
                 return null;
             }
+
             var remotingService = _services.GetService<IRemotingWebServer>();
-            return await remotingService.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, _services.Log(), _console, cancellationToken);
+            if (url.StartsWithIgnoreCase("file://") || url.StartsWithIgnoreCase("/")) {
+                var fs = _services.GetService<IFileSystem>();
+                return await remotingService.CreateRemoteStaticFileServerAsync(url, _sessionProvider, fs, Log, _console, cancellationToken);
+            }
+
+            return await remotingService.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, Log, _console, cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {

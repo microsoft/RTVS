@@ -92,8 +92,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         public static void Stop(int port) {
-            WebServer server;
-            if (Servers.TryRemove(port, out server)) {
+            if (Servers.TryRemove(port, out WebServer server)) {
                 server.Stop();
             }
         }
@@ -135,8 +134,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             var remoteUri = new Uri(remoteUrl);
             var localUri = new UriBuilder(remoteUri);
 
-            WebServer server;
-            if(!Servers.TryGetValue(remoteUri.Port, out server)) {
+            if (!Servers.TryGetValue(remoteUri.Port, out WebServer server)) {
                 server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress, name, log, console);
                 await server.InitializeAsync(ct);
                 Servers.TryAdd(remoteUri.Port, server);

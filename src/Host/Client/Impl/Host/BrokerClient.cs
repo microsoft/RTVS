@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
@@ -231,6 +232,15 @@ namespace Microsoft.R.Host.Client.Host {
             return ex.ApiError.ToString();
         }
 
-        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken)  => Task.FromResult(url);
+        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
+            UriBuilder ub = new UriBuilder(url);
+            if (ub.Scheme.StartsWithIgnoreCase("file")) {
+                var remotingService = _services.GetService<IRemotingWebServer>();
+                var fs = _services.GetService<IFileSystem>();
+                return remotingService.CreateLocalStaticFileServerAsync(url, fs, Log, _console, cancellationToken);
+            }
+
+            return Task.FromResult(url);
+        }
     }
 }

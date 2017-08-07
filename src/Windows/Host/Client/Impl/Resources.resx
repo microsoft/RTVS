@@ -252,4 +252,10 @@ Please upgrade remote R Services installation to match.</value>
 
 </value>
   </data>
+  <data name="Error_StaticFileServerStopped" xml:space="preserve">
+    <value>Static file server stopped with error: {0}</value>
+  </data>
+  <data name="Info_StaticFileServerStarted" xml:space="preserve">
+    <value>Static file server started at: {0}</value>
+  </data>
 </root>
