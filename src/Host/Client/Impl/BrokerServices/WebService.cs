@@ -35,12 +35,10 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     throw new UnauthorizedAccessException();
                 }
 
-                IEnumerable<string> values;
-                if (response.Headers.TryGetValues(CustomHttpHeaders.RTVSApiError, out values)) {
+                if (response.Headers.TryGetValues(CustomHttpHeaders.RTVSApiError, out IEnumerable<string> values)) {
                     var s = values.FirstOrDefault();
                     if (s != null) {
-                        BrokerApiError apiError;
-                        if (Enum.TryParse(s, out apiError)) {
+                        if (Enum.TryParse(s, out BrokerApiError apiError)) {
                             response.Headers.TryGetValues(CustomHttpHeaders.RTVSBrokerException, out values);
                             throw new BrokerApiErrorException(apiError, values?.FirstOrDefault());
                         } else {

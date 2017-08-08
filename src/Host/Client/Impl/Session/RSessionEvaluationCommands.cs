@@ -266,5 +266,8 @@ grDevices::deviceIsInteractive('ide')
 
         public static Task EnableAutosaveAsync(this IRExpressionEvaluator evaluation, bool deleteExisting) =>
             evaluation.ExecuteAsync(Invariant($"rtvs:::enable_autosave({deleteExisting.ToRBooleanLiteral()})"));
+
+        public static Task<bool> FileExistsAsync(this IRExpressionEvaluator evaluation, string path, CancellationToken cancellationToken = default(CancellationToken)) =>
+            evaluation.EvaluateAsync<bool>(Invariant($"file.exists({path.ToRPath().ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
     }
 }

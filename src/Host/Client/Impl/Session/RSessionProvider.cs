@@ -352,7 +352,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             if (connectionInfo.IsRemote) {
-                return new RemoteBrokerClient(name, connectionInfo, _services, _console, cancellationToken);
+                return new RemoteBrokerClient(name, this, connectionInfo, _services, _console, cancellationToken);
             }
 
             return new LocalBrokerClient(name, connectionInfo, _services, _console);

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
@@ -90,8 +91,7 @@ namespace Microsoft.R.Host.Client.Host {
         public async Task<T> GetHostInformationAsync<T>(CancellationToken cancellationToken) {
             string result = null;
             try {
-                string endpoint;
-                if (!_typeToEndpointMap.TryGetValue(typeof(T), out endpoint)) {
+                if (!_typeToEndpointMap.TryGetValue(typeof(T), out string endpoint)) {
                     throw new ArgumentException($"There is no endpoint for type {typeof(T)}");
                 }
 
@@ -231,6 +231,15 @@ namespace Microsoft.R.Host.Client.Host {
             return ex.ApiError.ToString();
         }
 
-        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken)  => Task.FromResult(url);
+        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
+            var ub = new UriBuilder(url);
+            if (ub.Scheme.StartsWithIgnoreCase("file")) {
+                var remotingService = _services.GetService<IRemotingWebServer>();
+                var fs = _services.GetService<IFileSystem>();
+                return remotingService.HandleLocalStaticFileUrlAsync(url, _console, cancellationToken);
+            }
+
+            return Task.FromResult(url);
+        }
     }
 }

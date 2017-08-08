@@ -148,6 +148,24 @@ namespace Microsoft.R.Host.Client {
         }
 
         /// <summary>
+        /// Gets contents of a remote file and copies it to given stream. This method adds the blob for clean up by default.
+        /// </summary>
+        /// <param name="remoteFile"></param>
+        /// <param name="stream"></param>
+        /// <param name="doCleanUp"></param>
+        public async Task CopyToFileStreamAsync(string remoteFile, Stream stream, bool doCleanUp = true, IProgress<long> progress = null, CancellationToken cancellationToken = default(CancellationToken)) {
+            string filePath = remoteFile.ToRPath().ToRStringLiteral();
+            IRBlobInfo blob = new RBlobInfo(await _session.EvaluateAsync<ulong>($"rtvs:::create_blob(readBin({filePath}, 'raw', file.info({filePath})$size))", REvaluationKind.Normal, cancellationToken));
+            using (RBlobStream blobStream = await RBlobStream.OpenAsync(blob, _blobService, cancellationToken)) {
+                await blobStream.CopyToAsync(stream, progress, cancellationToken);
+            }
+
+            if (doCleanUp) {
+                _cleanup.Add(blob);
+            }
+        }
+
+        /// <summary>
         /// Gets the data for a given blob (compressed) from R-Host and decompresses it. This 
         /// method adds the blob for clean up by default.
         /// </summary>

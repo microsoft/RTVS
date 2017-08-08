@@ -13,6 +13,7 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client.BrokerServices {
     public class WebServer {
         private static ConcurrentDictionary<int, WebServer> Servers { get; } = new ConcurrentDictionary<int, WebServer>();
+        private static object _serverLock = new object();
 
         private readonly IRemoteUriWebService _remoteUriService;
         private readonly string _baseAddress;
@@ -40,8 +41,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             _remoteUriService = new RemoteUriWebService(baseAddress, log, console);
         }
 
-        public async Task InitializeAsync(CancellationToken ct) {
-            await TaskUtilities.SwitchToBackgroundThread();
+        public void Initialize(CancellationToken ct) {
             Random r = new Random();
 
             // if remote port is between 10000 and 32000, select a port in the same range.
@@ -92,8 +92,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         public static void Stop(int port) {
-            WebServer server;
-            if (Servers.TryRemove(port, out server)) {
+            if (Servers.TryRemove(port, out WebServer server)) {
                 server.Stop();
             }
         }
@@ -131,22 +130,24 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             }
         }
 
-        public static async Task<string> CreateWebServerAsync(string remoteUrl, string baseAddress, string name, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken)) {
+        public static Task<string> CreateWebServerAndHandleUrlAsync(string remoteUrl, string baseAddress, string name, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken)) {
             var remoteUri = new Uri(remoteUrl);
             var localUri = new UriBuilder(remoteUri);
 
             WebServer server;
-            if(!Servers.TryGetValue(remoteUri.Port, out server)) {
-                server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress, name, log, console);
-                await server.InitializeAsync(ct);
-                Servers.TryAdd(remoteUri.Port, server);
+            lock (_serverLock) {
+                if (!Servers.TryGetValue(remoteUri.Port, out server)) {
+                    server = new WebServer(remoteUri.Host, remoteUri.Port, baseAddress, name, log, console);
+                    server.Initialize(ct);
+                    Servers.TryAdd(remoteUri.Port, server);
+                }
             }
 
             server.DoWorkAsync(ct).DoNotWait();
 
             localUri.Host = server.LocalHost;
             localUri.Port = server.LocalPort;
-            return localUri.Uri.ToString();
+            return Task.FromResult(localUri.Uri.ToString());
         }
     }
 }

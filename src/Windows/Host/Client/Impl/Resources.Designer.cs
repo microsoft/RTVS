@@ -312,6 +312,15 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Static file server stopped with error: {0}.
+        /// </summary>
+        internal static string Error_StaticFileServerStopped {
+            get {
+                return ResourceManager.GetString("Error_StaticFileServerStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Services broker process did not start on the machine &apos;{0}&apos;. Exception:  {1}.
         /// </summary>
         internal static string Error_UnableToStartBrokerException {
@@ -381,6 +390,15 @@ namespace Microsoft.R.Host.Client {
         internal static string Info_RemoteWebServerStopped {
             get {
                 return ResourceManager.GetString("Info_RemoteWebServerStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static file server started at: {0}.
+        /// </summary>
+        internal static string Info_StaticFileServerStarted {
+            get {
+                return ResourceManager.GetString("Info_StaticFileServerStarted", resourceCulture);
             }
         }
         
