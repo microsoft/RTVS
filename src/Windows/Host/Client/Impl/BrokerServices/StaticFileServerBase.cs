@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
             await TaskUtilities.SwitchToBackgroundThread();
 
             _listener = _listener ?? new HttpListener();
-            if (_listener != null && _listener.IsListening) {
+            if (_listener.IsListening) {
                 return true;
             }
 

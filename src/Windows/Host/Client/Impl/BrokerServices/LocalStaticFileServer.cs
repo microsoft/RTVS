@@ -26,19 +26,19 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         public override async Task HandleRequestAsync(HttpListenerContext context, CancellationToken ct) {
-            UriBuilder ub = new UriBuilder();
-            ub.Scheme = "file";
-            ub.Host = "";
-            ub.Path = context.Request.Url.LocalPath;
-            ub.Query = context.Request.Url.Query;
+            UriBuilder ub = new UriBuilder() {
+                Scheme = "file",
+                Host = "",
+                Path = context.Request.Url.AbsolutePath
+            };
 
             var uri = ub.Uri.LocalPath;
             if (FileSystem.FileExists(uri)) {
                 using (var stream = FileSystem.FileOpen(uri, FileMode.Open)) {
                     await stream.CopyToAsync(context.Response.OutputStream, null, ct);
                 }
-                context.Response.OutputStream.Close();
             }
+            context.Response.OutputStream.Close();
         }
     }
 }

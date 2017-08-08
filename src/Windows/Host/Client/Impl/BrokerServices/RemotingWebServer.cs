@@ -26,30 +26,27 @@ namespace Microsoft.R.Host.Client {
             _log = _services.Log();
         }
 
-        public Task<string> HandleRemoteWebUrlAsync(string remoteUrl, string baseAddress, string name, IConsole console, CancellationToken ct = default(CancellationToken)) {
-            return WebServer.CreateWebServerAndHandleUrlAsync(remoteUrl, baseAddress, name, _log, console, ct);
-        }
+        public Task<string> HandleRemoteWebUrlAsync(string remoteUrl, string baseAddress, string name, IConsole console, CancellationToken ct = default(CancellationToken)) =>
+            WebServer.CreateWebServerAndHandleUrlAsync(remoteUrl, baseAddress, name, _log, console, ct);
 
-        public Task<string> HandleLocalStaticFileUrlAsync(string url, IConsole console, CancellationToken ct = default(CancellationToken)) {
-            CreateLocalStaticFileServer(console);
-            return _localStaticFileServer.HandleUrlAsync(url, ct);
-        }
+        public Task<string> HandleLocalStaticFileUrlAsync(string url, IConsole console, CancellationToken ct = default(CancellationToken)) =>
+           GetOrCreateLocalStaticFileServer(console).HandleUrlAsync(url, ct);
 
-        public Task<string> HandleRemoteStaticFileUrlAsync(string url,  IRSessionProvider rSessionProvider, IConsole console, CancellationToken ct = default(CancellationToken)) {
-            CreateRemoteStaticFileServerAsync(rSessionProvider, console);
-            return _remoteStaticFileServer.HandleUrlAsync(url, ct);
-        }
+        public Task<string> HandleRemoteStaticFileUrlAsync(string url,  IRSessionProvider rSessionProvider, IConsole console, CancellationToken ct = default(CancellationToken)) =>
+            GetOrCreateRemoteStaticFileServerAsync(rSessionProvider, console).HandleUrlAsync(url, ct);
 
-        private void CreateLocalStaticFileServer(IConsole console) {
+        private LocalStaticFileServer GetOrCreateLocalStaticFileServer(IConsole console) {
             lock (_localStaticFileServerLock) {
                 _localStaticFileServer = _localStaticFileServer ?? new LocalStaticFileServer(_fs, _log, console);
             }
+            return _localStaticFileServer;
         }
 
-        private void CreateRemoteStaticFileServerAsync(IRSessionProvider rSessionProvider, IConsole console) {
+        private RemoteStaticFileServer GetOrCreateRemoteStaticFileServerAsync(IRSessionProvider rSessionProvider, IConsole console) {
             lock (_remoteStaticFileServerLock) {
                 _remoteStaticFileServer = _remoteStaticFileServer ?? new RemoteStaticFileServer(rSessionProvider, _fs, _log, console);
             }
+            return _remoteStaticFileServer;
         }
     }
 }

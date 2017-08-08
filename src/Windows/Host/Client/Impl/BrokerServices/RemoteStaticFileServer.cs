@@ -46,11 +46,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 await _session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 3000, ct);
             }
 
-            var ub = new UriBuilder();
-            ub.Scheme = "file";
-            ub.Host = "";
-            ub.Path = context.Request.Url.LocalPath;
-            ub.Query = context.Request.Url.Query;
+            var ub = new UriBuilder() {
+                Scheme = "file",
+                Host = "",
+                Path = context.Request.Url.AbsolutePath
+            };
 
             var uri = ub.Uri.LocalPath;
             if (await _session.FileExistsAsync(uri, ct)) {
