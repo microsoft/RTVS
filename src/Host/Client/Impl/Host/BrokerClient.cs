@@ -237,7 +237,7 @@ namespace Microsoft.R.Host.Client.Host {
             if (ub.Scheme.StartsWithIgnoreCase("file")) {
                 var remotingService = _services.GetService<IRemotingWebServer>();
                 var fs = _services.GetService<IFileSystem>();
-                return remotingService.CreateLocalStaticFileServerAsync(url, fs, Log, _console, cancellationToken);
+                return remotingService.HandleLocalStaticFileUrlAsync(url, _console, cancellationToken);
             }
 
             return Task.FromResult(url);

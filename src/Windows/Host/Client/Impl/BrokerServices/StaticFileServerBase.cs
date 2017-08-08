@@ -12,7 +12,7 @@ using Microsoft.Common.Core.Logging;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
-    public abstract class StaticFileServerBase {
+    internal abstract class StaticFileServerBase {
         private static Random _random = new Random();
         private HttpListener _listener;
 
@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     return false;
                 }
                 _listener.Prefixes.Clear();
-                var lport = _random.Next(49152, 65535);
+                var lport = _random.GetEphemeralPort();
                 _listener.Prefixes.Add(Invariant($"http://{IPAddress.Loopback.ToString()}:{lport}/"));
                 try {
                     _listener.Start();
@@ -65,7 +65,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                     }
 
                     HttpListenerContext context = await _listener.GetContextAsync();
-                    await HandleRequestAsync(context);
+                    await HandleRequestAsync(context, ct);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 Log.WriteLine(LogVerbosity.Minimal, MessageCategory.Error, Resources.Error_StaticFileServerStopped.FormatInvariant(ex.Message));

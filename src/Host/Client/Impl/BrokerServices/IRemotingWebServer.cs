@@ -8,8 +8,8 @@ using Microsoft.Common.Core.Logging;
 
 namespace Microsoft.R.Host.Client {
     public interface IRemotingWebServer {
-        Task<string> CreateWebServerAsync(string remoteUrl, string baseAddress, string name, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken));
-        Task<string> CreateLocalStaticFileServerAsync(string url, IFileSystem fs, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken));
-        Task<string> CreateRemoteStaticFileServerAsync(string url, IRSessionProvider rSessionProvider, IFileSystem fs, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken));
+        Task<string> HandleRemoteWebUrlAsync(string remoteUrl, string baseAddress, string name, IConsole console, CancellationToken ct = default(CancellationToken));
+        Task<string> HandleLocalStaticFileUrlAsync(string url, IConsole console, CancellationToken ct = default(CancellationToken));
+        Task<string> HandleRemoteStaticFileUrlAsync(string url, IRSessionProvider rSessionProvider, IConsole console, CancellationToken ct = default(CancellationToken));
     }
 }

@@ -12,11 +12,9 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
-    public class RemoteStaticFileServer: StaticFileServerBase {
+    internal class RemoteStaticFileServer: StaticFileServerBase {
         private readonly IRSessionProvider _sessionProvider;
         private const string remoteFileSession = "FileFetcher";
-        private static RemoteStaticFileServer _server;
-        private static object _serverLock = new object();
         private IRSession _session;
 
         public RemoteStaticFileServer(IRSessionProvider sessionProvider, IFileSystem fs, IActionLog log, IConsole console) : base(fs, log, console) {
@@ -26,7 +24,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         public async Task<string> HandleUrlAsync(string urlStr, CancellationToken ct = default(CancellationToken)) {
             await InitializeAsync(ct);
 
-            IRSession session = _sessionProvider.GetOrCreate(remoteFileSession);
+            var session = _sessionProvider.GetOrCreate(remoteFileSession);
             await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 3000, ct);
             _session = session;
 
@@ -35,19 +33,11 @@ namespace Microsoft.R.Host.Client.BrokerServices {
 
             string path = urlStr;
             if (urlStr.StartsWithIgnoreCase("file://")) {
-                UriBuilder ub = new UriBuilder(urlStr);
-                path = ub.Path;
+                Uri ub = new Uri(urlStr);
+                path = ub.LocalPath;
             }
             
             return GetFileServerPath(path);
-        }
-
-        public static Task<string> CreateAsync(string url, IRSessionProvider sp, IFileSystem fs, IActionLog log, IConsole console, CancellationToken ct = default(CancellationToken)) {
-            lock (_serverLock) {
-                _server = _server ?? new RemoteStaticFileServer(sp, fs, log, console);
-            }
-
-            return _server.HandleUrlAsync(url);
         }
 
 
@@ -56,14 +46,14 @@ namespace Microsoft.R.Host.Client.BrokerServices {
                 await _session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 3000, ct);
             }
 
-            var uri = context.Request.Url.PathAndQuery;
-            if (await _session.FileExistsAsync(uri)) {
-                await CopyFileAsync(uri, context, ct);
-                return;
-            }
+            var ub = new UriBuilder();
+            ub.Scheme = "file";
+            ub.Host = "";
+            ub.Path = context.Request.Url.LocalPath;
+            ub.Query = context.Request.Url.Query;
 
-            if (uri.StartsWithIgnoreCase("/")) {
-                uri =  uri.Substring(1);
+            var uri = ub.Uri.LocalPath;
+            if (await _session.FileExistsAsync(uri, ct)) {
                 await CopyFileAsync(uri, context, ct);
                 return;
             }

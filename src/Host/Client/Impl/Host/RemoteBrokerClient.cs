@@ -65,10 +65,10 @@ namespace Microsoft.R.Host.Client.Host {
             var remotingService = _services.GetService<IRemotingWebServer>();
             if (url.StartsWithIgnoreCase("file://") || url.StartsWithIgnoreCase("/")) {
                 var fs = _services.GetService<IFileSystem>();
-                return await remotingService.CreateRemoteStaticFileServerAsync(url, _sessionProvider, fs, Log, _console, cancellationToken);
+                return await remotingService.HandleRemoteStaticFileUrlAsync(url, _sessionProvider, _console, cancellationToken);
             }
 
-            return await remotingService.CreateWebServerAsync(url, HttpClient.BaseAddress.ToString(), Name, Log, _console, cancellationToken);
+            return await remotingService.HandleRemoteWebUrlAsync(url, HttpClient.BaseAddress.ToString(), Name, _console, cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {
