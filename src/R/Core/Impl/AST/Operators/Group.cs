@@ -26,17 +26,17 @@ namespace Microsoft.R.Core.AST.Variables {
         public override Associativity Associativity => Associativity.Right;
         #endregion
 
-        public override bool Parse(ParseContext context, IAstNode parent) {
+        public override bool Parse(ParseContext context, IAstNode parent = null) {
             TokenStream<RToken> tokens = context.Tokens;
 
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenBrace);
-            this.OpenBrace = RParser.ParseToken(context, this);
+            OpenBrace = RParser.ParseToken(context, this);
 
-            this.Content = new Expression(inGroup: true);
-            this.Content.Parse(context, this);
+            Content = new Expression(inGroup: true);
+            Content.Parse(context, this);
 
             if (tokens.CurrentToken.TokenType == RTokenType.CloseBrace) {
-                this.CloseBrace = RParser.ParseToken(context, this);
+                CloseBrace = RParser.ParseToken(context, this);
             } else {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseBraceExpected, tokens.PreviousToken));
             }

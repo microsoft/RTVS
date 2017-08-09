@@ -7,6 +7,7 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
+    [Category.R.Parser]
     public class ParseFilesTest {
         private readonly CoreTestFilesFixture _files;
 
@@ -15,13 +16,11 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseFile_CheckR() {
             ParseFiles.ParseFile(_files, @"Parser\Check.r");
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseFile_FrametoolsR() {
             ParseFiles.ParseFile(_files, @"Parser\frametools.r");
         }

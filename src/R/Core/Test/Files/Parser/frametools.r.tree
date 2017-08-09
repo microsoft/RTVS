@@ -118,14 +118,15 @@ GlobalScope  [Global]
                                                     Expression  [!is.logical(r)]
                                                         TokenOperator  [! [968...969)]
                                                             TokenNode  [! [968...969)]
-                                                            FunctionCall  [969...982)
-                                                                Variable  [is.logical]
-                                                                TokenNode  [( [979...980)]
-                                                                ArgumentList  [980...981)
-                                                                    ExpressionArgument  [980...981)
-                                                                        Expression  [r]
-                                                                            Variable  [r]
-                                                                TokenNode  [) [981...982)]
+                                                            Expression  [is.logical(r)]
+                                                                FunctionCall  [969...982)
+                                                                    Variable  [is.logical]
+                                                                    TokenNode  [( [979...980)]
+                                                                    ArgumentList  [980...981)
+                                                                        ExpressionArgument  [980...981)
+                                                                            Expression  [r]
+                                                                                Variable  [r]
+                                                                    TokenNode  [) [981...982)]
                                                     TokenNode  [) [982...983)]
                                                     SimpleScope  [984...1016)
                                                         ExpressionStatement  [stop("'subset' must be logical")]
@@ -145,14 +146,15 @@ GlobalScope  [Global]
                                                             TokenNode  [& [1021...1022)]
                                                             TokenOperator  [! [1023...1024)]
                                                                 TokenNode  [! [1023...1024)]
-                                                                FunctionCall  [1024...1032)
-                                                                    Variable  [is.na]
-                                                                    TokenNode  [( [1029...1030)]
-                                                                    ArgumentList  [1030...1031)
-                                                                        ExpressionArgument  [1030...1031)
-                                                                            Expression  [r]
-                                                                                Variable  [r]
-                                                                    TokenNode  [) [1031...1032)]
+                                                                Expression  [is.na(r)]
+                                                                    FunctionCall  [1024...1032)
+                                                                        Variable  [is.na]
+                                                                        TokenNode  [( [1029...1030)]
+                                                                        ArgumentList  [1030...1031)
+                                                                            ExpressionArgument  [1030...1031)
+                                                                                Expression  [r]
+                                                                                    Variable  [r]
+                                                                        TokenNode  [) [1031...1032)]
                                                 TokenNode  [} [1038...1039)]
                         ExpressionStatement  [vars <- if(missing(select))\r\n	TRUE\r\n    else {\r\n	nl <- as.list(seq_along(x))\r\n	names(nl) <- names(x)\r\n	eval(substitute(select), nl, parent.frame())\r\n    }]
                             Expression  [vars <- if(missing(select))\r\n	TRUE\r\n    else {\r\n	nl <- as.list(seq_along(x))\r\n	names(nl) <- names(x)\r\n	eval(substitute(select), nl, parent.frame())\r\n    }]
@@ -325,14 +327,15 @@ GlobalScope  [Global]
                             Expression  [!is.logical(subset)]
                                 TokenOperator  [! [1532...1533)]
                                     TokenNode  [! [1532...1533)]
-                                    FunctionCall  [1533...1551)
-                                        Variable  [is.logical]
-                                        TokenNode  [( [1543...1544)]
-                                        ArgumentList  [1544...1550)
-                                            ExpressionArgument  [1544...1550)
-                                                Expression  [subset]
-                                                    Variable  [subset]
-                                        TokenNode  [) [1550...1551)]
+                                    Expression  [is.logical(subset)]
+                                        FunctionCall  [1533...1551)
+                                            Variable  [is.logical]
+                                            TokenNode  [( [1543...1544)]
+                                            ArgumentList  [1544...1550)
+                                                ExpressionArgument  [1544...1550)
+                                                    Expression  [subset]
+                                                        Variable  [subset]
+                                            TokenNode  [) [1550...1551)]
                             TokenNode  [) [1551...1552)]
                             SimpleScope  [1553...1585)
                                 ExpressionStatement  [stop("'subset' must be logical")]
@@ -358,14 +361,15 @@ GlobalScope  [Global]
                                                     TokenNode  [& [1600...1601)]
                                                     TokenOperator  [! [1602...1603)]
                                                         TokenNode  [! [1602...1603)]
-                                                        FunctionCall  [1603...1616)
-                                                            Variable  [is.na]
-                                                            TokenNode  [( [1608...1609)]
-                                                            ArgumentList  [1609...1615)
-                                                                ExpressionArgument  [1609...1615)
-                                                                    Expression  [subset]
-                                                                        Variable  [subset]
-                                                            TokenNode  [) [1615...1616)]
+                                                        Expression  [is.na(subset)]
+                                                            FunctionCall  [1603...1616)
+                                                                Variable  [is.na]
+                                                                TokenNode  [( [1608...1609)]
+                                                                ArgumentList  [1609...1615)
+                                                                    ExpressionArgument  [1609...1615)
+                                                                        Expression  [subset]
+                                                                            Variable  [subset]
+                                                                TokenNode  [) [1615...1616)]
                                     TokenNode  [] [1616...1617)]
                         TokenNode  [} [1619...1620)]
     ExpressionStatement  [subset.matrix <- function(x, subset, select, drop = FALSE, ...)\r\n{\r\n    if(missing(select))\r\n	vars <- TRUE\r\n    else {\r\n	nl <- as.list(1L:ncol(x))\r\n	names(nl) <- colnames(x)\r\n	vars <- eval(substitute(select), nl, parent.frame())\r\n    }\r\n    if(missing(subset)) subset <- TRUE\r\n    else if(!is.logical(subset)) stop("'subset' must be logical")\r\n    x[subset & !is.na(subset), vars, drop = drop]\r\n}]
@@ -528,14 +532,15 @@ GlobalScope  [Global]
                                         Expression  [!is.logical(subset)]
                                             TokenOperator  [! [1913...1914)]
                                                 TokenNode  [! [1913...1914)]
-                                                FunctionCall  [1914...1932)
-                                                    Variable  [is.logical]
-                                                    TokenNode  [( [1924...1925)]
-                                                    ArgumentList  [1925...1931)
-                                                        ExpressionArgument  [1925...1931)
-                                                            Expression  [subset]
-                                                                Variable  [subset]
-                                                    TokenNode  [) [1931...1932)]
+                                                Expression  [is.logical(subset)]
+                                                    FunctionCall  [1914...1932)
+                                                        Variable  [is.logical]
+                                                        TokenNode  [( [1924...1925)]
+                                                        ArgumentList  [1925...1931)
+                                                            ExpressionArgument  [1925...1931)
+                                                                Expression  [subset]
+                                                                    Variable  [subset]
+                                                        TokenNode  [) [1931...1932)]
                                         TokenNode  [) [1932...1933)]
                                         SimpleScope  [1934...1966)
                                             ExpressionStatement  [stop("'subset' must be logical")]
@@ -561,14 +566,15 @@ GlobalScope  [Global]
                                                     TokenNode  [& [1981...1982)]
                                                     TokenOperator  [! [1983...1984)]
                                                         TokenNode  [! [1983...1984)]
-                                                        FunctionCall  [1984...1997)
-                                                            Variable  [is.na]
-                                                            TokenNode  [( [1989...1990)]
-                                                            ArgumentList  [1990...1996)
-                                                                ExpressionArgument  [1990...1996)
-                                                                    Expression  [subset]
-                                                                        Variable  [subset]
-                                                            TokenNode  [) [1996...1997)]
+                                                        Expression  [is.na(subset)]
+                                                            FunctionCall  [1984...1997)
+                                                                Variable  [is.na]
+                                                                TokenNode  [( [1989...1990)]
+                                                                ArgumentList  [1990...1996)
+                                                                    ExpressionArgument  [1990...1996)
+                                                                        Expression  [subset]
+                                                                            Variable  [subset]
+                                                                TokenNode  [) [1996...1997)]
                                             TokenNode  [, [1997...1998)]
                                         ExpressionArgument  [1999...2004)
                                             Expression  [vars]
@@ -673,91 +679,24 @@ GlobalScope  [Global]
                                                                     Variable  [`_data`]
                                                         TokenNode  [) [2354...2355)]
                                         TokenNode  [) [2355...2356)]
-                        ExpressionStatement  [matched <- !is.na(inx)]
-                            Expression  [matched <- !is.na(inx)]
-                                TokenOperator  [<- [2370...2372)]
-                                    Variable  [matched]
-                                    TokenNode  [<- [2370...2372)]
-                                    TokenOperator  [! [2373...2374)]
-                                        TokenNode  [! [2373...2374)]
-                                        FunctionCall  [2374...2384)
-                                            Variable  [is.na]
-                                            TokenNode  [( [2379...2380)]
-                                            ArgumentList  [2380...2383)
-                                                ExpressionArgument  [2380...2383)
-                                                    Expression  [inx]
-                                                        Variable  [inx]
-                                            TokenNode  [) [2383...2384)]
-                        If  []
-                            TokenNode  [if [2390...2392)]
-                            TokenNode  [( [2393...2394)]
-                            Expression  [any(matched)]
-                                FunctionCall  [2394...2406)
-                                    Variable  [any]
-                                    TokenNode  [( [2397...2398)]
-                                    ArgumentList  [2398...2405)
-                                        ExpressionArgument  [2398...2405)
-                                            Expression  [matched]
-                                                Variable  [matched]
-                                    TokenNode  [) [2405...2406)]
-                            TokenNode  [) [2406...2407)]
-                            Scope  []
-                                TokenNode  [{ [2408...2409)]
-                                ExpressionStatement  [`_data`[inx[matched]] <- e[matched]]
-                                    Expression  [`_data`[inx[matched]] <- e[matched]]
-                                        TokenOperator  [<- [2434...2436)]
-                                            Indexer  [2412...2433)
-                                                Variable  [`_data`]
-                                                TokenNode  [[ [2419...2420)]
-                                                ArgumentList  [2420...2432)
-                                                    ExpressionArgument  [2420...2432)
-                                                        Expression  [inx[matched]]
-                                                            Indexer  [2420...2432)
-                                                                Variable  [inx]
-                                                                TokenNode  [[ [2423...2424)]
-                                                                ArgumentList  [2424...2431)
-                                                                    ExpressionArgument  [2424...2431)
-                                                                        Expression  [matched]
-                                                                            Variable  [matched]
-                                                                TokenNode  [] [2431...2432)]
-                                                TokenNode  [] [2432...2433)]
-                                            TokenNode  [<- [2434...2436)]
-                                            Indexer  [2437...2447)
-                                                Variable  [e]
-                                                TokenNode  [[ [2438...2439)]
-                                                ArgumentList  [2439...2446)
-                                                    ExpressionArgument  [2439...2446)
-                                                        Expression  [matched]
-                                                            Variable  [matched]
-                                                TokenNode  [] [2446...2447)]
-                                ExpressionStatement  [`_data` <- data.frame(`_data`)]
-                                    Expression  [`_data` <- data.frame(`_data`)]
-                                        TokenOperator  [<- [2458...2460)]
-                                            Variable  [`_data`]
-                                            TokenNode  [<- [2458...2460)]
-                                            FunctionCall  [2461...2480)
-                                                Variable  [data.frame]
-                                                TokenNode  [( [2471...2472)]
-                                                ArgumentList  [2472...2479)
-                                                    ExpressionArgument  [2472...2479)
-                                                        Expression  [`_data`]
-                                                            Variable  [`_data`]
-                                                TokenNode  [) [2479...2480)]
-                                TokenNode  [} [2486...2487)]
+                        ExpressionStatement  [matched]
+                            Expression  [matched]
+                                Variable  [matched]
                         If  []
                             TokenNode  [if [2493...2495)]
                             TokenNode  [( [2496...2497)]
                             Expression  [!all(matched)]
                                 TokenOperator  [! [2497...2498)]
                                     TokenNode  [! [2497...2498)]
-                                    FunctionCall  [2498...2510)
-                                        Variable  [all]
-                                        TokenNode  [( [2501...2502)]
-                                        ArgumentList  [2502...2509)
-                                            ExpressionArgument  [2502...2509)
-                                                Expression  [matched]
-                                                    Variable  [matched]
-                                        TokenNode  [) [2509...2510)]
+                                    Expression  [all(matched)]
+                                        FunctionCall  [2498...2510)
+                                            Variable  [all]
+                                            TokenNode  [( [2501...2502)]
+                                            ArgumentList  [2502...2509)
+                                                ExpressionArgument  [2502...2509)
+                                                    Expression  [matched]
+                                                        Variable  [matched]
+                                            TokenNode  [) [2509...2510)]
                             TokenNode  [) [2510...2511)]
                             SimpleScope  [2562...2614)
                                 ExpressionStatement  [do.call("data.frame", c(list(`_data`), e[!matched]))]
@@ -797,7 +736,8 @@ GlobalScope  [Global]
                                                                                     Expression  [!matched]
                                                                                         TokenOperator  [! [2603...2604)]
                                                                                             TokenNode  [! [2603...2604)]
-                                                                                            Variable  [matched]
+                                                                                            Expression  [matched]
+                                                                                                Variable  [matched]
                                                                             TokenNode  [] [2611...2612)]
                                                             TokenNode  [) [2612...2613)]
                                             TokenNode  [) [2613...2614)]
@@ -872,3 +812,5 @@ GlobalScope  [Global]
                                         EllipsisArgument  [...]
                                             TokenNode  [... [2985...2988)]
                                     TokenNode  [) [2988...2989)]
+
+UnexpectedToken Token [2493...2495)

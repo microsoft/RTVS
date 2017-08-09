@@ -7,11 +7,11 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
+    [Category.R.Parser]
     public class ParseUnaryTest {
         [Test]
-        [Category.R.Parser]
         public void Unary01() {
-            string expected =
+            const string expected = 
 @"GlobalScope  [Global]
     ExpressionStatement  [-a]
         Expression  [-a]
@@ -23,9 +23,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void Unary02() {
-            string expected =
+            const string expected = 
 @"GlobalScope  [Global]
     ExpressionStatement  [-a+b]
         Expression  [-a+b]
@@ -40,9 +39,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void Unary03() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [--a++b]
         Expression  [--a++b]
@@ -61,9 +59,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void Unary04() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a--b^+3]
         Expression  [a--b^+3]
@@ -81,28 +78,29 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void MultipleUnary01() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [!!!TRUE]
         Expression  [!!!TRUE]
             TokenOperator  [! [0...1)]
                 TokenNode  [! [0...1)]
-                TokenOperator  [! [1...2)]
-                    TokenNode  [! [1...2)]
-                    TokenOperator  [! [2...3)]
-                        TokenNode  [! [2...3)]
-                        LogicalValue  [TRUE [3...7)]
+                Expression  [!!TRUE]
+                    TokenOperator  [! [1...2)]
+                        TokenNode  [! [1...2)]
+                        Expression  [!TRUE]
+                            TokenOperator  [! [2...3)]
+                                TokenNode  [! [2...3)]
+                                Expression  [TRUE]
+                                    LogicalValue  [TRUE [3...7)]
 ";
-            string content = "!!!TRUE";
+            const string content = "!!!TRUE";
             ParserTest.VerifyParse(expected, content);
         }
 
         [Test]
-        [Category.R.Parser]
         public void MultipleUnary02() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [1-+-+-3]
         Expression  [1-+-+-3]
@@ -117,15 +115,14 @@ namespace Microsoft.R.Core.Test.Parser {
                             TokenNode  [+ [4...5)]
                             NumericalValue  [-3 [5...7)]
 ";
-            string content = "1-+-+-3";
+            const string content = "1-+-+-3";
 
             ParserTest.VerifyParse(expected, content);
         }
 
         [Test]
-        [Category.R.Parser]
         public void MultipleUnary03() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [1/+-+-3]
         Expression  [1/+-+-3]
@@ -146,9 +143,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void MissingOperand() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a]
         Expression  [a]
@@ -156,7 +152,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
 RightOperandExpected Token [6...7)
 ";
-            string content = "a - ---";
+            const string content = "a - ---";
 
             ParserTest.VerifyParse(expected, content);
         }

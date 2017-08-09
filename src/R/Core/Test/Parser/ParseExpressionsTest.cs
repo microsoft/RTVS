@@ -7,12 +7,11 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
+    [Category.R.Parser]
     public class ParseExpressionsTest {
         [Test]
-        [Category.R.Parser]
         public void ParseExpressions01() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [a <-(grepl('^check', install) || R_check_use_install_log)]
         Expression  [a <-(grepl('^check', install) || R_check_use_install_log)]
             TokenOperator  [<- [2...4)]
@@ -42,10 +41,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseListExpression01() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [fitted.zeros <- xzero * z$coefficients]
         Expression  [fitted.zeros <- xzero * z$coefficients]
             TokenOperator  [<- [13...15)]
@@ -63,10 +60,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseExpressionSequence01() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [a <- 1*b]
         Expression  [a <- 1*b]
             TokenOperator  [<- [2...4)]
@@ -88,17 +83,15 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [) [16...17)]
 ";
 
-            string content =
+            var content =
 @"a <- 1*b
   (c+1)";
             ParserTest.VerifyParse(expected, content);
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseExpressionSequence02() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [a <- 1*b[1]]
         Expression  [a <- 1*b[1]]
             TokenOperator  [<- [2...4)]
@@ -127,17 +120,15 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [) [19...20)]
 ";
 
-            string content =
+            var content =
 @"a <- 1*b[1]
   (c+1)";
             ParserTest.VerifyParse(expected, content);
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseExpressionSequence03() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [a <- 1*b[[1]]]
         Expression  [a <- 1*b[[1]]]
             TokenOperator  [<- [2...4)]
@@ -166,17 +157,15 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [) [21...22)]
 ";
 
-            string content =
+            var content =
 @"a <- 1*b[[1]]
   (c+1)";
             ParserTest.VerifyParse(expected, content);
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseMultipleTilde() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [x ~ ~ ~ y]
         Expression  [x ~ ~ ~ y]
             TokenOperator  [~ [2...3)]
@@ -188,16 +177,14 @@ namespace Microsoft.R.Core.Test.Parser {
                         TokenNode  [~ [6...7)]
                         Variable  [y]
 ";
-            string content = "x ~ ~ ~ y";
+            var content = "x ~ ~ ~ y";
 
             ParserTest.VerifyParse(expected, content);
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParseLongFloats() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [sec <- function(x) {\r\n    3600L * floor(x / 1e4L) + 60 * floor(x %% 1e4L / 1e2L) + x %% 1e2 - 86400L * (x > 200000L)\r\n}]
         Expression  [sec <- function(x) {\r\n    3600L * floor(x / 1e4L) + 60 * floor(x %% 1e4L / 1e2L) + x %% 1e2 - 86400L * (x > 200000L)\r\n}]
             TokenOperator  [<- [4...6)]
@@ -269,7 +256,7 @@ namespace Microsoft.R.Core.Test.Parser {
                                             TokenNode  [) [115...116)]
                         TokenNode  [} [118...119)]
 ";
-            string content =
+            var content =
 @"sec <- function(x) {
     3600L * floor(x / 1e4L) + 60 * floor(x %% 1e4L / 1e2L) + x %% 1e2 - 86400L * (x > 200000L)
 }";
@@ -277,10 +264,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void ParsePipe() {
-            string expected =
-@"GlobalScope  [Global]
+            const string expected = @"GlobalScope  [Global]
     ExpressionStatement  [a() %>% b]
         Expression  [a() %>% b]
             TokenOperator  [%>% [4...7)]
@@ -292,6 +277,70 @@ namespace Microsoft.R.Core.Test.Parser {
                 Variable  [b]
 ";
             ParserTest.VerifyParse(expected, @"a() %>% b");
+        }
+
+        [Test]
+        public void ParseBangExpression01() {
+            const string expected = @"GlobalScope  [Global]
+    ExpressionStatement  [a + !b + c]
+        Expression  [a + !b + c]
+            TokenOperator  [+ [2...3)]
+                Variable  [a]
+                TokenNode  [+ [2...3)]
+                TokenOperator  [! [4...5)]
+                    TokenNode  [! [4...5)]
+                    Expression  [b + c]
+                        TokenOperator  [+ [7...8)]
+                            Variable  [b]
+                            TokenNode  [+ [7...8)]
+                            Variable  [c]
+";
+            ParserTest.VerifyParse(expected, @"a + !b + c");
+        }
+        [Test]
+
+        public void ParseBangExpression02() {
+            const string expected = @"GlobalScope  [Global]
+    ExpressionStatement  [a + !(b +\n c)]
+        Expression  [a + !(b +\n c)]
+            TokenOperator  [+ [2...3)]
+                Variable  [a]
+                TokenNode  [+ [2...3)]
+                TokenOperator  [! [4...5)]
+                    TokenNode  [! [4...5)]
+                    Expression  [(b +\n c)]
+                        Group  [5...13)
+                            TokenNode  [( [5...6)]
+                            Expression  [b +\n c]
+                                TokenOperator  [+ [8...9)]
+                                    Variable  [b]
+                                    TokenNode  [+ [8...9)]
+                                    Variable  [c]
+                            TokenNode  [) [12...13)]
+";
+            ParserTest.VerifyParse(expected, "a + !(b +\n c)");
+        }
+
+        [Test]
+        public void ParseBangExpression03() {
+            const string expected = @"GlobalScope  [Global]
+    If  []
+        TokenNode  [if [0...2)]
+        TokenNode  [( [2...3)]
+        Expression  [!a()]
+            TokenOperator  [! [3...4)]
+                TokenNode  [! [3...4)]
+                Expression  [a()]
+                    FunctionCall  [4...7)
+                        Variable  [a]
+                        TokenNode  [( [5...6)]
+                        TokenNode  [) [6...7)]
+        TokenNode  [) [7...8)]
+        Scope  []
+            TokenNode  [{ [9...10)]
+            TokenNode  [} [11...12)]
+";
+            ParserTest.VerifyParse(expected, "if(!a()) { }");
         }
     }
 }

@@ -383,7 +383,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType) {
-            errorType = this.HandleOperator(context, null, out bool isUnary);
+            errorType = this.HandleOperator(context, out bool isUnary);
             return isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
         }
 
@@ -443,11 +443,32 @@ namespace Microsoft.R.Core.AST.Expressions {
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleOperator(ParseContext context, IAstNode parent, out bool isUnary) {
+        private ParseErrorType HandleOperator(ParseContext context, out bool isUnary) {
             var currentOperator = new TokenOperator(firstInExpression: (_operands.Count == 0));
             currentOperator.Parse(context, null);
             isUnary = currentOperator.IsUnary;
 
+            if (currentOperator.OperatorType == OperatorType.Not) {
+                //This comes from the fact that
+                //  x < -1
+                //  y < -1
+                //  2 + !x + y
+                // yields 2 (i.e. bang applies to the entire expression that follows
+                isUnary = true;
+                if (!IsInGroup && context.Tokens.IsLineBreakAfter(context.TextProvider, context.Tokens.Position - 1)) {
+                    // Make sure expression that follows is not empty
+                    return ParseErrorType.RightOperandExpected;
+                }
+
+                var exp = new Expression(IsInGroup);
+                if (!exp.Parse(context, null)) {
+                    return ParseErrorType.RightOperandExpected;
+                }
+
+                _operators.Push(currentOperator);
+                _operands.Push(exp);
+                return ParseErrorType.None;
+            }
             return HandleOperatorPrecedence(context, currentOperator);
         }
 

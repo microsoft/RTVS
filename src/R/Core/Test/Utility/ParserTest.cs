@@ -15,19 +15,16 @@ namespace Microsoft.R.Core.Test.Utility {
     {
         public static void VerifyParse(string expected, string expression)
         {
-            AstRoot ast = RParser.Parse(new TextStream(expression));
-            ParserTest.CompareTrees(expected, ast);
+            var ast = RParser.Parse(new TextStream(expression));
+            CompareTrees(expected, ast);
          }
 
         public static void CompareTrees(string expected, AstRoot actualTree)
         {
-            AstWriter astWriter = new AstWriter();
-            string actual = astWriter.WriteTree(actualTree);
-            
-            string expectedLine, actualLine;
-            int index;
-            int result = BaselineCompare.CompareLines(expected, actual, out expectedLine, out actualLine, out index);
+            var astWriter = new AstWriter();
+            var actual = astWriter.WriteTree(actualTree);
 
+            var result = BaselineCompare.CompareLines(expected, actual, out var expectedLine, out var actualLine, out var index);
             result.Should().Be(0, "Line at {0} should be {1}, but found {2}, different at position {3}", result, expectedLine, actualLine, index);
         }
     }
