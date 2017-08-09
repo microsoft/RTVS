@@ -84,12 +84,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 }
             }
 
-            if (list.Count > 0) {
-                return list;
-            }
-
             var name = context.Session.View.GetVariableNameBeforeCaret();
-            return !string.IsNullOrEmpty(name) ? new [] { name } : Enumerable.Empty<string>();
+            if(!string.IsNullOrEmpty(name)) {
+                list.Add(name);
+            }
+            return list;
         }
     }
 }
