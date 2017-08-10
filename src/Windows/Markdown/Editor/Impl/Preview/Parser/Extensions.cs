@@ -7,7 +7,7 @@ using Markdig.Syntax;
 namespace Microsoft.Markdown.Editor.Preview.Parser {
     internal static class Extensions {
         public static string GetText(this LeafBlock block) {
-            if(block?.Lines == null) {
+            if(block?.Lines == null || block.Lines.Lines == null) {
                 return string.Empty;
             }
 
