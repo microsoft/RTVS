@@ -139,6 +139,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_PingTimedOut" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ping to {0}:{1} timed out.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[對 {0}:{1} 的偵測已逾時。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Error_PipeAlreadyConnected" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This session already has an active client connection]]></Val>
@@ -161,7 +170,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[遠端 R 要求開啟 {0}，但僅對遠端支援 http:// URI。]]></Val>
+            <Val><![CDATA[遠端 R 已要求開啟 {0}，但對遠端僅支援 http:// URI。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -305,7 +314,7 @@
         <Str Cat="Text">
           <Val><![CDATA[HTTP server for remote {0} listening on http://{1}:{2}. ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[遠端 {0} 的 HTTP 伺服器正於 http://{1}:{2} 接聽。  ]]></Val>
+            <Val><![CDATA[遠端 {0} 的 HTTP 伺服器正於 http://{1}:{2} 接聽。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -361,7 +370,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.1.30717.934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +391,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.1.30717.0934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +427,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.1.30717.0934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

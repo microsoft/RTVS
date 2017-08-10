@@ -44,7 +44,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} is missing from the installation directory.]D;]A;Please reinstall Data Science workload or repair the Visual Studio installation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[V adresáři instalace chybí soubor {0}.]D;]A;Přeinstalujte úlohu Datové vědy nebo opravte instalaci sady Visual Studio.]]></Val>
+            <Val><![CDATA[V adresáři instalace chybí soubor {0}.]D;]A;Přeinstalujte sadu funkcí Datové vědy nebo opravte instalaci sady Visual Studio.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -139,6 +139,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_PingTimedOut" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Ping to {0}:{1} timed out.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Příkazu ping na{0}:{1} vypršel časový limit.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Error_PipeAlreadyConnected" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This session already has an active client connection]]></Val>
@@ -161,7 +170,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Vzdálená služba R žádala o otevření {0}, ale pro vzdálenou službu jsou podporovány jen identifikátory URI http://.]]></Val>
+            <Val><![CDATA[Vzdálená služba R žádala o otevření adresy {0}, ale pro vzdálenou službu jsou podporovány jen identifikátory URI formátu http://.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -188,7 +197,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to create HTTP server for remote {0}.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nepovedlo se vytvořit server HTTP pro vzdálenou službu {0}.]]></Val>
+            <Val><![CDATA[Nepovedlo se vytvořit server HTTP pro vzdálenou připojení {0}.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -197,7 +206,7 @@
         <Str Cat="Text">
           <Val><![CDATA[HTTP server for remote stopped with following exception:]D;]A;{0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Server HTTP pro vzdálenou službu se zastavil s následující výjimkou:]D;]A;{0}]]></Val>
+            <Val><![CDATA[Server HTTP pro vzdálené připojení se zastavil s následující výjimkou:]D;]A;{0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -251,7 +260,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to set options(): {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nepovedlo se nastavit možnosti: {0}]]></Val>
+            <Val><![CDATA[Nepovedlo se nastavit options(): {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -361,7 +370,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.1.30717.934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -382,7 +391,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.1.30717.0934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +427,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.1.30717.0934]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
