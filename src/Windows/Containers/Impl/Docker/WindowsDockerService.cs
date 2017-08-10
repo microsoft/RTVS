@@ -20,12 +20,10 @@ namespace Microsoft.R.Containers.Docker {
         const string DockerServiceName = "Docker for Windows";
         private readonly IFileSystem _fs;
         private readonly IProcessServices _ps;
-        private readonly IActionLogWriter _outputLogWriter;
 
         public WindowsDockerService(IFileSystem fs, IProcessServices ps, IRegistry registryService, IActionLogWriter logWriter = null) : base (GetLocalDocker(registryService, fs), ps, logWriter) {
             _fs = fs;
             _ps = ps;
-            _outputLogWriter = logWriter;
         }
 
         public ContainerServiceStatus GetServiceStatus() {

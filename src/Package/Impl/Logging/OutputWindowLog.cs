@@ -42,11 +42,6 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             window?.Activate();
         }
 
-        public Task WriteAsync(MessageCategory category, string message) {
-            Write(category, message);
-            return Task.CompletedTask;
-        }
-
         public void Write(MessageCategory category, string message) {
             EnsurePaneVisible();
             _pane?.OutputStringThreadSafe(message);
