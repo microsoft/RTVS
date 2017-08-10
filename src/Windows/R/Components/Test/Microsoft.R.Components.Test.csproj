@@ -74,7 +74,7 @@
     <Compile Include="Fakes\Undo\WeakReferenceForKey.cs" />
     <Compile Include="Fakes\VisualComponentFactories\Container.cs" />
     <Compile Include="Fakes\VisualComponentFactories\ContainerFactoryBase.cs" />
-    <Compile Include="Fakes\VisualComponentFactories\TestConnectionManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="Fakes\VisualComponentFactories\TestConnectionManagerVisualProvider.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPlotHistoryVisualComponentContainerFactory.cs" />

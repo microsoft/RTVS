@@ -4,20 +4,19 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
-using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.ToolWindows {
-    [Export(typeof(IConnectionManagerVisualComponentContainerFactory))]
-    internal class VsConnectionManagerVisualComponentContainerFactory : ToolWindowPaneFactory<ConnectionManagerWindowPane>, IConnectionManagerVisualComponentContainerFactory {
+    [Export(typeof(IConnectionManagerVisualProvider))]
+    internal class VsConnectionManagerVisualProvider : ToolWindowPaneFactory<ConnectionManagerWindowPane>, IConnectionManagerVisualProvider {
         private readonly ICoreShell _coreShell;
 
         [ImportingConstructor]
-        public VsConnectionManagerVisualComponentContainerFactory(ICoreShell coreShell): base(coreShell.Services) {
+        public VsConnectionManagerVisualProvider(ICoreShell coreShell): base(coreShell.Services) {
             _coreShell = coreShell;
         }
 
-        public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0) 
-            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, _coreShell.Services));
+        public IConnectionManagerVisual GetOrCreate(IConnectionManager connectionManager, int instanceId = 0) 
+            => GetOrCreate(instanceId, i => new ConnectionManagerWindowPane(connectionManager, _coreShell.Services)).Component;
     }
 }

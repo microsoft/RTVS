@@ -141,8 +141,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         var installer = Shell.GetService<IMicrosoftRClientInstaller>();
                         installer.LaunchRClientSetup(Shell.Services);
                     } else {
-                        var cmv = Connections as IConnectionManagerVisual;
-                        cmv.GetOrCreateVisualComponent().Container.Show(focus: false, immediate: false);
+                        var cmvp = Shell.Services.GetService<IConnectionManagerVisualProvider>();
+                        cmvp?.GetOrCreate(Connections).Container.Show(focus: false, immediate: false);
                     }
                 }
             }

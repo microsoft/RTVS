@@ -7,16 +7,16 @@ using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [ExcludeFromCodeCoverage]
-    [Export(typeof(IConnectionManagerVisualComponentContainerFactory))]
-    internal sealed class TestConnectionManagerVisualComponentContainerFactory : ContainerFactoryBase<IConnectionManagerVisualComponent>, IConnectionManagerVisualComponentContainerFactory {
+    [Export(typeof(IConnectionManagerVisualProvider))]
+    internal sealed class TestConnectionManagerVisualProvider : ContainerFactoryBase<IConnectionManagerVisual>, IConnectionManagerVisualProvider {
         private readonly ICoreShell _shell;
 
         [ImportingConstructor]
-        public TestConnectionManagerVisualComponentContainerFactory(ICoreShell shell) {
+        public TestConnectionManagerVisualProvider(ICoreShell shell) {
             _shell = shell;
         }
 
-        public IVisualComponentContainer<IConnectionManagerVisualComponent> GetOrCreate(IConnectionManager connectionManager, int instanceId = 0)
-            => GetOrCreate(instanceId, container => new ConnectionManagerVisualComponent(connectionManager, container, _shell.Services));
+        public IConnectionManagerVisual GetOrCreate(IConnectionManager connectionManager, int instanceId = 0)
+            => GetOrCreate(instanceId, container => new ConnectionManagerVisual(connectionManager, container, _shell.Services)).Component;
     }
 }

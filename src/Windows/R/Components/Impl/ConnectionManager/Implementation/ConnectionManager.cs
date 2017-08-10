@@ -25,7 +25,7 @@ using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
-    internal class ConnectionManager : IConnectionManagerVisual {
+    internal class ConnectionManager : IConnectionManager {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSettings _settings;
         private readonly ICoreShell _shell;
@@ -45,7 +45,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public bool IsRunning { get; private set; }
         public IConnection ActiveConnection { get; private set; }
         public ReadOnlyCollection<IConnection> RecentConnections { get; private set; }
-        public IConnectionManagerVisualComponent VisualComponent { get; private set; }
 
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler ConnectionStateChanged;
@@ -60,10 +59,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _log = _shell.GetService<IActionLog>();
             _installationService = _shell.GetService<IRInstallationService>();
 
-            _statusBarViewModel = new ConnectionStatusBarViewModel(this, interactiveWorkflow.Shell.Services);
+            _statusBarViewModel = new ConnectionStatusBarViewModel(this, _shell.Services);
             if (settings.ShowHostLoadMeter) {
                 _hostLoadIndicatorViewModel =
-                    new HostLoadIndicatorViewModel(_sessionProvider, interactiveWorkflow.Shell.MainThread());
+                    new HostLoadIndicatorViewModel(_sessionProvider, _shell.MainThread());
             }
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
@@ -102,16 +101,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public void Dispose() {
             _disposableBag.TryDispose();
-        }
-
-        public IConnectionManagerVisualComponent GetOrCreateVisualComponent(int instanceId = 0) {
-            if (VisualComponent != null) {
-                return VisualComponent;
-            }
-
-            var visualComponentContainerFactory = _shell.GetService<IConnectionManagerVisualComponentContainerFactory>();
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
-            return VisualComponent;
         }
 
         public IConnection AddOrUpdateConnection(IConnectionInfo connectionInfo) {

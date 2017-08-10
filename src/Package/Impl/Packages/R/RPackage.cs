@@ -183,12 +183,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             var toolWindowFactory = Services.GetService<RPackageToolWindowProvider>();
-            return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
+            return toolWindowFactory.CreateToolWindow(toolWindowType, id) != null ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
         protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
             var toolWindowFactory = Services.GetService<RPackageToolWindowProvider>();
-            return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
+            return toolWindowFactory.CreateToolWindow(toolWindowType.GUID, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
 
         private bool IsCommandLineMode() {
