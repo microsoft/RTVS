@@ -211,6 +211,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private void SavePackageIndex() {
             _packageIndex?.WriteToDisk();
             _packageIndex?.Dispose();
+            LanguageSettingsStorage?.Dispose();
         }
     }
 }

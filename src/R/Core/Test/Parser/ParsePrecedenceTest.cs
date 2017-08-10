@@ -7,11 +7,11 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
+    [Category.R.Parser]
     public class ParsePrecedenceTest {
         [Test]
-        [Category.R.Parser]
         public void Precedence01() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a && !b]
         Expression  [a && !b]
@@ -20,15 +20,15 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [&& [2...4)]
                 TokenOperator  [! [5...6)]
                     TokenNode  [! [5...6)]
-                    Variable  [b]
+                    Expression  [b]
+                        Variable  [b]
 ";
             ParserTest.VerifyParse(expected, "a && !b");
         }
 
         [Test]
-        [Category.R.Parser]
         public void EqualLeftPrecedence1() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a+b+c]
         Expression  [a+b+c]
@@ -44,9 +44,8 @@ namespace Microsoft.R.Core.Test.Parser {
         }
 
         [Test]
-        [Category.R.Parser]
         public void EqualLeftPrecedence2() {
-            string expected =
+            const string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a-b+c]
         Expression  [a-b+c]

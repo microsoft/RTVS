@@ -585,48 +585,38 @@
     <EmbeddedResource Include="Resources\RdFileNode.png" />
     <EmbeddedResource Include="Resources\RDataFile.png" />
     <Content Include="Templates\ItemTemplates\EmptyRD\Document.Rd">
-      <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\ItemTemplates\EmptyRD\emptyrd.vstemplate">
       <SubType>Designer</SubType>
-      <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Template.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Query.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\WebStyleSheet\WebStyleSheet.vstemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\NewItem\SqlQuery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -634,11 +624,9 @@
     </Content>
     <Content Include="Templates\Sql\Create Procedure R.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\Sql\Create Procedure R.vstemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
       <SubType>Designer</SubType>
     </Content>
     <Content Include="vstheme.pkgdef">
@@ -1232,7 +1220,6 @@
     <Content Include="SurveyNews\ReadmeStyle.css" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Profiles\14.0\R.vssettings">
       <SubType>Designer</SubType>
@@ -1269,15 +1256,12 @@
     </Content>
     <Content Include="Templates\Sql\Create Procedure R.vsdir">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\Sql\R Script.vsdir">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\RSettings\Settings.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\NewItem\SqlRScript.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1295,26 +1279,21 @@
   <ItemGroup>
     <Content Include="Templates\ProjectTemplates\EmptyProject\.Rhistory">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ProjectTemplates\EmptyProject\RProject.Rproj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ProjectTemplates\EmptyProject\EmptyProject.vstemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\RScript\Script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\RScript\rscript.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -1324,89 +1303,73 @@
     <Content Include="Templates\ItemTemplates\FunctionRD\functionrd.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\DatasetRD\Dataset.Rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\DatasetRD\datasetrd.vstemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\EmptyRMD\Markdown.Rmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\EmptyRMD\emptyrmd.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\WebHtmlPage\HtmlPage.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\WebHtmlPage\WebHtmlPage.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\WebStyleSheet\StyleSheet.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\TextFile\textfile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\TextFile\TextFile.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\XMLFile\XMLFile.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\XMLFile\XMLFile.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\XMLSchema\XMLSchema.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\XMLSchema\XMLSchema.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\ItemTemplates\XSLTFile\XSLTFile.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\ItemTemplates\XSLTFile\XSLTFile.vstemplate">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
   <ItemGroup>

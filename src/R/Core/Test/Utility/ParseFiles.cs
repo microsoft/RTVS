@@ -23,14 +23,14 @@ namespace Microsoft.R.Core.Test.Utility {
         }
 
         private static void ParseFileImplementation(CoreTestFilesFixture fixture, string name) {
-            string testFile = fixture.GetDestinationPath(name);
-            string baselineFile = testFile + ".tree";
-            string text = fixture.LoadDestinationFile(name);
+            var testFile = fixture.GetDestinationPath(name);
+            var baselineFile = testFile + ".tree";
+            var text = fixture.LoadDestinationFile(name);
 
-            AstRoot actualTree = RParser.Parse(text);
+            var actualTree = RParser.Parse(text);
 
-            AstWriter astWriter = new AstWriter();
-            string actual = astWriter.WriteTree(actualTree);
+            var astWriter = new AstWriter();
+            var actual = astWriter.WriteTree(actualTree);
 
             if (_regenerateBaselineFiles) {
                 // Update this to your actual enlistment if you need to update baseline

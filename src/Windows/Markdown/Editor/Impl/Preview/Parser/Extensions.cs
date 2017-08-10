@@ -7,6 +7,10 @@ using Markdig.Syntax;
 namespace Microsoft.Markdown.Editor.Preview.Parser {
     internal static class Extensions {
         public static string GetText(this LeafBlock block) {
+            if(block?.Lines == null) {
+                return string.Empty;
+            }
+
             var sb = new StringBuilder();
             foreach (var line in block.Lines.Lines) {
                 sb.AppendLine(line.ToString());
