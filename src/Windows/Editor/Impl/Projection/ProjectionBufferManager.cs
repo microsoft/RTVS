@@ -172,6 +172,7 @@ namespace Microsoft.Languages.Editor.Projection {
         private void RestoreViewPosition() {
             var textView = DiskBuffer.GetFirstView();
             if(textView == null) {
+                _savedViewPosition = null;
                 return;
             }
 

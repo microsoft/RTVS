@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operands;
 using Microsoft.R.Core.AST.Operators;
@@ -383,7 +382,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType) {
-            errorType = this.HandleOperator(context, out bool isUnary);
+            errorType = HandleOperator(context, out bool isUnary);
             return isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
         }
 
