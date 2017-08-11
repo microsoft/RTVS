@@ -79,7 +79,7 @@
           <ServiceDependency Id="RUserProfileService" Group="no"/>
         </ServiceInstall>
         <ServiceControl Id="RemoteRBrokerServiceUninstall" Name="RRemoteService" Remove="uninstall" Stop="uninstall"/>
-        <fire:FirewallException Id="RBrokerSvcFirewallException" Name="Microsoft.R.Host.Broker" Program="[INSTALLFOLDER]Microsoft.R.Host.Broker.exe" Scope="any" Profile="all"/>
+        <fire:FirewallException Id="RBrokerSvcFirewallException" Name="Microsoft.R.Host.Broker" Program="[INSTALLFOLDER]Microsoft.R.Host.Broker.Windows.exe" Scope="any" Profile="all"/>
         <util:EventSource Log="Application" Name="RRemoteService" EventMessageFile="[NETFRAMEWORK40CLIENTINSTALLROOTDIR]EventLogMessages.dll"/>
       </Component>
     </DirectoryRef>
