@@ -1380,4 +1380,16 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Settings_BreakMultipleStatements_Description" xml:space="preserve">
     <value>When there multiple statements on the same line, break them into separate lines.</value>
   </data>
+  <data name="Settings_Markdown_ScrollEditorWithPreview" xml:space="preserve">
+    <value>Scroll editor with preview</value>
+  </data>
+  <data name="Settings_Markdown_ScrollEditorWithPreview_Description" xml:space="preserve">
+    <value>When preview pane scrolls the editor scrolls text pane to match the preview pane scroll position.</value>
+  </data>
+  <data name="Settings_Markdown_ScrollPreviewWithEditor" xml:space="preserve">
+    <value>Scroll preview with editor</value>
+  </data>
+  <data name="Settings_Markdown_ScrollPreviewWithEditor_Description" xml:space="preserve">
+    <value>When caret moves in the text pane the editor scrolls preview pane to make sure current text line is visible.</value>
+  </data>
 </root>

@@ -2634,6 +2634,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scroll editor with preview.
+        /// </summary>
+        public static string Settings_Markdown_ScrollEditorWithPreview {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_ScrollEditorWithPreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When preview pane scrolls the editor scrolls text pane to match the preview pane scroll position..
+        /// </summary>
+        public static string Settings_Markdown_ScrollEditorWithPreview_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_ScrollEditorWithPreview_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll preview with editor.
+        /// </summary>
+        public static string Settings_Markdown_ScrollPreviewWithEditor {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_ScrollPreviewWithEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When caret moves in the text pane the editor scrolls preview pane to make sure current text line is visible..
+        /// </summary>
+        public static string Settings_Markdown_ScrollPreviewWithEditor_Description {
+            get {
+                return ResourceManager.GetString("Settings_Markdown_ScrollPreviewWithEditor_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown preview browser.
         /// </summary>
         public static string Settings_MarkdownBrowserType {

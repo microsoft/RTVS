@@ -8,6 +8,8 @@ namespace Microsoft.Markdown.Editor.Test.Fixtures {
         public bool EnablePreview { get; set; }
         public RMarkdownPreviewPosition PreviewPosition { get; set; } = RMarkdownPreviewPosition.Right;
         public bool AutomaticSync { get; set; } = false;
+        public bool ScrollPreviewWithEditor { get; set; } = false;
+        public bool ScrollEditorWithPreview { get; set; } = false;
         public int PreviewWidth { get; set; } = 400;
         public int PreviewHeight { get; set; } = 300;
         public void ResetSettings() { }

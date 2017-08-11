@@ -46,6 +46,24 @@ namespace Microsoft.VisualStudio.R.Package.Options.Markdown {
         }
 
         [LocCategory("Settings_MarkdownCategory_Preview")]
+        [CustomLocDisplayName("Settings_Markdown_ScrollEditorWithPreview")]
+        [LocDescription("Settings_Markdown_ScrollEditorWithPreview_Description")]
+        [DefaultValue(true)]
+        public bool ScrollEditorWithPreview {
+            get => _settings.ScrollEditorWithPreview;
+            set => _settings.ScrollEditorWithPreview = value;
+        }
+
+        [LocCategory("Settings_MarkdownCategory_Preview")]
+        [CustomLocDisplayName("Settings_Markdown_ScrollPreviewWithEditor")]
+        [LocDescription("Settings_Markdown_ScrollPreviewWithEditor_Description")]
+        [DefaultValue(true)]
+        public bool ScrollPreviewWithEditor {
+            get => _settings.ScrollPreviewWithEditor;
+            set => _settings.ScrollPreviewWithEditor = value;
+        }
+
+        [LocCategory("Settings_MarkdownCategory_Preview")]
         [CustomLocDisplayName("Settings_Markdown_PreviewWidth")]
         [LocDescription("Settings_Markdown_PreviewWidth_Description")]
         [DefaultValue(RMarkdownEditorSettings.DefaultWidth)]

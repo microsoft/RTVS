@@ -73,6 +73,9 @@
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
     <Compile Include="Preview\Browser\BrowserView.cs" />
+    <Compile Include="Preview\Browser\BrowserWindow.cs" />
+    <Compile Include="Preview\Browser\HtmlPageTemplate.cs" />
+    <Compile Include="Preview\Browser\ScrollTracker.cs" />
     <Compile Include="Preview\Browser\WebBrowserHostUIHandler.cs" />
     <Compile Include="Preview\Code\CodeBlockState.cs" />
     <Compile Include="Preview\Code\EvalSession.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
     <Compile Include="Preview\Commands\RunCurrentChunkCommand.cs" />
     <Compile Include="Preview\IMarkdownPreview.cs" />
+    <Compile Include="Preview\Margin\MarginControls.cs" />
     <Compile Include="Preview\Margin\PreviewBottomMarginProvider.cs" />
     <Compile Include="Preview\Margin\PreviewMargin.cs" />
     <Compile Include="Preview\Margin\PreviewMarginProviderBase.cs" />
