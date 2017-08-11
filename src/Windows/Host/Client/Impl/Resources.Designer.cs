@@ -84,16 +84,6 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}  is missing from the installation directory.
-        ///Please reinstall R Tools for Visual Studio 2015.
-        /// </summary>
-        internal static string Error_BinaryMissing14 {
-            get {
-                return ResourceManager.GetString("Error_BinaryMissing14", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Machine &apos;{0}&apos; appears to be online, but the Remote R Service is not running..
         /// </summary>
         internal static string Error_BrokerNotRunning {
@@ -193,37 +183,6 @@ namespace Microsoft.R.Host.Client {
         internal static string Error_PipeAlreadyConnected {
             get {
                 return ResourceManager.GetString("Error_PipeAlreadyConnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Remote R requested to open {0}, but only http:// URIs are supported for remote..
-        /// </summary>
-        internal static string Error_RemoteUriNotSupported {
-            get {
-                return ResourceManager.GetString("Error_RemoteUriNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
-        ///is higher than the version of R Tools on the local computer ({1}). 
-        ///Please upgrade local R Tools installation to match..
-        /// </summary>
-        internal static string Error_RemoteVersionHigher {
-            get {
-                return ResourceManager.GetString("Error_RemoteVersionHigher", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
-        ///is lower than the version of R Tools on the local computer ({1}). 
-        ///Please upgrade remote R Services installation to match..
-        /// </summary>
-        internal static string Error_RemoteVersionLower {
-            get {
-                return ResourceManager.GetString("Error_RemoteVersionLower", resourceCulture);
             }
         }
         
@@ -399,17 +358,6 @@ namespace Microsoft.R.Host.Client {
         internal static string Info_StaticFileServerStarted {
             get {
                 return ResourceManager.GetString("Info_StaticFileServerStarted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Check out Microsoft&apos;s enhanced R distribution at https://aka.ms/mrclient.
-        ///
-        ///.
-        /// </summary>
-        internal static string Message_SuggestMRO {
-            get {
-                return ResourceManager.GetString("Message_SuggestMRO", resourceCulture);
             }
         }
         
