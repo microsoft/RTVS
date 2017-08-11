@@ -2580,24 +2580,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Height.
-        /// </summary>
-        public static string Settings_Markdown_PreviewHeight {
-            get {
-                return ResourceManager.GetString("Settings_Markdown_PreviewHeight", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Preview pane height when it is positioned below the editor.
-        /// </summary>
-        public static string Settings_Markdown_PreviewHeight_Description {
-            get {
-                return ResourceManager.GetString("Settings_Markdown_PreviewHeight_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Position.
         /// </summary>
         public static string Settings_Markdown_PreviewPosition {
@@ -2612,24 +2594,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_Markdown_PreviewPosition_Description {
             get {
                 return ResourceManager.GetString("Settings_Markdown_PreviewPosition_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Width.
-        /// </summary>
-        public static string Settings_Markdown_PreviewWidth {
-            get {
-                return ResourceManager.GetString("Settings_Markdown_PreviewWidth", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Preview pane width when it is positioned at the right side of the editor.
-        /// </summary>
-        public static string Settings_Markdown_PreviewWidth_Description {
-            get {
-                return ResourceManager.GetString("Settings_Markdown_PreviewWidth_Description", resourceCulture);
             }
         }
         
@@ -2702,6 +2666,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_MarkdownCategory_Preview {
             get {
                 return ResourceManager.GetString("Settings_MarkdownCategory_Preview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrolling.
+        /// </summary>
+        public static string Settings_MarkdownCategory_Scroll {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownCategory_Scroll", resourceCulture);
             }
         }
         
