@@ -5,6 +5,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Microsoft.Common.Wpf.Extensions;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -29,17 +30,6 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private void CreateRightMarginControl(Decorator parent) {
             var width = _settings.PreviewWidth;
 
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Pixel) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(width, GridUnitType.Pixel), MinWidth = 150 });
-            grid.RowDefinitions.Add(new RowDefinition());
-            parent.Child = grid;
-
-            grid.Children.Add(_webBrowser);
-            Grid.SetColumn(_webBrowser, 2);
-            Grid.SetRow(_webBrowser, 0);
-
             var splitter = new GridSplitter {
                 Width = 5,
                 ResizeDirection = GridResizeDirection.Columns,
@@ -48,9 +38,20 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             };
             splitter.DragCompleted += RightDragCompleted;
 
-            grid.Children.Add(splitter);
-            Grid.SetColumn(splitter, 1);
-            Grid.SetRow(splitter, 0);
+            var grid = new Grid {
+                ColumnDefinitions = {
+                    new ColumnDefinition {Width = new GridLength(0, GridUnitType.Star)},
+                    new ColumnDefinition {Width = new GridLength(5, GridUnitType.Pixel)},
+                    new ColumnDefinition {Width = new GridLength(width, GridUnitType.Pixel), MinWidth = 150}
+                },
+                RowDefinitions = { new RowDefinition() },
+                Children = {
+                    splitter.SetGridPosition(0, 1),
+                    _webBrowser.SetGridPosition(0, 2)
+                }
+            };
+
+            parent.Child = grid;
 
             var fixWidth = new Action(() => {
                 // previewWindow maxWidth = current total width - textView minWidth
@@ -79,18 +80,6 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private void CreateBottomMarginControls(Decorator parent) {
             var height = _settings.PreviewHeight;
 
-            var grid = new Grid();
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Star) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5, GridUnitType.Pixel) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(height, GridUnitType.Pixel) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            grid.Children.Add(_webBrowser);
-            parent.Child = grid;
-
-            Grid.SetColumn(_webBrowser, 0);
-            Grid.SetRow(_webBrowser, 2);
-
             var splitter = new GridSplitter {
                 Height = 5,
                 ResizeDirection = GridResizeDirection.Rows,
@@ -99,9 +88,19 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             };
             splitter.DragCompleted += BottomDragCompleted;
 
-            grid.Children.Add(splitter);
-            Grid.SetColumn(splitter, 0);
-            Grid.SetRow(splitter, 1);
+            var grid = new Grid {
+                RowDefinitions = {
+                    new RowDefinition { Height = new GridLength(0, GridUnitType.Star)},
+                    new RowDefinition { Height = new GridLength(5, GridUnitType.Pixel)},
+                    new RowDefinition { Height = new GridLength(height, GridUnitType.Pixel)}
+                },
+                ColumnDefinitions = { new ColumnDefinition() },
+                Children = {
+                    splitter.SetGridPosition(1, 0),
+                    _webBrowser.SetGridPosition(2, 0)
+                }
+            };
+            parent.Child = grid;
         }
 
         private void RightDragCompleted(object sender, DragCompletedEventArgs e) {
