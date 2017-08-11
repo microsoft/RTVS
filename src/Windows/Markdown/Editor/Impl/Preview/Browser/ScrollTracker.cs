@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Drawing;
+using System.Windows;
 using Microsoft.Common.Core;
 using mshtml;
 
@@ -28,7 +30,9 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
                 _htmlDocument.documentElement.setAttribute("scrollTop", 0);
             } else {
                 var element = _htmlDocument.getElementById(_linePragmaPrefix + markdownLineNumber);
-                element?.scrollIntoView(true);
+                if (element != null && !IsVisible(element)) {
+                    element.scrollIntoView(true);
+                }
             }
             Invalidate();
         }
@@ -38,23 +42,27 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
                 return -1;
             }
 
-            var de = _htmlDocument.documentElement;
-            var de2 = _htmlDocument.documentElement as IHTMLElement2;
-            var viewTop = de2.scrollTop;
-            var viewBottom = viewTop + de.offsetHeight;
+            var rc = GetViewRect();
 
-            if (_viewTop == viewTop && _viewBottom == viewBottom && _firstVisibleLine >= 0) {
+            if (_viewTop == rc.Top && _viewBottom == rc.Bottom && _firstVisibleLine >= 0) {
                 return _firstVisibleLine;
             }
 
-            _viewTop = viewTop;
-            _viewBottom = viewBottom;
+            _viewTop = rc.Top;
+            _viewBottom = rc.Bottom;
 
             _firstVisibleLine = FindFirstVisibleParagraphLine();
             return _firstVisibleLine;
         }
 
         public void Invalidate() => _firstVisibleLine = -1;
+
+        private bool IsVisible(IHTMLElement e) => GetViewRect().Contains(e.offsetLeft, e.offsetTop);
+
+        private Rectangle GetViewRect() {
+            var de2 = _htmlDocument.documentElement as IHTMLElement2;
+            return new Rectangle(de2.scrollLeft, de2.scrollTop, de2.clientWidth, de2.clientHeight);
+        }
 
         private int FindFirstVisibleParagraphLine() {
             var allPara = _htmlDocument.getElementsByTagName("p");

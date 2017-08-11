@@ -33,7 +33,7 @@ namespace Microsoft.Markdown.Editor.Settings {
         }
 
         public bool AutomaticSync {
-            get => Storage.Get(AutomaticSyncKey, true);
+            get => Storage.Get(AutomaticSyncKey, false);
             set => WritableStorage?.Set(AutomaticSyncKey, value);
         }
 

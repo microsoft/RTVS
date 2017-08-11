@@ -43,7 +43,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
             if (!RSession.IsHostRunning) {
                 var settings = _services.GetService<IRSettings>();
-                await RSession.EnsureHostStartedAsync(new RHostStartupInfo(), SessionCallback, 3000, ct);
+                await RSession.EnsureHostStartedAsync(new RHostStartupInfo(isInteractive: true), SessionCallback, 3000, ct);
                 await RSession.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(settings.CranMirror), ct);
                 await RSession.SetCodePageAsync(settings.RCodePage, ct);
                 await RSession.SetVsGraphicsDeviceAsync();

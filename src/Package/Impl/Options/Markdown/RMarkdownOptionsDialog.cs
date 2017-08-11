@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.Markdown {
         [LocCategory("Settings_MarkdownCategory_Preview")]
         [CustomLocDisplayName("Settings_Markdown_AutomaticSync")]
         [LocDescription("Settings_Markdown_AutomaticSync_Description")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool AutomaticSync {
             get => _settings.AutomaticSync;
             set => _settings.AutomaticSync = value;
