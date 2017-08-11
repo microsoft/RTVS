@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Common.Core;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Security;
@@ -59,7 +60,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
         public IActionResult Delete(string id) {
             var session = _sessionManager.GetSession(User.Identity, id);
             if (session == null) {
-                return NotFound();
+                _sessionLogger.LogDebug(Resources.Debug_SessionNotFound.FormatInvariant(id));
+                return Ok();
             }
 
             try {

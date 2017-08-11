@@ -15,6 +15,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public static string IsHostVersionCompatible(this AboutHost aboutHost) {
+#if !DEBUG
             if (_localVersion.Major != 0 || _localVersion.Minor != 0) { // Filter out debug builds
                 var serverVersion = new Version(aboutHost.Version.Major, aboutHost.Version.Minor);
                 var clientVersion = new Version(_localVersion.Major, _localVersion.Minor);
@@ -26,6 +27,7 @@ namespace Microsoft.R.Host.Client {
                     return Resources.Error_RemoteVersionLower.FormatInvariant(aboutHost.Version, _localVersion);
                 }
             }
+#endif
 
             return null;
         }
