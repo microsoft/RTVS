@@ -72,10 +72,10 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                 _separators.Add(new TextRange(t.Start, t.LeadingSeparatorLength)); // ```{r or `r
                 if (t.IsWellFormed) {
                     // Count backticks
-                    Blocks.Add(RLanguageBlock.FromBounds(t.Start + t.LeadingSeparatorLength, t.End - t.TrailingSeparatorLength, t.LeadingSeparatorLength == 2));
+                    Blocks.Add(new RLanguageBlock(TextRange.FromBounds(t.Start + t.LeadingSeparatorLength, t.End - t.TrailingSeparatorLength), t.LeadingSeparatorLength == 2));
                     _separators.Add(new TextRange(t.End - t.TrailingSeparatorLength, t.TrailingSeparatorLength));
                 } else {
-                    Blocks.Add(RLanguageBlock.FromBounds(t.Start + t.LeadingSeparatorLength, t.End, t.LeadingSeparatorLength == 2));
+                    Blocks.Add(new RLanguageBlock(TextRange.FromBounds(t.Start + t.LeadingSeparatorLength, t.End), t.LeadingSeparatorLength == 2));
                 }
             }
         }

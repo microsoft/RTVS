@@ -22,6 +22,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         public bool Eval { get; private set; } = true;
         public bool DisplayErrors { get; private set; } = true;
         public bool DisplayWarnings { get; private set; } = true;
+        public bool DisplayMessages { get; private set; } = true;
         public bool EchoContent { get; private set; } = true;
 
         public string HtmlElementId => Invariant($"rcode_{BlockNumber}_{Hash}");
@@ -53,13 +54,15 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                         DisplayErrors = GetTokenValue(info, tokens, true);
                     } else if (t.Length == 7 && info.Substring(t.Start, t.Length).EqualsOrdinal("warning")) {
                         DisplayWarnings = GetTokenValue(info, tokens, true);
+                    } else if(t.Length == 7 && info.Substring(t.Start, t.Length).EqualsOrdinal("message")) {
+                        DisplayMessages = GetTokenValue(info, tokens, true);
                     }
                 }
                 tokens.MoveToNextToken();
             }
         }
 
-        private bool GetTokenValue(string info, TokenStream<RToken> tokens, bool defaultValue) {
+        private static bool GetTokenValue(string info, TokenStream<RToken> tokens, bool defaultValue) {
             var t = tokens.MoveToNextToken();
             if (t.Length == 1 && info[t.Start] == '=') {
                 t = tokens.MoveToNextToken();

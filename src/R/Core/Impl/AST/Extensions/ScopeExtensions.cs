@@ -7,10 +7,12 @@ using Microsoft.Common.Core;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Functions;
+using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Statements.Loops;
 using Microsoft.R.Core.AST.Variables;
+using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST {
     public static class ScopeExtensions {
@@ -126,6 +128,30 @@ namespace Microsoft.R.Core.AST {
         public static IVariable FindVariableDefinitionByName(this IScope scope, string name, int position) {
             var variables = scope.GetApplicableVariables(position);
             return variables.FirstOrDefault(x => x.Name.EqualsOrdinal(name));
+        }
+
+        /// <summary>
+        /// Attempts to retrieve value for the given KnitR block option.
+        /// Works for scopes that define KnitR code chunk arguments
+        /// in the R Markdown such as '{r echo=TRUE, warning=FALSE}
+        /// </summary>
+        public static string GetKnitrBlockOption(this IScope scope, string optionName) {
+            if (scope == null || !scope.KnitrOptions) {
+                return string.Empty;
+            }
+
+            // Find all expressions that look like 'name = value' 
+            // and if name matches, return the value.
+            var valueNode = scope.Children
+                .OfType<IExpressionStatement>()
+                .Select(s => s.Expression)
+                .Where(e => e.Children.Count == 1 && (e.Children[0] as IOperator)?.OperatorType == OperatorType.Equals)
+                .Select(e => (IOperator)e.Children[0])
+                .Where(op => (op.LeftOperand as Variable)?.Name == optionName)
+                .Select(op => op.RightOperand)
+                .FirstOrDefault();
+
+            return valueNode?.Root?.TextProvider?.GetText(valueNode) ?? string.Empty;
         }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
+using Microsoft.R.Core.Parser;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -17,7 +18,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     /// Host for contained (embedded) language editors such as R editor inside 
     /// ``` code ``` blocks in R Markdown.
     /// </summary>
-    internal sealed class MdContainedLanguageHost : IContainedLanguageHost {
+    internal sealed class MdContainedLanguageHost : IContainedLanguageHost, IExpressionTermFilter {
         private readonly ITextBuffer _textBuffer;
         private readonly IEditorDocument _document;
 

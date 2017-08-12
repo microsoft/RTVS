@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST;
@@ -13,24 +14,24 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.Parser {
     [DebuggerDisplay("{Tokens.Position} = {Tokens.CurrentToken.TokenType} : Errors = {Errors.Count}")]
     public sealed class ParseContext {
-        private List<IParseError> _errors = new List<IParseError>();
+        private readonly List<IParseError> _errors = new List<IParseError>();
 
-        public AstRoot AstRoot { get; private set; }
+        public AstRoot AstRoot { get; }
 
         /// <summary>
         /// Provider of the text to parse
         /// </summary>
-        public ITextProvider TextProvider { get; private set; }
+        public ITextProvider TextProvider { get; }
 
         /// <summary>
         /// Token stream
         /// </summary>
-        public TokenStream<RToken> Tokens { get; private set; }
+        public TokenStream<RToken> Tokens { get; }
 
         /// <summary>
         /// The range that is being parsed
         /// </summary>
-        public ITextRange TextRange { get; private set; }
+        public ITextRange TextRange { get; }
 
         /// <summary>
         /// Nested scopes where last element is the innermost scope
@@ -52,11 +53,15 @@ namespace Microsoft.R.Core.Parser {
         /// <summary>
         /// Collection of comments in the file
         /// </summary>
-        public IReadOnlyCollection<RToken> Comments { get; private set; }
+        public IReadOnlyCollection<RToken> Comments { get; }
 
         public IExpressionTermFilter ExpressionTermFilter { get; }
 
-        public ParseContext(ITextProvider textProvider, ITextRange range, TokenStream<RToken> tokens, IReadOnlyList<RToken> comments, IExpressionTermFilter filter = null) {
+        public ParseContext(ITextProvider textProvider
+            , ITextRange range
+            , TokenStream<RToken> tokens
+            , IReadOnlyList<RToken> comments
+            , IExpressionTermFilter filter = null) {
             AstRoot = new AstRoot(textProvider);
             TextProvider = textProvider;
             Tokens = tokens;
@@ -68,21 +73,13 @@ namespace Microsoft.R.Core.Parser {
         }
 
         public void AddError(ParseError error) {
-            bool found = false;
-
-            foreach (IParseError e in _errors) {
-                if (e.Start == error.Start && e.Length == error.Length && e.ErrorType == error.ErrorType) {
-                    found = true;
-                    break;
-                }
-            }
-
+            bool found = _errors.Any(e => e.Start == error.Start && e.Length == error.Length && e.ErrorType == error.ErrorType);
             if (!found) {
                 _errors.Add(error);
             }
         }
 
-        class DefaultExpressionTermFilter : IExpressionTermFilter {
+        private class DefaultExpressionTermFilter : IExpressionTermFilter {
             public bool IsInertRange(ITextRange range) => false;
         }
     }
