@@ -1074,12 +1074,6 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="VariableExplorer_ExpandVariable" xml:space="preserve">
     <value>Expand variable</value>
   </data>
-  <data name="Settings_WorkingDirectory" xml:space="preserve">
-    <value>Working directory</value>
-  </data>
-  <data name="Settings_WorkingDirectory_Description" xml:space="preserve">
-    <value>Working directory to set when R session starts.</value>
-  </data>
   <data name="Settings_SpaceBeforeCurly" xml:space="preserve">
     <value>Space before {</value>
   </data>

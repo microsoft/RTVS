@@ -59,7 +59,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 .Add(() => Session.Disconnected -= SessionOnDisconnected)
                 .Add(() => Session.BeforeRequest -= SessionOnBeforeRequest)
                 .Add(() => Session.AfterRequest -= SessionOnAfterRequest)
-                .Add(() => _sessionProvider.BrokerChanged -= OnBrokerChanging);
+                .Add(() => _sessionProvider.BrokerChanging -= OnBrokerChanging);
 
             _sessionProvider.BrokerChanging += OnBrokerChanging;
 
@@ -85,7 +85,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
             try {
                 if (!Session.IsHostRunning) {
-                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, _settings.WorkingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true, true);
+                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, null, _settings.RCodePage, _terminalWidth, !isResetting, true, true);
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, _fs));
                 }
                 return ExecutionResult.Success;
