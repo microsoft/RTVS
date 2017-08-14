@@ -100,27 +100,18 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
 
                 var result = GetCachedResult(_blockNumber, rCodeBlock.Hash, fencedCodeBlock);
                 if (result != null) {
-                    WriteBlockContent(renderer, _blockNumber, text);
                     renderer.Write(result);
                 } else {
                     var elementId = rCodeBlock.HtmlElementId;
                     _blocks.Add(rCodeBlock);
 
-                    WriteBlockContent(renderer, _blockNumber, text);
                     // Write placeholder first. We will insert actual data when the evaluation is done.
                     renderer.Write(GetBlockPlaceholder(elementId, text));
                 }
                 _blockNumber++;
             }
         }
-
-        private void WriteBlockContent(HtmlRenderer renderer, int blockNumber, string text) {
-            if (_blocks[blockNumber].EchoContent) {
-                renderer.Write(Invariant($"<pre class='r'><code>{text}</code></pre>"));
-            }
-        }
         #endregion
-
 
         #region Cache
         private string GetCachedResult(int blockNumber, int hash, FencedCodeBlock block) {
@@ -163,7 +154,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         /// Returns static image for manual sync mode
         /// </summary>
         private static string GetStaticPlaceholder(string elementId, string text)
-            => Invariant($"<div id='{elementId}'><code>{text}</code></div>");
+            => Invariant($"<div id='{elementId}'></div>");
         #endregion
 
         public void Dispose() {
