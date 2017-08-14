@@ -50,7 +50,7 @@ namespace Microsoft.Common.Core.UI.Commands {
         public virtual CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) => CommandResult.NotSupported;
 
         [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
-        public virtual CommandResult Invoke() {
+        public CommandResult Invoke() {
             Debug.Assert(_commandIds.Length == 1, "Default Invoke called on command with multiple ids.");
             var o = new object();
             return Invoke(_commandIds[0].Group, _commandIds[0].Id, null, ref o);

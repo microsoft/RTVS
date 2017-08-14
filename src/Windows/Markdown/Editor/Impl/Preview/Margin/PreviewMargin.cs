@@ -132,7 +132,8 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         }
 
         #region IMarkdownPreview
-
+        public void Reload() => Browser.Reload(_textView.TextBuffer.CurrentSnapshot);
+        
         public void Update(bool force) {
             if (_textChanged || force) {
                 UpdateBrowser();

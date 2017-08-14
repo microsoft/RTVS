@@ -49,6 +49,8 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
         public Task RenderCodeBlocks(HTMLDocument htmlDocument, int start, int count)
             => _codeBlockRenderer.RenderBlocksAsync(htmlDocument, start, count, CancellationToken.None);
 
+        public void Reset() => _codeBlockRenderer.ClearCache();
+
         public void Dispose() => _codeBlockRenderer.Dispose();
     }
 }

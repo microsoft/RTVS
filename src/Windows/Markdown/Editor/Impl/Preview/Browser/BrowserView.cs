@@ -111,6 +111,11 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             }
         }
 
+        public void Reload(ITextSnapshot snapshot) {
+            _documentRenderer.Reset();
+            UpdateBrowser(snapshot);
+        }
+
         public int GetFirstVisibleLineNumber() => _scrollTracker?.GetFirstVisibleLineNumber() ?? 0;
 
         public void Dispose() {

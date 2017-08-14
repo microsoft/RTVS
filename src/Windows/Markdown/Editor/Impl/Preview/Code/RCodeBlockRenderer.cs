@@ -114,6 +114,8 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         #endregion
 
         #region Cache
+        public void ClearCache() => _blocks.Clear();
+
         private string GetCachedResult(int blockNumber, int hash, FencedCodeBlock block) {
             if (blockNumber >= _blocks.Count) {
                 return null;

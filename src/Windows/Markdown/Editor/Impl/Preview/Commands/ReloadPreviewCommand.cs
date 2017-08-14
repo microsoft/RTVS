@@ -16,8 +16,8 @@ namespace Microsoft.Markdown.Editor.Preview.Commands {
 
         public override CommandStatus Status(Guid group, int id) => CommandStatus.SupportedAndEnabled;
 
-        public override CommandResult Invoke() {
-            TextView.GetService<IMarkdownPreview>()?.Update(force: true);
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            TextView.GetService<IMarkdownPreview>()?.Reload();
             return CommandResult.Executed;
         }
     }
