@@ -43,7 +43,6 @@
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{9C717F8F-4A97-4FA5-8031-5A180467754D}" Win64="yes">
         <?include "Assemblies.wxi" ?>
-        <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.dll" />
       </Component>
       
         <!-- Remote R User Profile service installer -->
