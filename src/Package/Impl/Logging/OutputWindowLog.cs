@@ -10,7 +10,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
-    internal sealed class OutputWindowLogWriter {
+    internal sealed class OutputWindowLogWriter : IActionLogWriter {
         private readonly IServiceContainer _services;
         private readonly string _windowName;
         private IVsOutputWindowPane _pane;
@@ -42,10 +42,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             window?.Activate();
         }
 
-        public Task WriteAsync(MessageCategory category, string message) {
+        public void Write(MessageCategory category, string message) {
             EnsurePaneVisible();
             _pane?.OutputStringThreadSafe(message);
-            return Task.CompletedTask;
         }
 
         public void Flush() { }

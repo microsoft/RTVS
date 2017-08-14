@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
 using static System.FormattableString;
@@ -20,7 +21,7 @@ namespace Microsoft.R.Containers.Docker {
         private readonly IFileSystem _fs;
         private readonly IProcessServices _ps;
 
-        public WindowsDockerService(IFileSystem fs, IProcessServices ps, IRegistry registryService):base (GetLocalDocker(registryService, fs), ps) {
+        public WindowsDockerService(IFileSystem fs, IProcessServices ps, IRegistry registryService, IActionLogWriter logWriter = null) : base (GetLocalDocker(registryService, fs), ps, logWriter) {
             _fs = fs;
             _ps = ps;
         }
@@ -52,7 +53,7 @@ namespace Microsoft.R.Containers.Docker {
                 if (string.IsNullOrEmpty(containerId)) {
                     throw new ContainerException(Resources.Error_ContainerIdInvalid.FormatInvariant(containerId));
                 }
-                return new LocalDockerContainer(containerId);
+                return await GetContainerAsync(containerId, ct);
             } catch (ContainerException cex) {
                 throw cex;
             } finally {

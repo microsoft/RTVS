@@ -5,6 +5,7 @@
   <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Common.Core.Windows.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
+  <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
   <File Source="$(var.BinDir)\Microsoft.R.Interpreters.Windows.dll" />

@@ -10,10 +10,13 @@ namespace Microsoft.R.Containers.Docker {
         private static readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
 
         public string Id { get; }
+        public string Name { get; }
+
         public bool IsShortId => Id.Length < 64;
 
-        public LocalDockerContainer(string id) {
+        public LocalDockerContainer(string id, string name) {
             Id = id;
+            Name = name;
         }
     }
 }

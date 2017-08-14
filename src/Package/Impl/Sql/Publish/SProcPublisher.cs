@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 var message = Environment.NewLine +
                     string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) +
                     Environment.NewLine;
-                _outputWindow.WriteAsync(MessageCategory.General, message).DoNotWait();
+                _outputWindow.Write(MessageCategory.General, message);
                 RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
             }
         }
