@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -17,13 +18,15 @@ namespace Microsoft.R.Containers.Docker {
     public abstract class LocalDockerService : IDockerService {
         private readonly IProcessServices _ps;
         private readonly LocalDocker _docker;
+        private readonly IActionLogWriter _outputLogWriter;
         private readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
         private readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
         private int _defaultTimeout = 5000;
 
-        public LocalDockerService(LocalDocker docker, IProcessServices ps) {
+        public LocalDockerService(LocalDocker docker, IProcessServices ps, IActionLogWriter logWriter) {
             _docker = docker;
             _ps = ps;
+            _outputLogWriter = logWriter;
         }
 
         public async Task<IEnumerable<string>> ListContainersAsync(bool getAll = true, CancellationToken ct = default(CancellationToken)) {
@@ -41,7 +44,8 @@ namespace Microsoft.R.Containers.Docker {
             if (ids.Count() > 0) {
                 JArray arr = await InspectContainerAsync(containerId, ct);
                 if (arr.Count == 1) {
-                    return new LocalDockerContainer((string)arr[0]["Id"]);
+                    var containerObj = arr[0];
+                    return new LocalDockerContainer((string)containerObj["Id"], GetContainerName(containerObj));
                 }
             }
             return null;
@@ -116,6 +120,11 @@ namespace Microsoft.R.Containers.Docker {
             return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
         }
 
+        private string GetContainerName(JToken containerObj) {
+            var name = (string)containerObj["Name"];
+            return (name.StartsWithIgnoreCase("/") ? name.Substring(1) : name);
+        }
+
         private async Task<string> ExecuteCommandAsync(string arguments, int timeoutms, CancellationToken ct) {
             ProcessStartInfo psi = new ProcessStartInfo() {
                 FileName = _docker.DockerCommandPath,
@@ -138,8 +147,11 @@ namespace Microsoft.R.Containers.Docker {
             string output = await process.StandardOutput.ReadToEndAsync();
             string error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error)) {
+                _outputLogWriter?.Write(MessageCategory.Error, error);
                 throw new ContainerException(error);
             }
+
+            _outputLogWriter?.Write(MessageCategory.General, output);
             return output;
         }
     }

@@ -142,3 +142,5 @@ fakeroot chmod u+rwxs,g+rx,o+x ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsU
 echo "Building deb package"
 fakeroot dpkg-deb --build ./pkg/debian "./pkg/$RTVS_PKG_NAME" && \
 echo "Package name: $RTVS_PKG_NAME"
+
+export RTVS_PKG_NAME

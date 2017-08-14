@@ -119,7 +119,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to retrieve R installation data for interpreter \"{0}\" at \"{1}\"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler beim Abrufen von R-Installationsdaten für Interpreter \"{0}\" bei \"{1}\".]]></Val>
+            <Val><![CDATA[Fehler beim Abrufen von R-Installationsdaten für Interpreter \"{0}\" unter \"{1}\".]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -362,7 +362,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R {0} detected at \"{1}\"]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R \"{0}\" erkannt bei \"{1}\"]]></Val>
+            <Val><![CDATA[R \"{0}\" erkannt unter \"{1}\"]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -454,7 +454,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -475,7 +475,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -511,7 +511,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.1.30627.1321]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

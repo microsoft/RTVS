@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "prepare and place docker file"
+m4 --define=RTVS_PKG_NAME="$RTVS_PKG_NAME" ./Setup/Docker/ubuntu1604rtvsd/Dockerfile.m4 > ./Setup/Docker/ubuntu1604rtvsd/Dockerfile
+rm ./Setup/Docker/ubuntu1604rtvsd/Dockerfile.m4

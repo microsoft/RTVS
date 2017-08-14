@@ -216,4 +216,7 @@
   <data name="Error_HostToClientConnectionFailed" xml:space="preserve">
     <value>R session disconnected from client due to error: {0}</value>
   </data>
+  <data name="Debug_SessionNotFound" xml:space="preserve">
+    <value>Could not find session with id: {0}</value>
+  </data>
 </root>

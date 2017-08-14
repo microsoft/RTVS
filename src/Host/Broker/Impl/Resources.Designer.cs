@@ -116,6 +116,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find session with id: {0}.
+        /// </summary>
+        internal static string Debug_SessionNotFound {
+            get {
+                return ResourceManager.GetString("Debug_SessionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default.
         /// </summary>
         internal static string Default {
