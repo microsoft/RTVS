@@ -44,7 +44,8 @@ namespace Microsoft.R.Containers.Docker {
             if (ids.Count() > 0) {
                 JArray arr = await InspectContainerAsync(containerId, ct);
                 if (arr.Count == 1) {
-                    return new LocalDockerContainer((string)arr[0]["Id"]);
+                    var containerObj = arr[0];
+                    return new LocalDockerContainer((string)containerObj["Id"], GetContainerName(containerObj));
                 }
             }
             return null;
@@ -117,6 +118,11 @@ namespace Microsoft.R.Containers.Docker {
             string command = "stop";
             string commandOptions = $"{container.Id}";
             return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+        }
+
+        private string GetContainerName(JToken containerObj) {
+            var name = (string)containerObj["Name"];
+            return (name.StartsWithIgnoreCase("/") ? name.Substring(1) : name);
         }
 
         private async Task<string> ExecuteCommandAsync(string arguments, int timeoutms, CancellationToken ct) {

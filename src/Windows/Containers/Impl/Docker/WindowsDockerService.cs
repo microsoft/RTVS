@@ -53,7 +53,7 @@ namespace Microsoft.R.Containers.Docker {
                 if (string.IsNullOrEmpty(containerId)) {
                     throw new ContainerException(Resources.Error_ContainerIdInvalid.FormatInvariant(containerId));
                 }
-                return new LocalDockerContainer(containerId);
+                return await GetContainerAsync(containerId, ct);
             } catch (ContainerException cex) {
                 throw cex;
             } finally {
