@@ -141,19 +141,11 @@ namespace Microsoft.R.Containers.Docker {
             string output = await process.StandardOutput.ReadToEndAsync();
             string error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error)) {
-                try {
-                    _outputLogWriter?.Write(MessageCategory.Error, error);
-                } catch(Exception ex) when (!ex.IsCriticalException()) {
-                }
-
+                _outputLogWriter?.Write(MessageCategory.Error, error);
                 throw new ContainerException(error);
             }
 
-            try {
-                _outputLogWriter?.Write(MessageCategory.General, output);
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-            }
-
+            _outputLogWriter?.Write(MessageCategory.General, output);
             return output;
         }
     }
