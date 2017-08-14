@@ -61,7 +61,7 @@ namespace Microsoft.Markdown.Editor.Document {
         #region IDisposable
         public void Dispose() {
             EditorBuffer.RemoveService(this);
-            _projectionBufferManager?.Dispose();
+            _projectionBufferManager.Dispose();
         }
         #endregion
     }
