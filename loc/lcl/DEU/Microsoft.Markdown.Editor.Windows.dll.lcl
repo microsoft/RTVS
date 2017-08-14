@@ -11,8 +11,44 @@
   </Item>
   <Item ItemId=";Microsoft.Markdown.Editor.Resources.resources" ItemType="0" PsrId="211" Leaf="false">
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" Path=" \ ;Managed Resources \ 0 \ 0" />
+    <Item ItemId=";Images" ItemType="0" PsrId="211" Leaf="false">
+      <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
+      <Item ItemId=";Loading" ItemType="6" PsrId="211" Leaf="true">
+        <Bin BinId="3">
+          <Val><![CDATA[AAEAAAD/////AQAAAAAAAAAEAQAAAAxTeXN0ZW0uSW50MzIBAAAAB21fdmFsdWUACAMAAAALAAEAAAD/////AQAAAAAAAAAGAQAAAAdMb2FkaW5nCwABAAAA/////wEAAAAAAAAABAEAAAAfU3lzdGVtLlVuaXR5U2VyaWFsaXphdGlvbkhvbGRlcgMAAAAERGF0YQlVbml0eVR5cGUMQXNzZW1ibHlOYW1lAQABCAYCAAAAFVN5c3RlbS5EcmF3aW5nLkJpdG1hcAQAAAAGAwAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2ELAAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAAdCMAAAJHSUY4OWFkAGQAswwATLnwnNj3iND1Jantm9j3H6fsSbfwJKntndn3IKftGqXs////////AAAAAAAAAAAAIf8LTkVUU0NBUEUyLjADAQAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS41LWMwMTQgNzkuMTUxNDgxLCAyMDEzLzAzLzEzLTEyOjA5OjE1ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlw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]]></Val>
+        </Bin>
+        <Disp Edtr="External" Icon="Bmp" LocTbl="false" />
+      </Item>
+    </Item>
     <Item ItemId=";Strings" ItemType="0" PsrId="211" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
+      <Item ItemId=";AutomaticSyncPauseTooltip" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pause automatic view synchronization]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Automatische Ansichtssynchronisierung anhalten]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";AutomaticSyncPlayTooltip" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Activate automatic view synchronization]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Automatische Ansichtssynchronisierung aktivieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";BrowserView_Error" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An unexpected exception occurred]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Unerwartete Ausnahme.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";ColorName_MD_AltText" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Markdown Alt Text]]></Val>
@@ -103,11 +139,164 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_RScriptLaunchFailed" ItemType="0" PsrId="211" Leaf="true">
+      <Item ItemId=";Error_PackageMissing" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Unable to run RScript.exe. Exception: {0}]]></Val>
+          <Val><![CDATA[This operation requires package {0} which is not installed or has been removed. ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA["RScript.exe" kann nicht ausgeführt werden. Ausnahme: {0}]]></Val>
+            <Val><![CDATA[Für diesen Vorgang ist das Paket "{0}" erforderlich, das nicht installiert ist oder entfernt wurde. ]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_PandocMissingLocal" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing markdown requires Pandoc. Please install Pandoc for Windows from http://pandoc.org/installing.html.]D;]A;    ]D;]A;Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zum Veröffentlichen von Markdowns ist Pandoc erforderlich. Installieren Sie Pandoc für Windows von http://pandoc.org/installing.html.]D;]A;    ]D;]A;Klicken Sie auf "OK", um die Pandoc-Downloadseite im Standardbrowser zu öffnen. Möglicherweise müssen Sie Visual Studio neu starten, wenn das Pandoc-Setup abgeschlossen ist.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_PandocMissingRemote" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing markdown requires Pandoc. Please contact the remote machine administrator and ask them to install Pandoc for Windows from http://pandoc.org/installing.html.]D;]A;    ]D;]A;Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zum Veröffentlichen von Markdowns ist Pandoc erforderlich. Wenden Sie sich an den Administrator des Remotecomputers, und bitten Sie um die Installation von Pandoc für Windows von http://pandoc.org/installing.html.]D;]A;    ]D;]A;Klicken Sie auf "OK", um die Pandoc-Downloadseite im Standardbrowser zu öffnen. Möglicherweise müssen Sie den Prozess der R-Remotedienste neu starten, wenn das Pandoc-Setup abgeschlossen ist.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_PdfLatexMissingLocal" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing markdown to PDF requires TeX installation. Please install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.]D;]A;    ]D;]A;Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zum Veröffentlichen von Markdowns als PDF muss TeX installiert werden. Installieren Sie MiKTeX (Complete) von http://miktex.org/2.9/setup. Stellen Sie sicher, dass Sie die Installationsoption "Complete" herunterladen.]D;]A;    ]D;]A;Klicken Sie auf "OK", um die MiKTeX-Downloadseite im Standardbrowser zu öffnen. Möglicherweise müssen Sie Visual Studio neu starten, wenn das MiKTeX-Setup abgeschlossen ist.]D;]A;]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_PdfLatexMissingRemote" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing markdown to PDF requires TeX installation. Please contact the remote machine administrator and ask them to install MiKTeX (Complete) from http://miktex.org/2.9/setup. Be sure to download the Complete installation.]D;]A;]D;]A;Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zum Veröffentlichen von Markdowns als PDF muss TeX installiert werden. Wenden Sie sich an den Administrator des Remotecomputers, und bitten Sie um die Installation von MiKTeX (Complete) von http://miktex.org/2.9/setup. Stellen Sie sicher, dass die Installationsoption "Complete" heruntergeladen wird.]D;]A;]D;]A;Klicken Sie auf "OK", um die MiKTeX-Downloadseite im Standardbrowser zu öffnen. Möglicherweise müssen Sie den Prozess der R-Remote Services neu starten, wenn das MiKTeX-Setup abgeschlossen ist.]D;]A;]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";FormatDocument" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Format Document]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dokument formatieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Info_MarkdownGetOutputFile" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Saving published output file: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Veröffentlichte Ausgabedatei wird gespeichert: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Info_MarkdownPublishComplete" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Finished publishing markdown file: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Veröffentlichung der Markdowndatei wurde beendet: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Info_MarkdownPublishingFile" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Publishing markdown file: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdowndatei wird veröffentlicht: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Info_MarkdownSendingInputFile" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Sending markdown input file to R: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdowneingabedatei wird an R gesendet: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";ManualUpdateTooltip" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Update HTML view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[HTML-Ansicht aktualisieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";OutputPlaceholder" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[R Code Chunk Output]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Blockausgabe von R-Code]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PreviewHtmlTooltip" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Knit and preview HTML]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Knit-Vorgang und Vorschau für HTML]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PreviewPdfTooltip" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Knit and preview PDF file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Knit-Vorgang und Vorschau für PDF-Datei]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";PreviewWordTooltip" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Knit and preview Word file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Knit-Vorgang und Vorschau für Word-Datei]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";SuggestedAction_RunAllChunksAbove" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run all chunks above]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Alle obigen Blöcke ausführen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";SuggestedAction_RunCurrentChunk" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Run current chunk]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktuellen Block ausführen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Warning_SaveInUtf8" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die aktuelle Datei kann in der aktuellen Codierung nicht gespeichert werden. Möchten Sie die Datei in UTF-8 speichern und fortfahren?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -118,7 +307,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.2.30809.304]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -139,13 +328,13 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.2.30809.0304]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";InternalName" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.Markdown.Editor.dll]]></Val>
+        <Val><![CDATA[Microsoft.Markdown.Editor.Windows.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -160,7 +349,7 @@
     </Item>
     <Item ItemId=";OriginalFilename" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.Markdown.Editor.dll]]></Val>
+        <Val><![CDATA[Microsoft.Markdown.Editor.Windows.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -175,7 +364,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30227.2212]]></Val>
+        <Val><![CDATA[1.2.30809.0304]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

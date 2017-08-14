@@ -40,15 +40,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_BinaryMissing15" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} is missing from the installation directory.]D;]A;Please reinstall Data Science workload or repair the Visual Studio installation.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[설치 디렉터리에 {0}이(가) 없습니다.]D;]A;데이터 과학 작업을 다시 설치하거나 Visual Studio 설치를 복구하세요.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Error_BrokerNotRunning" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine '{0}' appears to be online, but the Remote R Service is not running.]]></Val>
@@ -135,15 +126,6 @@
           <Val><![CDATA[Web request has timed out.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[웹 요청 시간이 초과되었습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_PingTimedOut" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Ping to {0}:{1} timed out.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0}:{1}에 대한 ping 시간이 초과되었습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -265,6 +247,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_StaticFileServerStopped" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Static file server stopped with error: {0}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Error_UnableToStartBrokerException" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R Services broker process did not start on the machine '{0}'. Exception:  {1}]]></Val>
@@ -337,6 +325,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Info_StaticFileServerStarted" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Static file server started at: {0}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Message_SuggestMRO" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";RHostDisconnected" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Interactive Window is disconnected from R session.]]></Val>
@@ -370,7 +370,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.934]]></Val>
+        <Val><![CDATA[1.2.30809.304]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -391,13 +391,13 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.0934]]></Val>
+        <Val><![CDATA[1.2.30809.0304]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";InternalName" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.R.Host.Client.dll]]></Val>
+        <Val><![CDATA[Microsoft.R.Host.Client.Windows.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -412,7 +412,7 @@
     </Item>
     <Item ItemId=";OriginalFilename" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.R.Host.Client.dll]]></Val>
+        <Val><![CDATA[Microsoft.R.Host.Client.Windows.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -427,7 +427,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.0934]]></Val>
+        <Val><![CDATA[1.2.30809.0304]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
