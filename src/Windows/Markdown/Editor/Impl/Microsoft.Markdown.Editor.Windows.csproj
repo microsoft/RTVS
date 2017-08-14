@@ -84,6 +84,7 @@
     <Compile Include="Preview\Code\RCodeEvaluator.cs" />
     <Compile Include="Preview\Commands\RunAllChunksAboveCommand.cs" />
     <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
+    <Compile Include="Preview\Commands\ReloadPreviewCommand.cs" />
     <Compile Include="Preview\Commands\RunCurrentChunkCommand.cs" />
     <Compile Include="Preview\IMarkdownPreview.cs" />
     <Compile Include="Preview\Margin\MarginControls.cs" />
