@@ -64,7 +64,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.2.30810.303]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -85,13 +85,13 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.2.30810.0303]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";InternalName" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.R.Common.Core.dll]]></Val>
+        <Val><![CDATA[Microsoft.R.Common.Core.Windows.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -106,7 +106,7 @@
     </Item>
     <Item ItemId=";OriginalFilename" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.R.Common.Core.dll]]></Val>
+        <Val><![CDATA[Microsoft.R.Common.Core.Windows.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -121,7 +121,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30224.2310]]></Val>
+        <Val><![CDATA[1.2.30810.0303]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
