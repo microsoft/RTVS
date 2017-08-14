@@ -26,7 +26,6 @@ namespace Microsoft.R.Host.Client {
                     return Resources.Error_RemoteVersionLower.FormatInvariant(aboutHost.Version, _localVersion);
                 }
             }
-#endif
 
             return null;
         }
