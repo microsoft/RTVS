@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Plots.ViewModel;
 
@@ -23,6 +22,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
         /// to the visual component control (ie. this control).
         /// </summary>
         public event EventHandler<PointEventArgs> ContextMenuRequested;
+        public event EventHandler<EventArgs> SelectionChanged;
 
 
         public RPlotHistoryControl() {
@@ -75,6 +75,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
                 // Regular click clear selection then reselects
                 HistoryListView.SelectedItems.Clear();
             }
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void HistoryListView_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e) => e.Handled = true;
