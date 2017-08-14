@@ -6,6 +6,8 @@ namespace Microsoft.Markdown.Editor.Settings {
         bool EnablePreview { get; set; }
         RMarkdownPreviewPosition PreviewPosition { get; set; }
         bool AutomaticSync { get; set; }
+        bool ScrollEditorWithPreview { get; set; }
+        bool ScrollPreviewWithEditor { get; set; }
         int PreviewWidth { get; set; }
         int PreviewHeight { get; set; }
         void ResetSettings();

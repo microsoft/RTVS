@@ -39,25 +39,39 @@ namespace Microsoft.VisualStudio.R.Package.Options.Markdown {
         [LocCategory("Settings_MarkdownCategory_Preview")]
         [CustomLocDisplayName("Settings_Markdown_AutomaticSync")]
         [LocDescription("Settings_Markdown_AutomaticSync_Description")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool AutomaticSync {
             get => _settings.AutomaticSync;
             set => _settings.AutomaticSync = value;
         }
 
-        [LocCategory("Settings_MarkdownCategory_Preview")]
-        [CustomLocDisplayName("Settings_Markdown_PreviewWidth")]
-        [LocDescription("Settings_Markdown_PreviewWidth_Description")]
-        [DefaultValue(RMarkdownEditorSettings.DefaultWidth)]
+        [LocCategory("Settings_MarkdownCategory_Scroll")]
+        [CustomLocDisplayName("Settings_Markdown_ScrollEditorWithPreview")]
+        [LocDescription("Settings_Markdown_ScrollEditorWithPreview_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool ScrollEditorWithPreview {
+            get => _settings.ScrollEditorWithPreview;
+            set => _settings.ScrollEditorWithPreview = value;
+        }
+
+        [LocCategory("Settings_MarkdownCategory_Scroll")]
+        [CustomLocDisplayName("Settings_Markdown_ScrollPreviewWithEditor")]
+        [LocDescription("Settings_Markdown_ScrollPreviewWithEditor_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool ScrollPreviewWithEditor {
+            get => _settings.ScrollPreviewWithEditor;
+            set => _settings.ScrollPreviewWithEditor = value;
+        }
+
+        [Browsable(false)]
         public int PreviewWidth {
             get => _settings.PreviewWidth;
             set => _settings.PreviewWidth = value;
         }
 
-        [LocCategory("Settings_MarkdownCategory_Preview")]
-        [CustomLocDisplayName("Settings_Markdown_PreviewHeight")]
-        [LocDescription("Settings_Markdown_PreviewHeight_Description")]
-        [DefaultValue(RMarkdownEditorSettings.DefaultHeight)]
+        [Browsable(false)]
         public int PreviewHeight {
             get => _settings.PreviewHeight;
             set => _settings.PreviewHeight = value;

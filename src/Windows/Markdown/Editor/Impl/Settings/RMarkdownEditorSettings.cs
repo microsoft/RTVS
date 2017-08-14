@@ -10,6 +10,8 @@ namespace Microsoft.Markdown.Editor.Settings {
         public const string EnablePreviewKey = nameof(EnablePreview);
         public const string PreviewPositionKey = nameof(PreviewPosition);
         public const string AutomaticSyncKey = nameof(AutomaticSync);
+        public const string ScrollEditorWithPreviewKey = nameof(ScrollEditorWithPreview);
+        public const string ScrollPreviewWithEditorKey = nameof(ScrollPreviewWithEditor);
         public const string PreviewHeightKey = nameof(PreviewHeight);
         public const string PreviewWidthKey = nameof(PreviewWidth);
 
@@ -31,8 +33,18 @@ namespace Microsoft.Markdown.Editor.Settings {
         }
 
         public bool AutomaticSync {
-            get => Storage.Get(AutomaticSyncKey, true);
+            get => Storage.Get(AutomaticSyncKey, false);
             set => WritableStorage?.Set(AutomaticSyncKey, value);
+        }
+
+        public bool ScrollEditorWithPreview {
+            get => Storage.Get(ScrollEditorWithPreviewKey, true);
+            set => WritableStorage?.Set(ScrollEditorWithPreviewKey, value);
+        }
+
+        public bool ScrollPreviewWithEditor {
+            get => Storage.Get(ScrollPreviewWithEditorKey, true);
+            set => WritableStorage?.Set(ScrollPreviewWithEditorKey, value);
         }
 
         public int PreviewWidth {

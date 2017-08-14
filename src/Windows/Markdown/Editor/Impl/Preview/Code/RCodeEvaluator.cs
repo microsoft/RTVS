@@ -55,10 +55,10 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                 if (callback.PlotResult != null) {
                     block.Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' style='display:block; margin: 0 auto; text-align: center;' />");
                     callback.PlotResult = null;
-                } else if (_output.Length > 0) {
-                    block.Result = Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>");
-                } else if (_errors.Length > 0) {
-                    block.Result = block.DisplayErrors ? FormatError(_errors.ToString()) : string.Empty;
+                } else if (_output != null && _output.Length > 0) {
+                    block.Result = block.DisplayMessages ? Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>") : string.Empty;
+                } else if (_errors != null && _errors.Length > 0) {
+                    block.Result = block.DisplayMessages && block.DisplayErrors ? FormatError(_errors.ToString()) : string.Empty;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _output = _errors = null;

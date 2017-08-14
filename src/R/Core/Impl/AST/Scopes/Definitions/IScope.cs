@@ -14,5 +14,10 @@ namespace Microsoft.R.Core.AST.Scopes {
         TokenNode OpenCurlyBrace { get; }
 
         TokenNode CloseCurlyBrace { get; }
+
+        /// <summary>
+        /// Tells that block is a KnitR code chunk options block
+        /// </summary>
+        bool KnitrOptions { get; }
     }
 }

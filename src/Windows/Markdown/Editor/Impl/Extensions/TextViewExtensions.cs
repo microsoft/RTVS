@@ -6,6 +6,7 @@ using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -19,9 +20,25 @@ namespace Microsoft.Markdown.Editor {
             return containedLanguageHandler?.GetCodeBlockOfLocation(position);
         }
 
+        /// <summary>
+        /// Given position in the view returns index of the fenced
+        /// ode block such as ```{r ...}```. Skips over inline blocks.
+        /// </summary>
         public static int? GetRCodeBlockNumber(this ITextView textView, int position) {
             var containedLanguageHandler = textView.GetContainerLanguageHandler();
-            return containedLanguageHandler?.LanguageBlocks.GetItemContaining(position);
+            if (containedLanguageHandler != null) {
+                var index = 0;
+                foreach (var t in containedLanguageHandler.LanguageBlocks) {
+                    var block = t as RLanguageBlock;
+                    if(block?.Inline == false) {
+                        if(block.Contains(position)) {
+                            return index;
+                        }
+                        index++;
+                    }
+                }
+            }
+            return null;
         }
 
         public static int? GetCurrentRCodeBlockNumber(this ITextView textView)

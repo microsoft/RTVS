@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.AST.Scopes {
     /// </summary>
     [DebuggerDisplay("Scope, Children: {Children.Count} [{Start}...{End})")]
     public class Scope : AstNode, IScope {
-        private TextRangeCollection<IStatement> statements = new TextRangeCollection<IStatement>();
+        private readonly TextRangeCollection<IStatement> statements = new TextRangeCollection<IStatement>();
 
         #region IScope
         /// <summary>
@@ -26,6 +26,8 @@ namespace Microsoft.R.Core.AST.Scopes {
         public TokenNode OpenCurlyBrace { get; private set; }
 
         public TokenNode CloseCurlyBrace { get; private set; }
+
+        public bool KnitrOptions { get; private set; }
         #endregion
 
         #region ITextRange
@@ -44,17 +46,17 @@ namespace Microsoft.R.Core.AST.Scopes {
         }
 
         public Scope(string name) {
-            this.Name = name;
+            Name = name;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent) {
-            TokenStream<RToken> tokens = context.Tokens;
-            RToken currentToken = tokens.CurrentToken;
+        public override bool Parse(ParseContext context, IAstNode parent = null) {
+            var tokens = context.Tokens;
+            var currentToken = tokens.CurrentToken;
 
             context.Scopes.Push(this);
 
             if (!(this is GlobalScope) && currentToken.TokenType == RTokenType.OpenCurlyBrace) {
-                this.OpenCurlyBrace = RParser.ParseToken(context, this);
+                OpenCurlyBrace = RParser.ParseToken(context, this);
             }
 
             while (!tokens.IsEndOfStream()) {
@@ -62,8 +64,8 @@ namespace Microsoft.R.Core.AST.Scopes {
 
                 switch (currentToken.TokenType) {
                     case RTokenType.CloseCurlyBrace:
-                        if (this.OpenCurlyBrace != null) {
-                            this.CloseCurlyBrace = RParser.ParseToken(context, this);
+                        if (OpenCurlyBrace != null) {
+                            CloseCurlyBrace = RParser.ParseToken(context, this);
                         } else {
                             context.AddError(new ParseError(ParseErrorType.UnexpectedToken, ErrorLocation.Token, currentToken));
                             context.Tokens.MoveToNextToken();
@@ -76,10 +78,10 @@ namespace Microsoft.R.Core.AST.Scopes {
                         break;
 
                     default:
-                        IStatement statement = Statement.Create(context, this, null);
+                        var statement = Statement.Create(context, this, null);
                         if (statement != null) {
                             if (statement.Parse(context, this)) {
-                                this.statements.Add(statement);
+                                statements.Add(statement);
                             } else {
                                 statement = null;
                             }
@@ -90,10 +92,8 @@ namespace Microsoft.R.Core.AST.Scopes {
                                 // try recovering at the next line or past nearest 
                                 // semicolon or closing curly brace
                                 tokens.MoveToNextLine(context.TextProvider,
-                                    (TokenStream<RToken> ts) => {
-                                        return ts.CurrentToken.TokenType == RTokenType.Semicolon ||
-                                               ts.NextToken.TokenType == RTokenType.CloseCurlyBrace;
-                                    });
+                                    ts => ts.CurrentToken.TokenType == RTokenType.Semicolon ||
+                                                                ts.NextToken.TokenType == RTokenType.CloseCurlyBrace);
                             } else {
                                 tokens.MoveToNextToken();
                             }
@@ -101,14 +101,14 @@ namespace Microsoft.R.Core.AST.Scopes {
                         break;
                 }
 
-                if (this.CloseCurlyBrace != null) {
+                if (CloseCurlyBrace != null) {
                     break;
                 }
             }
 
             context.Scopes.Pop();
 
-            if (this.OpenCurlyBrace != null && this.CloseCurlyBrace == null) {
+            if (OpenCurlyBrace != null && CloseCurlyBrace == null) {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseCurlyBraceExpected, context.Tokens.PreviousToken));
             }
 

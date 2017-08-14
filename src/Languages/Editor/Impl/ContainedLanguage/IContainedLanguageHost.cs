@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
@@ -43,12 +42,5 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// <param name="lineNumber">Line number in the contained language buffer</param>
         /// <returns></returns>
         bool CanFormatLine(IEditorView editorView, IEditorBuffer containedLanguageBuffer, int lineNumber);
-
-        /// <summary>
-        /// Detemines if particular range should not be treated as contained language and 
-        /// instead should be ignored or 'skipped over'. Used by R parser to ignore 'R' in
-        /// ```{R ... }
-        /// </summary>
-        bool IsInertRange(ITextRange range);
     }
 }

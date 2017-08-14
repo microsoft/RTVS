@@ -1287,23 +1287,11 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Settings_Markdown_EnablePreview_Description" xml:space="preserve">
     <value>Enables or disables preview of resulting HTML in a browser pane</value>
   </data>
-  <data name="Settings_Markdown_PreviewHeight" xml:space="preserve">
-    <value>Height</value>
-  </data>
-  <data name="Settings_Markdown_PreviewHeight_Description" xml:space="preserve">
-    <value>Preview pane height when it is positioned below the editor</value>
-  </data>
   <data name="Settings_Markdown_PreviewPosition" xml:space="preserve">
     <value>Position</value>
   </data>
   <data name="Settings_Markdown_PreviewPosition_Description" xml:space="preserve">
     <value>Defines where HTML preview pane appears</value>
-  </data>
-  <data name="Settings_Markdown_PreviewWidth" xml:space="preserve">
-    <value>Width</value>
-  </data>
-  <data name="Settings_Markdown_PreviewWidth_Description" xml:space="preserve">
-    <value>Preview pane width when it is positioned at the right side of the editor</value>
   </data>
   <data name="SqlPublishDialog_TargetTypeFile" xml:space="preserve">
     <value>File</value>
@@ -1379,5 +1367,20 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   </data>
   <data name="Settings_BreakMultipleStatements_Description" xml:space="preserve">
     <value>When there multiple statements on the same line, break them into separate lines.</value>
+  </data>
+  <data name="Settings_Markdown_ScrollEditorWithPreview" xml:space="preserve">
+    <value>Scroll editor with preview</value>
+  </data>
+  <data name="Settings_Markdown_ScrollEditorWithPreview_Description" xml:space="preserve">
+    <value>When preview pane scrolls the editor scrolls text pane to match the preview pane scroll position.</value>
+  </data>
+  <data name="Settings_Markdown_ScrollPreviewWithEditor" xml:space="preserve">
+    <value>Scroll preview with editor</value>
+  </data>
+  <data name="Settings_Markdown_ScrollPreviewWithEditor_Description" xml:space="preserve">
+    <value>When caret moves in the text pane the editor scrolls preview pane to make sure current text line is visible.</value>
+  </data>
+  <data name="Settings_MarkdownCategory_Scroll" xml:space="preserve">
+    <value>Scrolling</value>
   </data>
 </root>

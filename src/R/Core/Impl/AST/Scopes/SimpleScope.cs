@@ -17,12 +17,13 @@ namespace Microsoft.R.Core.AST.Scopes {
     [DebuggerDisplay("Simple Scope, Children: {Children.Count} [{Start}...{End})")]
     public sealed class SimpleScope : AstNode, IScope {
         private IStatement _statement;
-        private string _terminatingKeyword;
+        private readonly string _terminatingKeyword;
 
         #region IScope
         public string Name => string.Empty;
         public TokenNode OpenCurlyBrace => null;
         public TokenNode CloseCurlyBrace => null;
+        public bool KnitrOptions => false;
 
         public IReadOnlyDictionary<string, int> Functions => StaticDictionary<string, int>.Empty;
         public IReadOnlyDictionary<string, int> Variables => StaticDictionary<string, int>.Empty;
@@ -33,7 +34,7 @@ namespace Microsoft.R.Core.AST.Scopes {
             _terminatingKeyword = terminatingKeyword;
         }
 
-        public override bool Parse(ParseContext context, IAstNode parent) {
+        public override bool Parse(ParseContext context, IAstNode parent = null) {
             _statement = Statement.Create(context, this, _terminatingKeyword);
             if (_statement != null) {
                 if (_statement.Parse(context, this)) {

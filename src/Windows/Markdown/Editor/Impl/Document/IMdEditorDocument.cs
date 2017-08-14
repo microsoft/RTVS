@@ -7,5 +7,6 @@ using Microsoft.Languages.Editor.Document;
 namespace Microsoft.Markdown.Editor.Document {
     public interface IMdEditorDocument: IEditorDocument {
         IContainedLanguageHandler ContainedLanguageHandler { get; }
+        IContainedLanguageHost ContainedLanguageHost { get; }
     }
 }

@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -23,9 +22,11 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private readonly IIdleTimeService _idleTime;
         private readonly ITextView _textView;
         private readonly IRMarkdownEditorSettings _settings;
+        private readonly MarginControls _marginControls;
 
         private bool _textChanged;
         private int _lastLineNumber;
+        private int _lastBrowserLineNumber;
         private Task _browserUpdateTask;
 
         public BrowserView Browser { get; }
@@ -37,29 +38,51 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             _settings = services.GetService<IRMarkdownEditorSettings>();
 
             Browser = new BrowserView(_textView.TextBuffer.GetFileName(), services);
-
-            if (_settings.PreviewPosition == RMarkdownPreviewPosition.Below) {
-                CreateBottomMarginControls();
-            } else {
-                CreateRightMarginControls();
-            }
+            _marginControls = new MarginControls(this, textView, Browser.Control, _settings);
 
             UpdateBrowser();
 
             // TODO: separate R code changes from markdown changes
             _idleTime = services.GetService<IIdleTimeService>();
+            _idleTime.Idle += OnIdle;
+
             _textView.TextBuffer.Changed += OnTextBufferChanged;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
 
             textView.AddService(this);
         }
 
+        private void OnIdle(object sender, EventArgs e) {
+            if (_settings.ScrollEditorWithPreview && !((IWpfTextView)_textView).VisualElement.IsKeyboardFocused) {
+                // Check if browser visible line has changed
+                // Only do this if text view does NOT have focus.
+                var browserLineNum = Browser.GetFirstVisibleLineNumber();
+                if(browserLineNum >= 0 && _lastBrowserLineNumber != browserLineNum) {
+                    // Scroll matching text line into view
+                    _lastBrowserLineNumber = browserLineNum;
+                    var line = _textView.TextSnapshot.GetLineFromLineNumber(browserLineNum);
+                    _textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(line.Start, 0));
+                }
+            }
+        }
+
         public void Dispose() {
+            if (_idleTime != null) {
+                _idleTime.Idle -= OnIdle;
+            }
+
             Browser?.Dispose();
-            _textView?.RemoveService(this);
+
+            if (_textView != null) {
+                _textView.TextBuffer.Changed -= OnTextBufferChanged;
+                _textView.Caret.PositionChanged -= OnCaretPositionChanged;
+                _textView.RemoveService(this);
+            }
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+            UpdateBrowserScrollPosition();
+
             if (!_textChanged) {
                 return;
             }
@@ -92,13 +115,25 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
             _textChanged = true;
         }
 
+        private void UpdateBrowserScrollPosition() {
+            if(!_settings.ScrollPreviewWithEditor) {
+                return;
+            }
+
+            IdleTimeAction.Create(() => {
+                var lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(_textView.Caret.Position.BufferPosition);
+                Browser.UpdatePosition(lineNumber);
+            }, 5, GetType(), _idleTime);
+        }
+
         private void UpdateOnIdle() {
             IdleTimeAction.Cancel(_idleActionTag);
             IdleTimeAction.Create(() => Update(force: true), 0, _idleActionTag, _idleTime);
         }
 
         #region IMarkdownPreview
-
+        public void Reload() => Browser.Reload(_textView.TextBuffer.CurrentSnapshot);
+        
         public void Update(bool force) {
             if (_textChanged || force) {
                 UpdateBrowser();
@@ -134,96 +169,5 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         public double MarginSize => 500;
         public FrameworkElement VisualElement => this;
         #endregion
-
-
-        private void CreateRightMarginControls() {
-            var width = _settings.PreviewWidth;
-
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0, GridUnitType.Star) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(5, GridUnitType.Pixel) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(width, GridUnitType.Pixel), MinWidth = 150 });
-            grid.RowDefinitions.Add(new RowDefinition());
-            Child = grid;
-
-            grid.Children.Add(Browser.Control);
-            Grid.SetColumn(Browser.Control, 2);
-            Grid.SetRow(Browser.Control, 0);
-
-            var splitter = new GridSplitter {
-                Width = 5,
-                ResizeDirection = GridResizeDirection.Columns,
-                VerticalAlignment = VerticalAlignment.Stretch,
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            splitter.DragCompleted += RightDragCompleted;
-
-            grid.Children.Add(splitter);
-            Grid.SetColumn(splitter, 1);
-            Grid.SetRow(splitter, 0);
-
-            var fixWidth = new Action(() => {
-                // previewWindow maxWidth = current total width - textView minWidth
-                var newWidth = (_textView.ViewportWidth + grid.ActualWidth) - 150;
-
-                // preveiwWindow maxWidth < previewWindow minWidth
-                if (newWidth < 150) {
-                    // Call 'get before 'set for performance
-                    if (grid.ColumnDefinitions[2].MinWidth > 0) {
-                        grid.ColumnDefinitions[2].MinWidth = 0;
-                        grid.ColumnDefinitions[2].MaxWidth = 0;
-                    }
-                } else {
-                    grid.ColumnDefinitions[2].MaxWidth = newWidth;
-                    // Call 'get before 'set for performance
-                    if (grid.ColumnDefinitions[2].MinWidth > 0)
-                        grid.ColumnDefinitions[2].MinWidth = 150;
-                }
-            });
-
-            // Listen sizeChanged event of both marginGrid and textView
-            grid.SizeChanged += (e, s) => fixWidth();
-            _textView.ViewportWidthChanged += (e, s) => fixWidth();
-        }
-
-        private void CreateBottomMarginControls() {
-            var height = _settings.PreviewHeight;
-
-            var grid = new Grid();
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0, GridUnitType.Star) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(5, GridUnitType.Pixel) });
-            grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(height, GridUnitType.Pixel) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-
-            grid.Children.Add(Browser.Control);
-            Child = grid;
-
-            Grid.SetColumn(Browser.Control, 0);
-            Grid.SetRow(Browser.Control, 2);
-
-            var splitter = new GridSplitter {
-                Height = 5,
-                ResizeDirection = GridResizeDirection.Rows,
-                VerticalAlignment = VerticalAlignment.Stretch,
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            splitter.DragCompleted += BottomDragCompleted;
-
-            grid.Children.Add(splitter);
-            Grid.SetColumn(splitter, 0);
-            Grid.SetRow(splitter, 1);
-        }
-
-        private void RightDragCompleted(object sender, DragCompletedEventArgs e) {
-            if (!double.IsNaN(Browser.Control.ActualWidth)) {
-                _settings.PreviewWidth = (int)Browser.Control.ActualWidth;
-            }
-        }
-
-        private void BottomDragCompleted(object sender, DragCompletedEventArgs e) {
-            if (!double.IsNaN(Browser.Control.ActualHeight)) {
-                _settings.PreviewHeight = (int)Browser.Control.ActualHeight;
-            }
-        }
     }
 }

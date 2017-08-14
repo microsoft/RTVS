@@ -43,11 +43,6 @@ namespace Microsoft.Languages.Editor.ViewModel {
         public IEditorBuffer DiskBuffer { get; }
 
         /// <summary>
-        /// Retreives editor document
-        /// </summary>
-        public T GetDocument<T>() where T : class, IEditorDocument => _document as T;
-
-        /// <summary>
         /// Retrieves editor command target (controller) for a particular view
         /// </summary>
         public abstract ICommandTarget GetCommandTarget(IEditorView editorView);

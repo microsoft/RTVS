@@ -13,7 +13,7 @@ namespace Microsoft.R.Core.AST.Expressions {
     /// </summary>
     [DebuggerDisplay("Expression [{Start}...{End})")]
     public sealed partial class Expression : RValueNode, IExpression {
-        private string _terminatingKeyword;
+        private readonly string _terminatingKeyword;
 
         #region IExpression
         public IRValueNode Content { get; internal set; }
@@ -35,7 +35,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         public override bool Parse(ParseContext context, IAstNode parent) {
-            if (ParseExpression(context) && this.Children.Count > 0) {
+            if (ParseExpression(context) && Children.Count > 0) {
                 return base.Parse(context, parent);
             }
 
@@ -45,14 +45,8 @@ namespace Microsoft.R.Core.AST.Expressions {
         public bool IsInGroup { get; private set; }
 
         public override string ToString() {
-            if (this.Root != null) {
-                string text = this.Root.TextProvider.GetText(this);
-                if (!string.IsNullOrWhiteSpace(text)) {
-                    return text;
-                }
-            }
-
-            return "Expression";
+            var text = Root?.TextProvider.GetText(this);
+            return !string.IsNullOrWhiteSpace(text) ? text : "Expression";
         }
     }
 }

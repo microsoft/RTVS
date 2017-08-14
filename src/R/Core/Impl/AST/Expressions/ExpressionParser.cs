@@ -36,8 +36,8 @@ namespace Microsoft.R.Core.AST.Expressions {
             EndOfExpression
         }
 
-        private Stack<IRValueNode> _operands = new Stack<IRValueNode>();
-        private Stack<IOperator> _operators = new Stack<IOperator>();
+        private readonly Stack<IRValueNode> _operands = new Stack<IRValueNode>();
+        private readonly Stack<IOperator> _operators = new Stack<IOperator>();
         private OperationType _previousOperationType = OperationType.None;
 
         private bool ParseExpression(ParseContext context) {

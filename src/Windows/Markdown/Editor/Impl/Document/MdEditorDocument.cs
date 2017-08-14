@@ -17,9 +17,8 @@ namespace Microsoft.Markdown.Editor.Document {
     /// </summary>
     public sealed class MdEditorDocument : IMdEditorDocument {
         private readonly IServiceContainer _services;
-        private readonly RLanguageHandler _rLanguageHandler;
-        private readonly IProjectionBufferManager _projectionBufferManager;
-
+        private readonly ProjectionBufferManager _projectionBufferManager;
+        
         #region Constructors
         public MdEditorDocument(IEditorBuffer editorBuffer, IServiceContainer services) {
             _services = services;
@@ -28,8 +27,10 @@ namespace Microsoft.Markdown.Editor.Document {
             EditorBuffer.AddService(this);
 
             var textBuffer = editorBuffer.As<ITextBuffer>();
+
             _projectionBufferManager = new ProjectionBufferManager(textBuffer, services, MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
-            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, services);
+            ContainedLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, services);
+            ContainedLanguageHost = new RContainedLanguageHost(this, _projectionBufferManager.ContainedLanguageBuffer);
         }
         #endregion
 
@@ -53,6 +54,8 @@ namespace Microsoft.Markdown.Editor.Document {
 
         #region IMdEditorDocument
         public IContainedLanguageHandler ContainedLanguageHandler { get; }
+
+        public IContainedLanguageHost ContainedLanguageHost { get; }
         #endregion
 
         #region IDisposable

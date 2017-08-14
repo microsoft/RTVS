@@ -174,9 +174,9 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         /// <param name="editorBuffer">Editor buffer</param>
         /// <param name="services">Application services</param>
-        public EditorTree(IEditorBuffer editorBuffer, IServiceContainer services, IExpressionTermFilter filter = null) {
+        public EditorTree(IEditorBuffer editorBuffer, IServiceContainer services) {
             _ownerThread = Thread.CurrentThread.ManagedThreadId;
-            ExpressionTermFilter = filter;
+            ExpressionTermFilter = editorBuffer.GetService<IExpressionTermFilter>();
 
             EditorBuffer = editorBuffer;
             EditorBuffer.ChangedHighPriority += OnTextBufferChanged;

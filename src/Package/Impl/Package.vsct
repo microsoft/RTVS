@@ -304,11 +304,11 @@
       <Group guid="guidRToolsCmdSet" id="rToolbarDataGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
       </Group>
-      
+
       <Group guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0400" />
       <Group guid="guidRToolsCmdSet" id="markdownAutoSyncGroup" priority="0x0450" />
       <Group guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0500" />
-      
+
       <!-- R code editor context menu groups -->
       <!-- R Formatting -->
       <Group guid="guidRToolsCmdSet" id="groupRContextRepl" priority="0x0800">
@@ -1179,9 +1179,22 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText> &amp;Automatic Sync</ButtonText>
+          <ButtonText>&amp;Automatic Sync</ButtonText>
           <CommandName>Automatic Preview Sync</CommandName>
           <ToolTipText>Toggle automatic preview pane synchronization</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMdToolsCmdSet" id="icmdReloadPreview" priority="0x0110" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownAutoSyncGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Refresh"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Reload R Markdown Previe&amp;w</ButtonText>
+          <CommandName>Reload Preview</CommandName>
+          <ToolTipText>Reload R markdown preview pane</ToolTipText>
         </Strings>
       </Button>
 
@@ -1197,7 +1210,7 @@
           <ToolTipText>Run current code chunk and update preview pane</ToolTipText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" priority="0x0210" type="Button">
         <Parent guid="guidRToolsCmdSet" id="markdownSyncGroup"/>
         <Icon guid="ImageCatalogGuid" id="GoToBottom"/>
@@ -2113,7 +2126,7 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="markdownAutoSyncGroup" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="markdownSubMenu"/>
     </CommandPlacement>
-    
+
     <!-- R history context menu -->
     <CommandPlacement guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
@@ -2151,7 +2164,7 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0210">
       <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0220">
       <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
     </CommandPlacement>
@@ -2655,6 +2668,7 @@
       <IDSymbol name="icmdAutomaticSync" value="612" />
       <IDSymbol name="icmdRunCurrentChunk" value="613" />
       <IDSymbol name="icmdRunAllChunksAbove" value="614" />
+      <IDSymbol name="icmdReloadPreview" value="615"/>
     </GuidSymbol>
 
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
