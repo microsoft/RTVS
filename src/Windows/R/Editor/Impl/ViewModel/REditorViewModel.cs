@@ -16,7 +16,11 @@ namespace Microsoft.R.Editor.ViewModel {
     /// </summary>
     public sealed class REditorViewModel : EditorViewModel {
         public REditorViewModel(ITextBuffer diskBuffer, IServiceContainer services) :
-            base(new REditorDocument(new EditorBuffer(diskBuffer, services.GetService<ITextDocumentFactoryService>()), services, isRepl: false)) { }
+            base(new REditorDocument(
+                    diskBuffer.ToEditorBuffer() ?? new EditorBuffer(diskBuffer, services.GetService<ITextDocumentFactoryService>()), 
+                    services, 
+                    isRepl: false)
+                ) { }
 
         #region IEditorViewModel
         public override ICommandTarget GetCommandTarget(IEditorView editorView) => RMainController.FromTextView(editorView.As<ITextView>());

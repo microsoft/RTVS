@@ -37,6 +37,7 @@ namespace Microsoft.Languages.Editor.Projection {
 
             contentType = contentTypeRegistryService.GetContentType(secondaryContentTypeName);
             ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+            EditorBuffer.Create(ContainedLanguageBuffer, services.GetService<ITextDocumentFactoryService>());
 
             DiskBuffer.AddService(this);
             ViewBuffer.AddService(this);

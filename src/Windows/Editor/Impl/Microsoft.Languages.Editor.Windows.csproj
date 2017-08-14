@@ -49,7 +49,6 @@
     <Compile Include="ContainedLanguage\BufferGenerator.cs" />
     <Compile Include="ContainedLanguage\CommandTargetProxy.cs" />
     <Compile Include="ContainedLanguage\ContainedLanguageHandler.cs" />
-    <Compile Include="ContainedLanguage\ContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHandler.cs" />
     <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />

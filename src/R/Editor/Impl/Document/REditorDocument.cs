@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Document {
         private readonly IServiceContainer _services;
         private readonly TreeValidator _validator;
 
-        public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, bool isRepl, IExpressionTermFilter termFilter = null) {
+        public REditorDocument(IEditorBuffer editorBuffer, IServiceContainer services, bool isRepl) {
             EditorBuffer = editorBuffer;
             IsRepl = isRepl;
 
@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Document {
             EditorBuffer.Services.AddService(this);
             EditorBuffer.Closing += OnBufferClosing;
 
-            var tree = new EditorTree(EditorBuffer, services, termFilter);
+            var tree = new EditorTree(EditorBuffer, services);
             tree.Build();
             EditorTree = tree;
 

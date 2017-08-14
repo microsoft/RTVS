@@ -14,8 +14,9 @@ namespace Microsoft.Markdown.Editor.ViewModel {
     public sealed class MdEditorViewModel : ProjectionEditorViewModel {
         public MdEditorViewModel(ITextBuffer diskBuffer, IServiceContainer services) :
             base(new MdEditorDocument(
-                       new EditorBuffer(diskBuffer, services.GetService<ITextDocumentFactoryService>()
-                     ), services), services.GetService<ITextDocumentFactoryService>()) { }
+                    diskBuffer.ToEditorBuffer() ?? new EditorBuffer(diskBuffer, services.GetService<ITextDocumentFactoryService>()),
+                    services
+                ), services.GetService<ITextDocumentFactoryService>()) { }
 
         #region IEditorViewModel
         /// <summary>

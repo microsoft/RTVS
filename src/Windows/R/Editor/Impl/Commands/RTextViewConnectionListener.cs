@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Commands {
 
             if (textBuffer != textView.TextBuffer) {
                 // Projected scenario
-                _containedLanguageHost = ContainedLanguageHost.GetHost(textView, textBuffer, Services);
+                _containedLanguageHost = textBuffer.GetService<IContainedLanguageHost>();
                 if (_containedLanguageHost != null) {
                     _containedLanguageHost.Closing += OnContainedLanguageHostClosing;
                     _textBuffer = textBuffer;

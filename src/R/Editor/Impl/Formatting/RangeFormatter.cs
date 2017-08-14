@@ -189,9 +189,7 @@ namespace Microsoft.R.Editor.Formatting {
         private bool CanFormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var locator = _services.GetService<IContentTypeServiceLocator>();
-            var provider = locator.GetService<IContainedLanguageHostProvider>("R");
-            var host = provider?.GetContainedLanguageHost(editorView, editorBuffer);
+            var host = editorBuffer.GetService<IContainedLanguageHost>();
             if (host != null) {
                 var snapshot = editorBuffer.CurrentSnapshot;
                 var startLine = snapshot.GetLineNumberFromPosition(formatRange.Start);

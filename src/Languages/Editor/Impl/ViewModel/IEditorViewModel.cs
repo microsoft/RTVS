@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.UI.Commands;
-using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.Languages.Editor.ViewModel {
@@ -23,11 +22,6 @@ namespace Microsoft.Languages.Editor.ViewModel {
         /// or generated in memory. 
         /// </summary>
         IEditorBuffer DiskBuffer { get; }
-
-        /// <summary>
-        /// Retreives editor document
-        /// </summary>
-        T GetDocument<T>() where T : class, IEditorDocument;
 
         /// <summary>
         /// Retrieves editor command target (controller) for a particular view

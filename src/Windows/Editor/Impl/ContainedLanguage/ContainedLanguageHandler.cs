@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
-    public abstract class ContainedLanguageHandler: IContainedLanguageHandler {
+    public abstract class ContainedLanguageHandler : IContainedLanguageHandler {
         protected TextRangeCollection<ITextRange> Blocks { get; } = new TextRangeCollection<ITextRange>();
         protected ITextBuffer TextBuffer { get; }
 
@@ -47,12 +47,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         protected ITextRange GetLanguageBlockOfLocation(int bufferPosition) {
             if (_cachedPosition != bufferPosition) {
                 var items = Blocks.GetItemsContainingInclusiveEnd(bufferPosition);
-                int index;
-                if (items.Count > 0) {
-                    index = items[0];
-                } else { 
-                    index = Blocks.GetItemAtPosition(bufferPosition);
-                }
+                var index = items.Count > 0 ? items[0] : Blocks.GetItemAtPosition(bufferPosition);
                 _cachedLanguageBlock = index >= 0 ? Blocks[index] : null;
                 _cachedPosition = bufferPosition;
             }

@@ -15,25 +15,26 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
     /// <summary>
-    /// Host for contained (embedded) language editors such as R editor inside 
-    /// ``` code ``` blocks in R Markdown.
+    /// Host for the contained (embedded) R language editor in the ```{r} code ``` blocks 
+    /// inside R Markdown file. Each contained language gets its own host. Host is attached
+    /// to the contained language editor buffer.
     /// </summary>
-    internal sealed class MdContainedLanguageHost : IContainedLanguageHost, IExpressionTermFilter {
-        private readonly ITextBuffer _textBuffer;
+    internal sealed class RContainedLanguageHost : IContainedLanguageHost {
         private readonly IEditorDocument _document;
 
         /// <summary>
         /// Creates contained language host with default settings.
         /// </summary>
-        /// <param name="document">Markdown editor document</param>
-        /// <param name="editorBuffer">Contained language text buffer</param>
-        public MdContainedLanguageHost(IEditorDocument document, IEditorBuffer editorBuffer) {
-            _textBuffer = editorBuffer.As<ITextBuffer>();
+        /// <param name="document">Markdown editor document (top-level)</param>
+        /// <param name="containedLanguageBuffer">Contained language text buffer</param>
+        public RContainedLanguageHost(IEditorDocument document, ITextBuffer containedLanguageBuffer) {
 
             _document = document;
             _document.Closing += OnDocumentClosing;
 
-            editorBuffer.AddService(this);
+            var containedTextBuffer = containedLanguageBuffer;
+            containedTextBuffer.AddService(this);
+            new RExpressionTermFilter(containedTextBuffer);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
@@ -92,34 +93,6 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         }
 
         #endregion
-
-        /// <summary>
-        /// Detemines if particular range should not be treated as contained language and 
-        /// instead should be ignored or 'skipped over'. Used by R parser to ignore 'R' in
-        /// ```{R ... }
-        /// </summary>
-        public bool IsInertRange(ITextRange range) {
-            // This is a workaround for constructs like ```{r x = 1, y = FALSE} where the { }
-            // block is treated as R fragment. The fragment is syntactually incorrect since
-            // 'r' is indentifier and there is an operator expected between 'r' and 'x'.
-            // In order to avoid parsing errors expression parser will use this flag and
-            // allow standalone indentifier 'r' or 'R' right after the opening curly brace.
-            if (range.Length == 1 && range.Start > 0) {
-                // Map range up from contained language
-                var view = _textBuffer.GetFirstView();
-                var viewPoint = view?.MapUpToView(new SnapshotPoint(_textBuffer.CurrentSnapshot, range.Start));
-                if (viewPoint.HasValue) {
-                    var snapshot = view.TextBuffer.CurrentSnapshot;
-                    if (snapshot.Length >= 2 && snapshot.GetText(viewPoint.Value - 1, 2).EqualsIgnoreCase("`r")) {
-                        return true;
-                    }
-                    if (snapshot.Length >= 5 && viewPoint.Value > 3 && snapshot.GetText(viewPoint.Value - 4, 5).EqualsIgnoreCase("```{r")) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Retrieves base command target that is chained to the main controller

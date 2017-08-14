@@ -61,8 +61,8 @@
     <Compile Include="Commands\MdTextViewConnectionListener.cs" />
     <Compile Include="Commands\RunRChunkCommand.cs" />
     <Compile Include="ContainedLanguage\IRLanguageBlock.cs" />
-    <Compile Include="ContainedLanguage\MdContainedLanguageHostProvider.cs" />
-    <Compile Include="ContainedLanguage\MdContainedLanguageHost.cs" />
+    <Compile Include="ContainedLanguage\RContainedLanguageHost.cs" />
+    <Compile Include="ContainedLanguage\RExpressionTermFilter.cs" />
     <Compile Include="ContainedLanguage\RLanguageBlock.cs" />
     <Compile Include="ContainedLanguage\RCodeSeparatorCollection.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
