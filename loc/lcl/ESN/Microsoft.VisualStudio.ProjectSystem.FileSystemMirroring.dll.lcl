@@ -13,7 +13,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30504.2337]]></Val>
+        <Val><![CDATA[1.2.30810.303]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -34,7 +34,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30504.2337]]></Val>
+        <Val><![CDATA[1.2.30810.0303]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -48,7 +48,7 @@
       <Str Cat="Text">
         <Val><![CDATA[© Microsoft Corporation. All rights reserved.]]></Val>
         <Tgt Cat="Text" Stat="Loc" Orig="New">
-          <Val><![CDATA[© Microsoft Corporation. Reservados todos los derechos.]]></Val>
+          <Val><![CDATA[© Microsoft Corporation. Todos los derechos reservados.]]></Val>
         </Tgt>
       </Str>
       <Disp Icon="Str" />
@@ -70,7 +70,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30504.2337]]></Val>
+        <Val><![CDATA[1.2.30810.0303]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
