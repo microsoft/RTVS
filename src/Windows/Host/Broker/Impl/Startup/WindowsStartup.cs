@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Services;
+using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Interpreters;
 
 namespace Microsoft.R.Host.Broker.Startup {
@@ -19,7 +20,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
                 .AddSingleton<IRHostProcessService, WindowsRHostProcessService>()
                 .AddSingleton<IRInstallationService, RInstallation>()
-                .AddSingleton<ISystemInfoService, WindowsSystemInfoService>();
+                .AddSingleton<ISystemInfoService, WindowsSystemInfoService>()
+                .AddSingleton<UserProfileManager>();
         }
     }
 }
