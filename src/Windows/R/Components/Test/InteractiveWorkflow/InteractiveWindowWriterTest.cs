@@ -52,6 +52,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                     new[] { "\rtest1 test2" })]
         [InlineData(new[] { "st\rart1", "st\nart2", "\rtest1", " test2" },
                     new[] { "st\rart1", "st\nart2", "\rtest1 test2" })]
+        [InlineData(new[] { "abc", "\r", "def" }, new[] { "def" })]
         public async Task MessageQueueTest02(IEnumerable<string> input, IEnumerable<string> expected) {
             using (var mq = new InteractiveWindowWriter.MessageQueue()) {
                 foreach (var s in input) {

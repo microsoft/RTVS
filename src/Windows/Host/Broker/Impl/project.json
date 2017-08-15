@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "Libuv": "1.9.1",
+    "Libuv": "1.10.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.AspNetCore.Authentication": "1.1.1",
     "Microsoft.AspNetCore.Mvc": "1.1.2",

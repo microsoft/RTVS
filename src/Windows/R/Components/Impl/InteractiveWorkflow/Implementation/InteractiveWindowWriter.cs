@@ -140,7 +140,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             public string Text;
             public bool IsError;
 
-            public bool MovesCaretBack() => Text.Length > 1 && Text[0] == '\r' && Text[1] != '\n';
+            public bool MovesCaretBack() {
+                switch (Text.Length) {
+                    case 0: return false;
+                    case 1: return Text[0] == '\r';
+                }
+                return Text[0] == '\r' && Text[1] != '\n';
+            }
+
             public bool ContainsLineFeed() => Text.Any(ch => ch == '\n');
             public bool IsPlainText() => !MovesCaretBack() && !ContainsLineFeed();
         }
@@ -182,7 +189,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 await TaskUtilities.SwitchToBackgroundThread();
 
                 await _messagesAvailable.WaitAsync(ct);
-                if(ct.IsCancellationRequested) {
+                if (ct.IsCancellationRequested) {
                     return Enumerable.Empty<Message>();
                 }
 
