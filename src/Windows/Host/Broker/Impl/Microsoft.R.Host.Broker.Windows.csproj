@@ -86,6 +86,7 @@
     </Compile>
     <Compile Include="Startup\WindowsStartup.cs" />
     <Compile Include="UserProfile\ProfileController.cs" />
+    <Compile Include="UserProfile\UserProfileManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
