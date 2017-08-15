@@ -28,10 +28,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             control.DataContext = _viewModel;
 
             _disposableBag = DisposableBag.Create<RPlotDeviceVisualComponent>()
-                .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested);
+                .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested)
+                .Add(() => control.SelectionChanged -= Control_SelectionChanged);
 
             control.ContextMenuRequested += Control_ContextMenuRequested;
             control.SelectionChanged += Control_SelectionChanged;
+
             Control = control;
             Container = container;
         }

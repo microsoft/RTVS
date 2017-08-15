@@ -100,3 +100,4 @@ TestFiles/
 *.db-shm
 *.ipch
 *.tmp_proj
+*.ide
