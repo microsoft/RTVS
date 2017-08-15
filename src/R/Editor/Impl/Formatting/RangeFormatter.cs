@@ -111,8 +111,6 @@ namespace Microsoft.R.Editor.Formatting {
                 });
 
             return true;
-
-            return false;
         }
 
         private AstRoot UpdateAst(IEditorBuffer editorBuffer) {

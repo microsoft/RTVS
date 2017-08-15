@@ -3129,24 +3129,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Working directory.
-        /// </summary>
-        public static string Settings_WorkingDirectory {
-            get {
-                return ResourceManager.GetString("Settings_WorkingDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Working directory to set when R session starts..
-        /// </summary>
-        public static string Settings_WorkingDirectory_Description {
-            get {
-                return ResourceManager.GetString("Settings_WorkingDirectory_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Workspace.
         /// </summary>
         public static string Settings_WorkspaceCategory {

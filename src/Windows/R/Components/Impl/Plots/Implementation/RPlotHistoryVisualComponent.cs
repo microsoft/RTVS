@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -27,9 +28,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
             control.DataContext = _viewModel;
 
             _disposableBag = DisposableBag.Create<RPlotDeviceVisualComponent>()
-                .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested);
+                .Add(() => control.ContextMenuRequested -= Control_ContextMenuRequested)
+                .Add(() => control.SelectionChanged -= Control_SelectionChanged);
 
             control.ContextMenuRequested += Control_ContextMenuRequested;
+            control.SelectionChanged += Control_SelectionChanged;
 
             Control = control;
             Container = container;
@@ -58,6 +61,9 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         private void Control_ContextMenuRequested(object sender, PointEventArgs e) 
             => Container.ShowContextMenu(RPlotCommandIds.PlotHistoryContextMenu, e.Point);
+
+        private void Control_SelectionChanged(object sender, EventArgs e)
+            => Container.UpdateCommandStatus(true);
 
         public void DecreaseThumbnailSize() => _viewModel.DecreaseThumbnailSize();
         public void IncreaseThumbnailSize() => _viewModel.IncreaseThumbnailSize();

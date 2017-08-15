@@ -4,7 +4,6 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -22,7 +21,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             var selection = VisualComponent.SelectedPlots.ToList();
             if (selection.Count > 0) {
                 try {
-                    PlotClipboardData.ToClipboard(selection);
+                    PlotClipboardData.ToClipboard(selection, _cut);
                 } catch (ExternalException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 }

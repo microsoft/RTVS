@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing.Design;
 using System.Runtime.CompilerServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
@@ -111,16 +110,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [DefaultValue(null)]
         public string CranMirror {
             get => _holder.GetValue<string>();
-            set => _holder.SetValue(value);
-        }
-
-        [LocCategory(nameof(Resources.Settings_REngineCategory))]
-        [CustomLocDisplayName(nameof(Resources.Settings_WorkingDirectory))]
-        [LocDescription(nameof(Resources.Settings_WorkingDirectory_Description))]
-        [Editor(typeof(BrowserForFolderUIEditor), typeof(UITypeEditor))]
-        [DefaultValue("~")]
-        public string WorkingDirectory {
-            get => _holder.GetValue("~", "WorkingDirectory");
             set => _holder.SetValue(value);
         }
 
