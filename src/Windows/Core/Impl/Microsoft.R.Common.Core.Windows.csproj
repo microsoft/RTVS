@@ -37,6 +37,7 @@
     <Compile Include="Composition\NamedExportLocator.cs" />
     <Compile Include="Extensions\CompositionBatchExtensions.cs" />
     <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
+    <Compile Include="IO\NamedPipeServerStreamFactory.cs" />
     <Compile Include="IO\WindowsFileSystem.cs" />
     <Compile Include="IO\KnownFolderGuids.cs" />
     <Compile Include="Logging\EventLogLogger.cs" />

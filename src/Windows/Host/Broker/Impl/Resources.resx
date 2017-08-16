@@ -174,4 +174,10 @@
   <data name="Text_ServiceName" xml:space="preserve">
     <value>RRemoteService</value>
   </data>
+  <data name="Error_ProfileCreationFailedIO" xml:space="preserve">
+    <value>Profile creation failed for user {0}.</value>
+  </data>
+  <data name="Error_ProfileDeletionFailedIO" xml:space="preserve">
+    <value>Profile deletion failed for user {0}.</value>
+  </data>
 </root>
