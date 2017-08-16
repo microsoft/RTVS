@@ -270,7 +270,6 @@
     <Compile Include="Shell\Services\VsServiceManager.cs" />
     <Compile Include="Shell\Services\VsTaskService.cs" />
     <Compile Include="Shell\Editor\VsEditorUndoAction.cs" />
-    <Compile Include="Shell\VsEditorViewLocator.cs" />
     <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />

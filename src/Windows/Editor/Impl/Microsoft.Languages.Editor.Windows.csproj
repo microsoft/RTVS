@@ -69,6 +69,7 @@
     <Compile Include="SuggestedActions\SuggestedActionsSourceBase.cs" />
     <Compile Include="Text\EditorSnapshotPoint.cs" />
     <Compile Include="Text\TrackingTextRange.cs" />
+    <Compile Include="ViewModel\EditorViewLocator.cs" />
     <Compile Include="ViewModel\IEditorViewModelFactory.cs" />
     <Compile Include="ViewModel\ProjectionEditorViewModel.cs" />
     <Compile Include="ViewModel\EditorViewModel.cs" />
