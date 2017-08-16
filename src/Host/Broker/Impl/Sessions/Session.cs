@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -131,6 +132,10 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 if (!(_process?.HasExited).Value) {
                     _process?.Kill();
                 }
+            } catch(Win32Exception wex) when ((uint)wex.HResult == 0x80004005) {
+                // On windows, attempting to kill a process that already has a kill issued will result 
+                // in AccessDeniedException. This is best effort, so log it and continue.
+                _sessionLogger.LogError(0, wex, "Failed to kill host process for session '{0}'.", Id);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _sessionLogger.LogError(0, ex, "Failed to kill host process for session '{0}'.", Id);
                 throw;
