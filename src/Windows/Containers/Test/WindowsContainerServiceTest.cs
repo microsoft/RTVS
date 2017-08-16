@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -11,7 +13,6 @@ using Microsoft.Common.Core.OS;
 using Microsoft.R.Containers.Docker;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.R.Containers.Windows.Test {
     [ExcludeFromCodeCoverage]
@@ -39,16 +40,16 @@ namespace Microsoft.R.Containers.Windows.Test {
             await svc.StartContainerAsync(container, CancellationToken.None);
 
             var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers.Should().Contain(container.Id.Substring(0, 12));
+            runningContainers.Select((c)=>c.Id).Should().Contain(container.Id);
 
             await svc.StopContainerAsync(container, CancellationToken.None);
 
             var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers2.Should().NotContain(container.Id.Substring(0, 12));
+            runningContainers2.Select((c) => c.Id).Should().NotContain(container.Id);
 
             await svc.DeleteContainerAsync(container, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
-            allContainers.Should().NotContain(container.Id.Substring(0, 12));
+            allContainers.Select((c) => c.Id).Should().NotContain(container.Id);
         }
 
         [Test]
@@ -64,29 +65,29 @@ namespace Microsoft.R.Containers.Windows.Test {
             await svc.StartContainerAsync(container, CancellationToken.None);
 
             var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers.Should().Contain(container.Id.Substring(0, 12));
+            runningContainers.Select((c) => c.Id).Should().Contain(container.Id);
 
             await svc.StopContainerAsync(container, CancellationToken.None);
 
             var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers2.Should().NotContain(container.Id.Substring(0, 12));
+            runningContainers2.Select((c) => c.Id).Should().NotContain(container.Id);
 
             await svc.DeleteContainerAsync(container, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
-            allContainers.Should().NotContain(container.Id.Substring(0, 12));
+            allContainers.Select((c) => c.Id).Should().NotContain(container.Id);
 
             await DeleteImageAsync(imageName);
         }
 
         private async Task<bool> DeleteImageAsync(string image) {
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "docker";
-            psi.Arguments = $"rmi -f {image}";
-            psi.RedirectStandardError = true;
-            psi.RedirectStandardInput = true;
-            psi.RedirectStandardOutput = true;
-            psi.UseShellExecute = false;
-
+            ProcessStartInfo psi = new ProcessStartInfo() {
+                FileName = "docker",
+                Arguments = $"rmi -f {image}",
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
             var process = Process.Start(psi);
             process.WaitForExit();
 
