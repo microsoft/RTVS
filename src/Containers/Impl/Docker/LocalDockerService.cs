@@ -34,15 +34,16 @@ namespace Microsoft.R.Containers.Docker {
             var command = "ps";
             var commandOptions = getAll ? "-a -q" : "-q";
             var output = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, ct);
-            var ids = output.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            var arr = await InspectContainerAsync(ids.Where(id => _containerIdMatcher12.IsMatch(id) || _containerIdMatcher64.IsMatch(id)), ct);
-            return arr.Select((c) => new LocalDockerContainer(c));
+            var lines = output.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
+            var arr = await InspectContainerAsync(ids, ct);
+            return arr.Select(c => new LocalDockerContainer(c));
         }
 
         public async Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
             var ids = (await ListContainersAsync(true, ct)).Where(container => containerId.StartsWithIgnoreCase(container.Id));
-            if (ids.Count() > 0) {
+            if (ids.Any()) {
                 JArray arr = await InspectContainerAsync(new string[] { containerId }, ct);
                 if (arr.Count == 1) {
                     return new LocalDockerContainer(arr[0]);
@@ -53,10 +54,14 @@ namespace Microsoft.R.Containers.Docker {
 
         public async Task<JArray> InspectContainerAsync(IEnumerable<string> containerIds, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            var command = "container inspect";
-            var commandOptions = string.Join(" ", containerIds);
-            var result = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, ct);
-            return JArray.Parse(result);
+
+            if (containerIds.Any()) {
+                var command = "container inspect";
+                var commandOptions = string.Join(" ", containerIds);
+                var result = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, ct);
+                return JArray.Parse(result);
+            }
+            return new JArray();
         }
 
         public Task<string> RepositoryLoginAsync(string username, string password, string server, CancellationToken ct) {

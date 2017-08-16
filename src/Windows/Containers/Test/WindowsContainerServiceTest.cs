@@ -28,7 +28,7 @@ namespace Microsoft.R.Containers.Windows.Test {
             container.Id.Should().Be(container2.Id);
             await svc.DeleteContainerAsync(container, CancellationToken.None);
             var containers = await svc.ListContainersAsync(true, CancellationToken.None);
-            containers.Should().NotContain(container.Id.Substring(0, 12));
+            containers.Should().NotContain(c => c.Id == container.Id);
         }
 
         [Test]
@@ -40,16 +40,16 @@ namespace Microsoft.R.Containers.Windows.Test {
             await svc.StartContainerAsync(container, CancellationToken.None);
 
             var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers.Select((c)=>c.Id).Should().Contain(container.Id);
+            runningContainers.Should().Contain(c => c.Id == container.Id);
 
             await svc.StopContainerAsync(container, CancellationToken.None);
 
             var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers2.Select((c) => c.Id).Should().NotContain(container.Id);
+            runningContainers2.Should().NotContain(c => c.Id == container.Id);
 
             await svc.DeleteContainerAsync(container, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
-            allContainers.Select((c) => c.Id).Should().NotContain(container.Id);
+            allContainers.Should().NotContain(c => c.Id == container.Id);
         }
 
         [Test]
@@ -65,16 +65,16 @@ namespace Microsoft.R.Containers.Windows.Test {
             await svc.StartContainerAsync(container, CancellationToken.None);
 
             var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers.Select((c) => c.Id).Should().Contain(container.Id);
+            runningContainers.Should().Contain(c => c.Id == container.Id);
 
             await svc.StopContainerAsync(container, CancellationToken.None);
 
             var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers2.Select((c) => c.Id).Should().NotContain(container.Id);
+            runningContainers2.Should().NotContain(c => c.Id == container.Id);
 
             await svc.DeleteContainerAsync(container, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
-            allContainers.Select((c) => c.Id).Should().NotContain(container.Id);
+            allContainers.Should().NotContain(c => c.Id == container.Id);
 
             await DeleteImageAsync(imageName);
         }

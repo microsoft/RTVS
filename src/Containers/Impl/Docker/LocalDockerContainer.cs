@@ -25,16 +25,16 @@ namespace Microsoft.R.Containers.Docker {
             HostPorts = GetHostPorts(containerObject);
         }
 
-        private IEnumerable<int> GetHostPorts(dynamic containerObject) {
+        private IEnumerable<int> GetHostPorts(JToken containerObject) {
             var hostPorts = new List<int>();
             try {
-                dynamic portMap = containerObject.NetworkSettings.Ports["5444/tcp"];
+                dynamic portMap = ((dynamic)containerObject).NetworkSettings.Ports["5444/tcp"];
                 foreach (dynamic pm in portMap) {
                     if (int.TryParse(pm.HostPort.Value, out int port)) {
                         hostPorts.Add(port);
                     }
                 }
-            } catch (Exception ex) when (ex.IsCriticalException()) {
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
                 // RuntimeBinderException can occur if a container was not port mapped.
             }
             return hostPorts;
