@@ -1280,7 +1280,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Off]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[끄기]]></Val>
+            <Val><![CDATA[해제]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1289,7 +1289,7 @@
         <Str Cat="Text">
           <Val><![CDATA[On]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[켜기]]></Val>
+            <Val><![CDATA[설정]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1946,7 +1946,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Formatting]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[서식]]></Val>
+            <Val><![CDATA[서식 지정]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3656,7 +3656,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[형식]]></Val>
+            <Val><![CDATA[유형]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
