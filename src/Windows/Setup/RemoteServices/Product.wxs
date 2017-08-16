@@ -69,7 +69,7 @@
         <ServiceInstall Id="RemoteRBrokerServiceInstaller" Type="ownProcess" Vital="yes" Name="RRemoteService" DisplayName="R Remote Service"
                         Description="Creates and manages R Host sessions" Start="auto" Account="NT AUTHORITY\NETWORKSERVICE"
                         ErrorControl="normal" Interactive="no"
-                        Arguments="--start.as service --config &quot;[INSTALLFOLDER]Microsoft.R.Host.Broker.Config.json&quot;">
+                        Arguments="--startup:isService true --config &quot;[INSTALLFOLDER]Microsoft.R.Host.Broker.Config.json&quot;">
 
           <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
               ServiceInterrogate="yes" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
