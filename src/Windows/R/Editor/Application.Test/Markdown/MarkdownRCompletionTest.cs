@@ -15,6 +15,7 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
+    [Category.Interactive]
     public class MarkdownRCompletionTest : IAsyncLifetime {
         private readonly IServiceContainer _services;
         private readonly IRSessionProvider _sessionProvider;
@@ -31,7 +32,6 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
-        [Category.Interactive]
         public async Task TypeRBlock() {
             using (var script = await _editorHost.StartScript(_services, string.Empty, "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
                 var packageName = await _editorHost.FunctionIndex.GetPackageNameAsync("abbreviate");
@@ -61,7 +61,6 @@ x <- function() {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task RSignature() {
             using (var script = await _editorHost.StartScript(_services, "```{r}\r\n\r\n```", "filename", MdContentTypeDefinition.ContentType, _sessionProvider)) {
                 var packageName = await _editorHost.FunctionIndex.GetPackageNameAsync("lm");

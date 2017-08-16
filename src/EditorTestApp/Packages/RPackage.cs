@@ -18,7 +18,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Editable)]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     [Name("R Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener {
