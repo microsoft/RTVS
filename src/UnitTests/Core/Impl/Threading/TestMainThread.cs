@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -8,10 +12,11 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 
 namespace Microsoft.UnitTests.Core.Threading {
+    [ExcludeFromCodeCoverage]
     public class TestMainThread : IProgressDialog, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
+        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new System.Threading.AsyncLocal<BlockingLoop>();
 
         public TestMainThread(Action onDispose) {
             _onDispose = onDispose;
