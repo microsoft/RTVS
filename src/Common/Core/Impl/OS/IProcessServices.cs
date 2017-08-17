@@ -5,8 +5,8 @@ using System.Diagnostics;
 
 namespace Microsoft.Common.Core.OS {
     public interface IProcessServices {
-        Process Start(ProcessStartInfo psi);
-        Process Start(string path);
+        IProcess Start(ProcessStartInfo psi);
+        IProcess Start(string path);
         string MessageFromExitCode(int processExitCode);
         void Kill(IProcess process);
         void Kill(int pid);

@@ -11,8 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
-
-
+using Microsoft.Common.Core.Services;
 using static System.FormattableString;
 namespace Microsoft.R.Containers.Docker {
     public class LinuxDockerService : LocalDockerService, IContainerService {
@@ -20,14 +19,7 @@ namespace Microsoft.R.Containers.Docker {
         const string DockerEePackageName = "docker-ee";
         const string DockerProcessName = "dockerd";
 
-        private readonly IFileSystem _fs;
-        private readonly IProcessServices _ps;
-
-
-        public LinuxDockerService(IFileSystem fs, IProcessServices ps, IActionLogWriter logWriter = null) : base(GetLocalDocker(fs), ps, logWriter) {
-            _fs = fs;
-            _ps = ps;
-        }
+        public LinuxDockerService(IServiceContainer services) : base(GetLocalDocker(services), services) { }
 
         public ContainerServiceStatus GetServiceStatus() {
             var proc = GetDockerProcess();
@@ -40,11 +32,12 @@ namespace Microsoft.R.Containers.Docker {
 
         internal static Process GetDockerProcess() {
             var processes = Process.GetProcessesByName(DockerProcessName);
-            return (processes.Count() >= 1) ? processes.FirstOrDefault() : null;
+            return processes.Any() ? processes.FirstOrDefault() : null;
         }
 
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
+            await TaskUtilities.SwitchToBackgroundThread();
+
             if (createParams.ImageSourceCredentials != null) {
                 await RepositoryLoginAsync(createParams.ImageSourceCredentials, ct);
             }
@@ -66,39 +59,39 @@ namespace Microsoft.R.Containers.Docker {
             }
         }
 
-        public async new Task DeleteContainerAsync(IContainer container, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            var result = await base.DeleteContainerAsync(container, ct);
+        async Task IContainerService.DeleteContainerAsync(IContainer container, CancellationToken ct) {
+            var result = await DeleteContainerAsync(container, ct);
             if (!result.StartsWithIgnoreCase(container.Id)) {
                 throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(container.Id, result));
             }
         }
 
-        public async new Task StartContainerAsync(IContainer container, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            var result = await base.StartContainerAsync(container, ct);
+        async Task IContainerService.StartContainerAsync(IContainer container, CancellationToken ct) {
+            var result = await StartContainerAsync(container, ct);
             if (!result.StartsWithIgnoreCase(container.Id)) {
                 throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(container.Id, result));
             }
         }
 
-        public async new Task StopContainerAsync(IContainer container, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            var result = await base.StopContainerAsync(container, ct);
+        async Task IContainerService.StopContainerAsync(IContainer container, CancellationToken ct) {
+            var result = await StopContainerAsync(container, ct);
             if (!result.StartsWithIgnoreCase(container.Id)) {
                 throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(container.Id, result));
             }
         }
 
-        private static LocalDocker GetLocalDocker(IFileSystem fs) {
+        private static LocalDocker GetLocalDocker(IServiceContainer services) {
+            var fs = services.FileSystem();
             const string dockerPath = "/usr/bin/docker";
-            LocalDocker docker = new LocalDocker();
+            var docker = new LocalDocker();
             var packages = InstalledPackageInfo.GetPackages(fs);
-            var dockerPkgs = packages.Where(pkg => pkg.PackageName.EqualsIgnoreCase(DockerCePackageName) || pkg.PackageName.EqualsIgnoreCase(DockerEePackageName));
-            if (dockerPkgs.Count() > 0) {
+            var dockerPkgs = packages
+                .Where(pkg => pkg.PackageName.EqualsIgnoreCase(DockerCePackageName) || pkg.PackageName.EqualsIgnoreCase(DockerEePackageName))
+                .ToList();
+            if (dockerPkgs.Any()) {
                 var pkg = dockerPkgs.First();
                 var files = pkg.GetPackageFiles(fs).Where(f => f.Equals(dockerPath));
-                if (files.Count() > 0) {
+                if (files.Any()) {
                     docker = new LocalDocker(Path.GetDirectoryName(dockerPath), pkg.Version, dockerPath);
                 }
             } else {

@@ -121,8 +121,8 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var hostEnd = _pipe.ConnectHost(_process.Id);
             _hostEnd = hostEnd;
 
-            ClientToHostWorker(_process.StandardInput, hostEnd).DoNotWait();
-            HostToClientWorker(_process.StandardOutput, hostEnd).DoNotWait();
+            ClientToHostWorker(_process.StandardInput.BaseStream, hostEnd).DoNotWait();
+            HostToClientWorker(_process.StandardOutput.BaseStream, hostEnd).DoNotWait();
         }
 
         public void KillHost() {

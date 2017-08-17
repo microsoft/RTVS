@@ -3,25 +3,31 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Containers.Docker;
-using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Containers.Windows.Test {
     [ExcludeFromCodeCoverage]
     [Category.Threads]
     public class WindowsContainerTests {
+        private readonly IServiceManager _services;
+
+        public WindowsContainerTests() {
+            _services = new ServiceManager()
+                .AddService<IFileSystem, FileSystem>()
+                .AddService<IProcessServices, ProcessServices>()
+                .AddService<IRegistry, RegistryImpl>();
+        }
+
         [Test]
         public async Task CreateAndDeleteContainerTest() {
-            await TaskUtilities.SwitchToBackgroundThread();
-            WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
+            var svc = new WindowsDockerService(_services);
             var param = new ContainerCreateParameters("docker.io/kvnadig/rtvs-linux", "latest");
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             var container2 = await svc.GetContainerAsync(container.Id, CancellationToken.None);
@@ -33,8 +39,7 @@ namespace Microsoft.R.Containers.Windows.Test {
 
         [Test]
         public async Task StartStopContainerTest() {
-            await TaskUtilities.SwitchToBackgroundThread();
-            WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
+            var svc = new WindowsDockerService(_services);
             var param = new ContainerCreateParameters("docker.io/kvnadig/rtvs-linux", "latest");
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             await svc.StartContainerAsync(container, CancellationToken.None);
@@ -54,8 +59,7 @@ namespace Microsoft.R.Containers.Windows.Test {
 
         [Test]
         public async Task CleanImageDownloadTest() {
-            await TaskUtilities.SwitchToBackgroundThread();
-            WindowsDockerService svc = new WindowsDockerService(new FileSystem(), new ProcessServices(), new RegistryImpl());
+            var svc = new WindowsDockerService(_services);
 
             var param = new ContainerCreateParameters("hello-world", "latest");
             string imageName = $"{param.Image}:{param.Tag}";
@@ -80,7 +84,7 @@ namespace Microsoft.R.Containers.Windows.Test {
         }
 
         private async Task<bool> DeleteImageAsync(string image) {
-            ProcessStartInfo psi = new ProcessStartInfo() {
+            var psi = new ProcessStartInfo {
                 FileName = "docker",
                 Arguments = $"rmi -f {image}",
                 RedirectStandardError = true,
@@ -88,6 +92,7 @@ namespace Microsoft.R.Containers.Windows.Test {
                 RedirectStandardOutput = true,
                 UseShellExecute = false
             };
+
             var process = Process.Start(psi);
             process.WaitForExit();
 

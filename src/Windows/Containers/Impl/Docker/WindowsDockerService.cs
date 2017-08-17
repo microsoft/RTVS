@@ -12,36 +12,25 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Win32;
 using static System.FormattableString;
 
 namespace Microsoft.R.Containers.Docker {
     public class WindowsDockerService : LocalDockerService, IContainerService {
         const string DockerServiceName = "Docker for Windows";
-        private readonly IFileSystem _fs;
-        private readonly IProcessServices _ps;
 
-        public WindowsDockerService(IFileSystem fs, IProcessServices ps, IRegistry registryService, IActionLogWriter logWriter = null) : base (GetLocalDocker(registryService, fs), ps, logWriter) {
-            _fs = fs;
-            _ps = ps;
-        }
+        public WindowsDockerService(IServiceContainer services) : base(GetLocalDocker(services), services) { }
 
-        public ContainerServiceStatus GetServiceStatus() {
-            var proc = GetDockerProcess(DockerServiceName);
-            if (proc.HasExited) {
-                return new ContainerServiceStatus(false, Resources.Error_ServiceNotAvailable, ContainerServiceStatusType.Error);
-            } else {
-                return new ContainerServiceStatus(true, Resources.Info_ServiceAvailable, ContainerServiceStatusType.Information);
-            }
-        }
+        public ContainerServiceStatus GetServiceStatus() => GetDockerProcess(DockerServiceName).HasExited 
+            ? new ContainerServiceStatus(false, Resources.Error_ServiceNotAvailable, ContainerServiceStatusType.Error) 
+            : new ContainerServiceStatus(true, Resources.Info_ServiceAvailable, ContainerServiceStatusType.Information);
 
-        internal static Process GetDockerProcess(string processName) {
-            var processes = Process.GetProcessesByName(processName);
-            return (processes.Length >= 1) ? processes.FirstOrDefault() : null;
-        }
+        internal static Process GetDockerProcess(string processName) => Process.GetProcessesByName(processName).FirstOrDefault();
 
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
+            await TaskUtilities.SwitchToBackgroundThread();
+
             if (createParams.ImageSourceCredentials != null) {
                 await RepositoryLoginAsync(createParams.ImageSourceCredentials, ct);
             }
@@ -63,31 +52,30 @@ namespace Microsoft.R.Containers.Docker {
             }
         }
 
-        public async new Task DeleteContainerAsync(IContainer container, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            var result = await base.DeleteContainerAsync(container, ct);
+        async Task IContainerService.DeleteContainerAsync(IContainer container, CancellationToken ct) {
+            var result = await DeleteContainerAsync(container, ct);
             if (!result.StartsWithIgnoreCase(container.Id)) {
                 throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(container.Id, result));
             }
         }
 
-        public async new Task StartContainerAsync(IContainer container, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            var result = await base.StartContainerAsync(container, ct);
+        async Task IContainerService.StartContainerAsync(IContainer container, CancellationToken ct) {
+            var result = await StartContainerAsync(container, ct);
             if (!result.StartsWithIgnoreCase(container.Id)) {
                 throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(container.Id, result));
             }
         }
 
-        public async new Task StopContainerAsync(IContainer container, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            var result = await base.StopContainerAsync(container, ct);
+        async Task IContainerService.StopContainerAsync(IContainer container, CancellationToken ct) {
+            var result = await StopContainerAsync(container, ct);
             if(!result.StartsWithIgnoreCase(container.Id)) {
                 throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(container.Id, result));
             }
         }
 
-        private static LocalDocker GetLocalDocker(IRegistry rs, IFileSystem fs) {
+        private static LocalDocker GetLocalDocker(IServiceContainer services) {
+            var rs = services.GetService<IRegistry>();
+            var fs = services.FileSystem();
             const string dockerRegistryPath = @"SOFTWARE\Docker Inc.\Docker";
             const string dockerCommand = "docker.exe";
 
@@ -101,7 +89,7 @@ namespace Microsoft.R.Containers.Docker {
                 string[] subkeys = dockerRegKey.GetSubKeyNames();
                 foreach (var subKey in subkeys) {
                     using (var key = dockerRegKey.OpenSubKey(subKey)) {
-                        bool isInstallKey = key.GetValueNames().Where(v => v.EqualsIgnoreCase("BinPath") || v.EqualsIgnoreCase("Version")).Count() == 2;
+                        var isInstallKey = key.GetValueNames().Count(v => v.EqualsIgnoreCase("BinPath") || v.EqualsIgnoreCase("Version")) == 2;
                         if (isInstallKey) {
                             var binPath = ((string)key.GetValue("BinPath")).Trim('\"');
                             var version = (string)key.GetValue("Version");
