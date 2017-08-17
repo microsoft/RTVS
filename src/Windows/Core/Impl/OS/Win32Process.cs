@@ -53,13 +53,16 @@ namespace Microsoft.Common.Core.OS {
             }, null, -1, true);
         }
 
-        public void WaitForExit(int milliseconds) {
+        public bool WaitForExit(int milliseconds) {
             using (var processWaitHandle = new ProcessWaitHandle(_processHandle)) {
                 if (processWaitHandle.WaitOne(milliseconds)) {
                     // This means the process exited while waiting.
                     SetExitState();
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public void Kill() {

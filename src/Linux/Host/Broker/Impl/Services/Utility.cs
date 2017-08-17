@@ -26,8 +26,8 @@ namespace Microsoft.R.Host.Broker.Services {
         private const string RtvsResult = "rtvs-result";
         private const string RtvsError = "rtvs-error";
 
-        public static Process AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
-            Process proc = CreateRunAsUserProcess(ps, true);
+        public static IProcess AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
+            var proc = CreateRunAsUserProcess(ps, true);
             using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
                 var message = new AuthenticateAndRunMessage() {
                     Username = GetUnixUserName(username),
@@ -48,7 +48,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
         public static bool AuthenticateUser(ILogger<IAuthenticationService> logger, IProcessServices ps,  string username, string password, string allowedGroup, out string profileDir) {
             bool retval = false;
-            Process proc = null;
+            IProcess proc = null;
             string userDir = string.Empty;
             try {
                 proc = CreateRunAsUserProcess(ps, false);
@@ -145,13 +145,14 @@ namespace Microsoft.R.Host.Broker.Services {
             };
         }
 
-        private static Process CreateRunAsUserProcess(IProcessServices ps, bool quietMode) {
-        ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = PathConstants.RunAsUserBinPath;
-            psi.Arguments = quietMode ? "-q" : "";
-            psi.RedirectStandardError = true;
-            psi.RedirectStandardInput = true;
-            psi.RedirectStandardOutput = true;
+        private static IProcess CreateRunAsUserProcess(IProcessServices ps, bool quietMode) {
+            var psi = new ProcessStartInfo {
+                FileName = PathConstants.RunAsUserBinPath,
+                Arguments = quietMode ? "-q" : "",
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true
+            };
 
             return ps.Start(psi);
         }

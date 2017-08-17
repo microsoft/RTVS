@@ -16,5 +16,6 @@ namespace Microsoft.Common.Core.OS {
         event EventHandler Exited;
 
         void Kill();
+        bool WaitForExit(int milliseconds);
     }
 }

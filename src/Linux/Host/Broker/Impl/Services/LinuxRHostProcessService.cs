@@ -32,7 +32,7 @@ namespace Microsoft.R.Host.Broker.Services {
             var environment = GetHostEnvironment(interpreter, profilePath, userName);
             var password = principal.FindFirst(UnixClaims.RPassword).Value;
 
-            Process process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
+            var process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode != 0) {
                 var message = _ps.MessageFromExitCode(process.ExitCode);
@@ -42,7 +42,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 throw new Win32Exception(process.ExitCode);
             }
 
-            return new UnixProcess(_ps, process);
+            return process;
         }
 
         private string GetLoadLibraryPath(string binPath) {
