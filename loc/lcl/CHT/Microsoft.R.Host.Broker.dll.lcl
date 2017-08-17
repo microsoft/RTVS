@@ -16,8 +16,8 @@
       <Item ItemId=";Critical_InvalidPipeHandle" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Requested to write 'urls' to pipe '{0}', but it is not a valid pipe handle]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[已要求將 server.urls 寫入管道 '{0}' 中，但這不是有效的管道控制代碼]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已要求將 'urls' 寫入管道 '{0}'，但這不是有效的管道控制代碼]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle]]></Val>
@@ -55,8 +55,8 @@
       <Item ItemId=";Critical_PipeConnectTimeOut" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Requested to write 'urls' to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[已要求將 server.urls 寫入管道 '{0}' 中，但嘗試連線到管道時逾時]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已要求將 'urls' 寫入管道 '{0}'，但嘗試連線到管道時逾時]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Requested to write server.urls to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
@@ -76,6 +76,9 @@
       <Item ItemId=";Debug_SessionNotFound" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find session with id: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[找不到識別碼為 {0} 的工作階段]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -100,18 +103,27 @@
       <Item ItemId=";Error_ClientToHostConnectionFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Client disconnected from R session due to error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[因為發生錯誤 {0}，導致用戶端與 R 工作階段的連線中斷]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_ConfigLoadFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Config file load failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[組態檔載入失敗: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_ConfigParseFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Config file parse failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[組態檔剖析失敗: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -127,8 +139,8 @@
       <Item ItemId=";Error_ExitRHost" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R Host exited with error : {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[R 主機已結束，發生 Win32 錯誤: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[R 主機已結束。錯誤: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[R Host Exited with Win32 error : {0}]]></Val>
@@ -148,12 +160,18 @@
       <Item ItemId=";Error_GracefulDisconnectFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Client failed to disconnect gracefully: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用戶端無法正常中斷連線: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_HostToClientConnectionFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R session disconnected from client due to error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[因為發生錯誤 {0}，導致 R 工作階段與用戶端的連線中斷]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -277,8 +295,8 @@
       <Item ItemId=";Trace_ServerUrlsToPipeBegin" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Writing 'urls' to pipe '{0}':{1}{2}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[正在將 server.urls 寫入管道 '{0}':{1}{2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在將 'urls' 寫入管道 '{0}':{1}{2}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Writing server.urls to pipe '{0}':{1}{2}]]></Val>
@@ -289,8 +307,8 @@
       <Item ItemId=";Trace_ServerUrlsToPipeDone" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Wrote 'urls' to pipe '{0}']]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[已將 server.urls 寫入管道 '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已將 'urls' 寫入管道 '{0}']]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Wrote server.urls to pipe '{0}']]></Val>
