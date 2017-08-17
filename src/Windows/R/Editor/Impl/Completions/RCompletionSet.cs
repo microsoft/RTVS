@@ -40,48 +40,12 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         private void UpdateVisibility(char commitChar = '\0') {
-            var matches = new Dictionary<int, List<Completion>>();
-            var maxKey = 0;
-
             var typedText = GetTypedText();
             if (typedText.Length == 0) {
                 return;
             }
 
-            foreach (var c in _completions) {
-                var key = Match(typedText, c.DisplayText, commitChar);
-                if (key > 0) {
-                    if (!matches.TryGetValue(key, out var list)) {
-                        list = new List<Completion>();
-                        matches[key] = list;
-                        maxKey = Math.Max(maxKey, key);
-                    }
-                    list.Add(c);
-                }
-            }
-
-            if (maxKey > 0) {
-                _completions.ForEach(x => ((RCompletion)x).IsVisible = false);
-                matches[maxKey].ForEach(x => ((RCompletion)x).IsVisible = true);
-            }
-        }
-
-        private int Match(string typedText, string compText, char commitChar) {
-            if (compText[compText.Length-1] == commitChar) { // like 'name ='
-                if (compText.StartsWithIgnoreCase(typedText)) {
-                    return compText.Length;
-                }
-            }
-
-            // Match at least something
-            var i = 0;
-            for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
-                if (char.ToLowerInvariant(typedText[i]) != char.ToLowerInvariant(compText[i])) {
-                    return i;
-                }
-            }
-
-            return i;
+            _completions.ForEach(x => ((RCompletion)x).IsVisible = x.DisplayText.StartsWithIgnoreCase(typedText));
         }
 
         private string GetTypedText() {
@@ -99,10 +63,10 @@ namespace Microsoft.R.Editor.Completions {
             var generalEntries = new List<Completion>();
 
             foreach (var c in completions) {
-                if(RTokenizer.IsIdentifierCharacter(c.DisplayText[0]) && c.DisplayText.EndsWith("=", StringComparison.Ordinal)) {
+                if (RTokenizer.IsIdentifierCharacter(c.DisplayText[0]) && c.DisplayText.EndsWith("=", StringComparison.Ordinal)) {
                     // Place argument completions first
                     orderedCompletions.Add(new RCompletion(c));
-                } else if(c.DisplayText.IndexOfIgnoreCase(".rtvs") < 0) {
+                } else if (c.DisplayText.IndexOfIgnoreCase(".rtvs") < 0) {
                     // Exclude .rtvs
                     if (!char.IsLetter(c.DisplayText[0])) {
                         // Special names will come last
@@ -110,7 +74,7 @@ namespace Microsoft.R.Editor.Completions {
                     } else {
                         generalEntries.Add(new RCompletion(c));
                     }
-                } 
+                }
             }
 
             orderedCompletions.AddRange(generalEntries);
