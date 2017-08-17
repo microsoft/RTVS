@@ -59,6 +59,7 @@
     <Compile Include="Disposables\DisposeTokenTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
+    <Compile Include="Extensions\TaskCompletionSourceExtensionsTest.cs" />
     <Compile Include="Fakes\Shell\TestApplication.cs" />
     <Compile Include="Fakes\Shell\TestCompositionCatalog.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />

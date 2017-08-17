@@ -33,5 +33,7 @@ namespace Microsoft.Common.Core.OS {
             // This is needed because broker user cannot kill process running as another user.
             _ps.Kill(_process.Id);
         }
+
+        public bool WaitForExit(int milliseconds) => _process.WaitForExit(milliseconds);
     }
 }
