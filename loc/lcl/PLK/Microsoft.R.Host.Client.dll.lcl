@@ -331,6 +331,9 @@
       <Item ItemId=";Message_SuggestMRO" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Sprawdź rozszerzoną dystrybucję środowiska R firmy Microsoft na stronie https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -355,6 +358,9 @@
       <Item ItemId=";Trace_SSLPolicyErrors" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SSL Policy Errors: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Błędy zasad SSL: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
