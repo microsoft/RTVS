@@ -16,8 +16,8 @@
       <Item ItemId=";Critical_InvalidPipeHandle" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Requested to write 'urls' to pipe '{0}', but it is not a valid pipe handle]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Schreiben von "server.urls" in die Pipe "{0}" wurde angefordert. Dies ist jedoch kein gültiges Pipehandle.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Schreiben von "urls" in die Pipe "{0}" wurde angefordert. Dies ist jedoch kein gültiges Pipehandle.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle]]></Val>
@@ -55,8 +55,8 @@
       <Item ItemId=";Critical_PipeConnectTimeOut" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Requested to write 'urls' to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Das Schreiben von "server.urls" in die Pipe "{0}" wurde angefordert, beim Herstellen einer Verbindung mit der Pipe ist jedoch ein Timeout aufgetreten.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Schreiben von "urls" in die Pipe "{0}" wurde angefordert, beim Herstellen einer Verbindung mit der Pipe ist jedoch ein Timeout aufgetreten.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Requested to write server.urls to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
@@ -76,6 +76,9 @@
       <Item ItemId=";Debug_SessionNotFound" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find session with id: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Sitzung mit der ID "{0}" wurde nicht gefunden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -100,18 +103,27 @@
       <Item ItemId=";Error_ClientToHostConnectionFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Client disconnected from R session due to error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Client wurde aufgrund eines Fehlers von der R-Sitzung getrennt: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_ConfigLoadFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Config file load failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Laden der Konfigurationsdatei: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_ConfigParseFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Config file parse failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Analysieren der Konfigurationsdatei: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -127,8 +139,8 @@
       <Item ItemId=";Error_ExitRHost" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R Host exited with error : {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[R-Host beendet mit Win32-Fehler: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[R-Host beendet mit Fehler: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[R Host Exited with Win32 error : {0}]]></Val>
@@ -148,12 +160,18 @@
       <Item ItemId=";Error_GracefulDisconnectFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Client failed to disconnect gracefully: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim kontrollierten Trennen der Clientverbindung: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_HostToClientConnectionFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R session disconnected from client due to error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die R-Sitzung wurde aufgrund eines Fehlers vom Client getrennt: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -277,8 +295,8 @@
       <Item ItemId=";Trace_ServerUrlsToPipeBegin" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Writing 'urls' to pipe '{0}':{1}{2}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[server.urls werden in Pipe "{0}" geschrieben:{1}{2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA["urls" werden in Pipe "{0}" geschrieben: {1}{2}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Writing server.urls to pipe '{0}':{1}{2}]]></Val>
@@ -289,8 +307,8 @@
       <Item ItemId=";Trace_ServerUrlsToPipeDone" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Wrote 'urls' to pipe '{0}']]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[server.urls wurden in Pipe "{0}" geschrieben.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA["urls" wurden in Pipe "{0}" geschrieben.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Wrote server.urls to pipe '{0}']]></Val>
