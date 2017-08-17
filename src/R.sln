@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -111,6 +111,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.API.Test", "Host\API\Test\Microsoft.R.Host.Client.API.Test.csproj", "{4277FA64-BBFB-4382-BE1F-8DBD91A8022C}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -738,5 +741,11 @@ Global
 		{9A3D13C0-7685-4C5B-835C-9BFC9E42C0B0} = {84AF58FA-5E3E-45AB-9AB5-543C3CACD563}
 		{4AA5CE64-5BE2-414C-8AD9-E3110E490DC4} = {84AF58FA-5E3E-45AB-9AB5-543C3CACD563}
 		{4277FA64-BBFB-4382-BE1F-8DBD91A8022C} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {10D51298-DD78-490C-A5ED-92522D51C493}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

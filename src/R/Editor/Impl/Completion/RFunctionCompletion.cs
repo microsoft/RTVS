@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.R.Support.Help;
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Completion {
 
         private void TryFetchDescription() {
             _functionIndex.GetFunctionInfoAsync(this.DisplayText).ContinueWith(t => {
-                if (t.IsCompleted) {
+                if (t.Status == TaskStatus.RanToCompletion) {
                     SetDescription(t.Result);
                 }
             }).DoNotWait();
