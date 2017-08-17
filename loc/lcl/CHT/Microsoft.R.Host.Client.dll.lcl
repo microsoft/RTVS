@@ -31,15 +31,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_BinaryMissing14" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}  is missing from the installation directory.]D;]A;Please reinstall R Tools for Visual Studio 2015]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[安裝目錄中遺漏 {0}。]D;]A;請重新安裝 Visual Studio 2015 R 工具]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Error_BinaryMissing15" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} is missing from the installation directory.]D;]A;Please reinstall Data Science workload or repair the Visual Studio installation.]]></Val>
@@ -287,7 +278,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Unknown error]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[未知錯誤]]></Val>
+            <Val><![CDATA[不明的錯誤]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -337,6 +328,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Message_SuggestMRO" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";RHostDisconnected" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Interactive Window is disconnected from R session.]]></Val>
@@ -355,6 +352,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Trace_SSLPolicyErrors" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SSL Policy Errors: {0}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Trace_UntrustedCertificate" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The supplied TLS certificate is not trusted: {0}]]></Val>
@@ -370,7 +373,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.934]]></Val>
+        <Val><![CDATA[1.2.30816.306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -391,7 +394,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.0934]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -427,7 +430,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.1.30717.0934]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
