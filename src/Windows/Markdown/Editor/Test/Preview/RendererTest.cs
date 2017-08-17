@@ -35,11 +35,12 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
         [CompositeTest]
         [InlineData("01.rmd")]
         [InlineData("02.rmd")]
+        [InlineData("03.rmd")]
         public void StaticRender(string fileName) {
             var source = _files.LoadDestinationFile(Path.Combine(_files.DestinationPath, _folder, fileName));
             var renderer = new DocumentRenderer(nameof(RendererTest), _shell.Services);
             var document = MarkdownFactory.ParseToMarkdown(source);
-            var actual = renderer.RenderStaticHtml(document);
+            var actual = renderer.RenderStaticHtml(document, source);
             CompareToBaseline(fileName, actual);
         }
 

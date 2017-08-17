@@ -1,0 +1,9 @@
+  ```{r}
+  summary(cars)
+  ```
+
+Plots
+
+```{r echo = FALSE}
+plot(cars)
+```

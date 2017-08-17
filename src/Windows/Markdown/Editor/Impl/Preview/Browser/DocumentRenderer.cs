@@ -25,12 +25,12 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             _yamlRenderer = new YamlRenderer();
         }
 
-        public string RenderStaticHtml(MarkdownDocument document) {
+        public string RenderStaticHtml(MarkdownDocument document, string documentText) {
             var htmlWriter = new StringWriter();
             var htmlRenderer = new HtmlRenderer(htmlWriter);
             MarkdownFactory.Pipeline.Setup(htmlRenderer);
 
-            using (_codeBlockRenderer.StartRendering()) {
+            using (_codeBlockRenderer.StartRendering(documentText)) {
                 htmlRenderer.ObjectRenderers.Insert(0, _codeBlockRenderer);
                 htmlRenderer.ObjectRenderers.Insert(0, _yamlRenderer);
 

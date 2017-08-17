@@ -56,7 +56,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                     block.Result = Invariant($"<img src='data:image/gif;base64, {Convert.ToBase64String(callback.PlotResult)}' style='display:block; margin: 0 auto; text-align: center;' />");
                     callback.PlotResult = null;
                 } else if (_output != null && _output.Length > 0) {
-                    block.Result = block.DisplayMessages ? Invariant($"<code style='white-space: pre-wrap'>{_output.ToString()}</code>") : string.Empty;
+                    block.Result = block.DisplayMessages ? HtmlFormatter.FormatCode(_output.ToString()) : string.Empty;
                 } else if (_errors != null && _errors.Length > 0) {
                     block.Result = block.DisplayMessages && block.DisplayErrors ? FormatError(_errors.ToString()) : string.Empty;
                 }
@@ -74,8 +74,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             return block.Result;
         }
 
-        private string FormatError(string error)
-            => Invariant($"<code style='white-space: pre-wrap; color: red'>{error}</code>");
+        private string FormatError(string error) => HtmlFormatter.FormatCode(error, "color: red;");
 
         private async Task ExecuteAndCaptureOutputAsync(IRSession session, string expression, CancellationToken cancellationToken) {
             _output = new StringBuilder();

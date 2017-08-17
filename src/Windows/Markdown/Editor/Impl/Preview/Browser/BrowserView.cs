@@ -78,7 +78,7 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             string html;
             try {
                 _markdownDocument = snapshot.ParseToMarkdown();
-                html = _documentRenderer.RenderStaticHtml(_markdownDocument);
+                html = _documentRenderer.RenderStaticHtml(_markdownDocument, snapshot.GetText());
             } catch (Exception ex) {
                 // We could output this to the exception pane of VS?
                 // Though, it's easier to output it directly to the browser
