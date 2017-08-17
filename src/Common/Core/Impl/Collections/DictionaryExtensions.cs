@@ -8,6 +8,11 @@ using System.Reflection;
 
 namespace Microsoft.Common.Core {
     public static class DictionaryExtensions {
+        public static void Deconstruct<TK, TV>(this KeyValuePair<TK, TV> kvp, out TK key, out TV value) {
+            key = kvp.Key;
+            value = kvp.Value;
+        }
+
         public static IDictionary<string, object> FromAnonymousObject(object data) {
             IDictionary<string, object> dict;
             if (data != null) {

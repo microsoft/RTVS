@@ -17,12 +17,14 @@ namespace Microsoft.Common.Core.OS {
             return ex.Message;
         }
 
-        public Process Start(ProcessStartInfo psi) {
-            return Process.Start(psi);
+        public IProcess Start(ProcessStartInfo psi) {
+            var process = Process.Start(psi);
+            return process != null ? new UnixProcess(this, process) : null;
         }
 
-        public Process Start(string path) {
-            return Process.Start(path);
+        public IProcess Start(string path) {
+            var process = Process.Start(path);
+            return process != null ? new UnixProcess(this, process) : null;
         }
 
         public void Kill(IProcess process) {

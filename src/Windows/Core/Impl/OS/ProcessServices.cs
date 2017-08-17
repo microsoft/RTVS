@@ -5,9 +5,15 @@ using System.Diagnostics;
 
 namespace Microsoft.Common.Core.OS {
     public sealed class ProcessServices : IProcessServices {
-        public Process Start(ProcessStartInfo psi) => Process.Start(psi);
+        public IProcess Start(ProcessStartInfo psi) {
+            var process = Process.Start(psi);
+            return process != null ? new DotNetProcess(process) : null;
+        }
 
-        public Process Start(string path) => Process.Start(path);
+        public IProcess Start(string path) {
+            var process = Process.Start(path);
+            return process != null ? new DotNetProcess(process) : null;
+        }
 
         public string MessageFromExitCode(int processExitCode) => ErrorCodeConverter.MessageFromErrorCode(processExitCode);
 

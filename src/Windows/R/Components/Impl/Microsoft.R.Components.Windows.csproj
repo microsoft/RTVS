@@ -70,11 +70,10 @@
     <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
     <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
     <Compile Include="ConnectionManager\IConnectionManagerVisual.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerVisualComponent.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="ConnectionManager\IConnectionManagerVisualProvider.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManager.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManagerProvider.cs" />
-    <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisualComponent.cs" />
+    <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisual.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBaseViewModel.cs" />
@@ -96,7 +95,6 @@
     <Compile Include="Extensions\PackageManagerExtensions.cs" />
     <Compile Include="Extensions\PlotManagerExtensions.cs" />
     <Compile Include="Extensions\InteractiveWorkflowExtensions.cs" />
-    <Compile Include="Extensions\ConnectionManagerExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Help\Commands\HelpHomeCommand.cs" />

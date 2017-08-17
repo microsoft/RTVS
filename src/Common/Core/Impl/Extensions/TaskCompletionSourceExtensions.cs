@@ -7,8 +7,19 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core {
     public static class TaskCompletionSourceExtensions {
-        public static CancellationTokenRegistration RegisterForCancellation<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken) {
-            var action = new CancelOnTokenAction<T>(taskCompletionSource, cancellationToken);
+        public static CancellationTokenRegistration RegisterForCancellation<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken) 
+            => taskCompletionSource.RegisterForCancellation(-1, cancellationToken);
+
+        public static CancellationTokenRegistration RegisterForCancellation<T>(this TaskCompletionSource<T> taskCompletionSource, int millisecondsDelay, CancellationToken cancellationToken) {
+            CancelOnTokenAction<T> action;
+            if (millisecondsDelay >= 0) {
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(millisecondsDelay);
+                action = new CancelOnTokenAction<T>(taskCompletionSource, cts.Token);
+            } else {
+                action = new CancelOnTokenAction<T>(taskCompletionSource, cancellationToken);
+            }
+
             return cancellationToken.Register(action.Invoke);
         }
 

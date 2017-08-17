@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Help;
@@ -26,83 +25,42 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             _workflowProvider = _services.GetService<IRInteractiveWorkflowVisualProvider>();
         }
 
-        public bool TryCreateToolWindow(Guid toolWindowType, int id) {
-            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                CreateInteractiveWindow(id);
-                return true;
+        public ToolWindowPane CreateToolWindow(Guid toolWindowGuid, int id) 
+            => CreateVisualComponent(toolWindowGuid, id).Container as ToolWindowPane;
+
+        private IVisualComponent CreateVisualComponent(Guid toolWindowGuid, int id) {
+            if (toolWindowGuid == RGuidList.ReplInteractiveWindowProviderGuid) {
+                return CreateInteractiveWindow(id);
             }
 
-            if (toolWindowType == HistoryWindowPane.WindowGuid) {
-                CreateHistoryToolWindow(id);
-                return true;
+            if (toolWindowGuid == HistoryWindowPane.WindowGuid) {
+                return CreateHistoryToolWindow(id);
             }
 
-            if (toolWindowType == ConnectionManagerWindowPane.WindowGuid) {
-                CreateConnectionManagerToolWindow(id);
-                return true;
+            if (toolWindowGuid == ConnectionManagerWindowPane.WindowGuid) {
+                return CreateConnectionManagerToolWindow(id);
             }
 
-            if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
-                CreatePackageManagerToolWindow(id);
-                return true;
+            if (toolWindowGuid == PackageManagerWindowPane.WindowGuid) {
+                return CreatePackageManagerToolWindow(id);
             }
 
-            if (toolWindowType == PlotDeviceWindowPane.WindowGuid) {
-                CreatePlotDeviceToolWindow(id);
-                return true;
+            if (toolWindowGuid == PlotDeviceWindowPane.WindowGuid) {
+                return CreatePlotDeviceToolWindow(id);
             }
 
-            if (toolWindowType == PlotHistoryWindowPane.WindowGuid) {
-                CreatePlotHistoryToolWindow(id);
-                return true;
+            if (toolWindowGuid == PlotHistoryWindowPane.WindowGuid) {
+                return CreatePlotHistoryToolWindow(id);
             }
 
-            if (toolWindowType == HelpWindowPane.WindowGuid) {
-                CreateHelpToolWindow(id);
-                return true;
-            }
-
-            return false;
+            return toolWindowGuid == HelpWindowPane.WindowGuid ? CreateHelpToolWindow(id) : null;
         }
 
-        public ToolWindowPane CreateToolWindow(Type toolWindowType, int id) 
-            => CreateContainer(toolWindowType.GUID, id) as ToolWindowPane;
-
-        private IVisualComponentContainer<IVisualComponent> CreateContainer(Guid toolWindowType, int id) {
-            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                return CreateInteractiveWindow(id).GetAwaiter().GetResult().Container;
-            }
-
-            if (toolWindowType == HistoryWindowPane.WindowGuid) {
-                return CreateHistoryToolWindow(id).Container;
-            }
-
-            if (toolWindowType == ConnectionManagerWindowPane.WindowGuid) {
-                return CreateConnectionManagerToolWindow(id).Container;
-            }
-
-            if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
-                return CreatePackageManagerToolWindow(id).Container;
-            }
-
-            if (toolWindowType == PlotDeviceWindowPane.WindowGuid) {
-                return CreatePlotDeviceToolWindow(id).Container;
-            }
-
-            if (toolWindowType == PlotHistoryWindowPane.WindowGuid) {
-                return CreatePlotHistoryToolWindow(id).Container;
-            }
-
-            if (toolWindowType == HelpWindowPane.WindowGuid) {
-                return CreateHelpToolWindow(id).Container;
-            }
-
-            return null;
-        }
-
-        private Task<IInteractiveWindowVisualComponent> CreateInteractiveWindow(int id) {
+        private IInteractiveWindowVisualComponent CreateInteractiveWindow(int id) {
             var workflow = _workflowProvider.GetOrCreate();
-            return workflow.GetOrCreateVisualComponentAsync(id);
+            var task = workflow.GetOrCreateVisualComponentAsync(id);
+            _services.Tasks().Wait(task);
+            return task.GetAwaiter().GetResult();
         }
 
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
@@ -111,9 +69,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return workflow.History.GetOrCreateVisualComponent(factory, id);
         }
 
-        private IConnectionManagerVisualComponent CreateConnectionManagerToolWindow(int id) {
+        private IConnectionManagerVisual CreateConnectionManagerToolWindow(int id) {
             var workflow = _workflowProvider.GetOrCreate();
-            return workflow.Connections.GetOrCreateVisualComponent(id);
+            var componentProvider = _services.GetService<IConnectionManagerVisualProvider>();
+            return componentProvider?.GetOrCreate(workflow.Connections, id);
         }
 
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {

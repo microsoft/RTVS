@@ -36,8 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public string CaptionText
         {
-            get { return _toolWindowPane.Caption; }
-            set { _toolWindowPane.Caption = value; }
+            get => _toolWindowPane.Caption;
+            set => _toolWindowPane.Caption = value;
         }
 
         public string StatusText
