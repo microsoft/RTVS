@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.19.2",
+    "FluentAssertions": "4.19.3",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.Shell.14.0": "15.0.25414-Preview5",
     "NSubstitute": "2.0.3",

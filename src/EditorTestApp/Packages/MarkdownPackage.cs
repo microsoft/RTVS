@@ -14,7 +14,7 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Editable)]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     [Name("Markdown Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class TestMdTextViewConnectionListener : MdTextViewConnectionListener {

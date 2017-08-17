@@ -101,3 +101,4 @@ TestFiles/
 *.ipch
 *.tmp_proj
 *.ide
+*.ide-journal

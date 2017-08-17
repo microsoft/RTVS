@@ -73,7 +73,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<IImageService, ImageService>()
                 .AddService(new REditorSettings(this))
                 .AddService(new RMarkdownEditorSettings(this))
-                .AddService(new VsEditorViewLocator())
                 .AddService<IStatusBar, VsStatusBar>()
                 .AddService<RPackageToolWindowProvider>()
                 .AddWindowsRInterpretersServices()

@@ -195,7 +195,7 @@ namespace Microsoft.Languages.Editor.Projection {
             var snapshot = ContainedLanguageBuffer.CurrentSnapshot;
 
             var currentSpans = snapshot.GetSourceSpans();
-            if (currentSpans.Count != newSpans.Count) {
+            if (currentSpans.Count != newSpans.Count || currentSpans.Count == 0) {
                 return false;
             }
 
