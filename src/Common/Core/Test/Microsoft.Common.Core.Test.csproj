@@ -50,8 +50,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs"/>
-    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs"/>
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="Controls\ControlTestScript.cs" />
     <Compile Include="Controls\ControlWindow.cs" />
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
@@ -59,6 +59,7 @@
     <Compile Include="Disposables\DisposeTokenTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Extensions\IOExtensionsTest.cs" />
+    <Compile Include="Extensions\TaskCompletionSourceExtensionsTest.cs" />
     <Compile Include="Fakes\Shell\TestApplication.cs" />
     <Compile Include="Fakes\Shell\TestCompositionCatalog.cs" />
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
