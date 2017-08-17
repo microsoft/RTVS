@@ -3,9 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media;
+using Microsoft.Common.Core;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 using static System.FormattableString;
@@ -36,9 +35,11 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         private void TryFetchDescription() {
-            Task.Run(async () => {
-                SetDescription(await _functionIndex.GetFunctionInfoAsync(this.DisplayText));
-            }).Wait(500);
+            _functionIndex.GetFunctionInfoAsync(this.DisplayText).ContinueWith(t => {
+                if (t.IsCompleted) {
+                    SetDescription(t.Result);
+                }
+            }).DoNotWait();
         }
 
         private void SetDescription(IFunctionInfo fi) {
