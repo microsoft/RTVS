@@ -18,8 +18,12 @@ namespace Microsoft.R.Containers.Docker {
         const string DockerCePackageName = "docker-ce";
         const string DockerEePackageName = "docker-ee";
         const string DockerProcessName = "dockerd";
+        private LocalDocker _docker;
+        private readonly IServiceContainer _services;
 
-        public LinuxDockerService(IServiceContainer services) : base(GetLocalDocker(services), services) { }
+        public LinuxDockerService(IServiceContainer services) : base(services) {
+            _services = services;
+        }
 
         public ContainerServiceStatus GetServiceStatus() {
             var proc = GetDockerProcess();
@@ -80,10 +84,14 @@ namespace Microsoft.R.Containers.Docker {
             }
         }
 
+        protected override LocalDocker GetLocalDocker() {
+            _docker = _docker ?? GetLocalDocker(_services);
+            return _docker;
+        }
+
         private static LocalDocker GetLocalDocker(IServiceContainer services) {
             var fs = services.FileSystem();
             const string dockerPath = "/usr/bin/docker";
-            var docker = new LocalDocker();
             var packages = InstalledPackageInfo.GetPackages(fs);
             var dockerPkgs = packages
                 .Where(pkg => pkg.PackageName.EqualsIgnoreCase(DockerCePackageName) || pkg.PackageName.EqualsIgnoreCase(DockerEePackageName))
@@ -92,17 +100,16 @@ namespace Microsoft.R.Containers.Docker {
                 var pkg = dockerPkgs.First();
                 var files = pkg.GetPackageFiles(fs).Where(f => f.Equals(dockerPath));
                 if (files.Any()) {
-                    docker = new LocalDocker(Path.GetDirectoryName(dockerPath), pkg.Version, dockerPath);
+                    var docker = new LocalDocker(Path.GetDirectoryName(dockerPath), dockerPath);
+                    if (!fs.FileExists(docker.DockerCommandPath)) {
+                        throw new FileNotFoundException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
+                    }
+
+                    return docker;
                 }
-            } else {
-                throw new ArgumentException(Resources.Error_DockerNotFound.FormatInvariant(DockerCePackageName, DockerEePackageName));
             }
 
-            if (!fs.FileExists(docker.DockerCommandPath)) {
-                throw new FileNotFoundException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
-            }
-
-            return docker;
+            throw new ArgumentException(Resources.Error_DockerNotFound.FormatInvariant(DockerCePackageName, DockerEePackageName));
         }
     }
 }

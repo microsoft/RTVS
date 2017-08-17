@@ -18,14 +18,12 @@ using static System.FormattableString;
 namespace Microsoft.R.Containers.Docker {
     public abstract class LocalDockerService : IDockerService {
         private readonly IProcessServices _ps;
-        private readonly LocalDocker _docker;
         private readonly IActionLogWriter _outputLogWriter;
         private readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
         private readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
-        private int _defaultTimeout = 5000;
+        private readonly int _defaultTimeout = 500;
 
-        protected LocalDockerService(LocalDocker docker, IServiceContainer services) {
-            _docker = docker;
+        protected LocalDockerService(IServiceContainer services) {
             _ps = services.Process();
             _outputLogWriter = services.GetService<IActionLogWriter>();
             // TODO: No instance of IActionLogWriter is exported in default IServiceContainer. Need scope support.
@@ -123,11 +121,14 @@ namespace Microsoft.R.Containers.Docker {
             return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
         }
 
+        protected abstract LocalDocker GetLocalDocker();
+
         private async Task<string> ExecuteCommandAsync(string arguments, int timeoutms, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var docker = GetLocalDocker();
             ProcessStartInfo psi = new ProcessStartInfo {
-                FileName = _docker.DockerCommandPath,
+                FileName = docker.DockerCommandPath,
                 Arguments = arguments,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
@@ -136,8 +137,14 @@ namespace Microsoft.R.Containers.Docker {
             };
 
             var process = _ps.Start(psi);
-            await process.WaitForExitAsync(timeoutms, cancellationToken);
-
+            try {
+                await process.WaitForExitAsync(timeoutms, cancellationToken);
+            } catch(OperationCanceledException) {
+                // 'container inspect' command does not exit. So, we can ignore the OperationCancelledException.
+                if(!arguments.StartsWithIgnoreCase("container inspect")) {
+                    throw;
+                }
+            }
             var output = await process.StandardOutput.ReadToEndAsync();
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error)) {
