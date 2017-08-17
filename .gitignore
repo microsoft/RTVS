@@ -123,3 +123,4 @@ TestFiles/
 *.db-wal
 *.db-shm
 *.ipch
+*.ide
