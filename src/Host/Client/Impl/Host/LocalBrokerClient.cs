@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Newtonsoft.Json;
@@ -31,7 +32,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
         private readonly IServiceContainer _services;
 
-        private Process _brokerProcess;
+        private IProcess _brokerProcess;
 
         static LocalBrokerClient() {
             // Allow "true" and non-zero integer to enable, otherwise disable.
@@ -86,7 +87,7 @@ namespace Microsoft.R.Host.Client.Host {
                 throw new RHostBrokerBinaryMissingException();
             }
 
-            Process process = null;
+            IProcess process = null;
             try {
                 var pipeName = Guid.NewGuid().ToString();
                 var cts = new CancellationTokenSource(100000);
@@ -115,7 +116,6 @@ namespace Microsoft.R.Host.Client.Host {
                     }
 
                     process = StartBroker(psi);
-                    process.EnableRaisingEvents = true;
 
                     process.Exited += delegate {
                         cts.Cancel();
@@ -169,7 +169,7 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        private Process StartBroker(ProcessStartInfo psi) {
+        private IProcess StartBroker(ProcessStartInfo psi) {
             var process = _services.Process().Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {

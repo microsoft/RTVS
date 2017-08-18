@@ -5,7 +5,7 @@ using System;
 using System.IO;
 
 namespace Microsoft.Common.Core.OS {
-    public interface IProcess {
+    public interface IProcess : IDisposable {
         int Id { get; }
         StreamWriter StandardInput { get; }
         StreamReader StandardOutput { get; }
