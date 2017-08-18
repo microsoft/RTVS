@@ -35,5 +35,6 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public bool WaitForExit(int milliseconds) => _process.WaitForExit(milliseconds);
+        public void Dispose() => _process.Dispose();
     }
 }

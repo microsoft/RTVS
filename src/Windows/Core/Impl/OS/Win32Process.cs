@@ -9,6 +9,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Common.Core.OS {
@@ -18,6 +19,7 @@ namespace Microsoft.Common.Core.OS {
         private readonly SafeProcessHandle _processHandle;
         private readonly RegisteredWaitHandle _registeredWait;
         private readonly object _exitCodeLock;
+        private readonly DisposableBag _disposable;
         private bool _hasExited;
         private uint _exitCode;
 
@@ -51,6 +53,12 @@ namespace Microsoft.Common.Core.OS {
                 threadHandle.Close();
                 wait.Close();
             }, null, -1, true);
+
+            _disposable
+                .Add(() => _registeredWait.Unregister(wait))
+                .Add(_processHandle)
+                .Add(threadHandle)
+                .Add(wait);
         }
 
         public bool WaitForExit(int milliseconds) {
@@ -72,6 +80,8 @@ namespace Microsoft.Common.Core.OS {
                 }
             }
         }
+
+        public void Dispose() => _disposable.TryDispose();
 
         private void SetExitState() {
             lock (_exitCodeLock) {

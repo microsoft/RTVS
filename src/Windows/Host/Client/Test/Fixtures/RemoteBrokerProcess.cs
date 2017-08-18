@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         private readonly IProcessServices _processServices;
         private readonly string _name;
         private readonly string _logFolder;
-        private Process _brokerProcess;
+        private IProcess _brokerProcess;
 
         public string Address { get; private set; }
         public string Password { get; }
@@ -54,7 +54,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
 
             var rHome = _installations.GetCompatibleEngines().First().InstallPath;
 
-            Process process = null;
+            IProcess process = null;
             try {
                 var psi = new ProcessStartInfo {
                     FileName = rhostBrokerExe,
@@ -74,7 +74,6 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
                 };
 
                 process = StartBroker(psi);
-                process.EnableRaisingEvents = true;
                 process.Exited += (sender, e) => exited();
 
                 var port = ProcessUtils.GetPortByProcessId(process.Id).FirstOrDefault();
@@ -100,7 +99,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
             }
         }
         
-        private Process StartBroker(ProcessStartInfo psi) {
+        private IProcess StartBroker(ProcessStartInfo psi) {
             var process = _processServices.Start(psi);
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode < 0) {
