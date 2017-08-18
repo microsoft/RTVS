@@ -100,11 +100,29 @@ namespace Microsoft.R.Containers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;Docker for windows.exe&quot; is not running..
+        /// </summary>
+        internal static string Error_DockerForWindowsNotRunning {
+            get {
+                return ResourceManager.GetString("Error_DockerForWindowsNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find Docker installation at &quot;{0}&quot;..
         /// </summary>
         internal static string Error_DockerNotFound {
             get {
                 return ResourceManager.GetString("Error_DockerNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker windows service &quot;com.docker.service&quot; is not running, status: {0}.
+        /// </summary>
+        internal static string Error_DockerServiceNotRunning {
+            get {
+                return ResourceManager.GetString("Error_DockerServiceNotRunning", resourceCulture);
             }
         }
         

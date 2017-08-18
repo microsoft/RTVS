@@ -135,6 +135,9 @@
   <data name="Error_DockerNotFound" xml:space="preserve">
     <value>Could not find Docker package "{0}" or "{1}".</value>
   </data>
+  <data name="Error_DockerServiceNotRunning" xml:space="preserve">
+    <value>Docker service "{0}" is not running.</value>
+  </data>
   <data name="Error_NoDockerCommand" xml:space="preserve">
     <value>Could not find the required Docker command at "{0}".</value>
   </data>

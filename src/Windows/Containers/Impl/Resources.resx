@@ -132,8 +132,14 @@
     <value>Failed to stop container with id: {0}
 {1}</value>
   </data>
+  <data name="Error_DockerForWindowsNotRunning" xml:space="preserve">
+    <value>"Docker for windows.exe" is not running.</value>
+  </data>
   <data name="Error_DockerNotFound" xml:space="preserve">
     <value>Could not find Docker installation at "{0}".</value>
+  </data>
+  <data name="Error_DockerServiceNotRunning" xml:space="preserve">
+    <value>Docker windows service "com.docker.service" is not running, status: {0}</value>
   </data>
   <data name="Error_NoDockerCommand" xml:space="preserve">
     <value>Could not find the required Docker command at "{0}".</value>

@@ -110,6 +110,15 @@ namespace Microsoft.R.Containers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Docker service &quot;{0}&quot; is not running..
+        /// </summary>
+        internal static string Error_DockerServiceNotRunning {
+            get {
+                return ResourceManager.GetString("Error_DockerServiceNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find the required Docker command at &quot;{0}&quot;..
         /// </summary>
         internal static string Error_NoDockerCommand {
