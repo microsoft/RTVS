@@ -4032,7 +4032,7 @@
         <Item ItemId=";{0bf33c69-94c2-4985-81a0-2556f8db88a6},612" ItemType=";Button" PsrId="240" Leaf="true">
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[&Automatic Sync]]></Val>
-            <Tgt Cat="Button" IgnoreHK="true" Stat="Update" Orig="New">
+            <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
               <Val><![CDATA[自動同期(&A)]]></Val>
             </Tgt>
             <Prev Cat="Button" IgnoreHK="true">
