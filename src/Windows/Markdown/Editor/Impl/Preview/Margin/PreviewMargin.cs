@@ -28,6 +28,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         private int _lastLineNumber;
         private int _lastBrowserLineNumber;
         private Task _browserUpdateTask;
+        private bool _ignoreLayoutChange;
 
         public BrowserView Browser { get; }
 
@@ -36,48 +37,54 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
 
             _textView = textView;
             _settings = services.GetService<IRMarkdownEditorSettings>();
+            _idleTime = services.GetService<IIdleTimeService>();
 
             Browser = new BrowserView(_textView.TextBuffer.GetFileName(), services);
+            Browser.ViewportChange += OnBrowserViewportChange;
+
             _marginControls = new MarginControls(this, textView, Browser.Control, _settings);
 
             UpdateBrowser();
 
-            // TODO: separate R code changes from markdown changes
-            _idleTime = services.GetService<IIdleTimeService>();
-            _idleTime.Idle += OnIdle;
-
             _textView.TextBuffer.Changed += OnTextBufferChanged;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
+            _textView.LayoutChanged += OnLayoutChanged;
 
             textView.AddService(this);
         }
 
-        private void OnIdle(object sender, EventArgs e) {
-            if (_settings.ScrollEditorWithPreview && !((IWpfTextView)_textView).VisualElement.IsKeyboardFocused) {
-                // Check if browser visible line has changed
-                // Only do this if text view does NOT have focus.
+        private void OnBrowserViewportChange(object sender, EventArgs e) {
+            if (_settings.ScrollEditorWithPreview) {
                 var browserLineNum = Browser.GetFirstVisibleLineNumber();
-                if(browserLineNum >= 0 && _lastBrowserLineNumber != browserLineNum) {
+                if (browserLineNum >= 0 && _lastBrowserLineNumber != browserLineNum) {
                     // Scroll matching text line into view
                     _lastBrowserLineNumber = browserLineNum;
                     var line = _textView.TextSnapshot.GetLineFromLineNumber(browserLineNum);
-                    _textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(line.Start, 0));
+                    var firstVisibleLineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(_textView.TextViewLines.FirstVisibleLine.Start);
+                    var delta = line.LineNumber - firstVisibleLineNumber;
+                    if (delta != 0) {
+                        _ignoreLayoutChange = true;
+                        var scrollDirection = delta < 0 ? ScrollDirection.Up : ScrollDirection.Down;
+                        _textView.ViewScroller.ScrollViewportVerticallyByLines(scrollDirection, Math.Abs(delta));
+                    }
                 }
             }
         }
 
         public void Dispose() {
-            if (_idleTime != null) {
-                _idleTime.Idle -= OnIdle;
-            }
+            Browser.ViewportChange -= OnBrowserViewportChange;
+            Browser.Dispose();
 
-            Browser?.Dispose();
+            _textView.TextBuffer.Changed -= OnTextBufferChanged;
+            _textView.Caret.PositionChanged -= OnCaretPositionChanged;
+            _textView.RemoveService(this);
+        }
 
-            if (_textView != null) {
-                _textView.TextBuffer.Changed -= OnTextBufferChanged;
-                _textView.Caret.PositionChanged -= OnCaretPositionChanged;
-                _textView.RemoveService(this);
+        private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
+            if (!_ignoreLayoutChange) {
+                UpdateBrowserScrollPosition();
             }
+            _ignoreLayoutChange = false;
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
@@ -116,12 +123,12 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
         }
 
         private void UpdateBrowserScrollPosition() {
-            if(!_settings.ScrollPreviewWithEditor) {
+            if (!_settings.ScrollPreviewWithEditor) {
                 return;
             }
 
             IdleTimeAction.Create(() => {
-                var lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(_textView.Caret.Position.BufferPosition);
+                var lineNumber = _textView.TextSnapshot.GetLineNumberFromPosition(_textView.TextViewLines.FirstVisibleLine.Start);
                 Browser.UpdatePosition(lineNumber);
             }, 5, GetType(), _idleTime);
         }
@@ -133,7 +140,7 @@ namespace Microsoft.Markdown.Editor.Preview.Margin {
 
         #region IMarkdownPreview
         public void Reload() => Browser.Reload(_textView.TextBuffer.CurrentSnapshot);
-        
+
         public void Update(bool force) {
             if (_textChanged || force) {
                 UpdateBrowser();

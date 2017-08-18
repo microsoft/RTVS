@@ -95,9 +95,9 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             renderer.EnsureLine();
 
             var fencedCodeBlock = codeBlock as FencedCodeBlock;
-            if(codeBlock.Column > 0 || fencedCodeBlock?.Info == null) {
-                var text = new string(' ', codeBlock.Column) + _documentText.Substring(codeBlock.Span.Start, codeBlock.Span.Length);
-                if (!string.IsNullOrEmpty(text)) {
+            if (codeBlock.Column > 0 || fencedCodeBlock?.Info == null) {
+                if (codeBlock.Span.Length > 0) {
+                    var text = new string(' ', codeBlock.Column) + _documentText.Substring(codeBlock.Span.Start, codeBlock.Span.Length);
                     renderer.Write(HtmlFormatter.FormatCode(text));
                 }
                 return;
