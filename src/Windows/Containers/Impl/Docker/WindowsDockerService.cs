@@ -7,14 +7,14 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using System.ServiceProcess;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Win32;
 using static System.FormattableString;
+
 
 namespace Microsoft.R.Containers.Docker {
     public class WindowsDockerService : LocalDockerService, IContainerService {
@@ -82,31 +82,37 @@ namespace Microsoft.R.Containers.Docker {
 
         protected override LocalDocker GetLocalDocker() {
             _docker = _docker ?? GetLocalDocker(_services);
+            CheckIfServiceIsRunning();
+
             return _docker;
+        }
+
+        private static void CheckIfServiceIsRunning() {
+            const string serviceName = "com.docker.service";
+            ServiceController sc = new ServiceController(serviceName);
+            if (sc.Status != ServiceControllerStatus.Running) {
+                throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(sc.Status.ToString()));
+            }
+
+            if (!Process.GetProcessesByName("Docker for windows").Any()) {
+                throw new ContainerServiceNotRunningException(Resources.Error_DockerForWindowsNotRunning);
+            }
         }
 
         private static LocalDocker GetLocalDocker(IServiceContainer services) {
             var rs = services.GetService<IRegistry>();
             var fs = services.FileSystem();
-            
-
             LocalDocker docker = null;
-            using (var hklm64 = rs.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64))
-            using (var dockerRegKey = hklm64.OpenSubKey(dockerRegistryPath))
-            using (var dockerComRegKey = hklm64.OpenSubKey(dockerRegistryPath2)) {
-                if (dockerRegKey == null) {
-                    throw new ArgumentException(Resources.Error_DockerNotFound.FormatInvariant(dockerRegistryPath));
-                }
-
+            using (var hklm64 = rs.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 if(!TryGetDockerFromRegistryInstall(fs, hklm64, out docker) &&
                    !TryGetDockerFromServiceInstall(fs, hklm64, out docker) &&
                    !TryGetDockerFromProgramFiles(fs,out docker)) {
-                    throw new ArgumentException(Resources.Error_DockerNotFound.FormatInvariant(dockerRegistryPath));
+                    throw new ContainerServiceNotInstalledException(Resources.Error_DockerNotFound.FormatInvariant(dockerRegistryPath));
                 }
             }
 
             if (!fs.FileExists(docker.DockerCommandPath)) {
-                throw new FileNotFoundException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
+                throw new ContainerServiceNotInstalledException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
             }
 
             return docker;

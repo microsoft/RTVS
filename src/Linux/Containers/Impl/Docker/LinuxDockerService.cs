@@ -86,7 +86,22 @@ namespace Microsoft.R.Containers.Docker {
 
         protected override LocalDocker GetLocalDocker() {
             _docker = _docker ?? GetLocalDocker(_services);
+            CheckIfServiceIsRunning();
+
             return _docker;
+        }
+
+        private static void CheckIfServiceIsRunning() {
+            const string dockerd = "dockerd";
+            const string dockerContainerd = "docker-containerd";
+            if (!Process.GetProcessesByName(dockerd).Any()) {
+                throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(dockerd));
+            }
+
+            // NOTE: the service is docker-containerd however ProcessName for the service is docker-containe.
+            if (!Process.GetProcessesByName("docker-containe").Any()) {
+                throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(dockerContainerd));
+            }
         }
 
         private static LocalDocker GetLocalDocker(IServiceContainer services) {
@@ -102,14 +117,14 @@ namespace Microsoft.R.Containers.Docker {
                 if (files.Any()) {
                     var docker = new LocalDocker(Path.GetDirectoryName(dockerPath), dockerPath);
                     if (!fs.FileExists(docker.DockerCommandPath)) {
-                        throw new FileNotFoundException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
+                        throw new ContainerServiceNotInstalledException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
                     }
 
                     return docker;
                 }
             }
 
-            throw new ArgumentException(Resources.Error_DockerNotFound.FormatInvariant(DockerCePackageName, DockerEePackageName));
+            throw new ContainerServiceNotInstalledException(Resources.Error_DockerNotFound.FormatInvariant(DockerCePackageName, DockerEePackageName));
         }
     }
 }

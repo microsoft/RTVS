@@ -34,7 +34,7 @@ namespace Microsoft.R.Containers.Docker {
 
             var command = "ps";
             var commandOptions = getAll ? "-a -q" : "-q";
-            var output = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, ct);
+            var output = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, true, ct);
             var lines = output.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
             var arr = await InspectContainerAsync(ids, ct);
@@ -62,7 +62,7 @@ namespace Microsoft.R.Containers.Docker {
             if (ids.Any()) {
                 var command = "container inspect";
                 var commandOptions = string.Join(" ", ids);
-                var result = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, ct);
+                var result = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, false, ct);
                 return JArray.Parse(result);
             }
 
@@ -72,7 +72,7 @@ namespace Microsoft.R.Containers.Docker {
         public Task<string> RepositoryLoginAsync(string username, string password, string server, CancellationToken ct) {
             var command = "login";
             var commandOptions = $"-u {username} -p {password} {server}";
-            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, true, ct);
         }
 
         public Task<string> RepositoryLoginAsync(RepositoryCredentials auth, CancellationToken ct) 
@@ -81,7 +81,7 @@ namespace Microsoft.R.Containers.Docker {
         public Task<string> RepositoryLogoutAsync(string server, CancellationToken ct) {
             var command = "logout";
             var commandOptions = server;
-            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, true, ct);
         }
 
         public Task<string> RepositoryLogoutAsync(RepositoryCredentials auth, CancellationToken ct) 
@@ -90,14 +90,14 @@ namespace Microsoft.R.Containers.Docker {
         public Task<string> PullImageAsync(string fullImageName, CancellationToken ct) {
             var command = "pull";
             var commandOptions = fullImageName;
-            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, true, ct);
         }
 
         public async Task<string> CreateContainerAsync(string createOptions, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var command = "create";
-            var output = await ExecuteCommandAsync(Invariant($"{command} {createOptions}"), -1, ct);
+            var output = await ExecuteCommandAsync(Invariant($"{command} {createOptions}"), -1, true, ct);
             var matches = _containerIdMatcher64.Matches(output);
 
             return matches.Count >= 1 ? matches[0].Value : string.Empty;
@@ -106,24 +106,24 @@ namespace Microsoft.R.Containers.Docker {
         public Task<string> DeleteContainerAsync(IContainer container, CancellationToken ct) {
             var command = "rm";
             var commandOptions = $"{container.Id}";
-            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, true, ct);
         }
 
         public Task<string> StartContainerAsync(IContainer container, CancellationToken ct) {
             var command = "start";
             var commandOptions = $"{container.Id}";
-            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, true, ct);
         }
 
         public Task<string> StopContainerAsync(IContainer container, CancellationToken ct) {
             var command = "stop";
             var commandOptions = $"{container.Id}";
-            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, ct);
+            return ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), -1, true, ct);
         }
 
         protected abstract LocalDocker GetLocalDocker();
 
-        private async Task<string> ExecuteCommandAsync(string arguments, int timeoutms, CancellationToken cancellationToken) {
+        private async Task<string> ExecuteCommandAsync(string arguments, int timeoutms, bool failOnTimeout = true, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var docker = GetLocalDocker();
@@ -138,13 +138,10 @@ namespace Microsoft.R.Containers.Docker {
 
             var process = _ps.Start(psi);
             try {
-                await process.WaitForExitAsync(timeoutms, cancellationToken);
-            } catch(OperationCanceledException) {
-                // 'container inspect' command does not exit. So, we can ignore the OperationCancelledException.
-                if(!arguments.StartsWithIgnoreCase("container inspect")) {
-                    throw;
-                }
+                await process.WaitForExitAsync(timeoutms, ct);
+            } catch(OperationCanceledException) when (!failOnTimeout && !ct.IsCancellationRequested){
             }
+
             var output = await process.StandardOutput.ReadToEndAsync();
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error)) {
