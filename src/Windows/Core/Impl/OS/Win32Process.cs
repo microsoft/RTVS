@@ -19,7 +19,7 @@ namespace Microsoft.Common.Core.OS {
         private readonly SafeProcessHandle _processHandle;
         private readonly RegisteredWaitHandle _registeredWait;
         private readonly object _exitCodeLock;
-        private readonly DisposableBag _disposable;
+        private readonly DisposableBag _disposable = new DisposableBag(nameof(Win32Process));
         private bool _hasExited;
         private uint _exitCode;
 
