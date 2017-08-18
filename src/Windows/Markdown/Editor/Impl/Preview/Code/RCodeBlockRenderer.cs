@@ -38,13 +38,15 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         private CancellationTokenSource _blockEvalCts = new CancellationTokenSource();
         private int _blockNumber;
         private Task _evalTask = Task.CompletedTask;
+        private string _documentText;
 
         public RCodeBlockRenderer(string documentName, IServiceContainer services) {
             _settings = services.GetService<IRMarkdownEditorSettings>();
             _evaluator = new RCodeEvaluator(documentName, services);
         }
 
-        public IDisposable StartRendering() {
+        public IDisposable StartRendering(string documentText) {
+            _documentText = documentText;
             _blockNumber = 0;
             _blockEvalCts?.Cancel();
             _blockEvalCts = new CancellationTokenSource();
@@ -93,8 +95,16 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             renderer.EnsureLine();
 
             var fencedCodeBlock = codeBlock as FencedCodeBlock;
-            var info = fencedCodeBlock?.Info;
-            if (info != null && MarkdownUtility.GetRCodeBlockSeparatorLength(info, out int start)) {
+            if(codeBlock.Column > 0 || fencedCodeBlock?.Info == null) {
+                var text = new string(' ', codeBlock.Column) + _documentText.Substring(codeBlock.Span.Start, codeBlock.Span.Length);
+                if (!string.IsNullOrEmpty(text)) {
+                    renderer.Write(HtmlFormatter.FormatCode(text));
+                }
+                return;
+            }
+
+            // For R blocks indent count must be zero (no whitespace before ```{r}
+            if (MarkdownUtility.GetRCodeBlockSeparatorLength(fencedCodeBlock.Info, out int start)) {
                 var text = fencedCodeBlock.GetText();
                 var rCodeBlock = new RCodeBlock(_blockNumber, text, fencedCodeBlock.Arguments);
 

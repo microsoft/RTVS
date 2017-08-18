@@ -81,6 +81,7 @@
     <Compile Include="Preview\Browser\WebBrowserHostUIHandler.cs" />
     <Compile Include="Preview\Code\CodeBlockState.cs" />
     <Compile Include="Preview\Code\EvalSession.cs" />
+    <Compile Include="Preview\Code\HtmlFormatter.cs" />
     <Compile Include="Preview\Code\RCodeEvaluator.cs" />
     <Compile Include="Preview\Commands\RunAllChunksAboveCommand.cs" />
     <Compile Include="Preview\Commands\RunChunkCommandBase.cs" />
