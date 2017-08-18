@@ -46,49 +46,11 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         private void UpdateVisibility(char commitChar = '\0') {
-            Dictionary<int, List<Completion>> matches = new Dictionary<int, List<Completion>>();
-            int maxKey = 0;
-
             string typedText = GetTypedText();
             if (typedText.Length == 0) {
                 return;
             }
-
-            foreach (RCompletion c in _completions) {
-                int key = Match(typedText, c.DisplayText, commitChar);
-                if (key > 0) {
-                    List<Completion> list;
-                    if (!matches.TryGetValue(key, out list)) {
-                        list = new List<Completion>();
-                        matches[key] = list;
-                        maxKey = Math.Max(maxKey, key);
-                    }
-                    list.Add(c);
-                }
-            }
-
-            if (maxKey > 0) {
-                _completions.ForEach(x => ((RCompletion)x).IsVisible = false);
-                matches[maxKey].ForEach(x => ((RCompletion)x).IsVisible = true);
-            }
-        }
-
-        private int Match(string typedText, string compText, char commitChar) {
-            if (compText[compText.Length-1] == commitChar) { // like 'name ='
-                if (compText.StartsWithIgnoreCase(typedText)) {
-                    return compText.Length;
-                }
-            }
-
-            // Match at least something
-            int i = 0;
-            for (i = 0; i < Math.Min(typedText.Length, compText.Length); i++) {
-                if (char.ToLowerInvariant(typedText[i]) != char.ToLowerInvariant(compText[i])) {
-                    return i;
-                }
-            }
-
-            return i;
+            _completions.ForEach(x => ((RCompletion)x).IsVisible = x.DisplayText.StartsWithIgnoreCase(typedText));
         }
 
         private string GetTypedText() {
