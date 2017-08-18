@@ -237,7 +237,7 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         private IEnumerable<string> ExecuteAndGetOutput(string command, string arguments) {
-            Process proc = null;
+            IProcess proc = null;
             List<string> standardOutData = new List<string>();
             try {
                 ProcessStartInfo psi = new ProcessStartInfo() {

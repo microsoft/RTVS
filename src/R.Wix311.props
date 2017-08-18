@@ -11,4 +11,5 @@
   <!-- Nuget does not like wixproj -->
   <Target Name="_GenerateRestoreProjectPathWalk" />
   <Target Name="_GenerateRestoreGraphProjectEntry" />
+  <Target Name="_IsProjectRestoreSupported" />
 </Project>

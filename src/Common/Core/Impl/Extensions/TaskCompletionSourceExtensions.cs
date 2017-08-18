@@ -7,12 +7,21 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core {
     public static class TaskCompletionSourceExtensions {
-        public static CancellationTokenRegistration RegisterForCancellation<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken) {
+        public static CancellationTokenRegistration RegisterForCancellation<T>(this TaskCompletionSource<T> taskCompletionSource, CancellationToken cancellationToken) 
+            => taskCompletionSource.RegisterForCancellation(-1, cancellationToken);
+
+        public static CancellationTokenRegistration RegisterForCancellation<T>(this TaskCompletionSource<T> taskCompletionSource, int millisecondsDelay, CancellationToken cancellationToken) {
+            if (millisecondsDelay >= 0) {
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(millisecondsDelay);
+                cancellationToken = cts.Token;
+            }
+
             var action = new CancelOnTokenAction<T>(taskCompletionSource, cancellationToken);
             return cancellationToken.Register(action.Invoke);
         }
 
-        private class CancelOnTokenAction<T> {
+        private struct CancelOnTokenAction<T> {
             private readonly TaskCompletionSource<T> _taskCompletionSource;
             private readonly CancellationToken _cancellationToken;
 
@@ -23,11 +32,11 @@ namespace Microsoft.Common.Core {
 
             public void Invoke() {
                 if (!_taskCompletionSource.Task.IsCompleted) {
-                    Task.Run(new Action(TryCancel));
+                    ThreadPool.QueueUserWorkItem(TryCancel);
                 }
             }
 
-            private void TryCancel() => _taskCompletionSource.TrySetCanceled(_cancellationToken);
+            private void TryCancel(object state) => _taskCompletionSource.TrySetCanceled(_cancellationToken);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Microsoft.R.Components.Test {
 
         [Test]
         public void ConnectionManagerVisualComponentContainerFactory() {
-            _services.GetService<IConnectionManagerVisualComponentContainerFactory>().Should().NotBeNull();
+            _services.GetService<IConnectionManagerVisualProvider>().Should().NotBeNull();
         }
 
         [Test]

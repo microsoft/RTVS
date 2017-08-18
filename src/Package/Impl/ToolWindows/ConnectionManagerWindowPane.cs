@@ -14,7 +14,7 @@ using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
-    internal class ConnectionManagerWindowPane : VisualComponentToolWindow<IConnectionManagerVisualComponent>, IOleCommandTarget {
+    internal class ConnectionManagerWindowPane : VisualComponentToolWindow<IConnectionManagerVisual>, IOleCommandTarget {
         private readonly IConnectionManager _connectionManager;
         public const string WindowGuidString = "75753398-BE0E-442E-900C-E775EAC1FAC2";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         }
 
         protected override void OnCreate() {
-            Component = new ConnectionManagerVisualComponent(_connectionManager, this, Services);
+            Component = new ConnectionManagerVisual(_connectionManager, this, Services);
             base.OnCreate();
         }
 

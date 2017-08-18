@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.Common.Wpf.Collections {
     /// <summary>
@@ -9,10 +11,15 @@ namespace Microsoft.Common.Wpf.Collections {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class BatchObservableCollection<T> : ObservableCollection<T> {
+        private readonly CountdownDisposable _batchUpdate;
 
-        public BatchObservableCollection() { }
+        public BatchObservableCollection() {
+            _batchUpdate = new CountdownDisposable(OnBatchUpdateCompleted);
+        }
 
-        public BatchObservableCollection(IEnumerable<T> collection) : base(collection) { }
+        public BatchObservableCollection(IEnumerable<T> collection) : base(collection) {
+            _batchUpdate = new CountdownDisposable(OnBatchUpdateCompleted);
+        }
 
         public void AddMany(IEnumerable<T> collection) {
             if (collection == null) {
@@ -26,7 +33,7 @@ namespace Microsoft.Common.Wpf.Collections {
             }
 
             if (raiseEvent) {
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                OnBatchUpdateCompleted();
             }
         }
 
@@ -41,7 +48,7 @@ namespace Microsoft.Common.Wpf.Collections {
             }
 
             if (raiseEvent) {
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                OnBatchUpdateCompleted();
             }
         }
 
@@ -58,8 +65,28 @@ namespace Microsoft.Common.Wpf.Collections {
             }
 
             if (raiseEvent) {
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+                OnBatchUpdateCompleted();
             }
+        }
+
+        public IDisposable StartBatchUpdate() => _batchUpdate.Increment();
+
+        protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e) {
+            if (_batchUpdate.Count == 0) { 
+                base.OnCollectionChanged(e);
+            }
+        }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e) {
+            if (_batchUpdate.Count == 0) {
+                base.OnPropertyChanged(e);
+            }
+        }
+
+        private void OnBatchUpdateCompleted() {
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Count)));
+            OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
 }

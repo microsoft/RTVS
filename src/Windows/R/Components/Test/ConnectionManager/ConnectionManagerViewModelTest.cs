@@ -23,12 +23,12 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [Category.Connections]
     public sealed class ConnectionManagerViewModelTest : IDisposable {
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IConnectionManagerVisualComponent _cmvc;
+        private readonly IConnectionManagerVisual _cmvc;
         private readonly ConnectionManagerViewModel _cmvm;
 
         public ConnectionManagerViewModelTest(IServiceContainer services) {
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _cmvc = UIThreadHelper.Instance.Invoke(() => _workflow.Connections.GetOrCreateVisualComponent());
+            _cmvc = UIThreadHelper.Instance.Invoke(() => services.GetService<IConnectionManagerVisualProvider>().GetOrCreate(_workflow.Connections));
             _cmvm = UIThreadHelper.Instance.Invoke(() => (ConnectionManagerViewModel)_cmvc.Control.DataContext);
         }
         

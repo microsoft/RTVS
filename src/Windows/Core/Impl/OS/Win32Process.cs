@@ -7,7 +7,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Common.Core.OS {
@@ -17,20 +19,21 @@ namespace Microsoft.Common.Core.OS {
         private readonly SafeProcessHandle _processHandle;
         private readonly RegisteredWaitHandle _registeredWait;
         private readonly object _exitCodeLock;
+        private readonly DisposableBag _disposable;
         private bool _hasExited;
         private uint _exitCode;
 
         public int Id { get; }
         public int MainThreadId { get; }
-        public Stream StandardInput { get; }
-        public Stream StandardOutput { get; }
-        public Stream StandardError { get; }
+        public StreamWriter StandardInput { get; }
+        public StreamReader StandardOutput { get; }
+        public StreamReader StandardError { get; }
         public bool HasExited => _hasExited;
         public int ExitCode => (int)_exitCode;
 
         public event EventHandler Exited;
 
-        private Win32Process(NativeMethods.PROCESS_INFORMATION pi, Stream stdin, Stream stdout, Stream stderror) {
+        private Win32Process(NativeMethods.PROCESS_INFORMATION pi, StreamWriter stdin, StreamReader stdout, StreamReader stderror) {
             StandardInput = stdin;
             StandardOutput = stdout;
             StandardError = stderror;
@@ -50,15 +53,24 @@ namespace Microsoft.Common.Core.OS {
                 threadHandle.Close();
                 wait.Close();
             }, null, -1, true);
+
+            _disposable
+                .Add(() => _registeredWait.Unregister(wait))
+                .Add(_processHandle)
+                .Add(threadHandle)
+                .Add(wait);
         }
 
-        public void WaitForExit(int milliseconds) {
+        public bool WaitForExit(int milliseconds) {
             using (var processWaitHandle = new ProcessWaitHandle(_processHandle)) {
                 if (processWaitHandle.WaitOne(milliseconds)) {
                     // This means the process exited while waiting.
                     SetExitState();
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public void Kill() {
@@ -68,6 +80,8 @@ namespace Microsoft.Common.Core.OS {
                 }
             }
         }
+
+        public void Dispose() => _disposable.TryDispose();
 
         private void SetExitState() {
             lock (_exitCodeLock) {
@@ -158,9 +172,11 @@ namespace Microsoft.Common.Core.OS {
                         }
                     }
 
-                    var stdin = new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false);
-                    var stdout = new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false);
-                    var stderror = new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false);
+                    var stdin = new StreamWriter(new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false), Encoding.UTF8, 0x1000) {
+                        AutoFlush = true
+                    };
+                    var stdout = new StreamReader(new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false), Encoding.UTF8, true, 0x1000);
+                    var stderror = new StreamReader(new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false), Encoding.UTF8, true, 0x1000);
 
                     return new Win32Process(pi, stdin, stdout, stderror);
                 } finally {

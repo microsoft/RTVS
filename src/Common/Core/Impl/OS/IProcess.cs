@@ -5,16 +5,17 @@ using System;
 using System.IO;
 
 namespace Microsoft.Common.Core.OS {
-    public interface IProcess {
+    public interface IProcess : IDisposable {
         int Id { get; }
-        Stream StandardInput { get; }
-        Stream StandardOutput { get; }
-        Stream StandardError { get; }
+        StreamWriter StandardInput { get; }
+        StreamReader StandardOutput { get; }
+        StreamReader StandardError { get; }
         bool HasExited { get; }
         int ExitCode { get; }
 
         event EventHandler Exited;
 
         void Kill();
+        bool WaitForExit(int milliseconds);
     }
 }

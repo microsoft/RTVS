@@ -9,19 +9,19 @@
   <Item ItemId=";Managed Resources" ItemType="0" PsrId="211" Leaf="true">
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
   </Item>
-  <Item ItemId=";Microsoft.R.Host.Broker.RBrokerServiceInstaller.resources" ItemType="0" PsrId="211" Leaf="true">
-    <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" Path=" \ ;Managed Resources \ 0 \ 0" />
-  </Item>
   <Item ItemId=";Microsoft.R.Host.Broker.Resources.resources" ItemType="0" PsrId="211" Leaf="false">
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" Path=" \ ;Managed Resources \ 0 \ 0" />
     <Item ItemId=";Strings" ItemType="0" PsrId="211" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";Critical_InvalidPipeHandle" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle]]></Val>
+          <Val><![CDATA[Requested to write 'urls' to pipe '{0}', but it is not a valid pipe handle]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Zażądano zapisania elementu server.urls w potoku „{0}”, ale nie jest to prawidłowe dojście do potoku]]></Val>
+            <Val><![CDATA[Zażądano zapisania elementu „urls” w potoku „{0}”, ale nie jest to prawidłowe dojście do potoku]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Requested to write server.urls to pipe '{0}', but it is not a valid pipe handle]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -54,10 +54,13 @@
       </Item>
       <Item ItemId=";Critical_PipeConnectTimeOut" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Requested to write server.urls to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
+          <Val><![CDATA[Requested to write 'urls' to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Zażądano zapisania elementu server.urls w potoku „{0}”, ale przekroczono limit czasu podczas próby nawiązania połączenia z potokiem]]></Val>
+            <Val><![CDATA[Zażądano zapisania elementu „urls” w potoku „{0}”, ale przekroczono limit czasu podczas próby nawiązania połączenia z potokiem]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Requested to write server.urls to pipe '{0}', but timed out while trying to connect to pipe]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -70,11 +73,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Debug_SessionNotFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Could not find session with id: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nie można odnaleźć sesji o identyfikatorze {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Default" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Domyślna]]></Val>
+            <Val><![CDATA[Domyślny]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -88,11 +100,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_ConfigFailed" ItemType="0" PsrId="211" Leaf="true">
+      <Item ItemId=";Error_ClientToHostConnectionFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Command Line or Config File error: {0}]]></Val>
+          <Val><![CDATA[Client disconnected from R session due to error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Błąd wiersza polecenia lub pliku konfiguracji: {0}]]></Val>
+            <Val><![CDATA[Rozłączono klienta z sesji środowiska R z powodu błędu: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_ConfigLoadFailed" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Config file load failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ładowanie pliku konfiguracji nie powiodło się: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_ConfigParseFailed" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Config file parse failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Analizowanie pliku konfiguracji nie powiodło się: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -108,10 +138,13 @@
       </Item>
       <Item ItemId=";Error_ExitRHost" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[R Host Exited with Win32 error : {0}]]></Val>
+          <Val><![CDATA[R Host exited with error : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Host języka R zakończył działanie z powodu błędu Win32: {0}]]></Val>
+            <Val><![CDATA[Host środowiska R zakończył działanie z powodu błędu: {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[R Host Exited with Win32 error : {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -124,20 +157,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_GetUserProfileDirectory" ItemType="0" PsrId="211" Leaf="true">
+      <Item ItemId=";Error_GracefulDisconnectFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to get user profile directory for user {0} with WIN32 error code 0x{1}]]></Val>
+          <Val><![CDATA[Client failed to disconnect gracefully: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można pobrać katalogu profilu użytkownika {0}. Kod błędu WIN32: 0x{1}]]></Val>
+            <Val><![CDATA[Nie można bezpiecznie rozłączyć klienta: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_LogOnFailed" ItemType="0" PsrId="211" Leaf="true">
+      <Item ItemId=";Error_HostToClientConnectionFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Log on failed for user: {0}]]></Val>
+          <Val><![CDATA[R session disconnected from client due to error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można zalogować użytkownika {0}]]></Val>
+            <Val><![CDATA[Rozłączono sesję środowiska R w ramach klienta z powodu błędu: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -151,65 +184,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_ProfileCreationFailed" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Profile creation failed for user {0} with WIN32 error code 0x{1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można utworzyć profilu użytkownika {0}. Kod błędu WIN32: 0x{1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_ProfileCreationFailedIO" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Profile creation failed for user {0}.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można utworzyć profilu użytkownika {0}.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_ProfileCreationFailedInvalidResponse" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Profile creation failed for user {0} with invalid response from the {1} service.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można utworzyć profilu użytkownika {0} z powodu nieprawidłowej odpowiedzi z usługi {1}.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_ProfileDeletionFailedIO" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Profile deletion failed for user {0}.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można usunąć profilu użytkownika {0}.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Error_RHostFailedToStart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R session process failed to start. Error: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nie można uruchomić procesu sesji języka R. Błąd: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_UserNameParse" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[User name parsing failed for user {0} with WIN32 error code 0x{1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nie można przeanalizować nazwy użytkownika {0}. Kod błędu WIN32: 0x{1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Exception_InvalidIdentityType" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Provided identity must be a {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Podana tożsamość musi mieć następujący typ: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -232,15 +211,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Info_BrokerName" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Broker name '{0}' assigned]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Przypisano nazwę brokera „{0}”]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Info_MonitoringParentProcess" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Monitoring parent process {0}]]></Val>
@@ -259,24 +229,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Info_ProfileAlreadyExists" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Profile already exists for user: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Istnieje już profil użytkownika {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Info_ProfileCreated" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Profile created for user: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Utworzono profil użytkownika {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Info_StartedRHost" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[R session started for connection {0} of user {1}]]></Val>
@@ -291,42 +243,6 @@
           <Val><![CDATA[Starting R session for connection {0} of user {1} with command line: {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Rozpoczynanie sesji języka R dla połączenia {0} użytkownika {1} z wierszem polecenia: {2}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Info_UserProfileServiceName" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Microsoft.R.Host.UserProfile]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Microsoft.R.Host.UserProfile]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Text_ServiceDescription" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Creates and manages R Host (Microsoft.R.Host.exe) sessions.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tworzy sesje hosta języka R (Microsoft.R.Host.exe) i zarządza nimi.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Text_ServiceDisplayName" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[R Remote Service]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Usługa zdalna języka R]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Text_ServiceName" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[RRemoteService]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Usługa zdalna języka R]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -367,24 +283,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Trace_EnvironmentVariable" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0} = {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} = {1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Trace_EnvironmentVariableCreationBegin" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Creating user environment variables for user {0} with profile directory {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tworzenie zmiennych środowiska użytkownika {0} z katalogiem profilu {1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Trace_ErrorDataReceived" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[|{0}|: {1}]]></Val>
@@ -394,57 +292,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Trace_LogOnSuccess" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log on succeeded for user: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Pomyślnie zalogowano użytkownika {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Trace_LogOnUserBegin" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Attempting log on for user: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Trwa próba zalogowania użytkownika {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Trace_ServerUrlsToPipeBegin" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Writing server.urls to pipe '{0}':{1}{2}]]></Val>
+          <Val><![CDATA[Writing 'urls' to pipe '{0}':{1}{2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Zapisywanie elementu server.urls w potoku „{0}”:{1}{2}]]></Val>
+            <Val><![CDATA[Zapisywanie elementu „urls” w potoku „{0}”:{1}{2}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Writing server.urls to pipe '{0}':{1}{2}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Trace_ServerUrlsToPipeDone" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Wrote server.urls to pipe '{0}']]></Val>
+          <Val><![CDATA[Wrote 'urls' to pipe '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Zapisano element server.urls w potoku „{0}”]]></Val>
+            <Val><![CDATA[Zapisano element „urls” w potoku „{0}”]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Trace_UserProfileCreation" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Attempting to create profile for user: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Trwa próba utworzenia profilu użytkownika {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Trace_UserProfileDirectory" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[User {0} profile directory: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Katalog profilu użytkownika {0}: {1}]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Wrote server.urls to pipe '{0}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -454,7 +322,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.2.30816.306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -475,13 +343,13 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
     <Item ItemId=";InternalName" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.R.Host.Broker.exe]]></Val>
+        <Val><![CDATA[Microsoft.R.Host.Broker.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -496,7 +364,7 @@
     </Item>
     <Item ItemId=";OriginalFilename" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[Microsoft.R.Host.Broker.exe]]></Val>
+        <Val><![CDATA[Microsoft.R.Host.Broker.dll]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -511,7 +379,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.0.30310.2203]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

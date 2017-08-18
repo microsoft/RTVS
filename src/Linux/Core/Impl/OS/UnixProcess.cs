@@ -15,29 +15,26 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public int Id => _process.Id;
-
-        public Stream StandardInput => _process.StandardInput.BaseStream;
-
-        public Stream StandardOutput => _process.StandardOutput.BaseStream;
-
-        public Stream StandardError => _process.StandardError.BaseStream;
-
+        public StreamWriter StandardInput => _process.StandardInput;
+        public StreamReader StandardOutput => _process.StandardOutput;
+        public StreamReader StandardError => _process.StandardError;
         public bool HasExited => _process.HasExited;
-
         public int ExitCode => _process.ExitCode;
 
         public event EventHandler Exited {
             add {
+                _process.EnableRaisingEvents = true;
                 _process.Exited += value;
             }
-            remove {
-                _process.Exited -= value;
-            }
+            remove => _process.Exited -= value;
         }
 
         public void Kill() {
             // This is needed because broker user cannot kill process running as another user.
             _ps.Kill(_process.Id);
         }
+
+        public bool WaitForExit(int milliseconds) => _process.WaitForExit(milliseconds);
+        public void Dispose() => _process.Dispose();
     }
 }

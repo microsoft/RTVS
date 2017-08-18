@@ -43,11 +43,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_ProfileCreationFailedIO" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Profile creation failed for user {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[사용자 {0}에 대한 프로필을 만들지 못했습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Error_ProfileCreationFailedInvalidResponse" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Profile creation failed for user {0} with invalid response from the {1} service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{1} 서비스의 응답이 잘못되어 사용자 {0}에 대한 프로필을 만들지 못했습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_ProfileDeletionFailedIO" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Profile deletion failed for user {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[사용자 {0}에 대한 프로필을 삭제하지 못했습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -193,7 +211,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30815.304]]></Val>
+        <Val><![CDATA[1.2.30816.306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -214,7 +232,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30815.0304]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -250,7 +268,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30815.0304]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

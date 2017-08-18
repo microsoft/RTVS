@@ -43,11 +43,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_ProfileCreationFailedIO" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Profile creation failed for user {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} adlı kullanıcı için profil oluşturma işlemi başarısız oldu.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";Error_ProfileCreationFailedInvalidResponse" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Profile creation failed for user {0} with invalid response from the {1} service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[{0} adlı kullanıcı için profil oluşturma işlemi {1} hizmetinden alınan geçersiz yanıt ile başarısız oldu.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";Error_ProfileDeletionFailedIO" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Profile deletion failed for user {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} adlı kullanıcı için profil silme işlemi başarısız oldu.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -193,7 +211,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30810.303]]></Val>
+        <Val><![CDATA[1.2.30816.306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -214,7 +232,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30810.0303]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -250,7 +268,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30810.0303]]></Val>
+        <Val><![CDATA[1.2.30816.0306]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

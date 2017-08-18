@@ -9,10 +9,10 @@ using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
-    public class ConnectionManagerVisualComponent : IConnectionManagerVisualComponent {
+    public class ConnectionManagerVisual : IConnectionManagerVisual {
         private readonly IConnectionManagerViewModel _viewModel;
 
-        public ConnectionManagerVisualComponent(IConnectionManager connectionManager, IVisualComponentContainer<IConnectionManagerVisualComponent> container, IServiceContainer services) {
+        public ConnectionManagerVisual(IConnectionManager connectionManager, IVisualComponentContainer<IConnectionManagerVisual> container, IServiceContainer services) {
             _viewModel = new ConnectionManagerViewModel(connectionManager, services);
             Container = container;
             var control = new ConnectionManagerControl(services) {

@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         protected IServiceContainer Services { get; }
 
         public T Component {
-            get { return _adapter.Component; }
+            get => _adapter.Component;
             protected set {
                 _adapter.Component = value;
                 Content = value?.Control;
@@ -21,16 +21,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public string CaptionText {
-            get { return _adapter.CaptionText; }
-            set { _adapter.CaptionText = value; }
+            get => _adapter.CaptionText;
+            set => _adapter.CaptionText = value;
         }
 
         public string StatusText {
-            get { return _adapter.StatusText; }
-            set { _adapter.StatusText = value; }
+            get => _adapter.StatusText;
+            set => _adapter.StatusText = value;
         }
 
-        public bool IsOnScreen => _adapter?.IsOnScreen ?? false;
+        public bool IsOnScreen => _adapter.IsOnScreen;
 
         protected VisualComponentToolWindow(IServiceContainer services) {
             Services = services;
@@ -38,9 +38,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public void Hide() => _adapter?.Hide();
-        public void Show(bool focus, bool immediate) => _adapter?.Show(focus, immediate);
-        public void ShowContextMenu(CommandId commandId, Point position) => _adapter?.ShowContextMenu(commandId, position);
-        public void UpdateCommandStatus(bool immediate) => _adapter?.UpdateCommandStatus(immediate);
+        public void Show(bool focus, bool immediate) => _adapter.Show(focus, immediate);
+        public void ShowContextMenu(CommandId commandId, Point position) => _adapter.ShowContextMenu(commandId, position);
+        public void UpdateCommandStatus(bool immediate) => _adapter.UpdateCommandStatus(immediate);
 
         protected override void Dispose(bool disposing) {
             if (disposing && Component != null) {
