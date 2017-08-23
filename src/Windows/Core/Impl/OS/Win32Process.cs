@@ -172,9 +172,7 @@ namespace Microsoft.Common.Core.OS {
                         }
                     }
 
-                    var stdin = new StreamWriter(new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false), Encoding.UTF8, 0x1000) {
-                        AutoFlush = true
-                    };
+                    var stdin = new StreamWriter(new FileStream(new SafeFileHandle(stdinWrite, true), FileAccess.Write, 0x1000, false), Encoding.UTF8, 0x1000, true);
                     var stdout = new StreamReader(new FileStream(new SafeFileHandle(stdoutRead, true), FileAccess.Read, 0x1000, false), Encoding.UTF8, true, 0x1000);
                     var stderror = new StreamReader(new FileStream(new SafeFileHandle(stderrorRead, true), FileAccess.Read, 0x1000, false), Encoding.UTF8, true, 0x1000);
 
