@@ -37,6 +37,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Docker\WindowsDockerService.cs" />
+    <Compile Include="Docker\WindowsLocalDockerFinder.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

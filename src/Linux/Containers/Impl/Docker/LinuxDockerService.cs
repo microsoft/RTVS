@@ -1,43 +1,30 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using static System.FormattableString;
+
 namespace Microsoft.R.Containers.Docker {
     public class LinuxDockerService : LocalDockerService, IContainerService {
-        const string DockerCePackageName = "docker-ce";
-        const string DockerEePackageName = "docker-ee";
-        const string DockerProcessName = "dockerd";
         private LocalDocker _docker;
         private readonly IServiceContainer _services;
+        private readonly LinuxLocalDockerFinder _dockerFinder;
 
         public LinuxDockerService(IServiceContainer services) : base(services) {
             _services = services;
+            _dockerFinder = new LinuxLocalDockerFinder(services);
         }
 
-        public ContainerServiceStatus GetServiceStatus() {
-            var proc = GetDockerProcess();
-            if (proc.HasExited) {
-                return new ContainerServiceStatus(false, Resources.Error_ServiceNotAvailable, ContainerServiceStatusType.Error);
-            } else {
-                return new ContainerServiceStatus(true, Resources.Info_ServiceAvailable, ContainerServiceStatusType.Information);
-            }
-        }
+        public ContainerServiceStatus GetServiceStatus() => GetDockerProcess().HasExited
+            ? new ContainerServiceStatus(false, Resources.Error_ServiceNotAvailable, ContainerServiceStatusType.Error)
+            : new ContainerServiceStatus(true, Resources.Info_ServiceAvailable, ContainerServiceStatusType.Information);
 
-        internal static Process GetDockerProcess() {
-            var processes = Process.GetProcessesByName(DockerProcessName);
-            return processes.Any() ? processes.FirstOrDefault() : null;
-        }
+        internal static Process GetDockerProcess() => Process.GetProcessesByName(LinuxLocalDockerFinder.DockerProcessName).FirstOrDefault();
 
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -85,46 +72,12 @@ namespace Microsoft.R.Containers.Docker {
         }
 
         protected override LocalDocker GetLocalDocker() {
-            _docker = _docker ?? GetLocalDocker(_services);
-            CheckIfServiceIsRunning();
+            _docker = _docker ?? _dockerFinder.GetLocalDocker();
+            _dockerFinder.CheckIfServiceIsRunning();
 
             return _docker;
         }
 
-        private static void CheckIfServiceIsRunning() {
-            const string dockerd = "dockerd";
-            const string dockerContainerd = "docker-containerd";
-            if (!Process.GetProcessesByName(dockerd).Any()) {
-                throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(dockerd));
-            }
-
-            // NOTE: the service is docker-containerd however ProcessName for the service is docker-containe.
-            if (!Process.GetProcessesByName("docker-containe").Any()) {
-                throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(dockerContainerd));
-            }
-        }
-
-        private static LocalDocker GetLocalDocker(IServiceContainer services) {
-            var fs = services.FileSystem();
-            const string dockerPath = "/usr/bin/docker";
-            var packages = InstalledPackageInfo.GetPackages(fs);
-            var dockerPkgs = packages
-                .Where(pkg => pkg.PackageName.EqualsIgnoreCase(DockerCePackageName) || pkg.PackageName.EqualsIgnoreCase(DockerEePackageName))
-                .ToList();
-            if (dockerPkgs.Any()) {
-                var pkg = dockerPkgs.First();
-                var files = pkg.GetPackageFiles(fs).Where(f => f.Equals(dockerPath));
-                if (files.Any()) {
-                    var docker = new LocalDocker(Path.GetDirectoryName(dockerPath), dockerPath);
-                    if (!fs.FileExists(docker.DockerCommandPath)) {
-                        throw new ContainerServiceNotInstalledException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
-                    }
-
-                    return docker;
-                }
-            }
-
-            throw new ContainerServiceNotInstalledException(Resources.Error_DockerNotFound.FormatInvariant(DockerCePackageName, DockerEePackageName));
-        }
+        
     }
 }
