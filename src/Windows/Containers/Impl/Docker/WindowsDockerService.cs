@@ -9,24 +9,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.ServiceProcess;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
-using Microsoft.Win32;
 using static System.FormattableString;
 
 
 namespace Microsoft.R.Containers.Docker {
     public class WindowsDockerService : LocalDockerService, IContainerService {
         const string DockerServiceName = "Docker for Windows";
-        const string dockerCommand = "docker.exe";
-        const string dockerRegistryPath = @"SOFTWARE\Docker Inc.\Docker";
-        const string dockerRegistryPath2 = @"SYSTEM\CurrentControlSet\Services\com.docker.service";
         private LocalDocker _docker;
         private readonly IServiceContainer _services;
+        private readonly WindowsLocalDockerFinder _dockerFinder;
 
         public WindowsDockerService(IServiceContainer services) : base(services) {
             _services = services;
+            _dockerFinder = new WindowsLocalDockerFinder(services);
         }
 
         public ContainerServiceStatus GetServiceStatus() => GetDockerProcess(DockerServiceName).HasExited 
@@ -81,105 +78,14 @@ namespace Microsoft.R.Containers.Docker {
         }
 
         protected override LocalDocker GetLocalDocker() {
-            _docker = _docker ?? GetLocalDocker(_services);
-            CheckIfServiceIsRunning();
+            _docker = _docker ?? _dockerFinder.GetLocalDocker();
+            _dockerFinder.CheckIfServiceIsRunning();
 
             return _docker;
         }
 
-        private static void CheckIfServiceIsRunning() {
-            const string serviceName = "com.docker.service";
-            ServiceController sc = new ServiceController(serviceName);
-            if (sc.Status != ServiceControllerStatus.Running) {
-                throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(sc.Status.ToString()));
-            }
+        
 
-            if (!Process.GetProcessesByName("Docker for windows").Any()) {
-                throw new ContainerServiceNotRunningException(Resources.Error_DockerForWindowsNotRunning);
-            }
-        }
-
-        private static LocalDocker GetLocalDocker(IServiceContainer services) {
-            var rs = services.GetService<IRegistry>();
-            var fs = services.FileSystem();
-            LocalDocker docker = null;
-            using (var hklm64 = rs.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                if(!TryGetDockerFromRegistryInstall(fs, hklm64, out docker) &&
-                   !TryGetDockerFromServiceInstall(fs, hklm64, out docker) &&
-                   !TryGetDockerFromProgramFiles(fs,out docker)) {
-                    throw new ContainerServiceNotInstalledException(Resources.Error_DockerNotFound.FormatInvariant(dockerRegistryPath));
-                }
-            }
-
-            if (!fs.FileExists(docker.DockerCommandPath)) {
-                throw new ContainerServiceNotInstalledException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
-            }
-
-            return docker;
-        }
-
-        private static bool TryGetDockerFromProgramFiles(IFileSystem fs, out LocalDocker docker) {
-            string[] envVars = { "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432" };
-            foreach (var envVar in envVars) {
-                var progFiles = Environment.GetEnvironmentVariable(envVar);
-                if (!string.IsNullOrWhiteSpace(progFiles)) {
-                    var basePath = Path.Combine(progFiles, "Docker", "Docker");
-                    var binPath = Path.Combine(basePath, "resources", "bin");
-                    var commandPath = Path.Combine(binPath, dockerCommand);
-                    if (fs.FileExists(commandPath)) {
-                        docker = new LocalDocker(binPath, commandPath);
-                        return true;
-                    }
-                }
-            }
-
-            docker = null;
-            return false;
-        }
-
-        private static bool TryGetDockerFromRegistryInstall(IFileSystem fs, IRegistryKey hklm, out LocalDocker docker) {
-            using (var dockerRegKey = hklm.OpenSubKey(dockerRegistryPath)) {
-                if (dockerRegKey != null) {
-                    string[] subkeys = dockerRegKey.GetSubKeyNames();
-                    foreach (var subKey in subkeys) {
-                        using (var key = dockerRegKey.OpenSubKey(subKey)) {
-                            var isInstallKey = key.GetValueNames().Count(v => v.Equals("BinPath") || v.Equals("Version")) == 2;
-                            if (isInstallKey) {
-                                var binPath = ((string)key.GetValue("BinPath")).Trim('\"');
-                                var commandPath = Path.Combine(binPath, dockerCommand);
-                                if (fs.FileExists(commandPath)) {
-                                    docker = new LocalDocker(binPath, commandPath);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            docker = null;
-            return false;
-        }
-
-        private static bool TryGetDockerFromServiceInstall(IFileSystem fs, IRegistryKey hklm, out LocalDocker docker) {
-            using (var dockerRegKey = hklm.OpenSubKey(dockerRegistryPath)) {
-                if (dockerRegKey != null) {
-                    var valueNames = dockerRegKey.GetValueNames();
-                    if (valueNames.Contains("ImagePath")) {
-                        var comPath = ((string)dockerRegKey.GetValue("ImagePath")).Trim('\"');
-                        var basePath = Path.GetDirectoryName(comPath);
-                        var binPath = Path.Combine(basePath, "resources", "bin");
-                        var commandPath = Path.Combine(binPath, dockerCommand);
-                        if (fs.FileExists(commandPath)) {
-                            docker = new LocalDocker(binPath, commandPath);
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            docker = null;
-            return false;
-        }
+        
     }
 }

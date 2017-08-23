@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -51,5 +52,7 @@ namespace Microsoft.Common.Core.OS {
                 proc.WaitForExit(1000);
             }
         }
+
+        public bool IsProcessRunning(string processName) => Process.GetProcessesByName(processName).Any();
     }
 }
