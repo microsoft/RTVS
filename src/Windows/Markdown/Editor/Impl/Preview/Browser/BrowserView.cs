@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Markdown.Editor.Preview.Parser;
 using Microsoft.VisualStudio.Text;
 using mshtml;
+using Microsoft.Common.Core.Shell;
 using static System.FormattableString;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 using WebBrowser = System.Windows.Controls.WebBrowser;
@@ -26,6 +27,8 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
         private MarkdownDocument _markdownDocument;
         private ScrollTracker _scrollTracker;
         private int _currentMarkdownLineNumber = -1;
+
+        public event EventHandler<EventArgs> ViewportChange;
 
         public BrowserView(string fileName, IServiceContainer services) {
             Check.ArgumentNull(nameof(fileName), fileName);
@@ -44,14 +47,19 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
             Control = new WebBrowser { HorizontalAlignment = HorizontalAlignment.Stretch };
             Control.LoadCompleted += (s, e) => {
                 _browserWindow.Init();;
+
                 _htmlDocument = (HTMLDocument)Control.Document;
-                _scrollTracker = new ScrollTracker(_htmlDocument);
+                _scrollTracker = new ScrollTracker(_htmlDocument, _services.GetService<IIdleTimeService>());
+                _scrollTracker.ViewportChange += OnViewportChange;
+
                 _documentRenderer.RenderCodeBlocks(_htmlDocument);
             };
 
             // Open external links in default browser
             Control.Navigating += OnNavigating;
         }
+
+        private void OnViewportChange(object sender, EventArgs e) => ViewportChange?.Invoke(this, EventArgs.Empty);
 
         private void OnNavigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e) {
             if (e.Uri == null) {
@@ -120,8 +128,14 @@ namespace Microsoft.Markdown.Editor.Preview.Browser {
 
         public void Dispose() {
             Control?.Dispose();
+
             _documentRenderer?.Dispose();
             _htmlDocument = null;
+
+            if (_scrollTracker != null) {
+                _scrollTracker.ViewportChange -= OnViewportChange;
+                _scrollTracker.Dispose();
+            }
         }
     }
 }
