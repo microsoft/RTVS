@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Editor.Functions;
 using static System.FormattableString;
@@ -16,9 +15,11 @@ namespace Microsoft.R.Editor.Completions {
     public class RFunctionCompletionEntry : EditorCompletionEntry {
         private readonly IFunctionIndex _functionIndex;
         private readonly IEditorIntellisenseSession _session;
+        private readonly string _packageName;
 
-        public RFunctionCompletionEntry(string displayText, string insertionText, string description, object iconSource, IFunctionIndex functionIndex, IEditorIntellisenseSession session) :
+        public RFunctionCompletionEntry(string displayText, string insertionText, string description, object iconSource, string packageName, IFunctionIndex functionIndex, IEditorIntellisenseSession session) :
             base(displayText, insertionText, description, iconSource) {
+            _packageName = packageName;
             _functionIndex = functionIndex;
             _session = session;
         }
@@ -26,7 +27,7 @@ namespace Microsoft.R.Editor.Completions {
         public override string Description {
             get {
                 if (string.IsNullOrEmpty(base.Description) && !_session.IsDismissed) {
-                    _functionIndex.GetFunctionInfoAsync(DisplayText, null, (fi, o) => SetDescription(fi), null);
+                    _functionIndex.GetFunctionInfoAsync(DisplayText, _packageName, (fi, o) => SetDescription(fi), null);
                 }
                 return base.Description;
             }

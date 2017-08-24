@@ -50,13 +50,8 @@ namespace Microsoft.R.Editor.Formatting {
                 }
             }
 
-            // Expand span to include the entire line unless position is 
-            // at the very end of the line. In the latter case use next line.
-            var startLine = snapshot.GetLineFromPosition(start);
-            if (startLine.Length > 0 && startLine.Start == start && startLine.End == end && startLine.LineNumber < snapshot.LineCount) {
-                startLine = snapshot.GetLineFromLineNumber(startLine.LineNumber + 1);
-            }
             var endLine = snapshot.GetLineFromPosition(end);
+            var startLine = snapshot.GetLineFromPosition(start);
 
             // In case of formatting of multiline expressions formatter needs
             // to know the entire expression since otherwise it may not correctly
@@ -72,7 +67,7 @@ namespace Microsoft.R.Editor.Formatting {
             // the AST is damaged at this point. As a workaround, we will check 
             // if the previous line ends with an operator current line starts with 
             // an operator.
-            int startPosition = FindStartOfExpression(editorBuffer, startLine.Start);
+            var startPosition = FindStartOfExpression(editorBuffer, startLine.Start);
 
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
             return FormatRangeExact(editorView, editorBuffer, formatRange);

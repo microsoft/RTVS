@@ -32,16 +32,16 @@ namespace Microsoft.Markdown.Editor.Formatting {
             using (new MassiveChange(TextView, TargetBuffer, Services, Resources.FormatDocument)) {
                 foreach (var block in clh.LanguageBlocks) {
                     var paramsRange = GetParameterBlockRange(TargetBuffer.CurrentSnapshot, block);
-                    var formatRange = TextRange.FromBounds(paramsRange.End, block.End);
+                    var formatRange = GetCodeBlockRange(TargetBuffer.CurrentSnapshot, block, paramsRange);
 
                     var formatSpan = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, formatRange.ToSpan());
                     TextView.Selection.Select(formatSpan, false);
 
                     var cmdTarget = clh.GetCommandTargetOfLocation(TextView, formatRange.Start);
-                    cmdTarget.Invoke(VSConstants.VSStd2K, (int) VSConstants.VSStd2KCmdID.FORMATSELECTION, null, ref o);
+                    cmdTarget.Invoke(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION, null, ref o);
                 }
 
-                if(clh.LanguageBlocks.Count > 0) {
+                if (clh.LanguageBlocks.Count > 0) {
                     var newSelection = originalSelection.TranslateTo(TextView.TextBuffer.CurrentSnapshot, SpanTrackingMode.EdgePositive);
                     TextView.Selection.Select(newSelection.SnapshotSpan, false);
                     TextView.Caret.MoveTo(newSelection.SnapshotSpan.Start);
@@ -53,11 +53,11 @@ namespace Microsoft.Markdown.Editor.Formatting {
         public override CommandStatus Status(Guid group, int id) => CommandStatus.SupportedAndEnabled;
         #endregion
 
-        private ITextRange GetParameterBlockRange(ITextSnapshot snapshot, ITextRange block) {
+        private static ITextRange GetParameterBlockRange(ITextSnapshot snapshot, ITextRange block) {
             var content = snapshot.GetText(block.ToSpan());
 
             var start = content.IndexOf('{');
-            if(start < 0) {
+            if (start < 0) {
                 return TextRange.FromBounds(block.Start, block.Start);
             }
 
@@ -70,6 +70,30 @@ namespace Microsoft.Markdown.Editor.Formatting {
             }
 
             return TextRange.FromBounds(block.Start + start, block.Start + end + 1);
+        }
+
+        private static ITextRange GetCodeBlockRange(ITextSnapshot snapshot, ITextRange block, ITextRange parametersRange) {
+            // In
+            // {r echo=FALSE}
+            //    code
+            //
+            // we want to format just *code* section and not spill range into the line
+            // with {r echo=FALSE} or the next (empty) line. I.e.
+            // 
+            // {r echo=FALSE}
+            //|    code|
+            //
+            // and not
+            // {r echo=FALSE}|
+            //     code|
+            //|
+            //
+            var startLine = snapshot.GetLineFromPosition(parametersRange.End);
+            var endline = snapshot.GetLineFromPosition(block.End);
+            if (endline.LineNumber > startLine.LineNumber) {
+                endline = snapshot.GetLineFromLineNumber(endline.LineNumber - 1);
+            }
+            return TextRange.FromBounds(startLine.EndIncludingLineBreak, endline.End);
         }
     }
 }

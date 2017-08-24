@@ -98,7 +98,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             if (codeBlock.Column > 0 || fencedCodeBlock?.Info == null) {
                 if (codeBlock.Span.Length > 0) {
                     var text = new string(' ', codeBlock.Column) + _documentText.Substring(codeBlock.Span.Start, codeBlock.Span.Length);
-                    renderer.Write(HtmlFormatter.FormatCode(text));
+                    renderer.Write(HtmlFormatter.FormatCode(text, "background-color: rgba(0, 0, 0, 0.04);"));
                 }
                 return;
             }

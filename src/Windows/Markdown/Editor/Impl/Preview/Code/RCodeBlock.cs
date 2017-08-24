@@ -20,7 +20,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         public bool DisplayMessages { get; private set; } = true;
         public bool EchoContent { get; private set; } = true;
 
-        public string HtmlElementId => Invariant($"rcode_{BlockNumber}_{Hash}");
+        public string HtmlElementId => Invariant($"rcode_{BlockNumber}_{(uint)Hash}");
 
         public RCodeBlock(int number, string text, string arguments = null) {
             BlockNumber = number;

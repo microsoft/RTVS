@@ -45,9 +45,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
             var infoSource = _snippetInformationSource?.InformationSource;
-            var packages = GetPackages(context);
+            var packages = GetPackages(context).ToList();
+            var packageName = packages.Count == 1 ? packages[0].Name : null;
 
-            // Get list of functions in the package
+                // Get list of functions in the package
             foreach (var pkg in packages) {
                 Debug.Assert(pkg != null);
                 var functions = pkg.Functions;
@@ -63,7 +64,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                         }
                     }
                     var glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
-                    var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, _functionIndex, context.Session);
+                    var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, packageName, _functionIndex, context.Session);
                     completions.Add(completion);
                 }
             }
@@ -105,7 +106,6 @@ namespace Microsoft.R.Editor.Completions.Providers {
             }
 
             if (colons > 1 && colons < 4) {
-                var packageName = string.Empty;
                 var start = 0;
                 var end = context.Position - colons;
 
@@ -118,7 +118,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 }
 
                 if (start < end) {
-                    packageName = snapshot.GetText(TextRange.FromBounds(start, end));
+                   var  packageName = snapshot.GetText(TextRange.FromBounds(start, end));
                     if (packageName.Length > 0) {
                         context.InternalFunctions = colons == 3;
                         var package = GetPackageByName(packageName);

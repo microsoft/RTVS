@@ -32,7 +32,6 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Test]
-        [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
                 await _editorHost.FunctionIndex.GetPackageNameAsync("lm");
@@ -105,6 +104,21 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 var actual = script.EditorText;
 
                 actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        public async Task R_ExplicitPackageCompletion() {
+            using (var script = await _editorHost.StartScript(_services, RContentTypeDefinition.ContentType, _sessionProvider)) {
+                script.Type("boot::");
+                script.DoIdle(300);
+                script.Type("{ESC}");
+                script.Type("{BACKSPACE}");
+                script.Type(":");
+
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                session.CompletionSets[0].Completions[0].Description.Should().NotBeNullOrEmpty();
             }
         }
     }

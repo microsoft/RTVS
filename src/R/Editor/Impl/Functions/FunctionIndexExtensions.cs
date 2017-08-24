@@ -9,6 +9,15 @@ using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.Editor.Functions {
     public static class FunctionIndexExtensions {
+        /// <summary>
+        /// Given function name and package name attempts to locate function information.
+        /// Intended to be used from non-async capable code that works via callbacks.
+        /// </summary>
+        /// <param name="functionIndex">Function index</param>
+        /// <param name="functionName">Function name</param>
+        /// <param name="packageName">Package name (can be null if not known)</param>
+        /// <param name="callback">Callback to invoke when information becomes available</param>
+        /// <param name="parameter">User data to pass to the callback method</param>
         public static void GetFunctionInfoAsync(this IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter = null) {
             var fi = functionIndex.GetFunctionInfo(functionName, packageName);
             if (fi != null) {
@@ -22,7 +31,7 @@ namespace Microsoft.R.Editor.Functions {
             IFunctionInfo fi = null;
             packageName = packageName ?? await functionIndex.GetPackageNameAsync(functionName);
             if (!string.IsNullOrEmpty(packageName)) {
-                fi = functionIndex.GetFunctionInfo(functionName, packageName);
+                fi = await functionIndex.GetFunctionInfoAsync(functionName, packageName);
             }
             await functionIndex.Services.MainThread().SwitchToAsync();
             callback(fi, parameter);

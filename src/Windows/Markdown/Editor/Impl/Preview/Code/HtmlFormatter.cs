@@ -6,6 +6,6 @@ using static System.FormattableString;
 namespace Microsoft.Markdown.Editor.Preview.Code {
     internal static class HtmlFormatter {
         public static string FormatCode(string code, string style = null) 
-            => Invariant($"<code style='white-space: pre-wrap; background-color: rgba(0, 0, 0, 0.04); display: block; {style ?? string.Empty}'>{code}</code>");
+            => Invariant($"<code style='white-space: pre-wrap; display: block; {style ?? string.Empty}'>{code}</code>");
     }
 }
