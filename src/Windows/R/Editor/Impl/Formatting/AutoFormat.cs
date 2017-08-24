@@ -46,9 +46,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var textBuffer = document.EditorBuffer.As<ITextBuffer>();
-            var host = textBuffer.GetService<IContainedLanguageHost>();
-            if (host != null && !host.CanFormatLine(editorView, textBuffer.ToEditorBuffer(), textBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
+            if(!CanFormatContainedLanguageLine(editorView, document.EditorBuffer, rPoint.Value, typedChar)) {
                 return;
             }
 
@@ -78,15 +76,40 @@ namespace Microsoft.R.Editor.Formatting {
             } else if (typedChar == ';') {
                 // Verify we are at the end of the string and not in a middle
                 // of another string or inside a statement.
-                ITextSnapshotLine line = subjectBuffer.CurrentSnapshot.GetLineFromPosition(rPoint.Value.Position);
-                int positionInLine = rPoint.Value.Position - line.Start;
-                string lineText = line.GetText();
+                var line = subjectBuffer.CurrentSnapshot.GetLineFromPosition(rPoint.Value.Position);
+                var positionInLine = rPoint.Value.Position - line.Start;
+                var lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
                     FormatOperations.FormatViewLine(editorView, editorBuffer, 0, _services);
                 }
             } else if (typedChar == '}') {
                 FormatOperations.FormatCurrentStatement(editorView, editorBuffer, _services, limitAtCaret: true, caretOffset: -1);
             }
+        }
+
+        /// <summary>
+        /// Determines if contained language line can be formatted.
+        /// </summary>
+        /// <param name="editorView">Editor view</param>
+        /// <param name="editorBuffer">Contained language buffer</param>
+        /// <param name="position">Position in the contained language buffer</param>
+        /// <param name="typedChar">Typed character</param>
+        /// <remarks>In R Markdown lines with ```{r should not be formatted</remarks>
+        private bool CanFormatContainedLanguageLine(IEditorView editorView, IEditorBuffer editorBuffer, int position, char typedChar) {
+            // Make sure we are not formatting damaging the projected range in R Markdown
+            // which looks like ```{r. 'r' should not separate from {.
+            var textBuffer = editorBuffer.As<ITextBuffer>();
+            var host = textBuffer.GetService<IContainedLanguageHost>();
+            // If user typed enter, we should be asking for permission to format previous
+            // line since automatic formatting is post-editing operation
+            if (host != null) {
+                var lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
+                if (typedChar.IsLineBreak()) {
+                    lineNumber--;
+                }
+                return host.CanFormatLine(editorView, textBuffer.ToEditorBuffer(), lineNumber);
+            }
+            return true;
         }
 
         private bool CanFormatLine(ITextBuffer textBuffer, int lineOffset) {
@@ -96,7 +119,7 @@ namespace Microsoft.R.Editor.Formatting {
             var caretPoint = _textView.GetCaretPosition(textBuffer);
             if (caretPoint.HasValue) {
                 var snapshot = textBuffer.CurrentSnapshot;
-                int lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
+                var lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Value.Position);
                 var line = snapshot.GetLineFromLineNumber(lineNumber + lineOffset);
 
                 var classifier = RClassifierProvider.GetRClassifier(textBuffer);
@@ -109,7 +132,7 @@ namespace Microsoft.R.Editor.Formatting {
 
         private static bool IsBetweenCurlyAndElse(ITextBuffer textBuffer, int position) {
             // Note that this is post-typing to the construct is now '}<line_break>else'
-            int lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
+            var lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
             if (lineNum < 1) {
                 return false;
             }
