@@ -171,6 +171,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class EditorAttribute : CategoryAttribute {
+                public EditorAttribute() : base("R.Editor") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class EditorTreeAttribute : CategoryAttribute {
                 public EditorTreeAttribute() : base("R.EditorTree") { }
             }

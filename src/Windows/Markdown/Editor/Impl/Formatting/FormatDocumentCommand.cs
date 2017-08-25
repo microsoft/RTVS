@@ -8,6 +8,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Editor;
 using Microsoft.R.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -55,21 +56,9 @@ namespace Microsoft.Markdown.Editor.Formatting {
 
         private static ITextRange GetParameterBlockRange(ITextSnapshot snapshot, ITextRange block) {
             var content = snapshot.GetText(block.ToSpan());
-
-            var start = content.IndexOf('{');
-            if (start < 0) {
-                return TextRange.FromBounds(block.Start, block.Start);
-            }
-
-            var bc = new BraceCounter<char>('{', '}');
-            var end = start;
-            bc.CountBrace(content[end]);
-            while (bc.Count > 0 && end < content.Length) {
-                end++;
-                bc.CountBrace(content[end]);
-            }
-
-            return TextRange.FromBounds(block.Start + start, block.Start + end + 1);
+            var range = content.GetScopeBlockRange();
+            range.Shift(block.Start);
+            return range;
         }
 
         private static ITextRange GetCodeBlockRange(ITextSnapshot snapshot, ITextRange block, ITextRange parametersRange) {
