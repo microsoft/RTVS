@@ -15,7 +15,6 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Debugging;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;

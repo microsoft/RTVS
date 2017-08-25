@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Host.Client.Debugging {
+namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IDebuggerModeTracker {
         bool IsInBreakMode { get; }
 

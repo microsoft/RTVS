@@ -2,21 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
     public sealed class InterruptRCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSession _session;
-        private readonly IServiceContainer _services;
+        private readonly IDebuggerModeTracker _debuggerModeTracker;
 
-        public InterruptRCommand(IRInteractiveWorkflowVisual interactiveWorkflow, IServiceContainer services) {
+        public InterruptRCommand(IRInteractiveWorkflowVisual interactiveWorkflow, IDebuggerModeTracker debuggerModeTracker) {
             _interactiveWorkflow = interactiveWorkflow;
             _session = interactiveWorkflow.RSession;
-            _services = services;
+            _debuggerModeTracker = debuggerModeTracker;
         }
 
         public CommandStatus Status {
@@ -24,7 +22,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 var status = CommandStatus.Supported;
                 if (_interactiveWorkflow.ActiveWindow == null) {
                     status |= CommandStatus.Invisible;
-                } else if (_session.CanInterrupt(_services)) {
+                } else if (CanInterrupt()) {
                     status |= CommandStatus.Enabled;
                 }
                 return status;
@@ -32,10 +30,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         }
 
         public async Task InvokeAsync() {
-            if (_session.CanInterrupt(_services)) {
+            if (CanInterrupt()) {
                 _interactiveWorkflow.Operations.ClearPendingInputs();
+                await _interactiveWorkflow.Operations.CancelAsync();
                 await _session.CancelAllAsync();
             }
         }
+        private bool CanInterrupt()
+            => _session.IsHostRunning && _session.IsProcessing && !_debuggerModeTracker.IsInBreakMode;
     }
 }

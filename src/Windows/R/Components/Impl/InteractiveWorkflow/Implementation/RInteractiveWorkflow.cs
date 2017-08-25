@@ -17,7 +17,6 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Debugging;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Repl;

@@ -14,7 +14,6 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Sql;
-using Microsoft.R.Host.Client.Debugging;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
@@ -43,6 +42,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var projectServiceAccessor = services.GetService<IProjectServiceAccessor>();
             var textViewTracker = services.GetService<IActiveWpfTextViewTracker>();
             var replTracker = services.GetService<IActiveRInteractiveWindowTracker>();
+            var debuggerModeTracker = services.GetService<IDebuggerModeTracker>();
             var pss = services.GetService<IProjectSystemServices>();
             var pcsp = services.GetService<IProjectConfigurationSettingsProvider>();
             var dbcs = services.GetService<IDbConnectionService>();
@@ -89,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new RunShinyAppCommand(interactiveWorkflow),
                 new StopShinyAppCommand(interactiveWorkflow),
 
-                CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, services)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, ui)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow, console)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdDeleteProfile, new DeleteProfileCommand(interactiveWorkflow)),

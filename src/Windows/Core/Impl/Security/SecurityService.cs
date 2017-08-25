@@ -43,7 +43,6 @@ namespace Microsoft.Common.Core.Security {
             var platform = _services.GetService<IPlatformServices>();
             if (Win32MessageBox.Show(platform.ApplicationWindowHandle, message,
                 Win32MessageBox.Flags.YesNo | Win32MessageBox.Flags.IconWarning) == Win32MessageBox.Result.Yes) {
-                certificate2.Reset();
                 return true;
             }
 

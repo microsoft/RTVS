@@ -165,9 +165,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             // If session is reading user input, do not terminate it
-            if (!Workflow.RSession.IsReadingUserInput && Workflow.RSession.CanInterrupt(Services)) {
+            if (!Workflow.RSession.IsReadingUserInput) {
                 Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
-                return true;
             }
 
             return false;
