@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Completions;
@@ -14,6 +13,7 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Expansions;
@@ -159,18 +159,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private bool HandleCancel(RCompletionController controller) {
-            if (!controller.HasActiveCompletionSession && !controller.HasActiveSignatureSession(TextView)) {
-                // If session is reading user input, do not terminate it
-                if (!Workflow.RSession.IsReadingUserInput) {
-                    Workflow.Operations.CancelAsync().DoNotWait();
-                    // Post interrupt command which knows if it can interrupt R or not
-                    Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
-                    return true;
-                }
-            } else {
+            if (controller.HasActiveCompletionSession || controller.HasActiveSignatureSession(TextView)) {
                 controller.DismissAllSessions();
                 return true;
             }
+
+            // If session is reading user input, do not terminate it
+            if (!Workflow.RSession.IsReadingUserInput && Workflow.RSession.CanInterrupt(Services)) {
+                Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+                return true;
+            }
+
             return false;
         }
 

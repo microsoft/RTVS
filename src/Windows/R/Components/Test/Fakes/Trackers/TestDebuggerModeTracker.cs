@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client.Debugging;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.Trackers {

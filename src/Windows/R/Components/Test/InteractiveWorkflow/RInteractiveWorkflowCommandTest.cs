@@ -92,7 +92,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
         [Category.Repl]
         public async Task InterruptRStatusTest() {
             var debuggerModeTracker = _services.GetService<TestDebuggerModeTracker>();
-            var command = new InterruptRCommand(_workflow, debuggerModeTracker);
+            var command = new InterruptRCommand(_workflow, _services);
             command.Should().BeInvisibleAndDisabled();
 
             await _workflow.RSessions.TrySwitchBrokerAsync(nameof(RInteractiveWorkflowCommandTest));

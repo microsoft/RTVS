@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
+using Microsoft.R.Host.Client.Debugging;
 using Microsoft.R.Host.Client.Extensions;
 using static System.FormattableString;
 
@@ -47,5 +49,13 @@ namespace Microsoft.R.Host.Client.Session {
 
         public static Task<string> GetFunctionCodeAsync(this IRSession session, string functionName, CancellationToken cancellationToken = default(CancellationToken)) 
             => session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal, cancellationToken);
+
+        /// <summary>
+        /// Determines if session is in a running, interruptable state.
+        /// </summary>
+        public static bool CanInterrupt(this IRSession session, IServiceContainer services) {
+            var dmt = services.GetService<IDebuggerModeTracker>();
+            return session.IsHostRunning && session.IsProcessing && !dmt.IsInBreakMode;
+        }
     }
 }

@@ -5,8 +5,8 @@ using System;
 using System.ComponentModel.Composition;
 using EnvDTE;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
+using Microsoft.R.Host.Client.Debugging;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {

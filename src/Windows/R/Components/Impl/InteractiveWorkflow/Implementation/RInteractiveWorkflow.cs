@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
@@ -18,6 +17,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Debugging;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -25,8 +25,6 @@ using Microsoft.VisualStudio.R.Package.Repl;
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveWorkflow : IRInteractiveWorkflowVisual {
         private readonly DisposableBag _disposableBag;
-        private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
-        private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRSettings _settings;
         private readonly RInteractiveWorkflowOperations _operations;
         private readonly IMainThread _mainThread;
@@ -56,8 +54,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IDebuggerModeTracker debuggerModeTracker
             , ICoreShell coreShell) {
 
-            _activeTextViewTracker = activeTextViewTracker;
-            _debuggerModeTracker = debuggerModeTracker;
+            var activeTextViewTracker1 = activeTextViewTracker;
             _settings = coreShell.GetService<IRSettings>();
             _mainThread = coreShell.MainThread();
 
@@ -72,16 +69,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(_settings, this);
             Plots = plotsProvider.CreatePlotManager(_settings, this, coreShell.FileSystem());
-            _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
+            _operations = new RInteractiveWorkflowOperations(this, debuggerModeTracker, Shell);
 
-            _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
+            activeTextViewTracker1.LastActiveTextViewChanged += LastActiveTextViewChanged;
             RSession.Disconnected += RSessionDisconnected;
 
             _settings.PropertyChanged += OnSettingsChanged;
 
             _disposableBag = DisposableBag.Create<RInteractiveWorkflow>()
                 .Add(() => _settings.PropertyChanged -= OnSettingsChanged)
-                .Add(() => _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
+                .Add(() => activeTextViewTracker1.LastActiveTextViewChanged -= LastActiveTextViewChanged)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
                 .Add(RSessions)
                 .Add(Operations)

@@ -13,6 +13,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Debugging;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
