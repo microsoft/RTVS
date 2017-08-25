@@ -30,26 +30,30 @@ namespace Microsoft.Common.Core.Security {
         public bool ValidateX509Certificate(X509Certificate certificate, string message) {
             var certificate2 = certificate as X509Certificate2;
             Debug.Assert(certificate2 != null);
-            if (certificate2 == null || !certificate2.Verify()) {
-                // Use native message box here since Win32 can show it from any thread.
-                // Parent window must be NULL since otherwise the call hangs since VS 
-                // is in modal state due to the progress dialog. Note that native message
-                // box appearance is a bit different from VS dialogs and matches OS theme
-                // rather than VS fonts and colors.
-                var platform = _services.GetService<IPlatformServices>();
-                if (Win32MessageBox.Show(platform.ApplicationWindowHandle, message,
-                    Win32MessageBox.Flags.YesNo | Win32MessageBox.Flags.IconWarning) == Win32MessageBox.Result.Yes) {
-                    certificate2.Reset();
-                    return true;
-                }
+
+            if (certificate2.Verify()) {
+                return true;
             }
+
+            // Use native message box here since Win32 can show it from any thread.
+            // Parent window must be NULL since otherwise the call hangs since VS 
+            // is in modal state due to the progress dialog. Note that native message
+            // box appearance is a bit different from VS dialogs and matches OS theme
+            // rather than VS fonts and colors.
+            var platform = _services.GetService<IPlatformServices>();
+            if (Win32MessageBox.Show(platform.ApplicationWindowHandle, message,
+                Win32MessageBox.Flags.YesNo | Win32MessageBox.Flags.IconWarning) == Win32MessageBox.Result.Yes) {
+                certificate2.Reset();
+                return true;
+            }
+
             return false;
         }
 
         public void DeleteCredentials(string authority) {
-            if(!NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0)) {
+            if (!NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0)) {
                 var err = Marshal.GetLastWin32Error();
-                if(err != NativeMethods.ERROR_NOT_FOUND) {
+                if (err != NativeMethods.ERROR_NOT_FOUND) {
                     throw new Win32Exception(err);
                 }
             }
@@ -66,7 +70,7 @@ namespace Microsoft.Common.Core.Security {
                 return string.Empty;
             }
         }
-        
+
         private Credentials ReadSavedCredentials(string authority) {
             using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
                 if (ch != null) {
@@ -130,7 +134,7 @@ namespace Microsoft.Common.Core.Security {
                 }
             }
         }
-        
+
         private static Credentials Save(string userName, SecureString password, string authority, bool save) {
             var creds = default(NativeMethods.CredentialData);
             try {
@@ -156,7 +160,7 @@ namespace Microsoft.Common.Core.Security {
             return Credentials.Create(userName, password);
         }
 
-        private static IntPtr CreatePasswordBuffer() 
+        private static IntPtr CreatePasswordBuffer()
             => Marshal.AllocCoTaskMem(NativeMethods.CREDUI_MAX_PASSWORD_LENGTH);
     }
 }
