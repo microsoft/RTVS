@@ -10,5 +10,6 @@ namespace Microsoft.Common.Core.OS {
         string MessageFromExitCode(int processExitCode);
         void Kill(IProcess process);
         void Kill(int pid);
+        bool IsProcessRunning(string processName);
     }
 }

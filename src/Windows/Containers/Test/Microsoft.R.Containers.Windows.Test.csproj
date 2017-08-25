@@ -76,6 +76,7 @@
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="WindowsDockerFinderTests.cs" />
     <Compile Include="WindowsContainerServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
