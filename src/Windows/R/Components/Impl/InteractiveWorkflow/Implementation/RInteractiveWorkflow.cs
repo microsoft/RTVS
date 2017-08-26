@@ -53,7 +53,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             , IDebuggerModeTracker debuggerModeTracker
             , ICoreShell coreShell) {
 
-            var activeTextViewTracker1 = activeTextViewTracker;
             _settings = coreShell.GetService<IRSettings>();
             _mainThread = coreShell.MainThread();
 
@@ -70,14 +69,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Plots = plotsProvider.CreatePlotManager(_settings, this, coreShell.FileSystem());
             _operations = new RInteractiveWorkflowOperations(this, debuggerModeTracker, Shell);
 
-            activeTextViewTracker1.LastActiveTextViewChanged += LastActiveTextViewChanged;
+            activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
             RSession.Disconnected += RSessionDisconnected;
 
             _settings.PropertyChanged += OnSettingsChanged;
 
             _disposableBag = DisposableBag.Create<RInteractiveWorkflow>()
                 .Add(() => _settings.PropertyChanged -= OnSettingsChanged)
-                .Add(() => activeTextViewTracker1.LastActiveTextViewChanged -= LastActiveTextViewChanged)
+                .Add(() => activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
                 .Add(RSessions)
                 .Add(Operations)

@@ -4,9 +4,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.AST;
@@ -19,11 +21,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// Provides list of functions from installed packages
     /// </summary>
     public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
-        private const int _asyncWaitTimeout = 1000;
+        private const int _asyncWaitTimeout = 500;
         private readonly IIntellisenseRSession _session;
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
+        private readonly ITaskService _taskService;
 
         private readonly object _functionGlyph;
         private readonly object _constantGlyph;
@@ -33,6 +36,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             _snippetInformationSource = serviceContainer.GetService<ISnippetInformationSourceProvider>();
             _packageIndex = serviceContainer.GetService<IPackageIndex>();
             _functionIndex = serviceContainer.GetService<IFunctionIndex>();
+            _taskService = serviceContainer.GetService<ITaskService>();
 
             var imageService = serviceContainer.GetService<IImageService>();
             _functionGlyph = imageService.GetImage(ImageType.Method);
@@ -48,7 +52,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var packages = GetPackages(context).ToList();
             var packageName = packages.Count == 1 ? packages[0].Name : null;
 
-                // Get list of functions in the package
+            // Get list of functions in the package
             foreach (var pkg in packages) {
                 Debug.Assert(pkg != null);
                 var functions = pkg.Functions;
@@ -84,8 +88,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
             }
 
             var t = GetAllFilePackagesAsync(context);
-            t.Wait(_asyncWaitTimeout);
-            return t.IsCompleted ? t.Result : Enumerable.Empty<IPackageInfo>();
+            return _taskService.Wait(t, CancellationToken.None, _asyncWaitTimeout)
+                        ? t.Result
+                        : Enumerable.Empty<IPackageInfo>();
         }
 
         /// <summary>
@@ -118,7 +123,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 }
 
                 if (start < end) {
-                   var  packageName = snapshot.GetText(TextRange.FromBounds(start, end));
+                    var packageName = snapshot.GetText(TextRange.FromBounds(start, end));
                     if (packageName.Length > 0) {
                         context.InternalFunctions = colons == 3;
                         var package = GetPackageByName(packageName);
