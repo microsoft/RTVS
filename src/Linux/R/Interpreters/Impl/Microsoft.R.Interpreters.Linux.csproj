@@ -21,7 +21,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
   </ItemGroup>
-
+  <Import Project="..\..\..\..\R.Settings.NetCore.props" />
   <Import Project="..\..\..\..\R.Settings.props" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

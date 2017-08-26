@@ -5,6 +5,7 @@
     <Error Condition = " '$(AssemblyName)'=='' " Text = "AssemblyName property must be specified before R.Settings.NetCore.props is referenced" />
   </Target>
   <PropertyGroup>
+    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
     <RootDirectory Condition="'$(RootDirectory)' == ''">$(MSBuildThisFileDirectory)..\</RootDirectory>
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)\$(AssemblyName)\</BaseIntermediateOutputPath>
