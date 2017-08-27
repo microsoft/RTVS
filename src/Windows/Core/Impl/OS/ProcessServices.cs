@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.Linq;
 
 namespace Microsoft.Common.Core.OS {
     public sealed class ProcessServices : IProcessServices {
@@ -19,5 +20,7 @@ namespace Microsoft.Common.Core.OS {
 
         public void Kill(IProcess process) => process.Kill();
         public void Kill(int pid) => (Process.GetProcessById(pid)).Kill();
+
+        public bool IsProcessRunning(string processName) => Process.GetProcessesByName(processName).Any();
     }
 }

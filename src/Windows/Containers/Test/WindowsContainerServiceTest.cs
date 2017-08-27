@@ -11,6 +11,8 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Containers.Docker;
 using Microsoft.UnitTests.Core.XUnit;
+using System.IO;
+using System;
 
 namespace Microsoft.R.Containers.Windows.Test {
     [ExcludeFromCodeCoverage]
@@ -23,6 +25,20 @@ namespace Microsoft.R.Containers.Windows.Test {
                 .AddService<IFileSystem, FileSystem>()
                 .AddService<IProcessServices, ProcessServices>()
                 .AddService<IRegistry, RegistryImpl>();
+        }
+
+        [Test]
+        public async Task BuildImageTest() {
+            var dockerFileContent = @"FROM ubuntu:16.10
+RUN apt-get update && apt-get upgrade -y";
+            var tempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tempDirectory);
+            var dockerFile = Path.Combine(tempDirectory, "Dockerfile");
+            File.WriteAllText(dockerFile, dockerFileContent);
+            var svc = new WindowsDockerService(_services);
+            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest");
+            (await svc.BuildImageAsync(param, CancellationToken.None)).Should().BeTrue();
+            Directory.Delete(tempDirectory, true);
         }
 
         [Test]

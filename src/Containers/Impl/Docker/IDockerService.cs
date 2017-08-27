@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Containers.Docker {
     public interface IDockerService {
+        Task<string> BuildImageAsync(string buildOptions, CancellationToken ct);
         Task<IEnumerable<IContainer>> ListContainersAsync(bool getAll = true, CancellationToken ct = default(CancellationToken));
         Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct);
         Task<JArray> InspectContainerAsync(IEnumerable<string> containerIds, CancellationToken ct);

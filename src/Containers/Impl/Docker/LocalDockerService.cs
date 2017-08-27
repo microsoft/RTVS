@@ -29,6 +29,11 @@ namespace Microsoft.R.Containers.Docker {
             // TODO: No instance of IActionLogWriter is exported in default IServiceContainer. Need scope support.
         }
 
+        public Task<string> BuildImageAsync(string buildOptions, CancellationToken ct) {
+            var command = "build";
+            return ExecuteCommandAsync(Invariant($"{command} {buildOptions}"), -1, true, ct);
+        }
+
         public async Task<IEnumerable<IContainer>> ListContainersAsync(bool getAll = true, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 

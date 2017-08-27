@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.Test.Registry {
     public sealed class RegistryMock : IRegistry {
         private readonly RegistryKeyMock[] _keys;
 
-        public RegistryMock(RegistryKeyMock[] keys) {
+        public RegistryMock(params RegistryKeyMock[] keys) {
             _keys = keys;
         }
 
