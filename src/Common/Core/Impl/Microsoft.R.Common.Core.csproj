@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.Composition" Version="1.0.31" />
+    <PackageReference Include="System.Composition" Version="1.1.0" />
     <PackageReference Include="System.Diagnostics.FileVersionInfo" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
