@@ -5,10 +5,10 @@
     <AssemblyName>Microsoft.R.Common.Core.Linux</AssemblyName>
     <RootNamespace>Microsoft.Common.Core</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
   </ItemGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
   <Import Project="..\..\..\R.Settings.props" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
