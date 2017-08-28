@@ -139,7 +139,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                 foreach (var c in connections) {
                     if (Uri.TryCreate(c.Path, UriKind.Absolute, out Uri uri)) {
                         if (uri.IsFile) {
-                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, uri.ToString());
+                            // Do not report local since they are reported via installed R
+                            // TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.LocalConnection, uri.ToString());
                         } else if (uri.IsLoopback) {
                             TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.ContainerConnection, uri.ToString());
                         } else {
@@ -171,7 +172,11 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 CompletionEnabled = _editorSettings.CompletionEnabled,
                                 SyntaxCheckInRepl = _editorSettings.SyntaxCheckInRepl,
                                 PartialArgumentNameMatch = _editorSettings.PartialArgumentNameMatch,
-                                RCommandLineArguments = _settings.LastActiveConnection?.RCommandLineArguments ?? string.Empty,
+
+                                // Do not report command line arguments - they may contain 
+                                // PII information and they are not that interesting anyway.
+                                // RCommandLineArguments = _settings.LastActiveConnection?.RCommandLineArguments ?? string.Empty,
+
                                 // R Linter
                                 LinterEnabled = _editorSettings.LintOptions.Enabled,
                                 LinterCamelCase = _editorSettings.LintOptions.CamelCase,
@@ -197,6 +202,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 LinterDoubleQuotes = _editorSettings.LintOptions.DoubleQuotes,
                                 LinterLineLength = _editorSettings.LintOptions.LineLength,
                                 LinterMaxLineLength = _editorSettings.LintOptions.MaxLineLength,
+
                                 // R formatter
                                 FormatterTabSize = _editorSettings.FormatOptions.TabSize,
                                 FormatterIndentSize = _editorSettings.FormatOptions.IndentSize,
@@ -207,6 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                                 FormatterSpaceAfterKeyword = _editorSettings.FormatOptions.SpaceAfterKeyword,
                                 FormatterSpaceBeforeCurly = _editorSettings.FormatOptions.SpaceBeforeCurly,
                                 FormatterSpacesAroundEquals = _editorSettings.FormatOptions.SpacesAroundEquals,
+
                                 // R Markdown
                                 MarkdownPreviewEnabled = _markdownSettings.EnablePreview,
                                 MarkdownPreviewRight = _markdownSettings.PreviewPosition == RMarkdownPreviewPosition.Right,
