@@ -332,7 +332,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[您可以前往 https://aka.ms/mrclient，查看 Microsoft 散發的增強版 R 。]D;]A;]D;]A;]]></Val>
+            <Val><![CDATA[您可以前往 https://aka.ms/mrclient，查看 Microsoft 散發的增強版 R。]D;]A;]D;]A;]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -379,7 +379,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30816.306]]></Val>
+        <Val><![CDATA[1.2.30827.920]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -400,7 +400,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30816.0306]]></Val>
+        <Val><![CDATA[1.2.30827.0920]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -436,7 +436,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30816.0306]]></Val>
+        <Val><![CDATA[1.2.30827.0920]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
