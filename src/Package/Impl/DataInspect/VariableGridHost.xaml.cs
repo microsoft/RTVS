@@ -10,6 +10,7 @@ using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -38,8 +39,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public void CleanUp() => _rSession.Mutated -= RSession_Mutated;
 
-        private void RSession_Mutated(object sender, System.EventArgs e) {
-            if (_evaluation != null) {
+        private void RSession_Mutated(object sender, EventArgs e) {
+            if (_evaluation != null && _services.GetService<IRSettings>().GridDynamicEvaluation) {
                 EvaluateAsync().DoNotWait();
             }
         }

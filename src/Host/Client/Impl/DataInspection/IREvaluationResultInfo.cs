@@ -45,6 +45,7 @@ namespace Microsoft.R.DataInspection {
         /// This property is filled automatically when the result is produced by <see cref="IRValueInfo.GetChildrenAsync"/>, 
         /// and is primarily useful in that scenario. See the documentation of that method for more information.
         /// </para>
+        /// </remarks>
         string Name { get; }
 
         /// <summary>

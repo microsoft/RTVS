@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -1910,6 +1910,33 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_GeneralCategory {
             get {
                 return ResourceManager.GetString("Settings_GeneralCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dynamic evaluation.
+        /// </summary>
+        public static string Settings_GridView_DynamicEvaluation {
+            get {
+                return ResourceManager.GetString("Settings_GridView_DynamicEvaluation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to By default View(x) takes snapshot of data as a data frame. This may consume subtantial amount of memory with large data sets. With dynamic evaluation the expression is evaluated every time grid refreshes in order to only fetch part of the data for display. However, if the variable changes the data in the grid will also change. This mode may be unsuitable for dplyr pipe expressions..
+        /// </summary>
+        public static string Settings_GridView_DynamicEvaluation_Description {
+            get {
+                return ResourceManager.GetString("Settings_GridView_DynamicEvaluation_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grid view.
+        /// </summary>
+        public static string Settings_GridViewCategory {
+            get {
+                return ResourceManager.GetString("Settings_GridViewCategory", resourceCulture);
             }
         }
         

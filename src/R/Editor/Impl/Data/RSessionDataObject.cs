@@ -108,7 +108,7 @@ namespace Microsoft.R.Editor.Data {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 if (valueEvaluation.HasChildren) {
-                    REvaluationResultProperties properties =
+                    var properties =
                         ExpressionProperty |
                         AccessorKindProperty |
                         TypeNameProperty |
@@ -129,7 +129,7 @@ namespace Microsoft.R.Editor.Data {
 
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {
             var result = new List<IRSessionDataObject>();
-            for (int i = 0; i < children.Count; i++) {
+            for (var i = 0; i < children.Count; i++) {
                 result.Add(new RSessionDataObject(children[i], _evaluateActiveBindings, GetMaxChildrenCount(children[i])));
             }
             return result;
@@ -149,12 +149,12 @@ namespace Microsoft.R.Editor.Data {
         private string GetValue(IRValueInfo v) {
             var value = v.Representation;
             if (value != null) {
-                Match match = Regex.Match(value, DataFramePrefix);
+                var match = Regex.Match(value, DataFramePrefix);
                 if (match.Success) {
                     return match.Groups[1].Value.Trim();
                 }
             }
-            return value != null ? value.ConvertCharacterCodes() : value;
+            return value?.ConvertCharacterCodes();
         }
 
         #region IRSessionDataObject
@@ -171,15 +171,10 @@ namespace Microsoft.R.Editor.Data {
 
         public IReadOnlyList<long> Dimensions { get; protected set; }
 
-        public bool IsHidden {
-            get { return Name.StartsWithOrdinal(HiddenVariablePrefix); }
-        }
+        public bool IsHidden => Name.StartsWithOrdinal(HiddenVariablePrefix);
 
-        public string Expression {
-            get {
-                return DebugEvaluation.Expression;
-            }
-        }
+        public string Expression => DebugEvaluation.Expression;
+
         #endregion
     }
 }

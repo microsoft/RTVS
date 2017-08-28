@@ -76,6 +76,8 @@ namespace Microsoft.R.Components.Test.Stubs {
         /// </summary>
         public bool ShowHostLoadMeter { get; set; }
 
+        public bool GridDynamicEvaluation { get; set; }
+
         public void Dispose() { }
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;

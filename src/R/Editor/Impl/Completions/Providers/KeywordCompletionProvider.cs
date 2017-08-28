@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-            if (!context.IsCaretInNameSpace()) {
+            if (!context.IsCaretInNamespace()) {
                 var infoSource = _snippetInformationSource?.InformationSource;
                 var keyWordGlyph = _imageService.GetImage(ImageType.Keyword);
 

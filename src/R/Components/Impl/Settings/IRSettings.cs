@@ -110,5 +110,17 @@ namespace Microsoft.R.Components.Settings {
         /// (CPU/Memory/Network load display).
         /// </summary>
         bool ShowHostLoadMeter { get; set; }
+
+        /// <summary>
+        /// Controls evaluation of the expression in the grid viewer.
+        /// </summary>
+        /// <remarks>
+        /// By default View(x) takes snapshot of data as a data frame. This may consume subtantial 
+        /// amount of memory with large data sets. With dynamic evaluation the expression is evaluated
+        /// every time grid refreshes in order to only fetch part of the data for display. However, if 
+        /// the variable changes the data in the grid will also change. This mode may be unsuitable 
+        /// for dplyr pipe expressions.
+        /// </remarks>
+        bool GridDynamicEvaluation { get; set; }
     }
 }

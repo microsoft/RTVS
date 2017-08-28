@@ -15,10 +15,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
         public static async Task<IGridData<string>> GetGridDataAsync(this IRSession rSession, string expression, GridRange? gridRange, ISortOrder sortOrder = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            string rows = gridRange?.Rows.ToRString();
-            string columns = gridRange?.Columns.ToRString();
-            string rowSelector = (sortOrder != null && !sortOrder.IsEmpty) ? sortOrder.GetRowSelector() : "";
-            string expr = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {rowSelector})");
+            var rows = gridRange?.Rows.ToRString();
+            var columns = gridRange?.Columns.ToRString();
+            var rowSelector = (sortOrder != null && !sortOrder.IsEmpty) ? sortOrder.GetRowSelector() : "";
+            var expr = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {rowSelector})");
 
             try {
                 return await rSession.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);

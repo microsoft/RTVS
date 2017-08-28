@@ -206,9 +206,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool ShowRToolbar { get; set; } = true;
         public bool ShowHostLoadMeter { get; set; }
+        public bool GridDynamicEvaluation { get; set; }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
-            List<string> list = new List<string>(WorkingDirectoryList ?? Enumerable.Empty<string>());
+            var list = new List<string>(WorkingDirectoryList ?? Enumerable.Empty<string>());
             if (!string.IsNullOrEmpty(newDirectory) && !list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
                 if (list.Count > MaxDirectoryEntries) {

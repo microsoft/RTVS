@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -38,14 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public bool CanSort { get; }
 
-        public Task<IGridData<string>> GetAsync(GridRange gridRange, ISortOrder sortOrder = null) {
-            var t = _session.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
-            if (t == null) {
-                // May happen when R host is not running
-                Trace.Fail(Invariant($"{nameof(VariableViewModel)} returned null grid data"));
-                return Task.FromResult<IGridData<string>>(null);
-            }
-            return t;
-        }
+        public Task<IGridData<string>> GetAsync(GridRange gridRange, ISortOrder sortOrder = null)
+            => _session.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
     }
 }

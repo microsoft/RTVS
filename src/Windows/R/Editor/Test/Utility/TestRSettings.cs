@@ -133,6 +133,8 @@ namespace Microsoft.R.Editor.Test.Utility {
 
         public bool ShowHostLoadMeter { get; set; }
 
+        public bool GridDynamicEvaluation { get; set; }
+
         #region IRPersistentSettings
         public void LoadSettings() { }
         public Task SaveSettingsAsync() => Task.CompletedTask;

@@ -210,6 +210,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set => _holder.SetValue(value);
         }
 
+        [LocCategory(nameof(Resources.Settings_GridViewCategory))]
+        [CustomLocDisplayName(nameof(Resources.Settings_GridView_DynamicEvaluation))]
+        [LocDescription(nameof(Resources.Settings_GridView_DynamicEvaluation_Description))]
+        [DefaultValue(false)]
+        public bool GridDynamicEvaluation {
+            get => _holder.GetValue(false);
+            set => _holder.SetValue(value);
+        }
+
         /// Overrides default methods since we provide custom settings storage
         public override void LoadSettingsFromStorage() { }
         public override void SaveSettingsToStorage() { }
