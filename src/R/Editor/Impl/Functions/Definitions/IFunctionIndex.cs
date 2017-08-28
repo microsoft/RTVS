@@ -38,6 +38,16 @@ namespace Microsoft.R.Editor.Functions {
         IFunctionInfo GetFunctionInfo(string functionName, string packageName = null);
 
         /// <summary>
+        /// Attempts to locate and cache function information. When it completes
+        /// it is possible to call <see cref="GetFunctionInfo"/> 
+        /// right away and get the function information.
+        /// </summary>
+        /// <param name="functionName">Function name</param>
+        /// <param name="packageName">Package name</param>
+        /// <returns></returns>
+        Task<IFunctionInfo> GetFunctionInfoAsync(string functionName, string packageName = null);
+
+        /// <summary>
         /// Attempts to determine package the function belongs to. Package name depends 
         /// on the order of loading. For example, 'select' may be from 'MASS' or from 'dplyr' 
         /// depending which package was loaded last. The function also retrieves and caches 

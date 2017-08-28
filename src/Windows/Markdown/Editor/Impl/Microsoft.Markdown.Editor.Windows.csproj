@@ -167,6 +167,10 @@
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
       <Name>Microsoft.R.Wpf</Name>

@@ -185,6 +185,7 @@
     <Compile Include="Completions\RCompletionTestUtilities.cs" />
     <Compile Include="Comments\RoxygenTest.cs" />
     <Compile Include="DragDrop\DragDropTest.cs" />
+    <Compile Include="Extensions\StringExtensionsTest.cs" />
     <Compile Include="Extensions\AssertionExtensions.cs" />
     <Compile Include="Extensions\RdAssertionExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />

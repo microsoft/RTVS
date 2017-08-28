@@ -31,16 +31,25 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
 
         [Test(ThreadType = ThreadType.UI)]
         public void Update() {
+            const string interactive = "interactive";
+
             var snapshot = Substitute.For<ITextSnapshot>();
             snapshot.GetText().Returns("Text **bold** text");
+
             _browser.UpdateBrowser(snapshot);
-
-            UIThreadHelper.Instance.DoEvents(1000);
-
             var htmlDocument = (HTMLDocument)_browser.Control.Document;
+
+            var ready = htmlDocument.readyState == interactive;
+            for (var i = 0; i < 20 && !ready; i++) {
+                ready = htmlDocument.readyState == interactive;
+                UIThreadHelper.Instance.DoEvents(100);
+            }
+
+            ready.Should().BeTrue();
+
             var element = htmlDocument.getElementById("___markdown-content___");
             var innerHtml = element.innerHTML.Trim();
-            innerHtml.Should().Be("<p>Text <strong>bold</strong> text</p>");
-         }
+            innerHtml.Should().Be("<p id=\"pragma-line-0\">Text <strong>bold</strong> text</p>");
+        }
     }
 }

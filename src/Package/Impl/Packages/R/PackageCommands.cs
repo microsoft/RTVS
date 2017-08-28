@@ -31,7 +31,6 @@ using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Windows;
-using Microsoft.VisualStudio.Utilities;
 using IServiceContainer = Microsoft.Common.Core.Services.IServiceContainer;
 using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuCommandShimFactory;
 
