@@ -60,12 +60,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private IGrid<string> _grid;
         public IGrid<string> Grid {
             get {
-                if (_grid == null) {
-                    _grid = new Grid<string>(
-                        new GridRange(new Range(RowStart - 1, RowCount), new Range(ColumnStart - 1, ColumnCount)),
-                        Values.Select(s => s.ConvertCharacterCodes()).ToList());
-                }
-
+                _grid = _grid ?? new Grid<string>(
+                    new GridRange(new Range(RowStart - 1, RowCount), new Range(ColumnStart - 1, ColumnCount)),
+                    Values.Select(s => s.ConvertCharacterCodes()).ToList());
                 return _grid;
             }
         }

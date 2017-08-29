@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             await TaskUtilities.SwitchToBackgroundThread();
 
             const int ScrollCommandUpperBound = 100;
-            List<ScrollCommand> batch = new List<ScrollCommand>();
+            var batch = new List<ScrollCommand>();
 
             while (true) {
                 var command = await _scrollCommands.ReceiveAsync(cancellationToken);
@@ -106,12 +106,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         // upperbound prevents infinite loop in case scroll commands is queued fast and endlessly, which happens only in theory
                         continue;
                     } else {
-                        for (int i = 0; i < batch.Count; i++) {
+                        for (var i = 0; i < batch.Count; i++) {
                             if (cancellationToken.IsCancellationRequested) {
                                 break;
                             }
 
-                            bool execute = true;
+                            var execute = true;
                             // if next command is same the current one, skip to next (new one) for optimization
                             if (i < (batch.Count - 1)) {
                                 if (IsRepeating(batch, i, RepeatSkip)) {

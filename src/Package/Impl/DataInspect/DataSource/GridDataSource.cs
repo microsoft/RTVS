@@ -11,22 +11,41 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
-    internal static class GridDataSource {
-        public static async Task<IGridData<string>> GetGridDataAsync(this IRSession rSession, string expression, GridRange? gridRange, ISortOrder sortOrder = null) {
+    internal sealed class GridDataSource {
+        private readonly IRSession _session;
+        private string _expression;
+        private string _rows;
+        private string _columns;
+        private string _rowSelector;
+        private GridData _gridData;
+
+        public GridDataSource(IRSession session) {
+            _session = session;
+        }
+
+        public async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var rows = gridRange?.Rows.ToRString();
             var columns = gridRange?.Columns.ToRString();
             var rowSelector = (sortOrder != null && !sortOrder.IsEmpty) ? sortOrder.GetRowSelector() : "";
-            var expr = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {rowSelector})");
 
+            if (_gridData != null && _expression == expression && _rows == rows && _columns == columns && _rowSelector == rowSelector) {
+                return _gridData;
+            }
+
+            var expr = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {rowSelector})");
             try {
-                return await rSession.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
+                _gridData = await _session.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
+                _expression = expression;
+                _rows = rows;
+                _columns = columns;
+                _rowSelector = rowSelector;
             } catch (RException ex) {
                 var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
                 VsAppShell.Current.Log().Write(LogVerbosity.Normal, MessageCategory.Error, message);
-                return null;
             }
+            return _gridData;
         }
     }
 }

@@ -14,10 +14,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal sealed class GridDataProvider : IGridProvider<string> {
         private readonly VariableViewModel _evaluation;
         private readonly IRSession _session;
+        private readonly GridDataSource _dataSource;
 
         public GridDataProvider(IRSession session, VariableViewModel evaluation) {
             _session = session;
             _evaluation = evaluation;
+            _dataSource = new GridDataSource(session);
 
             RowCount = evaluation.Dimensions[0];
             ColumnCount = evaluation.Dimensions.Count >= 2 ? evaluation.Dimensions[1] : 1;
@@ -37,6 +39,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool CanSort { get; }
 
         public Task<IGridData<string>> GetAsync(GridRange gridRange, ISortOrder sortOrder = null)
-            => _session.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
+            => _dataSource.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
     }
 }

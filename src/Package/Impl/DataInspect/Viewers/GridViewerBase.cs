@@ -11,6 +11,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal abstract class GridViewerBase : ViewerBase, IObjectDetailsViewer {
@@ -27,6 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public abstract bool CanView(IRValueInfo evaluation);
 
         public async Task ViewAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
+            expression = Invariant($"as.data.frame({expression})");
             var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str(), cancellationToken);
             if (evaluation != null) {
                 await Services.MainThread().SwitchToAsync(cancellationToken);

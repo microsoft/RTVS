@@ -44,9 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public void Add(ColumnSortOrder order) {
-            _sortOrderList.Add(order);
-        }
+        public void Add(ColumnSortOrder order) => _sortOrderList.Add(order);
 
         /// <remarks>
         /// Complete expression looks like:
