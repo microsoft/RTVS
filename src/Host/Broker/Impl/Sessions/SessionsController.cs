@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     return Task.FromResult<IActionResult>(new ApiErrorResult(BrokerApiError.InterpreterNotFound));
                 }
             } else {
-                interp = _interpManager.Interpreters.First();
+                interp = _interpManager.Interpreters.Latest();
             }
 
             try {
