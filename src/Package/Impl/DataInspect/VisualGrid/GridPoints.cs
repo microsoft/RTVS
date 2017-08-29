@@ -194,12 +194,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public double xPosition(long xIndex) {
             EnsureXPositions();
-            return xIndex > _columnCount ? double.NaN : _xPositions[xIndex] - HorizontalComputedOffset;
+            return xIndex < 0 || xIndex > _columnCount ? double.NaN : _xPositions[xIndex] - HorizontalComputedOffset;
         }
 
         public double yPosition(long yIndex) {
             EnsureYPositions();
-            return yIndex > _rowCount ? double.NaN : _yPositions[yIndex] - VerticalComputedOffset;
+            return yIndex < 0 || yIndex > _rowCount ? double.NaN : _yPositions[yIndex] - VerticalComputedOffset;
         }
 
         public double GetWidth(long columnIndex) => columnIndex < _columnCount ? _width[columnIndex] : 0;
