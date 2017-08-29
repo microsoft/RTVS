@@ -15,6 +15,11 @@ namespace Microsoft.R.Containers.Docker {
         public string Id { get; }
         public string Name { get; }
 
+        /// <summary>
+        /// Possible values for Docker Container:
+        /// "created", "restarting", "running", "removing", "paused", "exited", "dead"
+        /// </summary>
+        public string Status { get; }
         public bool IsShortId => Id.Length < 64;
 
         public IEnumerable<int> HostPorts { get; }
@@ -23,6 +28,11 @@ namespace Microsoft.R.Containers.Docker {
             Id = (string)containerObject["Id"];
             Name = GetContainerName(containerObject);
             HostPorts = GetHostPorts(containerObject);
+            Status = GetContainerStatus(containerObject);
+        }
+
+        private string GetContainerStatus(JToken containerObject) {
+            return ((dynamic)containerObject).State.Status;
         }
 
         private IEnumerable<int> GetHostPorts(JToken containerObject) {
