@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 if (IsRepeating(batch, i, RepeatSkip)) {
                                     execute = false;
                                 } else if (IsRepeating(batch, i, RepeatAccum)) {
-                                    batch[i + 1].Param = (double)batch[i + 1].Param + (double)batch[i].Param;
+                                    batch[i + 1].Param = Convert.ToDouble(batch[i + 1].Param) + Convert.ToDouble(batch[i].Param);
                                     execute = false;
                                 }
                             }
@@ -213,7 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case SetFocus:
-                    DataGrid.SelectedIndex = (GridIndex) cmd.Param;
+                    DataGrid.SelectedIndex = (GridIndex)cmd.Param;
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case HeaderFocusLeft:
@@ -225,7 +225,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     await BringFocusedHeaderIntoViewAsync(token);
                     return;
                 case SetHeaderFocus:
-                    ColumnHeader.SelectedIndex = (GridIndex) cmd.Param;
+                    ColumnHeader.SelectedIndex = (GridIndex)cmd.Param;
                     await BringFocusedHeaderIntoViewAsync(token);
                     return;
                 case Invalid:

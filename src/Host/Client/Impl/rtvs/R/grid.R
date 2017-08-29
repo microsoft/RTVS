@@ -30,6 +30,7 @@ grid_order <- function(x, ...) {
 
 grid_data <- function(x, rows, cols, row_selector) {
     # If it's a 1D vector, turn it into a single-column 2D matrix, then process as such.
+    x <- as.data.frame(x)
     d <- dim(x);
     if (is.null(d) || length(d) == 1) {
         dim(x) <- c(NROW(x), 1)
