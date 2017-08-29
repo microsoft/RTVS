@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.R.Components.Settings;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
@@ -88,6 +89,30 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
                 var actual = VisualTreeObject.Create(script.Control);
                 ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted02");
+            }
+        }
+
+        [CompositeTest]
+        [InlineData(false, "VariableGridSnapshot")]
+        [InlineData(true, "VariableGridDynamic")]
+        public async Task EvalModeTest(bool dynamicMode, string baselineName) {
+            using (var script = new ControlTestScript(typeof(VariableGridHost), Services)) {
+                using (var inter = await _hostScript.Session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("grid.test <- matrix(1:10)");
+                }
+                await PrepareControl(_hostScript, script, "grid.test");
+
+                Services.GetService<IRSettings>().GridDynamicEvaluation = dynamicMode;
+                using (var inter = await _hostScript.Session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("grid.test <- matrix(1:20)");
+                }
+
+                await UIThreadHelper.Instance.InvokeAsync(() => {
+                    DoIdle(500);
+                });
+
+                var actual = VisualTreeObject.Create(script.Control);
+                ViewTreeDump.CompareVisualTrees(_files, actual, baselineName);
             }
         }
 
