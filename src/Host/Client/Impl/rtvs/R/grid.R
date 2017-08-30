@@ -30,13 +30,8 @@ grid_order <- function(x, ...) {
 
 grid_data <- function(x, rows, cols, row_selector) {
     # If it's a 1D vector, turn it into a single-column 2D matrix, then process as such.
+    x <- as.data.frame(x)
     d <- dim(x);
-    if (is.null(d) || length(d) == 1) {
-        dim(x) <- c(NROW(x), 1)
-        vp <- grid_data(x, rows, cols, row_selector)
-        vp$is_1d <- TRUE;
-        return(vp);
-    }
 
     if (missing(rows)) {
         rows <- 1:d[[1]];
@@ -48,22 +43,6 @@ grid_data <- function(x, rows, cols, row_selector) {
     # Row names must be retrieved before slicing the data, because slicing can change the type -
     # for example, a sliced timeseries is just a vector or matrix, and so time() no longer works.
     rn <- row.names(x);
-    if (is.null(rn)) {
-        # If there are no explicit row names, try some alternatives
-        if (is.ts(x)) {
-            # For time series, use time().
-            rn <- tryCatch(time(x), error = function(e) NULL);
-        } else {
-            # For zoo objects, use zoo::index. Note that this package might not be installed,
-            # so both the type check and the index call are inside a try.
-            rn <- tryCatch(if (zoo::is.zoo(x)) zoo::index(x) else NULL, error = function(e) NULL);
-        }
-
-        # Make sure the length actually matches the number of rows.
-        if (length(rn) != nrow(x)) {
-            rn <- NULL;
-        } 
-    }
 
     # Slice the row names to match the data.
     if (!missing(row_selector)) {
@@ -123,7 +102,7 @@ grid_data <- function(x, rows, cols, row_selector) {
             else { paste0(substr(s, 1, max_length), '...', collapse = '') }
         })
     }), recursive = TRUE)
-
+    
     # Any names in the original data will flow through, but we don't want them.
     names(data) <- NULL;
 

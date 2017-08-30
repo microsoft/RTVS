@@ -261,6 +261,11 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
+        public static Task SetGridEvalModeAsync(this IRExpressionEvaluator evaluation, bool dynamicEval) {
+            var script = Invariant($"rtvs:::set_view_mode({(dynamicEval ? 1 : 0)})");
+            return evaluation.ExecuteAsync(script);
+        }
+
         public static Task<bool> QueryReloadAutosaveAsync(this IRExpressionEvaluator evaluation) =>
             evaluation.EvaluateAsync<bool>($"rtvs:::query_reload_autosave()", REvaluationKind.Reentrant);
 

@@ -62,7 +62,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
                 foreach (var function in functions) {
                     // Snippets are suppressed if user typed namespace
-                    if (!context.IsCaretInNameSpace() && infoSource != null) {
+                    if (!context.IsCaretInNamespace() && infoSource != null) {
                         if (infoSource.IsSnippet(function.Name)) {
                             continue;
                         }
@@ -83,7 +83,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #endregion
 
         private IEnumerable<IPackageInfo> GetPackages(IRIntellisenseContext context) {
-            if (context.IsCaretInNameSpace()) {
+            if (context.IsCaretInNamespace()) {
                 return GetSpecificPackage(context);
             }
 

@@ -160,6 +160,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 SetMirrorToSession().DoNotWait();
             } else if (e.PropertyName == nameof(IRSettings.RCodePage)) {
                 SetSessionCodePage().DoNotWait();
+            } else if (e.PropertyName == nameof(IRSettings.GridDynamicEvaluation)) {
+                RSession.SetGridEvalModeAsync(_settings.GridDynamicEvaluation).DoNotWait();
             }
         }
 
@@ -180,7 +182,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             foreach (var s in RSessions.GetSessions()) {
                 try {
                     await s.SetCodePageAsync(cp);
-                } catch (OperationCanceledException) { }
+                } catch (RException) { } catch (OperationCanceledException) { }
             }
         }
     }

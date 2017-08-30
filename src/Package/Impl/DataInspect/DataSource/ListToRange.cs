@@ -3,34 +3,28 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Adapter IList to IRange
     /// </summary>
     internal class ListToRange<T> : IRange<T> {
-        private IList<T> _list;
+        private readonly IList<T> _list;
 
         public ListToRange(Range range, IList<T> list) {
-            if (range.Count != list.Count) {
-                throw new ArgumentException("Range data cound doesn't match with range");
-            }
+            Check.Argument(nameof(range), () => range.Count <= list.Count);
 
             Range = range;
-
             _list = list;
         }
 
         public Range Range { get; }
 
         public T this[long index] {
-            get {
-                return _list[checked((int)(index - Range.Start))];
-            }
-
-            set {
-                _list[checked((int)( index - Range.Start))] = value;
-            }
+            get => _list[checked((int)(index - Range.Start))];
+            set => _list[checked((int)(index - Range.Start))] = value;
         }
     }
 }

@@ -26,23 +26,17 @@ namespace Microsoft.R.Components.Settings.Mirrors {
         /// <summary>
         /// Returns list of mirror names such as [Cloud 0] or 'Brazil'
         /// </summary>
-        public static string[] MirrorNames {
-            get { return _mirrors.Select(m => m.Name).ToArray(); }
-        }
+        public static string[] MirrorNames => _mirrors.Select(m => m.Name).ToArray();
 
         /// <summary>
         /// Retrieves list of CRAN mirror URLs
         /// </summary>
-        public static string[] MirrorUrls {
-            get { return _mirrors.Select(m => m.Url).ToArray(); }
-        }
+        public static string[] MirrorUrls => _mirrors.Select(m => m.Url).ToArray();
 
         /// <summary>
         /// Given CRAN mirror name returns its URL.
         /// </summary>
-        public static string UrlFromName(string name) {
-            return _mirrors.FirstOrDefault((x) => x.Name.EqualsIgnoreCase(name))?.Url;
-        }
+        public static string UrlFromName(string name) => _mirrors.FirstOrDefault((x) => x.Name.EqualsIgnoreCase(name))?.Url;
 
         /// <summary>
         /// Initiates download of the CRAN mirror list
@@ -50,9 +44,7 @@ namespace Microsoft.R.Components.Settings.Mirrors {
         /// </summary>
         public static void Download() {
             if (_mirrors.Length > 0) {
-                if (DownloadComplete != null) {
-                    DownloadComplete(null, EventArgs.Empty);
-                }
+                DownloadComplete?.Invoke(null, EventArgs.Empty);
                 return;
             }
 
@@ -106,9 +98,7 @@ namespace Microsoft.R.Components.Settings.Mirrors {
                 ReadCsv(content);
             }
 
-            if(DownloadComplete != null) {
-                DownloadComplete(null, EventArgs.Empty);
-            }
+            DownloadComplete?.Invoke(null, EventArgs.Empty);
         }
 
         private static void ReadCsv(string content) {

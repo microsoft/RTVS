@@ -3,27 +3,28 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.DataInspection;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     public abstract class ViewerBase {
         protected IDataObjectEvaluator Evaluator { get; }
-
-        protected ViewerBase(IDataObjectEvaluator evaluator) {
-             Evaluator = evaluator;
+        protected IServiceContainer Services { get; }
+        
+        protected ViewerBase(IServiceContainer services, IDataObjectEvaluator evaluator) {
+            Services = services;
+            Evaluator = evaluator;
         }
 
         protected async Task<IRValueInfo> EvaluateAsync(string expression, REvaluationResultProperties fields, string repr, CancellationToken cancellationToken) {
             var result = await Evaluator.EvaluateAsync(expression, fields, repr, cancellationToken);
-            var error = result as IRErrorInfo;
-            if (error != null) {
-                await VsAppShell.Current.SwitchToMainThreadAsync(cancellationToken);
-                VsAppShell.Current.ShowErrorMessage(error.ErrorText);
+
+            if (result is IRErrorInfo error) {
+                await Services.MainThread().SwitchToAsync(cancellationToken);
+                Services.UI().ShowErrorMessage(error.ErrorText);
                 return null;
             }
-
             return result as IRValueInfo;
         }
     }

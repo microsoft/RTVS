@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Host.Client.Test.Stubs;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -19,7 +21,10 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.Host.Client.Test.Session {
+    [Category.R.Session]
     public partial class RSessionTest : IDisposable {
+        private const int HostStartTimeout = 50000;
+
         private readonly IServiceContainer _services;
         private readonly TestMethodFixture _testMethod;
         private readonly IBrokerClient _brokerClient;
@@ -35,7 +40,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public void Lifecycle() {
             var disposed = false;
 
@@ -50,7 +54,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public void Lifecycle_DoubleDispose() {
             var disposed = false;
 
@@ -66,14 +69,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public async Task StartStop() {
             var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
 
             session.HostStarted.Should().NotBeCompleted();
             session.IsHostRunning.Should().BeFalse();
 
-            await session.StartHostAsync(new RHostStartupInfo(), null, 50000);
+            await session.StartHostAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
             session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
@@ -83,21 +85,20 @@ namespace Microsoft.R.Host.Client.Test.Session {
             session.HostStarted.Should().NotBeCompleted();
             session.IsHostRunning.Should().BeFalse();
 
-            await session.StartHostAsync(new RHostStartupInfo(), null, 50000);
+            await session.StartHostAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
             session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
         }
 
         [Test]
-        [Category.R.Session]
         public async Task Start_KillProcess_Start() {
             var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
 
             session.HostStarted.Should().NotBeCompleted();
             session.IsHostRunning.Should().BeFalse();
-            
-            await session.StartHostAsync(new RHostStartupInfo(), null, 50000);
+
+            await session.StartHostAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
             session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
@@ -109,21 +110,20 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             session.IsHostRunning.Should().BeFalse();
 
-            await session.StartHostAsync(new RHostStartupInfo(), null, 50000);
+            await session.StartHostAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
             session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
         }
 
         [Test]
-        [Category.R.Session]
         public async Task EnsureStarted_KillProcess_EnsureStarted() {
             var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
 
             session.HostStarted.Should().NotBeCompleted();
             session.IsHostRunning.Should().BeFalse();
 
-            await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
+            await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
             session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
@@ -135,19 +135,18 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             session.IsHostRunning.Should().BeFalse();
 
-            await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, 50000);
+            await session.EnsureHostStartedAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
             session.HostStarted.Should().BeRanToCompletion();
             session.IsHostRunning.Should().BeTrue();
         }
 
         [Test]
-        [Category.R.Session]
         public async Task DoubleStart() {
             var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
-            Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 50000);
+            Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, HostStartTimeout);
 
-            var tasks = await ParallelTools.InvokeAsync(4, i => start(), 50000);
+            var tasks = await ParallelTools.InvokeAsync(4, i => start(), HostStartTimeout);
             tasks.Should().ContainSingle(t => t.Status == TaskStatus.RanToCompletion);
 
             await session.HostStarted;
@@ -158,15 +157,14 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
                 var session = new RSession(i, _testMethod.FileSystemSafeName + i, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
-                await session.StartHostAsync(new RHostStartupInfo(), null, 50000);
+                await session.StartHostAsync(new RHostStartupInfo(), null, HostStartTimeout);
                 return session;
             };
 
-            var sessionsTasks = await ParallelTools.InvokeAsync(4, start, 50000);
+            var sessionsTasks = await ParallelTools.InvokeAsync(4, start, HostStartTimeout);
 
             sessionsTasks.Should().OnlyContain(t => t.Status == TaskStatus.RanToCompletion);
             var sessions = sessionsTasks.Select(t => t.Result).ToList();
@@ -178,7 +176,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public void StartRHostMissing() {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\", null, true), _services, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
@@ -188,7 +185,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public async Task StopBeforeInitialized() {
             var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
@@ -201,11 +197,10 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
         [Test]
-        [Category.R.Session]
         public async Task StopBeforeInitialized_RHostMissing() {
             var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\", null, true), _services, new NullConsole(), Environment.SystemDirectory);
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
-            Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo (), null, 10000);
+            Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();
 
             await session.StopHostAsync();
@@ -213,14 +208,35 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             await startTask;
         }
-        
+
+        private sealed class RHostOptionsTestCallback: RHostClientTestApp {
+            public override string CranUrlFromName(string name) => "https://test.cran.info";
+        }
+
         [Test]
-        [Category.R.Session]
+        public async Task StartupOptions() {
+            var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+            var info = new RHostStartupInfo(string.Empty, null, 1251, 80, false, false, false, true);
+
+            await session.StartHostAsync(info, new RHostOptionsTestCallback(), HostStartTimeout);
+            var result = await session.EvaluateAsync("rtvs:::view_env$view_mode");
+            result.Result.ToObject<int>().Should().Be(1);
+
+            result = await session.EvaluateAsync("Sys.getlocale()");
+            result.Result.ToObject<string>().Should().Contain("1251");
+
+            result = await session.EvaluateAsync("as.list(getOption('repos'))");
+            var urls = result.Result.ToObject<IDictionary<string, string>>();
+            Uri.TryCreate(urls.First().Value, UriKind.Absolute, out Uri uri).Should().BeTrue();
+            uri.Host.Should().Be("test.cran.info");
+        }
+
+        [Test]
         public async Task StopReentrantLoop() {
             var callback = new RSessionCallbackStub();
             var session = new RSession(0, _testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
 
-            await session.StartHostAsync(new RHostStartupInfo(), callback, 50000);
+            await session.StartHostAsync(new RHostStartupInfo(), callback, HostStartTimeout);
 
             var testMrs = new AsyncManualResetEvent();
             callback.PlotHandler = (message, ct) => {
@@ -242,13 +258,13 @@ namespace Microsoft.R.Host.Client.Test.Session {
         }
 
 
-        private static IBrokerClient CreateLocalBrokerClient(IServiceContainer services, string name) 
-            => new LocalBrokerClient(name, 
+        private static IBrokerClient CreateLocalBrokerClient(IServiceContainer services, string name)
+            => new LocalBrokerClient(name,
                 BrokerConnectionInfo.Create(null, "Test", new RInstallation().GetCompatibleEngines().FirstOrDefault()?.InstallPath, null, true),
-                services, 
+                services,
                 new NullConsole());
 
-        private static Task<int> GetRSessionProcessId(IRSession session) 
+        private static Task<int> GetRSessionProcessId(IRSession session)
             => session.EvaluateAsync<int>("Sys.getpid()", REvaluationKind.Normal);
     }
 }

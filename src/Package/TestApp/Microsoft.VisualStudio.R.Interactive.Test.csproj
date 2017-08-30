@@ -56,6 +56,8 @@
     <None Include="Files\VariableExplorer04.tree" />
     <None Include="Files\VariableGrid02.tree" />
     <AppDesigner Include="Properties\" />
+    <None Include="Files\VariableGridDynamic.tree" />
+    <None Include="Files\VariableGridSnapshot.tree" />
     <None Include="Files\VariableGridSorted01.tree" />
     <None Include="Files\VariableGridSorted02.tree" />
     <None Include="project.json" />

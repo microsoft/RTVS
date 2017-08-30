@@ -9,7 +9,8 @@ namespace Microsoft.R.Host.Client {
             , int terminalWidth = 80
             , bool enableAutosave = false
             , bool useRHostCommandLineArguments = false
-            , bool isInteractive = false) {
+            , bool isInteractive = false
+            , bool gridDynamicEvaluation = false) {
 
             CranMirrorName = cranMirrorName;
             WorkingDirectory = workingDirectory;
@@ -18,6 +19,7 @@ namespace Microsoft.R.Host.Client {
             EnableAutosave = enableAutosave;
             UseRHostCommandLineArguments = useRHostCommandLineArguments;
             IsInteractive = isInteractive;
+            GridDynamicEvaluation = gridDynamicEvaluation;
         }
 
         public string CranMirrorName { get; }
@@ -27,5 +29,6 @@ namespace Microsoft.R.Host.Client {
         public bool EnableAutosave { get; }
         public bool UseRHostCommandLineArguments { get; }
         public bool IsInteractive { get; }
+        public bool GridDynamicEvaluation { get; }
     }
 }

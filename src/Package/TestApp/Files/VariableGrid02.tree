@@ -440,7 +440,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[,1]"
+                                      "Value": "V1"
                                     }
                                   ],
                                   "Children": []
@@ -450,7 +450,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[,2]"
+                                      "Value": "V2"
                                     }
                                   ],
                                   "Children": []
@@ -460,7 +460,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[,3]"
+                                      "Value": "V3"
                                     }
                                   ],
                                   "Children": []
@@ -470,7 +470,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[,4]"
+                                      "Value": "V4"
                                     }
                                   ],
                                   "Children": []
@@ -480,7 +480,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[,5]"
+                                      "Value": "V5"
                                     }
                                   ],
                                   "Children": []
@@ -576,7 +576,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[1,]"
+                                      "Value": "1"
                                     }
                                   ],
                                   "Children": []
@@ -586,7 +586,7 @@
                                   "Properties": [
                                     {
                                       "Name": "Text",
-                                      "Value": "[2,]"
+                                      "Value": "2"
                                     }
                                   ],
                                   "Children": []

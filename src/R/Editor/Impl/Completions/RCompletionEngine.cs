@@ -115,12 +115,12 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 providers.Add(new UserVariablesCompletionProvider(_imageService));
                 providers.Add(new SnippetCompletionProvider(_services));
 
-                if (!context.IsCaretInNameSpace()) {
+                if (!context.IsCaretInNamespace()) {
                     providers.Add(new PackagesCompletionProvider(packageIndex, _imageService));
                 }
             }
 
-            if (!context.IsCaretInNameSpace()) {
+            if (!context.IsCaretInNamespace()) {
                 providers.Add(new WorkspaceVariableCompletionProvider(variablesProvider, _imageService));
             }
 

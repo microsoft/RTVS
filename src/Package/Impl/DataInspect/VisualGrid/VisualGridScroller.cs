@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             await TaskUtilities.SwitchToBackgroundThread();
 
             const int ScrollCommandUpperBound = 100;
-            List<ScrollCommand> batch = new List<ScrollCommand>();
+            var batch = new List<ScrollCommand>();
 
             while (true) {
                 var command = await _scrollCommands.ReceiveAsync(cancellationToken);
@@ -106,18 +106,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         // upperbound prevents infinite loop in case scroll commands is queued fast and endlessly, which happens only in theory
                         continue;
                     } else {
-                        for (int i = 0; i < batch.Count; i++) {
+                        for (var i = 0; i < batch.Count; i++) {
                             if (cancellationToken.IsCancellationRequested) {
                                 break;
                             }
 
-                            bool execute = true;
+                            var execute = true;
                             // if next command is same the current one, skip to next (new one) for optimization
                             if (i < (batch.Count - 1)) {
                                 if (IsRepeating(batch, i, RepeatSkip)) {
                                     execute = false;
                                 } else if (IsRepeating(batch, i, RepeatAccum)) {
-                                    batch[i + 1].Param = (double)batch[i + 1].Param + (double)batch[i].Param;
+                                    batch[i + 1].Param = Convert.ToDouble(batch[i + 1].Param) + Convert.ToDouble(batch[i].Param);
                                     execute = false;
                                 }
                             }
@@ -143,28 +143,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var suppress = false;
             switch (cmd.UpdateType) {
                 case LineUp:
-                    Points.VerticalOffset -= Points.AverageItemHeight * (int)cmd.Param;
+                    Points.VerticalOffset -= Points.AverageItemHeight * Convert.ToInt32(cmd.Param);
                     break;
                 case LineDown:
-                    Points.VerticalOffset += Points.AverageItemHeight * (int)cmd.Param;
+                    Points.VerticalOffset += Points.AverageItemHeight * Convert.ToInt32(cmd.Param);
                     break;
                 case LineLeft:
-                    Points.HorizontalOffset -= Points.AverageItemHeight * (int)cmd.Param;    // for horizontal line increment, use vertical size
+                    Points.HorizontalOffset -= Points.AverageItemHeight * Convert.ToInt32(cmd.Param);    // for horizontal line increment, use vertical size
                     break;
                 case LineRight:
-                    Points.HorizontalOffset += Points.AverageItemHeight * (int)cmd.Param;    // for horizontal line increment, use vertical size
+                    Points.HorizontalOffset += Points.AverageItemHeight * Convert.ToInt32(cmd.Param);    // for horizontal line increment, use vertical size
                     break;
                 case PageUp:
-                    Points.VerticalOffset -= Points.ViewportHeight * (int)cmd.Param;
+                    Points.VerticalOffset -= Points.ViewportHeight * Convert.ToInt32(cmd.Param);
                     break;
                 case PageDown:
-                    Points.VerticalOffset += Points.ViewportHeight * (int)cmd.Param;
+                    Points.VerticalOffset += Points.ViewportHeight * Convert.ToInt32(cmd.Param);
                     break;
                 case PageLeft:
-                    Points.HorizontalOffset -= Points.ViewportWidth * (int)cmd.Param;
+                    Points.HorizontalOffset -= Points.ViewportWidth * Convert.ToInt32(cmd.Param);
                     break;
                 case PageRight:
-                    Points.HorizontalOffset += Points.ViewportWidth * (int)cmd.Param;
+                    Points.HorizontalOffset += Points.ViewportWidth * Convert.ToInt32(cmd.Param);
                     break;
                 case SetHorizontalOffset: {
                         var (offset, thumbtrack) = ((double, ThumbTrack))cmd.Param;
@@ -179,7 +179,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                     break;
                 case MouseWheel:
-                    Points.VerticalOffset -= (int)cmd.Param;
+                    Points.VerticalOffset -= Convert.ToInt32(cmd.Param);
                     break;
                 case SizeChange:
                     Points.ViewportWidth = ((Size)cmd.Param).Width;
@@ -189,43 +189,43 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case Sort:
                     break;
                 case FocusUp:
-                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - (long)cmd.Param, 0), DataGrid.SelectedIndex.Column);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - Convert.ToInt32(cmd.Param), 0), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusDown:
-                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + (long)cmd.Param, DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + Convert.ToInt32(cmd.Param), DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusLeft:
-                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Max(DataGrid.SelectedIndex.Column - (long)cmd.Param, 0));
+                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Max(DataGrid.SelectedIndex.Column - Convert.ToInt32(cmd.Param), 0));
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusRight:
-                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Min(DataGrid.SelectedIndex.Column + (long)cmd.Param, DataProvider.RowCount - 1));
+                    DataGrid.SelectedIndex = new GridIndex(DataGrid.SelectedIndex.Row, Math.Min(DataGrid.SelectedIndex.Column + Convert.ToInt32(cmd.Param), DataProvider.RowCount - 1));
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusPageUp:
-                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - (long)cmd.Param, 0), DataGrid.SelectedIndex.Column);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Max(DataGrid.SelectedIndex.Row - Convert.ToInt32(cmd.Param), 0), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case FocusPageDown:
-                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + (long)cmd.Param, DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
+                    DataGrid.SelectedIndex = new GridIndex(Math.Min(DataGrid.SelectedIndex.Row + Convert.ToInt32(cmd.Param), DataProvider.RowCount - 1), DataGrid.SelectedIndex.Column);
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case SetFocus:
-                    DataGrid.SelectedIndex = (GridIndex) cmd.Param;
+                    DataGrid.SelectedIndex = (GridIndex)cmd.Param;
                     await BringFocusedCellIntoViewAsync(token);
                     return;
                 case HeaderFocusLeft:
-                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Max(ColumnHeader.SelectedIndex.Column - (long)cmd.Param, 0));
+                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Max(ColumnHeader.SelectedIndex.Column - Convert.ToInt32(cmd.Param), 0));
                     await BringFocusedHeaderIntoViewAsync(token);
                     return;
                 case HeaderFocusRight:
-                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Min(ColumnHeader.SelectedIndex.Column + (long)cmd.Param, DataProvider.RowCount - 1));
+                    ColumnHeader.SelectedIndex = new GridIndex(ColumnHeader.SelectedIndex.Row, Math.Min(ColumnHeader.SelectedIndex.Column + Convert.ToInt32(cmd.Param), DataProvider.RowCount - 1));
                     await BringFocusedHeaderIntoViewAsync(token);
                     return;
                 case SetHeaderFocus:
-                    ColumnHeader.SelectedIndex = (GridIndex) cmd.Param;
+                    ColumnHeader.SelectedIndex = (GridIndex)cmd.Param;
                     await BringFocusedHeaderIntoViewAsync(token);
                     return;
                 case Invalid:

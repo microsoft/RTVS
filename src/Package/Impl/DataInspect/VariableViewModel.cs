@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;

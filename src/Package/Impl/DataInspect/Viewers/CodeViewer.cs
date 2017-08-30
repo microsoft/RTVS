@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
@@ -14,18 +16,19 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Editor;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class CodeViewer : ViewerBase, IObjectDetailsViewer {
         private static readonly string[] _types = { "closure", "language" };
         private readonly IRInteractiveWorkflow _workflow;
+        private readonly IFileSystem _fs;
 
         [ImportingConstructor]
-        public CodeViewer(IRInteractiveWorkflowProvider workflowProvider, IDataObjectEvaluator evaluator) :
-            base(evaluator) {
+        public CodeViewer(ICoreShell coreShell, IRInteractiveWorkflowProvider workflowProvider, IDataObjectEvaluator evaluator) :
+            base(coreShell.Services, evaluator) {
             _workflow = workflowProvider.GetOrCreate();
+            _fs = coreShell.Services.FileSystem();
         }
 
         #region IObjectDetailsViewer
@@ -42,13 +45,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             var functionName = evaluation.Expression;
-            string functionCode = await GetFunctionCode(functionName, cancellationToken);
+            var functionCode = await GetFunctionCode(functionName, cancellationToken);
             if (!string.IsNullOrEmpty(functionCode)) {
 
-                string tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".r");
+                var tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".r");
                 try {
-                    if (File.Exists(tempFile)) {
-                        File.Delete(tempFile);
+                    if (_fs.FileExists(tempFile)) {
+                        _fs.DeleteFile(tempFile);
                     }
 
                     using (var sw = new StreamWriter(tempFile)) {
@@ -59,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
                     FileViewer.ViewFile(tempFile, functionName);
                     try {
-                        File.Delete(tempFile);
+                        _fs.DeleteFile(tempFile);
                     } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
                 } catch (IOException) { } catch (UnauthorizedAccessException) { }

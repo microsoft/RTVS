@@ -1377,4 +1377,13 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
   <data name="Settings_MarkdownCategory_Scroll" xml:space="preserve">
     <value>Scrolling</value>
   </data>
+  <data name="Settings_GridViewCategory" xml:space="preserve">
+    <value>Grid view</value>
+  </data>
+  <data name="Settings_GridView_DynamicEvaluation" xml:space="preserve">
+    <value>Dynamic evaluation</value>
+  </data>
+  <data name="Settings_GridView_DynamicEvaluation_Description" xml:space="preserve">
+    <value>By default View(x) takes snapshot of data as a data frame. This may consume subtantial amount of memory with large data sets. With dynamic evaluation the expression is evaluated every time grid refreshes in order to only fetch part of the data for display. However, if the variable changes the data in the grid will also change. This mode may be unsuitable for dplyr pipe expressions.</value>
+  </data>
 </root>

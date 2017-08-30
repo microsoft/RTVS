@@ -17,14 +17,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _componentID;
         private bool _startupComplete;
 
-        public VsIdleTimeService(IServiceContainer services) {
+        public VsIdleTimeService(IOleComponentManager oleComponentManager) {
             var crinfo = new OLECRINFO[1];
             crinfo[0].cbSize = (uint)Marshal.SizeOf(typeof(OLECRINFO));
             crinfo[0].grfcrf = (uint)_OLECRF.olecrfNeedIdleTime | (uint)_OLECRF.olecrfNeedPeriodicIdleTime;
             crinfo[0].grfcadvf = (uint)_OLECADVF.olecadvfModal | (uint)_OLECADVF.olecadvfRedrawOff | (uint)_OLECADVF.olecadvfWarningsOff;
             crinfo[0].uIdleTimeInterval = 200;
 
-            var oleComponentManager = services.GetService<IOleComponentManager>(typeof(SOleComponentManager));
             oleComponentManager.FRegisterComponent(this, crinfo, out _componentID);
         }
 

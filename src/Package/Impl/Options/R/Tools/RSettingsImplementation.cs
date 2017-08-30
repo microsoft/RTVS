@@ -51,6 +51,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private BrowserType _htmlBrowserType = BrowserType.External;
         private BrowserType _markdownBrowserType = BrowserType.External;
         private LogVerbosity _logVerbosity = LogVerbosity.Normal;
+        private bool _showRToolbar = true;
+        private bool _showLoadMeter;
+        private bool _dynamicGridEvaluation;
 
         public RSettingsImplementation(IServiceContainer services) {
             _services = services;
@@ -135,7 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 SetProperty(ref _workingDirectory, newDirectory);
                 UpdateWorkingDirectoryList(newDirectory);
 
-                
+
                 _services?.MainThread().Post(() => {
                     var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
                     shell.UpdateCommandUI(1);
@@ -204,11 +207,23 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set => SetProperty(ref _logVerbosity, value);
         }
 
-        public bool ShowRToolbar { get; set; } = true;
-        public bool ShowHostLoadMeter { get; set; }
+        public bool ShowRToolbar {
+            get => _showRToolbar;
+            set => SetProperty(ref _showRToolbar, value);
+        }
+
+        public bool ShowHostLoadMeter {
+            get => _showLoadMeter;
+            set => SetProperty(ref _showLoadMeter, value);
+        }
+
+        public bool GridDynamicEvaluation {
+            get => _dynamicGridEvaluation;
+            set => SetProperty(ref _dynamicGridEvaluation, value);
+        }
 
         private void UpdateWorkingDirectoryList(string newDirectory) {
-            List<string> list = new List<string>(WorkingDirectoryList ?? Enumerable.Empty<string>());
+            var list = new List<string>(WorkingDirectoryList ?? Enumerable.Empty<string>());
             if (!string.IsNullOrEmpty(newDirectory) && !list.Contains(newDirectory, StringComparer.OrdinalIgnoreCase)) {
                 list.Insert(0, newDirectory);
                 if (list.Count > MaxDirectoryEntries) {
@@ -223,7 +238,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public void LoadSettings() {
             _settingStorage.LoadPropertyValues(this);
             // Correct setting if stored value exceed currently set maximum
-            LogVerbosity = MathExtensions.Min<LogVerbosity>(LogVerbosity, _loggingPermissions.MaxVerbosity);
+            LogVerbosity = MathExtensions.Min(LogVerbosity, _loggingPermissions.MaxVerbosity);
             _loggingPermissions.CurrentVerbosity = LogVerbosity;
         }
 

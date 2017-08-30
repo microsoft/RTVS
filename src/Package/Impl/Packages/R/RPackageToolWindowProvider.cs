@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public ToolWindowPane CreateToolWindow(Guid toolWindowGuid, int id) 
-            => CreateVisualComponent(toolWindowGuid, id).Container as ToolWindowPane;
+            => CreateVisualComponent(toolWindowGuid, id)?.Container as ToolWindowPane;
 
         private IVisualComponent CreateVisualComponent(Guid toolWindowGuid, int id) {
             if (toolWindowGuid == RGuidList.ReplInteractiveWindowProviderGuid) {

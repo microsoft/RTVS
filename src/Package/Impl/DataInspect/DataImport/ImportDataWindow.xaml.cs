@@ -131,7 +131,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
-            string filePath = _services.FileDialog().ShowOpenFileDialog(Package.Resources.CsvFileFilter);
+            var filePath = _services.FileDialog().ShowOpenFileDialog(Package.Resources.CsvFileFilter);
             if (!string.IsNullOrEmpty(filePath)) {
                 SetFilePath(filePath);
             }
@@ -151,7 +151,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                 return;
             }
 
-            int cp = GetSelectedValueAsInt(EncodingComboBox);
+            var cp = GetSelectedValueAsInt(EncodingComboBox);
             PreviewFileContent(FilePathBox.Text, cp);
             await ConvertToUtf8(FilePathBox.Text, cp, false, MaxPreviewLines);
 
@@ -160,7 +160,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                 if (expression != null) {
                     try {
                         var session = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
-                        var grid = await session.GetGridDataAsync(expression, null);
+                        var ds = new GridDataSource(session);
+                        var grid = await ds.GetGridDataAsync(expression, null);
                         PopulateDataFramePreview(grid);
                         DataFramePreview.Visibility = Visibility.Visible;
                     } catch (Exception ex) {
@@ -190,7 +191,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         private void PopulateEncodingList() {
             var encodings = Encoding.GetEncodings().OrderBy(x => x.DisplayName);
             foreach (var enc in encodings) {
-                string item = Invariant($"{enc.DisplayName} (CP {enc.CodePage})");
+                var item = Invariant($"{enc.DisplayName} (CP {enc.CodePage})");
                 Encodings[item] = enc.CodePage;
             }
 
@@ -225,11 +226,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private string ReadFilePreview(string filePath, Encoding enc) {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             using (var sr = new StreamReader(filePath, enc, detectEncodingFromByteOrderMarks: true)) {
-                int readCount = 0;
+                var readCount = 0;
                 while (readCount < MaxPreviewLines) {
-                    string read = sr.ReadLine();
+                    var read = sr.ReadLine();
                     if (read == null) {
                         break;
                     }
@@ -254,8 +255,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         }
 
         private void PreviewFileContent(string file, int codePage) {
-            Encoding encoding = Encoding.GetEncoding(codePage);
-            string text = ReadFilePreview(file, encoding);
+            var encoding = Encoding.GetEncoding(codePage);
+            var text = ReadFilePreview(file, encoding);
             InputFilePreview.Text = text;
         }
 
@@ -273,10 +274,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
         private async Task ConvertToUtf8Worker(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            Encoding encoding = Encoding.GetEncoding(codePage);
+            var encoding = Encoding.GetEncoding(codePage);
             _utf8FilePath = Path.Combine(Path.GetTempPath(), Path.GetFileName(file) + ".utf8");
 
-            int lineCount = 0;
+            var lineCount = 0;
             double progressValue = 0;
 
             using (var sr = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true)) {
@@ -326,10 +327,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             var result = false;
 
             try {
-                int cp = GetSelectedValueAsInt(EncodingComboBox);
+                var cp = GetSelectedValueAsInt(EncodingComboBox);
 
                 var nRowsString = NRowsTextBox.Text;
-                int nrows = Int32.MaxValue;
+                var nrows = Int32.MaxValue;
                 if (!string.IsNullOrWhiteSpace(nRowsString)) {
                     if (!Int32.TryParse(nRowsString, out nrows) || nrows <= 0) {
                         _services.ShowErrorMessage(Package.Resources.ImportData_NRowsError);

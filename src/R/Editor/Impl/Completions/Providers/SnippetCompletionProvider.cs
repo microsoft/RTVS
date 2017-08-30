@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
             var completions = new List<ICompletionEntry>();
-            if (_snippetInformationSource?.InformationSource != null && !context.IsCaretInNameSpace()) {
+            if (_snippetInformationSource?.InformationSource != null && !context.IsCaretInNamespace()) {
                 foreach (ISnippetInfo info in _snippetInformationSource.InformationSource.Snippets) {
                     completions.Add(new EditorCompletionEntry(info.Name, info.Name, info.Description, _snippetGlyph));
                 }

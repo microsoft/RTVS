@@ -15,15 +15,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         private static bool _regenerateBaselineFiles = false;
 
         public static void CompareVisualTrees(DeployFilesFixture fixture, VisualTreeObject actual, string fileName) {
-            CompareVisualTreesImplementation(fixture, actual, fileName);
-        }
-
-        private static void CompareVisualTreesImplementation(DeployFilesFixture fixture, VisualTreeObject actual, string fileName) {
-            string testFileName = fileName + ".tree";
-            string testFilePath = fixture.GetDestinationPath(testFileName);
+            var testFileName = fileName + ".tree";
 
             var serializedActual = SerializeVisualTree(actual);
-            string baselineFilePath = fixture.GetSourcePath(testFileName);
+            var baselineFilePath = fixture.GetSourcePath(testFileName);
             if (_regenerateBaselineFiles) {
                 TestFiles.UpdateBaseline(baselineFilePath, serializedActual);
             } else {
@@ -33,8 +28,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
 
 
         private static string SerializeVisualTree(VisualTreeObject o) {
-            var serializer = new JsonSerializer();
-            serializer.Culture = CultureInfo.InvariantCulture;
+            var serializer = new JsonSerializer { Culture = CultureInfo.InvariantCulture };
             using (var sw = new StringWriter(CultureInfo.InvariantCulture)) {
                 using (var writer = new JsonTextWriter(sw)) {
                     writer.Culture = CultureInfo.InvariantCulture;
