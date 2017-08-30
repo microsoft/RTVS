@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -27,15 +28,17 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
+            _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
             VsWpfOverrides.Apply();
 
+            var oleCm = (IOleComponentManager)VsPackage.GetGlobalService(typeof(SOleComponentManager));
+            ConfigureIdleSource(oleCm);
+
             ConfigurePackageServices();
-            ConfigureIdleSource();
             CheckVsStarted();
         }
 
         private void CheckVsStarted() {
-            _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
             _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out var value);
             if (value is bool) {
                 if ((bool)value) {

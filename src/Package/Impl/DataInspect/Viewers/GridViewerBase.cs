@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.DataInspection;
+using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
@@ -28,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public abstract bool CanView(IRValueInfo evaluation);
 
         public async Task ViewAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) {
-            expression = Invariant($"as.data.frame({expression})");
             var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str(), cancellationToken);
             if (evaluation != null) {
                 await Services.MainThread().SwitchToAsync(cancellationToken);
@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 }
 
                 title = !string.IsNullOrEmpty(title) ? title : expression;
-                pane.SetEvaluation(new VariableViewModel(evaluation, Services), title);
+                pane.SetViewModel(new RSessionDataObject(evaluation, false), title);
             }
         }
         #endregion

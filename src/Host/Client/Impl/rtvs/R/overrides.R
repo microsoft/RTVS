@@ -1,6 +1,14 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
+view_env <- new.env() # Make sure this matches ViewEnvPrefix in VariableGridHost
+view_variable_num <- 1
+
+# 0 = cached, 1 = dynamic
+set_view_mode <- function(mode) {
+    view_env$view_mode <- mode 
+}
+
 view <- function(x, title) {
     if (is.function(x) || is.data.frame(x) || is.table(x) ||
         is.matrix(x) || is.list(x) || is.ts(x) || length(x) > 1) {
@@ -9,6 +17,16 @@ view <- function(x, title) {
         if (missing(title)) {
             title <- dep[1]
         }
+        
+        # Cache expression result in default mode.
+        # In dynamic mode pass expression to the main module for evaluation.
+        if((is.null(view_env$view_mode) || view_env$view_mode == 0) && !is.function(x)) {
+            var_name <- paste0("x", view_variable_num)
+            view_variable_num <- view_variable_num + 1
+            assign(var_name, as.data.frame(x), view_env)
+            dep <- paste0("rtvs:::view_env$", var_name)
+        }
+
         invisible(rtvs:::send_notification('!View', dep, title))
     } else {
         print(x)

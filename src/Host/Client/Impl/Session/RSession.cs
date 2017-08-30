@@ -446,6 +446,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                     await evaluator.OverrideFunctionAsync("setwd", "base");
                     await evaluator.SetFunctionRedirectionAsync();
+                    await evaluator.SetGridEvalModeAsync(startupInfo.GridDynamicEvaluation);
 
                     try {
                         await evaluator.OptionsSetWidthAsync(startupInfo.TerminalWidth);
