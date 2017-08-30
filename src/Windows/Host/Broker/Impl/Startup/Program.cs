@@ -34,9 +34,9 @@ namespace Microsoft.R.Host.Broker.Startup {
             configuration = Startup.LoadConfiguration(loggerFactory, configuration.GetValue<string>("config"), args);
             var loggingOptions = configuration.GetLoggingOptions();
 
-            if (startupOptions != null && loggingOptions != null) {
-                loggerFactory.AddFile(startupOptions.Name, loggingOptions.LogFolder);
-            }
+            var name = startupOptions != null ? startupOptions.Name : "RTVS";
+            var logFolder = loggingOptions != null ? loggingOptions.LogFolder : Environment.GetEnvironmentVariable("TEMP");
+            loggerFactory.AddFile(name, logFolder);
 
             var webHost = new WebHostBuilder()
                 .ConfigureServices(s => s.AddSingleton(configuration))
