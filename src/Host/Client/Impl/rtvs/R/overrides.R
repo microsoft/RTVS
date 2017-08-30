@@ -2,7 +2,6 @@
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
 view_env <- new.env() # Make sure this matches ViewEnvPrefix in VariableGridHost
-view_variable_num <- 1
 
 # 0 = cached, 1 = dynamic
 set_view_mode <- function(mode) {
@@ -21,8 +20,11 @@ view <- function(x, title) {
         # Cache expression result in default mode.
         # In dynamic mode pass expression to the main module for evaluation.
         if((is.null(view_env$view_mode) || view_env$view_mode == 0) && !is.function(x)) {
-            var_name <- paste0("x", view_variable_num)
-            view_variable_num <- view_variable_num + 1
+            if(is.null(view_env$view_variable_num)) {
+                view_env$view_variable_num = 1
+            }
+            var_name <- paste0("x", view_env$view_variable_num)
+            view_env$view_variable_num <- view_env$view_variable_num + 1
             assign(var_name, as.data.frame(x), view_env)
             dep <- paste0("rtvs:::view_env$", var_name)
         }
