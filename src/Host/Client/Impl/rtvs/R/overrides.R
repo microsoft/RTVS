@@ -21,7 +21,7 @@ view <- function(x, title) {
         # In dynamic mode pass expression to the main module for evaluation.
         if((is.null(view_env$view_mode) || view_env$view_mode == 0) && !is.function(x)) {
             if(is.null(view_env$view_variable_num)) {
-                view_env$view_variable_num = 1
+                view_env$view_variable_num <- 1
             }
             var_name <- paste0("x", view_env$view_variable_num)
             view_env$view_variable_num <- view_env$view_variable_num + 1
