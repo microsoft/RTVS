@@ -8,5 +8,6 @@ namespace Microsoft.R.Containers {
         string Id { get; }
         string Name { get; }
         IEnumerable<int> HostPorts { get; }
+        string Status { get; }
     }
 }
