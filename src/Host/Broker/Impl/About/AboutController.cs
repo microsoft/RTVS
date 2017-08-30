@@ -57,10 +57,8 @@ namespace Microsoft.R.Host.Broker.About {
                     VideoProcessor = ci.VideoProcessor
                 }).ToArray();
 
-            a.Interpreters = _interpManager.Interpreters.Select(x => Invariant($"[{x.Id}] {x.Name}")).ToArray();
-            if(a.Interpreters.Length > 0) {
-                a.Interpreters[0] = Invariant($"{a.Interpreters[0]} ({Resources.Default})");
-            }
+            var latest = _interpManager.Interpreters.Latest();
+            a.Interpreters = _interpManager.Interpreters.Select(x => x.Id == latest.Id ? Invariant($"[{x.Id}] {x.Name} ({Resources.Default})") : Invariant($"[{x.Id}] {x.Name}")).ToArray();
             return a;
         }
     }
