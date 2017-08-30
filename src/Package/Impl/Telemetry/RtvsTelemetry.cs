@@ -175,7 +175,6 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
 
                                 // Do not report command line arguments - they may contain 
                                 // PII information and they are not that interesting anyway.
-                                // RCommandLineArguments = _settings.LastActiveConnection?.RCommandLineArguments ?? string.Empty,
 
                                 // R Linter
                                 LinterEnabled = _editorSettings.LintOptions.Enabled,
