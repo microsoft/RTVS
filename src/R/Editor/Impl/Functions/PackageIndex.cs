@@ -10,17 +10,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
-using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Functions {
@@ -28,6 +29,7 @@ namespace Microsoft.R.Editor.Functions {
     /// Index of packages available from the R engine.
     /// </summary>
     public sealed class PackageIndex : IPackageIndex {
+        private readonly DisposableBag _disposableBag = new DisposableBag(nameof(PackageIndex));
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRSession _interactiveSession;
         private readonly IIntellisenseRSession _host;
@@ -61,6 +63,14 @@ namespace Microsoft.R.Editor.Functions {
             if (_workflow.RSession.IsHostRunning) {
                 BuildIndexAsync().DoNotWait();
             }
+
+            _disposableBag
+                .Add(() => _interactiveSession.PackagesInstalled -= OnPackagesChanged)
+                .Add(() => _interactiveSession.PackagesRemoved -= OnPackagesChanged)
+                .Add(() => _interactiveSession.Connected -= OnSessionConnected)
+                .Add(() => _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged)
+                .Add(_host);
+
         }
 
         private void OnSessionConnected(object sender, RConnectedEventArgs e) => BuildIndexAsync().DoNotWait();
@@ -164,15 +174,7 @@ namespace Microsoft.R.Editor.Functions {
         }
         #endregion
 
-        public void Dispose() {
-            if (_interactiveSession != null) {
-                _interactiveSession.PackagesInstalled -= OnPackagesChanged;
-                _interactiveSession.PackagesRemoved -= OnPackagesChanged;
-                _interactiveSession.Connected -= OnSessionConnected;
-                _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged;
-            }
-            _host?.Dispose();
-        }
+        public void Dispose() => _disposableBag.TryDispose();
 
         private async Task LoadInstalledPackagesIndexAsync() {
             var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
@@ -180,10 +182,16 @@ namespace Microsoft.R.Editor.Functions {
                 var name = package.Value<string>("Package");
                 var description = package.Value<string>("Description");
                 var version = package.Value<string>("Version");
-                var functions = package.Value<JArray>("Functions");
-                if (functions.HasValues) {
-                    var functionNames = functions.Children<JValue>().Select(v => (string)v.Value);
-                    _packages[name] = new PackageInfo(_host, name, description, version, functionNames);
+
+                var exportedFunctionNames = package.GetEnumerable<string>("ExportedFunctions");
+                var internalFunctionNames = package.GetEnumerable<string>("InternalFunctions");
+
+                var functions = exportedFunctionNames
+                        .Select(x => new PersistentFunctionInfo(x, false))
+                        .Concat(internalFunctionNames.Select(x => new PersistentFunctionInfo(x, true)));
+
+                if (functions.Any()) {
+                    _packages[name] = new PackageInfo(_host, name, description, version, functions);
                 } else {
                     _packages[name] = new PackageInfo(_host, name, description, version);
                 }

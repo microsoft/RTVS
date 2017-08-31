@@ -130,7 +130,7 @@ namespace Microsoft.R.Editor.Roxygen {
         private static string GenerateRoxygenBlock(string functionName, IFunctionDefinition fd, string lineBreak) {
             var sb = new StringBuilder();
 
-            var fi = fd.MakeFunctionInfo(functionName);
+            var fi = fd.MakeFunctionInfo(functionName, isInternal: false);
             if (fi != null && fi.Signatures.Count > 0) {
 
                 sb.Append(Invariant($"#' Title{lineBreak}"));

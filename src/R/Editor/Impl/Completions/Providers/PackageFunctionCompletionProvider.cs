@@ -52,6 +52,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var packages = GetPackages(context).ToList();
             var packageName = packages.Count == 1 ? packages[0].Name : null;
 
+            var caretInNamespace = !context.IsCaretInNamespace(out bool showInternalFunctions);
             // Get list of functions in the package
             foreach (var pkg in packages) {
                 Debug.Assert(pkg != null);
@@ -60,9 +61,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     continue;
                 }
 
-                foreach (var function in functions) {
+                foreach (var function in functions.Where(f => !f.IsInternal || f.IsInternal == showInternalFunctions)) {
                     // Snippets are suppressed if user typed namespace
-                    if (!context.IsCaretInNamespace() && infoSource != null) {
+                    if (!caretInNamespace && infoSource != null) {
                         if (infoSource.IsSnippet(function.Name)) {
                             continue;
                         }

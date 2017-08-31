@@ -237,7 +237,7 @@ namespace Microsoft.R.Editor.Functions {
                 } else {
                     // Add stub function info here to prevent subsequent calls
                     // for the same function as we already know the call will fail.
-                    _functionToInfoMap[qualifiedName] = new FunctionInfo(functionName);
+                    _functionToInfoMap[qualifiedName] = new FunctionInfo(functionName, true);
                 }
             }
         }

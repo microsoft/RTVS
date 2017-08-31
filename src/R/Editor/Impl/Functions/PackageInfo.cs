@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
@@ -20,33 +21,35 @@ namespace Microsoft.R.Editor.Functions {
     /// Represents R package installed on user machine
     /// </summary>
     internal sealed class PackageInfo : NamedItemInfo, IPackageInfo {
+        private const int Version = 2;
+
         /// <summary>
         /// Maps package name to a list of functions in the package.
         /// Used to extract function names and descriptions when
         /// showing list of functions available in the file.
         /// </summary>
-        private readonly ConcurrentBag<INamedItemInfo> _functions;
+        private readonly ConcurrentBag<IFunctionInfo> _functions;
         private readonly IIntellisenseRSession _host;
         private readonly IFileSystem _fs;
         private readonly string _version;
         private bool _saved;
 
         public PackageInfo(IIntellisenseRSession host, string name, string description, string version) :
-            this(host, name, description, version, Enumerable.Empty<string>()) { }
+            this(host, name, description, version, Enumerable.Empty<IPersistentFunctionInfo>()) { }
 
-        public PackageInfo(IIntellisenseRSession host, string name, string description, string version, IEnumerable<string> functionNames) :
+        public PackageInfo(IIntellisenseRSession host, string name, string description, string version, IEnumerable<IPersistentFunctionInfo> functions) :
             base(name, description, NamedItemType.Package) {
             _host = host;
             _fs = _host.Services.FileSystem();
             _version = version;
-            _functions = new ConcurrentBag<INamedItemInfo>(functionNames.Select(fn => new FunctionInfo(fn)));
+            _functions = new ConcurrentBag<IFunctionInfo>(functions.Select(fn => new FunctionInfo(fn.Name, fn.IsInternal)));
         }
 
         #region IPackageInfo
         /// <summary>
         /// Collection of functions in the package
         /// </summary>
-        public IEnumerable<INamedItemInfo> Functions => _functions;
+        public IEnumerable<IFunctionInfo> Functions => _functions;
 
         public void WriteToDisk() {
             if (!_saved) {
@@ -56,10 +59,11 @@ namespace Microsoft.R.Editor.Functions {
                     if (!_fs.DirectoryExists(dir)) {
                         _fs.CreateDirectory(dir);
                     }
-                    using (var file = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write)) {
+                    using (var file = new FileStream(filePath, FileMode.Truncate, FileAccess.Write)) {
                         using (var sw = new StreamWriter(file)) {
+                            sw.WriteLine(VersionString);
                             foreach (var f in _functions) {
-                                sw.WriteLine(f.Name);
+                                sw.WriteLine(Invariant($"`{f.Name}` {f.IsInternal}"));
                             }
                         }
                     }
@@ -72,38 +76,51 @@ namespace Microsoft.R.Editor.Functions {
         #endregion
 
         public async Task LoadFunctionsIndexAsync() {
-            var functionNames = await GetFunctionNamesAsync();
-            foreach (var functionName in functionNames) {
-                _functions.Add(new FunctionInfo(functionName));
+            var functions = await GetFunctionNamesAsync();
+            foreach (var function in functions) {
+                _functions.Add(new FunctionInfo(function));
             }
         }
 
-        private async Task<IEnumerable<string>> GetFunctionNamesAsync() {
+        private async Task<IEnumerable<IPersistentFunctionInfo>> GetFunctionNamesAsync() {
             var functions = TryRestoreFromCache();
             if (functions == null || !functions.Any()) {
                 try {
-                    var result = await _host.Session.PackagesFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
-                    functions = result.Children<JValue>().Select(v => (string)v.Value);
+                    var result = await _host.Session.PackageExportedFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
+                    var exportedFunctions = new HashSet<string>(result.Children<JValue>().Select(v => (string)v.Value));
+
+                    result = await _host.Session.PackageAllFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
+                    var allFunctions = result.Children<JValue>().Select(v => (string)v.Value);
+
+                    functions = allFunctions.Select(x => new PersistentFunctionInfo(x, !exportedFunctions.Contains(x)));
                 } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;
             }
-            return functions ?? Enumerable.Empty<string>();
+            return functions ?? Enumerable.Empty<IPersistentFunctionInfo>();
         }
 
         /// <summary>
         /// Attempts to locate cached function list for the package
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<string> TryRestoreFromCache() {
+        private IEnumerable<IPersistentFunctionInfo> TryRestoreFromCache() {
             var filePath = this.CacheFilePath;
             try {
                 if (_fs.FileExists(filePath)) {
-                    var list = new List<string>();
+                    var list = new List<IPersistentFunctionInfo>();
                     using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read)) {
                         using (var sr = new StreamReader(file)) {
+                            var s = sr.ReadLine();
+                            if(!s.EqualsOrdinal(VersionString)) {
+                                return null; // incompatible
+                            }
                             while (!sr.EndOfStream) {
-                                list.Add(sr.ReadLine().Trim());
+                                s = sr.ReadLine().Trim();
+                                if(!PersistentFunctionInfo.TryParse(s, out IPersistentFunctionInfo info)) { 
+                                    return null;
+                                }
+                                list.Add(info);
                             }
                         }
                     }
@@ -114,5 +131,6 @@ namespace Microsoft.R.Editor.Functions {
         }
 
         private string CacheFilePath => Path.Combine(_host.Services.GetService<IPackageIndex>().CacheFolderPath, Invariant($"{this.Name}_{_version}.functions"));
+        private string VersionString => Invariant($"Version: {Version}");
     }
 }
