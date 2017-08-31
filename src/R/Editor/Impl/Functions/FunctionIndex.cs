@@ -181,6 +181,8 @@ namespace Microsoft.R.Editor.Functions {
                 return null;
             }
 
+            // Make sure loaded packages collection is up to date
+            await _host.GetLoadedPackageNamesAsync();
             TryGetCachedFunctionInfo(functionName, ref packageName);
 
             packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);

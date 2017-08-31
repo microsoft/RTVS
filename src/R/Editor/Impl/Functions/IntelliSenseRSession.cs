@@ -142,6 +142,7 @@ namespace Microsoft.R.Editor.Functions {
             Debug.Assert(_updateTask != null);
             await _updateTask;
 
+            Debug.Assert(_loadedPackages != null);
             return _loadedPackages ?? Enumerable.Empty<string>();
         }
 

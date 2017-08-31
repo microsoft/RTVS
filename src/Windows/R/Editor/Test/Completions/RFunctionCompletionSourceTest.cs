@@ -69,6 +69,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("utils::", 7, "adist", "approximate string distance", false)]
         [InlineData("lm(utils::)", 10, "adist", "approximate string distance", false)]
         [InlineData("rtvs::", 6, "fetch_file", "used to download", true)]
+        [InlineData("utils:::", 7, "relist.factor", "approximate string distance", false)]
         public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription, bool realHost) {
             var hostScript = realHost ? new RHostScript(Services) : null;
             try {
@@ -88,6 +89,22 @@ namespace Microsoft.R.Editor.Test.Completions {
             } finally {
                 hostScript?.Dispose();
             }
+        }
+
+        [CompositeTest]
+        [InlineData("utils::", 7, "relist", "relist.factor")]
+        [InlineData("utils:::", 8, "relist.factor", "")]
+        public async Task InternalExternal(string content, int position, string expectedEntry, string notExpectedEntry) {
+            var packageName = await FunctionIndex.GetPackageNameAsync(expectedEntry);
+            packageName.Should().NotBeNull();
+
+            var completionSets = new List<CompletionSet>();
+            RCompletionTestUtilities.GetCompletions(Services, content, position, completionSets);
+            completionSets.Should().ContainSingle();
+
+            var entries = completionSets[0].Completions.Select(c => c.DisplayText).ToList();
+            entries.Should().Contain(expectedEntry);
+            entries.Should().NotContain(notExpectedEntry);
         }
 
         [Test]
