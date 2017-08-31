@@ -30,6 +30,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         private readonly object _functionGlyph;
         private readonly object _constantGlyph;
+        private readonly object _internalFunctionGlyph;
+        private readonly object _internalConstantGlyph;
 
         public PackageFunctionCompletionProvider(IServiceContainer serviceContainer) {
             _session = serviceContainer.GetService<IIntellisenseRSession>();
@@ -39,8 +41,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
             _taskService = serviceContainer.GetService<ITaskService>();
 
             var imageService = serviceContainer.GetService<IImageService>();
+
             _functionGlyph = imageService.GetImage(ImageType.Method);
+            _internalFunctionGlyph = imageService.GetImage(ImageType.Method, ImageSubType.Internal);
+
             _constantGlyph = imageService.GetImage(ImageType.Constant);
+            _internalConstantGlyph = imageService.GetImage(ImageType.Constant, ImageSubType.Internal);
         }
 
         #region IRCompletionListProvider
@@ -68,7 +74,9 @@ namespace Microsoft.R.Editor.Completions.Providers {
                             continue;
                         }
                     }
-                    var glyph = function.ItemType == NamedItemType.Constant ? _constantGlyph : _functionGlyph;
+                    var glyph = function.ItemType == NamedItemType.Constant
+                        ? function.IsInternal ? _internalConstantGlyph : _constantGlyph
+                        : function.IsInternal ? _internalFunctionGlyph : _functionGlyph;
                     var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, packageName, _functionIndex, context.Session);
                     completions.Add(completion);
                 }

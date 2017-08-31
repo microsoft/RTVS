@@ -4,7 +4,6 @@
 namespace Microsoft.Common.Core.Imaging {
     public enum ImageType {
         Keyword,
-        Function,
         Variable,
         Method,
         Constant,
