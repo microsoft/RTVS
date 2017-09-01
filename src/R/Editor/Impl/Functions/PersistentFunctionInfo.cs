@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Functions {
             if (!bool.TryParse(s.Substring(end + 1), out bool isInternal)) {
                 return false;
             }
-            info = new PersistentFunctionInfo(s.Substring(start + 1, end - start - 2), isInternal);
+            info = new PersistentFunctionInfo(s.Substring(start + 1, end - start - 1), isInternal);
             return true;
         }
     }
