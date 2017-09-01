@@ -16,12 +16,12 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.R.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
+using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Functions {
@@ -183,8 +183,8 @@ namespace Microsoft.R.Editor.Functions {
                 var description = package.Value<string>("Description");
                 var version = package.Value<string>("Version");
 
-                var exportedFunctionNames = package.GetEnumerable<string>("ExportedFunctions");
-                var internalFunctionNames = package.GetEnumerable<string>("InternalFunctions");
+                var exportedFunctionNames = GetEnumerable<string>(package, "ExportedFunctions");
+                var internalFunctionNames = GetEnumerable<string>(package, "InternalFunctions");
 
                 var functions = exportedFunctionNames
                         .Select(x => new PersistentFunctionInfo(x, false))
@@ -200,6 +200,11 @@ namespace Microsoft.R.Editor.Functions {
             if (!_packages.ContainsKey("rtvs")) {
                 _packages["rtvs"] = new PackageInfo(_host, "rtvs", "R Tools", "1.0");
             }
+        }
+
+        private static IEnumerable<T> GetEnumerable<T>(JToken token, string key) {
+            var array = token.Value<JArray>(key);
+            return array?.HasValues == true ? array.Children<JValue>().Select(v => (T)v.Value) : Enumerable.Empty<T>();
         }
 
         private async Task LoadRemainingPackagesFunctions() {

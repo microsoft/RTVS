@@ -163,12 +163,12 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<JArray> PackageExportedFunctionsNamesAsync(this IRExpressionEvaluator evaluation, string packageName, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
-            var script = Invariant($"rtvs:::package.exported.functions.names({packageName.ToRStringLiteral()}");
+            var script = Invariant($"rtvs:::package.exported.functions.names({packageName.ToRStringLiteral()})");
             return evaluation.EvaluateAsync<JArray>(script, kind, cancellationToken);
         }
 
         public static Task<JArray> PackageAllFunctionsNamesAsync(this IRExpressionEvaluator evaluation, string packageName, REvaluationKind kind = REvaluationKind.Normal, CancellationToken cancellationToken = default(CancellationToken)) {
-            var script = Invariant($"rtvs:::package.all.functions.names({packageName.ToRStringLiteral()}");
+            var script = Invariant($"rtvs:::package.all.functions.names({packageName.ToRStringLiteral()})");
             return evaluation.EvaluateAsync<JArray>(script, kind, cancellationToken);
         }
 

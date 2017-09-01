@@ -69,7 +69,6 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("utils::", 7, "adist", "approximate string distance", false)]
         [InlineData("lm(utils::)", 10, "adist", "approximate string distance", false)]
         [InlineData("rtvs::", 6, "fetch_file", "used to download", true)]
-        [InlineData("utils:::", 7, "relist.factor", "approximate string distance", false)]
         public async Task SpecificPackage(string content, int position, string expectedEntry, string expectedDescription, bool realHost) {
             var hostScript = realHost ? new RHostScript(Services) : null;
             try {
