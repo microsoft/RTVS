@@ -66,18 +66,6 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
                 }
             }
 
-            var completionBroker = _shell.GetService<ICompletionBroker>();
-            var sessions = completionBroker.GetSessions(textView);
-
-            var hasSpecialCompletions = sessions
-                .SelectMany(s => s.CompletionSets)
-                .SelectMany(cs => cs.Completions)
-                .Any(x => x.DisplayText[0] == openingBrace);
-
-            if(hasSpecialCompletions) {
-                return false;
-            }
-
             context = new BraceCompletionContext(_shell);
             return true;
         }

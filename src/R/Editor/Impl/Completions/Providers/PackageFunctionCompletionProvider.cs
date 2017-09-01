@@ -77,7 +77,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     var glyph = function.ItemType == NamedItemType.Constant
                         ? function.IsInternal ? _internalConstantGlyph : _constantGlyph
                         : function.IsInternal ? _internalFunctionGlyph : _functionGlyph;
-                    var completion = new RFunctionCompletionEntry(function.Name, function.Name.BacktickName(), function.Description, glyph, packageName, _functionIndex, context.Session);
+                    if(function.Name.IndexOf('`') >= 0) {
+
+                    }
+                    var completion = new RFunctionCompletionEntry(function.Name.RemoveBackticks(), function.Name.BacktickName(), function.Description, glyph, packageName, _functionIndex, context.Session);
                     completions.Add(completion);
                 }
             }

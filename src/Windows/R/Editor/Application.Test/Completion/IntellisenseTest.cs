@@ -594,10 +594,11 @@ e <- list(D=d, E=d)
                 PrimeIntellisenseProviders(script);
                 script.DoIdle(500);
 
-                script.Type("as.data.frame(iris3)$");
+                await Workflow.RSession.ExecuteAsync("df <- as.data.frame(iris3)\n");
+                script.Type("df$");
                 script.DoIdle(100);
-                script.Type("`p{TAB}");
-                script.EditorText.Should().Be("as.data.frame(iris3)$`Petal L..Setosa`");
+                script.Type("p{TAB}");
+                script.EditorText.Should().Be("df$`Petal L..Setosa`");
             }
         }
 

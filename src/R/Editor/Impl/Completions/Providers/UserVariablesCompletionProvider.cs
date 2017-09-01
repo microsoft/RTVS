@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var variables = scope.GetApplicableVariables(context.Position);
             foreach (var v in variables) {
                 var f = v.Value as RFunction;
-                var completion = new EditorCompletionEntry(v.Name, v.Name.BacktickName(), string.Empty, f != null ? _functionGlyph : _variableGlyph);
+                var completion = new EditorCompletionEntry(v.Name.RemoveBackticks(), v.Name.BacktickName(), string.Empty, f != null ? _functionGlyph : _variableGlyph);
                 completions.Add(completion);
             }
 
