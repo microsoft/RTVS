@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 using Microsoft.VisualStudio.Text.Editor;
@@ -47,22 +49,35 @@ namespace Microsoft.R.Editor.Completions.AutoCompletion {
         /// was a valid point in the buffer to start a <see cref="IBraceCompletionSession"/>.
         /// </returns>
         public bool TryCreateContext(ITextView textView, SnapshotPoint openingPoint, char openingBrace, char closingBrace, out IBraceCompletionContext context) {
+            context = null;
+
             var document = openingPoint.Snapshot.TextBuffer.GetService<IREditorDocument>();
             if (document != null) {
                 var ast = document.EditorTree.AstRoot;
 
                 // We don't want to complete inside strings
                 if (ast.IsPositionInsideString(openingPoint.Position)) {
-                    context = null;
                     return false;
                 }
 
                 // We don't want to complete inside comments
                 if (document.IsPositionInComment(openingPoint.Position)) {
-                    context = null;
                     return false;
                 }
             }
+
+            var completionBroker = _shell.GetService<ICompletionBroker>();
+            var sessions = completionBroker.GetSessions(textView);
+
+            var hasSpecialCompletions = sessions
+                .SelectMany(s => s.CompletionSets)
+                .SelectMany(cs => cs.Completions)
+                .Any(x => x.DisplayText[0] == openingBrace);
+
+            if(hasSpecialCompletions) {
+                return false;
+            }
+
             context = new BraceCompletionContext(_shell);
             return true;
         }

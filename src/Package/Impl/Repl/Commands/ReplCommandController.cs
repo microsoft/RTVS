@@ -166,6 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             // If session is reading user input, do not terminate it
             if (!Workflow.RSession.IsReadingUserInput) {
+                Workflow.Operations.ClearPendingInputs();
                 Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
             }
 
