@@ -152,7 +152,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(Services, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
                 var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                var settings = Workflow.Shell.GetService<IRSettings>();
+                var settings = Workflow.Services.GetService<IRSettings>();
                 settings.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
                 script.DoIdle(100);

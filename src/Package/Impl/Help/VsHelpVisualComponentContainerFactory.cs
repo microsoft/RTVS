@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         public IVisualComponentContainer<IHelpVisualComponent> GetOrCreate(int instanceId) {
-            return GetOrCreate(instanceId, i => new HelpWindowPane(_coreShell.Services));
+            return GetOrCreate(instanceId, () => new HelpWindowPane(_coreShell.Services));
         }
     }
 }

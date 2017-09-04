@@ -49,7 +49,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var settings = services.GetService<IRSettings>();
             var ui = services.UI();
             var shell = services.GetService<ICoreShell>();
-            var console = new InteractiveWindowConsole(interactiveWorkflow);
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(services),
@@ -91,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdInterruptR, new InterruptRCommand(interactiveWorkflow, debuggerModeTracker)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdTerminateR, new TerminateRCommand(interactiveWorkflow, ui)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow, console)),
+                CreateRCmdSetCommand(RPackageCommandId.icmdSessionInformation, new SessionInformationCommand(interactiveWorkflow)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdDeleteProfile, new DeleteProfileCommand(interactiveWorkflow)),
 
                 new ResetReplCommand(interactiveWorkflow),
@@ -116,14 +115,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),
                 new ShowToolWindowCommand<HistoryWindowPane>(RPackageCommandId.icmdShowHistoryWindow),
-                new ShowToolWindowCommand<ConnectionManagerWindowPane>(RPackageCommandId.icmdShowConnectionsWindow),
-                new ShowToolWindowCommand<PackageManagerWindowPane>(RPackageCommandId.icmdShowPackagesWindow),
+                new ShowToolWindowCommand<ConnectionManagerToolWindow>(RPackageCommandId.icmdShowConnectionsWindow),
+                new ShowToolWindowCommand<PackageManagerToolWindow>(RPackageCommandId.icmdShowPackagesWindow),
                 new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
 
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new GotoEditorWindowCommand(textViewTracker, services),
-                new GotoSolutionExplorerCommand(shell),
+                new GotoSolutionExplorerCommand(services),
 
                 // Plot commands
                 CreateRCmdSetCommand(RPackageCommandId.icmdNewPlotWindow, new PlotDeviceNewCommand(interactiveWorkflow)),

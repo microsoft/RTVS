@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdDeleteSelectedHistoryEntries, false) {
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);
-            _ui = _interactiveWorkflow.Shell.UI();
+            _ui = _interactiveWorkflow.Services.UI();
         }
 
         public override CommandStatus Status(Guid guid, int id) {

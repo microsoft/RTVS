@@ -271,14 +271,12 @@
     <Compile Include="Shell\Services\VsTaskService.cs" />
     <Compile Include="Shell\Editor\VsEditorUndoAction.cs" />
     <Compile Include="Sql\Services\DacPackageServicesProvider.cs" />
+    <Compile Include="ToolWindows\ViewContainerToolWindow.cs" />
     <Compile Include="ToolWindows\PlotHistoryWindowPane.cs" />
     <Compile Include="ProjectSystem\Commands\CopyRemoteItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetAsStartUpRScriptCommand.cs" />
     <Compile Include="ProjectSystem\Definitions\IRProjectPropertiesExtensions.cs" />
-    <Compile Include="ToolWindows\ConnectionManagerWindowPane.cs" />
-    <Compile Include="ToolWindows\VsConnectionManagerVisualProvider.cs" />
-    <Compile Include="ToolWindows\VsRPackageManagerVisualComponent.cs" />
-    <Compile Include="ToolWindows\PackageManagerWindowPane.cs" />
+    <Compile Include="ToolWindows\ViewContainerToolWindows.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
     <Compile Include="ToolWindows\PlotDeviceWindowPane.cs" />
@@ -371,6 +369,8 @@
     <Compile Include="Sql\Extensions\SProcFileExtensions.cs" />
     <Compile Include="Sql\Publish\SqlTelemetryEvents.cs" />
     <Compile Include="StatusBar\VsStatusBar.cs" />
+    <Compile Include="ToolWindows\VsRInteractiveWorkflowToolWindowService.cs" />
+    <Compile Include="ToolWindows\ViewContainerToolWindowFactory.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Utilities\VsUIShellExtensions.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />

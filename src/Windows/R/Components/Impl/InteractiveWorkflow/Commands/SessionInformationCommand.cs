@@ -19,9 +19,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly IConsole _console;
 
-        public SessionInformationCommand(IRInteractiveWorkflowVisual interactiveWorkflow, IConsole console) {
+        public SessionInformationCommand(IRInteractiveWorkflowVisual interactiveWorkflow) {
             _interactiveWorkflow = interactiveWorkflow;
-            _console = console;
+            _console = interactiveWorkflow.Console;
 
             _interactiveWorkflow.RSessions.BrokerChanged += OnBrokerChanged;
             _interactiveWorkflow.RSession.Disposed += OnRSessionDisposed;
@@ -125,7 +125,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
 
             _console.WriteError(sb.ToString());
             if (reportTelemetry) {
-                var telemetry = _interactiveWorkflow.Shell.GetService<ITelemetryService>();
+                var telemetry = _interactiveWorkflow.Services.GetService<ITelemetryService>();
                 foreach (var name in aboutHost.Interpreters) {
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
                     telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.Version);

@@ -330,6 +330,12 @@
   <data name="ConnectionManager_LocalConnections_Tooltip" xml:space="preserve">
     <value>Local R installations</value>
   </data>
+  <data name="ConnectionManager_LocalDockerConnections" xml:space="preserve">
+    <value>Local Docker</value>
+  </data>
+  <data name="ConnectionManager_LocalDockerConnections_Tooltip" xml:space="preserve">
+    <value>Local Docker Connections</value>
+  </data>
   <data name="ConnectionManager_RemoteConnections" xml:space="preserve">
     <value>Remote</value>
   </data>
@@ -359,6 +365,9 @@
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
     <value>Add</value>
+  </data>
+  <data name="ConnectionManager_ShowContainers" xml:space="preserve">
+    <value>Containers</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>
@@ -432,6 +441,39 @@ If you want to delete all data on the remote machine you must delete your user p
   </data>
   <data name="ConnectionManager_RemoveConnectionConfirmation" xml:space="preserve">
     <value>Are you sure you want to remove the '{0}' connection?</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="ContainerManager_ShowWorkspaces" xml:space="preserve">
+    <value>Workspaces</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker_UserName" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="ContainerManager_CreateTooltip" xml:space="preserve">
+    <value>Create new docker container</value>
+  </data>
+  <data name="ContainerManager_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ContainerManager_StartTooltip_Format" xml:space="preserve">
+    <value>Start container '{0}'</value>
+  </data>
+  <data name="ContainerManager_StopTooltip_Format" xml:space="preserve">
+    <value>Stop container '{0}'</value>
+  </data>
+  <data name="ContainerManager_DeleteTooltip_Format" xml:space="preserve">
+    <value>Delete container '{0}'</value>
   </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
     <value>Are you sure you want to remove all plots from {0}?</value>

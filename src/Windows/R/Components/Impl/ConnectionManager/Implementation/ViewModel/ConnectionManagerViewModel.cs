@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -24,29 +26,34 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private readonly IRSettings _settings;
         private readonly IRInstallationService _installationService;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
+        private readonly BatchObservableCollection<IConnectionViewModel> _localDockerConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private IConnectionViewModel _editedConnection;
         private IConnectionViewModel _testingConnection;
         private bool _isEditingNew;
         private bool _hasLocalConnections;
 
-        public ConnectionManagerViewModel(IConnectionManager connectionManager, IServiceContainer services) :
-            base(connectionManager, services) {
+        public ConnectionManagerViewModel(IServiceContainer services) :
+            base(services) {
             _ui = services.UI();
             _settings = services.GetService<IRSettings>();
             _installationService = services.GetService<IRInstallationService>();
 
-            _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
-            RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
-
             _localConnections = new BatchObservableCollection<IConnectionViewModel>();
             LocalConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localConnections);
 
-            IsConnected = connectionManager.IsConnected;
+            _localDockerConnections = new BatchObservableCollection<IConnectionViewModel>();
+            LocalDockerConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localDockerConnections);
+
+            _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
+            RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
+
+            IsConnected = ConnectionManager.IsConnected;
             UpdateConnections();
         }
 
         public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
+        public ReadOnlyObservableCollection<IConnectionViewModel> LocalDockerConnections { get; }
         public ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; }
 
         public IConnectionViewModel EditedConnection {
@@ -105,6 +112,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             EditedConnection = null;
             IsEditingNew = false;
         }
+
+        public void ShowContainers() => Services.GetService<IRInteractiveWorkflowToolWindowService>().Containers().Show(true, true);
 
         public void BrowseLocalPath(IConnectionViewModel connection) {
             Services.MainThread().Assert();
@@ -307,18 +316,26 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateConnections();
         }
 
-        private void UpdateConnections() {
+        protected override void UpdateConnections() {
             var selectedConnectionName = EditedConnection?.Name;
 
-            _localConnections.ReplaceWith(ConnectionManager.RecentConnections
-                .Where(c => !c.IsRemote)
-                .Select(CreateConnectionViewModel)
-                .OrderBy(c => c.Name));
-
-            _remoteConnections.ReplaceWith(ConnectionManager.RecentConnections
-                .Where(c => c.IsRemote)
-                .Select(CreateConnectionViewModel)
-                .OrderBy(c => c.Name));
+            using (_localConnections.StartBatchUpdate())
+            using (_localDockerConnections.StartBatchUpdate())
+            using (_remoteConnections.StartBatchUpdate()) {
+                _localConnections.Clear();
+                _localDockerConnections.Clear();
+                _remoteConnections.Clear();
+                foreach (var connection in ConnectionManager.RecentConnections.OrderBy(c => c.Name)) {
+                    var cvm = CreateConnectionViewModel(connection);
+                    if (connection.IsRemote) {
+                        _remoteConnections.Add(cvm);
+                    } else if (connection.IsDocker) {
+                        _localDockerConnections.Add(cvm);
+                    } else {
+                        _localConnections.Add(cvm);
+                    }
+                }
+            }
 
             var editedConnection = RemoteConnections.FirstOrDefault(i => i.Name == selectedConnectionName);
             if (editedConnection != null) {
@@ -336,7 +353,5 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 IsRunning = isActive && ConnectionManager.IsRunning
             };
         }
-
-        protected override void ConnectionStateChanged() => UpdateConnections();
     }
 }

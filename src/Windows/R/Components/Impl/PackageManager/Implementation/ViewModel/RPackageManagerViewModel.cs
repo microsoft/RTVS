@@ -43,8 +43,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private bool _hasErrors;
         private IRPackageViewModel _selectedPackage;
 
-        public RPackageManagerViewModel(IRPackageManager packageManager, IInfoBar infoBar, IServiceContainer services) {
-            _packageManager = packageManager;
+        public RPackageManagerViewModel(IServiceContainer services, IInfoBar infoBar) {
+            _packageManager = services.GetService<IRPackageManager>();
             _infoBar = infoBar;
             _services = services;
             _settings = services.GetService<IRSettings>();

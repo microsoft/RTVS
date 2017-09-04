@@ -75,6 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new RMarkdownEditorSettings(this))
                 .AddService<IStatusBar, VsStatusBar>()
                 .AddService<RPackageToolWindowProvider>()
+                .AddRComponentsServices()
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

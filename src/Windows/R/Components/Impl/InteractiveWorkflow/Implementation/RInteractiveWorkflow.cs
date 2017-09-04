@@ -7,15 +7,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.ContainerManager;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Interpreters;
@@ -27,61 +30,61 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly RInteractiveWorkflowOperations _operations;
         private readonly IMainThread _mainThread;
+        private readonly IServiceManager _services;
 
         private TaskCompletionSource<IInteractiveWindowVisualComponent> _visualComponentTcs;
 
-        public ICoreShell Shell { get; }
-        public IConnectionManager Connections { get; }
-        public IRHistory History { get; }
-        public IRSessionProvider RSessions { get; }
+        public IServiceContainer Services => _services;
         public IRSession RSession { get; }
-        public IRPackageManager Packages { get; }
-        public IRPlotManager Plots { get; }
-        public IConsole Console { get; }
 
+        public IConsole Console => _services.GetService<IConsole>();
+        public IRSessionProvider RSessions => _services.GetService<IRSessionProvider>();
+        public IConnectionManager Connections => _services.GetService<IConnectionManager>();
+        public IContainerManager Containers => _services.GetService<IContainerManager>();
+        public IRHistory History => _services.GetService<IRHistory>();
+        public IRPackageManager Packages => _services.GetService<IRPackageManager>();
+        public IRPlotManager Plots => _services.GetService<IRPlotManager>();
         public IRInteractiveWorkflowOperations Operations => _operations;
+        public IRInteractiveWorkflowToolWindowService ToolWindows => _services.GetService<IRInteractiveWorkflowToolWindowService>();
 
         public IInteractiveWindowVisualComponent ActiveWindow { get; private set; }
 
         public event EventHandler<ActiveWindowChangedEventArgs> ActiveWindowChanged;
 
         public RInteractiveWorkflow(IConnectionManagerProvider connectionsProvider
+            , IContainerManagerProvider containerProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , ICoreShell coreShell) {
+            , IServiceManager services) {
+            _services = services
+                .AddService<IRInteractiveWorkflow>(this)
+                .AddService<IConsole, InteractiveWindowConsole>()
+                .AddService<IRSessionProvider, RSessionProvider>()
+                .AddService(s => connectionsProvider.CreateConnectionManager(this))
+                .AddService(s => containerProvider.CreateContainerManager(this))
+                .AddService(s => historyProvider.CreateRHistory(this))
+                .AddService(s => packagesProvider.CreateRPackageManager(this))
+                .AddService(s => plotsProvider.CreatePlotManager(this));
 
-            _settings = coreShell.GetService<IRSettings>();
-            _mainThread = coreShell.MainThread();
-
-            Shell = coreShell;
-            var console = new InteractiveWindowConsole(this);
-            Console = console;
-            RSessions = new RSessionProvider(coreShell.Services, Console);
+            _settings = _services.GetService<IRSettings>();
+            _mainThread = _services.MainThread();
+            _operations = new RInteractiveWorkflowOperations(this, debuggerModeTracker, Services);
 
             RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
-            Connections = connectionsProvider.CreateConnectionManager(this);
-
-            History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(_settings, this);
-            Plots = plotsProvider.CreatePlotManager(_settings, this, coreShell.FileSystem());
-            _operations = new RInteractiveWorkflowOperations(this, debuggerModeTracker, Shell);
-
-            activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
-            RSession.Disconnected += RSessionDisconnected;
 
             _settings.PropertyChanged += OnSettingsChanged;
+            activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
+            RSession.Disconnected += RSessionDisconnected;
 
             _disposableBag = DisposableBag.Create<RInteractiveWorkflow>()
                 .Add(() => _settings.PropertyChanged -= OnSettingsChanged)
                 .Add(() => activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged)
                 .Add(() => RSession.Disconnected -= RSessionDisconnected)
-                .Add(RSessions)
                 .Add(Operations)
-                .Add(Connections)
-                .Add(console);
+                .Add(_services);
         }
 
         private void LastActiveTextViewChanged(object sender, ActiveTextViewChangedEventArgs e) {
@@ -114,8 +117,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private async Task CreateVisualComponentAsync(int instanceId) {
-            var factory = Shell.GetService<IInteractiveWindowComponentContainerFactory>();
-            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Shell, _settings, new InteractiveWindowConsole(this));
+            var factory = Services.GetService<IInteractiveWindowComponentContainerFactory>();
+            var evaluator = new RInteractiveEvaluator(RSessions, RSession, History, Connections, Services, _settings, Console);
 
             var window = factory.Create(instanceId, evaluator, RSessions);
             var interactiveWindow = window.InteractiveWindow;
@@ -127,17 +130,18 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 if (!connectedToBroker) {
                     var showConnectionsWindow = Connections.RecentConnections.Any();
                     if (!showConnectionsWindow) {
-                        var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine, Environment.NewLine);
-                        var ui = Shell.UI();
+                        var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine,
+                            Environment.NewLine);
+                        var ui = Services.UI();
                         showConnectionsWindow = ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
                     }
 
                     if (!showConnectionsWindow) {
-                        var installer = Shell.GetService<IMicrosoftRClientInstaller>();
-                        installer.LaunchRClientSetup(Shell.Services);
+                        var installer = Services.GetService<IMicrosoftRClientInstaller>();
+                        installer.LaunchRClientSetup(Services);
                     } else {
-                        var cmvp = Shell.Services.GetService<IConnectionManagerVisualProvider>();
-                        cmvp?.GetOrCreate(Connections).Container.Show(focus: false, immediate: false);
+                        var toolWindows = Services.GetService<IRInteractiveWorkflowToolWindowService>();
+                        toolWindows.Connections().Show(focus: false, immediate: false);
                     }
                 }
             }

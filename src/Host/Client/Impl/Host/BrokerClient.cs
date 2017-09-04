@@ -50,7 +50,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public BrokerConnectionInfo ConnectionInfo { get; }
         public string Name { get; }
-        public bool IsRemote => ConnectionInfo.IsRemote;
+        public bool IsRemote => ConnectionInfo.IsUrlBased;
         public bool IsVerified { get; protected set; }
 
         protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IConsole console, IServiceContainer services) {

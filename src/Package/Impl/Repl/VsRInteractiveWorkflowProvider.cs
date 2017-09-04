@@ -5,21 +5,26 @@ using System;
 using System.ComponentModel.Composition;
 using System.Threading;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
+using Microsoft.R.Components.View;
+using Microsoft.VisualStudio.R.Package.ToolWindows;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IRInteractiveWorkflowProvider))]
     [Export(typeof(IRInteractiveWorkflowVisualProvider))]
-    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowVisualProvider, IRInteractiveWorkflowProvider, IDisposable {
+    internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowVisualProvider, IRInteractiveWorkflowProvider {
         private readonly DisposableBag _disposableBag = DisposableBag.Create<VsRInteractiveWorkflowProvider>();
 
         private readonly IConnectionManagerProvider _connectionsProvider;
+        private readonly IContainerManagerProvider _containerProvider;
         private readonly IRHistoryProvider _historyProvider;
         private readonly IRPackageManagerProvider _packagesProvider;
         private readonly IRPlotManagerProvider _plotsProvider;
@@ -35,12 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _shell = shell;
 
             _connectionsProvider = shell.GetService<IConnectionManagerProvider>();
+            _containerProvider = shell.GetService<IContainerManagerProvider>();
             _historyProvider = shell.GetService<IRHistoryProvider>();
             _packagesProvider = shell.GetService<IRPackageManagerProvider>();
             _plotsProvider = shell.GetService<IRPlotManagerProvider>();
             _activeTextViewTracker = shell.GetService<IActiveWpfTextViewTracker>();
             _debuggerModeTracker = shell.GetService<IDebuggerModeTracker>();
-            _connectionsProvider = shell.GetService<IConnectionManagerProvider>();
 
             _app = _shell.GetService<IApplication>();
             _app.Terminating += OnApplicationTerminating;
@@ -65,7 +70,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private IRInteractiveWorkflowVisual CreateRInteractiveWorkflow() {
             _disposableBag.Add(DisposeInstance);
-            return new RInteractiveWorkflow(_connectionsProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, _shell);
+            var serviceManager = _shell.Services.Extend()
+                .AddService<IRInteractiveWorkflowToolWindowService, VsRInteractiveWorkflowToolWindowService>();
+            return new RInteractiveWorkflow(_connectionsProvider, _containerProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, serviceManager);
         }
 
         private void DisposeInstance() {

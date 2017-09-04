@@ -39,7 +39,7 @@ namespace Microsoft.Common.Core.Services {
         /// Adds on-demand created service
         /// </summary>
         /// <param name="factory">Service factory</param>
-        public virtual IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class {
+        public virtual IServiceManager AddService<T>(Func<IServiceContainer, T> factory) where T : class {
             _disposeToken.ThrowIfDisposed();
 
             var lazy = new Lazy<object>(() => factory(this));
@@ -72,24 +72,6 @@ namespace Microsoft.Common.Core.Services {
         public virtual void RemoveService(object service) => _s.TryRemove(service.GetType(), out object dummy);
 
         public virtual IEnumerable<Type> AllServices => _s.Keys.ToList();
-
-        public virtual IEnumerable<T> GetServices<T>() where T : class {
-            if (_disposeToken.IsDisposed) {
-                yield break;
-            }
-
-            var type = typeof(T);
-            foreach (var value in _s.Values.OfType<T>()) {
-                CheckDisposed(value);
-                yield return value;
-            }
-
-            // Perhaps someone is asking for IFoo that is implemented on class Bar 
-            // but Bar was added as Bar, not as IFoo
-            foreach (var kvp in _s.Where(kvp => kvp.Value is Lazy<object> && type.GetTypeInfo().IsAssignableFrom(kvp.Key))) {
-                yield return (T)CheckDisposed(((Lazy<object>)kvp.Value).Value);
-            }
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private object CheckDisposed(object service) {

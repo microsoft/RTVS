@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         public ToggleMultilineHistorySelectionCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdToggleMultilineSelection, false) {
             _history = historyProvider.GetAssociatedRHistory(textView);
-            _settings = interactiveWorkflow.Shell.GetService<IRSettings>();
+            _settings = interactiveWorkflow.Services.GetService<IRSettings>();
             _interactiveWorkflow = interactiveWorkflow;
         }
 

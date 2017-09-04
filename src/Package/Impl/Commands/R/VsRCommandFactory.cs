@@ -34,10 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             }
 
             return new ICommand[] {
-                new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int) RContextMenuId.R, workflow.Shell.Services),
+                new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int) RContextMenuId.R, workflow.Services),
                 new SendToReplCommand(textView, workflow),
                 new ClearReplCommand(textView, workflow),
-                new GoToFormattingOptionsCommand(textView, workflow.Shell.Services),
+                new GoToFormattingOptionsCommand(textView, workflow.Services),
                 new WorkingDirectoryCommand(workflow)
             };
         }

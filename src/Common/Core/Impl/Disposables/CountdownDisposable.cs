@@ -6,24 +6,34 @@ using System.Threading;
 
 namespace Microsoft.Common.Core.Disposables {
     public sealed class CountdownDisposable {
+        private readonly Action _createAction;
         private readonly Action _disposeAction;
         private int _count;
-
         public int Count => _count;
 
-        public CountdownDisposable(Action disposeAction = null) {
-            this._disposeAction = disposeAction ?? (() => { });
+        public CountdownDisposable(Action disposeAction = null) : this (() => { }, disposeAction) { }
+        public CountdownDisposable(Action createAction, Action disposeAction) {
+            _createAction = createAction ?? (() => {});
+            _disposeAction = disposeAction ?? (() => {});
         }
 
         public IDisposable Increment() {
-            Interlocked.Increment(ref _count);
+            if (Interlocked.Increment(ref _count) == 1) {
+                _createAction();
+            }
+
             return Disposable.Create(Decrement);
         }
 
         public void Decrement() {
             if (Interlocked.Decrement(ref _count) == 0) {
-                this._disposeAction();
+                _disposeAction();
             }
+        }
+
+        public void Reset() {
+            Interlocked.Exchange(ref _count, 0);
+            _disposeAction();
         }
     }
 }

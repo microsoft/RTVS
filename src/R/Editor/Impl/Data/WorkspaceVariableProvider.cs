@@ -150,7 +150,7 @@ namespace Microsoft.R.Editor.Data {
                             DimProperty |
                             FlagsProperty;
                         var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
-                        var settings = Workflow.Shell.GetService<IRSettings>();
+                        var settings = Workflow.Services.GetService<IRSettings>();
                         var e = new RSessionDataObject(evaluation, settings.EvaluateActiveBindings);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();

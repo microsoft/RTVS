@@ -6,12 +6,12 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
-    internal class ConnectionStatusBarViewModel : ConnectionStatusBaseViewModel, IConnectionStatusBarViewModel {
+    public class ConnectionStatusBarViewModel : ConnectionStatusBaseViewModel, IConnectionStatusBarViewModel {
         private string _selectedConnection;
 
-        public ConnectionStatusBarViewModel(IConnectionManager connectionManager, IServiceContainer services): 
-            base(connectionManager, services) {
-            SelectedConnection = connectionManager.ActiveConnection?.Name;
+        public ConnectionStatusBarViewModel(IServiceContainer services): 
+            base(services) {
+            SelectedConnection = ConnectionManager.ActiveConnection?.Name;
         }
 
         public string SelectedConnection {
@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public void ShowContextMenu(Point point) 
             => Services.ShowContextMenu(ConnectionManagerCommandIds.ContextMenu, (int)point.X, (int)point.Y);
 
-        protected override void ConnectionStateChanged()
+        protected override void UpdateConnections()
             => SelectedConnection = ConnectionManager.ActiveConnection?.Name;
     }
 }

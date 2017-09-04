@@ -232,6 +232,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Containers.
+        /// </summary>
+        public static string ContainersWindowCaption {
+            get {
+                return ResourceManager.GetString("ContainersWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Converting....
         /// </summary>
         public static string Converting {

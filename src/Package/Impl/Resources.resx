@@ -443,6 +443,9 @@
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
   </data>
+  <data name="ContainersWindowCaption" xml:space="preserve">
+    <value>Containers</value>
+  </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
   </data>

@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Components.View;
+using System;
 
-namespace Microsoft.R.Components.PackageManager {
-    public interface IRPackageManagerVisualComponent : IVisualComponent {
+namespace Microsoft.R.Components.View {
+    public interface IToolWindow : IDisposable {
+        void Show(bool focus, bool immediate);
     }
 }

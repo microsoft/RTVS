@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var dte = _shell.GetService<DTE>(typeof(DTE));
             dte.ExecuteCommand("File.SaveAll");
 
-            _shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc);
+            _shell.Services.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc);
             Close();
         }
 

@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _properties = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
             _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             _pss = pss;
-            _fs = _interactiveWorkflow.Shell.FileSystem();
+            _fs = _interactiveWorkflow.Services.FileSystem();
         }
 
         private IFileSystem FileSystem => _fs;

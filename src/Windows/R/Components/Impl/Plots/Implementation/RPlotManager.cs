@@ -12,10 +12,9 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 
@@ -38,10 +37,10 @@ namespace Microsoft.R.Components.Plots.Implementation {
         public event EventHandler<RPlotDeviceEventArgs> DeviceAdded;
         public event EventHandler<RPlotDeviceEventArgs> DeviceRemoved;
 
-        public RPlotManager(IRSettings settings, IRInteractiveWorkflowVisual interactiveWorkflow, IFileSystem fileSystem) {
+        public RPlotManager(IRInteractiveWorkflowVisual interactiveWorkflow) {
             _interactiveWorkflow = interactiveWorkflow;
-            _fileSystem = fileSystem;
-            _mainThread = _interactiveWorkflow.Shell.MainThread();
+            _fileSystem = interactiveWorkflow.Services.FileSystem();
+            _mainThread = _interactiveWorkflow.Services.MainThread();
 
             _disposableBag = DisposableBag.Create<RPlotManager>()
                 .Add(() => interactiveWorkflow.RSession.Connected -= RSession_Connected)
@@ -433,7 +432,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             // If we have no plot window to reuse, create one
             if (component == null) {
-                var containerFactory = InteractiveWorkflow.Shell.GetService<IRPlotDeviceVisualComponentContainerFactory>();
+                var containerFactory = InteractiveWorkflow.Services.GetService<IRPlotDeviceVisualComponentContainerFactory>();
                 component = GetOrCreateVisualComponent(containerFactory, GetUnusedInstanceId());
             }
 

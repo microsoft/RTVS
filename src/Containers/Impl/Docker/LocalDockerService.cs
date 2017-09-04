@@ -40,7 +40,7 @@ namespace Microsoft.R.Containers.Docker {
             var command = "ps";
             var commandOptions = getAll ? "-a -q" : "-q";
             var output = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), _defaultTimeout, true, ct);
-            var lines = output.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = output.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
             var arr = await InspectContainerAsync(ids, ct);
             return arr.Select(c => new LocalDockerContainer(c));
@@ -132,7 +132,8 @@ namespace Microsoft.R.Containers.Docker {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var docker = GetLocalDocker();
-            ProcessStartInfo psi = new ProcessStartInfo {
+            var psi = new ProcessStartInfo {
+                CreateNoWindow = true,
                 FileName = docker.DockerCommandPath,
                 Arguments = arguments,
                 RedirectStandardError = true,

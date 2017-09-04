@@ -55,8 +55,8 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<BrokerStateChangedEventArgs> BrokerStateChanged;
         public event EventHandler<HostLoadChangedEventArgs> HostLoadChanged;
 
-        public RSessionProvider(IServiceContainer services, IConsole callback = null) {
-            _console = callback ?? new NullConsole();
+        public RSessionProvider(IServiceContainer services) {
+            _console = services.GetService<IConsole>() ?? new NullConsole();
             _brokerProxy = new BrokerClientProxy();
             _services = services;
             // Cache task service since we need it during disposal.
@@ -351,7 +351,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return null;
             }
 
-            if (connectionInfo.IsRemote) {
+            if (connectionInfo.IsUrlBased) {
                 return new RemoteBrokerClient(name, this, connectionInfo, _services, _console, cancellationToken);
             }
 

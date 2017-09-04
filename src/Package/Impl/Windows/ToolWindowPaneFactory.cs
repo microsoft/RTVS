@@ -5,31 +5,33 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Components.View;
+using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Windows {
-    internal abstract class ToolWindowPaneFactory<T> where T : RToolWindowPane, IVisualComponentContainer<IVisualComponent> {
+    internal abstract class ToolWindowPaneFactory<T> where T : RToolWindowPane {
         private readonly Dictionary<int, ToolWindowPaneHolder> _toolWindowPanes = new Dictionary<int, ToolWindowPaneHolder>();
+        private readonly IMainThread _mainThread;
 
         protected IServiceContainer Services { get; }
 
         protected ToolWindowPaneFactory(IServiceContainer services) {
             Services = services;
+            _mainThread = services.MainThread();
         }
 
-        protected T GetOrCreate(int instanceId, Func<int, T> factory) {
-            ToolWindowPaneHolder holder;
-            if (_toolWindowPanes.TryGetValue(instanceId, out holder)) {
+        protected T GetOrCreate(int instanceId, Func<T> factory) {
+            _mainThread.Assert();
+            if (_toolWindowPanes.TryGetValue(instanceId, out ToolWindowPaneHolder holder)) {
                 if (holder.ToolWindowPane != null) {
                     return holder.ToolWindowPane;
                 }
                 RemoveHolder(instanceId);
             }
 
-            var instance = factory(instanceId);
-            IVsUIShell vsUiShell = Services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var instance = factory();
+            var vsUiShell = Services.GetService<IVsUIShell>(typeof(SVsUIShell));
             ToolWindowUtilities.CreateToolWindow(vsUiShell, instance, instanceId);
 
             holder = new ToolWindowPaneHolder(instance, () => RemoveHolder(instanceId));

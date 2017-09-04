@@ -21,6 +21,7 @@ using StatusBarControl = System.Windows.Controls.Primitives.StatusBar;
 namespace Microsoft.VisualStudio.R.Package.StatusBar {
     internal sealed class VsStatusBar : IStatusBar {
         private readonly IServiceContainer _services;
+        private readonly IMainThread _mainThread;
         private readonly IIdleTimeService _idleTime;
         private readonly IVsStatusbar _vsStatusBar;
         private ItemsControl _itemsControl;
@@ -29,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
 
         public VsStatusBar(IServiceContainer services) {
             _services = services;
+            _mainThread = services.MainThread();
             _idleTime = services.GetService<IIdleTimeService>();
             _vsStatusBar = services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
         }
@@ -45,35 +47,29 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         #region IStatusBar
-        public IDisposable AddItem(Func<UIElement> itemFactory, object dataContext) {
-            _services.MainThread().CheckAccess();
+        public IDisposable AddItem(UIElement element) {
+            _mainThread.CheckAccess();
             EnsureItemsControlCreated();
 
-            var element = itemFactory();
-            if(element is FrameworkElement fe) {
-                fe.DataContext = dataContext;
-            }
-
             _itemsControl.Items.Insert(0, element);
-            return Disposable.Create(() => _services.MainThread().Post(() => _itemsControl.Items.Remove(element)));
+            return Disposable.Create(() => _mainThread.Post(() => _itemsControl.Items.Remove(element)));
         }
 
         public async Task<string> GetTextAsync(CancellationToken ct = default(CancellationToken)) {
-            await _services.MainThread().SwitchToAsync(ct);
+            await _mainThread.SwitchToAsync(ct);
             _vsStatusBar.GetText(out string text);
             return text ?? string.Empty;
         }
 
         public async Task SetTextAsync(string text, CancellationToken ct = default(CancellationToken)) {
-            await _services.MainThread().SwitchToAsync(ct);
+            await _mainThread.SwitchToAsync(ct);
             _vsStatusBar.SetText(text);
         }
 
         public async Task<IStatusBarProgress> ShowProgressAsync(int totalSteps = 100, CancellationToken cancellationToken = default(CancellationToken)) {
-            await _services.MainThread().SwitchToAsync(cancellationToken);
+            await _mainThread.SwitchToAsync(cancellationToken);
             var vsStatusbar = _services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
-            var mainThread = _services.MainThread();
-            return new VsStatusBarProgress(vsStatusbar, mainThread, totalSteps);
+            return new VsStatusBarProgress(vsStatusbar, _mainThread, totalSteps);
         }
         #endregion
 

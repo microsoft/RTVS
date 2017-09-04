@@ -79,17 +79,6 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="ValidityIndicatorStyle" TargetType="{x:Type imaging:CrispImage}">
-                <Style.Setters>
-                    <Setter Property="Width" Value="16" />
-                    <Setter Property="Height" Value="16" />
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="Margin" Value="0,0,4,0" />
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
-                </Style.Setters>
-            </Style>
-
             <Style x:Key="ExpandCollapseButtonLocalConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
                 <Setter Property="IsExpanded" Value="True" />
                 <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalConnections}" />
@@ -100,6 +89,18 @@
                     </Setter.Value>
                 </Setter>
                 <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+            </Style>
+
+            <Style x:Key="ExpandCollapseButtonLocalDockerConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
+                <Setter Property="IsExpanded" Value="True" />
+                <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalDockerConnections}" />
+                <Setter Property="Visibility" Value="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}" />
+                <Setter Property="ToolTip">
+                    <Setter.Value>
+                        <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalDockerConnections_Tooltip}" />
             </Style>
 
             <Style x:Key="ExpandCollapseButtonRemoteConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
@@ -334,33 +335,8 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}">
-                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true" />
-                <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-                <Setter Property="VirtualizingPanel.CacheLength" Value="1,2" />
-                <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="BorderThickness" Value="0,0,0,0" />
-                <Setter Property="IsTabStop" Value="False" />
+            <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}" BasedOn="{StaticResource ToolWindowListBoxStyle}">
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ConnectionsListBoxItemStyle}" />
-                <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
-                <Setter Property="SelectionMode" Value="Multiple"/>
-                <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBox}">
-                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                                <ScrollViewer Focusable="false">
-                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                </ScrollViewer>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
             </Style>
 
             <Style x:Key="InputBorderStyle" TargetType="{x:Type Border}">
@@ -389,7 +365,12 @@
                             IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
                             Content="{x:Static components:Resources.ConnectionManager_Add}"
                             AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Add}"
-                            Click="ButtonAdd_Click"/>
+                            Click="ButtonAdd_Click" />
+                    <Button x:Name="ButtonShowContainers" Margin="6,0,0,0" MinWidth="75" MinHeight="23"
+                            VerticalAlignment="Center" Click="ButtonShowContainers_Click" 
+                            Style="{StaticResource ToolWindowButtonStyle}"
+                            Content="{x:Static components:Resources.ConnectionManager_ShowContainers}" 
+                            AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_ShowContainers}" />
                 </WrapPanel>
 
                 <!-- Add options panel -->
@@ -408,6 +389,14 @@
                      DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=LocalConnections}" 
                      Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
+            <!-- Local docker connections header -->
+            <controls:ExpandCollapseButton x:Name="ToggleButtonLocalDockerConnections" Style="{StaticResource ExpandCollapseButtonLocalDockerConnectionsStyle}" DockPanel.Dock="Top" />
+
+            <!-- Local docker connections -->
+            <ListBox x:Name="LocalDockerList"
+                     DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=LocalDockerConnections}" 
+                     Visibility="{Binding ElementName=ToggleButtonLocalDockerConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+            
             <!-- Remote connections header -->
             <controls:ExpandCollapseButton x:Name="ToggleButtonRemoteConnections" Style="{StaticResource ExpandCollapseButtonRemoteConnectionsStyle}" DockPanel.Dock="Top" />
 
@@ -418,3 +407,4 @@
         </DockPanel>
     </ScrollViewer>
 </UserControl>
+

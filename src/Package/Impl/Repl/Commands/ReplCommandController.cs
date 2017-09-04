@@ -166,14 +166,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             // If session is reading user input, do not terminate it
             if (!Workflow.RSession.IsReadingUserInput) {
-                Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
+                Workflow.Services.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
             }
 
             return false;
         }
 
         private void HandleF1Help(RCompletionController controller)
-            => Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
+            => Workflow.Services.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent);
 
         /// <summary>
         /// Determines if command is one of the completion commands

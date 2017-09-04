@@ -20,10 +20,11 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
-    internal class RPackageManager : IRPackageManagerVisual {
-        private readonly IRSession _session;
+    internal class RPackageManager : IRPackageManager {
+        private readonly IRSessionProvider _sessionProvider;
+        private readonly IRSession _pmSession;
+        private readonly IRSession _replSession;
         private readonly IRSettings _settings;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly DisposableBag _disposableBag;
         private readonly DirtyEventSource _loadedPackagesEvent;
         private readonly DirtyEventSource _installedPackagesEvent;
@@ -44,51 +45,42 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             remove => _availablePackagesEvent.Event -= value;
         }
 
-        public IRPackageManagerVisualComponent VisualComponent { get; private set; }
+        public bool IsRemoteSession => _pmSession.IsRemote;
 
-        public bool IsRemoteSession => _session.IsRemote;
-
-        public RPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _session = interactiveWorkflow.RSessions.GetOrCreate(SessionNames.PackageManager);
-            _settings = settings;
-            _interactiveWorkflow = interactiveWorkflow;
+        public RPackageManager(IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
+            _sessionProvider = interactiveWorkflow.RSessions;
+            _pmSession = _sessionProvider.GetOrCreate(SessionNames.PackageManager);
+            _replSession = interactiveWorkflow.RSession;
+            _settings = interactiveWorkflow.Services.GetService<IRSettings>();
             _loadedPackagesEvent = new DirtyEventSource(this);
             _installedPackagesEvent = new DirtyEventSource(this);
             _availablePackagesEvent = new DirtyEventSource(this);
 
-            _disposableBag = DisposableBag.Create<RPackageManager>(dispose)
-                .Add(() => _interactiveWorkflow.RSessions.BrokerChanged -= BrokerChanged)
-                .Add(() => _interactiveWorkflow.RSession.Mutated -= RSessionMutated)
-                .Add(() => _interactiveWorkflow.RSession.PackagesInstalled -= PackagesInstalled)
-                .Add(() => _interactiveWorkflow.RSession.PackagesRemoved -= PackagesRemoved);
+            _disposableBag = DisposableBag.Create<RPackageManager>()
+                .Add(dispose)
+                .Add(() => _sessionProvider.BrokerChanged -= BrokerChanged)
+                .Add(() => _replSession.Mutated -= RSessionMutated)
+                .Add(() => _replSession.PackagesInstalled -= PackagesInstalled)
+                .Add(() => _replSession.PackagesRemoved -= PackagesRemoved);
 
-            _interactiveWorkflow.RSessions.BrokerChanged += BrokerChanged;
-            _interactiveWorkflow.RSession.Mutated += RSessionMutated;
-            _interactiveWorkflow.RSession.PackagesInstalled += PackagesInstalled;
-            _interactiveWorkflow.RSession.PackagesRemoved += PackagesRemoved;
-        }
-
-        public IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
-            if (VisualComponent != null) {
-                return VisualComponent;
-            }
-
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
-            return VisualComponent;
+            _sessionProvider.BrokerChanged += BrokerChanged;
+            _replSession.Mutated += RSessionMutated;
+            _replSession.PackagesInstalled += PackagesInstalled;
+            _replSession.PackagesRemoved += PackagesRemoved;
         }
 
         public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync(CancellationToken cancellationToken = default (CancellationToken)) {
             _installedPackagesEvent.Reset();
-            return await GetPackagesAsync(_session.InstalledPackagesAsync, cancellationToken);
+            return await GetPackagesAsync(_pmSession.InstalledPackagesAsync, cancellationToken);
         }
 
         public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             _availablePackagesEvent.Reset();
-            return await GetPackagesAsync(_session.AvailablePackagesAsync, cancellationToken);
+            return await GetPackagesAsync(_pmSession.AvailablePackagesAsync, cancellationToken);
         }
 
         public async Task InstallPackageAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync(cancellationToken:cancellationToken)) {
+            using (var request = await _replSession.BeginInteractionAsync(cancellationToken:cancellationToken)) {
                 if (string.IsNullOrEmpty(libraryPath)) {
                     await request.InstallPackageAsync(name);
                 } else {
@@ -97,16 +89,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) => 
-            _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
+        public Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) =>
+            _replSession.EvaluateAsync<PackageLockState>(
                 Invariant($"rtvs:::package_uninstall({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
 
-        public Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) => 
-            _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
+        public Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) =>
+            _replSession.EvaluateAsync<PackageLockState>(
                 Invariant($"rtvs:::package_update({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
 
         public async Task LoadPackageAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync(cancellationToken: cancellationToken)) {
+            using (var request = await _replSession.BeginInteractionAsync(cancellationToken: cancellationToken)) {
                 if (string.IsNullOrEmpty(libraryPath)) {
                     await request.LoadPackageAsync(name);
                 } else {
@@ -116,44 +108,44 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task UnloadPackageAsync(string name, CancellationToken cancellationToken = default(CancellationToken)) {
-            using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync(cancellationToken: cancellationToken)) {
+            using (var request = await _replSession.BeginInteractionAsync(cancellationToken: cancellationToken)) {
                 await request.UnloadPackageAsync(name);
             }
         }
 
         public async Task<string[]> GetLoadedPackagesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             _loadedPackagesEvent.Reset();
-            var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackagesAsync(cancellationToken));
+            var result = await WrapRException(_replSession.LoadedPackagesAsync(cancellationToken));
             return result.Select(p => (string)((JValue)p).Value).ToArray();
         }
 
         public async Task<string> GetLibraryPathAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPathsAsync(cancellationToken));
+            var result = await WrapRException(_replSession.LibraryPathsAsync(cancellationToken));
             return result.Select(p => p.ToRPath()).FirstOrDefault();
         }
 
         public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath, CancellationToken cancellationToken = default(CancellationToken)) 
-            => _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>(
+            => _replSession.EvaluateAsync<PackageLockState>(
                  Invariant($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
 
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<Task<JArray>> queryFunc, CancellationToken cancellationToken) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             try {
-                await _session.EnsureHostStartedAsync(new RHostStartupInfo(), null, cancellationToken: cancellationToken);
-                await _session.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(_settings.CranMirror), cancellationToken);
-                await _session.SetCodePageAsync(_settings.RCodePage, cancellationToken);
+                await _pmSession.EnsureHostStartedAsync(new RHostStartupInfo(), null, cancellationToken: cancellationToken);
+                await _pmSession.SetVsCranSelectionAsync(CranMirrorList.UrlFromName(_settings.CranMirror), cancellationToken);
+                await _pmSession.SetCodePageAsync(_settings.RCodePage, cancellationToken);
 
                 // Get the repos and libpaths from the REPL session and set them
                 // in the package query session
                 var repositories = (await DeparseRepositoriesAsync());
                 if (repositories != null) {
-                    await WrapRException(_session.ExecuteAsync($"options(repos=eval(parse(text={repositories.ToRStringLiteral()})))", cancellationToken));
+                    await WrapRException(_pmSession.ExecuteAsync($"options(repos=eval(parse(text={repositories.ToRStringLiteral()})))", cancellationToken));
                 }
 
                 var libraries = (await DeparseLibrariesAsync());
                 if (libraries != null) { 
-                    await WrapRException(_session.ExecuteAsync($".libPaths(eval(parse(text={libraries.ToRStringLiteral()})))", cancellationToken));
+                    await WrapRException(_pmSession.ExecuteAsync($".libPaths(eval(parse(text={libraries.ToRStringLiteral()})))", cancellationToken));
                 }
 
                 var result = await WrapRException(queryFunc());
@@ -166,7 +158,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         private async Task<string> DeparseRepositoriesAsync() {
             try {
-                return await WrapRException(_interactiveWorkflow.RSession.EvaluateAsync<string>("rtvs:::deparse_str(getOption('repos'))", REvaluationKind.Normal));
+                return await WrapRException(_replSession.EvaluateAsync<string>("rtvs:::deparse_str(getOption('repos'))", REvaluationKind.Normal));
             } catch(RHostDisconnectedException) {
                 return null;
             }
@@ -174,17 +166,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         private async Task<string> DeparseLibrariesAsync() {
             try {
-                return await WrapRException(_interactiveWorkflow.RSession.EvaluateAsync<string>("rtvs:::deparse_str(.libPaths())", REvaluationKind.Normal));
+                return await WrapRException(_replSession.EvaluateAsync<string>("rtvs:::deparse_str(.libPaths())", REvaluationKind.Normal));
             } catch (RHostDisconnectedException) {
                 return null;
             }
         }
 
-        public void Dispose() {
-            if (_disposableBag.TryDispose()) {
-                VisualComponent?.Dispose();
-            }
-        }
+        public void Dispose() => _disposableBag.TryDispose();
 
         private async Task WrapRException(Task task) {
             try {
@@ -219,7 +207,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
         
         private void RSessionMutated(object sender, EventArgs e) {
-            if (_interactiveWorkflow.RSessions.IsConnected) {
+            if (_sessionProvider.IsConnected) {
                 _loadedPackagesEvent.FireOnce();
             }
         }

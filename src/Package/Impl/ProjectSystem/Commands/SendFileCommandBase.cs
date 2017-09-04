@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var workflow = _interactiveWorkflowProvider.GetOrCreate();
-            IConsole console = new InteractiveWindowConsole(workflow);
+            var console = workflow.Console;
 
             try {
                 var session = workflow.RSession;
