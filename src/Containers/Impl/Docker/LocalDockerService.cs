@@ -155,13 +155,6 @@ namespace Microsoft.R.Containers.Docker {
                 throw new ContainerException(error);
             }
 
-            if (!process.HasExited) {
-                try {
-                    process.Kill();
-                } catch(Exception ex) when (!ex.IsCriticalException()) {
-                }
-            }
-
             _outputLogWriter?.Write(MessageCategory.General, output);
             return output;
         }
