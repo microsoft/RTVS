@@ -13,7 +13,6 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Expansions;
@@ -166,6 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             // If session is reading user input, do not terminate it
             if (!Workflow.RSession.IsReadingUserInput) {
+                Workflow.Operations.ClearPendingInputs();
                 Workflow.Shell.PostCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR);
             }
 
