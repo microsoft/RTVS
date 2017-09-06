@@ -4,6 +4,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContainerManager.Implementation.ViewModel;
 
@@ -23,7 +24,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void Container_PreviewKeyUp(object sender, KeyEventArgs keyEventArgs) {
             if (keyEventArgs.Key == Key.Delete && !(keyEventArgs.OriginalSource is TextBox)) {
-                ViewModel.Delete(GetContainer(keyEventArgs));
+                ViewModel.DeleteAsync(GetContainer(keyEventArgs)).DoNotWait();
             }
         }
 
@@ -37,11 +38,11 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void ButtonCancelCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CancelCreateLocalDocker();
 
-        private void ButtonStart_Click(object sender, RoutedEventArgs e) => ViewModel.Start(GetContainer(e));
+        private void ButtonStart_Click(object sender, RoutedEventArgs e) => ViewModel.StartAsync(GetContainer(e)).DoNotWait();
 
-        private void ButtonStop_Click(object sender, RoutedEventArgs e) => ViewModel.Stop(GetContainer(e));
+        private void ButtonStop_Click(object sender, RoutedEventArgs e) => ViewModel.StopAsync(GetContainer(e)).DoNotWait();
 
-        private void ButtonDelete_Click(object sender, RoutedEventArgs e) => ViewModel.Delete(GetContainer(e));
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e) => ViewModel.DeleteAsync(GetContainer(e)).DoNotWait();
 
         private static ContainerViewModel GetContainer(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as ContainerViewModel;
     }

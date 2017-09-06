@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 

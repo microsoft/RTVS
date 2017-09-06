@@ -18,8 +18,8 @@ namespace Microsoft.R.Containers.Docker {
         Task<string> RepositoryLogoutAsync(string server, CancellationToken ct);
         Task<string> PullImageAsync(string fullImageName, CancellationToken ct);
         Task<string> CreateContainerAsync(string createOptions, CancellationToken ct);
-        Task<string> DeleteContainerAsync(IContainer container, CancellationToken ct);
-        Task<string> StartContainerAsync(IContainer container, CancellationToken ct);
-        Task<string> StopContainerAsync(IContainer container, CancellationToken ct);
+        Task<string> DeleteContainerAsync(string containerId, CancellationToken ct);
+        Task<string> StartContainerAsync(string containerId, CancellationToken ct);
+        Task<string> StopContainerAsync(string containerId, CancellationToken ct);
     }
 }

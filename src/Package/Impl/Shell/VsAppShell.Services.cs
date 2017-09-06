@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Settings;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Containers;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Settings;
@@ -45,6 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<ILoggingPermissions, LoggingPermissions>()
                 .AddService<IMainThread, VsMainThread>()
                 .AddService<IMicrosoftRClientInstaller, MicrosoftRClientInstaller>()
+                .AddService<IOutputService, VsOutputService>()
                 .AddService<IProcessServices, ProcessServices>()
                 .AddService<IRegistry, RegistryImpl>()
                 .AddService<ISettingsStorage, VsSettingsStorage>()

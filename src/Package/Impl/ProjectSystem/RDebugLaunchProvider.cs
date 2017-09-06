@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;

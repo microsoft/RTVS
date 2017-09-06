@@ -18,6 +18,7 @@ using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;

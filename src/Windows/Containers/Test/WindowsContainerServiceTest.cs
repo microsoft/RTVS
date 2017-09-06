@@ -48,7 +48,7 @@ RUN apt-get update && apt-get upgrade -y";
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             var container2 = await svc.GetContainerAsync(container.Id, CancellationToken.None);
             container.Id.Should().Be(container2.Id);
-            await svc.DeleteContainerAsync(container, CancellationToken.None);
+            await svc.DeleteContainerAsync(container.Id, CancellationToken.None);
             var containers = await svc.ListContainersAsync(true, CancellationToken.None);
             containers.Should().NotContain(c => c.Id == container.Id);
         }
@@ -58,17 +58,17 @@ RUN apt-get update && apt-get upgrade -y";
             var svc = new WindowsDockerService(_services);
             var param = new ContainerCreateParameters("docker.io/kvnadig/rtvs-linux", "latest");
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
-            await svc.StartContainerAsync(container, CancellationToken.None);
+            await svc.StartContainerAsync(container.Id, CancellationToken.None);
 
             var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
             runningContainers.Should().Contain(c => c.Id == container.Id);
 
-            await svc.StopContainerAsync(container, CancellationToken.None);
+            await svc.StopContainerAsync(container.Id, CancellationToken.None);
 
             var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
             runningContainers2.Should().NotContain(c => c.Id == container.Id);
 
-            await svc.DeleteContainerAsync(container, CancellationToken.None);
+            await svc.DeleteContainerAsync(container.Id, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
             allContainers.Should().NotContain(c => c.Id == container.Id);
         }
@@ -82,17 +82,17 @@ RUN apt-get update && apt-get upgrade -y";
             await DeleteImageAsync(imageName);
 
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
-            await svc.StartContainerAsync(container, CancellationToken.None);
+            await svc.StartContainerAsync(container.Id, CancellationToken.None);
 
             var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
             runningContainers.Should().Contain(c => c.Id == container.Id);
 
-            await svc.StopContainerAsync(container, CancellationToken.None);
+            await svc.StopContainerAsync(container.Id, CancellationToken.None);
 
             var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
             runningContainers2.Should().NotContain(c => c.Id == container.Id);
 
-            await svc.DeleteContainerAsync(container, CancellationToken.None);
+            await svc.DeleteContainerAsync(container.Id, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
             allContainers.Should().NotContain(c => c.Id == container.Id);
 

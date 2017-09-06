@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;

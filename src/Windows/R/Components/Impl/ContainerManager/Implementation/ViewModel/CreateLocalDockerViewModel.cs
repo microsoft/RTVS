@@ -13,65 +13,77 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private string _username;
         private string _password;
         private string _version;
-        private bool _nameIsValid;
-        private bool _usernameIsValid;
-        private bool _passwordIsValid;
-        private bool _versionIsValid;
+        private bool _isNameValid;
+        private bool _isUsernameValid;
+        private bool _isPasswordValid;
+        private bool _isVersionValid = true;
+        private bool _isValid;
 
         public string Name {
             get => _name;
             set {
                 if (SetProperty(ref _name, value)) {
-                    NameIsValid = NameRegex.IsMatch(value);
+                    IsNameValid = NameRegex.IsMatch(value);
+                    UpdateIsValid();
                 }
             }
         }
 
-        public bool NameIsValid {
-            get => _nameIsValid;
-            set => SetProperty(ref _nameIsValid, value);
+        public bool IsNameValid {
+            get => _isNameValid;
+            set => SetProperty(ref _isNameValid, value);
         }
 
         public string Username {
             get => _username;
             set {
                 if (SetProperty(ref _username, value)) {
-                    UsernameIsValid = string.IsNullOrWhiteSpace(value);
+                    IsUsernameValid = !string.IsNullOrWhiteSpace(value);
+                    UpdateIsValid();
                 }
             }
         }
 
-        public bool UsernameIsValid {
-            get => _usernameIsValid;
-            set => SetProperty(ref _usernameIsValid, value);
+        public bool IsUsernameValid {
+            get => _isUsernameValid;
+            set => SetProperty(ref _isUsernameValid, value);
         }
 
         public string Password {
             get => _password;
             set {
                 if (SetProperty(ref _password, value)) {
-                    PasswordIsValid = string.IsNullOrWhiteSpace(value);
+                    IsPasswordValid = !string.IsNullOrWhiteSpace(value);
+                    UpdateIsValid();
                 }
             }
         }
 
-        public bool PasswordIsValid {
-            get => _passwordIsValid;
-            set => SetProperty(ref _passwordIsValid, value);
+        public bool IsPasswordValid {
+            get => _isPasswordValid;
+            set => SetProperty(ref _isPasswordValid, value);
         }
 
         public string Version {
             get => _version;
             set {
                 if (SetProperty(ref _version, value)) {
-                    VersionIsValid = VersionRegex.IsMatch(value);
+                    IsVersionValid = string.IsNullOrEmpty(value) || VersionRegex.IsMatch(value);
+                    UpdateIsValid();
                 }
             }
         }
 
-        public bool VersionIsValid {
-            get => _versionIsValid;
-            set => SetProperty(ref _versionIsValid, value);
+        public bool IsVersionValid {
+            get => _isVersionValid;
+            set => SetProperty(ref _isVersionValid, value);
         }
+
+        public bool IsValid {
+            get => _isValid;
+            set => SetProperty(ref _isValid, value);
+        }
+
+        private void UpdateIsValid() => IsValid = IsNameValid && IsUsernameValid && IsPasswordValid && IsVersionValid;
     }
 }

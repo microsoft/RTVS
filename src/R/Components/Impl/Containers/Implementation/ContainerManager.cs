@@ -40,23 +40,59 @@ namespace Microsoft.R.Components.Containers.Implementation {
             });
         }
 
+        public async Task StartAsync(string containerId, CancellationToken cancellationToken) {
+            try {
+                await _containerService.StartContainerAsync(containerId, cancellationToken);
+            } finally {
+                try {
+                    await UpdateContainersOnceAsync(cancellationToken);
+                } catch (ContainerException) { }
+            }
+        }
+
+        public async Task StopAsync(string containerId, CancellationToken cancellationToken) {
+            try {
+                await _containerService.StopContainerAsync(containerId, cancellationToken);
+            } finally {
+                try {
+                    await UpdateContainersOnceAsync(cancellationToken);
+                } catch (ContainerException) { }
+            }
+        }
+
+        public async Task DeleteAsync(string containerId, CancellationToken cancellationToken) {
+            try {
+                await _containerService.DeleteContainerAsync(containerId, cancellationToken);
+            } finally {
+                try {
+                    await UpdateContainersOnceAsync(cancellationToken);
+                } catch (ContainerException) { }
+            }
+        }
+
         public void Dispose() => _updateContainersCts.Cancel();
 
         private void StartUpdatingContainers() => UpdateContainersAsync().DoNotWait();
         private void EndUpdatingContainers() => Interlocked.Exchange(ref _updateContainersCts, new CancellationTokenSource()).Cancel();
 
         private async Task UpdateContainersAsync() {
-            while (!_updateContainersCts.Token.IsCancellationRequested) {
-                var cts = CancellationTokenSource.CreateLinkedTokenSource(_updateContainersCts.Token);
+            var updateContainersCancellationToken = _updateContainersCts.Token;
+            while (!updateContainersCancellationToken.IsCancellationRequested) {
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(updateContainersCancellationToken);
                 cts.CancelAfter(5000);
-                try {
-                    UpdateContainers(await _containerService.ListContainersAsync(true, cts.Token));
-                } catch (OperationCanceledException) when (!_updateContainersCts.Token.IsCancellationRequested) {
-                } catch (ContainerException) {
-                    _containersChangedCountdown.Reset();
-                }
+                await UpdateContainersOnceAsync(cts.Token);
+                await Task.Delay(10000, updateContainersCancellationToken);
+            }
+        }
 
-                await Task.Delay(10000, _updateContainersCts.Token);
+        private async Task UpdateContainersOnceAsync(CancellationToken token) {
+            try {
+                UpdateContainers(await _containerService.ListContainersAsync(true, token)); 
+            } catch (OperationCanceledException) {
+            } catch (ContainerServiceNotInstalledException) {
+                _containersChangedCountdown.Reset();
+            } catch (ContainerServiceNotRunningException) {
+                _containersChangedCountdown.Reset();
             }
         }
 

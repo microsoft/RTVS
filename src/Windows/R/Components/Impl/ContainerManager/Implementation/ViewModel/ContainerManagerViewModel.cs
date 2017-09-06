@@ -4,6 +4,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
@@ -21,9 +23,14 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private readonly DisposableBag _disposable;
         private readonly IMainThread _mainThread;
         private readonly IRSettings _settings;
+        private CreateLocalDockerViewModel _newLocalDocker;
 
         public ReadOnlyObservableCollection<ContainerViewModel> LocalContainers { get; }
-        public CreateLocalDockerViewModel NewLocalDocker { get; private set; }
+
+        public CreateLocalDockerViewModel NewLocalDocker {
+            get => _newLocalDocker;
+            private set => SetProperty(ref _newLocalDocker, value);
+        }
 
         public ContainerManagerViewModel(IServiceContainer services) {
             _disposable = DisposableBag.Create<ContainerManagerViewModel>();
@@ -56,23 +63,14 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             NewLocalDocker = null;
         }
 
-        public void Start(ContainerViewModel container) {
-            if (container != null) {
-                _containers.Start(container.Id);
-            }
-        }
+        public Task StartAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) 
+            => container != null ? _containers.StartAsync(container.Id, cancellationToken) : Task.CompletedTask;
 
-        public void Stop(ContainerViewModel container) {
-            if (container != null) {
-                _containers.Stop(container.Id);
-            }
-        }
+        public Task StopAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) 
+            => container != null ? _containers.StopAsync(container.Id, cancellationToken) : Task.CompletedTask;
 
-        public void Delete(ContainerViewModel container) {
-            if (container != null) {
-                _containers.Delete(container.Id);
-            }
-        }
+        public Task DeleteAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) 
+            => container != null ? _containers.DeleteAsync(container.Id, cancellationToken) : Task.CompletedTask;
 
         public void ShowConnections() 
             => _services.GetService<IRInteractiveWorkflowToolWindowService>().Connections().Show(true, true);
