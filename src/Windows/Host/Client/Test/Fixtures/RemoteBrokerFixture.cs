@@ -10,6 +10,8 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
@@ -17,7 +19,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
         private readonly IFileSystem _fileSystem;
         private readonly RInstallation _installations;
-        private readonly ProcessServices _processService;
+        private readonly WindowsProcessServices _processService;
         private readonly string _logFolder;
 
         private volatile RemoteBrokerProcess _process;
@@ -30,7 +32,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public RemoteBrokerFixture() {
             _fileSystem = new WindowsFileSystem();
             _installations = new RInstallation();
-            _processService = new ProcessServices();
+            _processService = new WindowsProcessServices();
             _logFolder = Path.Combine(DeployFilesFixture.TestFilesRoot, "Logs");
         }
 

@@ -4,17 +4,18 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Platform.IO;
 
 namespace Microsoft.UnitTests.Core.Linux {
-    public class TestFileSystem : FileSystem {
-        UnixFileSystem _fs = new UnixFileSystem();
-        private bool _doPlatformDefault;
+    public class TestFileSystem : FileSystem, IFileSystem {
+        readonly UnixFileSystem _fs = new UnixFileSystem();
+        private readonly bool _doPlatformDefault;
 
         public TestFileSystem(bool doPlatformDefault = true) {
             _doPlatformDefault = doPlatformDefault;
         }
 
-        public override IEnumerable<string> FileReadAllLines(string path) {
+        IEnumerable<string> IFileSystem.FileReadAllLines(string path) {
             switch (path) {
                 case "/var/lib/dpkg/status":
                     return File.ReadAllLines("TestData/status"); // this is the test status file
@@ -27,7 +28,7 @@ namespace Microsoft.UnitTests.Core.Linux {
             }
         }
 
-        public override bool FileExists(string path) {
+        bool IFileSystem.FileExists(string path) {
             switch (path) {
                 case "/var/lib/dpkg/status":
                 case "/var/lib/dpkg/info/microsoft-r-open-mro-3.3.list":
@@ -40,7 +41,7 @@ namespace Microsoft.UnitTests.Core.Linux {
             }
         }
 
-        public override bool DirectoryExists(string fullPath) {
+        bool IFileSystem.DirectoryExists(string fullPath) {
             switch (fullPath) {
                 case "/usr/lib64/microsoft-r/3.3/lib64/R":
                 case "/usr/lib64/microsoft-r/3.3/lib64/R/lib":
@@ -52,19 +53,14 @@ namespace Microsoft.UnitTests.Core.Linux {
             }
         }
 
-        public override string[] GetFiles(string path, string pattern, SearchOption option) {
+        string[] IFileSystem.GetFiles(string path, string pattern, SearchOption option) {
             switch (pattern) {
                 case "microsoft-r-open-mro-3.3*.list":
                     return new string[] { "TestData/microsoft-r-open-mro-3.3.list" }; // this is the test status file
                 case "/var/lib/dpkg/info/r-base-core.list":
                     return new string[] { "TestData/r-base-core.list" }; // this is the test status file
-                default:
-                    if (_doPlatformDefault) {
-                        return _fs.GetFiles(path, pattern, option);
-                    } else {
-                        return new string[] { };
-                    }
             }
+            return _doPlatformDefault ? _fs.GetFiles(path, pattern, option) : new string[] { };
         }
     }
 }

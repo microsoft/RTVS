@@ -11,12 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 

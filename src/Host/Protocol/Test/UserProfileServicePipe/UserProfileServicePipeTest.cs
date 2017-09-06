@@ -13,6 +13,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.OS;
 using Microsoft.R.Host.UserProfile;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;

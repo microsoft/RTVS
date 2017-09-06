@@ -4,9 +4,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql;

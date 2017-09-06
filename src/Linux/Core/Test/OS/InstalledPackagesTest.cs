@@ -3,7 +3,7 @@
 
 using System.Linq;
 using FluentAssertions;
-using Microsoft.Common.Core.OS;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Linux;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;

@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Platform.OS;
 using Microsoft.Win32;
 using static System.FormattableString;
 

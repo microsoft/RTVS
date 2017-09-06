@@ -7,12 +7,11 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -45,7 +44,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void LocalFiles() {
             var services = new ServiceManager();
-            services.AddService(new FileSystem());
+            services.AddService(new WindowsFileSystem());
             services.AddService(Substitute.For<IRInteractiveWorkflowProvider>());
             services.AddService(Substitute.For<IImageService>());
             var provider = new FilesCompletionProvider(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), services);

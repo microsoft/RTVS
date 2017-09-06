@@ -47,7 +47,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
                 RedirectStandardError = true,
                 LoadUserProfile = true
             };
-            var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
+            var shortHome = new StringBuilder(1024);
             GetShortPathName(_interpreter.Path, shortHome, shortHome.Capacity);
             psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
             psi.EnvironmentVariables["PATH"] = _interpreter.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");

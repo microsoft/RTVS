@@ -56,16 +56,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Containers\Impl\Microsoft.R.Containers.csproj">
       <Project>{BAEA19C5-E1F7-4580-AE19-9FB3C890570B}</Project>
       <Name>Microsoft.R.Containers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

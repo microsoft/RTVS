@@ -7,7 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="..\..\..\..\Core\Impl\Microsoft.R.Common.Core.Linux.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">

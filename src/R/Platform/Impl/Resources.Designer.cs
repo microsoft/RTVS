@@ -87,5 +87,14 @@ namespace Microsoft.R.Platform {
                 return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Tools.
+        /// </summary>
+        internal static string MessageBoxTitle {
+            get {
+                return ResourceManager.GetString("MessageBoxTitle", resourceCulture);
+            }
+        }
     }
 }

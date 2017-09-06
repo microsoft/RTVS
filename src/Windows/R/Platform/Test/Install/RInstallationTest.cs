@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Registry;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;

@@ -80,8 +80,8 @@
   </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>

@@ -53,7 +53,7 @@ namespace Microsoft.UnitTests.Core.NSubstitute.Mef {
 
         public MefSubstituteBuilder AddValue<TContract, T>(T value)
             where T : TContract {
-            string contractName = AttributedModelServices.GetContractName(typeof(TContract));
+            var contractName = AttributedModelServices.GetContractName(typeof(TContract));
             AddValue(contractName, value);
             return this;
         }
@@ -64,7 +64,7 @@ namespace Microsoft.UnitTests.Core.NSubstitute.Mef {
         }
 
         public MefSubstitute Build() {
-            NSubstituteCompositionContainer compositionContainer = new NSubstituteCompositionContainer(new TypeCatalog(_types));
+            var compositionContainer = new NSubstituteCompositionContainer(new TypeCatalog(_types));
             compositionContainer.Compose(_batch);
             return MefSubstitute.CreateFrom(compositionContainer);
         }

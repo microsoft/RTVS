@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.Common.Core;
+using Microsoft.R.Platform.OS;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -21,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         [ImportingConstructor]
         public OpenContainingFolderCommand(UnconfiguredProject unconfiguredProject, [Import(AllowDefault = true)] IProcessServices ps) {
             _unconfiguredProject = unconfiguredProject;
-            _ps = ps ?? new ProcessServices();
+            _ps = ps ?? new WindowsProcessServices();
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {

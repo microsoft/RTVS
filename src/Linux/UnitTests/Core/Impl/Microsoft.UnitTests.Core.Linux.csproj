@@ -13,7 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Linux.csproj" />
+    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
+    <ProjectReference Include="..\..\..\R\Platform\Impl\Interpreters\Microsoft.R.Platform.Linux.csproj" />
   </ItemGroup>
 
   <ItemGroup>

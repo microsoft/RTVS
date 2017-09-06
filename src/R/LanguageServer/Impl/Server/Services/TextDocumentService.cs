@@ -56,7 +56,7 @@ namespace Microsoft.R.LanguageServer.Server {
             var entry = new DocumentEntry {
                 EditorBuffer = eb,
                 View = new EditorView(eb),
-                Document = new REditorDocument(eb, Services)
+                Document = new REditorDocument(eb, Services, false)
             };
             _documents[textDocument.Uri] = entry;
         }

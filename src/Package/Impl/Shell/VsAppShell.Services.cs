@@ -23,6 +23,10 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Platform;
 using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.Logging;
+using Microsoft.R.Platform.OS;
+using Microsoft.R.Platform.Security;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
@@ -43,14 +47,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _services
                 .AddService<IActionLog>(s => new Logger(VsApplication.Name, Path.GetTempPath(), s))
                 .AddService<IFileSystem, WindowsFileSystem>()
-                .AddService<ILoggingPermissions, LoggingPermissions>()
+                .AddService<ILoggingPermissions, WindowsLoggingPermissions>()
                 .AddService<IMainThread, VsMainThread>()
                 .AddService<IMicrosoftRClientInstaller, MicrosoftRClientInstaller>()
-                .AddService<IProcessServices, ProcessServices>()
+                .AddService<IProcessServices, WindowsProcessServices>()
                 .AddService<IRegistry, RegistryImpl>()
                 .AddService<ISettingsStorage, VsSettingsStorage>()
                 .AddService<IRSettings, RSettingsImplementation>()
-                .AddService<ISecurityService, SecurityService>()
+                .AddService<ISecurityService, WindowsSecurityService>()
                 .AddService<ITaskService, VsTaskService>()
                 .AddService<ITelemetryService, VsTelemetryService>();
         }

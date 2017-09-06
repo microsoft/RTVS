@@ -3,7 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using Microsoft.Common.Core.Shell;
+using Microsoft.R.Platform.Composition;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class CompositionCatalog : ICompositionCatalog {

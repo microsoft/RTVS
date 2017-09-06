@@ -18,6 +18,7 @@ namespace Microsoft.Common.Core.Security {
             return creds;
         }
 
-        public NetworkCredential GetCredential(Uri uri, string authType) => new NetworkCredential(UserName, Password.ToUnsecureString());
+        public NetworkCredential GetCredential(Uri uri, string authType) 
+            => new NetworkCredential(UserName, Password.ToUnsecureString());
     }
 }

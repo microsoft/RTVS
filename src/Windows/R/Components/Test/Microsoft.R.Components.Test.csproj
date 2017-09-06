@@ -141,8 +141,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
@@ -175,10 +175,6 @@
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>

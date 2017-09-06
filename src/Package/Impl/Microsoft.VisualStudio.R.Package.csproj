@@ -217,6 +217,7 @@
     <Compile Include="InfoBar\VsInfoBar.cs" />
     <Compile Include="InfoBar\VsInfoBarProvider.cs" />
     <Compile Include="Imaging\ImageService.cs" />
+    <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
     <Compile Include="Options\Attributes\PreviewPositionTypeConverter.cs" />
     <Compile Include="Options\Attributes\YesNoTypeConverter.cs" />
@@ -1084,8 +1085,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
@@ -1110,10 +1111,6 @@
     <ProjectReference Include="..\..\Windows\Containers\Impl\Microsoft.R.Containers.Windows.csproj">
       <Project>{8ed6ef0a-08a9-4f77-8ec1-f1630aad2ddb}</Project>
       <Name>Microsoft.R.Containers.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>

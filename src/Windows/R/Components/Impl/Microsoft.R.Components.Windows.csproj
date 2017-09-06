@@ -267,8 +267,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
@@ -306,9 +306,9 @@
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
+    <ProjectReference Include="..\..\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

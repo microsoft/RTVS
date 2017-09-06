@@ -4,7 +4,7 @@
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Shell;
+using Microsoft.R.Platform.Composition;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]

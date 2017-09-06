@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Sql;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.Win32;
 using NSubstitute;

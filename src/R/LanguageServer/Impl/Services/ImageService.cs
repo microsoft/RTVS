@@ -5,7 +5,7 @@ using Microsoft.Common.Core.Imaging;
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class ImageService: IImageService {
-        public object GetImage(ImageType imageType) => null;
+        public object GetImage(ImageType imageType, ImageSubType subType = ImageSubType.Public) => null;
 
         public object GetImage(string name) => null;
 

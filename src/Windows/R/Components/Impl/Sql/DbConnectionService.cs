@@ -7,10 +7,10 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.Data.ConnectionUI;
+using Microsoft.R.Platform.OS;
 using Microsoft.Win32;
 
 namespace Microsoft.R.Components.Sql {

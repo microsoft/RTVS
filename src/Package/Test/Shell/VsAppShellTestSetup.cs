@@ -19,6 +19,8 @@ using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Platform;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -63,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new WindowsFileSystem())
                 .AddService(new RegistryImpl())
-                .AddService(new ProcessServices())
+                .AddService(new WindowsProcessServices())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestTaskService())
                 .AddService(new TestPlatformServices())

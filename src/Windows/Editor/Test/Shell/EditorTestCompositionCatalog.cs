@@ -12,7 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.R.Platform.Composition;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.Languages.Editor.Test.Shell {

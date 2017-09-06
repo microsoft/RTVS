@@ -8,7 +8,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.OS;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.Win32;
 using static System.FormattableString;
 
@@ -19,10 +20,6 @@ namespace Microsoft.R.Platform.Interpreters {
     /// settings try and find highest version.
     /// </summary>
     public sealed class RInstallation : IRInstallationService {
-        private const string _rCoreRegKey = @"SOFTWARE\R-core\R";
-        private const string _rServer = "R_SERVER";
-        private static readonly string[] rFolders = new string[] { "MRO", "RRO", "R" };
-
         private readonly IRegistry _registry;
         private readonly IFileSystem _fileSystem;
 

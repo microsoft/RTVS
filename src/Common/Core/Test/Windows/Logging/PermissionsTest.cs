@@ -5,10 +5,10 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.R.Platform.Logging;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.Win32;
 using NSubstitute;
@@ -29,8 +29,8 @@ namespace Microsoft.Windows.Core.Test.Logging {
         [InlineData(false, 42, 42, (int)LogVerbosity.Minimal, false)]
         public void Overrides(bool telemetryEnabled, int? logVerbosity, int? feedbackSetting, LogVerbosity expectedMaxLogLevel, bool expectedFeedback) {
             var rtvsKey = Substitute.For<IRegistryKey>();
-            rtvsKey.GetValue(LoggingPermissions.LogVerbosityValueName).Returns(logVerbosity);
-            rtvsKey.GetValue(LoggingPermissions.FeedbackValueName).Returns(feedbackSetting);
+            rtvsKey.GetValue(WindowsLoggingPermissions.LogVerbosityValueName).Returns(logVerbosity);
+            rtvsKey.GetValue(WindowsLoggingPermissions.FeedbackValueName).Returns(feedbackSetting);
 
             var hklm = Substitute.For<IRegistryKey>();
             hklm.OpenSubKey("rtvs").Returns(rtvsKey);
@@ -46,7 +46,7 @@ namespace Microsoft.Windows.Core.Test.Logging {
                 .AddService(telemetry)
                 .AddService(registry);
 
-            var permissions = new LoggingPermissions(services);
+            var permissions = new WindowsLoggingPermissions(services);
             permissions.MaxVerbosity.Should().Be(expectedMaxLogLevel);
             permissions.IsFeedbackPermitted.Should().Be(expectedFeedback);
 

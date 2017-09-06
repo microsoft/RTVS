@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
@@ -52,5 +51,7 @@ namespace Microsoft.R.LanguageServer.Services {
         public BrowserType HtmlBrowserType { get; set; }
         public BrowserType MarkdownBrowserType { get; set; }
         public bool ShowRToolbar { get; set; }
+        public bool ShowHostLoadMeter { get; set; }
+        public bool GridDynamicEvaluation { get; set; }
     }
 }

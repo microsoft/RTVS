@@ -2,16 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO.Pipes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
+using Microsoft.R.Platform.Core.IO;
+using Microsoft.R.Platform.IO;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.UserProfile {
@@ -29,10 +29,10 @@ namespace Microsoft.R.Host.UserProfile {
         }
 
         private static async Task ProfileServiceOperationAsync(Func<IUserCredentials, ILogger, IUserProfileServiceResult> operation, string name, IUserProfileNamedPipeFactory pipeFactory, int serverTimeOutms = 0, int clientTimeOutms = 0, CancellationToken ct = default(CancellationToken), ILogger logger = null) {
-            using (NamedPipeServerStream server = pipeFactory.CreatePipe(name)) {
+            using (var server = pipeFactory.CreatePipe(name)) {
                 await server.WaitForConnectionAsync(ct);
 
-                ManualResetEventSlim forceDisconnect = new ManualResetEventSlim(false);
+                var forceDisconnect = new ManualResetEventSlim(false);
                 try {
                     if (serverTimeOutms + clientTimeOutms > 0) {
                         Task.Run(() => {
@@ -52,21 +52,19 @@ namespace Microsoft.R.Host.UserProfile {
                             cts.CancelAfter(serverTimeOutms);
                         }
 
-                        byte[] requestRaw = new byte[1024];
-                        int bytesRead = 0;
+                        var requestRaw = new byte[1024];
+                        var bytesRead = 0;
 
                         while (bytesRead == 0 && !cts.IsCancellationRequested) {
                             bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, cts.Token);
                         }
 
-                        string json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
-
+                        var json = Encoding.Unicode.GetString(requestRaw, 0, bytesRead);
                         var requestData = Json.DeserializeObject<RUserProfileServiceRequest>(json);
-
                         var result = operation?.Invoke(requestData, logger);
 
-                        string jsonResp = JsonConvert.SerializeObject(result);
-                        byte[] respData = Encoding.Unicode.GetBytes(jsonResp);
+                        var jsonResp = JsonConvert.SerializeObject(result);
+                        var respData = Encoding.Unicode.GetBytes(jsonResp);
 
                         await server.WriteAsync(respData, 0, respData.Length, cts.Token);
                         await server.FlushAsync(cts.Token);
@@ -78,8 +76,8 @@ namespace Microsoft.R.Host.UserProfile {
                         }
 
                         // Waiting here to allow client to finish reading client should disconnect after reading.
-                        byte[] requestRaw = new byte[1024];
-                        int bytesRead = 0;
+                        var requestRaw = new byte[1024];
+                        var bytesRead = 0;
                         while (bytesRead == 0 && !cts.Token.IsCancellationRequested) {
                             bytesRead = await server.ReadAsync(requestRaw, 0, requestRaw.Length, cts.Token);
                         }

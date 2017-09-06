@@ -7,10 +7,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
+using Microsoft.R.Platform.Core.IO;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.UserProfile {

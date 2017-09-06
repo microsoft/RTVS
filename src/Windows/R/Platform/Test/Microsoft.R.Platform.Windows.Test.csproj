@@ -49,24 +49,16 @@
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
-      <Project>{8445a4fb-4443-432c-94e8-1408559b7f58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
+      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
+      <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.Rtvs.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.Rtvs.Core.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Test\Microsoft.Windows.Core.Test.csproj">
-      <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>
-      <Name>Microsoft.Windows.Core.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Interpreters.Windows</Name>
+      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
+      <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

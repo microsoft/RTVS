@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public sealed class WindowsStartup : Startup {
@@ -16,7 +17,8 @@ namespace Microsoft.R.Host.Broker.Startup {
         public override void ConfigureServices(IServiceCollection services) {
             base.ConfigureServices(services);
 
-            services.AddSingleton<IFileSystem>(new WindowsFileSystem())
+            services
+                .AddSingleton<IFileSystem>(new WindowsFileSystem())
                 .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
                 .AddSingleton<IRHostProcessService, WindowsRHostProcessService>()
                 .AddSingleton<IRInstallationService, RInstallation>()

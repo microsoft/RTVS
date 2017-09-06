@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Broker.Startup;
+using Microsoft.R.Platform.OS;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class WindowsRHostProcessService : IRHostProcessService {

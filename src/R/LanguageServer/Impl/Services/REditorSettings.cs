@@ -3,15 +3,18 @@
 
 using System;
 using Microsoft.Languages.Core.Formatting;
+using Microsoft.Languages.Editor.Settings;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Validation.Lint;
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class REditorSettings : IREditorSettings {
-        public void Dispose() {
-            throw new NotImplementedException();
+        public REditorSettings(IEditorSettingsStorage storage) {
+            LintOptions = new LintOptions(() => storage);
         }
+
+        public void Dispose() { }
 
         public event EventHandler<EventArgs> SettingsChanged;
         public bool AutoFormat { get; } = true;
@@ -29,11 +32,11 @@ namespace Microsoft.R.LanguageServer.Services {
         public bool CommitOnEnter { get; } = true;
         public bool ShowCompletionOnFirstChar { get; } = true;
         public bool ShowCompletionOnTab { get; } = true;
-        public bool SendToReplOnCtrlEnter { get; }
         public bool SyntaxCheckInRepl { get; }
         public bool PartialArgumentNameMatch { get; }
         public bool EnableOutlining { get; }
+        public bool SmartIndentByArgument { get; } = true;
         public RFormatOptions FormatOptions { get; } = new RFormatOptions();
-        public LintOptions LintOptions { get; } = new LintOptions();
+        public LintOptions LintOptions { get; }
     }
 }

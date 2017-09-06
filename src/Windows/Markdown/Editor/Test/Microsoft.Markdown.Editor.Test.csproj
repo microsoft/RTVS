@@ -62,8 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
@@ -84,10 +84,6 @@
     <ProjectReference Include="..\..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
@@ -112,6 +108,10 @@
     <ProjectReference Include="..\..\..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
+      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
+      <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.Markdown.Editor.Windows.csproj">
       <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>

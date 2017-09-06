@@ -90,8 +90,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj">
       <Project>{eb1aadf1-ed85-4cec-a7ff-82602270da10}</Project>
@@ -104,10 +104,6 @@
     <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
       <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
       <Name>Microsoft.R.Platform</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>

@@ -12,6 +12,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
+using Microsoft.R.Platform.OS;
 
 namespace Microsoft.R.Host.Broker.UserProfile {
     [Authorize(Policy = Policies.RUser)]

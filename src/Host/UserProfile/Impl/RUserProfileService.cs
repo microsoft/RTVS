@@ -6,10 +6,10 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
+using Microsoft.R.Platform.IO;
 
 namespace Microsoft.R.Host.UserProfile {
     partial class RUserProfileService : ServiceBase {

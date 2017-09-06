@@ -59,8 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.OS;
+using Microsoft.R.Platform.OS;
 using Microsoft.Win32;
 
 namespace Microsoft.Common.Core.Test.Registry {
@@ -15,9 +15,6 @@ namespace Microsoft.Common.Core.Test.Registry {
         }
 
         public string LocalMachineHive => null;
-
-        public IRegistryKey OpenBaseKey(RegistryHive hive, RegistryView view) {
-            return new RegistryBaseKeyMock(_keys);
-        }
+        public IRegistryKey OpenBaseKey(RegistryHive hive, RegistryView view) => new RegistryBaseKeyMock(_keys);
     }
 }

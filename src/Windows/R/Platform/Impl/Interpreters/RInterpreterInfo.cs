@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
@@ -89,7 +90,7 @@ namespace Microsoft.R.Platform.Interpreters {
                 }
             } catch (Exception ex) when (ex is IOException || ex is ArgumentException || ex is UnauthorizedAccessException) {
                 ui?.ShowErrorMessage(
-                    string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, InstallPath, ex.Message));
+                    Resources.Error_ExceptionAccessingPath.FormatInvariant(InstallPath, ex.Message));
             }
 
             return _isValid.Value;

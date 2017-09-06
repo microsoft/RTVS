@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public sealed class LinuxStartup : Startup {

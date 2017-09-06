@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
@@ -12,6 +11,8 @@ using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Test.Telemetry;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
@@ -32,7 +33,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new TelemetryTestService())
                 .AddService(new WindowsFileSystem())
                 .AddService(new RegistryImpl())
-                .AddService(new ProcessServices())
+                .AddService(new WindowsProcessServices())
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestPlatformServices())

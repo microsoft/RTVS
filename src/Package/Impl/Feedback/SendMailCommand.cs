@@ -4,11 +4,11 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
 
         protected void SendMail(string body, string subject, string attachmentFile) {
             if (attachmentFile != null) {
-                IntPtr pidl = IntPtr.Zero;
+                var pidl = IntPtr.Zero;
                 try {
                     pidl = NativeMethods.ILCreateFromPath(attachmentFile);
                     if (pidl != IntPtr.Zero) {
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                 fallbackWindow.Show();
                 fallbackWindow.Activate();
 
-                ProcessStartInfo psi = new ProcessStartInfo();
+                var psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;
                 psi.FileName = string.Format(
                     CultureInfo.InvariantCulture,
@@ -62,7 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                 Services.Process().Start(psi);
             } else {
                 try {
-                    MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
+                    var mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
                     mail.Subject = subject;
                     mail.Body = body;
                     mail.To = "rtvsuserfeedback@microsoft.com";

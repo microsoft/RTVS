@@ -11,12 +11,14 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
     [ExcludeFromCodeCoverage]
-    public class TestCoreShell : ICoreShell {
+    public sealed class TestCoreShell : ICoreShell {
         public IServiceManager ServiceManager { get; }
 
         public TestCoreShell(IServiceManager serviceManager) {
@@ -77,7 +79,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
                 .AddService(fs ?? new WindowsFileSystem())
                 .AddService(registry ?? new RegistryImpl())
-                .AddService(ps ?? new ProcessServices())
+                .AddService(ps ?? new WindowsProcessServices())
                 .AddService(new TestTaskService())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestImageService())

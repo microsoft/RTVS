@@ -3,7 +3,7 @@
 
 using System;
 using System.IO;
-using Microsoft.Common.Core.OS;
+using Microsoft.R.Platform.OS;
 using Microsoft.Win32;
 
 namespace Microsoft.R.Platform.Interpreters {
