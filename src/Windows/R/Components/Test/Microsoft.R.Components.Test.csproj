@@ -160,10 +160,6 @@
       <Project>{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}</Project>
       <Name>Microsoft.R.Host.Protocol</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
-      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
-      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
@@ -191,6 +187,10 @@
     <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{F951311C-D665-4987-95A4-72A2DE37E263}</Project>
       <Name>Microsoft.R.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
       <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>

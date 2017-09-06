@@ -99,10 +99,6 @@
       <Project>{62857E49-E586-4BAA-AE4D-1232093E7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
-      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
-      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>

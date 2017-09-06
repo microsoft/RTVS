@@ -81,10 +81,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
-      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
-      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -92,6 +88,10 @@
     <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
       <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>

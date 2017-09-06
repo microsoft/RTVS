@@ -85,14 +85,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
-      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
-      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Mocks\VisualStudio\Microsoft.VisualStudio.Shell.Mocks.csproj">
-      <Project>{bef9464f-ff58-4693-af12-a6fa75033a5c}</Project>
-      <Name>Microsoft.VisualStudio.Shell.Mocks</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41aa8769-0fbc-4a80-8498-21c833f0c2ac}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
@@ -148,6 +140,14 @@
     <ProjectReference Include="..\..\Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Mocks\VisualStudio\Microsoft.VisualStudio.Shell.Mocks.csproj">
+      <Project>{bef9464f-ff58-4693-af12-a6fa75033a5c}</Project>
+      <Name>Microsoft.VisualStudio.Shell.Mocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
