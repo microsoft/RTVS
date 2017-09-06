@@ -57,7 +57,7 @@
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
       <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+    <ProjectReference Include="..\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>

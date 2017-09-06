@@ -52,6 +52,10 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\EditorTestApp\Microsoft.Languages.Editor.Application.csproj">
+      <Project>{9174c912-e757-4ecd-9d6e-9604bef74900}</Project>
+      <Name>Microsoft.Languages.Editor.Application</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
       <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
       <Name>Microsoft.Markdown.Editor.Windows</Name>
@@ -87,10 +91,6 @@
     <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\EditorTestApp\Microsoft.Languages.Editor.Application.csproj">
-      <Project>{9174c912-e757-4ecd-9d6e-9604bef74900}</Project>
-      <Name>Microsoft.Languages.Editor.Application</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
