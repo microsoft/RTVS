@@ -3,7 +3,7 @@
 
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
@@ -12,7 +12,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
             base.SetupServices(serviceManager, testInput);
             serviceManager
                 .AddWindowsHostClientServices()
-                .AddWindowsRInterpretersServices();
+                .AddWindowsPlatformServices();
         }
     }
 }

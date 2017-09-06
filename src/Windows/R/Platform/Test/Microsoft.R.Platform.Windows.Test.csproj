@@ -6,8 +6,8 @@
     <ProjectGuid>{D73325D8-2406-47FF-9E7A-E295A847268B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.R.Interpreters.Windows.Test</RootNamespace>
-    <AssemblyName>Microsoft.R.Interpreters.Windows.Test</AssemblyName>
+    <RootNamespace>Microsoft.R.Platform.Windows.Test</RootNamespace>
+    <AssemblyName>Microsoft.R.Platform.Windows.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -48,7 +48,7 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
       <Project>{8445a4fb-4443-432c-94e8-1408559b7f58}</Project>
       <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
@@ -64,7 +64,7 @@
       <Project>{1F89902F-853E-44B5-93A7-E237984C4FB7}</Project>
       <Name>Microsoft.Windows.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.R.Interpreters.Windows.csproj">
+    <ProjectReference Include="..\Impl\Microsoft.R.Platform.Windows.csproj">
       <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
       <Name>Microsoft.R.Interpreters.Windows</Name>
     </ProjectReference>

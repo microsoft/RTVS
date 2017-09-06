@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     public sealed class RInterpreterInfo : IRInterpreterInfo {
         private readonly IFileSystem _fileSystem;
         private bool? _isValid;
@@ -66,11 +65,11 @@ namespace Microsoft.R.Interpreters {
             svr = svr ?? new SupportedRVersionRange();
 
             // Normalize path so it points to R root and not to bin or bin\x64
-            string rDllPath = Path.Combine(BinPath, "R.dll");
-            string rGraphAppPath = Path.Combine(BinPath, "Rgraphapp.dll");
-            string rTermPath = Path.Combine(BinPath, "RTerm.exe");
-            string rScriptPath = Path.Combine(BinPath, "RScript.exe");
-            string rGuiPath = Path.Combine(BinPath, "RGui.exe");
+            var rDllPath = Path.Combine(BinPath, "R.dll");
+            var rGraphAppPath = Path.Combine(BinPath, "Rgraphapp.dll");
+            var rTermPath = Path.Combine(BinPath, "RTerm.exe");
+            var rScriptPath = Path.Combine(BinPath, "RScript.exe");
+            var rGuiPath = Path.Combine(BinPath, "RGui.exe");
 
             try {
                 if (_fileSystem.FileExists(rDllPath) && _fileSystem.FileExists(rTermPath) &&
@@ -102,7 +101,7 @@ namespace Microsoft.R.Interpreters {
         }
 
         private Version GetRVersionFromBinary(IFileSystem fs, string basePath) {
-            string rDllPath = Path.Combine(BinPath, "R.dll");
+            var rDllPath = Path.Combine(BinPath, "R.dll");
             var fvi = fs.GetFileVersion(rDllPath);
             int minor, revision;
 
@@ -141,11 +140,11 @@ namespace Microsoft.R.Interpreters {
         private Version DetermineVersion() {
             Version v = null;
 
-            string versionString = ExtractVersionString(Name);
+            var versionString = ExtractVersionString(Name);
             if (string.IsNullOrEmpty(versionString)) {
                 // Try from file
                 try {
-                    string rDllPath = Path.Combine(BinPath, @"R.dll");
+                    var rDllPath = Path.Combine(BinPath, @"R.dll");
                     v = GetRVersionFromBinary(_fileSystem, rDllPath);
                 } catch (IOException) { } catch (UnauthorizedAccessException) { }
             } else {
@@ -156,8 +155,8 @@ namespace Microsoft.R.Interpreters {
         }
 
         private string ExtractVersionString(string original) {
-            int start = 0;
-            int end = original.Length;
+            var start = 0;
+            var end = original.Length;
 
             for (; start < original.Length; start++) {
                 if (char.IsDigit(original[start])) {

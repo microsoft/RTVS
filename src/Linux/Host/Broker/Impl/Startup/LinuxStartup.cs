@@ -7,10 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Services;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
-namespace Microsoft.R.Host.Broker.Startup
-{
+namespace Microsoft.R.Host.Broker.Startup {
     public sealed class LinuxStartup : Startup {
         public LinuxStartup(ILoggerFactory loggerFactory, IConfigurationRoot configuration) : base(loggerFactory, configuration) { }
 

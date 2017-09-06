@@ -14,7 +14,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Fixtures {
@@ -43,7 +43,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
-                .AddWindowsRInterpretersServices()
+                .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddEditorServices()

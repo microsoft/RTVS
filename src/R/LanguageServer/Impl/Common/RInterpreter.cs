@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.LanguageServer.Common {
     internal sealed class RInterpreterInfo: IRInterpreterInfo {

@@ -39,8 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)R\Interpreters\Impl\Microsoft.R.Interpreters.csproj" />
     <ProjectReference Include="$(SourceDirectory)Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj" />
+    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">

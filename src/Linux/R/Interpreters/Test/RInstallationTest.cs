@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.Linux;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;

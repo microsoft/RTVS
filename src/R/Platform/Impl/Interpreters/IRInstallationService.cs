@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     public interface IRInstallationService {
         IRInterpreterInfo CreateInfo(string name, string path);
 

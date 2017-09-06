@@ -6,11 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
-using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {

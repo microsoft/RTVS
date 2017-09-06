@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Broker.UserProfile;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public sealed class WindowsStartup : Startup {

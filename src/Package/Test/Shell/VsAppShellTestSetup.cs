@@ -3,9 +3,7 @@
 
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
@@ -14,12 +12,13 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
-using Microsoft.R.Interpreters;
 using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components;
+using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Platform;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -29,7 +28,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
 using Microsoft.VisualStudio.TextManager.Interop;
 using NSubstitute;
-using Microsoft.R.Components.Test.Fakes.StatusBar;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
@@ -73,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
-                .AddWindowsRInterpretersServices()
+                .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 // OLE and VS specifics

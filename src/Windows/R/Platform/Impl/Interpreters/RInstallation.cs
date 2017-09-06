@@ -12,7 +12,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
 using static System.FormattableString;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     /// <summary>
     /// Verifies that R is installed in the folder
     /// specified in settings. If nothing is specified

@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Test.Stubs;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Components.Test.StubFactories {
     [ExcludeFromCodeCoverage]

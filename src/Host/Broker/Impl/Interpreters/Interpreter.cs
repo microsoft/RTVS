@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.R.Host.Protocol;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     public class Interpreter {

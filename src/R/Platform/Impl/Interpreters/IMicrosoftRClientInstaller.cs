@@ -4,7 +4,7 @@
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     /// <summary>
     /// Provides a way to download installer and launch setup 
     /// of the Microsoft R Client. Exported via MEF.

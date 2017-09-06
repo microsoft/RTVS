@@ -14,14 +14,15 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Settings;
-using Microsoft.R.Containers;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
+using Microsoft.R.Containers;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
@@ -75,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new RMarkdownEditorSettings(this))
                 .AddService<IStatusBar, VsStatusBar>()
                 .AddService<RPackageToolWindowProvider>()
-                .AddWindowsRInterpretersServices()
+                .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddEditorServices()

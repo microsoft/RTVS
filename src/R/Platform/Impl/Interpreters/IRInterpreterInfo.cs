@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Common.Core.Services;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     public interface IRInterpreterInfo {
         /// <summary>
         /// User-friendly name of the interpreter. Determined from the registry

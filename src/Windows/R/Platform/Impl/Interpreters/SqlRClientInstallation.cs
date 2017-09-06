@@ -6,7 +6,7 @@ using System.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     public static class SqlRClientInstallation {
         private const string _rClientKey = @"SOFTWARE\Microsoft\R Client";
         private const string _rServer = "R_SERVER";

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Interpreters {
+namespace Microsoft.R.Platform.Interpreters {
     public interface ISupportedRVersionRange {
         /// <summary>
         /// Minimal supported R version major part such as 3 in 3.2

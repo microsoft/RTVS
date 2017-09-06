@@ -9,7 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
@@ -56,8 +56,8 @@ namespace Microsoft.R.Host.Broker.Interpreters {
             }
 
             foreach (var kv in _options.Interpreters) {
-                string id = kv.Key;
-                InterpreterOptions options = kv.Value;
+                var id = kv.Key;
+                var options = kv.Value;
 
                 if (!string.IsNullOrEmpty(options.BasePath) && _fs.DirectoryExists(options.BasePath)) {
                     var interpInfo = _installationService.CreateInfo(string.Empty, options.BasePath);

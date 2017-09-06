@@ -1103,6 +1103,10 @@
       <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
       <Name>Microsoft.R.Host.Protocol</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
+      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
+      <Name>Microsoft.R.Platform</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Containers\Impl\Microsoft.R.Containers.Windows.csproj">
       <Project>{8ed6ef0a-08a9-4f77-8ec1-f1630aad2ddb}</Project>
       <Name>Microsoft.R.Containers.Windows</Name>
@@ -1150,10 +1154,6 @@
       <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\R\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj">
       <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
       <Name>Microsoft.VisualStudio.R.Sql</Name>
@@ -1182,10 +1182,6 @@
       <Name>Microsoft.R.Host.Broker.Windows</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Interpreters.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
@@ -1193,6 +1189,10 @@
     <ProjectReference Include="..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
+      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
+      <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
