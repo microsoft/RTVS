@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.12
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
 EndProject
@@ -128,6 +128,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Containers.Linux", "Linux\Containers\Impl\Microsoft.R.Containers.Linux.csproj", "{D84CC0CF-40A7-49E0-964B-5D4114710EC1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Containers.Windows.Test", "Windows\Containers\Test\Microsoft.R.Containers.Windows.Test.csproj", "{62E1CA8E-8398-46FC-B14F-DE0C5759DD2D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.LanguageServer", "R\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj", "{15AEED49-AD90-46C5-866D-2365BC133E1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -839,6 +841,18 @@ Global
 		{62E1CA8E-8398-46FC-B14F-DE0C5759DD2D}.Release|x64.Build.0 = Release|Any CPU
 		{62E1CA8E-8398-46FC-B14F-DE0C5759DD2D}.Release|x86.ActiveCfg = Release|Any CPU
 		{62E1CA8E-8398-46FC-B14F-DE0C5759DD2D}.Release|x86.Build.0 = Release|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Debug|x64.Build.0 = Debug|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Debug|x86.Build.0 = Debug|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Release|x64.ActiveCfg = Release|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Release|x64.Build.0 = Release|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Release|x86.ActiveCfg = Release|Any CPU
+		{15AEED49-AD90-46C5-866D-2365BC133E1F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -891,5 +905,8 @@ Global
 		{8ED6EF0A-08A9-4F77-8EC1-F1630AAD2DDB} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 		{D84CC0CF-40A7-49E0-964B-5D4114710EC1} = {3CF8DD8A-9533-498F-8B65-AF3F5AA580C7}
 		{62E1CA8E-8398-46FC-B14F-DE0C5759DD2D} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {78E1EA9E-4708-4DE9-B4DF-D10E3B0119FA}
 	EndGlobalSection
 EndGlobal
