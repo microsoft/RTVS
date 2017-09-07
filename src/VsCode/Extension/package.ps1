@@ -22,11 +22,11 @@ $vsc = Resolve-Path -Path $vscPath
 &copy $bin/Microsoft.R.Host.UserProfile.exe
 #&copy $bin/Microsoft.R.Host.RunAsUser.exe
 &copy $bin/Microsoft.R.Host.Broker.Windows.exe
+&copy $bin/Microsoft.R.Host.Broker.Config.json
 &copy $bin/Microsoft.R.Platform.Windows.dll
 &copy $bin/Microsoft.R.Containers.Windows.dll
 
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Broker.dll
-&copy $bin/netcoreapp1.1/Microsoft.R.Host.Broker.Config.json
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Broker.Linux.dll
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Protocol.dll
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Client.dll
