@@ -19,11 +19,14 @@ $vsc = Resolve-Path -Path $vscPath
 &copy $bin/Newtonsoft.Json.dll
 
 &copy $bin/Microsoft.R.Host.exe
+&copy $bin/Microsoft.R.Host.UserProfile.exe
+#&copy $bin/Microsoft.R.Host.RunAsUser.exe
 &copy $bin/Microsoft.R.Host.Broker.Windows.exe
 &copy $bin/Microsoft.R.Platform.Windows.dll
 &copy $bin/Microsoft.R.Containers.Windows.dll
 
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Broker.dll
+&copy $bin/netcoreapp1.1/Microsoft.R.Host.Broker.Config.json
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Broker.Linux.dll
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Protocol.dll
 &copy $bin/netcoreapp1.1/Microsoft.R.Host.Client.dll
@@ -171,6 +174,9 @@ $vsc = Resolve-Path -Path $vscPath
 &copy $bin/System.Xml.XPath.dll
 &copy $bin/System.Xml.XPath.XDocument.dll
 &copy $bin/libuv.dll
+&copy $bin/libzip-5.dll
+&copy $bin/libwinpthread-1.dll
+&copy $bin/zlib1.dll
 
 &cd ..
 &vsce package
