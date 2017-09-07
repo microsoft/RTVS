@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml" />
+  <Default Extension="dll" ContentType="application/octet-stream" />
+  <Default Extension="snippet" ContentType="application/octet-stream" />
+  <Default Extension="psdsxs" ContentType="application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml" />
+  <Default Extension="R" ContentType="application/octet-stream" />
+  <Default Extension="sql" ContentType="application/octet-stream" />
+  <Override PartName="/Contents/Common7/IDE/Extensions/Microsoft/R%20Tools%20for%20Visual%20Studio/rtvs/NAMESPACE" ContentType="application/octet-stream" />
+  <Default Extension="xml" ContentType="application/octet-stream" />
+  <Default Extension="html" ContentType="application/octet-stream" />
+  <Default Extension="css" ContentType="application/octet-stream" />
+  <Default Extension="rd" ContentType="application/octet-stream" />
+  <Default Extension="Rmd" ContentType="application/octet-stream" />
+  <Default Extension="targets" ContentType="application/octet-stream" />
+  <Default Extension="Rproj" ContentType="application/octet-stream" />
+  <Default Extension="vsixmanifest" ContentType="application/octet-stream" />
+  <Default Extension="psdor" ContentType="application/vnd.openxmlformats-package.digital-signature-origin" />
+  <Override PartName="/Contents/Common7/IDE/Extensions/Microsoft/R%20Tools%20for%20Visual%20Studio/rtvs/R/rtvs" ContentType="application/octet-stream" />
+  <Default Extension="txt" ContentType="application/octet-stream" />
+  <Default Extension="ico" ContentType="application/octet-stream" />
+  <Default Extension="config" ContentType="application/octet-stream" />
+  <Default Extension="props" ContentType="application/octet-stream" />
+  <Default Extension="json" ContentType="text/xml" />
+  <Override PartName="/Contents/Common7/IDE/Extensions/Microsoft/R%20Tools%20for%20Visual%20Studio/rtvs/DESCRIPTION" ContentType="application/octet-stream" />
+  <Default Extension="exe" ContentType="application/octet-stream" />
+</Types>

@@ -8,8 +8,8 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class PersistentSpanMock : IPersistentSpan {
-        private ITextBuffer _textBuffer;
-        private Span _span;
+        private readonly ITextBuffer _textBuffer;
+        private readonly Span _span;
 
         public PersistentSpanMock(ITextBuffer textBuffer, Span span, string filePath) {
             _textBuffer = textBuffer;
@@ -23,17 +23,13 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
         public ITrackingSpan Span => new TrackingSpanMock(_textBuffer, _span, SpanTrackingMode.EdgePositive, TrackingFidelityMode.Forward);
         public void Dispose() { }
 
-        public bool TryGetEndLineIndex(out int endLine, out int endIndex) {
-            throw new NotImplementedException();
-        }
+        public bool TryGetEndLineIndex(out int endLine, out int endIndex) => throw new NotImplementedException();
 
         public bool TryGetSpan(out Span span) {
             span = _span;
             return true;
         }
 
-        public bool TryGetStartLineIndex(out int startLine, out int startIndex) {
-            throw new NotImplementedException();
-        }
+        public bool TryGetStartLineIndex(out int startLine, out int startIndex) => throw new NotImplementedException();
     }
 }

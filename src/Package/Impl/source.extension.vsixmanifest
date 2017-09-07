@@ -20,7 +20,6 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" />
   </Dependencies>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="websocket-sharp.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Newtonsoft.Json.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Broker.Windows.exe" />
