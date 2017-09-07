@@ -175,7 +175,7 @@
       <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
       <Name>Microsoft.R.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
+    <ProjectReference Include="..\..\..\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>

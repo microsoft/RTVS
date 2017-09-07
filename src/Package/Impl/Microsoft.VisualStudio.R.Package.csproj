@@ -1187,6 +1187,10 @@
       <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
       <Name>Microsoft.R.Platform.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Windows\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj">
+      <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
+      <Name>Microsoft.VisualStudio.R.Sql</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Help\Themes\Dark.css">
