@@ -3,9 +3,9 @@
 out/test/**
 test/**
 src/**
-server/**
 **/*.map
 *.csproj
+*.user
 *.ps1
 .gitignore
 tsconfig.json
