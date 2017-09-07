@@ -30,7 +30,7 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
 
     // The server is implemented in C#
     const commandOptions = { stdio: "pipe" };
-    const serverModule = "Microsoft.R.LanguageServer.dll";
+    const serverModule = context.extensionPath + "/server/Microsoft.R.LanguageServer.dll";
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used

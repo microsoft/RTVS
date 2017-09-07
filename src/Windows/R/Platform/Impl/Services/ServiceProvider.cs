@@ -4,7 +4,9 @@
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.Logging;
 using Microsoft.R.Platform.OS;
+using Microsoft.R.Platform.Telemetry;
 
 namespace Microsoft.R.Platform {
     public static class ServicesExtensions {
@@ -12,6 +14,9 @@ namespace Microsoft.R.Platform {
             => serviceManager
                 .AddService(new WindowsFileSystem())
                 .AddService(new WindowsProcessServices())
+                .AddService(new RegistryImpl())
+                .AddService(new TelemetryServiceStub())
+                .AddService(new WindowsLoggingPermissions(serviceManager))
                 .AddService<IRInstallationService, RInstallation>();
     }
 

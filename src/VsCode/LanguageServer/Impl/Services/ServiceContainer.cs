@@ -20,7 +20,7 @@ using Microsoft.R.Editor;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 
 namespace Microsoft.R.LanguageServer.Services {
-    internal sealed class ServiceContainer : IServiceContainer {
+    internal sealed class ServiceContainer : IServiceContainer, IDisposable {
         private readonly ServiceManager _services = new ServiceManager();
 
         public ServiceContainer() {
@@ -40,6 +40,8 @@ namespace Microsoft.R.LanguageServer.Services {
             AddPlatformSpecificServices();
         }
 
+        public void Dispose() => _services.Dispose();
+
         public T GetService<T>(Type type = null) where T : class => _services.GetService<T>(type);
         public IEnumerable<Type> AllServices => _services.AllServices;
         public IEnumerable<T> GetServices<T>() where T : class => _services.GetServices<T>();
@@ -50,7 +52,7 @@ namespace Microsoft.R.LanguageServer.Services {
             var platformServicesAssemblyPath = Path.Combine(assemblyLoc, GetPlatformServiceProviderAssemblyName());
             var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(platformServicesAssemblyPath);
 
-            var classType = assembly.GetType("ServiceProvider");
+            var classType = assembly.GetType("Microsoft.R.Platform.ServiceProvider");
             var mi = classType.GetMethod("ProvideServices", BindingFlags.Static | BindingFlags.Public);
             mi.Invoke(null, new object[] { _services });
         }

@@ -10,29 +10,18 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using JsonRpc.Standard.Client;
 using JsonRpc.Standard.Contracts;
 using JsonRpc.Standard.Server;
 using JsonRpc.Streams;
 using LanguageServer.VsCode;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Functions;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Host;
-using Microsoft.R.LanguageServer.InteractiveWorkflow;
-using Microsoft.R.LanguageServer.Services;
 using Console = System.Console;
 
 namespace Microsoft.R.LanguageServer.Server {
     internal static class Program {
-        private static IServiceContainer _services;
-        private static IPackageIndex _packageIndex;
-
         private static void Main(string[] args) {
             var debugMode = CheckDebugMode(args);
             StartSessions(debugMode);
@@ -69,15 +58,17 @@ namespace Microsoft.R.LanguageServer.Server {
                     StreamRpcServerHandlerOptions.ConsistentResponseSequence |
                     StreamRpcServerHandlerOptions.SupportsRequestCancellation);
                 serverHandler.DefaultFeatures.Set(session);
+
                 // If we want server to stop, just stop the "source"
                 using (serverHandler.Attach(reader, writer))
-                using (clientHandler.Attach(reader, writer)) {
-                    StartHostAsync().DoNotWait();
+                using (clientHandler.Attach(reader, writer))
+                using (var rConnection = new RConnection()) {
+                    rConnection.ConnectAsync().DoNotWait();
                     // Wait for the "stop" request.
                     session.CancellationToken.WaitHandle.WaitOne();
                 }
-                logWriter?.WriteLine("Exited");
             }
+            logWriter?.WriteLine("Exited");
         }
 
         private static IJsonRpcServiceHost BuildServiceHost(TextWriter logWriter,
@@ -131,20 +122,6 @@ namespace Microsoft.R.LanguageServer.Server {
 #endif
             }
             return debugMode;
-        }
-
-        private static async Task StartHostAsync() {
-            _services = new ServiceContainer();
-            TextDocumentService.Services = _services;
-
-            var provider = _services.GetService<IRInteractiveWorkflowProvider>();
-            var workflow = provider.GetOrCreate();
-
-            var info = BrokerConnectionInfo.Create(_services.Security(), "VSCR", @"C:\Program Files\R\R-3.4.0", string.Empty, false);
-
-            await workflow.RSessions.TrySwitchBrokerAsync("VSCR", info);
-            await workflow.RSession.StartHostAsync(new RHostStartupInfo(), new RSessionCallback(), 20000);
-            _packageIndex = _services.GetService<IPackageIndex>();
         }
     }
 }
