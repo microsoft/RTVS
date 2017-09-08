@@ -4,10 +4,7 @@
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Common.Core.Extensions;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
@@ -19,6 +16,7 @@ using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Platform;
+using Microsoft.R.Platform.Composition;
 using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;

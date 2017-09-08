@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.R.Platform {
+namespace Microsoft.R.Components {
     internal static class NativeMethods {
         public enum LogonType : int {
             LOGON32_LOGON_INTERACTIVE = 2,

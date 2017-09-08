@@ -14,9 +14,9 @@ using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.R.Platform.OS;
+using Microsoft.R.Components.OS;
 
-namespace Microsoft.R.Platform.Security {
+namespace Microsoft.R.Components.Security {
     public class WindowsSecurityService : ISecurityService {
         private readonly IServiceContainer _services;
 
@@ -86,7 +86,7 @@ namespace Microsoft.R.Platform.Security {
             var credui = new NativeMethods.CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(NativeMethods.CREDUI_INFO)),
                 hwndParent = _services.GetService<IPlatformServices>().ApplicationWindowHandle,
-                pszCaptionText = WindowsResources.Info_ConnectingTo.FormatInvariant(workspaceName)
+                pszCaptionText = Resources.Info_ConnectingTo.FormatInvariant(workspaceName)
             };
 
             uint authPkg = 0;
@@ -151,7 +151,7 @@ namespace Microsoft.R.Platform.Security {
                 creds.CredentialBlobSize = (uint)((password.Length + 1) * sizeof(char)); // unicode password + unicode null
                 if (!NativeMethods.CredWrite(ref creds, 0)) {
                     var error = Marshal.GetLastWin32Error();
-                    throw new Win32Exception(error, WindowsResources.Error_CredWriteFailed);
+                    throw new Win32Exception(error, Resources.Error_CredWriteFailed);
                 }
             } finally {
                 if (creds.CredentialBlob != IntPtr.Zero) {

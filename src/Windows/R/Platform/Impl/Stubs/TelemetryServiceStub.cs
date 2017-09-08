@@ -3,7 +3,7 @@
 
 using Microsoft.Common.Core.Telemetry;
 
-namespace Microsoft.R.Platform.Telemetry {
+namespace Microsoft.R.Platform.Stubs {
     internal sealed class TelemetryServiceStub: ITelemetryService {
         public bool IsEnabled => true;
         public void ReportEvent(TelemetryArea area, string eventName, object parameters = null) { }

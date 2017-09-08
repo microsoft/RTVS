@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Common.Core.Logging {
+namespace Microsoft.R.Components.Logging {
     public class EventLogLoggerProvider : ILoggerProvider {
         private readonly List<EventLogLogger> _loggers = new List<EventLogLogger>();
         private readonly LogLevel _logLevel;

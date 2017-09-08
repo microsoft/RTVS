@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#if DESKTOP
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -11,7 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-namespace Microsoft.Common.Core.Extensions {
+namespace Microsoft.R.Platform.Composition {
     public static partial class CompositionBatchExtensions {
         public static CompositionBatch AddValue<TContract>(this CompositionBatch batch, TContract value) {
             var contractName = AttributedModelServices.GetContractName(typeof(TContract));
@@ -78,3 +79,4 @@ namespace Microsoft.Common.Core.Extensions {
             null);
     }
 }
+#endif

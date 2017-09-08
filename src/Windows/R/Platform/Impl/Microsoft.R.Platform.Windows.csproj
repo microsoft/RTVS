@@ -1,106 +1,34 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.R.Platform</RootNamespace>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.R.Platform.Windows</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <RootNamespace>Microsoft.R.Platform</RootNamespace>
   </PropertyGroup>
+  <Import Project="..\..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\..\R.Settings.props" />
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.4.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs">
-      <Link>Properties\AssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Composition\INamedExport.cs" />
-    <Compile Include="Composition\NamedExportLocator.cs" />
-    <Compile Include="Diagnostics\RestartManager.cs" />
-    <Compile Include="Extensions\ClipboardExtensions.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.cs" />
-    <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
-    <Compile Include="IO\KnownFolderGuids.cs" />
-    <Compile Include="IO\NamedPipeServerStreamFactory.cs" />
-    <Compile Include="IO\WindowsFileSystem.cs" />
-    <Compile Include="Logging\EventLogLogger.cs" />
-    <Compile Include="Logging\EventLogLoggerProvider.cs" />
-    <Compile Include="Logging\WindowsLoggingPermissions.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Network\FileDownloader.cs" />
-    <Compile Include="OS\ErrorCodeConverter.cs" />
-    <Compile Include="OS\IRegistry.cs" />
-    <Compile Include="OS\IRegistryKey.cs" />
-    <Compile Include="OS\ProcessWaitHandle.cs" />
-    <Compile Include="OS\RegistryImpl.cs" />
-    <Compile Include="OS\RegistryKeyImpl.cs" />
-    <Compile Include="OS\SafeThreadHandle.cs" />
-    <Compile Include="OS\Win32EnvironmentBlock.cs" />
-    <Compile Include="OS\Win32MessageBox.cs" />
-    <Compile Include="OS\Win32NativeEnvironmentBlock.cs" />
-    <Compile Include="OS\Win32Process.cs" />
-    <Compile Include="OS\WindowsProcessServices.cs" />
-    <Compile Include="Security\CredentialHandle.cs" />
-    <Compile Include="Security\WindowsSecurityService.cs" />
-    <Compile Include="Security\SecurityUtilities.cs" />
-    <Compile Include="Services\ServiceProvider.cs" />
-    <Compile Include="Interpreters\RInstallation.cs" />
-    <Compile Include="Interpreters\RInterpreterInfo.cs" />
-    <Compile Include="Interpreters\SqlRClientInstallation.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Composition\ICompositionCatalog.cs" />
-    <Compile Include="Shell\IPlatformServices.cs" />
-    <Compile Include="Telemetry\TelemetryServiceStub.cs" />
-    <Compile Include="WindowsResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>WindowsResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
-      <Name>Microsoft.R.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
-      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
-      <Name>Microsoft.R.Platform</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="WindowsResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>WindowsResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net46'">DESKTOP;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

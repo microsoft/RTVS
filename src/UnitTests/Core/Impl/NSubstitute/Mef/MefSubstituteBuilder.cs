@@ -8,7 +8,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Common.Core.Extensions;
+using Microsoft.R.Platform.Composition;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef {
     [ExcludeFromCodeCoverage]

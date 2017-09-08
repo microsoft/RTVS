@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading;
 using Microsoft.Common.Core.Net;
 
-namespace Microsoft.Common.Core.Network {
+namespace Microsoft.VisualStudio.R.Package.RClient {
     public sealed class FileDownloader : IFileDownloader {
         public string Download(string url, string dstPath, CancellationToken ct) {
             try {

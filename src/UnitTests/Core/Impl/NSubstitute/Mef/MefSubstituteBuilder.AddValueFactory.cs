@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Primitives;
-using Microsoft.Common.Core.Extensions;
+using Microsoft.R.Platform.Composition;
 
 namespace Microsoft.UnitTests.Core.NSubstitute.Mef {
     public partial class MefSubstituteBuilder {

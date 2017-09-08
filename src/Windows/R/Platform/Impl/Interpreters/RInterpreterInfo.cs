@@ -152,7 +152,7 @@ namespace Microsoft.R.Platform.Interpreters {
                 Version.TryParse(versionString, out v);
             }
 
-            return v ?? new Version();
+            return v ?? new Version(0, 0);
         }
 
         private string ExtractVersionString(string original) {

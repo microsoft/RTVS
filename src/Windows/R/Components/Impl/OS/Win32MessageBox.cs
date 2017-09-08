@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
 
-namespace Microsoft.R.Platform.OS {
+namespace Microsoft.R.Components.OS {
     public sealed class Win32MessageBox {
         ///<summary>
         /// Flags that define appearance and behaviour of a standard message box displayed by a call to the MessageBox function.

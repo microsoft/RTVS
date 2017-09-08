@@ -92,6 +92,7 @@
     <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
     <Compile Include="Documentation\LocalDocumentationPaths.cs" />
     <Compile Include="Documentation\OnlineDocumentationUrls.cs" />
+    <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Extensions\PackageManagerExtensions.cs" />
     <Compile Include="Extensions\PlotManagerExtensions.cs" />
     <Compile Include="Extensions\InteractiveWorkflowExtensions.cs" />
@@ -141,6 +142,10 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowVisualProvider.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowVisual.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\InteractiveWindowWriter.cs" />
+    <Compile Include="Logging\EventLogLogger.cs" />
+    <Compile Include="Logging\EventLogLoggerProvider.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="OS\Win32MessageBox.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisual.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
@@ -247,6 +252,9 @@
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
+    <Compile Include="Security\CredentialHandle.cs" />
+    <Compile Include="Security\SecurityUtilities.cs" />
+    <Compile Include="Security\WindowsSecurityService.cs" />
     <Compile Include="ServicesExtensions.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorList.cs" />

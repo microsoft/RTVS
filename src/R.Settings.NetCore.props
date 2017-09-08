@@ -12,6 +12,7 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\</IntermediateOutputPath>
     <MicroBuild_DoNotStrongNameSign>true</MicroBuild_DoNotStrongNameSign>
     <BuildDependsOn>ValidateAssemblyName;$(BuildDependsOn)</BuildDependsOn>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net46'">DESKTOP;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <PackageReference Include="NETStandard.Library" Version="2.0.0" />

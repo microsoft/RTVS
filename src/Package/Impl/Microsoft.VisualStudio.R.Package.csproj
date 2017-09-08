@@ -247,6 +247,7 @@
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
     <Compile Include="ProjectSystem\Editors\SettingPropertyDescriptor.cs" />
     <Compile Include="ProjectSystem\Editors\SettingsTypeDescriptor.cs" />
+    <Compile Include="RClient\FileDownloader.cs" />
     <Compile Include="Repl\Commands\History\NextHistoryReplCommand.cs" />
     <Compile Include="Repl\Commands\History\PrevHistoryReplCommand.cs" />
     <Compile Include="Repl\Commands\ReplCommandBase.cs" />

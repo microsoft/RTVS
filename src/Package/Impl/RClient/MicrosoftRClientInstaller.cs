@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
-using Microsoft.Common.Core.Network;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.UI;

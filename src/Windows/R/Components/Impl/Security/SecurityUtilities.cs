@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Microsoft.R.Platform.Security {
+namespace Microsoft.R.Components.Security {
     public static class SecurityUtilities {
         public static IntPtr CreateSecureStringBuffer(int length) {
             var sec = new SecureString();

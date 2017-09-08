@@ -19,7 +19,7 @@ namespace Microsoft.R.Components {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -742,6 +742,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Credential handle is invalid..
+        /// </summary>
+        public static string Error_CredentialHandleInvalid {
+            get {
+                return ResourceManager.GetString("Error_CredentialHandleInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reading credentails failed with Win32 error..
+        /// </summary>
+        public static string Error_CredReadFailed {
+            get {
+                return ResourceManager.GetString("Error_CredReadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Writing credentails failed with Win32 error..
+        /// </summary>
+        public static string Error_CredWriteFailed {
+            get {
+                return ResourceManager.GetString("Error_CredWriteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to save state, resetting anyway..
         /// </summary>
         public static string Error_FailedToSaveState {
@@ -814,6 +841,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connecting to {0}.
+        /// </summary>
+        public static string Info_ConnectingTo {
+            get {
+                return ResourceManager.GetString("Info_ConnectingTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         public static string InputIsTooLong {
@@ -864,6 +900,15 @@ namespace Microsoft.R.Components {
         public static string LocalR {
             get {
                 return ResourceManager.GetString("LocalR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Tools.
+        /// </summary>
+        public static string MessageBoxTitle {
+            get {
+                return ResourceManager.GetString("MessageBoxTitle", resourceCulture);
             }
         }
         

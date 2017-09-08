@@ -44,21 +44,18 @@ namespace Microsoft.R.Platform.OS {
             MainThreadId = pi.dwThreadId;
             _processHandle = new SafeProcessHandle(pi.hProcess, true);
 
-            var threadHandle = new SafeThreadHandle(pi.hThread);
-            var wait = new ProcessWaitHandle(_processHandle);
+             var wait = new ProcessWaitHandle(_processHandle);
             _registeredWait = ThreadPool.RegisterWaitForSingleObject(wait, (o, t) => {
                 _registeredWait.Unregister(wait);
                 SetExitState();
                 Exited?.Invoke(this, EventArgs.Empty);
-                _processHandle.Close();
-                threadHandle.Close();
-                wait.Close();
+                _processHandle.Dispose();
+                 wait.Dispose();
             }, null, -1, true);
 
             _disposable
                 .Add(() => _registeredWait.Unregister(wait))
                 .Add(_processHandle)
-                .Add(threadHandle)
                 .Add(wait);
         }
 
@@ -98,8 +95,8 @@ namespace Microsoft.R.Platform.OS {
         public static Win32Process StartProcessAsUser(WindowsIdentity winIdentity, string applicationName, string commandLine, string workingDirectory, Win32NativeEnvironmentBlock environment) {
 
             var si = new NativeMethods.STARTUPINFO {
-                cb = Marshal.SizeOf(typeof(NativeMethods.STARTUPINFO)),
-                lpDesktop = ""
+                cb = Marshal.SizeOf<NativeMethods.STARTUPINFO>(),
+                lpDesktop = string.Empty
             };
 
             /* 
@@ -163,7 +160,7 @@ namespace Microsoft.R.Platform.OS {
                         }
                     } else {
                         if (!NativeMethods.CreateProcessAsUser(
-                            winIdentity.Token, applicationName, commandLine, ref processAttr, ref threadAttr, true,
+                            winIdentity.AccessToken.DangerousGetHandle(), applicationName, commandLine, ref processAttr, ref threadAttr, true,
                             (uint)(NativeMethods.CREATE_PROCESS_FLAGS.CREATE_UNICODE_ENVIRONMENT | NativeMethods.CREATE_PROCESS_FLAGS.CREATE_NO_WINDOW),
                             environment.NativeEnvironmentBlock,
                             workingDirectory,

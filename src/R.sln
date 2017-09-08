@@ -109,7 +109,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Containers.Wind
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform", "R\Platform\Impl\Microsoft.R.Platform.csproj", "{9000D374-E37E-4DF2-A703-08D29F3FBE61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Platform.Windows", "Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj", "{DE1EC50A-C588-45A9-B22C-981419CD7CD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Windows", "Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj", "{DE1EC50A-C588-45A9-B22C-981419CD7CD4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Linux", "Linux\R\Platform\Impl\Interpreters\Microsoft.R.Platform.Linux.csproj", "{B6FD71C6-AAA8-4846-8231-C1F620827E32}"
 EndProject

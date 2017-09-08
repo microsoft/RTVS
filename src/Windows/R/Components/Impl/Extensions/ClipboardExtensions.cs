@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace Microsoft.Common.Core.Extensions {
+namespace Microsoft.R.Components.Data {
     public static class ClipboardExtensions {
         public static void CopyToClipboard(this string data) {
             try {

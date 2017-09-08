@@ -6,7 +6,7 @@ using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.Logging;
 using Microsoft.R.Platform.OS;
-using Microsoft.R.Platform.Telemetry;
+using Microsoft.R.Platform.Stubs;
 
 namespace Microsoft.R.Platform {
     public static class ServicesExtensions {

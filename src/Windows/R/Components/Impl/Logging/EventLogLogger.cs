@@ -7,7 +7,7 @@ using System.Globalization;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Common.Core.Logging {
+namespace Microsoft.R.Components.Logging {
     public sealed class EventLogLogger : ILogger, IDisposable {
         private readonly string _category;
         private readonly LogLevel _logLevel;

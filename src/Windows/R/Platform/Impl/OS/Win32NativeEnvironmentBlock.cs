@@ -4,34 +4,37 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.R.Platform.OS {
-    public sealed class Win32NativeEnvironmentBlock : SafeHandleZeroOrMinusOneIsInvalid {
+    public sealed class Win32NativeEnvironmentBlock : SafeHandle {
+        private bool _isInvalid = true;
+
         public int Length { get; }
 
         public IntPtr NativeEnvironmentBlock => handle;
 
-        private Win32NativeEnvironmentBlock(int length) : base(true) {
+        private Win32NativeEnvironmentBlock(IntPtr handle, int length) : base(IntPtr.Zero, true) {
             Length = length;
+            SetHandle(handle);
         }
 
         public static Win32NativeEnvironmentBlock Create(byte[] environmentData) {
-            var eb = new Win32NativeEnvironmentBlock(environmentData.Length);
+            //RuntimeHelpers.PrepareConstrainedRegions();
+            var ptr = Marshal.AllocHGlobal(environmentData.Length);
+            Marshal.Copy(environmentData, 0, ptr, environmentData.Length);
 
-            RuntimeHelpers.PrepareConstrainedRegions();
-            try { } finally {
-                IntPtr ptr = Marshal.AllocHGlobal(environmentData.Length);
-                eb.SetHandle(ptr);
-                Marshal.Copy(environmentData, 0, ptr, environmentData.Length);
-            }
-
-            return eb;
+            return new Win32NativeEnvironmentBlock(ptr, environmentData.Length);
         }
 
         protected override bool ReleaseHandle() {
-            Marshal.FreeHGlobal(handle);
-            return true;
+            if (!_isInvalid) {
+                Marshal.FreeHGlobal(handle);
+                _isInvalid = true;
+                return true;
+            }
+            return false;
         }
+
+        public override bool IsInvalid => _isInvalid;
     }
 }

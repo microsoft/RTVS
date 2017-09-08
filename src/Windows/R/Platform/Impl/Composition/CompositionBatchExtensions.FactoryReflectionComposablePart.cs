@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#if DESKTOP
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -10,7 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace Microsoft.Common.Core.Extensions {
+namespace Microsoft.R.Platform.Composition {
     public static partial class CompositionBatchExtensions {
         internal class FactoryReflectionComposablePart : ComposablePart {
             private readonly ComposablePartDefinition _composablePartDefinition;
@@ -71,3 +72,4 @@ namespace Microsoft.Common.Core.Extensions {
         }
     }
 }
+#endif
