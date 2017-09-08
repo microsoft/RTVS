@@ -35,7 +35,8 @@ namespace Microsoft.R.Containers.Docker {
         public async Task<bool> BuildImageAsync(BuildImageParameters buildParams, CancellationToken ct) {
             var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
             var output = await BuildImageAsync(buildOptions, ct);
-            return output.ContainsIgnoreCase($"Successfully tagged {buildParams.Image}:{buildParams.Tag}");
+            return output.ContainsIgnoreCase($"Successfully tagged {buildParams.Image}:{buildParams.Tag}") ||
+                output.ContainsIgnoreCase($"Successfully built");
         }
 
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
