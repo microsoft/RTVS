@@ -22,7 +22,6 @@ $vsc = Resolve-Path -Path $vscPath
 #&copy $bin/Microsoft.R.Host.RunAsUser.exe
 &copy $bin/Microsoft.R.Host.Broker.Windows.exe
 &copy $bin/Microsoft.R.Host.Broker.Config.json
-&copy $bin/Microsoft.R.Platform.Windows.dll
 &copy $bin/Microsoft.R.Containers.Windows.dll
 
 &copy $bin/libuv.dll

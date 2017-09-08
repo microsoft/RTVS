@@ -33,6 +33,14 @@
     <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(VSCTDefinitions)</VSCTDefinitions>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Linux\R\Platform\Impl\Interpreters\Microsoft.R.Platform.Linux.csproj">
+      <Project>{b6fd71c6-aaa8-4846-8231-c1f620827e32}</Project>
+      <Name>Microsoft.R.Platform.Linux</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
+      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
+      <Name>Microsoft.R.Platform</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
       <Name>Microsoft.R.Host.Broker.Windows</Name>

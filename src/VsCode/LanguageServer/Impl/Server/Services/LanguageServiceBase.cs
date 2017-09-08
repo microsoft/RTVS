@@ -13,11 +13,8 @@ namespace Microsoft.R.LanguageServer.Server {
 
         protected ClientProxy Client => Session.Client;
 
-        protected TextDocument GetDocument(Uri uri) {
-            if (Session.Documents.TryGetValue(uri, out var sd))
-                return sd.Document;
-            return null;
-        }
+        protected TextDocument GetDocument(Uri uri) 
+            => Session.Documents.TryGetValue(uri, out var sd) ? sd.Document : null;
 
         protected TextDocument GetDocument(TextDocumentIdentifier id) => GetDocument(id.Uri);
 
