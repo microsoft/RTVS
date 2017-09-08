@@ -41,15 +41,21 @@ namespace Microsoft.R.Host.Broker.Security {
             options.UseHttps(httpsOptions);
         }
 
-        private HttpsConnectionFilterOptions GetHttpsOptions() {            
-            var cert = GetCertificate();
-            if (cert != null) {
-                return new HttpsConnectionFilterOptions {
-                    ServerCertificate = cert,
-                    ClientCertificateValidation = ClientCertificateValidationCallback,
-                    ClientCertificateMode = ClientCertificateMode.NoCertificate,
-                    SslProtocols = SslProtocols.Tls12
-                };
+        private HttpsConnectionFilterOptions GetHttpsOptions() {
+            try {
+                var cert = GetCertificate();
+
+                if (cert != null) {
+                    return new HttpsConnectionFilterOptions {
+                        ServerCertificate = cert,
+                        ClientCertificateValidation = ClientCertificateValidationCallback,
+                        ClientCertificateMode = ClientCertificateMode.NoCertificate,
+                        SslProtocols = SslProtocols.Tls12
+                    };
+                }
+            } catch(Exception ex) {
+                _logger.LogCritical(Resources.Critical_CertificateLoadFailed, ex.Message);
+                throw (ex);
             }
             return null;
         }
