@@ -12,9 +12,9 @@ using Microsoft.R.Editor.Functions;
 
 namespace Microsoft.R.Editor {
     public static class FunctionDefinitionExtensions {
-        public static IFunctionInfo MakeFunctionInfo(this IFunctionDefinition fd, string functionName) {
+        public static IFunctionInfo MakeFunctionInfo(this IFunctionDefinition fd, string functionName, bool isInternal) {
             if (fd != null) {
-                var fi = new FunctionInfo(functionName) {
+                var fi = new FunctionInfo(functionName, isInternal) {
                     Signatures = new [] { fd.MakeSignature(functionName) }
                 };
                 return fi;

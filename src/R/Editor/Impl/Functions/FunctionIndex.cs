@@ -23,11 +23,18 @@ namespace Microsoft.R.Editor.Functions {
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
 
         /// <summary>
-        /// Map of functions to packages. Used to quickly find package 
+        /// Map of exported functions to packages. Used to quickly find package 
         /// name by function name as we need both to get the function 
         /// documentation in RD format from the R engine.
         /// </summary>
-        private readonly ConcurrentDictionary<string, List<string>> _functionToPackageMap = new ConcurrentDictionary<string, List<string>>();
+        private readonly ConcurrentDictionary<string, List<string>> _exportedFunctionToPackageMap = new ConcurrentDictionary<string, List<string>>();
+
+        /// <summary>
+        /// Map of internal functions to packages. Used to quickly find package 
+        /// name by function name as we need both to get the function 
+        /// documentation in RD format from the R engine.
+        /// </summary>
+        private readonly ConcurrentDictionary<string, List<string>> _internalFunctionToPackageMap = new ConcurrentDictionary<string, List<string>>();
 
         /// <summary>
         /// Map of function names to complete function information.
@@ -69,7 +76,7 @@ namespace Microsoft.R.Editor.Functions {
                     // First populate index for popular packages that are commonly preloaded
                     foreach (var pi in packageIndex.Packages) {
                         foreach (var f in pi.Functions) {
-                            RegisterFunction(f.Name, pi.Name);
+                            RegisterFunction(f.Name, pi.Name, f.IsInternal);
                         }
                     }
                 }
@@ -78,17 +85,25 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private void RegisterFunction(string functionName, string packageName) {
-            if (!_functionToPackageMap.TryGetValue(functionName, out List<string> packages)) {
-                _functionToPackageMap[functionName] = new List<string> { packageName };
+        private void RegisterFunction(string functionName, string packageName, bool isInternal) {
+            if (isInternal) {
+                if (!_internalFunctionToPackageMap.TryGetValue(functionName, out List<string> packages)) {
+                    _internalFunctionToPackageMap[functionName] = new List<string> {packageName};
+                } else {
+                    packages.Add(packageName);
+                }
             } else {
-                packages.Add(packageName);
+                if (!_exportedFunctionToPackageMap.TryGetValue(functionName, out List<string> packages)) {
+                    _exportedFunctionToPackageMap[functionName] = new List<string> { packageName };
+                } else {
+                    packages.Add(packageName);
+                }
             }
         }
 
         public void RegisterPackageFunctions(IPackageInfo package) {
             foreach (var f in package.Functions) {
-                RegisterFunction(f.Name, package.Name);
+                RegisterFunction(f.Name, package.Name, f.IsInternal);
             }
         }
 
@@ -137,7 +152,12 @@ namespace Microsoft.R.Editor.Functions {
             IFunctionInfo functionInfo = null;
             if (string.IsNullOrEmpty(packageName)) {
                 // Find packages that the function may belong to. There may be more than one.
-                if (!_functionToPackageMap.TryGetValue(functionName, out var packages) || packages.Count == 0) {
+                if (!_exportedFunctionToPackageMap.TryGetValue(functionName, out var packages)) {
+                    if (!_internalFunctionToPackageMap.TryGetValue(functionName, out packages)) {
+                        return null;
+                    }
+                }
+                if (packages.Count == 0) {
                     // Not in the cache
                     return null;
                 }
@@ -181,6 +201,8 @@ namespace Microsoft.R.Editor.Functions {
                 return null;
             }
 
+            // Make sure loaded packages collection is up to date
+            await _host.GetLoadedPackageNamesAsync();
             TryGetCachedFunctionInfo(functionName, ref packageName);
 
             packageName = packageName ?? await _host.GetFunctionPackageNameAsync(functionName);
@@ -237,7 +259,7 @@ namespace Microsoft.R.Editor.Functions {
                 } else {
                     // Add stub function info here to prevent subsequent calls
                     // for the same function as we already know the call will fail.
-                    _functionToInfoMap[qualifiedName] = new FunctionInfo(functionName);
+                    _functionToInfoMap[qualifiedName] = new FunctionInfo(functionName, true);
                 }
             }
         }

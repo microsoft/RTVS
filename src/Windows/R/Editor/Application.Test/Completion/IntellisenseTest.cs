@@ -588,6 +588,20 @@ e <- list(D=d, E=d)
             }
         }
 
+        [Test]
+        public async Task R_BacktickNameCompletion() {
+            using (var script = await _editorHost.StartScript(Services, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
+                PrimeIntellisenseProviders(script);
+                script.DoIdle(500);
+
+                await Workflow.RSession.ExecuteAsync("df <- as.data.frame(iris3)\n");
+                script.Type("df$");
+                script.DoIdle(100);
+                script.Type("p{TAB}");
+                script.EditorText.Should().Be("df$`Petal L..Setosa`");
+            }
+        }
+
         private void PrimeIntellisenseProviders(IEditorScript script) {
             // Prime variable provider
             UIThreadHelper.Instance.Invoke(() => {

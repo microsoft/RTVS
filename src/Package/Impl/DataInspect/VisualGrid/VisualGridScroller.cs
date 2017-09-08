@@ -103,31 +103,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     batch.Add(command);
                     if (_scrollCommands.Count > 0 && _scrollCommands.Count < ScrollCommandUpperBound) {
                         // another command has been queued already. continue to next
-                        // upperbound prevents infinite loop in case scroll commands is queued fast and endlessly, which happens only in theory
+                        // upperbound prevents infinite loop in case scroll commands is queued fast and endlessly, 
+                        // which happens only in theory
                         continue;
-                    } else {
-                        for (var i = 0; i < batch.Count; i++) {
-                            if (cancellationToken.IsCancellationRequested) {
-                                break;
-                            }
+                    }
 
-                            var execute = true;
-                            // if next command is same the current one, skip to next (new one) for optimization
-                            if (i < (batch.Count - 1)) {
-                                if (IsRepeating(batch, i, RepeatSkip)) {
-                                    execute = false;
-                                } else if (IsRepeating(batch, i, RepeatAccum)) {
-                                    batch[i + 1].Param = Convert.ToDouble(batch[i + 1].Param) + Convert.ToDouble(batch[i].Param);
-                                    execute = false;
-                                }
-                            }
+                    // Add all commands
+                    while(_scrollCommands.Count > 0) {
+                        batch.Add(await _scrollCommands.ReceiveAsync(cancellationToken));
+                    }
 
-                            if (execute) {
-                                await ExecuteCommandAsync(batch[i], cancellationToken);
+                    for (var i = 0; i < batch.Count; i++) {
+                        if (cancellationToken.IsCancellationRequested) {
+                            break;
+                        }
+
+                        var execute = true;
+                        // if next command is same the current one, skip to next (new one) for optimization
+                        if (i < (batch.Count - 1)) {
+                            if (IsRepeating(batch, i, RepeatSkip)) {
+                                execute = false;
+                            } else if (IsRepeating(batch, i, RepeatAccum)) {
+                                batch[i + 1].Param = Convert.ToDouble(batch[i + 1].Param) + Convert.ToDouble(batch[i].Param);
+                                execute = false;
                             }
                         }
-                        batch.Clear();
+
+                        if (execute) {
+                            await ExecuteCommandAsync(batch[i], cancellationToken);
+                        }
                     }
+                    batch.Clear();
                 } catch (Exception ex) {
                     _services.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "VisualGridScroller exception: " + ex);
                     batch.Clear();

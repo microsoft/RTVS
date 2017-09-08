@@ -452,7 +452,7 @@ namespace Microsoft.R.Core.Tokens {
         private static bool IsIdentifierCharacter(CharacterStream cs) => IsIdentifierCharacter(cs.CurrentChar);
 
         public static bool IsIdentifierCharacter(char ch)
-            => (CharacterStream.IsLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_');
+            => (CharacterStream.IsLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_' || ch == '`');
 
         private static bool IsOpenBraceFollow(CharacterStream cs, int position) {
             for (var i = position; i < cs.Length; i++) {

@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor {
             var v = scope?.FindFunctionDefinitionByName(functionName, position);
             var rf = v?.Value as RFunction;
             var fd = rf?.Value as IFunctionDefinition;
-            return fd?.MakeFunctionInfo(functionName);
+            return fd?.MakeFunctionInfo(functionName, false);
         }
 
         public static bool IsPositionInComment(this AstRoot ast, int position) {
