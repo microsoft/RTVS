@@ -16,8 +16,9 @@
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CXuesong.JsonRpc.Standard" Version="0.3.2" />
-    <PackageReference Include="CXuesong.JsonRpc.Streams" Version="0.3.2" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="CXuesong.JsonRpc.Standard" Version="0.3.1" />
+    <PackageReference Include="CXuesong.JsonRpc.Streams" Version="0.3.1" />
     <PackageReference Include="CXuesong.LanguageServer.VsCode" Version="0.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />

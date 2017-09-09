@@ -1,6 +1,5 @@
 ﻿{
     "buildOptions": {
-        "warningsAsErrors": true,
         "emitEntryPoint": true
     }
 }
