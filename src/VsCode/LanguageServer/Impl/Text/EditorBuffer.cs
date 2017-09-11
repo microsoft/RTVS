@@ -21,7 +21,7 @@ namespace Microsoft.R.LanguageServer.Text {
         }
 
         // This is VS-only option
-        public T As<T>() where T : class => throw new NotImplementedException();
+        public T As<T>() where T : class => throw new NotSupportedException();
 
         public string ContentType { get; }
 
