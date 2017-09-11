@@ -10,7 +10,7 @@ namespace Microsoft.R.Containers {
         ContainerServiceStatus GetServiceStatus();
         Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct);
         Task<IEnumerable<IContainer>> ListContainersAsync(bool allContainers, CancellationToken ct);
-        Task<string> BuildImageAsync(string buildOptions, CancellationToken ct);
+        Task<IContainer> CreateContainerFromFileAsync(BuildImageParameters buildOptions, CancellationToken ct);
         Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct);
         Task DeleteContainerAsync(string containerId, CancellationToken ct);
         Task StartContainerAsync(string containerId, CancellationToken ct);

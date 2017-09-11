@@ -6,14 +6,17 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
+using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
+using Microsoft.R.Containers;
 
 namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
     internal sealed class ContainerManagerViewModel : BindableBase, IDisposable {
@@ -22,6 +25,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private readonly BatchObservableCollection<ContainerViewModel> _localContainers;
         private readonly DisposableBag _disposable;
         private readonly IMainThread _mainThread;
+        private readonly IUIService _ui;
         private readonly IRSettings _settings;
         private CreateLocalDockerViewModel _newLocalDocker;
 
@@ -36,6 +40,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             _disposable = DisposableBag.Create<ContainerManagerViewModel>();
             _services = services;
             _mainThread = services.MainThread();
+            _ui = services.UI();
             _settings = services.GetService<IRSettings>();
             _containers = services.GetService<IContainerManager>();
             _localContainers = new BatchObservableCollection<ContainerViewModel>();
@@ -52,25 +57,77 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public void Dispose() => _disposable.TryDispose();
 
         public void ShowCreateLocalDocker() {
-            NewLocalDocker = new CreateLocalDockerViewModel();
+            _mainThread.Assert();
+            NewLocalDocker = new CreateLocalDockerViewModel {
+                Username = _settings.LastLocalDockerUsername,
+                Password = _settings.LastLocalDockerPassword
+            };
         }
 
-        public void CreateLocalDocker() {
+        public async Task CreateLocalDockerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            _mainThread.Assert();
+
+            IContainer container;
+            try {
+                container = await _containers.CreateLocalDockerAsync(NewLocalDocker.Name, NewLocalDocker.Username, NewLocalDocker.Password, NewLocalDocker.Version, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDocker_CreationError, MessageButtons.OK, MessageType.Error);
+                return;
+            }
+
+            _settings.LastLocalDockerUsername = NewLocalDocker.Username;
+            _settings.LastLocalDockerPassword = NewLocalDocker.Password;
+
+            try {
+                await _containers.StartAsync(container.Id, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_StartError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+                return;
+            }
+
             NewLocalDocker = null;
         }
-
+         
         public void CancelCreateLocalDocker() {
+            _mainThread.Assert();
             NewLocalDocker = null;
         }
 
-        public Task StartAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) 
-            => container != null ? _containers.StartAsync(container.Id, cancellationToken) : Task.CompletedTask;
+        public async Task StartAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (container == null) {
+                return;
+            }
 
-        public Task StopAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) 
-            => container != null ? _containers.StopAsync(container.Id, cancellationToken) : Task.CompletedTask;
+            try {
+                await _containers.StartAsync(container.Id, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_StartError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+            }
+        }
 
-        public Task DeleteAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) 
-            => container != null ? _containers.DeleteAsync(container.Id, cancellationToken) : Task.CompletedTask;
+        public async Task StopAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (container == null) {
+                return;
+            }
+
+            try {
+                await _containers.StartAsync(container.Id, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_StopError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+            }
+        }
+
+        public async Task DeleteAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (container == null) {
+                return;
+            }
+
+            try {
+                await _containers.StartAsync(container.Id, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_DeleteError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+            }
+        }
 
         public void ShowConnections() 
             => _services.GetService<IRInteractiveWorkflowToolWindowService>().Connections().Show(true, true);

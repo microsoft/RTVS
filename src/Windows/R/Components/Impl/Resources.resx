@@ -460,6 +460,9 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="ContainerManager_CreateLocalDocker_Version" xml:space="preserve">
     <value>Version</value>
   </data>
+  <data name="ContainerManager_CreateLocalDocker_CreationError" xml:space="preserve">
+    <value>There was an error creating the container. Please see R Containers output for details.</value>
+  </data>
   <data name="ContainerManager_CreateTooltip" xml:space="preserve">
     <value>Create new docker container</value>
   </data>
@@ -468,6 +471,15 @@ If you want to delete all data on the remote machine you must delete your user p
   </data>
   <data name="ContainerManager_StartTooltip_Format" xml:space="preserve">
     <value>Start container '{0}'</value>
+  </data>
+  <data name="ContainerManager_StartError_Format" xml:space="preserve">
+    <value>There was an error starting '{0}' container. Please see R Containers output for details.</value>
+  </data>
+  <data name="ContainerManager_StopError_Format" xml:space="preserve">
+    <value>There was an error stopping '{0}' container. Please see R Containers output for details.</value>
+  </data>
+  <data name="ContainerManager_DeleteError_Format" xml:space="preserve">
+    <value>There was an error deleting '{0}' container. Please see R Containers output for details.</value>
   </data>
   <data name="ContainerManager_StopTooltip_Format" xml:space="preserve">
     <value>Stop container '{0}'</value>

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -29,6 +30,17 @@ namespace Microsoft.R.Containers.Docker {
         protected LocalDockerService(IServiceContainer services) {
             _ps = services.Process();
             _outputService = services.GetService<IOutputService>();
+        }
+        
+        public async Task<IContainer> CreateContainerFromFileAsync(BuildImageParameters buildParams, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
+            await BuildImageAsync(buildOptions, ct);
+
+            var createOptions = Invariant($"-p 5444:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
+            var containerId = await CreateContainerAsync(createOptions, ct);
+            return await GetContainerAsync(containerId, ct);
         }
 
         public Task<string> BuildImageAsync(string buildOptions, CancellationToken ct) {

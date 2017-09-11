@@ -28,12 +28,6 @@ namespace Microsoft.R.Containers.Docker {
 
         internal static Process GetDockerProcess(string processName) => Process.GetProcessesByName(processName).FirstOrDefault();
 
-        public async Task<bool> BuildImageAsync(BuildImageParameters buildParams, CancellationToken ct) {
-            var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
-            var output = await BuildImageAsync(buildOptions, ct);
-            return output.ContainsIgnoreCase($"Successfully tagged {buildParams.Image}:{buildParams.Tag}");
-        }
-
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -49,8 +43,6 @@ namespace Microsoft.R.Containers.Docker {
                     throw new ContainerException(Resources.Error_ContainerIdInvalid.FormatInvariant(containerId));
                 }
                 return await GetContainerAsync(containerId, ct);
-            } catch (ContainerException cex) {
-                throw cex;
             } finally {
                 if (createParams.ImageSourceCredentials != null) {
                     await RepositoryLogoutAsync(createParams.ImageSourceCredentials, ct);

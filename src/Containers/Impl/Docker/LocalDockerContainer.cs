@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 
@@ -34,7 +35,7 @@ namespace Microsoft.R.Containers.Docker {
         private IEnumerable<int> GetHostPorts(JToken containerObject) {
             var hostPorts = new List<int>();
             try {
-                dynamic portMap = ((dynamic)containerObject).NetworkSettings.Ports["5444/tcp"];
+                dynamic portMap = ((dynamic)containerObject).HostConfig.PortBindings["5444/tcp"];
                 foreach (dynamic pm in portMap) {
                     if (int.TryParse(pm.HostPort.Value, out int port)) {
                         hostPorts.Add(port);

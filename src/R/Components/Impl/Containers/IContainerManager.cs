@@ -13,8 +13,9 @@ namespace Microsoft.R.Components.Containers {
         IReadOnlyList<IContainer> GetRunningContainers();
         IDisposable SubscribeOnChanges(Action containersChanged);
 
-        Task StartAsync(string containerId, CancellationToken cancellationToken);
-        Task StopAsync(string containerId, CancellationToken cancellationToken);
-        Task DeleteAsync(string containerId, CancellationToken cancellationToken);
+        Task StartAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
+        Task StopAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

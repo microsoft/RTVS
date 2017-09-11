@@ -223,12 +223,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 var name = connection.Name;
 
                 // Remove connections for missing engines
-                if (!connection.IsRemote && !IsValidLocalConnection(name, connection.Path)) {
-                    connectionsToRemove.Add(name);
-                }
+                if (!connection.IsRemote) {
+                    var isValid = connection.Uri.IsFile
+                        ? IsValidLocalConnection(name, connection.Path)
+                        : containers.Any(c => c.Name.EqualsOrdinal(name));
 
-                if (connection.IsDocker && !containers.Any(c => c.Name.EqualsOrdinal(name))) {
-                    connectionsToRemove.Add(name);
+                    if (!isValid) {
+                        connectionsToRemove.Add(name);
+                    }
                 }
 
                 // For MRS and MRC always use generated name. These upgrade in place

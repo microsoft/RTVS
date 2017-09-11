@@ -28,7 +28,17 @@ namespace Microsoft.R.Components.Settings {
         /// May not be in list of  <see cref="Connections"/>
         /// </summary>
         ConnectionInfo LastActiveConnection { get; set; }
-        
+
+        /// <summary>
+        /// Username used for the last successfully created local docker container
+        /// </summary>
+        string LastLocalDockerUsername { get; set; }
+
+        /// <summary>
+        /// Password used for the last successfully created local docker container
+        /// </summary>
+        string LastLocalDockerPassword { get; set; }
+
         /// <summary>
         /// Selected CRAN mirror
         /// </summary>

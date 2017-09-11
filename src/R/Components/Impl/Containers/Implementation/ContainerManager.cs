@@ -4,17 +4,21 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Containers;
 
 namespace Microsoft.R.Components.Containers.Implementation {
     internal class ContainerManager : IContainerManager {
         private readonly IContainerService _containerService;
+        private readonly IFileSystem _fileSystem;
         private readonly CountdownDisposable _containersChangedCountdown;
         private ImmutableArray<IContainer> _containers;
         private ImmutableArray<IContainer> _runningContainers;
@@ -23,6 +27,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
 
         public ContainerManager(IRInteractiveWorkflow interactiveWorkflow) {
             _containerService = interactiveWorkflow.Services.GetService<IContainerService>();
+            _fileSystem = interactiveWorkflow.Services.FileSystem();
             _updateContainersCts = new CancellationTokenSource();
             _containers = ImmutableArray<IContainer>.Empty;
             _runningContainers = ImmutableArray<IContainer>.Empty;
@@ -44,9 +49,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
             try {
                 await _containerService.StartContainerAsync(containerId, cancellationToken);
             } finally {
-                try {
-                    await UpdateContainersOnceAsync(cancellationToken);
-                } catch (ContainerException) { }
+                await UpdateContainersOnceAsync(cancellationToken);
             }
         }
 
@@ -54,9 +57,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
             try {
                 await _containerService.StopContainerAsync(containerId, cancellationToken);
             } finally {
-                try {
-                    await UpdateContainersOnceAsync(cancellationToken);
-                } catch (ContainerException) { }
+                await UpdateContainersOnceAsync(cancellationToken);
             }
         }
 
@@ -64,9 +65,41 @@ namespace Microsoft.R.Components.Containers.Implementation {
             try {
                 await _containerService.DeleteContainerAsync(containerId, cancellationToken);
             } finally {
-                try {
-                    await UpdateContainersOnceAsync(cancellationToken);
-                } catch (ContainerException) { }
+                await UpdateContainersOnceAsync(cancellationToken);
+            }
+        }
+
+        public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (string.IsNullOrWhiteSpace(version)) {
+                version = "3.4.1";
+            }
+
+            var dockerImageContent = $@"FROM kvnadig/rtvsd-ub1604:{version}
+RUN apt upgrade -y
+
+RUN apt-get install -y git
+RUN mkdir /tmp/rtvsfiles && cd /tmp/rtvsfiles && git clone https://github.com/karthiknadig/docker-stuff.git && cd /
+RUN cd /tmp/rtvsfiles 
+RUN find -name *.deb | xargs dpkg -i
+RUN apt-get -f install
+RUN cp /tmp/rtvsfiles/docker-stuff/server.pfx /etc/rtvs
+RUN rm -R /tmp/rtvsfiles
+
+RUN useradd --create-home {username}
+RUN echo ""{username}:{password}"" | chpasswd
+
+EXPOSE 5444";                
+
+            var guid = Guid.NewGuid().ToString();
+            var folder = Path.Combine(Path.GetTempPath(), guid);
+            var filePath = Path.Combine(folder, "Dockerfile");
+            _fileSystem.CreateDirectory(folder);
+            _fileSystem.WriteAllText(filePath, dockerImageContent);
+
+            try {
+                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name), cancellationToken);
+            } finally {
+                await UpdateContainersOnceAsync(cancellationToken);
             }
         }
 
@@ -97,7 +130,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
         }
 
         private void UpdateContainers(IEnumerable<IContainer> newContainers) {
-            var containers = newContainers.ToImmutableArray();
+            var containers = newContainers.Where(c => c.HostPorts.Any()).ToImmutableArray();
             var runningContainers = containers.RemoveRange(containers.Where(c => !c.IsRunning));
             var hasChanges = containers.Length != _containers.Length || containers.Where((t, i) => !t.Id.EqualsOrdinal(_containers[i].Id) || t.IsRunning != _containers[i].IsRunning).Any();
             _containers = containers;

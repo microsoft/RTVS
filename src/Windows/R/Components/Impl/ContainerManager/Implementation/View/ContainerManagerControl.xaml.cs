@@ -34,7 +34,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
             }
         }
 
-        private void ButtonCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CreateLocalDocker();
+        private void ButtonCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CreateLocalDockerAsync().DoNotWait();
 
         private void ButtonCancelCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CancelCreateLocalDocker();
 

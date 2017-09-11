@@ -7,16 +7,15 @@ using Microsoft.R.Common.Wpf.Controls;
 namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
     internal sealed class CreateLocalDockerViewModel : BindableBase {
         private static readonly Regex NameRegex = new Regex("^[a-zA-Z0-9][a-zA-Z0-9_-]+$", RegexOptions.Compiled);
-        private static readonly Regex VersionRegex = new Regex("^[0-9].[0-9].[0-9]$", RegexOptions.Compiled);
 
         private string _name;
         private string _username;
         private string _password;
         private string _version;
+        private string _folder;
         private bool _isNameValid;
         private bool _isUsernameValid;
         private bool _isPasswordValid;
-        private bool _isVersionValid = true;
         private bool _isValid;
 
         public string Name {
@@ -66,24 +65,14 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
 
         public string Version {
             get => _version;
-            set {
-                if (SetProperty(ref _version, value)) {
-                    IsVersionValid = string.IsNullOrEmpty(value) || VersionRegex.IsMatch(value);
-                    UpdateIsValid();
-                }
-            }
-        }
-
-        public bool IsVersionValid {
-            get => _isVersionValid;
-            set => SetProperty(ref _isVersionValid, value);
+            set => SetProperty(ref _version, value);
         }
 
         public bool IsValid {
             get => _isValid;
-            set => SetProperty(ref _isValid, value);
+            private set => SetProperty(ref _isValid, value);
         }
 
-        private void UpdateIsValid() => IsValid = IsNameValid && IsUsernameValid && IsPasswordValid && IsVersionValid;
+        private void UpdateIsValid() => IsValid = IsNameValid && IsUsernameValid && IsPasswordValid;
     }
 }

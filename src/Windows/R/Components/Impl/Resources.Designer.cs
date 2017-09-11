@@ -703,6 +703,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_CreationError {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_CreationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string ContainerManager_CreateLocalDocker_Name {
@@ -748,6 +757,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error deleting &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_DeleteError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete container &apos;{0}&apos;.
         /// </summary>
         public static string ContainerManager_DeleteTooltip_Format {
@@ -766,11 +784,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error starting &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_StartError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StartError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start container &apos;{0}&apos;.
         /// </summary>
         public static string ContainerManager_StartTooltip_Format {
             get {
                 return ResourceManager.GetString("ContainerManager_StartTooltip_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error stopping &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_StopError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StopError_Format", resourceCulture);
             }
         }
         

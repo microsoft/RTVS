@@ -9,7 +9,7 @@ namespace Microsoft.Common.Core.Services {
 
         public static IServiceManager AddService<TService>(this IServiceManager services, TService instance)
             where TService : class
-            => services.AddService(services, typeof(TService));
+            => services.AddService(instance, typeof(TService));
 
         public static IServiceManager AddService<TService, TImplementation>(this IServiceManager services)
             where TService : class

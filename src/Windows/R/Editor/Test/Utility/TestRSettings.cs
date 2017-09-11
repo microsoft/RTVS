@@ -37,6 +37,14 @@ namespace Microsoft.R.Editor.Test.Utility {
             get => _connections[0]; set { }
         }
 
+        public string LastLocalDockerUsername {
+            get => string.Empty; set { }
+        }
+
+        public string LastLocalDockerPassword {
+            get => string.Empty; set { }
+        }
+
         public string CranMirror {
             get => string.Empty; set { }
         }

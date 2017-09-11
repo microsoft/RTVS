@@ -7,7 +7,6 @@
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\..\R.Settings.props" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
