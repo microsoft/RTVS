@@ -18,7 +18,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         }
 
         public object GetFileIcon(string file) => _image;
-        public object GetImage(ImageType imageType) => _image;
+        public object GetImage(ImageType imageType, ImageSubType subType = ImageSubType.Public) => _image;
         public object GetImage(string name) => _image;
     }
 }

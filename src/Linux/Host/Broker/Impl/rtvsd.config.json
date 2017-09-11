@@ -2,8 +2,8 @@
   "logging": { "logFolder": "/tmp" },
   "security": {
     "allowedGroup": "",
-    "X509CertificateFile": "/etc/rtvs/server.pfx",
-    "X509CertificatePassword": "12345"
+    "X509CertificateFile": "/etc/rtvs/ssl-cert-snakeoil.pfx",
+    "X509CertificatePassword": "SnakeOil"
   },
   "startup": { "name": "rtvsd" },
   "urls": "https://0.0.0.0:5444"

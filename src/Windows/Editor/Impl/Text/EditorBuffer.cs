@@ -36,9 +36,11 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
+        [DebuggerStepThrough]
         public static IEditorBuffer Create(ITextBuffer textBuffer, ITextDocumentFactoryService textDocumentFactoryService)
             => textBuffer.ToEditorBuffer() ?? new EditorBuffer(textBuffer, textDocumentFactoryService);
 
+        [DebuggerStepThrough]
         public static IEditorBuffer FromTextBuffer(ITextBuffer textBuffer)
             => textBuffer.Properties.TryGetProperty(Key, out IEditorBuffer buffer) ? buffer : null;
 

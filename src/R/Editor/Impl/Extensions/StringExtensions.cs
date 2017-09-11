@@ -18,6 +18,13 @@ namespace Microsoft.R.Editor {
             return name;
         }
 
+        public static string RemoveBackticks(this string name) {
+            if (!string.IsNullOrEmpty(name) && name.Length >= 2 && name[0] == '`' && name[name.Length-1] == '`') {
+                return name.Substring(1, name.Length - 2);
+            }
+            return name;
+        }
+
         /// <summary>
         /// Locates boundaries of '{ }' block in the text.
         /// Takes into account curly brace nesting.

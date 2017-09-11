@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using Microsoft.Common.Core;
@@ -15,7 +14,6 @@ using Microsoft.Common.Wpf.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Imaging {
@@ -30,30 +28,39 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
             _glyphService = services.GetService<IGlyphService>();
         }
 
-        public object GetImage(ImageType imageType) {
+        public object GetImage(ImageType imageType, ImageSubType subType = ImageSubType.Public) {
+            StandardGlyphItem qualifier;
+
+            switch (subType) {
+                case ImageSubType.Internal:
+                    qualifier = StandardGlyphItem.GlyphItemInternal;
+                    break;
+                default:
+                    qualifier = StandardGlyphItem.GlyphItemPublic;
+                    break;
+            }
+
             switch (imageType) {
                 case ImageType.Keyword:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
-                case ImageType.Function:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, qualifier);
                 case ImageType.Variable:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, qualifier);
                 case ImageType.Method:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, qualifier);
                 case ImageType.Constant:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, qualifier);
                 case ImageType.Library:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, qualifier);
                 case ImageType.ValueType:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, qualifier);
                 case ImageType.Snippet:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, qualifier);
                 case ImageType.OpenFolder:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, qualifier);
                 case ImageType.ClosedFolder:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, qualifier);
                 case ImageType.Intrinsic:
-                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+                    return _glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, qualifier);
                 case ImageType.File:
                 case ImageType.Document:
                     return GetImage("Document");

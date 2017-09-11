@@ -36,9 +36,7 @@ namespace Microsoft.R.Editor.Functions {
 
             sb.Append('(');
 
-            if (locusPoints != null) {
-                locusPoints.Add(sb.Length);
-            }
+            locusPoints?.Add(sb.Length);
 
             for (var i = 0; i < Arguments.Count; i++) {
                 var arg = Arguments[i];

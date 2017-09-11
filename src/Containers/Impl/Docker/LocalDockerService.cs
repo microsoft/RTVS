@@ -153,7 +153,8 @@ namespace Microsoft.R.Containers.Docker {
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
-                UseShellExecute = false
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
 
             var process = _ps.Start(psi);
@@ -172,12 +173,16 @@ namespace Microsoft.R.Containers.Docker {
             }
 
             var error = await process.StandardError.ReadToEndAsync();
-            if (!string.IsNullOrEmpty(error)) {
+            if (!string.IsNullOrEmpty(error) && !IsSecurityWarning(error)) {
                 _output.Write(Invariant($"{outputPrefix}> ERROR: {error}"));
                 throw new ContainerException(error);
             }
              
             return result.ToString();
+        }
+
+        private bool IsSecurityWarning(string error) {
+            return error.ContainsIgnoreCase("SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host.");
         }
     }
 }

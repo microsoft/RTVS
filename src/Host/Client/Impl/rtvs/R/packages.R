@@ -7,12 +7,13 @@ packages.installed.functions <- function() {
 		result$Package <- p$Package
 		result$Description <- p$Description
 		result$Version <- p$Version
-		result$Functions <- package.functions.names(p$Package)
+		result$ExportedFunctions <- package.exported.functions.names(p$Package)
+		result$InternalFunctions <- setdiff(package.all.functions.names(p$Package), result$ExportedFunctions)
 		return(result)
 	}))
 }
 
-package.functions.names <- function(packageName) {
+package.exported.functions.names <- function(packageName) {
     as.list(union(
 		tryCatch({
 			getNamespaceExports(packageName)
@@ -25,6 +26,16 @@ package.functions.names <- function(packageName) {
 			return(c())
 		})
 	))
+}
+
+package.all.functions.names <- function(packageName) {
+    as.list(
+		tryCatch({
+			ls(getNamespace(packageName), all.names = TRUE)
+		}, error = function(e) {
+			return(c())
+		})
+	)
 }
 
 packages.installed.named <- function() {

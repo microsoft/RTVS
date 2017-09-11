@@ -71,7 +71,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             // See if information is immediately available
             var infos = _engine.GetQuickInfosAsync(context, null);
             if (infos != null) {
-                AddQuickInfos(quickInfoContent, MakeQuickInfos(infos));
+                AddQuickInfos(quickInfoContent, MakeQuickInfos(infos, textBuffer.ToEditorBuffer().CurrentSnapshot, position, out applicableToSpan));
                 return true;
             }
 
@@ -82,18 +82,21 @@ namespace Microsoft.R.Editor.QuickInfo {
         }
         #endregion
 
-        internal static bool GetCachedSignatures(IList<object> quickInfos, ITextBuffer textBuffer, int position, IEnumerable<IRFunctionQuickInfo> infos, out ITrackingSpan applicableSpan) {
+        internal static bool GetCachedSignatures(
+            IList<object> quickInfos,
+            ITextBuffer textBuffer,
+            int position, IEnumerable<IRFunctionQuickInfo> infos,
+            out ITrackingSpan applicableSpan) {
             applicableSpan = null;
-            if (infos == null || !infos.Any()) {
+            if (infos == null) {
                 return false;
             }
 
-            applicableSpan = infos.First().ApplicableToRange.As<ITrackingSpan>();
-            var content = MakeQuickInfos(infos);
+            var content = MakeQuickInfos(infos, textBuffer.ToEditorBuffer().CurrentSnapshot, position, out applicableSpan);
             foreach (var s in content) {
                 quickInfos.Add(s);
             }
-            return true;
+            return quickInfos.Count > 0;
         }
 
         private static void AddQuickInfos(IList<object> quickInfos, IEnumerable<string> infosToAdd) {
@@ -102,8 +105,37 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
         }
 
-        private static IEnumerable<string> MakeQuickInfos(IEnumerable<IRFunctionQuickInfo> infos)
-            => infos.Select(x => x.Content.FirstOrDefault()).ExcludeDefault();
+        private static IEnumerable<string> MakeQuickInfos(
+            IEnumerable<IRFunctionQuickInfo> infos,
+            IEditorBufferSnapshot snapshot,
+            int position,
+            out ITrackingSpan applicableSpan) {
+
+            applicableSpan = null;
+            var list = new List<string>();
+            int s = 0, e = 0, length = int.MaxValue;
+
+            foreach (var info in infos) {
+                var start = info.ApplicableToRange.GetStartPoint(snapshot);
+                var end = info.ApplicableToRange.GetEndPoint(snapshot);
+                if (start <= position && position < end) {
+
+                    var content = info.Content.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(content)) {
+                        list.Add(content);
+
+                        s = Math.Max(s, start);
+                        e = Math.Min(e, end);
+                        var l = e - s;
+                        if(l < length) {
+                            applicableSpan = info.ApplicableToRange.As<ITrackingSpan>();
+                            length = l;
+                        }
+                    }
+                }
+            }
+            return list;
+        }
 
         private void RetriggerQuickInfoSession(IEnumerable<IRFunctionQuickInfo> infos, IQuickInfoSession session) {
             if (session == null) {

@@ -10,7 +10,7 @@ namespace Microsoft.Common.Core.Imaging {
         /// Provides image based on one of the predefined types
         /// </summary>
         /// <returns>Platform-specific image source</returns>
-        object GetImage(ImageType imageType);
+        object GetImage(ImageType imageType, ImageSubType subType = ImageSubType.Public);
 
         /// <summary>
         /// Returns image source given name of the image moniker

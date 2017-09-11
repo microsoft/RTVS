@@ -100,9 +100,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                 .Where(kvp => kvp.Value != null)
                 .Select(kvp => Invariant($"{kvp.Key}={kvp.Value}")));
 
+            var varName = VariableNameBox.Text.Trim();
+            if(varName.IndexOfAny(new [] { ' ', '\r', '\n', '\t' }) >= 0) {
+                varName = varName.ToRName();
+            }
             return preview
                 ? Invariant($"read.csv({inputString}, nrows=20)")
-                : Invariant($"`{VariableNameBox.Text}` <- read.csv({inputString})");
+                : Invariant($"{varName} <- read.csv({inputString})");
         }
 
         private static string GetSelectedValue(ComboBox comboBox) {

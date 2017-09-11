@@ -8,7 +8,7 @@ namespace Microsoft.R.Editor.Functions {
         /// <summary>
         /// List of functions in the package
         /// </summary>
-        IEnumerable<INamedItemInfo> Functions { get; }
+        IEnumerable<IFunctionInfo> Functions { get; }
 
         /// <summary>
         /// Writes information to disk for faster retrieval when new session starts

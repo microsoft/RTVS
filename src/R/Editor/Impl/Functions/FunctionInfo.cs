@@ -28,12 +28,17 @@ namespace Microsoft.R.Editor.Functions {
         public bool IsInternal { get; internal set; }
         #endregion
 
-        public FunctionInfo(string name, string package,  string description) :
+        public FunctionInfo(string name, string package,  string description, bool isInternal = false) :
             base(name, description, NamedItemType.Function) {
             Package = package;
+            IsInternal = isInternal;
         }
 
-        public FunctionInfo(string name) : this(name, null, string.Empty) { }
+        public FunctionInfo(IPersistentFunctionInfo info) :
+            this(info.Name, null, string.Empty, info.IsInternal) { }
+
+        public FunctionInfo(string name, bool isInternal) : 
+            this(name, null, string.Empty, isInternal) { }
 
         public FunctionInfo(string alias, IFunctionInfo primary) : 
             this(alias, primary .Package, primary.Description) {

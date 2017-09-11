@@ -12,19 +12,21 @@ namespace Microsoft.R.Editor.Completions {
     /// </summary>
     public static class RCompletionContextExtensions {
         public static bool IsCaretInNamespace(this IRIntellisenseContext context)
-            => context.Session.View.IsCaretInNamespace();
+            => context.IsCaretInNamespace(out bool unused);
+
+        public static bool IsCaretInNamespace(this IRIntellisenseContext context, out bool tripleColon)
+            => context.Session.View.IsCaretInNamespace(out tripleColon);
 
         public static bool IsCaretInNamespace(this IEditorView view)
-            => view.EditorBuffer.CurrentSnapshot.IsPositionInNamespace(view.Caret.Position.Position);
+            => view.EditorBuffer.CurrentSnapshot.IsPositionInNamespace(view.Caret.Position.Position, out bool unused);
 
-        public static bool IsPositionInNamespace(this IEditorBufferSnapshot snapshot, int position) {
-            if (position > 0) {
-                var line = snapshot.GetLineFromPosition(position);
-                if (line.Length > 2 && position - line.Start > 2) {
-                    return snapshot[position - 1] == ':';
-                }
-            }
-            return false;
+        public static bool IsCaretInNamespace(this IEditorView view, out bool tripleColon)
+            => view.EditorBuffer.CurrentSnapshot.IsPositionInNamespace(view.Caret.Position.Position, out tripleColon);
+
+        public static bool IsPositionInNamespace(this IEditorBufferSnapshot snapshot, int position, out bool tripleColon) {
+            var doubleColon = position >= 2 && snapshot[position - 1] == ':' && snapshot[position - 2] == ':';
+            tripleColon = position >= 3 && doubleColon && snapshot[position - 3] == ':';
+            return doubleColon;
         }
 
         public static bool IsCaretInLibraryStatement(this IRIntellisenseContext context)
@@ -40,10 +42,10 @@ namespace Microsoft.R.Editor.Completions {
                     return false;
                 }
 
-                int start = -1;
-                int end = -1;
+                var start = -1;
+                var end = -1;
 
-                for (int i = caretPosition - 2; i >= 0; i--) {
+                for (var i = caretPosition - 2; i >= 0; i--) {
                     if (!char.IsWhiteSpace(snapshot[i])) {
                         end = i + 1;
                         break;
@@ -54,7 +56,7 @@ namespace Microsoft.R.Editor.Completions {
                     return false;
                 }
 
-                for (int i = end - 1; i >= 0; i--) {
+                for (var i = end - 1; i >= 0; i--) {
                     if (char.IsWhiteSpace(snapshot[i])) {
                         start = i + 1;
                         break;
@@ -71,7 +73,7 @@ namespace Microsoft.R.Editor.Completions {
                 start -= line.Start;
                 end -= line.Start;
 
-                string s = line.GetText().Substring(start, end - start);
+                var s = line.GetText().Substring(start, end - start);
                 if (s == "library" || s == "require") {
                     return true;
                 }

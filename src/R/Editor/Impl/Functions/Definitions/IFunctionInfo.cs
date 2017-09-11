@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 
 namespace Microsoft.R.Editor.Functions {
-    public interface IFunctionInfo : INamedItemInfo {
+    public interface IFunctionInfo : IPersistentFunctionInfo {
         /// <summary>
         /// Package the function belongs to
         /// </summary>
@@ -19,11 +19,5 @@ namespace Microsoft.R.Editor.Functions {
         /// Return value description
         /// </summary>
         string ReturnValue { get; }
-
-        /// <summary>
-        /// Indicates that function is internal (has 'internal' 
-        /// in its list of keywords)
-        /// </summary>
-        bool IsInternal { get; }
     }
 }

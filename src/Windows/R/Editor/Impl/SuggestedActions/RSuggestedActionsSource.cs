@@ -69,14 +69,8 @@ namespace Microsoft.R.Editor.SuggestedActions {
                 return Enumerable.Empty<SuggestedActionSet>();
             }
 
-            var caretPosition = TextView.Caret.Position.BufferPosition;
-            var bufferPoint = TextView.MapDownToR(caretPosition);
-            if (!bufferPoint.HasValue) {
-                return Enumerable.Empty<SuggestedActionSet>();
-            }
-
             var ast = _document?.EditorTree?.AstRoot;
-            var bufferPosition = bufferPoint.Value.Position;
+            var bufferPosition = PositionFromRange(range);
             _lastNode = ast?.GetNodeOfTypeFromPosition<TokenNode>(bufferPosition);
             if (_lastNode == null) {
                 return Enumerable.Empty<SuggestedActionSet>();
@@ -88,20 +82,26 @@ namespace Microsoft.R.Editor.SuggestedActions {
                     .Select(ap => new SuggestedActionSet(ap.GetSuggestedActions(TextView, TextBuffer, bufferPosition), applicableToSpan: applicableSpan));
         }
 
-        public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            if (TextView != null && !TextView.Caret.InVirtualSpace) {
-                var rPosition = TextView.MapDownToR(TextView.Caret.Position.BufferPosition);
-                if (rPosition.HasValue && SuggestedActionProviders.Any(actionProvider => actionProvider.HasSuggestedActions(TextView, TextBuffer, rPosition.Value.Position))) {
-                    return Task.FromResult(true);
-                }
-            }
-            return Task.FromResult(false);
-        }
+        public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken)
+            => Task.FromResult(
+                    TextView != null && 
+                    SuggestedActionProviders.Any(a => a.HasSuggestedActions(TextView, TextBuffer, PositionFromRange(range))));
 
         public bool TryGetTelemetryId(out Guid telemetryId) {
             telemetryId = REditorCommands.REditorCmdSetGuid;
             return true;
         }
         #endregion
+
+        /// <remarks>
+        /// Picks position in range to fetch suggested acions. 
+        /// Ideally range content should be split and analyzed 
+        /// but this is TODO in the future.
+        /// </remarks>
+        private static int PositionFromRange(SnapshotSpan range) {
+            var text = range.Snapshot.GetText(range);
+            var nonWsOffset = text.Length - text.TrimStart().Length;
+            return Math.Min(range.Start + 1 + nonWsOffset, range.End);
+        }
     }
 }

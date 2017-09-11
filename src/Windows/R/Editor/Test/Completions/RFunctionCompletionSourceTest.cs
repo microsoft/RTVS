@@ -90,6 +90,22 @@ namespace Microsoft.R.Editor.Test.Completions {
             }
         }
 
+        [CompositeTest]
+        [InlineData("utils::", 7, "relist", "relist.factor")]
+        [InlineData("utils:::", 8, "relist.factor", "")]
+        public async Task InternalExternal(string content, int position, string expectedEntry, string notExpectedEntry) {
+            var packageName = await FunctionIndex.GetPackageNameAsync(expectedEntry);
+            packageName.Should().NotBeNull();
+
+            var completionSets = new List<CompletionSet>();
+            RCompletionTestUtilities.GetCompletions(Services, content, position, completionSets);
+            completionSets.Should().ContainSingle();
+
+            var entries = completionSets[0].Completions.Select(c => c.DisplayText).ToList();
+            entries.Should().Contain(expectedEntry);
+            entries.Should().NotContain(notExpectedEntry);
+        }
+
         [Test]
         public void CaseSensitiveEntries() {
             var completionSets = new List<CompletionSet>();
