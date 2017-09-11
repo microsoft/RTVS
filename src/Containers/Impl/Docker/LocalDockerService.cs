@@ -153,8 +153,7 @@ namespace Microsoft.R.Containers.Docker {
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                UseShellExecute = false
             };
 
             var process = _ps.Start(psi);
