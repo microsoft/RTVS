@@ -112,7 +112,7 @@
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
@@ -134,6 +134,10 @@
     <ProjectReference Include="..\..\Windows\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
       <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
       <Name>Microsoft.R.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>

@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="..\..\..\R\Platform\Impl\Interpreters\Microsoft.R.Platform.Linux.csproj" />
   </ItemGroup>
 

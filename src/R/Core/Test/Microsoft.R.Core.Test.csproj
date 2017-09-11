@@ -57,8 +57,12 @@
       <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

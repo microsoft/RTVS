@@ -36,10 +36,6 @@
       <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -51,6 +47,10 @@
     <ProjectReference Include="..\..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\EditorTestApp\Microsoft.Languages.Editor.Application.csproj">
       <Project>{9174c912-e757-4ecd-9d6e-9604bef74900}</Project>
@@ -79,6 +79,10 @@
     <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

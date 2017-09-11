@@ -93,6 +93,10 @@
       <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
       <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
@@ -101,10 +105,6 @@
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
@@ -112,6 +112,10 @@
     <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
       <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
       <Name>Microsoft.R.Platform.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>

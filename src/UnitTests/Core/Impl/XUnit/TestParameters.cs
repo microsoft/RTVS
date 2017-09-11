@@ -6,7 +6,6 @@ using System.Linq;
 using Xunit.Abstractions;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     public class TestParameters {
         public TestParameters(ITestMethod testMethod, IAttributeInfo factAttribute) {
             SkipReason = factAttribute.GetNamedArgument<string>(nameof(TestAttribute.Skip));

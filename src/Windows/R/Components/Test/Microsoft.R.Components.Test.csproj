@@ -169,7 +169,7 @@
       <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
@@ -191,6 +191,10 @@
     <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
       <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -12,7 +11,6 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 
 namespace Microsoft.UnitTests.Core.Threading {
-    [ExcludeFromCodeCoverage]
     public class TestMainThread : IProgressDialog, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();

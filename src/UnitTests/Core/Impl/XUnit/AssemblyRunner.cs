@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     internal sealed class AssemblyRunner : XunitTestAssemblyRunner {
         private readonly XunitTestEnvironment _testEnvironment;
         private IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
@@ -30,7 +29,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _assemblyLoaders = AssemblyLoaderAttribute.GetAssemblyLoaders(TestAssembly.Assembly);
 
             var assembly = TestAssembly.Assembly;
-            var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof (AssemblyFixtureImportAttribute))
+            var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof(AssemblyFixtureImportAttribute))
                 .SelectMany(ai => ai.GetConstructorArguments())
                 .OfType<Type[]>()
                 .SelectMany(a => a);
@@ -77,12 +76,19 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 await asyncLifetime.InitializeAsync();
             }
 
-            var methodFixtureFactory = fixtureType.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMethodFixtureFactory<>));
+            var methodFixtureFactory = fixtureType.GetInterfaces().FirstOrDefault(i => IsGenericType(i) && i.GetGenericTypeDefinition() == typeof(IMethodFixtureFactory<>));
             if (methodFixtureFactory != null) {
                 fixtures[methodFixtureFactory.GetGenericArguments()[0]] = fixture;
             } else {
                 fixtures[fixtureType] = fixture;
             }
         }
+
+        private static bool IsGenericType(Type t)
+#if DESKTOP
+            => t.IsGenericType;
+#else
+            =>  t.GetTypeInfo().IsGenericType;
+#endif
     }
 }

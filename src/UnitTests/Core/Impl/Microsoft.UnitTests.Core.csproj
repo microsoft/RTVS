@@ -1,151 +1,47 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.UnitTests.Core</RootNamespace>
+    <TargetFrameworks>netstandard1.6;net46</TargetFrameworks>
     <AssemblyName>Microsoft.UnitTests.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <RootNamespace>Microsoft.UnitTests.Core</RootNamespace>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
+  <PropertyGroup>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net46'">DESKTOP;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs">
-      <Link>Properties\AssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Threading\TestMainThread.cs" />
-    <Compile Include="XUnit\TaskObserver.cs" />
-    <Compile Include="XUnit\VsAssemblyLoaderAttribute.cs" />
-    <Compile Include="XUnit\XunitTestEnvironment.cs" />
+    <Compile Include="..\..\..\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="..\..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="project.json" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="FluentAssertions" Version="4.19.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="NSubstitute" Version="2.0.3" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Condition="'$(TargetFramework)' != 'net46'" Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="15.0.26606" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.5.24" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="PresentationFramework" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="EventTaskSources.cs" />
-    <Compile Include="FluentAssertions\ActionAssertionsExtensions.cs" />
-    <Compile Include="FluentAssertions\AsyncAssertions.cs" />
-    <Compile Include="FluentAssertions\CollectionAssertionsExtensions.cs" />
-    <Compile Include="FluentAssertions\FluentAssertionExtensions.cs" />
-    <Compile Include="FluentAssertions\GivenSelectorExtensions.cs" />
-    <Compile Include="FluentAssertions\ObjectAssertionsExtensions.cs" />
-    <Compile Include="FluentAssertions\TaskAssertionsBase.cs" />
-    <Compile Include="FluentAssertions\TaskAssertionsExtensions.cs" />
-    <Compile Include="Mef\CatalogFactory.cs" />
-    <Compile Include="Mef\PartMetadataAttributeNames.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="NSubstitute\SubstituteExtensions.cs" />
-    <Compile Include="NSubstitute\SubstituteHelper.cs" />
-    <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.AddValueFactory.cs" />
-    <Compile Include="NSubstitute\Mef\ImportDefinitionConstraintAnalyser.cs" />
-    <Compile Include="NSubstitute\Mef\MefSubstitute.cs" />
-    <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.cs" />
-    <Compile Include="NSubstitute\Mef\NSubstituteCompositionContainer.cs" />
-    <Compile Include="NSubstitute\Mef\NSubstituteExportProvider.cs" />
-    <Compile Include="Paths.cs" />
-    <Compile Include="ProcessUtils.cs" />
-    <Compile Include="Random.cs" />
-    <Compile Include="Threading\ControlledTaskScheduler.cs" />
-    <Compile Include="Threading\ControlledTaskSchedulerExtensions.cs" />
-    <Compile Include="Threading\ParallelTools.cs" />
-    <Compile Include="Threading\UIThreadHelper.cs" />
-    <Compile Include="Threading\UIThreadTools.cs" />
-    <Compile Include="UI\ContainerHost.cs" />
-    <Compile Include="XUnit\AssemblyFixtureImportAttribute.cs" />
-    <Compile Include="XUnit\AssemblyLoaderAttribute.cs" />
-    <Compile Include="XUnit\AssemblyRunner.cs" />
-    <Compile Include="XUnit\BeforeCtorAfterDisposeAttribute.cs" />
-    <Compile Include="XUnit\Categories.cs" />
-    <Compile Include="XUnit\CategoryAttribute.cs" />
-    <Compile Include="XUnit\CategoryTraitDiscoverer.cs" />
-    <Compile Include="XUnit\ClassRunner.cs" />
-    <Compile Include="XUnit\CollectionNames.cs" />
-    <Compile Include="XUnit\CollectionRunner.cs" />
-    <Compile Include="XUnit\CompositeTestAttribute.cs" />
-    <Compile Include="XUnit\CompositeTestDiscoverer.cs" />
-    <Compile Include="XUnit\DeployFilesFixture.cs" />
-    <Compile Include="XUnit\AssemblyFixtureAttribute.cs" />
-    <Compile Include="Mef\IExportProvider.cs" />
-    <Compile Include="XUnit\IMethodFixture.cs" />
-    <Compile Include="XUnit\IMethodFixtureFactory.cs" />
-    <Compile Include="XUnit\InlineArrayAttribute.cs" />
-    <Compile Include="XUnit\InlineArrayDiscoverer.cs" />
-    <Compile Include="XUnit\IntRangeAttribute.cs" />
-    <Compile Include="XUnit\IntRangeDiscoverer.cs" />
-    <Compile Include="XUnit\ITestInput.cs" />
-    <Compile Include="XUnit\MessageBusInjections\ExecuteBeforeAfterAttributesMessageBusInjection.cs" />
-    <Compile Include="XUnit\MessageBusInjections\ITestAfterStartingBeforeFinishedInjection.cs" />
-    <Compile Include="XUnit\MessageBusInjections\ITestCaseAfterStartingBeforeFinishedInjection.cs" />
-    <Compile Include="XUnit\MessageBusInjections\VerifyGlobalProviderMessageBusInjection.cs" />
-    <Compile Include="XUnit\MessageBusOverride.cs" />
-    <Compile Include="XUnit\MethodFixtures\ContainerHostMethodFixture.cs" />
-    <Compile Include="XUnit\MethodFixtureTypes.cs" />
-    <Compile Include="XUnit\TestAttribute.cs" />
-    <Compile Include="XUnit\TestCase.cs" />
-    <Compile Include="XUnit\TestCaseRunner.cs" />
-    <Compile Include="XUnit\TestDiscoverer.cs" />
-    <Compile Include="XUnit\TestForTypesAttribute.cs" />
-    <Compile Include="XUnit\TestForTypesDiscoverer.cs" />
-    <Compile Include="XUnit\TestForTypesParameters.cs" />
-    <Compile Include="XUnit\TestFramework.cs" />
-    <Compile Include="XUnit\TestFrameworkDiscoverer.cs" />
-    <Compile Include="XUnit\TestFrameworkExecutor.cs" />
-    <Compile Include="XUnit\TestFrameworkOverrideAttribute.cs" />
-    <Compile Include="XUnit\TestFrameworkTypeDiscoverer.cs" />
-    <Compile Include="XUnit\TestInvoker.cs" />
-    <Compile Include="XUnit\MethodFixtures\TestMethodFixture.cs" />
-    <Compile Include="XUnit\TestMethodRunner.cs" />
-    <Compile Include="XUnit\TestParameters.cs" />
-    <Compile Include="XUnit\TestRunner.cs" />
-    <Compile Include="XUnit\TestTraceListener.cs" />
-    <Compile Include="XUnit\ThreadType.cs" />
-    <Compile Include="XUnit\ThreadTypeAttribute.cs" />
-    <Compile Include="XUnit\TraceFailException.cs" />
-    <Compile Include="XUnit\UnitTestTraitDiscoverer.cs" />
-    <Compile Include="XUnit\TestForTypesTestCase.cs" />
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
-      <Name>Microsoft.R.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
-      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
-      <Name>Microsoft.R.Platform</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

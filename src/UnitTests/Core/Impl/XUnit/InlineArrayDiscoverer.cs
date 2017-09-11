@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     public class InlineArrayDiscoverer : IDataDiscoverer {
         /// <inheritdoc/>
         public virtual IEnumerable<object[]> GetData(IAttributeInfo dataAttribute, IMethodInfo testMethod) {

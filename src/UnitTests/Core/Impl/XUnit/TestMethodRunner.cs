@@ -158,7 +158,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _stopwatch.Restart();
             try {
                 var task = action();
+#if DESKTOP
                 await ParallelTools.When(task, 60_000, timeoutMessage);
+#endif
                 await task;
             } catch (Exception ex) {
                 exception = ex;    

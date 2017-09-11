@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
@@ -9,8 +8,6 @@
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\..\R.Settings.props" />
-  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj" />
@@ -35,4 +32,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
 </Project>

@@ -3,14 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [DataDiscoverer("Microsoft.UnitTests.Core.XUnit.IntRangeDiscoverer", "Microsoft.UnitTests.Core")]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    [ExcludeFromCodeCoverage]
     public sealed class IntRangeAttribute : DataAttribute {
         private readonly int _start;
         private readonly int _count;

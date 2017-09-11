@@ -5,15 +5,13 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.Linux;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.R.Platform.Interpreters.Linux.Test {
     [Category.Linux]
     public class RInstallationTest {
-        [Fact]
+        [Test]
         public void RInstallationBasicTest() {
             var fs = new TestFileSystem();
             var rInstallation = new RInstallation(fs);
@@ -27,7 +25,7 @@ namespace Microsoft.R.Platform.Interpreters.Linux.Test {
             installs.Should().ContainSingle(i => i.Name.StartsWithOrdinal("CRAN R")).Which.Version.Should().Be(new Version(3, 2, 3, 4));
         }
 
-        [Fact]
+        [Test]
         public void CreateInterpreterInfoTest() {
             // This test is valid only on Linux
             var fs = new TestFileSystem(false);

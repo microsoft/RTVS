@@ -34,8 +34,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>

@@ -57,12 +57,16 @@
       <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
       <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
       <Name>Microsoft.R.Platform.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UserProfile\Impl\Microsoft.R.Host.UserProfile.csproj">
       <Project>{28C3629E-3FD8-4040-9CCE-6D62B9B1A5E3}</Project>

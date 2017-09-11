@@ -44,7 +44,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) {
             TestTraceListener.Ensure();
-            MessageBusOverride messageBusOverride = new MessageBusOverride(messageBus)
+            var messageBusOverride = new MessageBusOverride(messageBus)
                 .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, TestMethod.TestClass.Class));
 
             var testMethodArguments = GetTestMethodArguments();
@@ -54,7 +54,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 return UIThreadHelper.Instance.Invoke(runner.RunAsync);
             }
 
+#if DESKTOP
             messageBusOverride.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
+#endif
             return ThreadType == ThreadType.Background ? Task.Run(() => runner.RunAsync()) : runner.RunAsync();
         }
 

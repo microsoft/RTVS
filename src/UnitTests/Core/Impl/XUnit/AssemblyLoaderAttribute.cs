@@ -3,15 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using Xunit.Abstractions;
+
+#if DESKTOP
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Common.Core;
-using Xunit.Abstractions;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Assembly)]
     public abstract class AssemblyLoaderAttribute : Attribute, IDisposable {
         public static IList<AssemblyLoaderAttribute> GetAssemblyLoaders(IAssemblyInfo assemblyInfo) {
@@ -100,3 +100,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
     }
 }
+#else
+namespace Microsoft.UnitTests.Core.XUnit {
+    [AttributeUsage(AttributeTargets.Assembly)]
+    public abstract class AssemblyLoaderAttribute : Attribute, IDisposable {
+        public static IList<AssemblyLoaderAttribute> GetAssemblyLoaders(IAssemblyInfo assemblyInfo) => new List<AssemblyLoaderAttribute>();
+        public void Dispose() { }
+    }
+}
+#endif

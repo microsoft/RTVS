@@ -3,15 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Microsoft.UnitTests.Core.XUnit.MessageBusInjections
-{
-    [ExcludeFromCodeCoverage]
+namespace Microsoft.UnitTests.Core.XUnit.MessageBusInjections {
     internal class ExecuteBeforeAfterAttributesMessageBusInjection : ITestAfterStartingBeforeFinishedInjection
     {
         private readonly Stack<BeforeCtorAfterDisposeAttribute> _attributesStack = new Stack<BeforeCtorAfterDisposeAttribute>();
