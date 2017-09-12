@@ -3,7 +3,6 @@
 
 using System.Collections.Concurrent;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Common.Core.Output;
@@ -18,8 +17,8 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             _outputs = new ConcurrentDictionary<string, IOutput>();
         }
 
-        public Task<IOutput> GetAsync(string name, CancellationToken cancellationToken) 
-            => Task.FromResult(_outputs.GetOrAdd(name, prefix => new TestOutput(prefix, _services.Log())));
+        public IOutput Get(string name, CancellationToken cancellationToken) 
+            => _outputs.GetOrAdd(name, prefix => new TestOutput(prefix, _services.Log()));
 
         private class TestOutput : IOutput {
             private readonly string _prefix;

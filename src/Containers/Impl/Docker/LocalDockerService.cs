@@ -140,7 +140,7 @@ namespace Microsoft.R.Containers.Docker {
         private async Task<string> ExecuteCommandAsync(string arguments, string outputPrefix, int timeoutms, bool failOnTimeout = true, CancellationToken ct = default(CancellationToken)) {
             var printOutput = outputPrefix != null;
             if (_output == null && printOutput) {
-                _output = await _outputService.GetAsync(ContainerOutputName, ct);
+                _output = _outputService.Get(ContainerOutputName, ct);
             }
 
             await TaskUtilities.SwitchToBackgroundThread();
@@ -168,6 +168,9 @@ namespace Microsoft.R.Containers.Docker {
                 }
 
                 await process.WaitForExitAsync(timeoutms, ct);
+            } catch(IOException) {
+                _output.Write(Invariant($"{outputPrefix}> ERROR: {Resources.LocalDockerOutputStreamException}"));
+                throw new ContainerException(Resources.LocalDockerOutputStreamException);
             } catch(OperationCanceledException) when (!failOnTimeout && !ct.IsCancellationRequested){
             }
 
