@@ -5,12 +5,14 @@ namespace Microsoft.R.Containers {
     public class BuildImageParameters {
         public string Image { get; }
         public string Tag { get; }
+        public string Name { get; }
         public string DockerfilePath { get; }
 
-        public BuildImageParameters(string dockerFile, string imageName, string imageTag) {
+        public BuildImageParameters(string dockerFile, string imageName, string imageTag, string name) {
             DockerfilePath = dockerFile;
             Image = imageName;
             Tag = imageTag;
+            Name = name;
         }
     }
 }

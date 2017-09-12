@@ -10,12 +10,14 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.R.Interpreters;
 using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
@@ -64,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new WindowsFileSystem())
+                .AddService<IOutputService, TestOutputService>()
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
@@ -73,6 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
+                .AddRComponentsServices()
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

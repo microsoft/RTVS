@@ -8,9 +8,8 @@ using Microsoft.R.Components.Settings;
 namespace Microsoft.R.Components.PackageManager.Implementation {
     [Export(typeof(IRPackageManagerProvider))]
     internal class RPackageManagerProvider : IRPackageManagerProvider {
-        public IRPackageManager CreateRPackageManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow) {
-            var pm = new RPackageManager(settings, interactiveWorkflow, () => {});
-            return pm;
+        public IRPackageManager CreateRPackageManager(IRInteractiveWorkflow interactiveWorkflow) {
+            return new RPackageManager(interactiveWorkflow, () => {});
         }
     }
 }

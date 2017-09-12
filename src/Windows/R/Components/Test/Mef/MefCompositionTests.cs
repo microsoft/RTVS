@@ -3,11 +3,8 @@
 
 using FluentAssertions;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
@@ -47,17 +44,7 @@ namespace Microsoft.R.Components.Test {
         public void InteractiveWindowComponentContainerFactory() {
             _services.GetService<IInteractiveWindowComponentContainerFactory>().Should().NotBeNull();
         }
-
-        [Test]
-        public void RPackageManagerVisualComponentContainerFactory() {
-            _services.GetService<IRPackageManagerVisualComponentContainerFactory>().Should().NotBeNull();
-        }
-
-        [Test]
-        public void ConnectionManagerVisualComponentContainerFactory() {
-            _services.GetService<IConnectionManagerVisualProvider>().Should().NotBeNull();
-        }
-
+        
         [Test]
         public void InteractiveWindowFactoryService() {
             _services.GetService<IInteractiveWindowFactoryService>().Should().NotBeNull();

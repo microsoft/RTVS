@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
@@ -46,8 +46,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             vsWindow2.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 
             var toolWindow = (ToolWindowPane)vsWindow2;
+            var interactiveWindow = vsWindow2.InteractiveWindow;
             var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow, _shell.Services);
-            var component = new RInteractiveWindowVisualComponent(vsWindow2.InteractiveWindow, componentContainer, sessionProvider, _shell.Services);
+            var component = new RInteractiveWindowVisualComponent(interactiveWindow, componentContainer, sessionProvider, _shell.Services);
             componentContainer.Component = component;
 
             RegisterFocusPreservingWindow(toolWindow);

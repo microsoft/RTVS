@@ -57,7 +57,7 @@ namespace Microsoft.R.Debugger {
 
             _children = Lazy.Create(CreateChildren);
             _reprToString = Lazy.Create(GetReprToString);
-            _settings = stackFrame.Engine.Shell.GetService<IRSettings>();
+            _settings = stackFrame.Engine.Services.GetService<IRSettings>();
         }
 
         private IReadOnlyList<IREvaluationResultInfo> CreateChildren() =>

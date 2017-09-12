@@ -19,7 +19,7 @@ namespace Microsoft.R.Components {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -432,6 +432,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Local Docker.
+        /// </summary>
+        public static string ConnectionManager_LocalDockerConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalDockerConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Docker Connections.
+        /// </summary>
+        public static string ConnectionManager_LocalDockerConnections_Tooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalDockerConnections_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Entry name.
         /// </summary>
         public static string ConnectionManager_Name {
@@ -565,6 +583,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Containers.
+        /// </summary>
+        public static string ConnectionManager_ShowContainers {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ShowContainers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;? Switching will stop your current session, all unsaved data will be lost.
         ///
         ///This prompt can be suppressed in R Tools | Options..
@@ -654,6 +681,141 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_TestingConnection {
             get {
                 return ResourceManager.GetString("ConnectionManager_TestingConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ContainerManager_Cancel {
+            get {
+                return ResourceManager.GetString("ContainerManager_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_CreationError {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_CreationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Name {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Password {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_UserName {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Version {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new docker container.
+        /// </summary>
+        public static string ContainerManager_CreateTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error deleting &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_DeleteError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete container &apos;{0}&apos;.
+        /// </summary>
+        public static string ContainerManager_DeleteTooltip_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteTooltip_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Workspaces.
+        /// </summary>
+        public static string ContainerManager_ShowWorkspaces {
+            get {
+                return ResourceManager.GetString("ContainerManager_ShowWorkspaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error starting &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_StartError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StartError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start container &apos;{0}&apos;.
+        /// </summary>
+        public static string ContainerManager_StartTooltip_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StartTooltip_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error stopping &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_StopError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StopError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop container &apos;{0}&apos;.
+        /// </summary>
+        public static string ContainerManager_StopTooltip_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StopTooltip_Format", resourceCulture);
             }
         }
         

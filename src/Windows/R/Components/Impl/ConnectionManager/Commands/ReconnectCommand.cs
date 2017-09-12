@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -15,7 +15,7 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
 
         public ReconnectCommand(IRInteractiveWorkflow workflow) {
             _connectionManager = workflow.Connections;
-            _ui = workflow.Shell.UI();
+            _ui = workflow.Services.UI();
         }
 
         public CommandStatus Status => _connectionManager.IsConnected 

@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }, false) {
 
             _interactiveWorkflow = interactiveWorkflow;
-            _settings = _interactiveWorkflow.Shell.GetService<IRSettings>();
+            _settings = _interactiveWorkflow.Services.GetService<IRSettings>();
 
             _session = interactiveWorkflow.RSession;
             _session.Connected += OnSessionConnected;

@@ -2,8 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
@@ -11,8 +12,9 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IRInteractiveWorkflow : IDisposable {
-        ICoreShell Shell { get; }
+        IServiceContainer Services { get; }
         IConnectionManager Connections { get; }
+        IContainerManager Containers { get; }
         IConsole Console { get; }
         IRHistory History { get; }
         IRPackageManager Packages { get; }

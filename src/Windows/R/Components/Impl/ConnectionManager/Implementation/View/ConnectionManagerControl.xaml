@@ -79,17 +79,6 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="ValidityIndicatorStyle" TargetType="{x:Type imaging:CrispImage}">
-                <Style.Setters>
-                    <Setter Property="Width" Value="16" />
-                    <Setter Property="Height" Value="16" />
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="Margin" Value="0,0,4,0" />
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
-                </Style.Setters>
-            </Style>
-
             <Style x:Key="ExpandCollapseButtonLocalConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
                 <Setter Property="IsExpanded" Value="True" />
                 <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalConnections}" />
@@ -100,6 +89,18 @@
                     </Setter.Value>
                 </Setter>
                 <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+            </Style>
+
+            <Style x:Key="ExpandCollapseButtonLocalDockerConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
+                <Setter Property="IsExpanded" Value="True" />
+                <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalDockerConnections}" />
+                <Setter Property="Visibility" Value="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}" />
+                <Setter Property="ToolTip">
+                    <Setter.Value>
+                        <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalDockerConnections_Tooltip}" />
             </Style>
 
             <Style x:Key="ExpandCollapseButtonRemoteConnectionsStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
@@ -114,126 +115,117 @@
             </Style>
 
             <DataTemplate x:Key="EditConnectionDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
-                <AdornerDecorator>
-                    <Grid Margin="0,6,0,8" PreviewKeyUp="EditConnection_PreviewKeyUp"
-                          Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                <Grid Margin="0,6,0,8" PreviewKeyUp="EditConnection_PreviewKeyUp"
+                        Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                        <imaging:CrispImage Grid.Row="0" Grid.Column="0" x:Name="NameValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
-                        <imaging:CrispImage Grid.Row="1" Grid.Column="0" x:Name="PathValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}" />
+                    <imaging:CrispImage Grid.Row="0" Grid.Column="0" x:Name="NameValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}"
+                                        rwpf:AttachedProperties.IsValid="{Binding Path=IsNameValid}"/>
+                    <imaging:CrispImage Grid.Row="1" Grid.Column="0" x:Name="PathValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}"
+                                        rwpf:AttachedProperties.IsValid="{Binding Path=IsPathValid}"/>
 
-                        <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}"
-                                 Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
-                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
-                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 ToolTip="{Binding Path=NameTextBoxTooltip}"
-                                 IsVisibleChanged="TextBoxName_IsVisibleChanged"
-                                 AutomationProperties.Name="{Binding Path=NameTextBoxTooltip}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}"
+                                Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Name}"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
+                                Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
+                                ToolTip="{Binding Path=NameTextBoxTooltip}"
+                                IsVisibleChanged="TextBoxName_IsVisibleChanged"
+                                AutomationProperties.Name="{Binding Path=NameTextBoxTooltip}"/>
 
-                        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
-                                 Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
-                                 IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
-                                 LostFocus="PathTextBox_LostFocus"
-                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
-                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 ToolTip="{Binding Path=PathTextBoxTooltip}"
-                                 AutomationProperties.Name="{Binding Path=PathTextBoxTooltip}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
+                                Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_Path}" 
+                                IsReadOnly="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}"
+                                LostFocus="PathTextBox_LostFocus"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}"
+                                Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
+                                ToolTip="{Binding Path=PathTextBoxTooltip}"
+                                AutomationProperties.Name="{Binding Path=PathTextBoxTooltip}"/>
 
-                        <Button Grid.Row="1" Grid.Column="2" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
-                                VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"
-                                IsEnabled="{Binding Path=IsUserCreated}" 
-                                Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
-                                AutomationProperties.Name="{x:Static components:Resources.Browse}"/>
+                    <Button Grid.Row="1" Grid.Column="2" Margin="3,0,0,6" Padding="2,0,2,0" Content="..." 
+                            VerticalAlignment="Stretch" MinHeight="0" MinWidth="0" Click="ButtonPath_Click"
+                            IsEnabled="{Binding Path=IsUserCreated}" 
+                            Visibility="{Binding Path=IsRemote, Converter={x:Static rwpf:Converters.TrueIsCollapsed}}"
+                            AutomationProperties.Name="{x:Static components:Resources.Browse}"/>
 
-                        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
-                                 Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
-                                 Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
-                                 Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
-                                 ToolTip="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
-                                 AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}" 
+                                Text="{Binding Path=RCommandLineArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.BackgroundBrushKey}}" 
+                                Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}"
+                                ToolTip="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}"
+                                AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_RCommandLineArguments}" />
 
-                        <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
-                            <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
-                                    VerticalAlignment="Center" Click="ButtonSave_Click" 
-                                    Style="{StaticResource ToolWindowButtonStyle}"  ToolTipService.ShowOnDisabled="True"
-                                    Content="{x:Static components:Resources.ConnectionManager_Save}" 
-                                    ToolTip="{Binding Path=SaveButtonTooltip}"
-                                    AutomationProperties.Name="{Binding Path=SaveButtonTooltip}">
-                                <Button.IsEnabled>
-                                    <MultiBinding Converter="{x:Static rwpf:Converters.All}">
-                                        <Binding Path="IsValid" />
-                                        <Binding Path="HasChanges" Mode="OneWay" />
-                                    </MultiBinding>
-                                </Button.IsEnabled>
-                            </Button>
-                            <!--
-                            <Button VerticalAlignment="Center" Click="ButtonTestConnection_Click"
-                                    Style="{StaticResource HyperlinkButton}"
-                                    Content="{x:Static components:Resources.ConnectionManager_TestConnection}"
-                                    ToolTip="{x:Static components:Resources.ConnectionManager_TestConnectionTooltip}">
-                                <Button.IsEnabled>
-                                    <MultiBinding Converter="{x:Static rwpf:Converters.All}">
-                                        <Binding Path="IsValid" />
-                                        <Binding Path="TestingConnectionCts" Converter="{x:Static rwpf:Converters.NullIsTrue}" />
-                                    </MultiBinding>
-                                </Button.IsEnabled>
-                            </Button>
+                    <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
+                        <Button Margin="0,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
+                                VerticalAlignment="Center" Click="ButtonSave_Click" 
+                                Style="{StaticResource ToolWindowButtonStyle}"  ToolTipService.ShowOnDisabled="True"
+                                Content="{x:Static components:Resources.ConnectionManager_Save}" 
+                                ToolTip="{Binding Path=SaveButtonTooltip}"
+                                AutomationProperties.Name="{Binding Path=SaveButtonTooltip}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{x:Static rwpf:Converters.All}">
+                                    <Binding Path="IsValid" />
+                                    <Binding Path="HasChanges" Mode="OneWay" />
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
+                        <!--
+                        <Button VerticalAlignment="Center" Click="ButtonTestConnection_Click"
+                                Style="{StaticResource HyperlinkButton}"
+                                Content="{x:Static components:Resources.ConnectionManager_TestConnection}"
+                                ToolTip="{x:Static components:Resources.ConnectionManager_TestConnectionTooltip}">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{x:Static rwpf:Converters.All}">
+                                    <Binding Path="IsValid" />
+                                    <Binding Path="TestingConnectionCts" Converter="{x:Static rwpf:Converters.NullIsTrue}" />
+                                </MultiBinding>
+                            </Button.IsEnabled>
+                        </Button>
 
-                            <Separator Margin="4,4,4,3" BorderThickness="0"
-                                       Style="{StaticResource VerticalSeparator}" 
-                                       Background="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextKey}}"/>
+                        <Separator Margin="4,4,4,3" BorderThickness="0"
+                                    Style="{StaticResource VerticalSeparator}" 
+                                    Background="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextKey}}"/>
 -->
-                            <Button VerticalAlignment="Center" Click="ButtonCancel_Click"
-                                    Style="{StaticResource HyperlinkButton}"
-                                    Content="{x:Static components:Resources.ConnectionManager_Cancel}"
-                                    IsCancel="True" 
-                                    AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Cancel}"/>
+                        <Button VerticalAlignment="Center" Click="ButtonCancel_Click"
+                                Style="{StaticResource HyperlinkButton}"
+                                Content="{x:Static components:Resources.ConnectionManager_Cancel}"
+                                IsCancel="True" 
+                                AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Cancel}"/>
 
-                        </WrapPanel>
+                    </WrapPanel>
 
-                        <!-- Test connection -->
-                        <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
-                            <rcontrols:Spinner Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
-                            <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestingConnection}"
-                                       Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}"/>
-                            <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestConnectionPassed}" 
-                                       Foreground="{DynamicResource {x:Static rwpf:Brushes.SuccessMessageTextBrushKey}}" FontWeight="SemiBold"
-                                       Visibility="{Binding Path=IsTestConnectionSucceeded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
-                            <TextBlock Margin="0,4,6,5" Text="{Binding Path=TestConnectionFailedText}" 
-                                       Foreground="{DynamicResource {x:Static rwpf:Brushes.FailMessageTextBrushKey}}" FontWeight="SemiBold" TextWrapping="Wrap"
-                                       Visibility="{Binding Path=TestConnectionFailedText, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
-
-                            <Button VerticalAlignment="Center" Click="ButtonCancelTestConnection_Click"
-                                    Style="{StaticResource HyperlinkButton}" Content="{x:Static components:Resources.ConnectionManager_Cancel}"
+                    <!-- Test connection -->
+                    <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0">
+                        <rcontrols:Spinner Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center"
                                     Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
-                        </WrapPanel>
-                    </Grid>
-                </AdornerDecorator>
+                        <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestingConnection}"
+                                    Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}"/>
+                        <TextBlock Margin="0,4,6,5" Text="{x:Static components:Resources.ConnectionManager_TestConnectionPassed}" 
+                                    Foreground="{DynamicResource {x:Static rwpf:Brushes.SuccessMessageTextBrushKey}}" FontWeight="SemiBold"
+                                    Visibility="{Binding Path=IsTestConnectionSucceeded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+                        <TextBlock Margin="0,4,6,5" Text="{Binding Path=TestConnectionFailedText}" 
+                                    Foreground="{DynamicResource {x:Static rwpf:Brushes.FailMessageTextBrushKey}}" FontWeight="SemiBold" TextWrapping="Wrap"
+                                    Visibility="{Binding Path=TestConnectionFailedText, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}"/>
 
-                <DataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding Path=IsNameValid}" Value="False">
-                        <Setter TargetName="NameValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Path=IsPathValid}" Value="False">
-                        <Setter TargetName="PathValidityIndicator" Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>
-                    </DataTrigger>
-                </DataTemplate.Triggers>
+                        <Button VerticalAlignment="Center" Click="ButtonCancelTestConnection_Click"
+                                Style="{StaticResource HyperlinkButton}" Content="{x:Static components:Resources.ConnectionManager_Cancel}"
+                                Visibility="{Binding Path=TestingConnectionCts, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" />
+                    </WrapPanel>
+                </Grid>
             </DataTemplate>
 
             <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
@@ -334,33 +326,8 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}">
-                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" />
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true" />
-                <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-                <Setter Property="VirtualizingPanel.CacheLength" Value="1,2" />
-                <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="BorderThickness" Value="0,0,0,0" />
-                <Setter Property="IsTabStop" Value="False" />
+            <Style x:Key="ConnectionsListBox" TargetType="{x:Type ListBox}" BasedOn="{StaticResource ToolWindowListBoxStyle}">
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ConnectionsListBoxItemStyle}" />
-                <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
-                <Setter Property="SelectionMode" Value="Multiple"/>
-                <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBox}">
-                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                                <ScrollViewer Focusable="false">
-                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                </ScrollViewer>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
             </Style>
 
             <Style x:Key="InputBorderStyle" TargetType="{x:Type Border}">
@@ -389,7 +356,12 @@
                             IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
                             Content="{x:Static components:Resources.ConnectionManager_Add}"
                             AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Add}"
-                            Click="ButtonAdd_Click"/>
+                            Click="ButtonAdd_Click" />
+                    <Button x:Name="ButtonShowContainers" Margin="6,0,0,0" MinWidth="75" MinHeight="23"
+                            VerticalAlignment="Center" Click="ButtonShowContainers_Click" 
+                            Style="{StaticResource ToolWindowButtonStyle}"
+                            Content="{x:Static components:Resources.ConnectionManager_ShowContainers}" 
+                            AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_ShowContainers}" />
                 </WrapPanel>
 
                 <!-- Add options panel -->
@@ -408,6 +380,14 @@
                      DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=LocalConnections}" 
                      Visibility="{Binding ElementName=ToggleButtonLocalConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
+            <!-- Local docker connections header -->
+            <controls:ExpandCollapseButton x:Name="ToggleButtonLocalDockerConnections" Style="{StaticResource ExpandCollapseButtonLocalDockerConnectionsStyle}" DockPanel.Dock="Top" />
+
+            <!-- Local docker connections -->
+            <ListBox x:Name="LocalDockerList"
+                     DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=LocalDockerConnections}" 
+                     Visibility="{Binding ElementName=ToggleButtonLocalDockerConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
+            
             <!-- Remote connections header -->
             <controls:ExpandCollapseButton x:Name="ToggleButtonRemoteConnections" Style="{StaticResource ExpandCollapseButtonRemoteConnectionsStyle}" DockPanel.Dock="Top" />
 
@@ -418,3 +398,4 @@
         </DockPanel>
     </ScrollViewer>
 </UserControl>
+

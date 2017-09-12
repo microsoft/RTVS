@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled:CommandStatus.Supported;
 
         public async Task InvokeAsync() {
-            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialog>();
+            var plotExportDialogs = InteractiveWorkflow.Services.GetService<IRPlotExportDialog>();
             var exportImageArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
             var exportImageParameters = plotExportDialogs.ShowExportImageDialog(exportImageArguments, Resources.Plots_ExportAsImageFilter, null, Resources.Plots_ExportAsImageDialogTitle);
             if (!string.IsNullOrEmpty(exportImageParameters?.FilePath)) {
@@ -33,14 +33,14 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                             exportImageParameters.PixelHeight,
                             exportImageParameters.Resolution);
                         if (exportImageParameters.ViewPlot) {
-                            InteractiveWorkflow.Shell.Process().Start(exportImageParameters.FilePath);
+                            InteractiveWorkflow.Services.Process().Start(exportImageParameters.FilePath);
                         }
                     } catch (RPlotManagerException ex) {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                        InteractiveWorkflow.Services.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {
                     }
                 } else {
-                    InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_ExportUnsupportedImageFormat, Path.GetExtension(exportImageParameters.FilePath)));
+                    InteractiveWorkflow.Services.ShowErrorMessage(string.Format(Resources.Plots_ExportUnsupportedImageFormat, Path.GetExtension(exportImageParameters.FilePath)));
                 }
             }
         }

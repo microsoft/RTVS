@@ -30,6 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private int _codePage;
         private ConnectionInfo[] _connections = new ConnectionInfo[0];
         private ConnectionInfo _lastActiveConnection;
+        private string _lastLocalDockerUsername;
+        private string _lastLocalDockerPassword;
 
         private YesNo _showConfirmationDialogWhenSwitch = YesNo.Yes;
         private YesNo _showShowSaveOnResetConfirmationDialog = YesNo.Yes;
@@ -124,6 +126,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public ConnectionInfo LastActiveConnection {
             get => _lastActiveConnection;
             set => SetProperty(ref _lastActiveConnection, value);
+        }
+
+        public string LastLocalDockerUsername {
+            get => _lastLocalDockerUsername;
+            set => SetProperty(ref _lastLocalDockerUsername, value);
+        }
+
+        public string LastLocalDockerPassword {
+            get => _lastLocalDockerPassword;
+            set => SetProperty(ref _lastLocalDockerPassword, value);
         }
 
         public string WorkingDirectory {

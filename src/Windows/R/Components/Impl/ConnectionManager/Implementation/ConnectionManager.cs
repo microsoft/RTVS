@@ -8,18 +8,16 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Security;
-using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.ConnectionManager.Implementation.View;
-using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
-using Microsoft.R.Components.Information;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Components.StatusBar;
+using Microsoft.R.Containers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
@@ -28,13 +26,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
     internal class ConnectionManager : IConnectionManager {
         private readonly IRInteractiveWorkflowVisual _interactiveWorkflow;
         private readonly IRSettings _settings;
-        private readonly ICoreShell _shell;
+        private readonly IServiceContainer _services;
         private readonly IActionLog _log;
-        private readonly IStatusBar _statusBar;
         private readonly IRSessionProvider _sessionProvider;
+        private readonly IContainerManager _containers;
         private readonly DisposableBag _disposableBag;
-        private readonly ConnectionStatusBarViewModel _statusBarViewModel;
-        private readonly HostLoadIndicatorViewModel _hostLoadIndicatorViewModel;
         private readonly ConcurrentDictionary<string, IConnection> _connections;
         private readonly ISecurityService _securityService;
         private readonly IRInstallationService _installationService;
@@ -49,32 +45,25 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         public event EventHandler RecentConnectionsChanged;
         public event EventHandler ConnectionStateChanged;
 
-        public ConnectionManager(IStatusBar statusBar, IRSettings settings, IRInteractiveWorkflowVisual interactiveWorkflow) {
-            _statusBar = statusBar;
+        public ConnectionManager(IRSettings settings, IRInteractiveWorkflowVisual interactiveWorkflow) {
             _sessionProvider = interactiveWorkflow.RSessions;
             _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
-            _shell = interactiveWorkflow.Shell;
-            _securityService = _shell.GetService<ISecurityService>();
-            _log = _shell.GetService<IActionLog>();
-            _installationService = _shell.GetService<IRInstallationService>();
-
-            _statusBarViewModel = new ConnectionStatusBarViewModel(this, _shell.Services);
-            if (settings.ShowHostLoadMeter) {
-                _hostLoadIndicatorViewModel =
-                    new HostLoadIndicatorViewModel(_sessionProvider, _shell.MainThread());
-            }
+            _services = interactiveWorkflow.Services;
+            _containers = interactiveWorkflow.Containers;
+            _securityService = _services.GetService<ISecurityService>();
+            _log = _services.GetService<IActionLog>();
+            _installationService = _services.GetService<IRInstallationService>();
+            _services.GetService<IContainerService>();
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
-                .Add(_statusBarViewModel)
-                .Add(_hostLoadIndicatorViewModel ?? Disposable.Empty)
                 .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged)
                 .Add(() => _interactiveWorkflow.RSession.Connected -= SessionConnected)
                 .Add(() => _interactiveWorkflow.RSession.Disconnected -= SessionDisconnected)
-                .Add(() => _interactiveWorkflow.ActiveWindowChanged -= ActiveWindowChanged);
+                .Add(() => _interactiveWorkflow.ActiveWindowChanged -= ActiveWindowChanged)
+                .Add(_containers.SubscribeOnChanges(ContainersChanged));
 
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
-
             _interactiveWorkflow.RSession.Connected += SessionConnected;
             _interactiveWorkflow.RSession.Disconnected += SessionDisconnected;
             _interactiveWorkflow.ActiveWindowChanged += ActiveWindowChanged;
@@ -84,21 +73,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _connections = new ConcurrentDictionary<string, IConnection>(connections);
 
             UpdateRecentConnections(save: false);
-            CompleteInitializationAsync().DoNotWait();
         }
-
-        private async Task CompleteInitializationAsync() {
-            await _shell.SwitchToMainThreadAsync();
-            AddToStatusBar(() => new ConnectionStatusBar(), _statusBarViewModel);
-            if (_hostLoadIndicatorViewModel != null) {
-                AddToStatusBar(() => new HostLoadIndicator(), _hostLoadIndicatorViewModel);
-            }
-        }
-
-        private void AddToStatusBar(Func<FrameworkElement> itemFactory, object dataContext) {
-            _disposableBag.TryAdd(_statusBar.AddItem(itemFactory, dataContext));
-        }
-
+        
         public void Dispose() {
             _disposableBag.TryDispose();
         }
@@ -156,7 +132,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         public async Task ConnectAsync(IConnectionInfo connection, CancellationToken cancellationToken = default(CancellationToken)) {
             if (await TrySwitchBrokerAsync(connection, cancellationToken)) {
-                await _shell.SwitchToMainThreadAsync(cancellationToken);
+                await _services.MainThread().SwitchToAsync(cancellationToken);
                 var interactiveWindow = await _interactiveWorkflow.GetOrCreateVisualComponentAsync();
                 interactiveWindow.Container.Show(focus: false, immediate: false);
             }
@@ -237,21 +213,36 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private Dictionary<string, IConnection> CreateConnectionList() {
             var connections = GetConnectionsFromSettings();
             var localEngines = _installationService.GetCompatibleEngines().ToList();
+            var containers = _containers.GetRunningContainers();
+            var connectionsToRemove = new List<string>();
 
             // Remove missing engines and add engines missing from saved connections
             // Set 'is used created' to false if path points to locally found interpreter
-            foreach (var kvp in connections.Where(c => !c.Value.IsRemote).ToList()) {
-                var valid = IsValidLocalConnection(kvp.Value.Name, kvp.Value.Path);
-                if (!valid) {
-                    connections.Remove(kvp.Key);
+
+            foreach (var connection in connections.Values) {
+                var name = connection.Name;
+
+                // Remove connections for missing engines
+                if (!connection.IsRemote) {
+                    var isValid = connection.Uri.IsFile
+                        ? IsValidLocalConnection(name, connection.Path)
+                        : containers.Any(c => c.Name.EqualsOrdinal(name));
+
+                    if (!isValid) {
+                        connectionsToRemove.Add(name);
+                    }
+                }
+
+                // For MRS and MRC always use generated name. These upgrade in place
+                // so keeping old name with old version doesn't make sense.
+                // TODO: handle this better in the future by storing version.
+                if (connection.Path.ContainsIgnoreCase("R_SERVER")) {
+                    connectionsToRemove.Add(name);
                 }
             }
 
-            // For MRS and MRC always use generated name. These upgrade in place
-            // so keeping old name with old version doesn't make sense.
-            // TODO: handle this better in the future by storing version.
-            foreach (var kvp in connections.Where(c => c.Value.Path.ContainsIgnoreCase("R_SERVER")).ToList()) {
-                connections.Remove(kvp.Key);
+            foreach (var connectionName in connectionsToRemove) {
+                connections.Remove(connectionName);
             }
 
             // Add newly installed engines
@@ -261,9 +252,16 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                 }
             }
 
+            // Add running containers
+            foreach (var container in containers) {
+                if (!connections.ContainsKey(container.Name)) {
+                    connections[container.Name] = Connection.Create(_securityService, container, string.Empty, false, _settings.ShowHostLoadMeter);
+                }
+            }
+
             // Verify that most recently used connection is still valid
-            var last = _settings.LastActiveConnection;
-            if (last != null && !IsRemoteConnection(last.Path) && !IsValidLocalConnection(last.Name, last.Path)) {
+            var last =  _settings.LastActiveConnection;
+            if (last != null && connections.TryGetValue(last.Name, out IConnection lastConnection) && !lastConnection.IsRemote && !IsValidLocalConnection(last.Name, last.Path)) {
                 // Installation was removed or otherwise disappeared
                 _settings.LastActiveConnection = null;
             }
@@ -284,16 +282,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             try {
                 var info = _installationService.CreateInfo(name, path);
                 return info.VerifyInstallation();
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
-            }
-            return false;
-        }
-
-        private bool IsRemoteConnection(string path) {
-            try {
-                Uri uri;
-                return Uri.TryCreate(path, UriKind.Absolute, out uri) && !uri.IsFile;
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _log.Write(LogVerbosity.Normal, MessageCategory.Error, ex.Message);
             }
@@ -325,13 +313,24 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public static ConcurrentQueue<string> Events = new ConcurrentQueue<string>();
-
         private void ActiveWindowChanged(object sender, ActiveWindowChangedEventArgs eventArgs) {
             IsConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
             IsRunning &= IsConnected;
             UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ContainersChanged() {
+            var activeConnection = ActiveConnection;
+            foreach (var container in _containers.GetRunningContainers()) {
+                if (container.IsRunning) {
+                    _connections[container.Name] = Connection.Create(_securityService, container, string.Empty, false, _settings.ShowHostLoadMeter);
+                } else if (activeConnection == null || !container.Name.EqualsOrdinal(activeConnection.Name)) {
+                    _connections.TryRemove(container.Name, out IConnection _);
+                }
+            }
+
+            UpdateRecentConnections();
         }
 
         private void UpdateActiveConnection(IConnection candidateConnection = null) {
@@ -357,7 +356,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SaveActiveConnectionToSettings() {
-            _shell.MainThread().Post(() => _settings.LastActiveConnection = ActiveConnection == null
+            _services.MainThread().Post(() => _settings.LastActiveConnection = ActiveConnection == null
                 ? null
                 : new ConnectionInfo(ActiveConnection));
         }

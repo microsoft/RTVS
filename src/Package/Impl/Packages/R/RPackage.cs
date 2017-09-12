@@ -5,11 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using System.Windows;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Settings;
+using Microsoft.R.Components.ConnectionManager.Implementation.View;
+using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Information;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
+using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Editor.Functions;
@@ -72,8 +79,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(PlotHistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.Toolbox)]
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
-    [ProvideToolWindow(typeof(ConnectionManagerWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
-    [ProvideToolWindow(typeof(PackageManagerWindowPane), Style = VsDockStyle.MDI)]
+    [ProvideToolWindow(typeof(ConnectionManagerToolWindow), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(ContainerManagerToolWindow), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(PackageManagerToolWindow), Style = VsDockStyle.MDI)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, DebuggerGuids.DebugEngineString, typeof(AD7Engine), SupportsAttach = true)]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), MultiInstances = true, Style = VsDockStyle.MDI, Transient = true)]
@@ -129,6 +137,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             LoadEditorSettings();
             BuildFunctionIndex();
+            AddConnectionStatusBar();
             RtvsTelemetry.Initialize(_packageIndex, Services);
 
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
@@ -207,6 +216,24 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void BuildFunctionIndex() => _packageIndex = Services.GetService<IPackageIndex>();
+
+        private void AddConnectionStatusBar() {
+            var interactiveWorkflowProvider = Services.GetService<IRInteractiveWorkflowVisualProvider>();
+            var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+            var statusBar = Services.GetService<IStatusBar>();
+            var settings = Services.GetService<IRSettings>();
+
+            AddToStatusBar(statusBar, new ConnectionStatusBar(), new ConnectionStatusBarViewModel(interactiveWorkflow.Services));
+
+            if (settings.ShowHostLoadMeter) {
+                AddToStatusBar(statusBar, new HostLoadIndicator(), new HostLoadIndicatorViewModel(interactiveWorkflow.RSessions, Services.MainThread()));
+            }
+        }
+
+        private void AddToStatusBar(IStatusBar statusBar, FrameworkElement item, object dataContext) {
+            item.DataContext = dataContext;
+            Disposables.TryAdd(statusBar.AddItem(item));
+        }
 
         private void SavePackageIndex() {
             _packageIndex?.WriteToDisk();

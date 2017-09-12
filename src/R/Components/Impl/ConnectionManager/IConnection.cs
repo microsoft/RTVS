@@ -14,5 +14,7 @@ namespace Microsoft.R.Components.ConnectionManager {
         /// If true, the connection is to a remote machine
         /// </summary>
         bool IsRemote { get; }
+
+        bool IsDocker { get; }
     }
 }

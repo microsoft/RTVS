@@ -18,6 +18,7 @@ using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
@@ -50,7 +51,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         public BrokerConnectionInfo ConnectionInfo { get; }
         public string Name { get; }
-        public bool IsRemote => ConnectionInfo.IsRemote;
+        public bool IsRemote => ConnectionInfo.IsUrlBased;
         public bool IsVerified { get; protected set; }
 
         protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IConsole console, IServiceContainer services) {

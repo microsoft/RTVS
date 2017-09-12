@@ -65,6 +65,7 @@
     <Compile Include="Fakes\Shell\TestFileDialog.cs" />
     <Compile Include="Fakes\Shell\TestIdleTimeService.cs" />
     <Compile Include="Fakes\Shell\TestImageService.cs" />
+    <Compile Include="Fakes\Shell\TestOutputService.cs" />
     <Compile Include="Fakes\Shell\TestUIServices.cs" />
     <Compile Include="Fixtures\ServiceManagerFixture.cs" />
     <Compile Include="Fixtures\ServiceManagerWithMefFixture.cs" />

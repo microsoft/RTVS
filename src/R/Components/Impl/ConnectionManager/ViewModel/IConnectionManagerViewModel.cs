@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Components.ConnectionManager.ViewModel {
     public interface IConnectionManagerViewModel : INotifyPropertyChanged, IDisposable {
         ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
+        ReadOnlyObservableCollection<IConnectionViewModel> LocalDockerConnections { get; }
         ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; }
         IConnectionViewModel EditedConnection { get; }
         bool HasLocalConnections { get; }
@@ -17,6 +18,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         
         bool TryEdit(IConnectionViewModel connection);
         bool TryEditNew();
+        void ShowContainers();
         void CancelEdit();
         void Save(IConnectionViewModel connectionViewModel);
 

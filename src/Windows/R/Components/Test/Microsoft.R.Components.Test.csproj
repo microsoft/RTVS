@@ -60,6 +60,8 @@
     <Compile Include="Fakes\Search\TestSearchControl.cs" />
     <Compile Include="Fakes\Search\TestSearchControlProvider.cs" />
     <Compile Include="Fakes\StatusBar\TestStatusBar.cs" />
+    <Compile Include="Fakes\ToolWindows\TestRInteractiveWorkflowToolWindowService.cs" />
+    <Compile Include="Fakes\ToolWindows\TestToolWindow.cs" />
     <Compile Include="Fakes\Trackers\TestActiveWpfTextViewTracker.cs" />
     <Compile Include="Fakes\Trackers\TestDebuggerModeTracker.cs" />
     <Compile Include="Fakes\Undo\AutoEnclose.cs" />
@@ -74,12 +76,10 @@
     <Compile Include="Fakes\Undo\WeakReferenceForKey.cs" />
     <Compile Include="Fakes\VisualComponentFactories\Container.cs" />
     <Compile Include="Fakes\VisualComponentFactories\ContainerFactoryBase.cs" />
-    <Compile Include="Fakes\VisualComponentFactories\TestConnectionManagerVisualProvider.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPlotHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRPlotDeviceVisualComponentContainerFactory.cs" />
-    <Compile Include="Fakes\VisualComponentFactories\TestRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\Wpf\TestThemeUtilities.cs" />
     <Compile Include="Fixtures\RComponentServicesFixture.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
@@ -102,6 +102,7 @@
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
     <Compile Include="Sql\SqlDbTest.cs" />
     <Compile Include="StubFactories\ConnectionManagerProviderStubFactory.cs" />
+    <Compile Include="StubFactories\ContainerManagerProviderStubFactory.cs" />
     <Compile Include="StubFactories\InteractiveWorkflowStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryProviderStubFactory.cs" />

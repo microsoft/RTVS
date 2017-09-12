@@ -20,9 +20,13 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.Packages {
     public abstract class BasePackage<TLanguageService> : VisualStudio.Shell.Package, IPackage
         where TLanguageService : class, new() {
-        private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
         private RToolbar _toolbar;
+        protected DisposableBag Disposables { get; }
+
+        protected BasePackage() {
+            Disposables = new DisposableBag(GetType().Name, "Package is disposed");
+        }
 
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
         protected virtual IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() { return new IVsProjectGenerator[0]; }
@@ -80,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             var windowFrameEvents = VsAppShell.Current.GetService<T>() as IVsWindowFrameEvents;
             var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
             var cookie = shell.AdviseWindowFrameEvents(windowFrameEvents);
-            _disposables.Add(Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie)));
+            Disposables.Add(() => shell.UnadviseWindowFrameEvents(cookie));
         }
 
         protected void AdviseExportedDebuggerEvents<T>() where T : class {
@@ -89,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
 
             uint cookie;
             debugger.AdviseDebuggerEvents(debuggerEvents, out cookie);
-            _disposables.Add(Disposable.Create(() => debugger.UnadviseDebuggerEvents(cookie)));
+            Disposables.Add(() => debugger.UnadviseDebuggerEvents(cookie));
         }
 
         private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator) {
@@ -121,10 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
                 UnregisterProjectFileGenerators(projectFileGenerators);
             }
 
-            foreach (var disposable in _disposables.Reverse()) {
-                disposable.Dispose();
-            }
-            _disposables.Clear();
+            Disposables.TryDispose();
 
             IServiceContainer container = this;
             container.RemoveService(typeof(TLanguageService));

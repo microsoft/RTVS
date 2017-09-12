@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.UnitTests.Core.Threading;
 using NSubstitute;
 
@@ -76,6 +77,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
                 .AddService(fs ?? new WindowsFileSystem())
+                .AddService<IOutputService, TestOutputService>()
                 .AddService(registry ?? new RegistryImpl())
                 .AddService(ps ?? new ProcessServices())
                 .AddService(new TestTaskService())

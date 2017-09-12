@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -17,7 +17,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             => HasCurrentPlot && !IsInLocatorMode ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
 
         public async Task InvokeAsync() {
-            var plotExportDialogs = InteractiveWorkflow.Shell.GetService<IRPlotExportDialog>();
+            var plotExportDialogs = InteractiveWorkflow.Services.GetService<IRPlotExportDialog>();
             var exportPdfArguments = new ExportArguments(VisualComponent.Device.PixelWidth, VisualComponent.Device.PixelHeight, VisualComponent.Device.Resolution);
             var exportPdfParameters = plotExportDialogs.ShowExportPdfDialog(exportPdfArguments, Resources.Plots_ExportAsPdfFilter, null, Resources.Plots_ExportAsPdfDialogTitle);
            
@@ -31,10 +31,10 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                         exportPdfParameters.WidthInInches,
                         exportPdfParameters.HeightInInches);
                     if(exportPdfParameters.ViewPlot) {
-                        InteractiveWorkflow.Shell.Process().Start(exportPdfParameters.FilePath);
+                        InteractiveWorkflow.Services.Process().Start(exportPdfParameters.FilePath);
                     }
                 } catch (RPlotManagerException ex) {
-                    InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                    InteractiveWorkflow.Services.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {
                 }
             }

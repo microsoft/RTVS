@@ -3,10 +3,12 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.R.Components.View;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IRInteractiveWorkflowVisual : IRInteractiveWorkflow {
         IInteractiveWindowVisualComponent ActiveWindow { get; }
+        IRInteractiveWorkflowToolWindowService ToolWindows { get; }
         event EventHandler<ActiveWindowChangedEventArgs> ActiveWindowChanged;
 
         Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponentAsync(int instanceId = 0);

@@ -48,6 +48,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             return true;
         }
 
-        private IMainThread MainThread => _interactiveWorkflowProvider.GetOrCreate().Shell.MainThread();
+        private IMainThread MainThread => _interactiveWorkflowProvider.GetOrCreate().Services.MainThread();
     }
 }

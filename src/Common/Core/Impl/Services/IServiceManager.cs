@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Services {
         /// Adds on-demand created service
         /// </summary>
         /// <param name="factory">Service factory</param>
-        IServiceManager AddService<T>(Func<IServiceManager, T> factory) where T : class;
+        IServiceManager AddService<T>(Func<IServiceContainer, T> factory) where T : class;
 
         /// <summary>
         /// Removes service from container by instance

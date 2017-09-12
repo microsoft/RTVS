@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -47,12 +48,15 @@ namespace Microsoft.R.Wpf.Controls {
                 Foreground = (Brush)textBox.FindResource(Brushes.GrayTextBrushKey),
                 Margin = new Thickness(2,0,0,0),
                 VerticalAlignment = VerticalAlignment.Center,
-                Visibility = string.IsNullOrEmpty(textBox.Text) ? Visibility.Visible : Visibility.Collapsed
+                Visibility = string.IsNullOrEmpty(textBox.Text) && textBox.IsVisible ? Visibility.Visible : Visibility.Collapsed
             };
 
-            textBox.TextChanged += (sender, args) => {
-                textBlock.Visibility = string.IsNullOrEmpty(textBox.Text) ? Visibility.Visible : Visibility.Collapsed;
-            };
+            void SetTextBlockVisibility<TArgs>(object sender, TArgs args) {
+                textBlock.Visibility = string.IsNullOrEmpty(textBox.Text) && textBox.IsVisible ? Visibility.Visible : Visibility.Collapsed;
+            } 
+
+            textBox.TextChanged += SetTextBlockVisibility;
+            textBox.IsVisibleChanged += SetTextBlockVisibility;
 
             SetAdornerContent(textBox, textBlock);
 

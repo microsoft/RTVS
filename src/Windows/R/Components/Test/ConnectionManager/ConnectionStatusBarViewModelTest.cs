@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
@@ -18,11 +18,12 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [Category.Connections]
     public sealed class ConnectionStatusBarViewModelTest {
         private readonly IConnectionManager _cm = Substitute.For<IConnectionManager>();
-        private readonly ICoreShell _shell = TestCoreShell.CreateBasic();
+        private readonly IServiceContainer _services = TestCoreShell.CreateBasic()
+            .ServiceManager.AddService(Substitute.For<IConnectionManager>());
 
         [Test]
         public void Construction() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
+            var m = new ConnectionStatusBarViewModel(_services);
             m.SelectedConnection.Should().BeNullOrEmpty();
             m.IsActive.Should().BeFalse();
             m.IsConnected.Should().BeFalse();
@@ -31,7 +32,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test]
         public void ConnectStates() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services) {
+            var m = new ConnectionStatusBarViewModel(_services) {
                 IsConnected = true
             };
             m.IsRunning.Should().BeFalse();
@@ -43,7 +44,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
 
         [Test(ThreadType.UI)]
         public async Task StateChanges() {
-            var m = new ConnectionStatusBarViewModel(_cm, _shell.Services);
+            var m = new ConnectionStatusBarViewModel(_services);
 
             _cm.IsConnected.Returns(true);
             _cm.ConnectionStateChanged += Raise.EventWith(_cm, EventArgs.Empty);

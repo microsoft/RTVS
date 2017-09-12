@@ -31,6 +31,7 @@ namespace Microsoft.R.Editor.Functions {
     public sealed class PackageIndex : IPackageIndex {
         private readonly DisposableBag _disposableBag = new DisposableBag(nameof(PackageIndex));
         private readonly IRInteractiveWorkflow _workflow;
+        private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _interactiveSession;
         private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
@@ -53,6 +54,7 @@ namespace Microsoft.R.Editor.Functions {
             var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = interactiveWorkflowProvider.GetOrCreate();
 
+            _sessionProvider = _workflow.RSessions;
             _interactiveSession = _workflow.RSession;
             _interactiveSession.Connected += OnSessionConnected;
             _interactiveSession.PackagesInstalled += OnPackagesChanged;
@@ -68,7 +70,7 @@ namespace Microsoft.R.Editor.Functions {
                 .Add(() => _interactiveSession.PackagesInstalled -= OnPackagesChanged)
                 .Add(() => _interactiveSession.PackagesRemoved -= OnPackagesChanged)
                 .Add(() => _interactiveSession.Connected -= OnSessionConnected)
-                .Add(() => _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged)
+                .Add(() => _sessionProvider.BrokerStateChanged -= OnBrokerStateChanged)
                 .Add(_host);
 
         }

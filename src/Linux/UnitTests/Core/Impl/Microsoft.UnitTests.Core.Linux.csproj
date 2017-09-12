@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
-
+  
+  <Import Project="..\..\..\..\R.Settings.NetCore.props" />
   <Import Project="..\..\..\..\R.Settings.props" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />

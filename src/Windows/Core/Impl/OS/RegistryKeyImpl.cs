@@ -17,7 +17,7 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public string[] GetSubKeyNames() => _key?.GetSubKeyNames() ?? new string[0];
-        public string[] GetValueNames() => _key.GetValueNames() ?? new string[0];
+        public string[] GetValueNames() => _key?.GetValueNames() ?? new string[0];
         public object GetValue(string name) => _key?.GetValue(name);
         public void SetValue(string name, object value) => _key?.SetValue(name, value);
 
@@ -26,7 +26,7 @@ namespace Microsoft.Common.Core.OS {
             if(key == null && writable) {
                 key = _key.CreateSubKey(name, true);
             }
-            return new RegistryKeyImpl(key);
+            return key != null ? new RegistryKeyImpl(key) : null;
         }
     }
 }

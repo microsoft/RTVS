@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         }
 
         protected override void Handle() {
-            var ui = _workflow.Shell.UI();
+            var ui = _workflow.Services.UI();
             if (MessageButtons.No == ui.ShowMessage(Resources.Warning_DeleteAllVariables, MessageButtons.YesNo)) {
                 return;
             }

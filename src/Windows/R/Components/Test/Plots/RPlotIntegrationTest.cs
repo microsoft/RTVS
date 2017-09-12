@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _testMethod = testMethod.MethodInfo;
             _remoteBroker = remoteBroker;
             _testFiles = testFiles;
-            _ui = _workflow.Shell.UI() as TestUIServices;
+            _ui = _workflow.Services.UI() as TestUIServices;
         }
 
         public async Task InitializeAsync() {
@@ -63,7 +63,7 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestPlotExportDialog ExportDialog => _workflow.Shell.GetService<IRPlotExportDialog>() as TestPlotExportDialog;
+        private TestPlotExportDialog ExportDialog => _workflow.Services.GetService<IRPlotExportDialog>() as TestPlotExportDialog;
 
         [Test(ThreadType.UI)]
         public async Task AllCommandsDisabledWhenNoPlot() {
