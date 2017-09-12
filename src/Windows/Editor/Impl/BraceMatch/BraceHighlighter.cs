@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.Languages.Editor.BraceMatch {
-    class BraceHighlighter : ITagger<TextMarkerTag>, IDisposable {
+    internal class BraceHighlighter : ITagger<TextMarkerTag>, IDisposable {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private readonly ICoreShell _shell;
@@ -21,7 +21,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         private ITextBuffer _textBuffer;
         private ITextView _textView;
         private SnapshotPoint? _currentChar;
-        private bool _highlighted = false;
+        private bool _highlighted;
         private bool _created;
         private IBraceMatcher _braceMatcher;
 
@@ -32,9 +32,11 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             _idleTime = _shell.GetService<IIdleTimeService>();
         }
 
+        private bool IsDisposed => _textBuffer == null;
+
         private IBraceMatcher BraceMatcher {
             get {
-                if(_braceMatcher == null && !_created) {
+                if(_braceMatcher == null && !_created && !IsDisposed) {
                     _created = true;
 
                     var locator = _shell.GetService<IContentTypeServiceLocator>();
@@ -50,13 +52,13 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             }
         }
 
-        void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+        private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
             if (CanHighlight(_textView) || _highlighted) {
                 IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _idleTime);
             }
         }
 
-        void OnViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
+        private void OnViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (e.NewSnapshot != e.OldSnapshot) {
                 if (CanHighlight(_textView) || _highlighted) {
                     IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _idleTime);
@@ -64,9 +66,9 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             }
         }
 
-        void UpdateAtCaretPosition() {
+        private void UpdateAtCaretPosition() {
             // Check for disposal, this can be disposed while waiting for idle
-            if (_textView != null && BraceMatcher != null && !_textView.Caret.InVirtualSpace) {
+            if (!IsDisposed && BraceMatcher != null && !_textView.Caret.InVirtualSpace) {
                 var caretPosition = _textView.Caret.Position;
                 _currentChar = caretPosition.Point.GetPoint(_textBuffer, caretPosition.Affinity);
 
@@ -79,7 +81,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         }
 
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (spans.Count == 0 || BraceMatcher == null || _textBuffer == null) {
+            if (IsDisposed || spans.Count == 0 || BraceMatcher == null) {
                 yield break;
             }
 
@@ -87,8 +89,8 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 yield break;
             }
 
-            SnapshotPoint position = _currentChar.Value;
-            ITextSnapshot snapshot = position.Snapshot;
+            var position = _currentChar.Value;
+            var snapshot = position.Snapshot;
 
             if (spans[0].Snapshot.TextBuffer != snapshot.TextBuffer) {
                 // This happens with diff views. The position could be mapped, but is it worth it?
@@ -99,8 +101,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 position = position.TranslateTo(spans[0].Snapshot, PointTrackingMode.Positive);
             }
 
-            int start, end;
-            if (!BraceMatcher.GetBracesFromPosition(snapshot, position, false, out start, out end)) {
+            if (!BraceMatcher.GetBracesFromPosition(snapshot, position, false, out var start, out var end)) {
                 yield break;
             }
 
