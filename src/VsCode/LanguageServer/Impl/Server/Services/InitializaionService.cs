@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.LanguageServer.Server {
     public sealed class InitializaionService : LanguageServiceBase {
+        private const string TriggerCharacters = "`:$@_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         [JsonRpcMethod(AllowExtensionData = true)]
         public InitializeResult Initialize(int processId, Uri rootPath,
@@ -20,7 +21,7 @@ namespace Microsoft.R.LanguageServer.Server {
             return new InitializeResult(new ServerCapabilities {
                 HoverProvider = true,
                 SignatureHelpProvider = new SignatureHelpOptions("()"),
-                CompletionProvider = new CompletionOptions(true, new [] {'$', '@'}),
+                CompletionProvider = new CompletionOptions(true, TriggerCharacters),
                 TextDocumentSync = new TextDocumentSyncOptions {
                     OpenClose = true,
                     WillSave = true,
@@ -31,21 +32,16 @@ namespace Microsoft.R.LanguageServer.Server {
 
         [JsonRpcMethod(IsNotification = true)]
         public async Task Initialized() {
-            await Client.Window.ShowMessage(MessageType.Info, "Hello from language server.");
+            await Client.Window.ShowMessage(MessageType.Info, "R language server started.");
         }
 
         [JsonRpcMethod]
-        public void Shutdown() {
-
-        }
+        public void Shutdown() { }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void Exit() {
-            Session.StopServer();
-        }
+        public void Exit() => Session.StopServer();
 
         [JsonRpcMethod("$/cancelRequest", IsNotification = true)]
-        public void CancelRequest(MessageId id) {
-        }
+        public void CancelRequest(MessageId id) { }
     }
 }

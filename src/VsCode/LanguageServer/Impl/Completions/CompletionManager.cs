@@ -14,19 +14,14 @@ using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.LanguageServer.Server.Documents;
 
 namespace Microsoft.R.LanguageServer.Completions {
-    internal sealed class CompletionManager {
+    internal sealed class CompletionManager: ICompletionManager {
         private readonly Guid _treeUserGuid = new Guid("DF3595E3-579C-48BD-9931-3E31F9FA7F46");
-
-        private static CompletionManager _instance;
         private readonly IServiceContainer _services;
 
-        private CompletionManager(IServiceContainer services) {
+        public CompletionManager(IServiceContainer services) {
             Check.ArgumentNull(nameof(services), services);
             _services = services;
         }
-
-        public static CompletionManager GetOrCreate(IServiceContainer services) 
-            => _instance ?? (_instance = new CompletionManager(services));
 
         public CompletionList GetCompletions(DocumentEntry entry, int position) {
             IReadOnlyCollection<IRCompletionListProvider> providers;
@@ -42,7 +37,7 @@ namespace Microsoft.R.LanguageServer.Completions {
                 entry.Document.EditorTree.ReleaseReadLock(_treeUserGuid);
             }
 
-            if (providers == null) {
+            if (providers == null || providers.Count == 0) {
                 return new CompletionList();
             }
 

@@ -3,21 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.LanguageServer.Server.Documents {
-    internal sealed class DocumentCollection {
-        private static DocumentCollection _instance;
-
+    internal sealed class DocumentCollection: IDocumentCollection {
         private readonly Dictionary<Uri, DocumentEntry> _documents = new Dictionary<Uri, DocumentEntry>();
         private readonly IServiceContainer _services;
 
-        public static DocumentCollection GetOrCreate(IServiceContainer services)
-            => _instance ?? (_instance = new DocumentCollection(services));
-
-        private DocumentCollection(IServiceContainer services) {
+        public DocumentCollection(IServiceContainer services) {
             Check.ArgumentNull(nameof(services), services);
             _services = services;
         }

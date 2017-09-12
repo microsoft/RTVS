@@ -30,7 +30,7 @@ namespace Microsoft.UnitTests.Core.Threading {
             initialized.Wait();
             uiThreadHelper.Invoke(() => {
                 uiThreadHelper.Thread = thread;
-                uiThreadHelper._syncContext = SynchronizationContext.Current;
+                uiThreadHelper._syncContext = SynchronizationContext.Current ?? new SynchronizationContext();
                 uiThreadHelper._taskScheduler = new ControlledTaskScheduler(uiThreadHelper._syncContext);
             });
             return uiThreadHelper;

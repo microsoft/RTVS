@@ -11,14 +11,20 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Extensions;
 using Microsoft.R.LanguageServer.Server.Documents;
-using Microsoft.R.LanguageServer.Services.Idle;
+using Microsoft.R.LanguageServer.Text;
 
 namespace Microsoft.R.LanguageServer.Server {
     [JsonRpcScope(MethodPrefix = "textDocument/")]
     public sealed class TextDocumentService : LanguageServiceBase {
         public static IServiceContainer Services { get; set; }
 
-        private static DocumentCollection Documents => DocumentCollection.GetOrCreate(Services);
+        private IDocumentCollection _documents;
+        private ITextManager _textManager;
+        private ICompletionManager _completionManager;
+
+        private IDocumentCollection Documents => _documents ?? (_documents = Services.GetService<IDocumentCollection>());
+        private ITextManager TextManager => _textManager ?? (_textManager = Services.GetService<ITextManager>());
+        private ICompletionManager CompletionManager => _completionManager ?? (_completionManager = Services.GetService<ICompletionManager>());
 
         [JsonRpcMethod]
         public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
@@ -41,7 +47,12 @@ namespace Microsoft.R.LanguageServer.Server {
 
         [JsonRpcMethod(IsNotification = true)]
         public void didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
-            IdleTimeManager.GetOrCreate(Services).NotifyUserActivity();
+            var entry = Documents.GetDocument(textDocument.Uri);
+            if(entry == null) {
+                return;
+            }
+
+            TextManager.ProcessTextChanges(entry, contentChanges);
         }
 
         [JsonRpcMethod(IsNotification = true)]
@@ -55,7 +66,7 @@ namespace Microsoft.R.LanguageServer.Server {
             var entry = Documents.GetDocument(textDocument.Uri);
             return entry == null 
                 ? new CompletionList() 
-                : CompletionManager.GetOrCreate(Services).GetCompletions(entry, entry.EditorBuffer.ToStreamPosition(position));
+                : CompletionManager.GetCompletions(entry, entry.EditorBuffer.ToStreamPosition(position));
         }
     }
 }

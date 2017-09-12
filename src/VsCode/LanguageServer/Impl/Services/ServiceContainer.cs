@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Logging;
@@ -17,15 +18,20 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor;
+using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
+using Microsoft.R.LanguageServer.Server.Documents;
+using Microsoft.R.LanguageServer.Text;
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class ServiceContainer : IServiceContainer, IDisposable {
         private readonly ServiceManager _services = new ServiceManager();
 
         public ServiceContainer() {
+            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+
             _services.AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
-                .AddService<IMainThread, MainThread>()
+                .AddService(new MainThread())
                 .AddService<ISettingsStorage, SettingsStorage>()
                 .AddService<IRSettings, RSettings>()
                 .AddService<ITaskService, TaskService>()
@@ -34,7 +40,10 @@ namespace Microsoft.R.LanguageServer.Services {
                 .AddService<IRInteractiveWorkflowProvider, RInteractiveWorkflowProvider>()
                 .AddService<ICoreShell, CoreShell>()
                 .AddService<IREditorSettings, REditorSettings>()
-                .AddService<IIdleTimeService, IdleTimeService>()
+                .AddService(new IdleTimeService(_services))
+                .AddService<IDocumentCollection, DocumentCollection>()
+                .AddService<ITextManager, TextManager>()
+                .AddService<ICompletionManager, CompletionManager>()
                 .AddEditorServices();
 
             AddPlatformSpecificServices();
