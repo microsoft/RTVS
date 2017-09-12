@@ -5,10 +5,16 @@
 using System.Collections.Generic;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.R.LanguageServer.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
     [JsonRpcScope(MethodPrefix = "workspace/")]
     public class WorkspaceService : LanguageServiceBase {
+        /// <summary>
+        /// Called by VS Code when configuration (settings) change.
+        /// https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didchangeconfiguration-notification
+        /// </summary>
+        /// <param name="settings"></param>
         [JsonRpcMethod(IsNotification = true)]
         public void DidChangeConfiguration(SettingsRoot settings) {
         }

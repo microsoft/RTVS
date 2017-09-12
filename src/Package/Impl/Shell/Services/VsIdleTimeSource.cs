@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.Common.Core.Services;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public sealed class VsIdleTimeService : IIdleTimeService, IIdleTimeSource, IOleComponent, IDisposable {

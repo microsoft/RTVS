@@ -32,10 +32,11 @@ namespace Microsoft.R.LanguageServer.Server {
 
         public void NotifyChanges(IEnumerable<TextDocumentContentChangeEvent> changes) {
             lock (syncLock) {
-                if (impendingChanges == null)
+                if (impendingChanges == null) {
                     impendingChanges = changes.ToList();
-                else
+                } else {
                     impendingChanges.AddRange(changes);
+                }
             }
             if (updateChangesDelayTask == null || updateChangesDelayTask.IsCompleted) {
                 updateChangesDelayTask = Task.Delay(RenderChangesDelay);
@@ -47,15 +48,19 @@ namespace Microsoft.R.LanguageServer.Server {
             List<TextDocumentContentChangeEvent> localChanges;
             lock (syncLock) {
                 localChanges = impendingChanges;
-                if (localChanges == null || localChanges.Count == 0) return;
+                if (localChanges == null || localChanges.Count == 0) {
+                    return;
+                }
+
                 impendingChanges = null;
             }
             Document = Document.ApplyChanges(localChanges);
             if (impendingChanges == null) {
                 localChanges.Clear();
                 lock (syncLock) {
-                    if (impendingChanges == null)
+                    if (impendingChanges == null) {
                         impendingChanges = localChanges;
+                    }
                 }
             }
             DocumentChanged?.Invoke(this, EventArgs.Empty);

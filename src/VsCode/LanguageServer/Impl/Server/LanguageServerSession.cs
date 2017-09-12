@@ -9,6 +9,7 @@ using JsonRpc.Standard.Client;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.R.LanguageServer.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
     public class LanguageServerSession {

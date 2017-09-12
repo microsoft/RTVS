@@ -8,12 +8,12 @@ using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Text {
     internal sealed class EditorView : ServiceAndPropertyHolder, IEditorView {
-        public T As<T>() where T : class => throw new NotImplementedException();
-
         public EditorView(IEditorBuffer editorBuffer) {
             EditorBuffer = editorBuffer;
             Caret = new ViewCaret(this);
         }
+        public T As<T>() where T : class => throw new NotSupportedException();
+
         public IEditorBuffer EditorBuffer { get; }
 
         public IViewCaret Caret { get; }

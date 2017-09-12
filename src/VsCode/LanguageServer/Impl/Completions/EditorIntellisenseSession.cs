@@ -13,7 +13,7 @@ namespace Microsoft.R.LanguageServer.Completions {
             View = view;
         }
 
-        public T As<T>() where T : class => throw new NotImplementedException();
+        public T As<T>() where T : class => throw new NotSupportedException();
 
         public new IServiceContainer Services => base.Services;
 
