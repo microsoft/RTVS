@@ -81,7 +81,7 @@ namespace Microsoft.R.Interpreters {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
                         foreach (var name in rKey.GetSubKeyNames()) {
                             using (var subKey = rKey.OpenSubKey(name)) {
-                                var path = subKey.GetValue("InstallPath") as string;
+                                var path = subKey?.GetValue("InstallPath") as string;
                                 if (!string.IsNullOrEmpty(path)) {
                                     // Convert '3.2.2.803 Microsoft R Client' to Microsoft R Client (version)
                                     // Convert '3.3.1' to 'R 3.3.1' for consistency

@@ -16,7 +16,7 @@ namespace Microsoft.R.Interpreters {
             try {
                 using (var hkcu = registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                     using (var key = hkcu.OpenSubKey(_rClientKey)) {
-                        string path = (string)key.GetValue("Path");
+                        string path = (string)key?.GetValue("Path");
                         if (!string.IsNullOrEmpty(path)) {
                             return Path.Combine(path, _rServer + "\\");
                         }
