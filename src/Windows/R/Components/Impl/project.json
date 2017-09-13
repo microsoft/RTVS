@@ -5,10 +5,10 @@
     "Microsoft.VisualStudio.ImageCatalog": "15.0.26606",
     "Microsoft.VisualStudio.Imaging": "15.0.26606",
     "Microsoft.VisualStudio.InteractiveWindow": "2.3.0",
-    "Microsoft.VisualStudio.Text.Data": "15.3.1709.108",
-    "Microsoft.VisualStudio.Text.Logic": "15.3.1709.108",
-    "Microsoft.VisualStudio.Text.UI": "15.3.1709.108",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.3.1709.108",
+    "Microsoft.VisualStudio.Text.Data": "15.0.26703.11111",
+    "Microsoft.VisualStudio.Text.Logic": "15.0.26703.11111",
+    "Microsoft.VisualStudio.Text.UI": "15.0.26703.11111",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.26703.11111",
     "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
