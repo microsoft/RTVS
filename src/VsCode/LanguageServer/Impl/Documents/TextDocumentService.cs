@@ -2,29 +2,23 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
-using Microsoft.Common.Core.Services;
-using Microsoft.R.LanguageServer.Completions;
-using Microsoft.R.LanguageServer.Documents;
-using Microsoft.R.LanguageServer.Extensions;
-using Microsoft.R.LanguageServer.Text;
+using Microsoft.R.LanguageServer.Server;
+using Microsoft.R.LanguageServer.Services;
 
-namespace Microsoft.R.LanguageServer.Server {
+namespace Microsoft.R.LanguageServer.Documents {
     [JsonRpcScope(MethodPrefix = "textDocument/")]
     public sealed class TextDocumentService : LanguageServiceBase {
-        public static IServiceContainer Services { get; set; }
-
         private IDocumentCollection _documents;
-        private ITextManager _textManager;
-        private ICompletionManager _completionManager;
+        private IIdleTimeNotification _idleTimeNotification;
 
         private IDocumentCollection Documents => _documents ?? (_documents = Services.GetService<IDocumentCollection>());
-        private ITextManager TextManager => _textManager ?? (_textManager = Services.GetService<ITextManager>());
-        private ICompletionManager CompletionManager => _completionManager ?? (_completionManager = Services.GetService<ICompletionManager>());
+        private IIdleTimeNotification IdleTimeNotification => _idleTimeNotification ?? (_idleTimeNotification = Services.GetService<IIdleTimeNotification>());
 
         [JsonRpcMethod]
         public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
@@ -43,30 +37,25 @@ namespace Microsoft.R.LanguageServer.Server {
         }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void didOpen(TextDocumentItem textDocument) => Documents.AddDocument(textDocument.Text, textDocument.Uri);
+        public Task didOpen(TextDocumentItem textDocument)
+            => MainThread.SendAsync(() => Documents.AddDocument(textDocument.Text, textDocument.Uri));
 
         [JsonRpcMethod(IsNotification = true)]
-        public void didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
-            var entry = Documents.GetDocument(textDocument.Uri);
-            if(entry == null) {
-                return;
-            }
-
-            TextManager.ProcessTextChanges(entry, contentChanges);
+        public Task didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
+            _idleTimeNotification.NotifyUserActivity();
+            return MainThread.SendAsync(() =>
+                Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges));
         }
 
         [JsonRpcMethod(IsNotification = true)]
         public void willSave(TextDocumentIdentifier textDocument, TextDocumentSaveReason reason) { }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void didClose(TextDocumentIdentifier textDocument) => Documents.RemoveDocument(textDocument.Uri);
+        public Task didClose(TextDocumentIdentifier textDocument)
+            => MainThread.SendAsync(() => Documents.RemoveDocument(textDocument.Uri));
 
         [JsonRpcMethod]
-        public CompletionList completion(TextDocumentIdentifier textDocument, Position position) {
-            var entry = Documents.GetDocument(textDocument.Uri);
-            return entry == null 
-                ? new CompletionList() 
-                : CompletionManager.GetCompletions(entry, entry.EditorBuffer.ToStreamPosition(position));
-        }
+        public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position)
+            => MainThread.InvokeAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList());
     }
 }

@@ -27,11 +27,15 @@ namespace Microsoft.R.LanguageServer.Threading {
         public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken))
             => ExecuteAsync(o => action(), null, cancellationToken).DoNotWait();
 
-        public void Send(Action action) 
+        public void Send(Action action)
             => ExecuteAsync(o => action(), null, CancellationToken.None).Wait();
 
-        public Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) 
+        public Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken))
             => ExecuteAsync(o => action(), null, cancellationToken);
+
+        public Task<T> InvokeAsync<T>(Func<T> action, CancellationToken cancellationToken = default(CancellationToken))
+            => ExecuteAsync(o => action(), null, cancellationToken);
+
         #endregion
 
         #region SynchronizationContext
@@ -50,19 +54,23 @@ namespace Microsoft.R.LanguageServer.Threading {
         }
         #endregion
 
-        private Task ExecuteAsync(Action<object> action, object state, CancellationToken cancellationToken) {
+        private Task ExecuteAsync(Action<object> action, object state, CancellationToken cancellationToken)
+            => ExecuteAsync(o => {
+                action(state);
+                return true;
+            }, state, cancellationToken);
+
+        private Task<T> ExecuteAsync<T>(Func<object, T> action, object state, CancellationToken cancellationToken) {
             _disposableBag.ThrowIfDisposed();
 
             if (ThreadId == Thread.CurrentThread.ManagedThreadId) {
-                action(state);
-                return Task.CompletedTask;
+                return Task.FromResult(action(state));
             }
 
-            var tcs = new TaskCompletionSource<bool>();
+            var tcs = new TaskCompletionSource<T>();
             _bufferBlock.Post(() => {
                 if (!cancellationToken.IsCancellationRequested) {
-                    action(state);
-                    tcs.TrySetResult(true);
+                    tcs.TrySetResult(action(state));
                 } else {
                     tcs.TrySetCanceled();
                 }

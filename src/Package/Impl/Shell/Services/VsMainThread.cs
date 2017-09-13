@@ -3,9 +3,11 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsMainThread : IMainThread {
@@ -35,11 +37,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public void Send(Action action)
             => ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync().GetAwaiter().OnCompleted(action);
 
-        public async System.Threading.Tasks.Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             if (!cancellationToken.IsCancellationRequested) {
                 action();
             }
+        }
+        public async Task<T> InvokeAsync<T>(Func<T> action, CancellationToken cancellationToken = default(CancellationToken)) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            return !cancellationToken.IsCancellationRequested ? action() : default(T);
         }
         #endregion
     }

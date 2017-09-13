@@ -38,6 +38,8 @@ namespace Microsoft.UnitTests.Core.Threading {
         public void Send(Action action) => throw new NotSupportedException();
         public Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) 
             => throw new NotSupportedException();
+        public Task<T> InvokeAsync<T>(Func<T> action, CancellationToken cancellationToken = default(CancellationToken))
+            => throw new NotSupportedException();
         #endregion
 
         public void Dispose() => _onDispose();

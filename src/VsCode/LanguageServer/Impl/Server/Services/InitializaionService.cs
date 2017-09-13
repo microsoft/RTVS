@@ -3,7 +3,6 @@
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard;
 using JsonRpc.Standard.Contracts;
@@ -40,7 +39,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public void Shutdown() { }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void Exit() => Session.StopServer();
+        public void Exit() => LanguageServerSession.StopServer();
 
         [JsonRpcMethod("$/cancelRequest", IsNotification = true)]
         public void CancelRequest(MessageId id) { }

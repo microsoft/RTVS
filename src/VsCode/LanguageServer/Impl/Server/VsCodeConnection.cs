@@ -11,6 +11,7 @@ using JsonRpc.Standard.Server;
 using JsonRpc.Streams;
 using LanguageServer.VsCode;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 
@@ -20,7 +21,7 @@ namespace Microsoft.R.LanguageServer.Server {
     /// Listens on stdin/stdout for the language protocol JSON RPC
     /// </summary>
     internal sealed class VsCodeConnection {
-        public void Connect(bool debugMode) {
+        public void Connect(IServiceContainer services, bool debugMode) {
             var logWriter = CreateLogWriter(debugMode);
 
             using (logWriter)
@@ -60,7 +61,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 using (serverHandler.Attach(reader, writer))
                 using (clientHandler.Attach(reader, writer))
                 using (var rConnection = new RConnection()) {
-                    rConnection.ConnectAsync().DoNotWait();
+                    rConnection.ConnectAsync(services).DoNotWait();
                     // Wait for the "stop" request.
                     session.CancellationToken.WaitHandle.WaitOne();
                 }

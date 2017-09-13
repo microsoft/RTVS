@@ -1,22 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using JsonRpc.Standard.Server;
-using LanguageServer.VsCode.Contracts;
 using LanguageServer.VsCode.Contracts.Client;
-using LanguageServer.VsCode.Server;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.LanguageServer.Server {
     public abstract class LanguageServiceBase : JsonRpcService {
-        protected LanguageServerSession Session => RequestContext.Features.Get<LanguageServerSession>();
+        protected LanguageServerSession LanguageServerSession => RequestContext.Features.Get<LanguageServerSession>();
 
-        protected ClientProxy Client => Session.Client;
-
-        protected TextDocument GetDocument(Uri uri) 
-            => Session.Documents.TryGetValue(uri, out var sd) ? sd.Document : null;
-
-        protected TextDocument GetDocument(TextDocumentIdentifier id) => GetDocument(id.Uri);
-
+        protected ClientProxy Client => LanguageServerSession.Client;
+        protected IServiceContainer Services => Session.Current.Services;
+        protected IMainThread MainThread => Services.MainThread();
     }
 }

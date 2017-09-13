@@ -17,11 +17,9 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor;
-using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Settings;
-using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Threading;
 
 namespace Microsoft.R.LanguageServer.Services {
@@ -44,8 +42,6 @@ namespace Microsoft.R.LanguageServer.Services {
                 .AddService<IREditorSettings, REditorSettings>()
                 .AddService(new IdleTimeService(_services))
                 .AddService<IDocumentCollection, DocumentCollection>()
-                .AddService<ITextManager, TextManager>()
-                .AddService<ICompletionManager, CompletionManager>()
                 .AddEditorServices();
 
             AddPlatformSpecificServices();

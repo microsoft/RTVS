@@ -31,5 +31,12 @@ namespace Microsoft.Common.Core.Threading {
         /// <param name="action"></param>
         /// <param name="cancellationToken"></param>
         Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Executed cancellable action on UI thread and return result.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="cancellationToken"></param>
+        Task<T> InvokeAsync<T>(Func<T> action, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

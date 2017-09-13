@@ -12,6 +12,7 @@ namespace Microsoft.R.LanguageServer.Services {
         private const int IdleDelay = 100;
         private readonly Timer _timer;
         private readonly IMainThread _mainThread;
+        private readonly object _lock = new object();
         private DateTime _lastActivityTime = DateTime.Now;
 
         public IdleTimeService(IServiceContainer services) {
@@ -22,8 +23,10 @@ namespace Microsoft.R.LanguageServer.Services {
         private static void OnTimer(object state) => ((IdleTimeService)state).HandleIdle();
 
         private void HandleIdle() {
-            if ((DateTime.Now - _lastActivityTime).TotalMilliseconds > IdleDelay) {
-                _mainThread.Post(() => Idle?.Invoke(this, EventArgs.Empty));
+            lock (_lock) {
+                if ((DateTime.Now - _lastActivityTime).TotalMilliseconds > IdleDelay) {
+                    _mainThread.Post(() => Idle?.Invoke(this, EventArgs.Empty));
+                }
             }
         }
 
@@ -33,7 +36,9 @@ namespace Microsoft.R.LanguageServer.Services {
 
         #region IIdleTimeNotification
         public void NotifyUserActivity() {
-            _lastActivityTime = DateTime.Now;
+            lock(_lock) {
+                _lastActivityTime = DateTime.Now;
+            }
         }
         #endregion
 
