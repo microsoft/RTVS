@@ -111,7 +111,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             }
 
             try {
-                await _containers.StartAsync(container.Id, cancellationToken);
+                await _containers.StopAsync(container.Id, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_StopError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
             }
@@ -123,7 +123,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             }
 
             try {
-                await _containers.StartAsync(container.Id, cancellationToken);
+                await _containers.DeleteAsync(container.Id, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_DeleteError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
             }
