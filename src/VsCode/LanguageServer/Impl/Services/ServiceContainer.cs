@@ -14,24 +14,26 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Server.Documents;
+using Microsoft.R.LanguageServer.Settings;
 using Microsoft.R.LanguageServer.Text;
+using Microsoft.R.LanguageServer.Threading;
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class ServiceContainer : IServiceContainer, IDisposable {
         private readonly ServiceManager _services = new ServiceManager();
 
         public ServiceContainer() {
-            SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+            var mt = new MainThread();
+            SynchronizationContext.SetSynchronizationContext(mt.SynchronizationContext);
 
             _services.AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
-                .AddService(new MainThread())
+                .AddService(mt)
                 .AddService<ISettingsStorage, SettingsStorage>()
                 .AddService<IRSettings, RSettings>()
                 .AddService<ITaskService, TaskService>()

@@ -10,7 +10,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
 
-namespace Microsoft.R.LanguageServer.Services {
+namespace Microsoft.R.LanguageServer.Settings {
     internal sealed class RSettings : IRSettings {
 
         public event PropertyChangedEventHandler PropertyChanged;

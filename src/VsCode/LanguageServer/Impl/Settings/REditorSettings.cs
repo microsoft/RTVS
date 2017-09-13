@@ -8,7 +8,7 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Validation.Lint;
 
-namespace Microsoft.R.LanguageServer.Services {
+namespace Microsoft.R.LanguageServer.Settings {
     internal sealed class REditorSettings : IREditorSettings {
         public REditorSettings(IEditorSettingsStorage storage) {
             LintOptions = new LintOptions(() => storage);

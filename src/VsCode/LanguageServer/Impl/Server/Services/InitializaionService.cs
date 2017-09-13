@@ -3,6 +3,7 @@
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard;
 using JsonRpc.Standard.Contracts;

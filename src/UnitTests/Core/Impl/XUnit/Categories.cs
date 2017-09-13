@@ -274,6 +274,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class EditorAttribute : CategoryAttribute {
                 public EditorAttribute() : base("VsCode.Editor") { }
             }
+            public class ThreadingAttribute : CategoryAttribute {
+                public ThreadingAttribute() : base("VsCode.Threading") { }
+            }
         }
     }
 }
