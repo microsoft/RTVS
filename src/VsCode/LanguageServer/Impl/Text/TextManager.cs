@@ -6,8 +6,8 @@ using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.Extensions;
-using Microsoft.R.LanguageServer.Server.Documents;
 using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Text {

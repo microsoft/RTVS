@@ -7,7 +7,7 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.LanguageServer.Text;
 
-namespace Microsoft.R.LanguageServer.Server.Documents {
+namespace Microsoft.R.LanguageServer.Documents {
     internal sealed class DocumentEntry : IDisposable {
         public IEditorView View { get; }
         public IEditorBuffer EditorBuffer { get; }

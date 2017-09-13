@@ -20,11 +20,10 @@ namespace Microsoft.UnitTests.Core.Threading {
             _onDispose = onDispose;
         }
 
+        #region  IMainThread
         public int ThreadId => UIThreadHelper.Instance.Thread.ManagedThreadId;
 
-        public void Dispose() => _onDispose();
-
-        public void Post(Action action, CancellationToken cancellationToken) {
+        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
             var bl = _blockingLoop.Value;
             if (bl != null) {
                 bl.Post(action);
@@ -35,6 +34,13 @@ namespace Microsoft.UnitTests.Core.Threading {
                 registration.UnregisterOnCompletion(task);
             }
         }
+
+        public void Send(Action action) => throw new NotSupportedException();
+        public Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) 
+            => throw new NotSupportedException();
+        #endregion
+
+        public void Dispose() => _onDispose();
 
         public void Show(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
             => BlockUntilCompleted(() => method(CancellationToken.None));

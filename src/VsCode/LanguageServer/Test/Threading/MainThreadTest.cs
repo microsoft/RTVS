@@ -32,15 +32,38 @@ namespace Microsoft.R.LanguageServer.Test.Text {
         }
 
         [Test]
-        public void Post() {
+        public async Task SendAsync() {
+            var tcs = new TaskCompletionSource<bool>();
+            await _mt.SendAsync(() => tcs.TrySetResult(true), CancellationToken.None);
+            tcs.Task.IsCompleted.Should().BeTrue();
+
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            var t = _mt.SendAsync(() => { }, cts.Token);
+
+            bool thrown = false;
+            try {
+                await t;
+            } catch(TaskCanceledException) {
+                thrown = true;
+            }
+
+            t.IsCanceled.Should().BeTrue();
+            thrown.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Post() {
+            var e = new ManualResetEventSlim(false);
             var tcs = new TaskCompletionSource<bool>();
             _mt.Post(o => {
-                Task.Delay(1000);
+                e.Wait();
                 tcs.TrySetResult(true);
             }, null);
 
             tcs.Task.IsCompleted.Should().BeFalse();
-            tcs.Task.Wait(2000);
+            e.Set();
+            await tcs.Task;
             tcs.Task.IsCompleted.Should().BeTrue();
         }
 

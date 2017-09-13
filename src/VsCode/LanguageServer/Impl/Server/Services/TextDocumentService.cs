@@ -9,8 +9,8 @@ using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.LanguageServer.Completions;
+using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.Extensions;
-using Microsoft.R.LanguageServer.Server.Documents;
 using Microsoft.R.LanguageServer.Text;
 
 namespace Microsoft.R.LanguageServer.Server {

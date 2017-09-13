@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 
-namespace Microsoft.R.LanguageServer.Server.Documents {
+namespace Microsoft.R.LanguageServer.Documents {
     internal sealed class DocumentCollection: IDocumentCollection {
         private readonly Dictionary<Uri, DocumentEntry> _documents = new Dictionary<Uri, DocumentEntry>();
         private readonly IServiceContainer _services;

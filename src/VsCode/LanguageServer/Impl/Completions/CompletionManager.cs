@@ -11,7 +11,7 @@ using Microsoft.Languages.Core;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Completions.Engine;
-using Microsoft.R.LanguageServer.Server.Documents;
+using Microsoft.R.LanguageServer.Documents;
 
 namespace Microsoft.R.LanguageServer.Completions {
     internal sealed class CompletionManager: ICompletionManager {

@@ -17,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _mainThreadDispatcher = Dispatcher.FromThread(_mainThread);
         }
 
+        #region IMainThread
         public int ThreadId => _mainThread.ManagedThreadId;
 
         public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -30,5 +31,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             awaiter.OnCompleted(action);
         }
+
+        public void Send(Action action)
+            => ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync().GetAwaiter().OnCompleted(action);
+
+        public async System.Threading.Tasks.Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            if (!cancellationToken.IsCancellationRequested) {
+                action();
+            }
+        }
+        #endregion
     }
 }

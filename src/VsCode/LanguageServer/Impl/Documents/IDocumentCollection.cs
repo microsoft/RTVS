@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.LanguageServer.Server.Documents {
+namespace Microsoft.R.LanguageServer.Documents {
     internal interface IDocumentCollection {
         void AddDocument(string content, Uri uri);
         void RemoveDocument(Uri uri);

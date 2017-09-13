@@ -5,27 +5,14 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.LanguageServer.Threading {
     internal sealed class MainThread : IMainThread, IDisposable {
-        private sealed class WorkItem {
-            public Action<object> Action { get; }
-            public object State { get; }
-            public CancellationToken CancellationToken { get; }
-
-            public WorkItem(Action<object> action, CancellationToken ct, object state) {
-                Action = action;
-                CancellationToken = ct;
-                State = state;
-            }
-
-            public WorkItem(Action action, CancellationToken ct) : this(o => action(), ct, null) { }
-        }
-
         private readonly CancellationTokenSource _ctsExit = new CancellationTokenSource();
-        private readonly BufferBlock<WorkItem> _bufferBlock = new BufferBlock<WorkItem>();
+        private readonly BufferBlock<Action> _bufferBlock = new BufferBlock<Action>();
         private readonly DisposableBag _disposableBag = DisposableBag.Create<MainThread>();
 
         public MainThread() {
@@ -37,61 +24,62 @@ namespace Microsoft.R.LanguageServer.Threading {
         #region IMainThread
         public int ThreadId => Thread.ManagedThreadId;
 
-        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
-            _disposableBag.ThrowIfDisposed();
-            if (ThreadId == Thread.CurrentThread.ManagedThreadId) {
-                action();
-            } else {
-                _bufferBlock.Post(new WorkItem(action, cancellationToken));
-            }
-        }
+        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken))
+            => ExecuteAsync(o => action(), null, cancellationToken).DoNotWait();
+
+        public void Send(Action action) 
+            => ExecuteAsync(o => action(), null, CancellationToken.None).Wait();
+
+        public Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) 
+            => ExecuteAsync(o => action(), null, cancellationToken);
         #endregion
 
         #region SynchronizationContext
         public SynchronizationContext SynchronizationContext { get; }
-
-        public void Post(Action<object> action, object state) {
-            _disposableBag.ThrowIfDisposed();
-            if (ThreadId == Thread.CurrentThread.ManagedThreadId) {
-                action(state);
-            } else {
-                _bufferBlock.Post(new WorkItem(action, CancellationToken.None, state));
-            }
-        }
-        public void Send(Action<object> action, object state) {
-            _disposableBag.ThrowIfDisposed();
-
-            var tcs = new TaskCompletionSource<bool>();
-            Post(o => {
-                action(state);
-                tcs.TrySetResult(true);
-            }, state);
-            tcs.Task.Wait();
-        }
+        public void Post(Action<object> action, object state) => ExecuteAsync(action, state, CancellationToken.None).DoNotWait();
+        public void Send(Action<object> action, object state) => ExecuteAsync(action, state, CancellationToken.None).Wait();
         #endregion
 
         #region IDisposable
-
         public void Dispose() => _disposableBag.TryDispose();
 
         private void Stop() {
             _ctsExit.Cancel();
-            _bufferBlock.Post(new WorkItem(() => { }, CancellationToken.None));
+            _bufferBlock.Post(() => { });
             Thread.Join(1000);
         }
         #endregion
 
-        internal Thread Thread { get; } = new Thread(o => ((MainThread) o).WorkerThread());
+        private Task ExecuteAsync(Action<object> action, object state, CancellationToken cancellationToken) {
+            _disposableBag.ThrowIfDisposed();
+
+            if (ThreadId == Thread.CurrentThread.ManagedThreadId) {
+                action(state);
+                return Task.CompletedTask;
+            }
+
+            var tcs = new TaskCompletionSource<bool>();
+            _bufferBlock.Post(() => {
+                if (!cancellationToken.IsCancellationRequested) {
+                    action(state);
+                    tcs.TrySetResult(true);
+                } else {
+                    tcs.TrySetCanceled();
+                }
+            });
+
+            return tcs.Task;
+        }
+
+        internal Thread Thread { get; } = new Thread(o => ((MainThread)o).WorkerThread());
 
         private void WorkerThread() {
             while (true) {
-                var workItem = _bufferBlock.Receive();
+                var action = _bufferBlock.Receive();
                 if (_ctsExit.IsCancellationRequested) {
                     break;
                 }
-                if (!workItem.CancellationToken.IsCancellationRequested) {
-                    workItem.Action(workItem.State);
-                }
+                action();
             }
         }
 

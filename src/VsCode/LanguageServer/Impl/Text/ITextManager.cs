@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using LanguageServer.VsCode.Contracts;
-using Microsoft.R.LanguageServer.Server.Documents;
+using Microsoft.R.LanguageServer.Documents;
 
 namespace Microsoft.R.LanguageServer.Text {
     internal interface ITextManager {
