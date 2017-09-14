@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -11,6 +12,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 
 namespace Microsoft.UnitTests.Core.Threading {
+    [ExcludeFromCodeCoverage]
     public class TestMainThread : IProgressDialog, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
@@ -20,10 +22,11 @@ namespace Microsoft.UnitTests.Core.Threading {
             _onDispose = onDispose;
         }
 
-        #region  IMainThread
         public int ThreadId => UIThreadHelper.Instance.Thread.ManagedThreadId;
 
-        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public void Dispose() => _onDispose();
+
+        public void Post(Action action, CancellationToken cancellationToken) {
             var bl = _blockingLoop.Value;
             if (bl != null) {
                 bl.Post(action);
@@ -34,9 +37,6 @@ namespace Microsoft.UnitTests.Core.Threading {
                 registration.UnregisterOnCompletion(task);
             }
         }
-        #endregion
-
-        public void Dispose() => _onDispose();
 
         public void Show(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
             => BlockUntilCompleted(() => method(CancellationToken.None));

@@ -33,20 +33,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             awaiter.OnCompleted(action);
         }
-
-        public void Send(Action action)
-            => ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync().GetAwaiter().OnCompleted(action);
-
-        public async Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            if (!cancellationToken.IsCancellationRequested) {
-                action();
-            }
-        }
-        public async Task<T> InvokeAsync<T>(Func<T> action, CancellationToken cancellationToken = default(CancellationToken)) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            return !cancellationToken.IsCancellationRequested ? action() : default(T);
-        }
         #endregion
     }
 }

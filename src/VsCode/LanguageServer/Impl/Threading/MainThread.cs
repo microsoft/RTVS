@@ -26,16 +26,6 @@ namespace Microsoft.R.LanguageServer.Threading {
 
         public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken))
             => ExecuteAsync(o => action(), null, cancellationToken).DoNotWait();
-
-        public void Send(Action action)
-            => ExecuteAsync(o => action(), null, CancellationToken.None).Wait();
-
-        public Task SendAsync(Action action, CancellationToken cancellationToken = default(CancellationToken))
-            => ExecuteAsync(o => action(), null, cancellationToken);
-
-        public Task<T> InvokeAsync<T>(Func<T> action, CancellationToken cancellationToken = default(CancellationToken))
-            => ExecuteAsync(o => action(), null, cancellationToken);
-
         #endregion
 
         #region SynchronizationContext
