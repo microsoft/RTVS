@@ -56,8 +56,20 @@ namespace Microsoft.R.Containers.Docker {
             var output = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), null, _defaultTimeout, true, ct);
             var lines = output.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
-            var arr = await InspectContainerAsync(ids, ct);
+            var arr = await InspectAsync(ids, ct);
             return arr.Select(c => new LocalDockerContainer(c));
+        }
+
+        public async Task<IEnumerable<IContainerImage>> ListImagesAsync(bool getAll = true, CancellationToken ct = default(CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var command = "images";
+            var commandOptions = getAll ? "-a -q" : "-q";
+            var output = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), null, _defaultTimeout, true, ct);
+            var lines = output.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
+            var arr = await InspectAsync(ids, ct);
+            return arr.Select(c => new LocalDockerImage(c));
         }
 
         public async Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct) {
@@ -65,7 +77,7 @@ namespace Microsoft.R.Containers.Docker {
 
             var ids = (await ListContainersAsync(true, ct)).Where(container => containerId.StartsWithIgnoreCase(container.Id));
             if (ids.Any()) {
-                var arr = await InspectContainerAsync(new string[] { containerId }, ct);
+                var arr = await InspectAsync(new string[] { containerId }, ct);
                 if (arr.Count == 1) {
                     return new LocalDockerContainer(arr[0]);
                 }
@@ -74,12 +86,12 @@ namespace Microsoft.R.Containers.Docker {
             return null;
         }
 
-        public async Task<JArray> InspectContainerAsync(IEnumerable<string> containerIds, CancellationToken ct) {
+        public async Task<JArray> InspectAsync(IEnumerable<string> containerIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var ids = containerIds.AsList();
             if (ids.Any()) {
-                var command = "container inspect";
+                var command = "inspect";
                 var commandOptions = string.Join(" ", ids);
                 var result = await ExecuteCommandAsync(Invariant($"{command} {commandOptions}"), null, _defaultTimeout, false, ct);
                 return JArray.Parse(result);
