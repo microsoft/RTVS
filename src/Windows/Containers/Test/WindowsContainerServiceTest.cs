@@ -7,12 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fakes.Shell;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Containers.Docker;
 using Microsoft.UnitTests.Core.XUnit;
 using System.IO;
 using System;
+using NSubstitute;
 
 namespace Microsoft.R.Containers.Windows.Test {
     [ExcludeFromCodeCoverage]
@@ -24,7 +28,9 @@ namespace Microsoft.R.Containers.Windows.Test {
             _services = new ServiceManager()
                 .AddService<IFileSystem, FileSystem>()
                 .AddService<IProcessServices, ProcessServices>()
-                .AddService<IRegistry, RegistryImpl>();
+                .AddService<IRegistry, RegistryImpl>()
+                .AddService(Substitute.For<IActionLog>())
+                .AddService<IOutputService, TestOutputService>();
         }
 
         [Test]
@@ -36,9 +42,10 @@ RUN apt-get update && apt-get upgrade -y";
             var dockerFile = Path.Combine(tempDirectory, "Dockerfile");
             File.WriteAllText(dockerFile, dockerFileContent);
             var svc = new WindowsDockerService(_services);
-            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest", "myimage");
+            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest", "mycontainer");
             await svc.CreateContainerFromFileAsync(param, CancellationToken.None);
             Directory.Delete(tempDirectory, true);
+            await svc.DeleteContainerAsync("mycontainer", CancellationToken.None);
         }
 
         [Test]
@@ -81,17 +88,16 @@ RUN apt-get update && apt-get upgrade -y";
             string imageName = $"{param.Image}:{param.Tag}";
             await DeleteImageAsync(imageName);
 
+            var images = await svc.ListImagesAsync(false, CancellationToken.None);
+            images.Should().NotContain(c => c.Name == param.Image && c.Tag == param.Tag);
+
             var container = await svc.CreateContainerAsync(param, CancellationToken.None);
             await svc.StartContainerAsync(container.Id, CancellationToken.None);
 
-            var runningContainers = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers.Should().Contain(c => c.Id == container.Id);
+            var images2 = await svc.ListImagesAsync(false, CancellationToken.None);
+            images2.Should().Contain(c => c.Name == param.Image && c.Tag == param.Tag);
 
             await svc.StopContainerAsync(container.Id, CancellationToken.None);
-
-            var runningContainers2 = await svc.ListContainersAsync(false, CancellationToken.None);
-            runningContainers2.Should().NotContain(c => c.Id == container.Id);
-
             await svc.DeleteContainerAsync(container.Id, CancellationToken.None);
             var allContainers = await svc.ListContainersAsync(true, CancellationToken.None);
             allContainers.Should().NotContain(c => c.Id == container.Id);
