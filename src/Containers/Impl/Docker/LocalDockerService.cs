@@ -60,7 +60,7 @@ namespace Microsoft.R.Containers.Docker {
             return arr.Select(c => new LocalDockerContainer(c));
         }
 
-        public async Task<IEnumerable<IContainerImage>> ListImagesAsync(bool getAll = true, CancellationToken ct = default(CancellationToken)) {
+        public async Task<IEnumerable<ContainerImage>> ListImagesAsync(bool getAll = true, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var command = "images";
@@ -69,7 +69,22 @@ namespace Microsoft.R.Containers.Docker {
             var lines = output.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
             var arr = await InspectAsync(ids, ct);
-            return arr.Select(c => new LocalDockerImage(c));
+            return arr.Select(c => GetContainerImage(c));
+        }
+
+        private ContainerImage GetContainerImage(JToken c) {
+            var obj = (dynamic)c;
+            var objId = ((string)obj.Id);
+            int idx = objId.IndexOf(':');
+            var id = idx < 0 ? objId : objId.Substring(idx + 1);
+            var name = string.Empty;
+            var tag = string.Empty;
+            if (((JArray)obj.RepoTags).Any()) {
+                string[] split = ((string)obj.RepoTags[0]).Split(new[] { ":" }, StringSplitOptions.RemoveEmptyEntries);
+                name = split[0];
+                tag = split.Length == 2 ? split[1] : string.Empty; ;
+            }
+            return new ContainerImage(id, name, tag);
         }
 
         public async Task<IContainer> GetContainerAsync(string containerId, CancellationToken ct) {

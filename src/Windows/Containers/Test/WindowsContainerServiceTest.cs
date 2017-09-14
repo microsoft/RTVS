@@ -7,13 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Containers.Docker;
 using Microsoft.UnitTests.Core.XUnit;
 using System.IO;
 using System;
+using NSubstitute;
 
 namespace Microsoft.R.Containers.Windows.Test {
     [ExcludeFromCodeCoverage]
@@ -26,7 +29,8 @@ namespace Microsoft.R.Containers.Windows.Test {
                 .AddService<IFileSystem, FileSystem>()
                 .AddService<IProcessServices, ProcessServices>()
                 .AddService<IRegistry, RegistryImpl>()
-                .AddService<IOutputService, OutputServiceMock>();
+                .AddService(Substitute.For<IActionLog>())
+                .AddService<IOutputService, TestOutputService>();
         }
 
         [Test]
@@ -38,9 +42,10 @@ RUN apt-get update && apt-get upgrade -y";
             var dockerFile = Path.Combine(tempDirectory, "Dockerfile");
             File.WriteAllText(dockerFile, dockerFileContent);
             var svc = new WindowsDockerService(_services);
-            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest", "myimage");
+            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest", "mycontainer");
             await svc.CreateContainerFromFileAsync(param, CancellationToken.None);
             Directory.Delete(tempDirectory, true);
+            await svc.DeleteContainerAsync("mycontainer", CancellationToken.None);
         }
 
         [Test]
