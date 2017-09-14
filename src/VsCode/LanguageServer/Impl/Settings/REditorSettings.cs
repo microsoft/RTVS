@@ -10,11 +10,14 @@ using Microsoft.R.Editor.Validation.Lint;
 
 namespace Microsoft.R.LanguageServer.Settings {
     internal sealed class REditorSettings : IREditorSettings {
-        public REditorSettings(IEditorSettingsStorage storage) {
-            LintOptions = new LintOptions(() => storage);
+        private readonly IEditorSettingsStorage _storage;
+
+        public REditorSettings() {
+            _storage = new EditorSettingsStorage();
+            LintOptions = new LintOptions(() => _storage);
         }
 
-        public void Dispose() { }
+        public void Dispose() => _storage.Dispose();
 
         public event EventHandler<EventArgs> SettingsChanged;
         public bool AutoFormat { get; } = true;

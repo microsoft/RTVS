@@ -25,7 +25,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 TextDocumentSync = new TextDocumentSyncOptions {
                     OpenClose = true,
                     WillSave = true,
-                    Change = TextDocumentSyncKind.Full
+                    Change = TextDocumentSyncKind.Incremental
                 }
             });
         }

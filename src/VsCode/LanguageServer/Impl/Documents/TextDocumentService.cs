@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,25 +36,24 @@ namespace Microsoft.R.LanguageServer.Documents {
         }
 
         [JsonRpcMethod(IsNotification = true)]
-        public Task didOpen(TextDocumentItem textDocument)
-            => MainThread.SendAsync(() => Documents.AddDocument(textDocument.Text, textDocument.Uri));
+        public void didOpen(TextDocumentItem textDocument)
+            => MainThread.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri));
 
         [JsonRpcMethod(IsNotification = true)]
         public Task didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
-            _idleTimeNotification.NotifyUserActivity();
-            return MainThread.SendAsync(() =>
-                Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges));
+            IdleTimeNotification.NotifyUserActivity();
+            return MainThread.SendAsync(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges));
         }
 
         [JsonRpcMethod(IsNotification = true)]
         public void willSave(TextDocumentIdentifier textDocument, TextDocumentSaveReason reason) { }
 
         [JsonRpcMethod(IsNotification = true)]
-        public Task didClose(TextDocumentIdentifier textDocument)
-            => MainThread.SendAsync(() => Documents.RemoveDocument(textDocument.Uri));
+        public void didClose(TextDocumentIdentifier textDocument)
+            => MainThread.Post(() => Documents.RemoveDocument(textDocument.Uri));
 
         [JsonRpcMethod]
-        public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position)
-            => MainThread.InvokeAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList());
+        public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) =>
+            MainThread.InvokeAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList());
     }
 }

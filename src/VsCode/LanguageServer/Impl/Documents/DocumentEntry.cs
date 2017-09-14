@@ -85,10 +85,15 @@ namespace Microsoft.R.LanguageServer.Documents {
                 completions.RemoveDuplicates(new CompletionEntryComparer(StringComparison.Ordinal));
             }
 
-            var items = completions.Select(c => new CompletionItem(c.InsertionText, CompletionItemKind.Function, c.InsertionText, null));
-            var list = new CompletionList(items);
+            var items = completions.Select(c => new CompletionItem {
+                Label = c.DisplayText,
+                InsertText = c.InsertionText,
+                Detail = c.Description,
+                Kind = (CompletionItemKind)c.ImageSource,
+                Documentation = c.Description
+            }).ToList();
 
-            return list;
+            return new CompletionList(items);
         }
 
     }

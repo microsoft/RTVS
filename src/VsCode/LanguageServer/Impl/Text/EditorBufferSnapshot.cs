@@ -53,12 +53,15 @@ namespace Microsoft.R.LanguageServer.Text {
         }
 
         public IEditorLine GetLineFromLineNumber(int lineNumber) {
-            Check.ArgumentOutOfRange(nameof(lineNumber), () => lineNumber < 0 || lineNumber >= _lines.Count);
-            MakeLinesData();
+            Check.ArgumentOutOfRange(nameof(lineNumber), () => lineNumber < 0 || lineNumber >= LineCount);
             return _lines[lineNumber];
         }
 
-        public int GetLineNumberFromPosition(int position) => _lines.GetItemContaining(position);
+        public int GetLineNumberFromPosition(int position) {
+            Check.ArgumentOutOfRange(nameof(position), () => position < 0 || position >= _content.Length);
+            MakeLinesData();
+            return _lines.GetItemContaining(position);
+        }
 
         public ITrackingTextRange CreateTrackingRange(ITextRange range) => throw new NotSupportedException();
         #endregion

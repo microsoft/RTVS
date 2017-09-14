@@ -35,7 +35,7 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions: languageClient.ServerOptions = {
-        run : { command: "dotnet", args: [serverModule], options: commandOptions },
+        run: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions },
         debug: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions }
     };
     

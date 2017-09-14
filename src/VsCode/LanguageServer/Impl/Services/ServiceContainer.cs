@@ -32,6 +32,7 @@ namespace Microsoft.R.LanguageServer.Services {
 
             _services.AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
                 .AddService(mt)
+                .AddService(new ContentTypeServiceLocator())
                 .AddService<ISettingsStorage, SettingsStorage>()
                 .AddService<IRSettings, RSettings>()
                 .AddService<ITaskService, TaskService>()

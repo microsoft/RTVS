@@ -11,7 +11,7 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.R.LanguageServer.Server {
     internal static class Program {
-        private static void Main(string[] args) {
+        public static void Main(string[] args) {
             var debugMode = CheckDebugMode(args);
             using (Session.Create()) {
                 var connection = new VsCodeConnection();
