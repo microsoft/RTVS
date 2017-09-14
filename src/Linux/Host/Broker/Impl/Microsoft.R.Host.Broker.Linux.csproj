@@ -28,6 +28,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(NuGetPackageRoot)\Libuv\$(LibuvVersion)\runtimes\linux-x64\native\*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>True</Visible>
+    </Content>
     <None Update="rtvsd.config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

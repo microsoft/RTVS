@@ -177,7 +177,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public void StartRHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\", null, true), _services, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\", null, true), _services, new NullConsole());
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
 
@@ -198,7 +198,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
         [Test]
         public async Task StopBeforeInitialized_RHostMissing() {
-            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\", null, true), _services, new NullConsole(), Environment.SystemDirectory);
+            var brokerClient = new LocalBrokerClient(nameof(RSessionTest), BrokerConnectionInfo.Create(null, "C", @"C:\", null, true), _services, new NullConsole());
             var session = new RSession(0, _testMethod.FileSystemSafeName, brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo(), null, 10000);
             var startTask = Task.Run(start).SilenceException<RHostBinaryMissingException>();

@@ -11,6 +11,7 @@
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
     <!-- We do not strong name sign in desktop builds -->
     <MicroBuild_DoNotStrongNameSign>true</MicroBuild_DoNotStrongNameSign>
+    <LibuvVersion>1.10.0</LibuvVersion>
   </PropertyGroup>
 
   <!--

@@ -9,6 +9,7 @@ using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.R.LanguageServer.Server;
 using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Threading;
 
 namespace Microsoft.R.LanguageServer.Documents {
     [JsonRpcScope(MethodPrefix = "textDocument/")]
@@ -54,6 +55,6 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) =>
-            MainThread.InvokeAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList());
+            MainThread.SendAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList());
     }
 }

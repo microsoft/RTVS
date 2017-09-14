@@ -54,7 +54,7 @@ namespace Microsoft.R.LanguageServer.Test.Text {
 
         [Test]
         public async Task InvokeAsync() {
-            var result = await _mt.InvokeAsync(() => 1, CancellationToken.None);
+            var result = await _mt.SendAsync(() => 1, CancellationToken.None);
             result.Should().Be(1);
         }
 

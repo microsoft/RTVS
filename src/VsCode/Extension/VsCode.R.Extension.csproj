@@ -33,18 +33,6 @@
     <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(VSCTDefinitions)</VSCTDefinitions>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
-      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
-      <Name>Microsoft.R.Platform</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
-      <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Name>Microsoft.R.Host.Broker.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj">
       <Project>{17eb0bf8-c7ff-4778-b66b-dea11613dc4d}</Project>
       <Name>Microsoft.R.LanguageServer</Name>
@@ -65,10 +53,10 @@
     <Exec Command="npm install" />
   </Target>
   <Target Name="Rebuild">
-    <CallTarget Targets="_build"/>
+    <CallTarget Targets="_build" />
   </Target>
   <Target Name="Build">
-    <CallTarget Targets="_build"/>
+    <CallTarget Targets="_build" />
   </Target>
   <Target Name="_build">
     <Exec Command="dotnet publish --framework netcoreapp1.1 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />

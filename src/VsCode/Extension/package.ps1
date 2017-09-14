@@ -12,22 +12,15 @@ $vsc = Resolve-Path -Path $vscPath
 
 &cd $vsc
 
-&md -Force server
+&md -Force Server
 &cd server
-
 &xcopy /e /y /r /q "$bin\netcoreapp1.1\publish"
 
-&copy $bin/Microsoft.R.Host.exe
-&copy $bin/Microsoft.R.Host.UserProfile.exe
-#&copy $bin/Microsoft.R.Host.RunAsUser.exe
-&copy $bin/Microsoft.R.Host.Broker.Windows.exe
-&copy $bin/Microsoft.R.Host.Broker.Config.json
-&copy $bin/Microsoft.R.Containers.Windows.dll
+&md -Force Broker
+&xcopy /e /y /r /q "$bin\Broker" "Broker"
 
-&copy $bin/libuv.dll
-&copy $bin/libzip-5.dll
-&copy $bin/libwinpthread-1.dll
-&copy $bin/zlib1.dll
+&md -Force Host
+&xcopy /e /y /r /q "$bin\Host" "Host"
 
 &cd ..
 &vsce package

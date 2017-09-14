@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,14 +21,11 @@ using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     public sealed class LocalBrokerClient : BrokerClient {
-        private const string RHostBrokerExe = "Microsoft.R.Host.Broker.Windows.exe";
-        private const string RHostExe = "Microsoft.R.Host.exe";
         private const string InterpreterId = "local";
 
         private static readonly bool ShowConsole;
         private static readonly LocalCredentialsDecorator _credentials = new LocalCredentialsDecorator();
 
-        private readonly string _rhostDirectory;
         private readonly string _rHome;
         private readonly BinaryAsyncLock _connectLock = new BinaryAsyncLock();
         private readonly IServiceContainer _services;
@@ -45,12 +43,10 @@ namespace Microsoft.R.Host.Client.Host {
             }
         }
 
-        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, string rhostDirectory = null)
+        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console)
             : base(name, connectionInfo, _credentials, console, services) {
             _rHome = connectionInfo.Uri.LocalPath;
             _services = services;
-            _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
-
             IsVerified = true;
         }
 
@@ -76,13 +72,14 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
+            var locator = new BrokerExecutableLocator();
 
-            var rhostExe = Path.Combine(_rhostDirectory, RHostExe);
+            var rhostExe = locator.GetHostExecutablePath();
             if (!_services.FileSystem().FileExists(rhostExe)) {
                 throw new RHostBinaryMissingException();
             }
 
-            var rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
+            var rhostBrokerExe = locator.GetBrokerExecutablePath();
             if (!_services.FileSystem().FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }

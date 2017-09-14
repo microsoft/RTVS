@@ -55,6 +55,7 @@ namespace Microsoft.R.LanguageServer.Services {
         public IEnumerable<T> GetServices<T>() where T : class => _services.GetServices<T>();
 
         private void AddPlatformSpecificServices() {
+#if NETCOREAPP1_1
             var thisAssembly = Assembly.GetEntryAssembly().GetAssemblyPath();
             var assemblyLoc = Path.GetDirectoryName(thisAssembly);
             var platformServicesAssemblyPath = Path.Combine(assemblyLoc, GetPlatformServiceProviderAssemblyName());
@@ -64,6 +65,7 @@ namespace Microsoft.R.LanguageServer.Services {
             var classType = assembly.GetType("Microsoft.R.Platform.ServiceProvider");
             var mi = classType.GetMethod("ProvideServices", BindingFlags.Static | BindingFlags.Public);
             mi.Invoke(null, new object[] { _services });
+#endif
         }
 
         private static string GetPlatformServiceProviderAssemblyName() {

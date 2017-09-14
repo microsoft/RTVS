@@ -5,7 +5,7 @@
     <Error Condition = " '$(AssemblyName)'=='' " Text = "AssemblyName property must be specified before R.Settings.NetCore.props is referenced" />
   </Target>
   <PropertyGroup>
-    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <RootDirectory Condition="'$(RootDirectory)' == ''">$(MSBuildThisFileDirectory)..\</RootDirectory>
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)\$(AssemblyName)\</BaseIntermediateOutputPath>
@@ -13,8 +13,9 @@
     <MicroBuild_DoNotStrongNameSign>true</MicroBuild_DoNotStrongNameSign>
     <BuildDependsOn>ValidateAssemblyName;$(BuildDependsOn)</BuildDependsOn>
     <DefineConstants Condition="'$(TargetFramework)' == 'net46'">DESKTOP;$(DefineConstants)</DefineConstants>
+    <LibuvVersion>1.10.0</LibuvVersion>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
-    <PackageReference Include="NETStandard.Library" Version="2.0.0" />
+    <PackageReference Include="NETStandard.Library" Version="1.6.1" />
   </ItemGroup>
 </Project>
