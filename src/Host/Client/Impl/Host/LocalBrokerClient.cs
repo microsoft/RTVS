@@ -17,6 +17,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Platform.Host;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -72,7 +73,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
-            var locator = new BrokerExecutableLocator();
+            var locator = new BrokerExecutableLocator(_services.FileSystem());
 
             var rhostExe = locator.GetHostExecutablePath();
             if (!_services.FileSystem().FileExists(rhostExe)) {

@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
+#define WAIT_FOR_DEBUGGER
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.ServiceProcess;
+using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +17,12 @@ using Microsoft.R.Host.Broker.Logging;
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
         public static void Main(string[] args) {
+#if WAIT_FOR_DEBUGGER
+                while (!Debugger.IsAttached) {
+                    Thread.Sleep(1000);
+                }
+#endif
+
             var configuration = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .Build();

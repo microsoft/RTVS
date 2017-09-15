@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Security.Claims;
@@ -13,21 +12,22 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Sessions;
-using Microsoft.R.Host.Broker.Startup;
+using Microsoft.R.Platform.Host;
+using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.OS;
 
 namespace Microsoft.R.Host.Broker.Services {
     public class WindowsRHostProcessService : IRHostProcessService {
         private readonly ILogger<Session> _sessionLogger;
-        private const string RHostExe = "Microsoft.R.Host.exe";
 
         public WindowsRHostProcessService(ILogger<Session> sessionLogger) {
             _sessionLogger = sessionLogger;
         }
 
         public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, ClaimsPrincipal principal, string commandLine) {
-            string brokerPath = Path.GetDirectoryName(typeof(Program).Assembly.GetAssemblyPath());
-            string rhostExePath = Path.Combine(brokerPath, RHostExe);
+            var locator = new BrokerExecutableLocator(new WindowsFileSystem());
+            string rhostExePath = locator.GetHostExecutablePath();
+
             commandLine = FormattableString.Invariant($"\"{rhostExePath}\" {commandLine}");
             var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domainBldr = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
