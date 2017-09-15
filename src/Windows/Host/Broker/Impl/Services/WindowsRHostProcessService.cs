@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
         public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, ClaimsPrincipal principal, string commandLine) {
             var locator = new BrokerExecutableLocator(new WindowsFileSystem());
-            string rhostExePath = locator.GetHostExecutablePath();
+            var rhostExePath = locator.GetHostExecutablePath();
 
             commandLine = FormattableString.Invariant($"\"{rhostExePath}\" {commandLine}");
             var usernameBldr = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
@@ -36,20 +36,20 @@ namespace Microsoft.R.Host.Broker.Services {
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
             NativeMethods.GetShortPathName(interpreter.Info.Path, shortHome, shortHome.Capacity);
 
-            WindowsIdentity useridentity = principal.Identity as WindowsIdentity;
+            var useridentity = principal.Identity as WindowsIdentity;
             var loggedOnUser = useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User;
 
             // build user environment block
             Win32EnvironmentBlock eb;
             if (loggedOnUser) {
-                uint error = NativeMethods.CredUIParseUserName(userName, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
+                var error = NativeMethods.CredUIParseUserName(userName, usernameBldr, usernameBldr.Capacity, domainBldr, domainBldr.Capacity);
                 if (error != 0) {
                     _sessionLogger.LogError(Resources.Error_UserNameParse, userName, error);
                     throw new ArgumentException(Resources.Error_UserNameParse.FormatInvariant(userName, error));
                 }
 
-                string username = usernameBldr.ToString();
-                string domain = domainBldr.ToString();
+                var username = usernameBldr.ToString();
+                var domain = domainBldr.ToString();
 
                 eb = CreateEnvironmentBlockForUser(useridentity, username, profilePath);
 
@@ -66,7 +66,7 @@ namespace Microsoft.R.Host.Broker.Services {
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
             Win32Process win32Process;
-            using (Win32NativeEnvironmentBlock nativeEnv = eb.GetNativeEnvironmentBlock()) {
+            using (var nativeEnv = eb.GetNativeEnvironmentBlock()) {
                 if (loggedOnUser) {
                     win32Process = Win32Process.StartProcessAsUser(useridentity, rhostExePath, commandLine, Path.GetDirectoryName(rhostExePath), nativeEnv);
                 } else {
@@ -74,6 +74,9 @@ namespace Microsoft.R.Host.Broker.Services {
                 }
             }
 
+            win32Process.Exited += (s, e) => {
+            };
+            ;
             win32Process.WaitForExit(250);
             if (win32Process.HasExited && win32Process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(win32Process.ExitCode);
@@ -86,6 +89,8 @@ namespace Microsoft.R.Host.Broker.Services {
             return win32Process;
         }
 
+        private void Win32Process_Exited(object sender, EventArgs e) => throw new NotImplementedException();
+
         private void AddGlobalREnvironmentVariables(Win32EnvironmentBlock eb) {
             // Get the broker's environment block
             var brokerEb = Win32EnvironmentBlock.Create(WindowsIdentity.GetCurrent().Token);
@@ -97,7 +102,7 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         private Win32EnvironmentBlock CreateEnvironmentBlockForUser(WindowsIdentity useridentity, string username, string profilePath) {
-            Win32EnvironmentBlock eb = Win32EnvironmentBlock.Create(useridentity.Token);
+            var eb = Win32EnvironmentBlock.Create(useridentity.Token);
 
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariableCreationBegin, username, profilePath);
             // if broker and rhost are run as different users recreate user environment variables.

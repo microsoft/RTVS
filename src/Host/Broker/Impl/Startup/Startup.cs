@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
@@ -101,7 +102,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 NamedPipeClientStream pipe;
                 try {
                     pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.Out);
-                    pipe.Connect(10000);
+                    pipe.Connect(Debugger.IsAttached ? 200000 : 10000);
                 } catch (IOException ex) {
                     logger.LogCritical(0, ex, Resources.Critical_InvalidPipeHandle, pipeName);
                     throw;

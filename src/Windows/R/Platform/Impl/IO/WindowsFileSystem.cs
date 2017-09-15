@@ -37,16 +37,6 @@ namespace Microsoft.R.Platform.IO {
                 KF_FLAG_ALIAS_ONLY = 0x80000000,
             }
 
-            [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-            public static extern uint GetLongPathName([MarshalAs(UnmanagedType.LPWStr)] string lpFileName,
-                                                      [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpBuffer,
-                                                      int nBufferLength);
-
-            [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-            public static extern uint GetShortPathName([MarshalAs(UnmanagedType.LPWStr)] string lpFileName,
-                                                       [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpBuffer,
-                                                       int nBufferLength);
-
             [DllImport("Shell32.dll")]
             public static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
                                                           uint dwFlags,

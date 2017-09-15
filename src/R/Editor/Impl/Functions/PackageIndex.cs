@@ -89,12 +89,12 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
-        public async Task BuildIndexAsync() {
-            var lockToken = await _buildIndexLock.WaitAsync();
-            await BuildIndexAsync(lockToken);
+        public async Task BuildIndexAsync(CancellationToken ct = default(CancellationToken)) {
+            var lockToken = await _buildIndexLock.WaitAsync(ct);
+            await BuildIndexAsync(lockToken, ct);
         }
 
-        private async Task BuildIndexAsync(IBinaryAsyncLockToken lockToken) {
+        private async Task BuildIndexAsync(IBinaryAsyncLockToken lockToken, CancellationToken ct) {
             try {
                 if (!lockToken.IsSet) {
                     await TaskUtilities.SwitchToBackgroundThread();
@@ -102,19 +102,19 @@ namespace Microsoft.R.Editor.Functions {
                     stopwatch.Start();
 
                     // Ensure session is started
-                    await _host.StartSessionAsync();
+                    await _host.StartSessionAsync(ct);
                     Debug.WriteLine("R function host start: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Fetch list of package functions from R session
-                    await LoadInstalledPackagesIndexAsync();
+                    await LoadInstalledPackagesIndexAsync(ct);
                     Debug.WriteLine("Fetch list of package functions from R session: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Try load missing functions from cache or explicitly
-                    await LoadRemainingPackagesFunctions();
+                    await LoadRemainingPackagesFunctions(ct);
                     Debug.WriteLine("Try load missing functions from cache or explicitly: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Build index
-                    await _functionIndex.BuildIndexAsync(this);
+                    await _functionIndex.BuildIndexAsync(this, ct);
                     Debug.WriteLine("R function index total: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     stopwatch.Stop();
@@ -131,7 +131,7 @@ namespace Microsoft.R.Editor.Functions {
         /// Retrieves R package information by name. If package is not in the index,
         /// attempts to locate the package in the current R session.
         /// </summary>
-        public async Task<IPackageInfo> GetPackageInfoAsync(string packageName) {
+        public async Task<IPackageInfo> GetPackageInfoAsync(string packageName, CancellationToken ct = default(CancellationToken)) {
             packageName = packageName.TrimQuotes().Trim();
             IPackageInfo package = GetPackageInfo(packageName);
             if (package != null) {
@@ -139,14 +139,14 @@ namespace Microsoft.R.Editor.Functions {
             }
 
             Debug.WriteLine(Invariant($"Missing package: {packageName}"));
-            return (await TryAddMissingPackagesAsync(new string[] { packageName })).FirstOrDefault();
+            return (await TryAddMissingPackagesAsync(new [] { packageName }, ct)).FirstOrDefault();
         }
 
         /// <summary>
         /// Retrieves information on multilple R packages. If one of the packages 
         /// is not in the index, attempts to locate the package in the current R session.
         /// </summary>
-        public async Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames) {
+        public async Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames, CancellationToken ct = default(CancellationToken)) {
             var list = new List<IPackageInfo>();
             var missing = new List<string>();
 
@@ -161,7 +161,7 @@ namespace Microsoft.R.Editor.Functions {
                 }
             }
 
-            list.AddRange(await TryAddMissingPackagesAsync(missing));
+            list.AddRange(await TryAddMissingPackagesAsync(missing, ct));
             return list;
         }
 
@@ -176,9 +176,11 @@ namespace Microsoft.R.Editor.Functions {
 
         public void Dispose() => _disposableBag.TryDispose();
 
-        private async Task LoadInstalledPackagesIndexAsync() {
-            var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
+        private async Task LoadInstalledPackagesIndexAsync(CancellationToken ct) {
+            var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv, ct);
             foreach (var package in packagesFunctions) {
+                ct.ThrowIfCancellationRequested();
+
                 var name = package.Value<string>("Package");
                 var description = package.Value<string>("Description");
                 var version = package.Value<string>("Version");
@@ -207,9 +209,9 @@ namespace Microsoft.R.Editor.Functions {
             return array?.HasValues == true ? array.Children<JValue>().Select(v => (T)v.Value) : Enumerable.Empty<T>();
         }
 
-        private async Task LoadRemainingPackagesFunctions() {
+        private async Task LoadRemainingPackagesFunctions(CancellationToken ct) {
             foreach (var pi in _packages.Values.Where(p => !p.Functions.Any())) {
-                await pi.LoadFunctionsIndexAsync();
+                await pi.LoadFunctionsIndexAsync(ct);
             }
         }
 
@@ -228,7 +230,7 @@ namespace Microsoft.R.Editor.Functions {
                     _packages.RemoveWhere((kvp) => removedNames.Contains(kvp.Key));
 
                     var added = installed.Where(p => !currentNames.Contains(p.Package));
-                    await AddPackagesToIndexAsync(added);
+                    await AddPackagesToIndexAsync(added, ct);
 
                     _updatePending = false;
                 } catch (RException) { } catch (OperationCanceledException) {
@@ -242,26 +244,30 @@ namespace Microsoft.R.Editor.Functions {
         /// From the supplied names selects packages that are not in the index and attempts
         /// to add them to the index. This typically applies to packages that were just installed.
         /// </summary>
-        private async Task<IEnumerable<IPackageInfo>> TryAddMissingPackagesAsync(IEnumerable<string> packageNames) {
+        private async Task<IEnumerable<IPackageInfo>> TryAddMissingPackagesAsync(IEnumerable<string> packageNames, CancellationToken ct) {
             var info = Enumerable.Empty<IPackageInfo>();
             // Do not attempt to add new package when index is still being built
             if (packageNames.Any() && _buildIndexLock.IsSet) {
                 try {
                     var installedPackages = await GetInstalledPackagesAsync();
                     var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
-                    info = await AddPackagesToIndexAsync(packagesNotInIndex);
+                    info = await AddPackagesToIndexAsync(packagesNotInIndex, ct);
                 } catch (RHostDisconnectedException) { }
             }
             return info;
         }
 
-        private async Task<IEnumerable<IPackageInfo>> AddPackagesToIndexAsync(IEnumerable<RPackage> packages) {
+        private async Task<IEnumerable<IPackageInfo>> AddPackagesToIndexAsync(IEnumerable<RPackage> packages, CancellationToken ct) {
             var list = new List<IPackageInfo>();
             foreach (var p in packages) {
+                if(ct.IsCancellationRequested) {
+                    break;
+                }
+
                 var info = new PackageInfo(_host, p.Package, p.Description, p.Version);
                 _packages[p.Package] = info;
 
-                await info.LoadFunctionsIndexAsync();
+                await info.LoadFunctionsIndexAsync(ct);
                 _functionIndex.RegisterPackageFunctions(info);
                 list.Add(info);
             }
@@ -292,18 +298,18 @@ namespace Microsoft.R.Editor.Functions {
 
         private void ScheduleIdleTimeRebuild() {
             IdleTimeAction.Cancel(typeof(PackageIndex));
-            IdleTimeAction.Create(() => RebuildIndexAsync().DoNotWait(), 100, GetType(), _idleTime);
+            IdleTimeAction.Create(() => RebuildIndexAsync(CancellationToken.None).DoNotWait(), 100, GetType(), _idleTime);
         }
 
-        private async Task RebuildIndexAsync() {
+        private async Task RebuildIndexAsync(CancellationToken ct) {
             if (!_buildIndexLock.IsSet) {
                 // Still building, try again later
                 ScheduleIdleTimeRebuild();
                 return;
             }
 
-            var lockToken = await _buildIndexLock.ResetAsync();
-            await BuildIndexAsync(lockToken);
+            var lockToken = await _buildIndexLock.ResetAsync(ct);
+            await BuildIndexAsync(lockToken, ct);
         }
 
         /// <summary>
@@ -323,7 +329,7 @@ namespace Microsoft.R.Editor.Functions {
             // If update is pending, cancel it.
             CancelPendingIndexUpdate();
             var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeoutCts.CancelAfter(5000);
+            timeoutCts.CancelAfter(Debugger.IsAttached? 50000 : 5000);
             return _host.StopSessionAsync(timeoutCts.Token);
         }
 

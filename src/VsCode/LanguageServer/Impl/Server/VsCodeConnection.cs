@@ -103,7 +103,7 @@ namespace Microsoft.R.LanguageServer.Server {
             StreamWriter logWriter = null;
             if (debugMode) {
                 var tempPath = Path.GetTempPath();
-                var fileName = "messages-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".log";
+                var fileName = "VSCode_R_JsonRPC-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".log";
                 logWriter = File.CreateText(Path.Combine(tempPath, fileName));
                 logWriter.AutoFlush = true;
             }

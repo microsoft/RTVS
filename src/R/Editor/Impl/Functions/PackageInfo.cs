@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -75,21 +76,24 @@ namespace Microsoft.R.Editor.Functions {
         }
         #endregion
 
-        public async Task LoadFunctionsIndexAsync() {
-            var functions = await GetFunctionNamesAsync();
+        public async Task LoadFunctionsIndexAsync(CancellationToken ct) {
+            var functions = await GetFunctionNamesAsync(ct);
             foreach (var function in functions) {
+                if(ct.IsCancellationRequested) {
+                    break;
+                }
                 _functions.Add(new FunctionInfo(function));
             }
         }
 
-        private async Task<IEnumerable<IPersistentFunctionInfo>> GetFunctionNamesAsync() {
+        private async Task<IEnumerable<IPersistentFunctionInfo>> GetFunctionNamesAsync(CancellationToken ct) {
             var functions = TryRestoreFromCache();
             if (functions == null || !functions.Any()) {
                 try {
-                    var result = await _host.Session.PackageExportedFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
+                    var result = await _host.Session.PackageExportedFunctionsNamesAsync(Name, REvaluationKind.BaseEnv, ct);
                     var exportedFunctions = new HashSet<string>(result.Children<JValue>().Select(v => (string)v.Value));
 
-                    result = await _host.Session.PackageAllFunctionsNamesAsync(Name, REvaluationKind.BaseEnv);
+                    result = await _host.Session.PackageAllFunctionsNamesAsync(Name, REvaluationKind.BaseEnv, ct);
                     var allFunctions = result.Children<JValue>().Select(v => (string)v.Value);
 
                     functions = allFunctions.Select(x => new PersistentFunctionInfo(x, !exportedFunctions.Contains(x)));

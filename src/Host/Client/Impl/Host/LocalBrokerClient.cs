@@ -88,7 +88,7 @@ namespace Microsoft.R.Host.Client.Host {
             IProcess process = null;
             try {
                 var pipeName = Guid.NewGuid().ToString();
-                var cts = new CancellationTokenSource(100000);
+                var cts = new CancellationTokenSource(Debugger.IsAttached ? 500000 : 100000);
 
                 using (var processConnectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token))
                 using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous)) {
