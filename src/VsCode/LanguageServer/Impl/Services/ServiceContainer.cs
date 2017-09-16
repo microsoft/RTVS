@@ -17,6 +17,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor;
+using Microsoft.R.Host.Client;
 using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Settings;
@@ -43,6 +44,7 @@ namespace Microsoft.R.LanguageServer.Services {
                 .AddService<IREditorSettings, REditorSettings>()
                 .AddService(new IdleTimeService(_services))
                 .AddService<IDocumentCollection, DocumentCollection>()
+                .AddService<IWebSocketClientService, WebSocketClientService>()
                 .AddEditorServices();
 
             AddPlatformSpecificServices();

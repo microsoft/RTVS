@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
@@ -68,14 +69,20 @@ namespace Microsoft.R.Editor.Functions {
         /// </summary>
         /// <param name="packageIndex">Package index, if available. If not available, 
         /// index builder will attempt to obtain it from the service container</param>
-        public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
+        public async Task BuildIndexAsync(IPackageIndex packageIndex = null, CancellationToken ct = default(CancellationToken)) {
             packageIndex = packageIndex ?? Services.GetService<IPackageIndex>();
-            var lockToken = await _buildIndexLock.WaitAsync();
+            var lockToken = await _buildIndexLock.WaitAsync(ct);
             try {
                 if (!lockToken.IsSet) {
                     // First populate index for popular packages that are commonly preloaded
                     foreach (var pi in packageIndex.Packages) {
+                        if (ct.IsCancellationRequested) {
+                            break;
+                        }
                         foreach (var f in pi.Functions) {
+                            if (ct.IsCancellationRequested) {
+                                break;
+                            }
                             RegisterFunction(f.Name, pi.Name, f.IsInternal);
                         }
                     }

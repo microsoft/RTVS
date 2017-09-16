@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         }
 
         public override async Task HandleRequestAsync(HttpListenerContext context, CancellationToken ct) {
-            UriBuilder ub = new UriBuilder() {
+            UriBuilder ub = new UriBuilder {
                 Scheme = "file",
                 Host = "",
                 Path = context.Request.Url.AbsolutePath
