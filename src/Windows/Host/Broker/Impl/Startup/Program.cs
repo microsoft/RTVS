@@ -10,10 +10,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.R.Host.Broker.Logging;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
         public static void Main(string[] args) {
+            while (!Debugger.IsAttached) {
+                Thread.Sleep(1000);
+            }
+
             var configuration = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .Build();

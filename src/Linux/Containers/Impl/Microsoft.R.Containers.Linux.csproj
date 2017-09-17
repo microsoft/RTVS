@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <OutputType>Dll</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFrameworks>netcoreapp1.1;netstandard1.6</TargetFrameworks>
     <AssemblyName>Microsoft.R.Containers</AssemblyName>
     <OutputType>Library</OutputType>
   </PropertyGroup>

@@ -12,7 +12,6 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private string _username;
         private string _password;
         private string _version;
-        private string _folder;
         private bool _isNameValid;
         private bool _isUsernameValid;
         private bool _isPasswordValid;

@@ -3,7 +3,7 @@
         "Libuv": "1.10.0",
         "MicroBuild.Core": "0.2.0",
         "Microsoft.AspNetCore.Authentication": "1.1.1",
-        "Microsoft.AspNetCore.Mvc": "1.1.2",
+        "Microsoft.AspNetCore.Mvc": "1.1.1",
         "Microsoft.AspNetCore.Server.Kestrel": "1.1.1",
         "Microsoft.AspNetCore.Server.Kestrel.Https": "1.1.1",
         "Microsoft.AspNetCore.Server.WebListener": "1.1.1",
