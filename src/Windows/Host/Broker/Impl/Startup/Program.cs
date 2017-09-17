@@ -16,9 +16,9 @@ using System.Threading;
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
         public static void Main(string[] args) {
-            while (!Debugger.IsAttached) {
-                Thread.Sleep(1000);
-            }
+            //while (!Debugger.IsAttached) {
+            //    Thread.Sleep(1000);
+            //}
 
             var configuration = new ConfigurationBuilder()
                 .AddCommandLine(args)
