@@ -6,7 +6,6 @@ using Microsoft.Common.Core.Services;
 namespace Microsoft.R.Host.Client {
     public static class ServicesExtensions {
         public static IServiceManager AddWindowsHostClientServices(this IServiceManager serviceManager) => serviceManager
-            .AddService<IRemotingWebServer, RemotingWebServer>()
-            .AddService<IWebSocketClientService, WebSocketClientService>();
+            .AddService<IRemotingWebServer, RemotingWebServer>();
     }
 }

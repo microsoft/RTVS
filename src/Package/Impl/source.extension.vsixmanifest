@@ -20,26 +20,6 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" />
   </Dependencies>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Newtonsoft.Json.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Broker.Windows.exe" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Broker.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Protocol.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Client.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Interpreters.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Interpreters.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Common.Core.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Common.Core.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Editor.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Components.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Debugger.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Common.Wpf.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Wpf.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Data.ConnectionUI.Dialog.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.Windows.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.Windows.dll" />

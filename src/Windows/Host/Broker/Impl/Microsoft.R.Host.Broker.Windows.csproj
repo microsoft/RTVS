@@ -97,6 +97,10 @@
       <Project>{eb1aadf1-ed85-4cec-a7ff-82602270da10}</Project>
       <Name>Microsoft.R.Host.Broker</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>

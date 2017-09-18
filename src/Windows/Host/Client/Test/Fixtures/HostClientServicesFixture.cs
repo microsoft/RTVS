@@ -11,6 +11,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
+                .AddHostClientServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsPlatformServices();
         }

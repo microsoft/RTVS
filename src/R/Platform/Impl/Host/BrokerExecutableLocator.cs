@@ -23,7 +23,10 @@ namespace Microsoft.R.Platform.Host {
         public string GetBrokerExecutablePath() {
             var platformName = GetPlatformName();
             var brokerBinaryName = RHostBrokerBaseName + "." + platformName + GetExecutableExtension();
-            return Path.Combine(_baseDirectory, @"Broker\", platformName, brokerBinaryName);
+            if (_fs.DirectoryExists(Path.Combine(_baseDirectory, @"Broker\"))) {
+                 return Path.Combine(_baseDirectory, @"Broker\", platformName, brokerBinaryName);
+            }
+            return Path.Combine(_baseDirectory, brokerBinaryName);
         }
 
         public string GetHostExecutablePath() {
@@ -32,8 +35,14 @@ namespace Microsoft.R.Platform.Host {
             //
             // When called from broker it is
             //      ../../Host/Platform/*.exe
-            if (_fs.DirectoryExists("Host")) {
-                return Path.Combine(_baseDirectory, "Host" + Path.DirectorySeparatorChar, GetPlatformName(), RHostExe);
+            var hostPath = Path.Combine(_baseDirectory, RHostExe);
+            if (_fs.FileExists(hostPath)) {
+                return Path.Combine(_baseDirectory, RHostExe);
+            }
+
+            var hostDirectory = Path.Combine(_baseDirectory, "Host" + Path.DirectorySeparatorChar);
+            if (_fs.DirectoryExists(hostDirectory)) {
+                return Path.Combine(_baseDirectory, hostDirectory, GetPlatformName(), RHostExe);
             }
 
             var relativePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Host{Path.DirectorySeparatorChar}";

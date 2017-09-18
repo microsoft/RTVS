@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.Logging;

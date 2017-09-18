@@ -43,6 +43,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
+                .AddHostClientServices()
                 .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

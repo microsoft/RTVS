@@ -37,7 +37,7 @@
     "Microsoft.Win32.Primitives": "4.3.0",
     "System.IO.Compression": "4.3.0",
     "System.IO.Compression.ZipFile": "4.3.0",
-    "System.Net.Http.WinHttpHandler": "4.3.0",
+    "System.Net.Http.WinHttpHandler": "4.4.0",
     "System.Threading.Tasks.Dataflow": "4.5.24",
     "System.ValueTuple": "4.3.0",
     "VSSDK.DTE.8": "8.0.4"

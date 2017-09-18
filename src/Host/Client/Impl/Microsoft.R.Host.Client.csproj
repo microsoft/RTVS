@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets.Protocol" Version="0.1.0" />
-    <PackageReference Include="System.Net.Http.WinHttpHandler" Version="4.3.0" />
+    <PackageReference Include="System.Net.Http.WinHttpHandler" Version="4.4.0" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
     <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.0" />
