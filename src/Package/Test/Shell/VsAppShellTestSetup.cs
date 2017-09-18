@@ -71,7 +71,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
-                .AddHostClientServices()
                 .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

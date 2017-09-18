@@ -1122,12 +1122,6 @@
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Host\Process\src\Microsoft.R.Host.vcxproj">
-      <SetPlatform>Platform=x64</SetPlatform>
-      <Project>{131842ce-daf9-4c0e-8409-4a26ef7961a7}</Project>
-      <Name>Microsoft.R.Host</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -1578,6 +1572,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Net.Http.Server.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Win32.Registry.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Win32.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.DotNet.PlatformAbstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Buffers.dll" />
@@ -1624,18 +1619,10 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\libuv.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.exe">
-        <VSIXSubPath>Host\Windows</VSIXSubPath>
-      </VSIXSourceItem>
-      <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll">
-        <VSIXSubPath>Host\Windows</VSIXSubPath>
-      </VSIXSourceItem>
-      <VSIXSourceItem Include="$(OutputPath)\zlib1.dll">
-        <VSIXSubPath>Host\Windows</VSIXSubPath>
-      </VSIXSourceItem>
-      <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll">
-        <VSIXSubPath>Host\Windows</VSIXSubPath>
-      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\Microsoft.R.Host.exe" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libzip-5.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\zlib1.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
       <VSIXSourceItem Include="$(OutputPath)\Templates\ProjectTemplates\EmptyProject\*.*">
         <VSIXSubPath>ProjectTemplates\EmptyProject</VSIXSubPath>

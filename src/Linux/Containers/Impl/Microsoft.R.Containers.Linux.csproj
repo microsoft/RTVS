@@ -1,8 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
     <OutputType>Dll</OutputType>
-    <TargetFrameworks>netcoreapp1.1</TargetFrameworks>
-    <AssemblyName>Microsoft.R.Containers</AssemblyName>
+    <TargetFrameworks>netcoreapp1.1;netstandard1.6</TargetFrameworks>
+    <AssemblyName>Microsoft.R.Containers.Linux</AssemblyName>
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.NetCore.props" />

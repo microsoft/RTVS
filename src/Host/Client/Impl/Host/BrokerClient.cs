@@ -19,6 +19,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Host.Client.BrokerServices;
+using Microsoft.R.Host.Client.Transports;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
@@ -172,26 +173,16 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             using (Log.Measure(LogVerbosity.Normal, Invariant($"Connect to broker session \"{name}\""))) {
-                var wsClientFactory = _services.GetService<IWebSocketClientService>();
-                var wsClient = wsClientFactory.Create(new List<string> { "Microsoft.R.Host" });
-                wsClient.KeepAliveInterval = HeartbeatTimeout;
-                wsClient.InspectResponse = response => {
-                    if (response.StatusCode == HttpStatusCode.Forbidden) {
-                        throw new UnauthorizedAccessException();
-                    }
-                };
-
                 var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
                     Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
                     Path = $"sessions/{name}/pipe"
                 }.Uri;
 
+                var wsClient = new WebSocketClient(pipeUri, new List<string> { "Microsoft.R.Host" }, HeartbeatTimeout, HttpClientHandler.ServerCredentials);
                 while (true) {
-                    var request = wsClient.CreateRequest(pipeUri, HttpClientHandler.ServerCredentials);
-
                     using (await _credentials.LockCredentialsAsync(cancellationToken)) {
                         try {
-                            return await wsClient.ConnectAsync(request, cancellationToken);
+                            return await wsClient.ConnectAsync(cancellationToken);
                         } catch (UnauthorizedAccessException) {
                             _credentials.InvalidateCredentials();
                         } catch (Exception ex) when (ex is InvalidOperationException) {

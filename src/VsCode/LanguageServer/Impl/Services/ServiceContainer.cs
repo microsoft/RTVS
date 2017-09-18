@@ -44,7 +44,6 @@ namespace Microsoft.R.LanguageServer.Services {
                 .AddService<IREditorSettings, REditorSettings>()
                 .AddService(new IdleTimeService(_services))
                 .AddService<IDocumentCollection, DocumentCollection>()
-                .AddService<IWebSocketClientService, WebSocketClientService>()
                 .AddEditorServices();
 
             AddPlatformSpecificServices();
