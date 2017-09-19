@@ -32,6 +32,13 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
             }
         }
 
+        private void PasswordBoxNewDocker_OnPasswordChanged(object sender, RoutedEventArgs e) {
+            var newLocalDocker = ViewModel.NewLocalDocker;
+            if (newLocalDocker != null) {
+                newLocalDocker.Password = ((PasswordBox) e.OriginalSource).SecurePassword;
+            }
+        }
+
         private void ButtonCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CreateLocalDockerAsync().DoNotWait();
 
         private void ButtonCancelCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CancelCreateLocalDocker();

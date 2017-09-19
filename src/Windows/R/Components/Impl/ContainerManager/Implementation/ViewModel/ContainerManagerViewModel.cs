@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Common.Wpf.Controls;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.View;
 using Microsoft.R.Containers;
@@ -24,6 +25,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private static readonly string LastLocalDockerCredentials = $"RTVSInternal:{nameof(LastLocalDockerCredentials)}";
         private readonly IServiceContainer _services;
         private readonly IContainerManager _containers;
+        private readonly IConnectionManager _connections;
         private readonly BatchObservableCollection<ContainerViewModel> _localContainers;
         private readonly DisposableBag _disposable;
         private readonly IMainThread _mainThread;
@@ -57,6 +59,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             _ui = services.UI();
             _security = services.Security();
             _containers = services.GetService<IContainerManager>();
+            _connections = services.GetService<IConnectionManager>();
             _localContainers = new BatchObservableCollection<ContainerViewModel>();
             LocalContainers = new ReadOnlyObservableCollection<ContainerViewModel>(_localContainers);
 
@@ -73,10 +76,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public void ShowCreateLocalDocker() {
             _mainThread.Assert();
             var (username, password) = _security.ReadUserCredentials(LastLocalDockerCredentials);
-            NewLocalDocker = new CreateLocalDockerViewModel {
-                Username = username,
-                Password = password
-            };
+            NewLocalDocker = new CreateLocalDockerViewModel(username, password);
         }
 
         public async Task CreateLocalDockerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
@@ -92,7 +92,9 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 _ui.ShowMessage(Resources.ContainerManager_CreateLocalDocker_CreationError, MessageButtons.OK, MessageType.Error);
                 return;
             }
-            
+
+            NewLocalDocker = null;
+
             var securePassword = password;
             _security.SaveUserCredentials(BrokerConnectionInfo.GetCredentialAuthority(name), username, securePassword, true);
             _security.SaveUserCredentials(LastLocalDockerCredentials, username, securePassword, true);
@@ -101,10 +103,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 await _containers.StartAsync(container.Id, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_StartError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
-                return;
             }
-
-            NewLocalDocker = null;
         }
          
         public void CancelCreateLocalDocker() {
@@ -139,6 +138,23 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public async Task DeleteAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
             if (container == null) {
                 return;
+            }
+
+            if (container.IsRunning) {
+                var activeConnection = _connections.ActiveConnection;
+                var message = activeConnection != null && container.HostPorts.Contains(activeConnection.Uri.Port)
+                    ? Resources.ContainerManager_DeleteActiveWarning_Format.FormatInvariant(container.Name)
+                    : Resources.ContainerManager_DeleteWarning_Format.FormatInvariant(container.Name);
+
+                if (_ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
+                    return;
+                }
+
+                try {
+                    await _containers.StopAsync(container.Id, cancellationToken);
+                } catch (ContainerException) {
+                    _ui.ShowMessage(Resources.ContainerManager_StopError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+                }
             }
 
             try {

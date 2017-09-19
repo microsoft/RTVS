@@ -8,16 +8,23 @@ using Microsoft.R.Common.Wpf.Controls;
 namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
     internal sealed class CreateLocalDockerViewModel : BindableBase {
         private static readonly Regex NameRegex = new Regex("^[a-zA-Z0-9][a-zA-Z0-9_-]+$", RegexOptions.Compiled);
+        private static readonly string ExistingPasswordWatermark = new string('●', 8);
 
         private string _name;
         private string _username;
         private SecureString _password;
+        private string _passwordWatermark;
         private string _version;
-        private string _folder;
         private bool _isNameValid;
         private bool _isUsernameValid;
         private bool _isPasswordValid;
         private bool _isValid;
+
+        public CreateLocalDockerViewModel(string username, SecureString password) {
+            Username = username;
+            Password = password;
+            _passwordWatermark = IsPasswordValid ? ExistingPasswordWatermark : Resources.ContainerManager_CreateLocalDocker_Password;
+        }
 
         public string Name {
             get => _name;
@@ -54,9 +61,15 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             set {
                 if (SetProperty(ref _password, value)) {
                     IsPasswordValid = value != null && value.Length > 0;
+                    PasswordWatermark = Resources.ContainerManager_CreateLocalDocker_Password;
                     UpdateIsValid();
                 }
             }
+        }
+
+        public string PasswordWatermark {
+            get => _passwordWatermark;
+            private set => SetProperty(ref _passwordWatermark, value);
         }
 
         public bool IsPasswordValid {

@@ -90,11 +90,14 @@ RUN echo ""{username}:{password}"" | chpasswd
 
 EXPOSE 5444";                
 
-            var guid = Guid.NewGuid().ToString();
+            var guid = dockerImageContent.ToGuid().ToString();
             var folder = Path.Combine(Path.GetTempPath(), guid);
             var filePath = Path.Combine(folder, "Dockerfile");
-            _fileSystem.CreateDirectory(folder);
-            _fileSystem.WriteAllText(filePath, dockerImageContent);
+
+            if (!_fileSystem.DirectoryExists(folder)) {
+                _fileSystem.CreateDirectory(folder);
+                _fileSystem.WriteAllText(filePath, dockerImageContent);
+            }
 
             try {
                 return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name), cancellationToken);

@@ -766,11 +766,31 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version of R that matches Docker image tag..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new docker container.
         /// </summary>
         public static string ContainerManager_CreateTooltip {
             get {
                 return ResourceManager.GetString("ContainerManager_CreateTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re currently connected to R which is hosted on container &apos;{0}&apos;.
+        ///If you delete this container, current connection will be terminated.
+        ///All data will be lost. Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteActiveWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteActiveWarning_Format", resourceCulture);
             }
         }
         
@@ -789,6 +809,26 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_DeleteTooltip_Format {
             get {
                 return ResourceManager.GetString("ContainerManager_DeleteTooltip_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Container &apos;{0}&apos; is currently running.
+        ///It has to be stopped before deleting.
+        ///Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteWarning_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Docker Containers.
+        /// </summary>
+        public static string ContainerManager_LocalDocker {
+            get {
+                return ResourceManager.GetString("ContainerManager_LocalDocker", resourceCulture);
             }
         }
         

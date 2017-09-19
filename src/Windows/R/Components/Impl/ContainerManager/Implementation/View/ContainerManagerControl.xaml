@@ -137,20 +137,17 @@
                     <imaging:CrispImage Grid.Row="2" Grid.Column="0" Style="{StaticResource ValidityIndicatorStyle}"
                                         cwpf:AttachedProperties.IsValid="{Binding Path=IsPasswordValid}"/>
 
-                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBoxSingleLineStyle}"
-                             Text="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Password}"
-                             ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Version}"
-                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Version}" />
-
-                    <!--<PasswordBox Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBoxSingleLineStyle}"
-                                 SecurePassword="{Binding Path=Password, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />-->
+                    <PasswordBox x:Name="PasswordBoxNewDocker" Grid.Row="2" Grid.Column="1" Style="{StaticResource TextBoxSingleLineStyle}"
+                                 rcontrols:Watermark.PasswordBoxHint="{Binding Path=PasswordWatermark}"
+                                 ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Password}"
+                                 AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Password}"
+                                 PasswordChanged="PasswordBoxNewDocker_OnPasswordChanged"/>
 
                     <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource TextBoxSingleLineStyle}" 
                              Text="{Binding Path=Version, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Version}"
-                             ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Version}"
-                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Version}" />
+                             ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_VersionTooltip}"
+                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_VersionTooltip}" />
 
                     <WrapPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
                         <Button Margin="-1,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
@@ -172,14 +169,14 @@
 
             <Style x:Key="ExpandCollapseButtonLocalDockerStyle" TargetType="{x:Type controls:ExpandCollapseButton}" BasedOn="{StaticResource ExpandCollapseButtonStyle}">
                 <Setter Property="IsExpanded" Value="True" />
-                <Setter Property="Content" Value="{x:Static components:Resources.ConnectionManager_LocalConnections}" />
+                <Setter Property="Content" Value="{x:Static components:Resources.ContainerManager_LocalDocker}" />
                 <Setter Property="Visibility" Value="{Binding Path=HasLocalConnections, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}" />
                 <Setter Property="ToolTip">
                     <Setter.Value>
-                        <TextBlock Text="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+                        <TextBlock Text="{x:Static components:Resources.ContainerManager_LocalDocker}" />
                     </Setter.Value>
                 </Setter>
-                <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ConnectionManager_LocalConnections_Tooltip}" />
+                <Setter Property="AutomationProperties.Name" Value="{x:Static components:Resources.ContainerManager_LocalDocker}" />
             </Style>
 
             <Style x:Key="ContainersListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
@@ -209,18 +206,23 @@
             </Style>
             
             <Style x:Key="WatermarkTextBlock" TargetType="TextBlock" >
-                
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}" />
+                <Setter Property="TextAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid x:Name="Root">
-        <TextBlock Visibility="{Binding Path=, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
-                   Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
-                   Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
-                   TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   TextWrapping="Wrap" Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotInstalled}" />
+    <Grid>
+        <TextBlock Style="{StaticResource WatermarkTextBlock}" Visibility="{Binding Path=ContainerServiceIsNotInstalled, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
+                   Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotInstalled}" />
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <TextBlock Style="{StaticResource WatermarkTextBlock}" Visibility="{Binding Path=ContainerServiceIsNotRunning, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
+                   Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotRunning}" />
+
+        <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250" >
                 <DockPanel.MaxWidth>
                     <MultiBinding Converter="{x:Static rwpf:Converters.Max}">
@@ -233,13 +235,13 @@
                 <controls:ExpandCollapseButton x:Name="ToggleButtonLocalDocker" Style="{StaticResource ExpandCollapseButtonLocalDockerStyle}" DockPanel.Dock="Top" />
 
                 <!-- Add local docker containers -->
-                <Button x:Name="ToggleButtonAddLocalDocker" DockPanel.Dock="Top" Style="{StaticResource HyperlinkDownArrowButton}" Margin="17,4,6,0"
+                <Button x:Name="ToggleButtonAddLocalDocker" DockPanel.Dock="Top" Style="{StaticResource HyperlinkDownArrowButton}" Margin="17,4,6,4"
                         Visibility="{Binding ElementName=ToggleButtonLocalDocker, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"
                         IsEnabled="{Binding Path=NewLocalDocker, Converter={x:Static rwpf:Converters.NullIsTrue}}"
                         Content="{x:Static components:Resources.ContainerManager_CreateLocalDocker}" AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker}"
                         Click="ButtonAdd_Click" />
 
-                <Border DockPanel.Dock="Top" Margin="16,8,6,8">
+                <Border DockPanel.Dock="Top" Margin="16,4,6,8" Padding="0,0,0,4" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ControlKey}}">
                     <Border.Visibility>
                         <MultiBinding Converter="{x:Static rwpf:Converters.AllIsNotCollapsed}">
                             <Binding ElementName="ToggleButtonLocalDocker" Path="IsExpanded"/>

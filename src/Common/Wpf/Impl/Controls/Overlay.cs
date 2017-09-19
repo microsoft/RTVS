@@ -54,8 +54,7 @@ namespace Microsoft.Common.Wpf.Controls {
         }
 
         private static void FrameworkElement_Loaded(object sender, RoutedEventArgs e) {
-            var frameworkElement = e.OriginalSource as FrameworkElement;
-            if (frameworkElement == null) {
+            if (!(e.OriginalSource is FrameworkElement frameworkElement)) {
                 return;
             }
 
