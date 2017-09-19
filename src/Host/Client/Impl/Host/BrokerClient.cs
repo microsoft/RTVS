@@ -185,7 +185,7 @@ namespace Microsoft.R.Host.Client.Host {
                             return await wsClient.ConnectAsync(cancellationToken);
                         } catch (UnauthorizedAccessException) {
                             _credentials.InvalidateCredentials();
-                        } catch (Exception ex) when (ex is InvalidOperationException) {
+                        } catch (Exception ex) when (ex is InvalidOperationException || ex is WebSocketException) {
                             throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
                         }
                     }

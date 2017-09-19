@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Microsoft.UnitTests.Core {
+namespace Microsoft.UnitTests.Core.Windows {
     internal static unsafe class NativeMethods {
         [DllImport("ws2_32.dll", SetLastError = true)]
         public static extern ushort ntohs(ushort v);

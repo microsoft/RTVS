@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
-using static Microsoft.UnitTests.Core.NativeMethods;
+using static Microsoft.UnitTests.Core.Windows.NativeMethods;
 
 namespace Microsoft.UnitTests.Core {
     public static class ProcessUtils {

@@ -14,9 +14,11 @@ namespace Microsoft.R.LanguageServer.Server {
         private const string TriggerCharacters = "`:$@_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         [JsonRpcMethod(AllowExtensionData = true)]
-        public InitializeResult Initialize(int processId, Uri rootPath,
+        public InitializeResult Initialize(
+            int processId, 
             ClientCapabilities capabilities,
-            JToken initializationOptions = null, 
+            JToken initializationOptions = null,
+            Uri rootUri = null,
             string trace = null) {
             return new InitializeResult(new ServerCapabilities {
                 HoverProvider = true,
