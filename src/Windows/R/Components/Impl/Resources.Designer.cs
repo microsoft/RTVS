@@ -241,7 +241,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Add Connection.
         /// </summary>
         public static string ConnectionManager_Add {
             get {
@@ -694,6 +694,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t installed.\nTo start working with containers, install Docker for Windows and restart VS..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t running.\nTo start working with containers, run Docker for Windows and restart VS..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string ContainerManager_CreateLocalDocker {
@@ -771,15 +789,6 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_DeleteTooltip_Format {
             get {
                 return ResourceManager.GetString("ContainerManager_DeleteTooltip_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Workspaces.
-        /// </summary>
-        public static string ContainerManager_ShowWorkspaces {
-            get {
-                return ResourceManager.GetString("ContainerManager_ShowWorkspaces", resourceCulture);
             }
         }
         

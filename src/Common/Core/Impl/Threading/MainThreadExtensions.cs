@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Threading {
     public static class MainThreadExtensions {
@@ -28,6 +29,16 @@ namespace Microsoft.Common.Core.Threading {
             } else {
                 mainThread.Post(action, cancellationToken);
             }
+        }
+
+        public static async Task SendAsync(this IMainThread mainThread, Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+            await mainThread.SwitchToAsync(cancellationToken);
+            action();
+        }
+
+        public static async Task<T> SendAsync<T>(this IMainThread mainThread, Func<T> action, CancellationToken cancellationToken = default(CancellationToken)) {
+            await mainThread.SwitchToAsync(cancellationToken);
+            return action();
         }
     }
 }

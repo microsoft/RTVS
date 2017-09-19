@@ -364,7 +364,7 @@
     <value>R command line arguments</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Add Connection</value>
   </data>
   <data name="ConnectionManager_ShowContainers" xml:space="preserve">
     <value>Containers</value>
@@ -442,11 +442,14 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="ConnectionManager_RemoveConnectionConfirmation" xml:space="preserve">
     <value>Are you sure you want to remove the '{0}' connection?</value>
   </data>
+  <data name="ContainerManager_ContainerServiceIsNotInstalled" xml:space="preserve">
+    <value>Docker service isn't installed.\nTo start working with containers, install Docker for Windows and restart VS.</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceIsNotRunning" xml:space="preserve">
+    <value>Docker service isn't running.\nTo start working with containers, run Docker for Windows and restart VS.</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker" xml:space="preserve">
     <value>Create</value>
-  </data>
-  <data name="ContainerManager_ShowWorkspaces" xml:space="preserve">
-    <value>Workspaces</value>
   </data>
   <data name="ContainerManager_CreateLocalDocker_Name" xml:space="preserve">
     <value>Name</value>

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cwpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTime"
@@ -132,9 +133,9 @@
                     </Grid.ColumnDefinitions>
 
                     <imaging:CrispImage Grid.Row="0" Grid.Column="0" x:Name="NameValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}"
-                                        rwpf:AttachedProperties.IsValid="{Binding Path=IsNameValid}"/>
+                                        cwpf:AttachedProperties.IsValid="{Binding Path=IsNameValid}"/>
                     <imaging:CrispImage Grid.Row="1" Grid.Column="0" x:Name="PathValidityIndicator" Style="{StaticResource ValidityIndicatorStyle}"
-                                        rwpf:AttachedProperties.IsValid="{Binding Path=IsPathValid}"/>
+                                        cwpf:AttachedProperties.IsValid="{Binding Path=IsPathValid}"/>
 
                     <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource InputTextBoxStyle}"
                                 Text="{Binding Path=Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

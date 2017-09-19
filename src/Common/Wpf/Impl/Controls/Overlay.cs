@@ -29,8 +29,7 @@ namespace Microsoft.Common.Wpf.Controls {
                 return;
             }
 
-            var frameworkElement = obj as FrameworkElement;
-            if (frameworkElement == null) {
+            if (!(obj is FrameworkElement frameworkElement)) {
                 return;
             }
 

@@ -8,26 +8,30 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.Containers;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Containers;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
     internal sealed class ContainerManagerViewModel : BindableBase, IDisposable {
+        private static readonly string LastLocalDockerCredentials = $"RTVSInternal:{nameof(LastLocalDockerCredentials)}";
         private readonly IServiceContainer _services;
         private readonly IContainerManager _containers;
         private readonly BatchObservableCollection<ContainerViewModel> _localContainers;
         private readonly DisposableBag _disposable;
         private readonly IMainThread _mainThread;
         private readonly IUIService _ui;
-        private readonly IRSettings _settings;
+        private readonly ISecurityService _security;
         private CreateLocalDockerViewModel _newLocalDocker;
+        private bool _containerServiceIsNotInstalled;
+        private bool _containerServiceIsNotRunning;
 
         public ReadOnlyObservableCollection<ContainerViewModel> LocalContainers { get; }
 
@@ -36,12 +40,22 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             private set => SetProperty(ref _newLocalDocker, value);
         }
 
+        public bool ContainerServiceIsNotInstalled {
+            get => _containerServiceIsNotInstalled;
+            private set => SetProperty(ref _containerServiceIsNotInstalled, value);
+        }
+
+        public bool ContainerServiceIsNotRunning {
+            get => _containerServiceIsNotRunning;
+            private set => SetProperty(ref _containerServiceIsNotRunning, value);
+        }
+
         public ContainerManagerViewModel(IServiceContainer services) {
             _disposable = DisposableBag.Create<ContainerManagerViewModel>();
             _services = services;
             _mainThread = services.MainThread();
             _ui = services.UI();
-            _settings = services.GetService<IRSettings>();
+            _security = services.Security();
             _containers = services.GetService<IContainerManager>();
             _localContainers = new BatchObservableCollection<ContainerViewModel>();
             LocalContainers = new ReadOnlyObservableCollection<ContainerViewModel>(_localContainers);
@@ -58,25 +72,30 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
 
         public void ShowCreateLocalDocker() {
             _mainThread.Assert();
+            var (username, password) = _security.ReadUserCredentials(LastLocalDockerCredentials);
             NewLocalDocker = new CreateLocalDockerViewModel {
-                Username = _settings.LastLocalDockerUsername,
-                Password = _settings.LastLocalDockerPassword
+                Username = username,
+                Password = password
             };
         }
 
         public async Task CreateLocalDockerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             _mainThread.Assert();
 
+            var name = NewLocalDocker.Name;
+            var username = NewLocalDocker.Username;
+            var password = NewLocalDocker.Password;
             IContainer container;
             try {
-                container = await _containers.CreateLocalDockerAsync(NewLocalDocker.Name, NewLocalDocker.Username, NewLocalDocker.Password, NewLocalDocker.Version, cancellationToken);
+                container = await _containers.CreateLocalDockerAsync(name, username, password.ToUnsecureString(), NewLocalDocker.Version, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_CreateLocalDocker_CreationError, MessageButtons.OK, MessageType.Error);
                 return;
             }
-
-            _settings.LastLocalDockerUsername = NewLocalDocker.Username;
-            _settings.LastLocalDockerPassword = NewLocalDocker.Password;
+            
+            var securePassword = password;
+            _security.SaveUserCredentials(BrokerConnectionInfo.GetCredentialAuthority(name), username, securePassword, true);
+            _security.SaveUserCredentials(LastLocalDockerCredentials, username, securePassword, true);
 
             try {
                 await _containers.StartAsync(container.Id, cancellationToken);

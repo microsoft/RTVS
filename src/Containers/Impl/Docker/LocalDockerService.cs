@@ -25,7 +25,7 @@ namespace Microsoft.R.Containers.Docker {
         private readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
         private readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
         private readonly int _defaultTimeout = 500;
-        private IOutput _output;
+        private volatile IOutput _output;
 
         protected LocalDockerService(IServiceContainer services) {
             _ps = services.Process();

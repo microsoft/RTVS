@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Security;
 using System.Text.RegularExpressions;
 using Microsoft.R.Common.Wpf.Controls;
 
@@ -10,7 +11,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
 
         private string _name;
         private string _username;
-        private string _password;
+        private SecureString _password;
         private string _version;
         private string _folder;
         private bool _isNameValid;
@@ -48,11 +49,11 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             set => SetProperty(ref _isUsernameValid, value);
         }
 
-        public string Password {
+        public SecureString Password {
             get => _password;
             set {
                 if (SetProperty(ref _password, value)) {
-                    IsPasswordValid = !string.IsNullOrWhiteSpace(value);
+                    IsPasswordValid = value != null && value.Length > 0;
                     UpdateIsValid();
                 }
             }
