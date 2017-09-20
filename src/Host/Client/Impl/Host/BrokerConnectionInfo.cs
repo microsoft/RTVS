@@ -40,7 +40,7 @@ namespace Microsoft.R.Host.Client.Host {
                 Password = null
             };
             uri = ub.Uri;
-            var username = securityService.GetUserName(GetCredentialAuthority(name));
+            var (username, _) = securityService.ReadUserCredentials(GetCredentialAuthority(name));
             return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username, fetchHostLoad);
         }
 
@@ -57,9 +57,7 @@ namespace Microsoft.R.Host.Client.Host {
             FetchHostLoad = fetchHostLoad;
         }
 
-        private static string GetCredentialAuthority(string name) {
-            return $"RTVS:{name}";
-        }
+        public static string GetCredentialAuthority(string name) => $"RTVS:{name}";
 
         public override bool Equals(object obj) => obj is BrokerConnectionInfo && Equals((BrokerConnectionInfo)obj);
 

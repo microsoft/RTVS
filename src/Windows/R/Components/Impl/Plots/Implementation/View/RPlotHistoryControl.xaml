@@ -29,17 +29,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <TextBlock Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
-                   Background="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}"
-                   Foreground="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}"
-                   TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   TextWrapping="Wrap">
-            <Run Text="{x:Static components:Resources.PlotHistory_EmptyWatermark}" />
-            <LineBreak/>
-            <LineBreak/>
-            <Run Text="{x:Static components:Resources.Plot_EmptyWatermark}" />
-        </TextBlock>
-
         <ListView x:Name="HistoryListView"
                   Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.TrueIsHidden}}"
                   ItemsSource="{Binding Source={StaticResource plotsByDevice}}"

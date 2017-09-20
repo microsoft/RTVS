@@ -9,6 +9,7 @@
                     xmlns:controls="clr-namespace:Microsoft.Common.Wpf.Controls;assembly=Microsoft.R.Common.Wpf"
                     xmlns:rcontrols="clr-namespace:Microsoft.R.Wpf.Controls"
                     xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+                    xmlns:cwpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
                     mc:Ignorable="d">
     <!--Icons-->
     <PathGeometry FillRule="NonZero" x:Key="ArrowRigth10" Figures="M0,0 L5,5 L0,10 z" />
@@ -235,7 +236,7 @@
         <Setter Property="Margin" Value="0,0,4,0" />
         <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
         <Style.Triggers>
-            <Trigger Property="wpf:AttachedProperties.IsValid" Value="False">
+            <Trigger Property="cwpf:AttachedProperties.IsValid" Value="False">
                 <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>        
             </Trigger>
         </Style.Triggers>

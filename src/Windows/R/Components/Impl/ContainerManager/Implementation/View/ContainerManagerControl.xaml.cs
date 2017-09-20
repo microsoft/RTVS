@@ -20,8 +20,6 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) => ViewModel.ShowCreateLocalDocker();
 
-        private void ButtonShowWorkspaces_Click(object sender, RoutedEventArgs e) => ViewModel.ShowConnections();
-
         private void Container_PreviewKeyUp(object sender, KeyEventArgs keyEventArgs) {
             if (keyEventArgs.Key == Key.Delete && !(keyEventArgs.OriginalSource is TextBox)) {
                 ViewModel.DeleteAsync(GetContainer(keyEventArgs)).DoNotWait();
@@ -31,6 +29,13 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
         private void AddLocalDocker_PreviewKeyUp(object sender, KeyEventArgs keyEventArgs) {
             if (keyEventArgs.Key == Key.Escape) {
                 ViewModel.CancelCreateLocalDocker();
+            }
+        }
+
+        private void PasswordBoxNewDocker_OnPasswordChanged(object sender, RoutedEventArgs e) {
+            var newLocalDocker = ViewModel.NewLocalDocker;
+            if (newLocalDocker != null) {
+                newLocalDocker.Password = ((PasswordBox) e.OriginalSource).SecurePassword;
             }
         }
 

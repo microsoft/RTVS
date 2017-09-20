@@ -241,7 +241,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Add Connection.
         /// </summary>
         public static string ConnectionManager_Add {
             get {
@@ -694,6 +694,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t installed.\nTo start working with containers, install Docker for Windows and restart VS..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t running.\nTo start working with containers, run Docker for Windows and restart VS..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string ContainerManager_CreateLocalDocker {
@@ -748,11 +766,31 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Version of R that matches Docker image tag..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new docker container.
         /// </summary>
         public static string ContainerManager_CreateTooltip {
             get {
                 return ResourceManager.GetString("ContainerManager_CreateTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re currently connected to R which is hosted on container &apos;{0}&apos;.
+        ///If you delete this container, current connection will be terminated.
+        ///All data will be lost. Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteActiveWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteActiveWarning_Format", resourceCulture);
             }
         }
         
@@ -775,11 +813,22 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Workspaces.
+        ///   Looks up a localized string similar to Container &apos;{0}&apos; is currently running.
+        ///It has to be stopped before deleting.
+        ///Do you wish to proceed?.
         /// </summary>
-        public static string ContainerManager_ShowWorkspaces {
+        public static string ContainerManager_DeleteWarning_Format {
             get {
-                return ResourceManager.GetString("ContainerManager_ShowWorkspaces", resourceCulture);
+                return ResourceManager.GetString("ContainerManager_DeleteWarning_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Docker Containers.
+        /// </summary>
+        public static string ContainerManager_LocalDocker {
+            get {
+                return ResourceManager.GetString("ContainerManager_LocalDocker", resourceCulture);
             }
         }
         

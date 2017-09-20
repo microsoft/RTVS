@@ -25,7 +25,7 @@ namespace Microsoft.R.Containers.Docker {
         private readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
         private readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
         private readonly int _defaultTimeout = 500;
-        private IOutput _output;
+        private volatile IOutput _output;
 
         protected LocalDockerService(IServiceContainer services) {
             _ps = services.Process();
@@ -35,8 +35,11 @@ namespace Microsoft.R.Containers.Docker {
         public async Task<IContainer> CreateContainerFromFileAsync(BuildImageParameters buildParams, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
-            await BuildImageAsync(buildOptions, ct);
+            var images = await ListImagesAsync(true, ct);
+            if (!images.Any(i => i.Name.EqualsOrdinal(buildParams.Image) && i.Tag.EqualsOrdinal(buildParams.Tag))) {
+                var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} \"{Path.GetDirectoryName(buildParams.DockerfilePath)}\"";
+                await BuildImageAsync(buildOptions, ct);
+            }
 
             var createOptions = Invariant($"-p 5444:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
             var containerId = await CreateContainerAsync(createOptions, ct);
@@ -69,7 +72,7 @@ namespace Microsoft.R.Containers.Docker {
             var lines = output.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
             var arr = await InspectAsync(ids, ct);
-            return arr.Select(c => GetContainerImage(c));
+            return arr.Select(GetContainerImage);
         }
 
         private ContainerImage GetContainerImage(JToken c) {

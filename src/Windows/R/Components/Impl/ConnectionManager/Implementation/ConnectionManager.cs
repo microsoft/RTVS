@@ -322,15 +322,23 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void ContainersChanged() {
             var activeConnection = ActiveConnection;
-            foreach (var container in _containers.GetRunningContainers()) {
+            var updateActiveConnection = false;
+            foreach (var container in _containers.GetContainers()) {
                 if (container.IsRunning) {
                     _connections[container.Name] = Connection.Create(_securityService, container, string.Empty, false, _settings.ShowHostLoadMeter);
-                } else if (activeConnection == null || !container.Name.EqualsOrdinal(activeConnection.Name)) {
+                } else {
                     _connections.TryRemove(container.Name, out IConnection _);
+                    if (activeConnection != null && container.Name.EqualsOrdinal(activeConnection.Name)) {
+                        updateActiveConnection = true;
+                    }
                 }
             }
 
-            UpdateRecentConnections();
+            if (updateActiveConnection) {
+                UpdateActiveConnection();
+            } else {
+                UpdateRecentConnections();
+            }
         }
 
         private void UpdateActiveConnection(IConnection candidateConnection = null) {
