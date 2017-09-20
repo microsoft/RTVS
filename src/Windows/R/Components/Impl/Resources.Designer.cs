@@ -694,7 +694,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Docker service isn&apos;t installed.\nTo start working with containers, install Docker for Windows and restart VS..
+        ///   Looks up a localized string similar to Docker service isn&apos;t installed.
+        ///To start working with containers, install Docker for Windows and restart Visual Studio..
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotInstalled {
             get {
@@ -703,7 +704,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Docker service isn&apos;t running.\nTo start working with containers, run Docker for Windows and restart VS..
+        ///   Looks up a localized string similar to Docker service isn&apos;t running.
+        ///To start working with containers, run Docker for Windows and restart Visual Studio..
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotRunning {
             get {

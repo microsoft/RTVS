@@ -33,7 +33,8 @@ namespace Microsoft.R.Host.Client.Host {
 #else
             TimeSpan.FromSeconds(5);
 #endif
-        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+        private static readonly IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+            { typeof(IEnumerable<InterpreterInfo>), "interpreters"},
             { typeof(AboutHost), "info/about"},
             { typeof(HostLoad), "info/load"}
         };

@@ -443,10 +443,12 @@ If you want to delete all data on the remote machine you must delete your user p
     <value>Are you sure you want to remove the '{0}' connection?</value>
   </data>
   <data name="ContainerManager_ContainerServiceIsNotInstalled" xml:space="preserve">
-    <value>Docker service isn't installed.\nTo start working with containers, install Docker for Windows and restart VS.</value>
+    <value>Docker service isn't installed.
+To start working with containers, install Docker for Windows and restart Visual Studio.</value>
   </data>
   <data name="ContainerManager_ContainerServiceIsNotRunning" xml:space="preserve">
-    <value>Docker service isn't running.\nTo start working with containers, run Docker for Windows and restart VS.</value>
+    <value>Docker service isn't running.
+To start working with containers, run Docker for Windows and restart Visual Studio.</value>
   </data>
   <data name="ContainerManager_LocalDocker" xml:space="preserve">
     <value>Local Docker Containers</value>

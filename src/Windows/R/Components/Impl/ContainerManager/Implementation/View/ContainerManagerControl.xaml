@@ -223,6 +223,12 @@
                    Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotRunning}" />
 
         <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ScrollViewer.Visibility>
+                <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsCollapsed}">
+                    <Binding Path="ContainerServiceIsNotInstalled" />
+                    <Binding Path="ContainerServiceIsNotRunning" />
+                </MultiBinding>
+            </ScrollViewer.Visibility>
             <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250" >
                 <DockPanel.MaxWidth>
                     <MultiBinding Converter="{x:Static rwpf:Converters.Max}">

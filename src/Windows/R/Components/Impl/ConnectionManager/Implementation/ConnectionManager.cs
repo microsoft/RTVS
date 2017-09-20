@@ -322,23 +322,18 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
 
         private void ContainersChanged() {
             var activeConnection = ActiveConnection;
-            var updateActiveConnection = false;
             foreach (var container in _containers.GetContainers()) {
                 if (container.IsRunning) {
-                    _connections[container.Name] = Connection.Create(_securityService, container, string.Empty, false, _settings.ShowHostLoadMeter);
+                    _connections.GetOrAdd(container.Name, Connection.Create(_securityService, container, string.Empty, false, _settings.ShowHostLoadMeter));
                 } else {
                     _connections.TryRemove(container.Name, out IConnection _);
                     if (activeConnection != null && container.Name.EqualsOrdinal(activeConnection.Name)) {
-                        updateActiveConnection = true;
+                        _sessionProvider.RemoveBrokerAsync().DoNotWait();
                     }
                 }
             }
 
-            if (updateActiveConnection) {
-                UpdateActiveConnection();
-            } else {
-                UpdateRecentConnections();
-            }
+            UpdateRecentConnections();
         }
 
         private void UpdateActiveConnection(IConnection candidateConnection = null) {
@@ -348,7 +343,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
                     if (candidateConnection == ActiveConnection && candidateConnection.BrokerConnectionInfo == brokerConnectionInfo) {
                         return;
                     }
-                } else if (brokerConnectionInfo == (ActiveConnection?.BrokerConnectionInfo ?? default(BrokerConnectionInfo))) {
+                } else if (_sessionProvider.IsConnected && brokerConnectionInfo == (ActiveConnection?.BrokerConnectionInfo ?? default(BrokerConnectionInfo))) {
                     return;
                 }
 

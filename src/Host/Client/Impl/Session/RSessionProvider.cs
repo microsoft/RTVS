@@ -27,7 +27,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly IConsole _console;
         private readonly ITaskService _taskService;
 
-        private volatile bool _isConnected;
+        private int _isConnected;
 
         private int _sessionCounter;
         private Task _updateHostLoadLoopTask;
@@ -36,10 +36,10 @@ namespace Microsoft.R.Host.Client.Session {
         public bool HasBroker => _brokerProxy.HasBroker;
 
         public bool IsConnected {
-            get => _isConnected;
-            set {
-                if (_isConnected != value) {
-                    _isConnected = value;
+            get => _isConnected != 0;
+            private set {
+                var isConnected = value ? 1 : 0;
+                if (Interlocked.Exchange(ref _isConnected, isConnected) != isConnected) {
                     var args = new BrokerStateChangedEventArgs(value);
                     Task.Run(() => BrokerStateChanged?.Invoke(this, args)).DoNotWait();
                 }
@@ -207,7 +207,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                 // First switch broker proxy so that all new sessions are created for the new broker
                 var oldBroker = _brokerProxy.Set(brokerClient);
-                if (_updateHostLoadLoopTask == null && connectionInfo.FetchHostLoad) {
+                if (_updateHostLoadLoopTask == null) {
                     _updateHostLoadLoopTask = UpdateHostLoadLoopAsync();
                 }
 
@@ -363,7 +363,28 @@ namespace Microsoft.R.Host.Client.Session {
                 var ct = _disposeToken.CancellationToken;
 
                 await Task.Delay(2000, ct);
-                await UpdateHostLoadAsync(ct);
+                var broker = Broker;
+                if (broker == null) {
+                    continue;
+                }
+
+                var connectionInfo = broker.ConnectionInfo;
+                if (connectionInfo.FetchHostLoad) {
+                    await UpdateHostLoadAsync(ct);
+                } else {
+                    await CheckInterpretersAsync(ct);
+                }
+            }
+        }
+
+        private async Task CheckInterpretersAsync(CancellationToken ct = default(CancellationToken)) {
+            using (await _connectArwl.ReaderLockAsync(ct)) {
+                try {
+                    var interpreters = await Broker.GetHostInformationAsync<IEnumerable<InterpreterInfo>>(ct);
+                    IsConnected = interpreters != null && interpreters.Any();
+                } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
+                    IsConnected = false;
+                }
             }
         }
 
