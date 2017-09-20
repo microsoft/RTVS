@@ -71,27 +71,31 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- Name  -->
-                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,1,6,2" Text="{Binding Path=Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
+                        <!-- Docker icon -->
+                        <imaging:CrispImage Grid.Row="0" Grid.Column="0" Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.StructurePublic}" Margin="5,2,2,2" />
+
+                        <!-- Name -->
+                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,1,6,2" Text="{Binding Path=Name}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" />
 
                         <!-- Start button -->
-                        <Button x:Name="ButtonStart" Grid.Row="0" Grid.Column="1" Style="{StaticResource ButtonStartStyle}">
+                        <Button x:Name="ButtonStart" Grid.Row="0" Grid.Column="2" Style="{StaticResource ButtonStartStyle}">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Run}" Grayscale="{Binding Path=IsRunning}" />
                         </Button>
 
                         <!-- Stop button -->
-                        <Button x:Name="ButtonStop" Grid.Row="0" Grid.Column="2" Style="{StaticResource ButtonStopStyle}">
+                        <Button x:Name="ButtonStop" Grid.Row="0" Grid.Column="3" Style="{StaticResource ButtonStopStyle}">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Stop}" Grayscale="{Binding Path=IsRunning, Converter={x:Static rwpf:Converters.Not}}" />
                         </Button>
 
                         <!-- Delete button -->
-                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="3" Style="{StaticResource ButtonDeleteStyle}">
+                        <Button x:Name="ButtonDelete" Grid.Row="0" Grid.Column="4" Style="{StaticResource ButtonDeleteStyle}">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Cancel}" />
                         </Button>
                     </Grid>
@@ -206,8 +210,7 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="ContainersListBox" TargetType="{x:Type ListBox}"
-                   BasedOn="{StaticResource ToolWindowListBoxStyle}">
+            <Style x:Key="ContainersListBox" TargetType="{x:Type ListBox}" BasedOn="{StaticResource ToolWindowListBoxStyle}">
                 <Setter Property="ItemContainerStyle" Value="{StaticResource ContainersListBoxItemStyle}" />
             </Style>
 

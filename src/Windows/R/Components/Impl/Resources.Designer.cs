@@ -823,6 +823,17 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Container &apos;{0}&apos; is currently running.
+        ///It has to be stopped before deleting. All data will be lost.
+        ///Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteRunningWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteRunningWarning_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete container &apos;{0}&apos;.
         /// </summary>
         public static string ContainerManager_DeleteTooltip_Format {
@@ -832,9 +843,8 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Container &apos;{0}&apos; is currently running.
-        ///It has to be stopped before deleting.
-        ///Do you wish to proceed?.
+        ///   Looks up a localized string similar to You&apos;re going to delete container &apos;{0}&apos;.
+        ///All data will be lost. Do you wish to proceed?.
         /// </summary>
         public static string ContainerManager_DeleteWarning_Format {
             get {

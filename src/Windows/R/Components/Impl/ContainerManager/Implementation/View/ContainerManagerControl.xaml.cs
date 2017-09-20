@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,17 +9,33 @@ using System.Windows.Navigation;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContainerManager.Implementation.ViewModel;
+using Microsoft.R.Wpf;
+using Microsoft.R.Wpf.Themes;
 
 namespace Microsoft.R.Components.ContainerManager.Implementation.View {
     public partial class ContainerManagerControl {
         private readonly IServiceContainer _services;
+        private readonly IThemeUtilities _theme;
         private ContainerManagerViewModel ViewModel { get; }
 
         public ContainerManagerControl(IServiceContainer services) {
             InitializeComponent();
             _services = services;
+
+            _theme = services.GetService<IThemeUtilities>();
+            var ui = services.UI();
+            ui.UIThemeChanged += OnThemeChanged;
+            SetImageBackground();
+
             ViewModel = new ContainerManagerViewModel(services);
             DataContext = ViewModel;
+        }
+
+        private void OnThemeChanged(object sender, EventArgs e) => SetImageBackground();
+
+        private void SetImageBackground() {
+            _theme.SetImageBackgroundColor(this, Brushes.ToolWindowBackgroundColorKey);
+            _theme.SetThemeScrollBars(this);
         }
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) => ViewModel.ShowCreateLocalDocker();
