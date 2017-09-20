@@ -40,7 +40,9 @@ namespace Microsoft.R.Wpf.Controls {
             }
 
             textBlock.Text = newValue;
-            frameworkElement.ToolTip = newValue;
+            if (frameworkElement.ToolTip == null || string.Empty.Equals(frameworkElement.ToolTip)) {
+                frameworkElement.ToolTip = newValue;
+            }
         }
 
         private static TextBlock EnsureAdorner(FrameworkElement frameworkElement) {

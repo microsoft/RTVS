@@ -14,11 +14,9 @@ namespace Microsoft.R.Containers.Docker {
     public class WindowsDockerService : LocalDockerService, IContainerService {
         const string DockerServiceName = "Docker for Windows";
         private LocalDocker _docker;
-        private readonly IServiceContainer _services;
         private readonly WindowsLocalDockerFinder _dockerFinder;
 
         public WindowsDockerService(IServiceContainer services) : base(services) {
-            _services = services;
             _dockerFinder = new WindowsLocalDockerFinder(services);
         }
 
