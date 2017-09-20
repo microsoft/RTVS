@@ -3,7 +3,6 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
@@ -21,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _outputs = new ConcurrentDictionary<string, IOutput>();
         }
 
-        public IOutput Get(string name, CancellationToken cancellationToken) => _outputs.GetOrAdd(name, CreateOutput);
+        public IOutput Get(string name) => _outputs.GetOrAdd(name, CreateOutput);
 
         private IOutput CreateOutput(string name) {
             var guid = name.ToGuid();

@@ -155,7 +155,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 var activeConnection = _connections.ActiveConnection;
                 var message = activeConnection != null && container.HostPorts.Contains(activeConnection.Uri.Port)
                     ? Resources.ContainerManager_DeleteActiveWarning_Format.FormatInvariant(container.Name)
-                    : Resources.ContainerManager_DeleteWarning_Format.FormatInvariant(container.Name);
+                    : Resources.ContainerManager_DeleteRunningWarning_Format.FormatInvariant(container.Name);
 
                 if (_ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
                     return;
@@ -165,6 +165,11 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                     await _containers.StopAsync(container.Id, cancellationToken);
                 } catch (ContainerException) {
                     _ui.ShowMessage(Resources.ContainerManager_StopError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+                }
+            } else {
+                var message = Resources.ContainerManager_DeleteWarning_Format.FormatInvariant(container.Name);
+                if (_ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
+                    return;
                 }
             }
 

@@ -27,6 +27,8 @@ namespace Microsoft.R.Containers.Docker {
         private readonly int _defaultTimeout = 500;
         private volatile IOutput _output;
 
+        protected IOutput Output => _output ?? (_output = _outputService.Get(ContainerOutputName));
+
         protected LocalDockerService(IServiceContainer services) {
             _ps = services.Process();
             _outputService = services.GetService<IOutputService>();
@@ -169,9 +171,6 @@ namespace Microsoft.R.Containers.Docker {
 
         private async Task<string> ExecuteCommandAsync(string arguments, string outputPrefix, int timeoutms, bool failOnTimeout = true, CancellationToken ct = default(CancellationToken)) {
             var printOutput = outputPrefix != null;
-            if (_output == null && printOutput) {
-                _output = _outputService.Get(ContainerOutputName, ct);
-            }
 
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -192,21 +191,23 @@ namespace Microsoft.R.Containers.Docker {
                 while (!process.StandardOutput.EndOfStream) {
                     var line = await process.StandardOutput.ReadLineAsync();
                     if (printOutput) {
-                        _output.WriteLine(Invariant($"{outputPrefix}> {line}"));
+                        Output.WriteLine(Invariant($"{outputPrefix}> {line}"));
                     }
                     result.AppendLine(line);
                 }
 
                 await process.WaitForExitAsync(timeoutms, ct);
             } catch(IOException) {
-                _output.Write(Invariant($"{outputPrefix}> ERROR: {Resources.LocalDockerOutputStreamException}"));
+                if (printOutput) {
+                    Output.Write(Invariant($"{outputPrefix}> ERROR: {Resources.LocalDockerOutputStreamException}"));
+                }
                 throw new ContainerException(Resources.LocalDockerOutputStreamException);
             } catch(OperationCanceledException) when (!failOnTimeout && !ct.IsCancellationRequested){
             }
 
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error) && !IsSecurityWarning(error)) {
-                _output.Write(Invariant($"{outputPrefix}> ERROR: {error}"));
+                Output.Write(Invariant($"{outputPrefix}> ERROR: {error}"));
                 throw new ContainerException(error);
             }
              

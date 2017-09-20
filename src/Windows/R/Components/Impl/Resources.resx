@@ -508,10 +508,14 @@ To start working with containers, run Docker for Windows and restart Visual Stud
 If you delete this container, current connection will be terminated.
 All data will be lost. Do you wish to proceed?</value>
   </data>
-  <data name="ContainerManager_DeleteWarning_Format" xml:space="preserve">
+  <data name="ContainerManager_DeleteRunningWarning_Format" xml:space="preserve">
     <value>Container '{0}' is currently running.
-It has to be stopped before deleting.
+It has to be stopped before deleting. All data will be lost.
 Do you wish to proceed?</value>
+  </data>
+  <data name="ContainerManager_DeleteWarning_Format" xml:space="preserve">
+    <value>You're going to delete container '{0}'.
+All data will be lost. Do you wish to proceed?</value>
   </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
     <value>Are you sure you want to remove all plots from {0}?</value>
