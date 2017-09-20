@@ -23,7 +23,18 @@ namespace Microsoft.R.Components.Containers.Implementation {
         private ImmutableArray<IContainer> _containers;
         private ImmutableArray<IContainer> _runningContainers;
         private CancellationTokenSource _updateContainersCts;
+        private int _status;
         private event Action ContainersChanged;
+
+        public event EventHandler ContainersStatusChanged;
+        public ContainersStatus Status {
+            get => (ContainersStatus)_status;
+            private set {
+                if (Interlocked.Exchange(ref _status, (int) value) != (int) value) {
+                    ContainersStatusChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
 
         public ContainerManager(IRInteractiveWorkflow interactiveWorkflow) {
             _containerService = interactiveWorkflow.Services.GetService<IContainerService>();
@@ -32,6 +43,8 @@ namespace Microsoft.R.Components.Containers.Implementation {
             _containers = ImmutableArray<IContainer>.Empty;
             _runningContainers = ImmutableArray<IContainer>.Empty;
             _containersChangedCountdown = new CountdownDisposable(StartUpdatingContainers, EndUpdatingContainers);
+
+            Status = ContainersStatus.Running;
         }
 
         public IReadOnlyList<IContainer> GetContainers() => _containers;
@@ -127,8 +140,10 @@ EXPOSE 5444";
             } catch (OperationCanceledException) {
             } catch (ContainerServiceNotInstalledException) {
                 _containersChangedCountdown.Reset();
+                Status = ContainersStatus.NotInstalled;
             } catch (ContainerServiceNotRunningException) {
                 _containersChangedCountdown.Reset();
+                Status = ContainersStatus.Stopped;
             }
         }
 

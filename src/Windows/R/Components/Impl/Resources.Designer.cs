@@ -694,12 +694,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Docker service isn&apos;t installed.
-        ///To start working with containers, install Docker for Windows and restart Visual Studio..
+        ///   Looks up a localized string similar to Docker service isn&apos;t installed. To start working with containers,.
         /// </summary>
-        public static string ContainerManager_ContainerServiceIsNotInstalled {
+        public static string ContainerManager_ContainerServiceIsNotInstalled_FirstPart {
             get {
-                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled", resourceCulture);
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to install Docker for Windows.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to and restart Visual Studio..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_ThirdPart", resourceCulture);
             }
         }
         

@@ -9,6 +9,10 @@ using Microsoft.R.Containers;
 
 namespace Microsoft.R.Components.Containers {
     public interface IContainerManager : IDisposable {
+        event EventHandler ContainersStatusChanged;
+
+        ContainersStatus Status { get; }
+
         IReadOnlyList<IContainer> GetContainers();
         IReadOnlyList<IContainer> GetRunningContainers();
         IDisposable SubscribeOnChanges(Action containersChanged);

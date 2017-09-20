@@ -63,13 +63,24 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             _localContainers = new BatchObservableCollection<ContainerViewModel>();
             LocalContainers = new ReadOnlyObservableCollection<ContainerViewModel>(_localContainers);
 
-            _disposable.Add(_containers.SubscribeOnChanges(ContrainersChanged));
+            _disposable
+                .Add(_containers.SubscribeOnChanges(ContrainersChanged))
+                .Add(() => _containers.ContainersStatusChanged -= ContainersStatusChanged);
+
+            _containers.ContainersStatusChanged += ContainersStatusChanged;
 
             ContrainersChangedMainThread();
+            ContainersStatusChangedMainThread();
         }
 
         private void ContrainersChanged() => _mainThread.Post(ContrainersChangedMainThread);
         private void ContrainersChangedMainThread() => _localContainers.ReplaceWith(_containers.GetContainers().Select(c => new ContainerViewModel(c)));
+
+        private void ContainersStatusChanged(object sender, EventArgs eventArgs) => _mainThread.Post(ContainersStatusChangedMainThread);
+        private void ContainersStatusChangedMainThread() {
+            ContainerServiceIsNotInstalled = _containers.Status == ContainersStatus.NotInstalled;
+            ContainerServiceIsNotRunning = _containers.Status == ContainersStatus.Stopped;
+        }
 
         public void Dispose() => _disposable.TryDispose();
 

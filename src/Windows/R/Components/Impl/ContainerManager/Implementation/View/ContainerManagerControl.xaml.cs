@@ -4,16 +4,19 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.ContainerManager.Implementation.ViewModel;
 
 namespace Microsoft.R.Components.ContainerManager.Implementation.View {
     public partial class ContainerManagerControl {
+        private readonly IServiceContainer _services;
         private ContainerManagerViewModel ViewModel { get; }
 
         public ContainerManagerControl(IServiceContainer services) {
             InitializeComponent();
+            _services = services;
             ViewModel = new ContainerManagerViewModel(services);
             DataContext = ViewModel;
         }
@@ -48,6 +51,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
         private void ButtonStop_Click(object sender, RoutedEventArgs e) => ViewModel.StopAsync(GetContainer(e)).DoNotWait();
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) => ViewModel.DeleteAsync(GetContainer(e)).DoNotWait();
+
+        private void RepositoryUri_RequestNavigate(object sender, RequestNavigateEventArgs e) => _services.Process().Start(e.Uri.AbsoluteUri);
 
         private static ContainerViewModel GetContainer(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as ContainerViewModel;
     }
