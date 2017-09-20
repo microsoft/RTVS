@@ -31,13 +31,9 @@ namespace Microsoft.R.LanguageServer.Settings {
         public bool EvaluateActiveBindings { get; set; }
         public bool ShowDotPrefixedVariables { get; set; }
         public LogVerbosity LogVerbosity { get; set; }
-        public void LoadSettings() {
-            throw new NotImplementedException();
-        }
 
-        public Task SaveSettingsAsync() {
-            throw new NotImplementedException();
-        }
+        public void LoadSettings() { }
+        public Task SaveSettingsAsync() => Task.CompletedTask;
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; }
         public YesNoAsk SaveRDataOnProjectUnload { get; set; }

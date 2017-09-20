@@ -9,12 +9,13 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.VisualStudio.Telemetry;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry {
+    /// <inheritdoc />
     /// <summary>
     /// Implements telemetry recording in Visual Studio environment
     /// </summary>
     internal sealed class VsTelemetryRecorder : ITelemetryRecorder {
-        private TelemetrySession _session;
-        private static Lazy<VsTelemetryRecorder> _instance = Lazy.Create(() => new VsTelemetryRecorder());
+        private readonly TelemetrySession _session;
+        private static readonly Lazy<VsTelemetryRecorder> _instance = Lazy.Create(() => new VsTelemetryRecorder());
 
         private VsTelemetryRecorder() {
             _session = TelemetryService.DefaultSession;

@@ -2,11 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
-#define WAIT_FOR_DEBUGGER
+// #define WAIT_FOR_DEBUGGER
 
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using Microsoft.Common.Core;
 
 namespace Microsoft.R.LanguageServer.Server {
@@ -23,8 +21,8 @@ namespace Microsoft.R.LanguageServer.Server {
             var debugMode = args.Any(a => a.EqualsOrdinal("--debug"));
             if (debugMode) {
 #if WAIT_FOR_DEBUGGER
-                while (!Debugger.IsAttached) {
-                    Thread.Sleep(1000);
+                while (!System.Diagnostics.Debugger.IsAttached) {
+                    System.Threading.Thread.Sleep(1000);
                 }
 #endif
             }

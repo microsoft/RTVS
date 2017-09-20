@@ -22,7 +22,9 @@ namespace Microsoft.R.Host.Broker.Security {
         public async Task SignInAsync(BasicSignInContext context) {
             ClaimsPrincipal principal;
             if (context.IsSignInRequired()) {
-                principal = _options.Secret != null ? SignInUsingSecret(context) : await _authenticationService.SignInAsync(context.Username, context.Password, context.Options.AuthenticationScheme);
+                principal = _options.Secret != null 
+                    ? SignInUsingSecret(context) 
+                    : await _authenticationService.SignInAsync(context.Username, context.Password, context.Options.AuthenticationScheme);
             } else {
                 var claims = new[] { new Claim(ClaimTypes.Anonymous, "") };
                 var claimsIdentity = new ClaimsIdentity(claims, context.Options.AuthenticationScheme);

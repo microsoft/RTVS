@@ -60,8 +60,7 @@ namespace Microsoft.R.LanguageServer.Services {
             var thisAssembly = Assembly.GetEntryAssembly().GetAssemblyPath();
             var assemblyLoc = Path.GetDirectoryName(thisAssembly);
             var platformServicesAssemblyPath = Path.Combine(assemblyLoc, GetPlatformServiceProviderAssemblyName());
-            var asmName = AssemblyLoadContext.GetAssemblyName(platformServicesAssemblyPath);
-            var assembly = Assembly.Load(asmName);
+            var assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(platformServicesAssemblyPath);
 
             var classType = assembly.GetType("Microsoft.R.Platform.ServiceProvider");
             var mi = classType.GetMethod("ProvideServices", BindingFlags.Static | BindingFlags.Public);

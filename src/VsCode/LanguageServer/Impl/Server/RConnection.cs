@@ -19,11 +19,10 @@ namespace Microsoft.R.LanguageServer.Server {
     /// Manages connection to RTVS
     /// </summary>
     internal sealed class RConnection : IDisposable {
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private IRInteractiveWorkflow _workflow;
         private IPackageIndex _packageIndex;
 
-        public async Task ConnectAsync(IServiceContainer services) {
+        public async Task ConnectAsync(IServiceContainer services, CancellationToken ct) {
             var provider = services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = provider.GetOrCreate();
 
@@ -32,22 +31,26 @@ namespace Microsoft.R.LanguageServer.Server {
             var info = BrokerConnectionInfo.Create(services.Security(), "VSCR", path, string.Empty, false);
 
             log.Write(LogVerbosity.Normal, MessageCategory.General, "Switching local broker");
-            await _workflow.RSessions.TrySwitchBrokerAsync("VSCR", info);
+            if (await _workflow.RSessions.TrySwitchBrokerAsync("VSCR", info, ct)) {
+                try {
+                    log.Write(LogVerbosity.Normal, MessageCategory.General, $"Starting R Host with {path}");
+                    await _workflow.RSession.StartHostAsync(new RHostStartupInfo(), new RSessionCallback(), Debugger.IsAttached ? 100000 : 20000, ct);
+                } catch(Exception ex) {
+                    log.Write(LogVerbosity.Normal, MessageCategory.Error, $"Unable to start host. Exception: {ex.Message}");
+                    return;
+                }
 
-            log.Write(LogVerbosity.Normal, MessageCategory.General, $"Starting R Host with {path}");
-            await _workflow.RSession.StartHostAsync(new RHostStartupInfo(), new RSessionCallback(), Debugger.IsAttached ? 50000 : 5000, _cts.Token);
-
-            // Start package building
-            log.Write(LogVerbosity.Normal, MessageCategory.General, "Starting package index build");
-            _packageIndex = services.GetService<IPackageIndex>();
-            _packageIndex.BuildIndexAsync(_cts.Token).ContinueWith(t => {
-                log.Write(LogVerbosity.Normal, MessageCategory.General, $"Package index build complete");
-            }).DoNotWait();
+                // Start package building
+                log.Write(LogVerbosity.Normal, MessageCategory.General, "Starting package index build");
+                _packageIndex = services.GetService<IPackageIndex>();
+                _packageIndex.BuildIndexAsync(ct).ContinueWith(t => {
+                    log.Write(LogVerbosity.Normal, MessageCategory.General, $"Package index build complete");
+                }).DoNotWait();
+            } else {
+                log.Write(LogVerbosity.Normal, MessageCategory.Error, "Unable to connect to the local broker");
+            }
         }
 
-        public void Dispose() {
-            _cts.Cancel();
-            _workflow?.Dispose();
-        }
+        public void Dispose() => _workflow?.Dispose();
     }
 }

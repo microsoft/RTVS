@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using JsonRpc.Standard.Client;
 using JsonRpc.Standard.Contracts;
 using JsonRpc.Standard.Server;
@@ -57,13 +58,15 @@ namespace Microsoft.R.LanguageServer.Server {
                     StreamRpcServerHandlerOptions.SupportsRequestCancellation);
                 serverHandler.DefaultFeatures.Set(session);
 
+                var cts = new CancellationTokenSource();
                 // If we want server to stop, just stop the "source"
                 using (serverHandler.Attach(reader, writer))
                 using (clientHandler.Attach(reader, writer))
                 using (var rConnection = new RConnection()) {
-                    rConnection.ConnectAsync(services).DoNotWait();
+                    rConnection.ConnectAsync(services, cts.Token).DoNotWait();
                     // Wait for the "stop" request.
                     session.CancellationToken.WaitHandle.WaitOne();
+                    cts.Cancel();
                 }
                 logWriter?.WriteLine("Exited");
             }

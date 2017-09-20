@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebSockets.Protocol;
 
 namespace Microsoft.R.Host.Client.Transports {
     internal sealed class WebSocketClient {
@@ -23,17 +25,23 @@ namespace Microsoft.R.Host.Client.Transports {
         }
 
         public async Task<WebSocket> ConnectAsync(CancellationToken cancellationToken) {
-            var clientWebsocket = new ClientWebSocket();
+            var socket = new ClientWebSocket();
 
-            clientWebsocket.Options.Credentials = _serverCredentails;
-            clientWebsocket.Options.KeepAliveInterval = _keepAliveInterval;
+            socket.Options.Credentials = _serverCredentails;
+            socket.Options.KeepAliveInterval = _keepAliveInterval;
+            socket.Options.SetRequestHeader(Constants.Headers.SecWebSocketVersion, Constants.Headers.SupportedVersion);
 
-            foreach (var sb in _subProtocols) {
-                clientWebsocket.Options.AddSubProtocol(sb);
+            if (_subProtocols.Any()) {
+                socket.Options.SetRequestHeader(Constants.Headers.SecWebSocketProtocol, string.Join(", ", _subProtocols));
             }
 
-            await clientWebsocket.ConnectAsync(_uri, cancellationToken);
-            return clientWebsocket;
+            foreach (var sb in _subProtocols) {
+                socket.Options.AddSubProtocol(sb);
+            }
+
+            
+            await socket.ConnectAsync(_uri, CancellationToken.None);
+            return socket;
         }
     }
 }

@@ -32,10 +32,8 @@
     <ProjectReference Include="$(SourceDirectory)R\Core\Impl\Microsoft.R.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Editor\Impl\Microsoft.R.Editor.csproj" />
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
-    <ProjectReference Include="..\..\..\Linux\R\Platform\Impl\Interpreters\Microsoft.R.Platform.Linux.csproj" />
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj" />
     <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

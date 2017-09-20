@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.Client.Host {
 #else
             TimeSpan.FromSeconds(5);
 #endif
-        private static IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+        private static readonly IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
             { typeof(AboutHost), "info/about"},
             { typeof(HostLoad), "info/load"}
         };
@@ -138,6 +138,8 @@ namespace Microsoft.R.Host.Client.Host {
                 return CreateRHost(uniqueSessionName, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);
+            } catch (WebSocketException wsex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, wsex.Message), wsex);
             }
         }
 
@@ -185,7 +187,7 @@ namespace Microsoft.R.Host.Client.Host {
                             return await wsClient.ConnectAsync(cancellationToken);
                         } catch (UnauthorizedAccessException) {
                             _credentials.InvalidateCredentials();
-                        } catch (Exception ex) when (ex is InvalidOperationException) {
+                        } catch (Exception ex) when (ex is InvalidOperationException || ex is WebSocketException) {
                             throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
                         }
                     }

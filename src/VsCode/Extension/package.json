@@ -40,15 +40,15 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0",
-    "mocha": "^2.3.3",
+    "typescript": "^2.5.2",
+    "vscode": "^1.1.5",
+    "mocha": "^3.5.3",
     "@types/node": "^6.0.40",
     "@types/mocha": "^2.2.32"
   },
   "dependencies": {
-    "applicationinsights": "^0.15.9",
-    "vscode-extension-telemetry": "^0.0.5",
-    "vscode-languageclient": "^2.5.0"
+    "applicationinsights": "^0.22.0",
+    "vscode-extension-telemetry": "^0.0.8",
+    "vscode-languageclient": "^3.4.2"
   }
 }
