@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private string GetRtvsFunctionRdData(string functionName) {
             var fs = _host.Services.GetService<IFileSystem>();
-            var app = _host.Services.GetService<IApplication>();
+            var app = _host.Services.GetService<IPlatformServices>();
             var dataFilePath = Path.Combine(app.ApplicationFolder, @"rtvs\man", Path.ChangeExtension(functionName, "rd"));
             return fs.FileExists(dataFilePath) ? fs.ReadAllText(dataFilePath) : string.Empty;
         }

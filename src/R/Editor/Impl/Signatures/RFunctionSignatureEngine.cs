@@ -20,12 +20,10 @@ namespace Microsoft.R.Editor.Signatures {
     /// given intellisense context (text buffer, position, AST).
     /// </summary>
     public sealed class RFunctionSignatureEngine : IRFunctionSignatureEngine {
-        private readonly IServiceContainer _services;
         private readonly IFunctionIndex _functionIndex;
 
         public RFunctionSignatureEngine(IServiceContainer services) {
-            _services = services;
-            _functionIndex = _services.GetService<IFunctionIndex>();
+            _functionIndex = services.GetService<IFunctionIndex>();
         }
 
         #region IFunctionSignatureEngine
@@ -72,7 +70,7 @@ namespace Microsoft.R.Editor.Signatures {
             // when caret or mouse is inside function arguments such as in abc(de|f(x)) 
             // it gives information of the outer function since signature is about help
             // on the function arguments.
-            var functionName = context.AstRoot.GetFunctionName(context.Position, out FunctionCall fc, out Variable fv);
+            var functionName = context.AstRoot.GetFunctionName(context.Position, out var fc, out var fv);
             if (!string.IsNullOrEmpty(functionName) && fc != null) {
                 var signatureInfo = context.AstRoot.GetSignatureInfo(fc, fv, fc.OpenBrace.End);
                 var applicableRange = context.EditorBuffer.CurrentSnapshot.CreateTrackingRange(fv);

@@ -10,7 +10,7 @@ namespace Microsoft.R.Platform.OS {
         /// certain application functionality. For example, security and privacy related
         /// features such as level of logging permitted.
         /// </summary>
-        public string LocalMachineHive => @"Software\Microsoft\R Tools";
+        public string LocalMachineHive => @"Software\Microsoft\VsCode-R";
 
         public IRegistryKey OpenBaseKey(RegistryHive hive, RegistryView view) 
             => new RegistryKeyImpl(RegistryKey.OpenBaseKey(hive, view));

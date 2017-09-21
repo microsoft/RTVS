@@ -3,15 +3,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
-using Microsoft.Languages.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Completions;
-using Microsoft.R.Editor.Completions.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Extensions;
@@ -20,6 +19,8 @@ using Microsoft.R.LanguageServer.Text;
 namespace Microsoft.R.LanguageServer.Documents {
     internal sealed class DocumentEntry : IDisposable {
         private readonly IServiceContainer _services;
+        private readonly CompletionManager _completionManager;
+        private readonly SignatureManager _signatureManager;
 
         public IEditorView View { get; }
         public IEditorBuffer EditorBuffer { get; }
@@ -31,6 +32,8 @@ namespace Microsoft.R.LanguageServer.Documents {
             EditorBuffer = new EditorBuffer(content, "R");
             View = new EditorView(EditorBuffer);
             Document = new REditorDocument(EditorBuffer, services, false);
+            _completionManager = new CompletionManager(services);
+            _signatureManager = new SignatureManager(services);
         }
 
         public void ProcessChanges(ICollection<TextDocumentContentChangeEvent> contentChanges) {
@@ -55,46 +58,21 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         public void Dispose() => Document?.Close();
 
-        public CompletionList GetCompletions(Position position) {
-            var root = Document.EditorTree.AstRoot;
-            var bufferPosition = EditorBuffer.ToStreamPosition(position);
+        public CompletionList GetCompletions(Position position)
+            => _completionManager.GetCompletions(CreateContext(position));
 
-            var session = new EditorIntellisenseSession(View);
-            var context = new RIntellisenseContext(session, EditorBuffer, root, bufferPosition);
-
-            var completionEngine = new RCompletionEngine(_services);
-            var providers = completionEngine.GetCompletionForLocation(context);
-
-            if (providers == null || providers.Count == 0) {
-                return new CompletionList();
-            }
-
-            var completions = new List<ICompletionEntry>();
-            var sort = true;
-
-            foreach (var provider in providers) {
-                var entries = provider.GetEntries(context);
-                if (entries.Count > 0) {
-                    completions.AddRange(entries);
-                }
-                sort &= provider.AllowSorting;
-            }
-
-            if (sort) {
-                completions.Sort(new CompletionEntryComparer(StringComparison.OrdinalIgnoreCase));
-                completions.RemoveDuplicates(new CompletionEntryComparer(StringComparison.Ordinal));
-            }
-
-            var items = completions.Select(c => new CompletionItem {
-                Label = c.DisplayText,
-                InsertText = c.InsertionText,
-                Detail = c.Description,
-                Kind = (CompletionItemKind)c.ImageSource,
-                Documentation = c.Description
-            }).ToList();
-
-            return new CompletionList(items);
+        public async Task<SignatureHelp> GetSignatureHelpAsync(Position position) {
+            var signatures = await _signatureManager.GetSignaturesAsync(CreateContext(position));
+            return signatures != null ? new SignatureHelp(signatures) : null;
         }
 
+        public Task<Hover> GetHoverAsync(Position position, CancellationToken ct)
+            => _signatureManager.GetHoverAsync(CreateContext(position), ct);
+
+        private IRIntellisenseContext CreateContext(Position position) {
+            var bufferPosition = EditorBuffer.ToStreamPosition(position);
+            var session = new EditorIntellisenseSession(View);
+            return new RIntellisenseContext(session, EditorBuffer, Document.EditorTree.AstRoot, bufferPosition);
+        }
     }
 }

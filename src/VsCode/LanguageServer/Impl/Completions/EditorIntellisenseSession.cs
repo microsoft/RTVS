@@ -11,15 +11,15 @@ namespace Microsoft.R.LanguageServer.Completions {
     internal sealed class EditorIntellisenseSession : ServiceAndPropertyHolder, IEditorIntellisenseSession {
         public EditorIntellisenseSession(IEditorView view) {
             View = view;
+            ServiceManager.AddService(new ViewSignatureBroker());
         }
 
         public T As<T>() where T : class => throw new NotSupportedException();
-
         public new IServiceContainer Services => base.Services;
-
         public IEditorView View { get; }
-        public bool IsDismissed { get; }
+        public bool IsDismissed => false;
 
+#pragma warning disable 67
         public event EventHandler Dismissed;
     }
 }

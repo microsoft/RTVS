@@ -30,8 +30,6 @@ namespace Microsoft.R.Editor.Functions {
     /// </summary>
     public sealed class PackageIndex : IPackageIndex {
         private readonly DisposableBag _disposableBag = new DisposableBag(nameof(PackageIndex));
-        private readonly IRInteractiveWorkflow _workflow;
-        private readonly IRSession _interactiveSession;
         private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
         private readonly IIdleTimeService _idleTime;
@@ -51,24 +49,24 @@ namespace Microsoft.R.Editor.Functions {
             _idleTime = services.GetService<IIdleTimeService>();
 
             var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
-            _workflow = interactiveWorkflowProvider.GetOrCreate();
+            var workflow = interactiveWorkflowProvider.GetOrCreate();
 
-            _interactiveSession = _workflow.RSession;
-            _interactiveSession.Connected += OnSessionConnected;
-            _interactiveSession.PackagesInstalled += OnPackagesChanged;
-            _interactiveSession.PackagesRemoved += OnPackagesChanged;
+            var interactiveSession = workflow.RSession;
+            interactiveSession.Connected += OnSessionConnected;
+            interactiveSession.PackagesInstalled += OnPackagesChanged;
+            interactiveSession.PackagesRemoved += OnPackagesChanged;
 
-            _workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
+            workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
 
-            if (_workflow.RSession.IsHostRunning) {
+            if (workflow.RSession.IsHostRunning) {
                 BuildIndexAsync().DoNotWait();
             }
 
             _disposableBag
-                .Add(() => _interactiveSession.PackagesInstalled -= OnPackagesChanged)
-                .Add(() => _interactiveSession.PackagesRemoved -= OnPackagesChanged)
-                .Add(() => _interactiveSession.Connected -= OnSessionConnected)
-                .Add(() => _workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged)
+                .Add(() => interactiveSession.PackagesInstalled -= OnPackagesChanged)
+                .Add(() => interactiveSession.PackagesRemoved -= OnPackagesChanged)
+                .Add(() => interactiveSession.Connected -= OnSessionConnected)
+                .Add(() => workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged)
                 .Add(_host);
 
         }
@@ -282,7 +280,7 @@ namespace Microsoft.R.Editor.Functions {
 
         public string CacheFolderPath {
             get {
-                var app = _host.Services.GetService<IApplication>();
+                var app = _host.Services.GetService<IPlatformServices>();
                 return Path.Combine(app.ApplicationDataFolder, @"IntelliSense\");
             }
         }

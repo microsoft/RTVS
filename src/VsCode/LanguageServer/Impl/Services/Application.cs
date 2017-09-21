@@ -8,9 +8,6 @@ namespace Microsoft.R.LanguageServer.Services {
     internal sealed class Application : IApplication, IDisposable {
         public string Name => "VsCode-R";
         public int LocaleId => 1033;
-        public string ApplicationFolder => ".";
-        public string ApplicationDataFolder => ".";
-
         public void Dispose() => Terminating?.Invoke(this, EventArgs.Empty);
 
         #pragma warning disable 67

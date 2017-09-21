@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.LanguageServer.Documents {
     internal sealed class DocumentCollection: IDocumentCollection {
-        private readonly Dictionary<Uri, DocumentEntry> _documents = new Dictionary<Uri, DocumentEntry>();
+        private readonly ConcurrentDictionary<Uri, DocumentEntry> _documents = new ConcurrentDictionary<Uri, DocumentEntry>();
         private readonly IServiceContainer _services;
 
         public DocumentCollection(IServiceContainer services) {
@@ -23,13 +23,13 @@ namespace Microsoft.R.LanguageServer.Documents {
         }
 
         public void RemoveDocument(Uri uri) {
-            if (_documents.TryGetValue(uri, out DocumentEntry doc)) {
+            if (_documents.TryGetValue(uri, out var doc)) {
                 doc.Dispose();
-                _documents.Remove(uri);
+                _documents.TryRemove(uri, out var _);
             }
         }
 
         public DocumentEntry GetDocument(Uri uri) 
-            => _documents.TryGetValue(uri, out DocumentEntry doc) ? doc : null;
+            => _documents.TryGetValue(uri, out var doc) ? doc : null;
     }
 }

@@ -63,7 +63,7 @@ namespace Microsoft.R.LanguageServer.Text {
             return _lines.GetItemContaining(position);
         }
 
-        public ITrackingTextRange CreateTrackingRange(ITextRange range) => throw new NotSupportedException();
+        public ITrackingTextRange CreateTrackingRange(ITextRange range) => new TrackingTextRange(range);
         #endregion
 
         private void MakeLinesData() {

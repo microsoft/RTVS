@@ -6,6 +6,7 @@ using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.Logging;
 using Microsoft.R.Platform.OS;
+using Microsoft.R.Platform.Shell;
 using Microsoft.R.Platform.Stubs;
 
 namespace Microsoft.R.Platform {
@@ -17,7 +18,8 @@ namespace Microsoft.R.Platform {
                 .AddService(new RegistryImpl())
                 .AddService(new TelemetryServiceStub())
                 .AddService(new WindowsLoggingPermissions(serviceManager))
-                .AddService<IRInstallationService, RInstallation>();
+                .AddService<IRInstallationService, RInstallation>()
+                .AddService(new PlatformServices());
     }
 
     /// <summary>

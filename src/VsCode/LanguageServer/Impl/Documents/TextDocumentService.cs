@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.LanguageServer.Server;
 using Microsoft.R.LanguageServer.Services;
 using Microsoft.R.LanguageServer.Threading;
@@ -22,18 +24,16 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
-            // Note that Hover is cancellable.
-            await Task.Delay(1000, ct);
-            return new Hover { Contents = "Test _hover_ @" + position + "\n\n" + textDocument };
+            await Services.MainThread().SwitchToAsync();
+            var doc = Documents.GetDocument(textDocument.Uri);
+            return doc != null ? await doc.GetHoverAsync(position, ct) : null;
         }
 
         [JsonRpcMethod]
-        public SignatureHelp SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
-            return new SignatureHelp(new List<SignatureInformation>
-            {
-                new SignatureInformation("**Function1**", "Documentation1"),
-                new SignatureInformation("**Function2** <strong>test</strong>", "Documentation2"),
-            });
+        public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
+            await Services.MainThread().SwitchToAsync();
+            var doc = Documents.GetDocument(textDocument.Uri);
+            return doc != null ? await doc.GetSignatureHelpAsync(position) : null;
         }
 
         [JsonRpcMethod(IsNotification = true)]

@@ -13,8 +13,9 @@ namespace Microsoft.R.LanguageServer.Services {
     /// </summary>
     internal abstract class ServiceAndPropertyHolder : IPropertyHolder {
         private readonly Lazy<PropertyDictionary> _properties = Lazy.Create(() => new PropertyDictionary());
+        protected ServiceManager ServiceManager { get; } = new ServiceManager();
 
         public PropertyDictionary Properties => _properties.Value;
-        public IServiceManager Services { get; } = new ServiceManager();
+        public IServiceManager Services => ServiceManager;
     }
 }

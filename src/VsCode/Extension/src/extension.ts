@@ -9,9 +9,9 @@ import * as fs from "fs";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    console.log("Activating R extension...");
+    console.log("Activating R Tools...");
     activateLanguageServer(context);
-    console.log("R extension is now activated.");
+    console.log("R Tools is now activated.");
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
@@ -44,8 +44,7 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
         // Register the server for plain text documents
         documentSelector: ["r"],
         synchronize: {
-            // Synchronize the setting section 'languageServerExample' to the server
-            configurationSection: "RLanguageServer",
+            configurationSection: "RLanguage",
             // Notify the server about file changes to '.clientrc files contain in the workspace
             fileEvents: [
                 vscode.workspace.createFileSystemWatcher("**/.clientrc"),
@@ -55,7 +54,7 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
     };
     
     // Create the language client and start the client.
-    let disposable = new languageClient.LanguageClient("R", "R Language Support", serverOptions, clientOptions).start();
+    let disposable = new languageClient.LanguageClient("R", "R Tools", serverOptions, clientOptions).start();
     
     // Push the disposable to the context's subscriptions so that the 
     // client can be deactivated on extension deactivation

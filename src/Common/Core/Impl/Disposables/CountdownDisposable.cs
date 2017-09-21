@@ -12,7 +12,7 @@ namespace Microsoft.Common.Core.Disposables {
         public int Count => _count;
 
         public CountdownDisposable(Action disposeAction = null) {
-            this._disposeAction = disposeAction ?? (() => { });
+            _disposeAction = disposeAction ?? (() => { });
         }
 
         public IDisposable Increment() {
@@ -22,7 +22,7 @@ namespace Microsoft.Common.Core.Disposables {
 
         public void Decrement() {
             if (Interlocked.Decrement(ref _count) == 0) {
-                this._disposeAction();
+                _disposeAction();
             }
         }
     }

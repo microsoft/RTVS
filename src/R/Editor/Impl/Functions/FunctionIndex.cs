@@ -271,7 +271,7 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private IReadOnlyList<IFunctionInfo> GetFunctionInfosFromRd(string packageName, string rdData) {
+        private static IReadOnlyList<IFunctionInfo> GetFunctionInfosFromRd(string packageName, string rdData) {
             IReadOnlyList<IFunctionInfo> infos = null;
             try {
                 infos = RdParser.GetFunctionInfos(packageName, rdData);

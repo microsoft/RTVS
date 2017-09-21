@@ -403,5 +403,10 @@ namespace Microsoft.R.Platform {
 
         [DllImport("kernel32.dll")]
         public static extern ErrorModes SetErrorMode(ErrorModes uMode);
+
+        public static readonly Guid KNOWNFOLDERID_LocalAppData = new Guid("F1B32785-6FBA-4FCF-9D55-7B8E7F157091");
+
+        [DllImport("Shell32.dll")]
+        public static extern int SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid folderId, uint dwFlags, IntPtr token, out IntPtr path);
     }
 }
