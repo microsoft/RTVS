@@ -98,7 +98,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             var password = NewLocalDocker.Password;
             IContainer container;
             try {
-                container = await _containers.CreateLocalDockerAsync(name, username, password.ToUnsecureString(), NewLocalDocker.Version, cancellationToken);
+                container = await _containers.CreateLocalDockerAsync(name, username, password.ToUnsecureString(), NewLocalDocker.Version, NewLocalDocker.Port, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_CreateLocalDocker_CreationError, MessageButtons.OK, MessageType.Error);
                 return;

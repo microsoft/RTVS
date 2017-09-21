@@ -111,6 +111,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -152,7 +153,15 @@
                              ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_VersionTooltip}"
                              AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_VersionTooltip}" />
 
-                    <WrapPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
+                    <imaging:CrispImage Grid.Row="4" Grid.Column="0" Style="{StaticResource ValidityIndicatorStyle}"
+                                        cwpf:AttachedProperties.IsValid="{Binding Path=IsPortAvailable}" />
+
+                    <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource TextBoxSingleLineStyle}"
+                             Text="{Binding Path=Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_PortTooltip}"
+                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_PortTooltip}" />
+
+                    <WrapPanel Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
                         <Button Margin="-1,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
                                 VerticalAlignment="Center" Click="ButtonCreateLocalDocker_Click"
                                 Style="{StaticResource ToolWindowButtonStyle}" ToolTipService.ShowOnDisabled="True"

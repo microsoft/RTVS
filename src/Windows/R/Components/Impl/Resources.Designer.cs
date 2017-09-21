@@ -767,6 +767,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Localhost port used to connect to R daemon in the container..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_PortTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_PortTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Username.
         /// </summary>
         public static string ContainerManager_CreateLocalDocker_UserName {

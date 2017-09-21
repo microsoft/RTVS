@@ -82,7 +82,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
             }
         }
 
-        public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrWhiteSpace(version)) {
                 version = "3.4.1";
             }
@@ -113,7 +113,7 @@ EXPOSE 5444";
             }
 
             try {
-                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name), cancellationToken);
+                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name, port), cancellationToken);
             } finally {
                 await UpdateContainersOnceAsync(cancellationToken);
             }
