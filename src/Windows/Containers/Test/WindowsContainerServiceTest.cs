@@ -42,7 +42,7 @@ RUN apt-get update && apt-get upgrade -y";
             var dockerFile = Path.Combine(tempDirectory, "Dockerfile");
             File.WriteAllText(dockerFile, dockerFileContent);
             var svc = new WindowsDockerService(_services);
-            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest", "mycontainer");
+            var param = new BuildImageParameters(dockerFile, "rtvs-test-build-image", "latest", "mycontainer", 5444);
             await svc.CreateContainerFromFileAsync(param, CancellationToken.None);
             Directory.Delete(tempDirectory, true);
             await svc.DeleteContainerAsync("mycontainer", CancellationToken.None);
