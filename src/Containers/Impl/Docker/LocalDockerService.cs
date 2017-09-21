@@ -43,7 +43,7 @@ namespace Microsoft.R.Containers.Docker {
                 await BuildImageAsync(buildOptions, ct);
             }
 
-            var createOptions = Invariant($"-p 5444:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
+            var createOptions = Invariant($"-p {buildParams.Port}:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
             var containerId = await CreateContainerAsync(createOptions, ct);
             return await GetContainerAsync(containerId, ct);
         }
