@@ -883,12 +883,18 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed.]D;]A;To start working with containers, install Docker for Windows and restart Visual Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Docker-Dienst ist nicht installiert.]D;]A;Installieren Sie Docker für Windows, und starten Sie Visual Studio neu, um mit Containern zu arbeiten.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceIsNotRunning" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and restart Visual Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Docker-Dienst wird nicht ausgeführt.]D;]A;Führen Sie Docker für Windows aus, und starten Sie Visual Studio neu, um mit Containern zu arbeiten.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -949,6 +955,9 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_VersionTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version of R that matches Docker image tag.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Version von R, die dem Docker-Imagetag entspricht.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -964,6 +973,9 @@
       <Item ItemId=";ContainerManager_DeleteActiveWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You're currently connected to R which is hosted on container '{0}'.]D;]A;If you delete this container, current connection will be terminated.]D;]A;All data will be lost. Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es besteht zurzeit eine Verbindung mit einer R-Instanz, die im Container "{0}" gehostet wird.]D;]A;Wenn Sie diesen Container löschen, wird die aktuelle Verbindung beendet, und alle Daten gehen verloren.]D;]A;Möchten Sie den Vorgang fortsetzen?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -988,12 +1000,18 @@
       <Item ItemId=";ContainerManager_DeleteWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Container '{0}' is currently running.]D;]A;It has to be stopped before deleting.]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Container "{0}" wird zurzeit ausgeführt.]D;]A;Er muss beendet werden, bevor der Löschvorgang durchgeführt werden kann.]D;]A;Möchten Sie fortfahren?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_LocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Docker Containers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Lokale Docker-Container]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
