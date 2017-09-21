@@ -883,12 +883,18 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed.]D;]A;To start working with containers, install Docker for Windows and restart Visual Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Docker 服務未安裝。]D;]A;若要開始使用容器，請安裝 Docker for Windows，然後重新啟動 Visual Studio。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceIsNotRunning" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and restart Visual Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Docker 服務未執行。]D;]A;若要開始使用容器，請執行 Docker for Windows，然後重新啟動 Visual Studio。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -949,6 +955,9 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_VersionTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Version of R that matches Docker image tag.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[符合 Docker 映像標籤的 R 版本。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -964,6 +973,9 @@
       <Item ItemId=";ContainerManager_DeleteActiveWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You're currently connected to R which is hosted on container '{0}'.]D;]A;If you delete this container, current connection will be terminated.]D;]A;All data will be lost. Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[您目前所連線的 R 裝載於容器 '{0}' 之上。]D;]A;若您刪除此容器，目前的連線將會終止。]D;]A;所有資料皆會遺失。要繼續嗎?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -988,12 +1000,18 @@
       <Item ItemId=";ContainerManager_DeleteWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Container '{0}' is currently running.]D;]A;It has to be stopped before deleting.]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[容器 '{0}' 目前正在執行。]D;]A;刪除之前必須先停止。]D;]A;要繼續嗎?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_LocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Docker Containers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[本機 Docker 容器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
