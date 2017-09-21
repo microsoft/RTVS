@@ -103,6 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdShowEditorWindow = 907;
         public const int icmdShowSolutionExplorer = 908;
         public const int icmdShowConnectionsWindow = 909;
+        public const int icmdShowContainersWindow = 910;
 
         // Publishing
         //public const int icmdPublishDialog = 1001;

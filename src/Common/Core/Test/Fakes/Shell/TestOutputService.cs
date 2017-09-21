@@ -31,6 +31,10 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             public void Write(string text) {
                 _log.Write(LogVerbosity.Minimal, MessageCategory.General, $"[{_prefix} output]: {text}");
             }
+
+            public void WriteError(string text) {
+                _log.Write(LogVerbosity.Minimal, MessageCategory.Error, $"[{_prefix} output]: {text}");
+            }
         }
     }
 }

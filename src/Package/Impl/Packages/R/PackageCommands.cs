@@ -116,6 +116,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowToolWindowCommand<HelpWindowPane>(RPackageCommandId.icmdShowHelpWindow),
                 new ShowToolWindowCommand<HistoryWindowPane>(RPackageCommandId.icmdShowHistoryWindow),
                 new ShowToolWindowCommand<ConnectionManagerToolWindow>(RPackageCommandId.icmdShowConnectionsWindow),
+                new ShowToolWindowCommand<ContainerManagerToolWindow>(RPackageCommandId.icmdShowContainersWindow),
                 new ShowToolWindowCommand<PackageManagerToolWindow>(RPackageCommandId.icmdShowPackagesWindow),
                 new ShowToolWindowCommand<PlotHistoryWindowPane>(RPackageCommandId.icmdPlotHistoryWindow),
 

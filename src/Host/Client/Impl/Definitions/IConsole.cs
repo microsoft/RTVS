@@ -7,8 +7,6 @@ using Microsoft.R.Common.Core.Output;
 
 namespace Microsoft.R.Host.Client {
     public interface IConsole : IOutput {
-        void WriteError(string text);
-        void WriteErrorLine(string text);
         Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken);
     }
 }

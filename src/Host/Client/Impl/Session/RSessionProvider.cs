@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Protocol;
 using Microsoft.R.Interpreters;

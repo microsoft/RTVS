@@ -4,5 +4,6 @@
 namespace Microsoft.R.Common.Core.Output {
     public interface IOutput {
         void Write(string text);
+        void WriteError(string text);
     }
 }

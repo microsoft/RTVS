@@ -16,11 +16,12 @@ namespace Microsoft.Common.Core.Disposables {
         private DisposeToken(Type type) {
             _type = type;
             _cts = new CancellationTokenSource();
+            CancellationToken = _cts.Token;
         }
 
         public bool IsDisposed => _cts.IsCancellationRequested;
 
-        public CancellationToken CancellationToken => _cts.Token;
+        public CancellationToken CancellationToken { get; }
 
         public void ThrowIfDisposed() {
             if (!_cts.IsCancellationRequested) {
