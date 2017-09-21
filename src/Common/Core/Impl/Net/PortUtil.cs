@@ -9,18 +9,11 @@ namespace Microsoft.Common.Core.Net {
     public static class PortUtil {
         private static Random _rand = new Random();
         public static int GetAvailablePort(int minPort, int maxPort) {
-            while (true) {
-                int port = _rand.Next(minPort, maxPort + 1);
-                try {
-                    TcpListener listener = new TcpListener(IPAddress.Loopback, port);
-                    listener.Start();
-                    // port is available
-                    listener.Stop();
-                    return port;
-                } catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse){
-                    // port busy, try another port
-                }
+            int port = _rand.Next(minPort, maxPort + 1);
+            while (!IsPortAvailable(port)) {
+                port = _rand.Next(minPort, maxPort + 1);
             }
+            return port;
         }
 
         public static bool IsPortAvailable(int port) {

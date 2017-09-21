@@ -158,6 +158,7 @@
 
                     <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource TextBoxSingleLineStyle}"
                              Text="{Binding Path=Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             rcontrols:Watermark.TextBoxHint="{x:Static components:Resources.ContainerManager_CreateLocalDocker_Version}"
                              ToolTip="{x:Static components:Resources.ContainerManager_CreateLocalDocker_PortTooltip}"
                              AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker_PortTooltip}" />
 

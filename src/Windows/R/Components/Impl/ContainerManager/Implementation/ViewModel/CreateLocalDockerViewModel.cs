@@ -12,6 +12,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private static readonly string ExistingPasswordWatermark = new string('●', 8);
         private static readonly int _minPort = 5500;
         private static readonly int _maxPort = 7000;
+        private static readonly string _defaultVersion = "latest";
 
         private string _name;
         private string _username;
@@ -30,6 +31,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             Password = password;
             _passwordWatermark = IsPasswordValid ? ExistingPasswordWatermark : Resources.ContainerManager_CreateLocalDocker_Password;
             Port = PortUtil.GetAvailablePort(_minPort, _maxPort);
+            Version = _defaultVersion;
         }
 
         public string Name {

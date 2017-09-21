@@ -84,7 +84,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
 
         public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrWhiteSpace(version)) {
-                version = "3.4.1";
+                version = "latest";
             }
 
             var dockerImageContent = $@"FROM kvnadig/rtvsd-ub1604:{version}
@@ -95,13 +95,12 @@ RUN mkdir /tmp/rtvsfiles && cd /tmp/rtvsfiles && git clone https://github.com/ka
 RUN cd /tmp/rtvsfiles 
 RUN find -name *.deb | xargs dpkg -i
 RUN apt-get -f install
-RUN cp /tmp/rtvsfiles/docker-stuff/server.pfx /etc/rtvs
 RUN rm -R /tmp/rtvsfiles
 
 RUN useradd --create-home {username}
 RUN echo ""{username}:{password}"" | chpasswd
 
-EXPOSE 5444";                
+EXPOSE 5444";
 
             var guid = dockerImageContent.ToGuid().ToString();
             var folder = Path.Combine(Path.GetTempPath(), guid);

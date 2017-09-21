@@ -834,4 +834,7 @@ This prompt can be suppressed in R Tools | Options.
   <data name="ContainerManager_CreateLocalDocker_PortTooltip" xml:space="preserve">
     <value>Localhost port used to connect to R daemon in the container.</value>
   </data>
+  <data name="ContainerManager_CreateLocalDocker_Port" xml:space="preserve">
+    <value>Local Port</value>
+  </data>
 </root>
