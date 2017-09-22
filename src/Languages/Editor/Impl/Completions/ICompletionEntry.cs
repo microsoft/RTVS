@@ -33,5 +33,10 @@ namespace Microsoft.Languages.Editor.Completions {
         object ImageSource { get; }
 
         bool IsVisible { get; }
+
+        /// <summary>
+        /// Any associated data
+        /// </summary>
+        object Data { get; }
     }
 }

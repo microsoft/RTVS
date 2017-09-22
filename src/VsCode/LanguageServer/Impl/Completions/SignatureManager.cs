@@ -35,20 +35,20 @@ namespace Microsoft.R.LanguageServer.Completions {
 
         public async Task<Hover> GetHoverAsync(IRIntellisenseContext context, CancellationToken ct) {
             var tcs = new TaskCompletionSource<Hover>();
+            using (context.AstReadLock()) {
+                var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
+                    if (!ct.IsCancellationRequested) {
+                        tcs.TrySetResult(ToHover(e.ToList(), context.EditorBuffer));
+                    } else {
+                        tcs.TrySetCanceled();
+                    }
+                });
 
-            var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
-                if (!ct.IsCancellationRequested) {
-                    tcs.TrySetResult(ToHover(e.ToList(), context.EditorBuffer));
-                } else {
-                    tcs.TrySetCanceled();
+                if (infos != null) {
+                    return ToHover(infos.ToList(), context.EditorBuffer);
                 }
-            });
-
-            if (infos != null) {
-                return ToHover(infos.ToList(), context.EditorBuffer);
+                return await tcs.Task;
             }
-
-            return await tcs.Task;
         }
 
         private static IList<SignatureInformation> ToSignatureInformation(IEnumerable<IRFunctionSignatureHelp> signatures)

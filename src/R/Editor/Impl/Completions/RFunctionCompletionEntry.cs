@@ -12,14 +12,14 @@ namespace Microsoft.R.Editor.Completions {
     /// Completion function entry in the R intellisense completion set
     /// </summary>
     [DebuggerDisplay("{" + nameof(DisplayText) + "}")]
-    public class RFunctionCompletionEntry : EditorCompletionEntry {
+    public sealed class RFunctionCompletionEntry : EditorCompletionEntry {
         private readonly IFunctionIndex _functionIndex;
         private readonly IEditorIntellisenseSession _session;
         private readonly string _packageName;
 
         public RFunctionCompletionEntry(string displayText, string insertionText, string description, object iconSource, string packageName, IFunctionIndex functionIndex, IEditorIntellisenseSession session) :
             base(displayText, insertionText, description, iconSource) {
-            _packageName = packageName;
+            Data = _packageName = packageName;
             _functionIndex = functionIndex;
             _session = session;
         }
@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Completions {
         public override string Description {
             get {
                 if (string.IsNullOrEmpty(base.Description) && !_session.IsDismissed) {
-                    _functionIndex.GetFunctionInfoAsync(DisplayText, _packageName, (fi, o) => SetDescription(fi), null);
+                    _functionIndex.GetFunctionInfoAsync(DisplayText, _packageName, (fi, o) => SetDescription(fi), null, false);
                 }
                 return base.Description;
             }

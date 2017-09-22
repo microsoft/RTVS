@@ -7,8 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
-using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Threading;
 using Microsoft.R.LanguageServer.Server;
 using Microsoft.R.LanguageServer.Services;
 using Microsoft.R.LanguageServer.Threading;
@@ -25,11 +23,10 @@ namespace Microsoft.R.LanguageServer.Documents {
         private IIdleTimeNotification IdleTimeNotification => _idleTimeNotification ?? (_idleTimeNotification = Services.GetService<IIdleTimeNotification>());
 
         [JsonRpcMethod]
-        public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) =>
-            await await MainThreadPriority.SendAsync(async () => {
-                var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? await doc.GetHoverAsync(position, ct) : null;
-            }, ThreadPostPriority.Normal, ct);
+        public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
+            var doc = Documents.GetDocument(textDocument.Uri);
+            return doc != null ? await doc.GetHoverAsync(position, ct) : null;
+        }
 
         [JsonRpcMethod]
         public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position)
@@ -56,7 +53,9 @@ namespace Microsoft.R.LanguageServer.Documents {
             => MainThreadPriority.Post(() => Documents.RemoveDocument(textDocument.Uri), ThreadPostPriority.Normal);
 
         [JsonRpcMethod]
-        public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) =>
-            MainThreadPriority.SendAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList(), ThreadPostPriority.Normal);
+        public CompletionList completion(TextDocumentIdentifier textDocument, Position position) {
+            var doc = Documents.GetDocument(textDocument.Uri);
+            return doc?.GetCompletions(position);
+        }
     }
 }

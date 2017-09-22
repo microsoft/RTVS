@@ -18,22 +18,24 @@ namespace Microsoft.R.Editor.Functions {
         /// <param name="packageName">Package name (can be null if not known)</param>
         /// <param name="callback">Callback to invoke when information becomes available</param>
         /// <param name="parameter">User data to pass to the callback method</param>
-        public static void GetFunctionInfoAsync(this IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter = null) {
+        public static void GetFunctionInfoAsync(this IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter = null, bool mainThreadRequired = true) {
             var fi = functionIndex.GetFunctionInfo(functionName, packageName);
             if (fi != null) {
                 callback(fi, parameter);
             } else {
-                GetFunctionInfoFromPackageAsync(functionIndex, functionName, packageName, callback, parameter).DoNotWait();
+                GetFunctionInfoFromPackageAsync(functionIndex, functionName, packageName, callback, parameter, mainThreadRequired).DoNotWait();
             }
         }
 
-        private static async Task GetFunctionInfoFromPackageAsync(IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter) {
+        private static async Task GetFunctionInfoFromPackageAsync(IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter, bool mainThreadRequired) {
             IFunctionInfo fi = null;
             packageName = packageName ?? await functionIndex.GetPackageNameAsync(functionName);
             if (!string.IsNullOrEmpty(packageName)) {
                 fi = await functionIndex.GetFunctionInfoAsync(functionName, packageName);
             }
-            await functionIndex.Services.MainThread().SwitchToAsync();
+            if (mainThreadRequired) {
+                await functionIndex.Services.MainThread().SwitchToAsync();
+            }
             callback(fi, parameter);
         }
 

@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Tree {
         /// <summary>
         /// Tracks tree users and helps to debug mismatched lock/unlock bugs.
         /// </summary>
-        private HashSet<Guid> _treeUsers;
+        private readonly HashSet<Guid> _treeUsers;
 
         public EditorTreeLock() {
             _treeLock = new ReaderWriterLockSlim();
