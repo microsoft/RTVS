@@ -11,20 +11,6 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
         public string Name => "RTVS_Test";
         public int LocaleId => 1033;
 
-        public string ApplicationDataFolder {
-            get {
-                var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                return Path.Combine(appData, @"Microsoft\RTVS");
-            }
-        }
-
-        public string ApplicationFolder {
-            get {
-                var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                return Path.GetDirectoryName(asmPath);
-            }
-        }
-
 #pragma warning disable 67
         public event EventHandler Started;
         public event EventHandler Terminating;

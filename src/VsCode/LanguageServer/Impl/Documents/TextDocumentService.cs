@@ -18,32 +18,34 @@ namespace Microsoft.R.LanguageServer.Documents {
     public sealed class TextDocumentService : LanguageServiceBase {
         private IDocumentCollection _documents;
         private IIdleTimeNotification _idleTimeNotification;
+        private IMainThreadPriority _mainThread;
 
+        private IMainThreadPriority MainThreadPriority => _mainThread ?? (_mainThread = Services.GetService<IMainThreadPriority>());
         private IDocumentCollection Documents => _documents ?? (_documents = Services.GetService<IDocumentCollection>());
         private IIdleTimeNotification IdleTimeNotification => _idleTimeNotification ?? (_idleTimeNotification = Services.GetService<IIdleTimeNotification>());
 
         [JsonRpcMethod]
-        public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
-            await Services.MainThread().SwitchToAsync();
-            var doc = Documents.GetDocument(textDocument.Uri);
-            return doc != null ? await doc.GetHoverAsync(position, ct) : null;
-        }
+        public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) =>
+            await await MainThreadPriority.SendAsync(async () => {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc != null ? await doc.GetHoverAsync(position, ct) : null;
+            }, ThreadPostPriority.Normal, ct);
 
         [JsonRpcMethod]
-        public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
-            await Services.MainThread().SwitchToAsync();
-            var doc = Documents.GetDocument(textDocument.Uri);
-            return doc != null ? await doc.GetSignatureHelpAsync(position) : null;
-        }
+        public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position)
+            => await await MainThreadPriority.SendAsync(async () => {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc != null ? await doc.GetSignatureHelpAsync(position) : null;
+            }, ThreadPostPriority.Normal);
 
         [JsonRpcMethod(IsNotification = true)]
         public void didOpen(TextDocumentItem textDocument)
-            => MainThread.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri));
+            => MainThreadPriority.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri), ThreadPostPriority.Normal);
 
         [JsonRpcMethod(IsNotification = true)]
         public void didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
             IdleTimeNotification.NotifyUserActivity();
-            MainThread.Post(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges));
+            MainThreadPriority.Post(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges), ThreadPostPriority.Normal);
         }
 
         [JsonRpcMethod(IsNotification = true)]
@@ -51,10 +53,10 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod(IsNotification = true)]
         public void didClose(TextDocumentIdentifier textDocument)
-            => MainThread.Post(() => Documents.RemoveDocument(textDocument.Uri));
+            => MainThreadPriority.Post(() => Documents.RemoveDocument(textDocument.Uri), ThreadPostPriority.Normal);
 
         [JsonRpcMethod]
         public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) =>
-            MainThread.SendAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList());
+            MainThreadPriority.SendAsync(() => Documents.GetDocument(textDocument.Uri)?.GetCompletions(position) ?? new CompletionList(), ThreadPostPriority.Normal);
     }
 }

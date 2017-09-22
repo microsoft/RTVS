@@ -5,15 +5,16 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.LanguageServer.Threading {
-    internal sealed class MainThread : IMainThread, IDisposable {
+    internal sealed class MainThread : IMainThreadPriority, IDisposable {
         private readonly CancellationTokenSource _ctsExit = new CancellationTokenSource();
-        private readonly BufferBlock<Action> _bufferBlock = new BufferBlock<Action>();
+        private readonly BufferBlock<Action> _idleTimeQueue = new BufferBlock<Action>();
+        private readonly BufferBlock<Action> _normalPriorityQueue = new BufferBlock<Action>();
+        private readonly BufferBlock<Action> _backgroundPriorityQueue = new BufferBlock<Action>();
         private readonly DisposableBag _disposableBag = DisposableBag.Create<MainThread>();
+        private volatile Action _idleOnceAction;
 
         public MainThread() {
             _disposableBag.Add(Stop);
@@ -25,13 +26,33 @@ namespace Microsoft.R.LanguageServer.Threading {
         public int ThreadId => Thread.ManagedThreadId;
 
         public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken))
-            => ExecuteAsync(o => action(), null, cancellationToken).DoNotWait();
+            => Execute(action, ThreadPostPriority.Background, cancellationToken);
+        #endregion
+
+        #region IMainThreadPriority
+        public void Post(Action action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken))
+            => Execute(action, priority, cancellationToken);
+
+        public Task<T> SendAsync<T>(Func<T> action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken)) {
+            var tcs = new TaskCompletionSource<T>();
+            Execute(() => {
+                if (!cancellationToken.IsCancellationRequested) {
+                    tcs.TrySetResult(action());
+                } else {
+                    tcs.TrySetCanceled();
+                }
+            }, priority, cancellationToken);
+
+            return tcs.Task;
+        }
+
+        public void CancelIdle() => _idleOnceAction = null;
         #endregion
 
         #region SynchronizationContext
         public SynchronizationContext SynchronizationContext { get; }
-        public void Post(Action<object> action, object state) => ExecuteAsync(action, state, CancellationToken.None).DoNotWait();
-        public void Send(Action<object> action, object state) => ExecuteAsync(action, state, CancellationToken.None).Wait();
+        public void Post(Action<object> action, object state) => Execute(() => action(state), ThreadPostPriority.Background, CancellationToken.None);
+        public void Send(Action<object> action, object state) => Execute(() => action(state), ThreadPostPriority.Background, CancellationToken.None);
         #endregion
 
         #region IDisposable
@@ -39,44 +60,80 @@ namespace Microsoft.R.LanguageServer.Threading {
 
         private void Stop() {
             _ctsExit.Cancel();
-            _bufferBlock.Post(() => { });
+            _normalPriorityQueue.Post(() => { });
             Thread.Join(1000);
         }
         #endregion
 
-        private Task ExecuteAsync(Action<object> action, object state, CancellationToken cancellationToken)
-            => ExecuteAsync(o => {
-                action(state);
-                return true;
-            }, state, cancellationToken);
-
-        private Task<T> ExecuteAsync<T>(Func<object, T> action, object state, CancellationToken cancellationToken) {
+        private void Execute(Action action, ThreadPostPriority priority, CancellationToken cancellationToken) {
             _disposableBag.ThrowIfDisposed();
 
             if (ThreadId == Thread.CurrentThread.ManagedThreadId) {
-                return Task.FromResult(action(state));
+                action();
+                return;
             }
 
-            var tcs = new TaskCompletionSource<T>();
-            _bufferBlock.Post(() => {
+            BufferBlock<Action> queue = null;
+            switch (priority) {
+                case ThreadPostPriority.IdleOnce:
+                    _idleOnceAction = action;
+                    return;
+                case ThreadPostPriority.Idle:
+                    queue = _idleTimeQueue;
+                    break;
+                case ThreadPostPriority.Background:
+                    queue = _backgroundPriorityQueue;
+                    break;
+                case ThreadPostPriority.Normal:
+                    queue = _normalPriorityQueue;
+                    break;
+            }
+
+            queue.Post(() => {
                 if (!cancellationToken.IsCancellationRequested) {
-                    tcs.TrySetResult(action(state));
-                } else {
-                    tcs.TrySetCanceled();
+                    action();
                 }
             });
-
-            return tcs.Task;
         }
 
         internal Thread Thread { get; } = new Thread(o => ((MainThread)o).WorkerThread());
 
         private void WorkerThread() {
-            while (true) {
-                var action = _bufferBlock.Receive();
-                if (_ctsExit.IsCancellationRequested) {
-                    break;
+            while (!_ctsExit.IsCancellationRequested) {
+                Action action;
+
+                while (!_ctsExit.IsCancellationRequested && 
+                       _normalPriorityQueue.TryReceive(out action)) {
+                    ProcessAction(action);
                 }
+
+                while (!_ctsExit.IsCancellationRequested &&
+                       _normalPriorityQueue.Count == 0 &&
+                       _backgroundPriorityQueue.TryReceive(out action)) {
+                    ProcessAction(action);
+                }
+
+                while (!_ctsExit.IsCancellationRequested &&
+                       _normalPriorityQueue.Count == 0 &&
+                       _backgroundPriorityQueue.Count == 0 && 
+                       _idleTimeQueue.TryReceive(out action)) {
+                    ProcessAction(action);
+                }
+
+                while (!_ctsExit.IsCancellationRequested &&
+                       _normalPriorityQueue.Count == 0 &&
+                       _backgroundPriorityQueue.Count == 0) {
+                    action = _idleOnceAction;
+                    _idleOnceAction = null;
+                    if (action != null) {
+                        ProcessAction(action);
+                    }
+                }
+            }
+        }
+
+        private void ProcessAction(Action action) {
+            if (!_ctsExit.IsCancellationRequested) {
                 action();
             }
         }

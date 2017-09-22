@@ -5,19 +5,19 @@ using System;
 using System.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Threading;
+using Microsoft.R.LanguageServer.Threading;
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class IdleTimeService : IIdleTimeService, IIdleTimeSource, IIdleTimeNotification, IDisposable {
         private const int IdleDelay = 100;
         private readonly Timer _timer;
-        private readonly IMainThread _mainThread;
+        private readonly IMainThreadPriority _mainThread;
         private readonly object _lock = new object();
         private DateTime _lastActivityTime = DateTime.Now;
 
         public IdleTimeService(IServiceContainer services) {
             _timer = new Timer(OnTimer, this, 200, 50);
-            _mainThread = services.MainThread();
+            _mainThread = services.GetService<IMainThreadPriority>();
         }
 
         private static void OnTimer(object state) => ((IdleTimeService)state).HandleIdle();
@@ -25,7 +25,7 @@ namespace Microsoft.R.LanguageServer.Services {
         private void HandleIdle() {
             lock (_lock) {
                 if ((DateTime.Now - _lastActivityTime).TotalMilliseconds > IdleDelay) {
-                    _mainThread.Post(() => Idle?.Invoke(this, EventArgs.Empty));
+                    _mainThread.Post(() => Idle?.Invoke(this, EventArgs.Empty), ThreadPostPriority.IdleOnce);
                 }
             }
         }
@@ -36,8 +36,9 @@ namespace Microsoft.R.LanguageServer.Services {
 
         #region IIdleTimeNotification
         public void NotifyUserActivity() {
-            lock(_lock) {
+            lock (_lock) {
                 _lastActivityTime = DateTime.Now;
+                _mainThread.CancelIdle();
             }
         }
         #endregion
