@@ -38,28 +38,35 @@ namespace Microsoft.R.LanguageServer.Text {
 
         public bool Insert(int position, string text) {
             _content.Insert(position, text);
-            FireChanged(new TextChangeEventArgs(new TextChange(position, 0, text.Length)));
+            FireChanged(position, 0, text.Length);
             return true;
         }
 
         public bool Replace(ITextRange range, string text) {
             _content.Remove(range.Start, range.Length);
             _content.Insert(range.Start, text);
-            FireChanged(new TextChangeEventArgs(new TextChange(range.Start, range.Length, text.Length)));
+            FireChanged(range.Start, range.Length, text.Length);
             return true;
         }
 
         public bool Delete(ITextRange range) {
             _content.Remove(range.Start, range.Length);
-            FireChanged(new TextChangeEventArgs(new TextChange(range.Start, range.Length, 0)));
+            FireChanged(range.Start, range.Length, 0);
             return true;
         }
 
         public void Dispose() => Closing?.Invoke(this, EventArgs.Empty);
 
-        private void FireChanged(TextChangeEventArgs args) {
+        private void FireChanged(int start, int oldLength, int newLength) {
+            var oldTextProvider = new TextStream(_currentSnapshot.GetText());
+
             _version++;
-            _currentSnapshot = null;
+            _currentSnapshot = new EditorBufferSnapshot(this, _content.ToString(), _version);
+
+            var newTextProvider = new TextStream(_currentSnapshot.GetText());
+            var change = new TextChange(start, oldLength, newLength, oldTextProvider, newTextProvider);
+            var args = new TextChangeEventArgs(change);
+
             ChangedHighPriority?.Invoke(this, args);
             Changed?.Invoke(this, args);
         }

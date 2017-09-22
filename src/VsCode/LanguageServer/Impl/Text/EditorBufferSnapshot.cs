@@ -49,7 +49,11 @@ namespace Microsoft.R.LanguageServer.Text {
 
         public IEditorLine GetLineFromPosition(int position) {
             MakeLinesData();
-            return GetLineFromLineNumber(_lines.GetItemContaining(position));
+            var lineIndex = position == Length 
+                ? _lines.Count - 1
+                : _lines.GetItemContaining(position);
+
+            return lineIndex < 0 ? null : _lines[lineIndex];
         }
 
         public IEditorLine GetLineFromLineNumber(int lineNumber) {

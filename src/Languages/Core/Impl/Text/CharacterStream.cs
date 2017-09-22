@@ -29,7 +29,7 @@ namespace Microsoft.Languages.Core.Text {
             _range = TextRange.FromBounds(range.Start, end);
 
             Position = _range.Start;
-            CurrentChar = Text[_range.Start];
+            CurrentChar = Text.Length > 0 ? Text[_range.Start] : '\0';
         }
 
         [DebuggerStepThrough]
@@ -61,7 +61,7 @@ namespace Microsoft.Languages.Core.Text {
         public int IndexOf(string text, int start, bool ignoreCase) => Text.IndexOf(text, start, ignoreCase);
         public int IndexOf(char ch, int start) => Text.IndexOf(ch, start);
 
-        public bool CompareTo(int position, int length, string text, bool ignoreCase) 
+        public bool CompareTo(int position, int length, string text, bool ignoreCase)
             => Text.CompareTo(position, length, text, ignoreCase);
 
         public char CurrentChar { get; private set; }
@@ -184,10 +184,10 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Determines if character is a hexadecimal digit
         /// </summary>
-        public bool IsHex() 
+        public bool IsHex()
             => IsDecimal() || (CurrentChar >= 'A' && CurrentChar <= 'F') || (CurrentChar >= 'a' && CurrentChar <= 'f');
 
-        public static bool IsHex(char character) 
+        public static bool IsHex(char character)
             => IsDecimal(character) || (character >= 'A' && character <= 'F') || (character >= 'a' && character <= 'f');
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Determines if current character is an ANSI letter
         /// </summary>
-        public static bool IsAnsiLetter(char character) 
+        public static bool IsAnsiLetter(char character)
             => (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace Microsoft.Languages.Core.Text {
         public bool IsAtString() => (CurrentChar == '\'' || CurrentChar == '\"');
 
         [DebuggerStepThrough]
-        public override string ToString() 
+        public override string ToString()
             => string.Format(CultureInfo.InvariantCulture, "@{0} ({1})", Position, Text[Position]);
     }
 }

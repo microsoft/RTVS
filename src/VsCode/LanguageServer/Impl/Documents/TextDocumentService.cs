@@ -41,9 +41,9 @@ namespace Microsoft.R.LanguageServer.Documents {
             => MainThread.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri));
 
         [JsonRpcMethod(IsNotification = true)]
-        public Task didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
+        public void didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
             IdleTimeNotification.NotifyUserActivity();
-            return MainThread.SendAsync(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges));
+            MainThread.Post(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges));
         }
 
         [JsonRpcMethod(IsNotification = true)]
