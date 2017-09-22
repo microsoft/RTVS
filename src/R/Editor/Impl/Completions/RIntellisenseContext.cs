@@ -14,7 +14,7 @@ namespace Microsoft.R.Editor.Completions {
     /// caret position and other necessary data for the completion engine.
     /// </summary>
     public sealed class RIntellisenseContext : IntellisenseContext, IRIntellisenseContext {
-        private static readonly Guid _treeUserId = new Guid("6A051930-A9CF-482E-B850-28AB2A2CE153");
+        private readonly Guid _treeUserId = Guid.NewGuid();
         private readonly IREditorTree _editorTree;
         private AstRoot _lockedAstRoot;
 

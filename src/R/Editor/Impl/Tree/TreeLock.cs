@@ -42,31 +42,29 @@ namespace Microsoft.R.Editor.Tree {
         public bool AcquireReadLock(Guid userID) {
             lock (_treeUsers) {
                 if (_treeUsers.Contains(userID)) {
-                    Debug.Assert(false, String.Empty, "Reentrancy in the EditorTree.AcquireReadLock() is not allowed. User: {0}", userID);
+                    Debug.Assert(false, string.Empty, "Reentrancy in the EditorTree.AcquireReadLock() is not allowed. User: {0}", userID);
                     return false;
                 }
                 _treeUsers.Add(userID);
+                _treeLock.EnterReadLock();
             }
-
-            _treeLock.EnterReadLock();
             return true;
         }
 
         /// <summary>
-        /// Releases read lock previously acquired by <seealso cref="BeginUse"/>
+        /// Releases read lock previously acquired by <seealso cref="AcquireReadLock"/>
         /// </summary>
         /// <param name="userID">Guid uniquely identifying caller. Used for usage tracking and debugging.</param>
         /// <returns>True if lock was released. False if caller didn't have read lock.</returns>
         public bool ReleaseReadLock(Guid userID) {
             lock (_treeUsers) {
                 if (!_treeUsers.Contains(userID)) {
-                    Debug.Assert(false, String.Empty, "EditorTree.EndUse() from unknown user: {0}", userID);
+                    Debug.Assert(false, string.Empty, "EditorTree.EndUse() from unknown user: {0}", userID);
                     return false;
                 }
                 _treeUsers.Remove(userID);
+                _treeLock.ExitReadLock();
             }
-
-            _treeLock.ExitReadLock();
             return true;
         }
 

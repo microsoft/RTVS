@@ -25,12 +25,14 @@ namespace Microsoft.R.LanguageServer.Completions {
         }
 
         public async Task<IList<SignatureInformation>> GetSignaturesAsync(IRIntellisenseContext context) {
-            var tcs = new TaskCompletionSource<IList<SignatureInformation>>();
-            var sigs = _signatureEngine.GetSignaturesAsync(context, e => tcs.TrySetResult(ToSignatureInformation(e)));
-            if(sigs != null) {
-                return ToSignatureInformation(sigs);
+            using (context.AstReadLock()) {
+                var tcs = new TaskCompletionSource<IList<SignatureInformation>>();
+                var sigs = _signatureEngine.GetSignaturesAsync(context, e => tcs.TrySetResult(ToSignatureInformation(e)));
+                if (sigs != null) {
+                    return ToSignatureInformation(sigs);
+                }
+                return await tcs.Task;
             }
-            return await tcs.Task;
         }
 
         public async Task<Hover> GetHoverAsync(IRIntellisenseContext context, CancellationToken ct) {

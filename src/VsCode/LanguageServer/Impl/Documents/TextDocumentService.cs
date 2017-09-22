@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.R.LanguageServer.Diagnostics;
 using Microsoft.R.LanguageServer.Server;
 using Microsoft.R.LanguageServer.Services;
 using Microsoft.R.LanguageServer.Threading;
@@ -24,16 +25,19 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
-            var doc = Documents.GetDocument(textDocument.Uri);
-            return doc != null ? await doc.GetHoverAsync(position, ct) : null;
+            using (new DebugMeasureTime("textDocument/hover")) {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc != null ? await doc.GetHoverAsync(position, ct) : null;
+            }
         }
 
         [JsonRpcMethod]
-        public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position)
-            => await await MainThreadPriority.SendAsync(async () => {
+        public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
+            using (new DebugMeasureTime("textDocument/signatureHelp")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
                 return doc != null ? await doc.GetSignatureHelpAsync(position) : null;
-            }, ThreadPostPriority.Normal);
+            }
+        }
 
         [JsonRpcMethod(IsNotification = true)]
         public void didOpen(TextDocumentItem textDocument)
@@ -41,8 +45,10 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod(IsNotification = true)]
         public void didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
-            IdleTimeNotification.NotifyUserActivity();
-            MainThreadPriority.Post(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges), ThreadPostPriority.Normal);
+            using (new DebugMeasureTime("textDocument/didChange")) {
+                IdleTimeNotification.NotifyUserActivity();
+                MainThreadPriority.Post(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges), ThreadPostPriority.Normal);
+            }
         }
 
         [JsonRpcMethod(IsNotification = true)]
@@ -54,8 +60,10 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public CompletionList completion(TextDocumentIdentifier textDocument, Position position) {
-            var doc = Documents.GetDocument(textDocument.Uri);
-            return doc?.GetCompletions(position);
+            using (new DebugMeasureTime("textDocument/completion")) {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc?.GetCompletions(position);
+            }
         }
     }
 }
