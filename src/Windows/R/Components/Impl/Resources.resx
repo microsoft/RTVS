@@ -348,6 +348,9 @@
   <data name="ConnectionManager_EditLocalTooltip_Format" xml:space="preserve">
     <value>Edit local connection '{0}'</value>
   </data>
+  <data name="ConnectionManager_EditLocalDockerTooltip_Format" xml:space="preserve">
+    <value>Edit local Docker connection '{0}'</value>
+  </data>
   <data name="ConnectionManager_EditRemoteTooltip_Format" xml:space="preserve">
     <value>Edit remote connection '{0}'</value>
   </data>
@@ -364,7 +367,7 @@
     <value>R command line arguments</value>
   </data>
   <data name="ConnectionManager_Add" xml:space="preserve">
-    <value>Add</value>
+    <value>Add Connection</value>
   </data>
   <data name="ConnectionManager_ShowContainers" xml:space="preserve">
     <value>Containers</value>
@@ -442,11 +445,24 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="ConnectionManager_RemoveConnectionConfirmation" xml:space="preserve">
     <value>Are you sure you want to remove the '{0}' connection?</value>
   </data>
+  <data name="ContainerManager_ContainerServiceIsNotInstalled_FirstPart" xml:space="preserve">
+    <value>Docker service isn't installed. To start working with containers,</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceIsNotInstalled_SecondPart" xml:space="preserve">
+    <value>install Docker for Windows</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" xml:space="preserve">
+    <value>and restart Visual Studio.</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceIsNotRunning" xml:space="preserve">
+    <value>Docker service isn't running.
+To start working with containers, run Docker for Windows and restart Visual Studio.</value>
+  </data>
+  <data name="ContainerManager_LocalDocker" xml:space="preserve">
+    <value>Local Docker Containers</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker" xml:space="preserve">
     <value>Create</value>
-  </data>
-  <data name="ContainerManager_ShowWorkspaces" xml:space="preserve">
-    <value>Workspaces</value>
   </data>
   <data name="ContainerManager_CreateLocalDocker_Name" xml:space="preserve">
     <value>Name</value>
@@ -460,17 +476,29 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="ContainerManager_CreateLocalDocker_Version" xml:space="preserve">
     <value>Version</value>
   </data>
+  <data name="ContainerManager_CreateLocalDocker_VersionTooltip" xml:space="preserve">
+    <value>Version of R that matches Docker image tag.</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker_CreationError" xml:space="preserve">
     <value>There was an error creating the container. Please see R Containers output for details.</value>
   </data>
   <data name="ContainerManager_CreateTooltip" xml:space="preserve">
-    <value>Create new docker container</value>
+    <value>Create new Docker container</value>
   </data>
   <data name="ContainerManager_Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="ContainerManager_StartTooltip_Format" xml:space="preserve">
     <value>Start container '{0}'</value>
+  </data>
+  <data name="ContainerManager_Start_ActivePortIsBusy_Format" xml:space="preserve">
+    <value>Can't start container '{0}' because its port is taken by container '{1}'.
+Do you want to stop '{1}' and then start '{0}'?
+All unsaved data will be lost!</value>
+  </data>
+  <data name="ContainerManager_Start_PortIsBusy_Format" xml:space="preserve">
+    <value>Can't start container '{0}' because its port is taken by container '{1}'.
+Do you want to stop '{1}' and then start '{0}'?</value>
   </data>
   <data name="ContainerManager_StartError_Format" xml:space="preserve">
     <value>There was an error starting '{0}' container. Please see R Containers output for details.</value>
@@ -486,6 +514,20 @@ If you want to delete all data on the remote machine you must delete your user p
   </data>
   <data name="ContainerManager_DeleteTooltip_Format" xml:space="preserve">
     <value>Delete container '{0}'</value>
+  </data>
+  <data name="ContainerManager_DeleteActiveWarning_Format" xml:space="preserve">
+    <value>You're currently connected to R which is hosted on container '{0}'.
+If you delete this container, current connection will be terminated.
+All data will be lost. Do you wish to proceed?</value>
+  </data>
+  <data name="ContainerManager_DeleteRunningWarning_Format" xml:space="preserve">
+    <value>Container '{0}' is currently running.
+It has to be stopped before deleting. All data will be lost.
+Do you wish to proceed?</value>
+  </data>
+  <data name="ContainerManager_DeleteWarning_Format" xml:space="preserve">
+    <value>You're going to delete container '{0}'.
+All data will be lost. Do you wish to proceed?</value>
   </data>
   <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
     <value>Are you sure you want to remove all plots from {0}?</value>
@@ -559,8 +601,11 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="NoLocalR" xml:space="preserve">
     <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
   </data>
-  <data name="ConnectionManager_DeleteTooltipDisabled" xml:space="preserve">
+  <data name="ConnectionManager_DeleteLocalDisabledTooltip" xml:space="preserve">
     <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
+  </data>
+  <data name="ConnectionManager_DeleteLocalDockerDisabledTooltip" xml:space="preserve">
+    <value>Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.</value>
   </data>
   <data name="ConnectionManager_Connected" xml:space="preserve">
     <value>Connected</value>
@@ -571,6 +616,11 @@ If you want to delete all data on the remote machine you must delete your user p
   <data name="ConnectionManager_InformationTooltipFormatLocal" xml:space="preserve">
     <value>Path: {0}
 Arguments: {1}</value>
+  </data>
+  <data name="ConnectionManager_InformationTooltipFormatLocalDocker" xml:space="preserve">
+    <value>Host: {0}
+Container name: {1}
+Arguments: {2}</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
     <value>Host: {0}
@@ -800,5 +850,11 @@ This prompt can be suppressed in R Tools | Options.
   </data>
   <data name="Browse" xml:space="preserve">
     <value>Browse</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker_PortTooltip" xml:space="preserve">
+    <value>Localhost port used to connect to R daemon in the container.</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDocker_Port" xml:space="preserve">
+    <value>Local Port</value>
   </data>
 </root>

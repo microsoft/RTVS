@@ -3,11 +3,11 @@
 
 using System.Windows;
 
-namespace Microsoft.R.Wpf {
+namespace Microsoft.Common.Wpf {
     public static class AttachedProperties {
         public static readonly DependencyProperty IsValidProperty = DependencyProperty.RegisterAttached("IsValid", typeof(bool), typeof(AttachedProperties), new PropertyMetadata(false));
 
-        public static bool GetIsValid(FrameworkElement fe) => (bool)fe.GetValue(IsValidProperty);
+        public static bool GetIsValid(FrameworkElement fe) => (bool)(fe.GetValue(IsValidProperty) ?? false);
         public static void SetIsValid(FrameworkElement fe, bool value) => fe.SetValue(IsValidProperty, value);
     }
 }

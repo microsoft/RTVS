@@ -42,8 +42,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        public void WriteErrorLine(string text) => WriteError(text + Environment.NewLine);
-
         public async Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 var result = await _workflow.Services.ShowMessageAsync(text, MessageButtons.YesNo, cancellationToken);

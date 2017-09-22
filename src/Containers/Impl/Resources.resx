@@ -120,4 +120,7 @@
   <data name="LocalDockerOutputStreamException" xml:space="preserve">
     <value>Can't read from Docker process output stream</value>
   </data>
+  <data name="LocalDockerErrorFormat" xml:space="preserve">
+    <value>{0}> ERROR: {1}</value>
+  </data>
 </root>

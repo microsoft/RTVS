@@ -30,7 +30,6 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsRemote { get; }
         
         void Reset();
-        string ConnectionTooltip { get; }
         
         /// <summary>
         /// Update the path with a default scheme and port, if possible.

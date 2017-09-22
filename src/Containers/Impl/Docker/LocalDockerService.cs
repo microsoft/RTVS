@@ -25,7 +25,9 @@ namespace Microsoft.R.Containers.Docker {
         private readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
         private readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
         private readonly int _defaultTimeout = 500;
-        private IOutput _output;
+        private volatile IOutput _output;
+
+        protected IOutput Output => _output ?? (_output = _outputService.Get(ContainerOutputName));
 
         protected LocalDockerService(IServiceContainer services) {
             _ps = services.Process();
@@ -35,10 +37,13 @@ namespace Microsoft.R.Containers.Docker {
         public async Task<IContainer> CreateContainerFromFileAsync(BuildImageParameters buildParams, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
-            await BuildImageAsync(buildOptions, ct);
+            var images = await ListImagesAsync(true, ct);
+            if (!images.Any(i => i.Name.EqualsOrdinal(buildParams.Image) && i.Tag.EqualsOrdinal(buildParams.Tag))) {
+                var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} \"{Path.GetDirectoryName(buildParams.DockerfilePath)}\"";
+                await BuildImageAsync(buildOptions, ct);
+            }
 
-            var createOptions = Invariant($"-p 5444:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
+            var createOptions = Invariant($"-p {buildParams.Port}:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
             var containerId = await CreateContainerAsync(createOptions, ct);
             return await GetContainerAsync(containerId, ct);
         }
@@ -69,7 +74,7 @@ namespace Microsoft.R.Containers.Docker {
             var lines = output.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             var ids = lines.Where(line => _containerIdMatcher12.IsMatch(line) || _containerIdMatcher64.IsMatch(line));
             var arr = await InspectAsync(ids, ct);
-            return arr.Select(c => GetContainerImage(c));
+            return arr.Select(GetContainerImage);
         }
 
         private ContainerImage GetContainerImage(JToken c) {
@@ -166,9 +171,6 @@ namespace Microsoft.R.Containers.Docker {
 
         private async Task<string> ExecuteCommandAsync(string arguments, string outputPrefix, int timeoutms, bool failOnTimeout = true, CancellationToken ct = default(CancellationToken)) {
             var printOutput = outputPrefix != null;
-            if (_output == null && printOutput) {
-                _output = _outputService.Get(ContainerOutputName, ct);
-            }
 
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -189,21 +191,23 @@ namespace Microsoft.R.Containers.Docker {
                 while (!process.StandardOutput.EndOfStream) {
                     var line = await process.StandardOutput.ReadLineAsync();
                     if (printOutput) {
-                        _output.WriteLine(Invariant($"{outputPrefix}> {line}"));
+                        Output.WriteLine(Invariant($"{outputPrefix}> {line}"));
                     }
                     result.AppendLine(line);
                 }
 
                 await process.WaitForExitAsync(timeoutms, ct);
             } catch(IOException) {
-                _output.Write(Invariant($"{outputPrefix}> ERROR: {Resources.LocalDockerOutputStreamException}"));
+                if (printOutput) {
+                    Output.WriteError(Resources.LocalDockerErrorFormat.FormatInvariant(outputPrefix, Resources.LocalDockerOutputStreamException));
+                }
                 throw new ContainerException(Resources.LocalDockerOutputStreamException);
             } catch(OperationCanceledException) when (!failOnTimeout && !ct.IsCancellationRequested){
             }
 
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error) && !IsSecurityWarning(error)) {
-                _output.Write(Invariant($"{outputPrefix}> ERROR: {error}"));
+                Output.WriteError(Resources.LocalDockerErrorFormat.FormatInvariant(outputPrefix, error));
                 throw new ContainerException(error);
             }
              

@@ -173,25 +173,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             set { SetProperty(ref _testConnectionResult, value); }
         }
 
-        /// <summary>
-        /// Tooltip when hovered over connection name
-        /// </summary>
-        public string ConnectionTooltip {
-            get {
-                var cmdLineInfo = !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None;
-                var format = IsRemote
-                                ? Resources.ConnectionManager_InformationTooltipFormatRemote
-                                : Resources.ConnectionManager_InformationTooltipFormatLocal;
-                return format.FormatInvariant(Path, cmdLineInfo);
-            }
-        }
-
         public DateTime LastUsed {
             get { return _connection?.LastUsed ?? DateTime.MinValue; }
             set { _connection.LastUsed = value; }
         }
 
         public string OriginalName => _connection?.Name;
+
+        /// <summary>
+        /// Tooltip when hovered over connection name
+        /// </summary>
+        public string ConnectionTooltip { get; set; }
+
+        /// <summary>
+        /// Tooltip when hovered over connection edit button
+        /// </summary>
+        public string ButtonEditTooltip { get; set; }
+
+        /// <summary>
+        /// Tooltip when hovered over connection delete button
+        /// </summary>
+        public string ButtonDeleteDisabledTooltip { get; set; }
 
         public void Reset() {
             Name = _connection?.Name;

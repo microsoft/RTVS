@@ -23,7 +23,18 @@ namespace Microsoft.R.Components.Containers.Implementation {
         private ImmutableArray<IContainer> _containers;
         private ImmutableArray<IContainer> _runningContainers;
         private CancellationTokenSource _updateContainersCts;
+        private int _status;
         private event Action ContainersChanged;
+
+        public event EventHandler ContainersStatusChanged;
+        public ContainersStatus Status {
+            get => (ContainersStatus)_status;
+            private set {
+                if (Interlocked.Exchange(ref _status, (int) value) != (int) value) {
+                    ContainersStatusChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
 
         public ContainerManager(IRInteractiveWorkflow interactiveWorkflow) {
             _containerService = interactiveWorkflow.Services.GetService<IContainerService>();
@@ -32,6 +43,8 @@ namespace Microsoft.R.Components.Containers.Implementation {
             _containers = ImmutableArray<IContainer>.Empty;
             _runningContainers = ImmutableArray<IContainer>.Empty;
             _containersChangedCountdown = new CountdownDisposable(StartUpdatingContainers, EndUpdatingContainers);
+
+            Status = ContainersStatus.Running;
         }
 
         public IReadOnlyList<IContainer> GetContainers() => _containers;
@@ -69,9 +82,9 @@ namespace Microsoft.R.Components.Containers.Implementation {
             }
         }
 
-        public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrWhiteSpace(version)) {
-                version = "3.4.1";
+                version = "latest";
             }
 
             var dockerImageContent = $@"FROM kvnadig/rtvsd-ub1604:{version}
@@ -82,22 +95,24 @@ RUN mkdir /tmp/rtvsfiles && cd /tmp/rtvsfiles && git clone https://github.com/ka
 RUN cd /tmp/rtvsfiles 
 RUN find -name *.deb | xargs dpkg -i
 RUN apt-get -f install
-RUN cp /tmp/rtvsfiles/docker-stuff/server.pfx /etc/rtvs
 RUN rm -R /tmp/rtvsfiles
 
 RUN useradd --create-home {username}
 RUN echo ""{username}:{password}"" | chpasswd
 
-EXPOSE 5444";                
+EXPOSE 5444";
 
-            var guid = Guid.NewGuid().ToString();
+            var guid = dockerImageContent.ToGuid().ToString();
             var folder = Path.Combine(Path.GetTempPath(), guid);
             var filePath = Path.Combine(folder, "Dockerfile");
-            _fileSystem.CreateDirectory(folder);
-            _fileSystem.WriteAllText(filePath, dockerImageContent);
+
+            if (!_fileSystem.DirectoryExists(folder)) {
+                _fileSystem.CreateDirectory(folder);
+                _fileSystem.WriteAllText(filePath, dockerImageContent);
+            }
 
             try {
-                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name), cancellationToken);
+                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name, port), cancellationToken);
             } finally {
                 await UpdateContainersOnceAsync(cancellationToken);
             }
@@ -124,8 +139,10 @@ EXPOSE 5444";
             } catch (OperationCanceledException) {
             } catch (ContainerServiceNotInstalledException) {
                 _containersChangedCountdown.Reset();
+                Status = ContainersStatus.NotInstalled;
             } catch (ContainerServiceNotRunningException) {
                 _containersChangedCountdown.Reset();
+                Status = ContainersStatus.Stopped;
             }
         }
 

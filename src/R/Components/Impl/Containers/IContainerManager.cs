@@ -9,6 +9,10 @@ using Microsoft.R.Containers;
 
 namespace Microsoft.R.Components.Containers {
     public interface IContainerManager : IDisposable {
+        event EventHandler ContainersStatusChanged;
+
+        ContainersStatus Status { get; }
+
         IReadOnlyList<IContainer> GetContainers();
         IReadOnlyList<IContainer> GetRunningContainers();
         IDisposable SubscribeOnChanges(Action containersChanged);
@@ -16,6 +20,6 @@ namespace Microsoft.R.Components.Containers {
         Task StartAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
         Task StopAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
         Task DeleteAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

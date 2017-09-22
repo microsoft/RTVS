@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Concurrent;
-using System.Threading;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Common.Core.Output;
@@ -17,7 +16,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             _outputs = new ConcurrentDictionary<string, IOutput>();
         }
 
-        public IOutput Get(string name, CancellationToken cancellationToken) 
+        public IOutput Get(string name) 
             => _outputs.GetOrAdd(name, prefix => new TestOutput(prefix, _services.Log()));
 
         private class TestOutput : IOutput {
@@ -31,6 +30,10 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
 
             public void Write(string text) {
                 _log.Write(LogVerbosity.Minimal, MessageCategory.General, $"[{_prefix} output]: {text}");
+            }
+
+            public void WriteError(string text) {
+                _log.Write(LogVerbosity.Minimal, MessageCategory.Error, $"[{_prefix} output]: {text}");
             }
         }
     }
