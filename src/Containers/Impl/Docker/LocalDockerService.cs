@@ -199,7 +199,7 @@ namespace Microsoft.R.Containers.Docker {
                 await process.WaitForExitAsync(timeoutms, ct);
             } catch(IOException) {
                 if (printOutput) {
-                    Output.WriteError(Invariant($"{outputPrefix}> ERROR: {Resources.LocalDockerOutputStreamException}"));
+                    Output.WriteError(Resources.LocalDockerErrorFormat.FormatInvariant(outputPrefix, Resources.LocalDockerOutputStreamException));
                 }
                 throw new ContainerException(Resources.LocalDockerOutputStreamException);
             } catch(OperationCanceledException) when (!failOnTimeout && !ct.IsCancellationRequested){
@@ -207,7 +207,7 @@ namespace Microsoft.R.Containers.Docker {
 
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error) && !IsSecurityWarning(error)) {
-                Output.WriteError(Invariant($"{outputPrefix}> ERROR: {error}"));
+                Output.WriteError(Resources.LocalDockerErrorFormat.FormatInvariant(outputPrefix, error));
                 throw new ContainerException(error);
             }
              
