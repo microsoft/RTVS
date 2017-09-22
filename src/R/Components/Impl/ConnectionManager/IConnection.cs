@@ -10,6 +10,8 @@ namespace Microsoft.R.Components.ConnectionManager {
 
         Uri Uri { get; }
 
+        string ContainerName { get; }
+
         /// <summary>
         /// If true, the connection is to a remote machine
         /// </summary>

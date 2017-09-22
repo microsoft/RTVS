@@ -80,7 +80,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         public IConnection AddOrUpdateConnection(IConnectionInfo connectionInfo) {
-            var newConnection = Connection.Create(_securityService, connectionInfo, _settings.ShowHostLoadMeter);
+            var newConnection = Connection.Create(_securityService, _containers, connectionInfo, _settings.ShowHostLoadMeter);
             var connection = _connections.AddOrUpdate(newConnection.Name, newConnection, (k, v) => UpdateConnectionFactory(v, newConnection));
             UpdateRecentConnections();
             return connection;
@@ -174,7 +174,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         private IConnection GetOrCreateConnection(IConnectionInfo connectionInfo)
             => _connections.TryGetValue(connectionInfo.Name, out var connection)
                ? connection
-               : Connection.Create(_securityService, connectionInfo, _settings.ShowHostLoadMeter);
+               : Connection.Create(_securityService, _containers, connectionInfo, _settings.ShowHostLoadMeter);
 
         private IConnection UpdateConnectionFactory(IConnection oldConnection, IConnection newConnection) {
             if (oldConnection != null && newConnection.Equals(oldConnection)) {
@@ -191,7 +191,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             }
 
             return _settings.Connections
-                .Select(c => (IConnection)Connection.Create(_securityService, c, _settings.ShowHostLoadMeter))
+                .Select(c => (IConnection)Connection.Create(_securityService, _containers, c, _settings.ShowHostLoadMeter))
                 .ToDictionary(k => k.Name);
         }
 

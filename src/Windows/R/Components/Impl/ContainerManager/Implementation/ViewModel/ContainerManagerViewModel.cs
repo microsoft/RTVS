@@ -127,6 +127,26 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 return;
             }
 
+            var runningContainer = _containers.GetRunningContainers()
+                .FirstOrDefault(c => c.HostPorts.Intersect(container.HostPorts).Any());
+
+            if (runningContainer != null) {
+                var message = IsActiveConnectionToContainer(container)
+                    ? Resources.ContainerManager_Start_ActivePortIsBusy_Format.FormatInvariant(container.Name, runningContainer.Name)
+                    : Resources.ContainerManager_Start_PortIsBusy_Format.FormatInvariant(container.Name, runningContainer.Name);
+                var stopRunning = _ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.Yes;
+                if (stopRunning) {
+                    try {
+                        await _containers.StopAsync(runningContainer.Id, cancellationToken);
+                    } catch (ContainerException) {
+                        _ui.ShowMessage(Resources.ContainerManager_StopError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+                        return;
+                    }
+                } else {
+                    return;
+                }
+            }
+
             try {
                 await _containers.StartAsync(container.Id, cancellationToken);
             } catch (ContainerException) {
@@ -152,8 +172,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             }
 
             if (container.IsRunning) {
-                var activeConnection = _connections.ActiveConnection;
-                var message = activeConnection != null && container.HostPorts.Contains(activeConnection.Uri.Port)
+                var message = IsActiveConnectionToContainer(container)
                     ? Resources.ContainerManager_DeleteActiveWarning_Format.FormatInvariant(container.Name)
                     : Resources.ContainerManager_DeleteRunningWarning_Format.FormatInvariant(container.Name);
 
@@ -179,6 +198,9 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 _ui.ShowMessage(Resources.ContainerManager_DeleteError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
             }
         }
+
+        private bool IsActiveConnectionToContainer(ContainerViewModel container) 
+            => _connections.ActiveConnection?.ContainerName?.EqualsOrdinal(container.Name) ?? false;
 
         public void ShowConnections() 
             => _services.GetService<IRInteractiveWorkflowToolWindowService>().Connections().Show(true, true);
