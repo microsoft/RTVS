@@ -8,6 +8,11 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <ItemGroup>
+    <Compile Remove="ConnectionManager\Implementation\**" />
+    <EmbeddedResource Remove="ConnectionManager\Implementation\**" />
+    <None Remove="ConnectionManager\Implementation\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
@@ -47,7 +52,6 @@
     <ProjectReference Include="..\..\..\Containers\Impl\Microsoft.R.Containers.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ConnectionManager\Implementation\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
