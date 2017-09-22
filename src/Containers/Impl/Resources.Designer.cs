@@ -62,6 +62,15 @@ namespace Microsoft.R.Containers {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}&gt; ERROR: {1}.
+        /// </summary>
+        internal static string LocalDockerErrorFormat {
+            get {
+                return ResourceManager.GetString("LocalDockerErrorFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can&apos;t read from Docker process output stream.
         /// </summary>
         internal static string LocalDockerOutputStreamException {

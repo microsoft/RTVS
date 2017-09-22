@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Common.Core.Output;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
