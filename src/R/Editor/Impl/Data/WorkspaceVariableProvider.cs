@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
@@ -26,6 +27,8 @@ namespace Microsoft.R.Editor.Data {
         private const int _maxWaitTime = 2000;
         private const int _maxResults = 100;
 
+        private readonly IServiceContainer _services;
+
         /// <summary>
         /// Collection of top-level variables
         /// </summary>
@@ -33,7 +36,9 @@ namespace Microsoft.R.Editor.Data {
         private bool _updating;
 
         public WorkspaceVariableProvider(IServiceContainer services) : 
-            base(services.GetService<IRInteractiveWorkflowProvider>()) { }
+            base(services.GetService<IRInteractiveWorkflowProvider>()) {
+            _services = services;
+        }
 
         #region IVariablesProvider
         /// <summary>
@@ -82,28 +87,27 @@ namespace Microsoft.R.Editor.Data {
 
                 // May be a package object line mtcars$
                 var memberName = TrimToLastSelector(variableName);
-                var session = Workflow.RSession;
 
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
-                Task.Run(async () => {
-                    try {
-                        var result = await session.TryEvaluateAndDescribeAsync(memberName, REvaluationResultProperties.None, null);
-                        if (!(result is IRErrorInfo)) {
-                            infoList = await session.DescribeChildrenAsync(REnvironments.GlobalEnv,
-                                memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
-                        }
 
+                async Task FillInfoList() {
+                    try {
+                        var result = await Session.TryEvaluateAndDescribeAsync(memberName, None, null);
+                        if (!(result is IRErrorInfo)) {
+                            infoList = await Session.DescribeChildrenAsync(REnvironments.GlobalEnv, memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
+                        }
                     } catch (Exception ex) when (!ex.IsCriticalException()) { }
-                }).Wait(_maxWaitTime);
+                }
+
+                _services.Tasks().Wait(FillInfoList(), CancellationToken.None, _maxWaitTime);
 
                 if (infoList != null) {
                     return infoList
-                                .Where(m => m is IRValueInfo &&
-                                               (((IRValueInfo)m).AccessorKind == RChildAccessorKind.At ||
-                                                ((IRValueInfo)m).AccessorKind == RChildAccessorKind.Dollar))
-                                .Take(maxCount)
-                                .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
-                                .ToArray();
+                        .OfType<IRValueInfo>()
+                        .Where(m => m.AccessorKind == RChildAccessorKind.At || m.AccessorKind == RChildAccessorKind.Dollar)
+                        .Take(maxCount)
+                        .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
+                        .ToArray();
                 }
             } catch (OperationCanceledException) { } catch (RException) { }
 
@@ -133,9 +137,8 @@ namespace Microsoft.R.Editor.Data {
             try {
                 _updating = true;
                 // May be null in tests
-                var session = Workflow.RSession;
-                if (session.IsHostRunning) {
-                    var stackFrames = await session.TracebackAsync();
+                if (Session.IsHostRunning) {
+                    var stackFrames = await Session.TracebackAsync();
 
                     var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
                     if (globalStackFrame != null) {
@@ -150,7 +153,7 @@ namespace Microsoft.R.Editor.Data {
                             DimProperty |
                             FlagsProperty;
                         var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
-                        var settings = Workflow.Services.GetService<IRSettings>();
+                        var settings = _services.GetService<IRSettings>();
                         var e = new RSessionDataObject(evaluation, settings.EvaluateActiveBindings);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();
