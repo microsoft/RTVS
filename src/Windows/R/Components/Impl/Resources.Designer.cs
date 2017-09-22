@@ -322,20 +322,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled..
+        /// </summary>
+        public static string ConnectionManager_DeleteLocalDisabledTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteLocalDisabledTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default entry for the running local docker container cannot be deleted. It will be removed when container is stopped or deleted..
+        /// </summary>
+        public static string ConnectionManager_DeleteLocalDockerDisabledTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteLocalDockerDisabledTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete connection &apos;{0}&apos;.
         /// </summary>
         public static string ConnectionManager_DeleteTooltip_Format {
             get {
                 return ResourceManager.GetString("ConnectionManager_DeleteTooltip_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled..
-        /// </summary>
-        public static string ConnectionManager_DeleteTooltipDisabled {
-            get {
-                return ResourceManager.GetString("ConnectionManager_DeleteTooltipDisabled", resourceCulture);
             }
         }
         
@@ -354,6 +363,15 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_EditedConnectionHasChanges {
             get {
                 return ResourceManager.GetString("ConnectionManager_EditedConnectionHasChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit local docker connection &apos;{0}&apos;.
+        /// </summary>
+        public static string ConnectionManager_EditLocalDockerTooltip_Format {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditLocalDockerTooltip_Format", resourceCulture);
             }
         }
         
@@ -382,6 +400,17 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_InformationTooltipFormatLocal {
             get {
                 return ResourceManager.GetString("ConnectionManager_InformationTooltipFormatLocal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host: {0}
+        ///Container name: {1}
+        ///Arguments: {2}.
+        /// </summary>
+        public static string ConnectionManager_InformationTooltipFormatLocalDocker {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InformationTooltipFormatLocalDocker", resourceCulture);
             }
         }
         
@@ -876,6 +905,27 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_LocalDocker {
             get {
                 return ResourceManager.GetString("ContainerManager_LocalDocker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t start container &apos;{0}&apos; because its port is taken by container &apos;{1}&apos;.
+        ///Do you want to stop &apos;{1}&apos; and then start &apos;{0}&apos;?
+        ///All unsaved data will be lost!.
+        /// </summary>
+        public static string ContainerManager_Start_ActivePortIsBusy_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_Start_ActivePortIsBusy_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t start container &apos;{0}&apos; because its port is taken by container &apos;{1}&apos;.
+        ///Do you want to stop &apos;{1}&apos; and then start &apos;{0}&apos;?.
+        /// </summary>
+        public static string ContainerManager_Start_PortIsBusy_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_Start_PortIsBusy_Format", resourceCulture);
             }
         }
         

@@ -348,6 +348,9 @@
   <data name="ConnectionManager_EditLocalTooltip_Format" xml:space="preserve">
     <value>Edit local connection '{0}'</value>
   </data>
+  <data name="ConnectionManager_EditLocalDockerTooltip_Format" xml:space="preserve">
+    <value>Edit local docker connection '{0}'</value>
+  </data>
   <data name="ConnectionManager_EditRemoteTooltip_Format" xml:space="preserve">
     <value>Edit remote connection '{0}'</value>
   </data>
@@ -488,6 +491,15 @@ To start working with containers, run Docker for Windows and restart Visual Stud
   <data name="ContainerManager_StartTooltip_Format" xml:space="preserve">
     <value>Start container '{0}'</value>
   </data>
+  <data name="ContainerManager_Start_ActivePortIsBusy_Format" xml:space="preserve">
+    <value>Can't start container '{0}' because its port is taken by container '{1}'.
+Do you want to stop '{1}' and then start '{0}'?
+All unsaved data will be lost!</value>
+  </data>
+  <data name="ContainerManager_Start_PortIsBusy_Format" xml:space="preserve">
+    <value>Can't start container '{0}' because its port is taken by container '{1}'.
+Do you want to stop '{1}' and then start '{0}'?</value>
+  </data>
   <data name="ContainerManager_StartError_Format" xml:space="preserve">
     <value>There was an error starting '{0}' container. Please see R Containers output for details.</value>
   </data>
@@ -589,8 +601,11 @@ All data will be lost. Do you wish to proceed?</value>
   <data name="NoLocalR" xml:space="preserve">
     <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
   </data>
-  <data name="ConnectionManager_DeleteTooltipDisabled" xml:space="preserve">
+  <data name="ConnectionManager_DeleteLocalDisabledTooltip" xml:space="preserve">
     <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
+  </data>
+  <data name="ConnectionManager_DeleteLocalDockerDisabledTooltip" xml:space="preserve">
+    <value>Default entry for the running local docker container cannot be deleted. It will be removed when container is stopped or deleted.</value>
   </data>
   <data name="ConnectionManager_Connected" xml:space="preserve">
     <value>Connected</value>
@@ -601,6 +616,11 @@ All data will be lost. Do you wish to proceed?</value>
   <data name="ConnectionManager_InformationTooltipFormatLocal" xml:space="preserve">
     <value>Path: {0}
 Arguments: {1}</value>
+  </data>
+  <data name="ConnectionManager_InformationTooltipFormatLocalDocker" xml:space="preserve">
+    <value>Host: {0}
+Container name: {1}
+Arguments: {2}</value>
   </data>
   <data name="ConnectionManager_InformationTooltipFormatRemote" xml:space="preserve">
     <value>Host: {0}

@@ -326,13 +326,12 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 _localDockerConnections.Clear();
                 _remoteConnections.Clear();
                 foreach (var connection in ConnectionManager.RecentConnections.OrderBy(c => c.Name)) {
-                    var cvm = CreateConnectionViewModel(connection);
                     if (connection.IsRemote) {
-                        _remoteConnections.Add(cvm);
+                        CreateRemoteConnectionViewModel(connection);
                     } else if (connection.IsDocker) {
-                        _localDockerConnections.Add(cvm);
+                        CreateLocalDockerConnectionViewModel(connection);
                     } else {
-                        _localConnections.Add(cvm);
+                        CreateLocalConnectionViewModel(connection);
                     }
                 }
             }
@@ -344,6 +343,39 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
             HasLocalConnections = _localConnections.Count > 0;
         }
+
+        private void CreateRemoteConnectionViewModel(IConnection connection) {
+            var cvm = CreateConnectionViewModel(connection);
+            var commandLine = GetConnectionTooltipCommandLine(connection);
+
+            cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(connection.Path, commandLine);
+            cvm.ButtonEditTooltip = Resources.ConnectionManager_EditRemoteTooltip_Format.FormatInvariant(connection.Name);
+            _remoteConnections.Add(cvm);
+        }
+
+        private void CreateLocalDockerConnectionViewModel(IConnection connection) {
+            var cvm = CreateConnectionViewModel(connection);
+            var commandLine = GetConnectionTooltipCommandLine(connection);
+
+            cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatLocalDocker.FormatInvariant(connection.Path, connection.ContainerName, commandLine);
+            cvm.ButtonEditTooltip = Resources.ConnectionManager_EditLocalDockerTooltip_Format.FormatInvariant(connection.Name);
+            cvm.ButtonDeleteDisabledTooltip = Resources.ConnectionManager_DeleteLocalDockerDisabledTooltip;
+            _localDockerConnections.Add(cvm);
+        }
+
+        private void CreateLocalConnectionViewModel(IConnection connection) {
+            var cvm = CreateConnectionViewModel(connection);
+            var commandLine = GetConnectionTooltipCommandLine(connection);
+
+            cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(connection.Path, commandLine);
+            cvm.ButtonEditTooltip = Resources.ConnectionManager_EditLocalTooltip_Format.FormatInvariant(connection.Name);
+            cvm.ButtonDeleteDisabledTooltip = Resources.ConnectionManager_DeleteLocalDisabledTooltip;
+            _localConnections.Add(cvm);
+        }
+
+        private static string GetConnectionTooltipCommandLine(IConnectionInfo connection) => !string.IsNullOrWhiteSpace(connection.RCommandLineArguments)
+            ? connection.RCommandLineArguments
+            : Resources.ConnectionManager_None;
 
         private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
             var isActive = connection == ConnectionManager.ActiveConnection;
