@@ -883,18 +883,27 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed. To start working with containers,]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Docker hizmeti yüklü değil. Kapsayıcılarla çalışmaya başlamak için,]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_SecondPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[install Docker for Windows]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Windows için Docker'ı yükleyin]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[and restart Visual Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ve Visual Studio'yu yeniden başlatın.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1000,6 +1009,9 @@
       <Item ItemId=";ContainerManager_DeleteRunningWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Container '{0}' is currently running.]D;]A;It has to be stopped before deleting. All data will be lost.]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' kapsayıcısı şu anda çalışmıyor.]D;]A;Silmeden önce durdurulması gerekiyor. Tüm veriler kaybolacak.]D;]A;Devam etmek istiyor musunuz?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1015,8 +1027,8 @@
       <Item ItemId=";ContainerManager_DeleteWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You're going to delete container '{0}'.]D;]A;All data will be lost. Do you wish to proceed?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA['{0}' kapsayıcısı şu anda çalışıyor.]D;]A;Silinmeden önce durdurulması gerekir.]D;]A;Devam etmek istiyor musunuz?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' kapsayıcısını sileceksiniz.]D;]A;Tüm veriler kaybolacak. Devam etmek istiyor musunuz?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
