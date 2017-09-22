@@ -349,7 +349,7 @@
     <value>Edit local connection '{0}'</value>
   </data>
   <data name="ConnectionManager_EditLocalDockerTooltip_Format" xml:space="preserve">
-    <value>Edit local docker connection '{0}'</value>
+    <value>Edit local Docker connection '{0}'</value>
   </data>
   <data name="ConnectionManager_EditRemoteTooltip_Format" xml:space="preserve">
     <value>Edit remote connection '{0}'</value>
@@ -483,7 +483,7 @@ To start working with containers, run Docker for Windows and restart Visual Stud
     <value>There was an error creating the container. Please see R Containers output for details.</value>
   </data>
   <data name="ContainerManager_CreateTooltip" xml:space="preserve">
-    <value>Create new docker container</value>
+    <value>Create new Docker container</value>
   </data>
   <data name="ContainerManager_Cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -605,7 +605,7 @@ All data will be lost. Do you wish to proceed?</value>
     <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
   </data>
   <data name="ConnectionManager_DeleteLocalDockerDisabledTooltip" xml:space="preserve">
-    <value>Default entry for the running local docker container cannot be deleted. It will be removed when container is stopped or deleted.</value>
+    <value>Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.</value>
   </data>
   <data name="ConnectionManager_Connected" xml:space="preserve">
     <value>Connected</value>

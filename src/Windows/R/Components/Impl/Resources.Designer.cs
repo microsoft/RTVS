@@ -331,7 +331,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Default entry for the running local docker container cannot be deleted. It will be removed when container is stopped or deleted..
+        ///   Looks up a localized string similar to Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted..
         /// </summary>
         public static string ConnectionManager_DeleteLocalDockerDisabledTooltip {
             get {
@@ -367,7 +367,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit local docker connection &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Edit local Docker connection &apos;{0}&apos;.
         /// </summary>
         public static string ConnectionManager_EditLocalDockerTooltip_Format {
             get {
@@ -841,7 +841,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create new docker container.
+        ///   Looks up a localized string similar to Create new Docker container.
         /// </summary>
         public static string ContainerManager_CreateTooltip {
             get {
