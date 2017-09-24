@@ -11,7 +11,7 @@ namespace Microsoft.R.LanguageServer.Server {
         protected LanguageServerSession LanguageServerSession => RequestContext.Features.Get<LanguageServerSession>();
 
         protected ClientProxy Client => LanguageServerSession.Client;
-        protected IServiceContainer Services => Session.Current.Services;
+         protected IServiceContainer Services => Session.Current.ServiceContainer;
         protected IMainThread MainThread => Services.MainThread();
     }
 }

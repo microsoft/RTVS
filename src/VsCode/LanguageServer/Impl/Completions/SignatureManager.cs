@@ -24,18 +24,18 @@ namespace Microsoft.R.LanguageServer.Completions {
             _mainThread = services.MainThread();
         }
 
-        public async Task<IList<SignatureInformation>> GetSignaturesAsync(IRIntellisenseContext context) {
+        public Task<IList<SignatureInformation>> GetSignaturesAsync(IRIntellisenseContext context) {
             using (context.AstReadLock()) {
                 var tcs = new TaskCompletionSource<IList<SignatureInformation>>();
                 var sigs = _signatureEngine.GetSignaturesAsync(context, e => tcs.TrySetResult(ToSignatureInformation(e)));
                 if (sigs != null) {
-                    return ToSignatureInformation(sigs);
+                    return Task.FromResult(ToSignatureInformation(sigs));
                 }
-                return await tcs.Task;
+                return tcs.Task;
             }
         }
 
-        public async Task<Hover> GetHoverAsync(IRIntellisenseContext context, CancellationToken ct) {
+        public Task<Hover> GetHoverAsync(IRIntellisenseContext context, CancellationToken ct) {
             var tcs = new TaskCompletionSource<Hover>();
             using (context.AstReadLock()) {
                 var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
@@ -47,9 +47,9 @@ namespace Microsoft.R.LanguageServer.Completions {
                 });
 
                 if (infos != null) {
-                    return ToHover(infos.ToList(), context.EditorBuffer);
+                    return Task.FromResult(ToHover(infos.ToList(), context.EditorBuffer));
                 }
-                return await tcs.Task;
+                return tcs.Task;
             }
         }
 

@@ -12,9 +12,11 @@ using JsonRpc.Standard.Server;
 using JsonRpc.Streams;
 using LanguageServer.VsCode;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
+using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Server {
     /// <summary>
@@ -22,7 +24,12 @@ namespace Microsoft.R.LanguageServer.Server {
     /// Listens on stdin/stdout for the language protocol JSON RPC
     /// </summary>
     internal sealed class VsCodeConnection {
-        public void Connect(IServiceContainer services, bool debugMode) {
+        private readonly ServiceContainer _serviceContainer;
+
+        public VsCodeConnection(ServiceContainer serviceContainer) {
+            _serviceContainer = serviceContainer;
+        }
+        public void Connect(bool debugMode) {
             var logWriter = CreateLogWriter(debugMode);
 
             using (logWriter)
@@ -52,18 +59,22 @@ namespace Microsoft.R.LanguageServer.Server {
                 }
                 // Configure & build service host
                 var session = new LanguageServerSession(client, contractResolver);
+                var output = new Output(session.Client.Window, _serviceContainer.GetService<IActionLog>());
+                _serviceContainer.AddService(output);
+
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);
                 var serverHandler = new StreamRpcServerHandler(host,
                     StreamRpcServerHandlerOptions.ConsistentResponseSequence |
                     StreamRpcServerHandlerOptions.SupportsRequestCancellation);
                 serverHandler.DefaultFeatures.Set(session);
 
+
                 var cts = new CancellationTokenSource();
                 // If we want server to stop, just stop the "source"
                 using (serverHandler.Attach(reader, writer))
                 using (clientHandler.Attach(reader, writer))
-                using (var rConnection = new RConnection()) {
-                    rConnection.ConnectAsync(services, cts.Token).DoNotWait();
+                using (var rConnection = new RConnection(_serviceContainer)) {
+                    rConnection.ConnectAsync(cts.Token).DoNotWait();
                     // Wait for the "stop" request.
                     session.CancellationToken.WaitHandle.WaitOne();
                     cts.Cancel();

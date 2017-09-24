@@ -71,7 +71,7 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         private IRIntellisenseContext CreateContext(Position position) {
             var bufferPosition = EditorBuffer.ToStreamPosition(position);
-            var session = new EditorIntellisenseSession(View);
+            var session = new EditorIntellisenseSession(View, _services);
             return new RIntellisenseContext(session, EditorBuffer, Document.EditorTree, bufferPosition);
         }
     }

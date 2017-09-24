@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -112,6 +113,7 @@ namespace Microsoft.R.Editor.Functions {
             var filePath = this.CacheFilePath;
             try {
                 if (_fs.FileExists(filePath)) {
+                    Debug.WriteLine("Restoring function index from cache");
                     var list = new List<IPersistentFunctionInfo>();
                     using (var file = new FileStream(filePath, FileMode.Open, FileAccess.Read)) {
                         using (var sr = new StreamReader(file)) {
@@ -121,7 +123,7 @@ namespace Microsoft.R.Editor.Functions {
                             }
                             while (!sr.EndOfStream) {
                                 s = sr.ReadLine().Trim();
-                                if(!PersistentFunctionInfo.TryParse(s, out IPersistentFunctionInfo info)) { 
+                                if(!PersistentFunctionInfo.TryParse(s, out var info)) { 
                                     return null;
                                 }
                                 list.Add(info);

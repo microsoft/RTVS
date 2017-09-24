@@ -9,7 +9,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
     /// <summary>
-    /// HTML tree lock. In addition to basic reader/writer lock functionality
+    /// AST lock. In addition to basic reader/writer lock functionality
     /// it has ability to track lock holders and assert if someone
     /// tries to reacquire lock again and makes it easier to track
     /// who is currently holding the lock.

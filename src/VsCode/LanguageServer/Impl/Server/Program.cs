@@ -12,8 +12,8 @@ namespace Microsoft.R.LanguageServer.Server {
         public static void Main(string[] args) {
             var debugMode = CheckDebugMode(args);
             using (Session.Create()) {
-                var connection = new VsCodeConnection();
-                connection.Connect(Session.Current.Services, debugMode);
+                var connection = new VsCodeConnection(Session.Current.ServiceContainer);
+                connection.Connect(debugMode);
             }
         }
 

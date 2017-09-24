@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using JsonRpc.Standard.Client;
 using JsonRpc.Standard.Contracts;
+using LanguageServer.VsCode.Contracts;
 using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.LanguageServer.Settings;
@@ -21,19 +22,12 @@ namespace Microsoft.R.LanguageServer.Server {
             RpcClient = rpcClient;
             var builder = new JsonRpcProxyBuilder { ContractResolver = contractResolver };
             Client = new ClientProxy(builder, rpcClient);
-            Documents = new ConcurrentDictionary<Uri, SessionDocument>();
-        }
+         }
 
         public CancellationToken CancellationToken => cts.Token;
-
         public JsonRpcClient RpcClient { get; }
-
         public ClientProxy Client { get; }
-
-        public ConcurrentDictionary<Uri, SessionDocument> Documents { get; }
-
         public LanguageServerSettings Settings { get; set; } = new LanguageServerSettings();
-
         public void StopServer() => cts.Cancel();
     }
 }

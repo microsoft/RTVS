@@ -8,14 +8,14 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Completions {
-    internal sealed class EditorIntellisenseSession : ServiceAndPropertyHolder, IEditorIntellisenseSession {
-        public EditorIntellisenseSession(IEditorView view) {
+    internal sealed class EditorIntellisenseSession : PropertyHolder, IEditorIntellisenseSession {
+        public EditorIntellisenseSession(IEditorView view, IServiceContainer services) {
             View = view;
-            ServiceManager.AddService(new ViewSignatureBroker());
+            Services = services;
         }
 
         public T As<T>() where T : class => throw new NotSupportedException();
-        public new IServiceContainer Services => base.Services;
+        public IServiceContainer Services { get; }
         public IEditorView View { get; }
         public bool IsDismissed => false;
 

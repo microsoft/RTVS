@@ -29,6 +29,13 @@ namespace Microsoft.R.Editor.Completions {
             IsRHistoryRequest = isRHistoryRequest;
         }
 
+        public RIntellisenseContext(IEditorIntellisenseSession session, IEditorBuffer editorBuffer, AstRoot ast, int position, bool autoShown = true, bool isRHistoryRequest = false) :
+            base(session, editorBuffer, position) {
+            _lockedAstRoot = ast;
+            AutoShownCompletion = autoShown;
+            IsRHistoryRequest = isRHistoryRequest;
+        }
+
         public AstRoot AstRoot => _lockedAstRoot ?? _editorTree.AstRoot;
 
         public IDisposable AstReadLock() {

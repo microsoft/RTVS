@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
@@ -15,6 +16,7 @@ using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor;
+using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Settings;
@@ -34,7 +36,8 @@ namespace Microsoft.R.LanguageServer.Services {
             var mt = new MainThread();
             SynchronizationContext.SetSynchronizationContext(mt.SynchronizationContext);
 
-            _services.AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
+            _services
+                .AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
                 .AddService(mt)
                 .AddService(new ContentTypeServiceLocator())
                 .AddService<ISettingsStorage, SettingsStorage>()
@@ -44,13 +47,16 @@ namespace Microsoft.R.LanguageServer.Services {
                 .AddService(new Application())
                 .AddService<IRInteractiveWorkflowProvider, RInteractiveWorkflowProvider>()
                 .AddService<ICoreShell, CoreShell>()
-                .AddService<IREditorSettings, REditorSettings>()
+                .AddService(new REditorSettings())
                 .AddService(new IdleTimeService(_services))
                 .AddService(new DocumentCollection(_services))
+                .AddService(new ViewSignatureBroker())
                 .AddEditorServices();
 
             AddPlatformSpecificServices();
         }
+
+        public void AddService<T>(T instance) => _services.AddService(instance);
 
         public void Dispose() => _services.Dispose();
 

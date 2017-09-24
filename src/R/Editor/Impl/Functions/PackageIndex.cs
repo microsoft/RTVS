@@ -104,16 +104,19 @@ namespace Microsoft.R.Editor.Functions {
                     Debug.WriteLine("R function host start: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Fetch list of package functions from R session
+                    stopwatch.Reset();
                     await LoadInstalledPackagesIndexAsync(ct);
                     Debug.WriteLine("Fetch list of package functions from R session: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Try load missing functions from cache or explicitly
+                    stopwatch.Reset();
                     await LoadRemainingPackagesFunctions(ct);
                     Debug.WriteLine("Try load missing functions from cache or explicitly: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Build index
+                    stopwatch.Reset();
                     await _functionIndex.BuildIndexAsync(this, ct);
-                    Debug.WriteLine("R function index total: {0} ms", stopwatch.ElapsedMilliseconds);
+                    Debug.WriteLine("R function index build: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     stopwatch.Stop();
                 }

@@ -9,7 +9,7 @@ using Microsoft.R.LanguageServer.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
     [JsonRpcScope(MethodPrefix = "workspace/")]
-    public class WorkspaceService : LanguageServiceBase {
+    public sealed class WorkspaceService : LanguageServiceBase {
         /// <summary>
         /// Called by VS Code when configuration (settings) change.
         /// https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#didchangeconfiguration-notification

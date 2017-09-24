@@ -9,11 +9,8 @@ using Microsoft.R.LanguageServer.Services;
 namespace Microsoft.R.LanguageServer.Server {
     internal sealed class Session: ISession, IDisposable {
         private static Session _instance;
-        public static ISession Current => _instance;
-
-        private readonly ServiceContainer _services = new ServiceContainer();
-
-        public IServiceContainer Services => _services;
+        public static Session Current => _instance;
+        public ServiceContainer ServiceContainer { get; } = new ServiceContainer();
 
         public static Session Create() {
             Check.InvalidOperation(() => _instance == null);
@@ -21,6 +18,6 @@ namespace Microsoft.R.LanguageServer.Server {
             return _instance;
         }
 
-        public void Dispose() => _services?.Dispose();
+        public void Dispose() => ServiceContainer?.Dispose();
     }
 }
