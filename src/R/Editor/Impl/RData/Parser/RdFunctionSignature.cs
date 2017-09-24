@@ -82,8 +82,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                     var range = TextRange.FromBounds(fragmentStart, fragmentEnd);
                     var fragment = context.TextProvider.GetText(range);
                     sb.Append(fragment);
-                }
-                else {
+                } else {
                     break; // Something went wrong;
                 }
             }
@@ -104,7 +103,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                 }
             }
             // Should be past \method{...}{...}. Now skip signature
-            var bc = new BraceCounter<char>(new [] { '(', ')' });
+            var bc = new BraceCounter<char>(new[] { '(', ')' });
             for (var i = context.Tokens[index - 1].End; i < context.TextProvider.Length; i++) {
                 if (bc.CountBrace(context.TextProvider[i])) {
                     if (bc.Count == 0) {
@@ -190,13 +189,11 @@ namespace Microsoft.R.Editor.RData.Parser {
                             argDefaultValue = nameArg.DefaultValue != null ?
                                  RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue)) : string.Empty;
                         } else {
-                            if (arg is MissingArgument) {
-                                argName = string.Empty;
+                            if (arg is EllipsisArgument) {
+                                argName = "...";
+                                isEllipsis = true;
                             } else {
-                                if (arg is EllipsisArgument) {
-                                    argName = "...";
-                                    isEllipsis = true;
-                                }
+                                argName = string.Empty;
                             }
                         }
                     }

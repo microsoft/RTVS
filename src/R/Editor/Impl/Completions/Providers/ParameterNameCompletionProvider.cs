@@ -49,7 +49,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
             // Collect parameter names from all signatures
             IEnumerable<KeyValuePair<string, IArgumentInfo>> arguments = new Dictionary<string, IArgumentInfo>();
             foreach (var signature in functionInfo.Signatures) {
-                var args = signature.Arguments.ToDictionary(x => x.Name);
+                var args = new Dictionary<string, IArgumentInfo>();
+                foreach (var arg in signature.Arguments.Where(x => !string.IsNullOrEmpty(x.Name))) {
+                    args[arg.Name] = arg;
+                }
                 arguments = arguments.Union(args);
             }
 
