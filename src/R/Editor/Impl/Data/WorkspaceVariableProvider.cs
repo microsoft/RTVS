@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Data {
         private readonly Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
         private bool _updating;
 
-        public WorkspaceVariableProvider(IServiceContainer services) : 
+        public WorkspaceVariableProvider(IServiceContainer services) :
             base(services.GetService<IRInteractiveWorkflowProvider>()) {
             _services = services;
         }
@@ -90,16 +90,16 @@ namespace Microsoft.R.Editor.Data {
 
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
 
-                async Task FillInfoList() {
+                Task.Run(async () => {
                     try {
-                        var result = await Session.TryEvaluateAndDescribeAsync(memberName, None, null);
+                        var result = await Session.TryEvaluateAndDescribeAsync(memberName, REvaluationResultProperties.None, null);
                         if (!(result is IRErrorInfo)) {
-                            infoList = await Session.DescribeChildrenAsync(REnvironments.GlobalEnv, memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
+                            infoList = await Session.DescribeChildrenAsync(REnvironments.GlobalEnv,
+                                memberName, HasChildrenProperty | AccessorKindProperty, null, _maxResults);
                         }
-                    } catch (Exception ex) when (!ex.IsCriticalException()) { }
-                }
 
-                _services.Tasks().Wait(FillInfoList(), CancellationToken.None, _maxWaitTime);
+                    } catch (Exception ex) when (!ex.IsCriticalException()) { }
+                }).Wait(_maxWaitTime);
 
                 if (infoList != null) {
                     return infoList
