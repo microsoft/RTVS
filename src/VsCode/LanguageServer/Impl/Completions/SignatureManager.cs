@@ -17,11 +17,9 @@ using Microsoft.R.LanguageServer.Extensions;
 namespace Microsoft.R.LanguageServer.Completions {
     internal sealed class SignatureManager {
         private readonly RFunctionSignatureEngine _signatureEngine;
-        private readonly IMainThread _mainThread;
-
+ 
         public SignatureManager(IServiceContainer services) {
             _signatureEngine = new RFunctionSignatureEngine(services);
-            _mainThread = services.MainThread();
         }
 
         public Task<IList<SignatureInformation>> GetSignaturesAsync(IRIntellisenseContext context) {
@@ -36,7 +34,7 @@ namespace Microsoft.R.LanguageServer.Completions {
         }
 
         public Task<Hover> GetHoverAsync(IRIntellisenseContext context, CancellationToken ct) {
-            var tcs = new TaskCompletionSource<Hover>();
+           var tcs = new TaskCompletionSource<Hover>();
             using (context.AstReadLock()) {
                 var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
                     if (!ct.IsCancellationRequested) {
@@ -77,7 +75,7 @@ namespace Microsoft.R.LanguageServer.Completions {
                     };
                 }
             }
-            return null;
+            return new Hover();
         }
     }
 }

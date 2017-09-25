@@ -3,6 +3,8 @@
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
@@ -25,9 +27,9 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
-            using (new DebugMeasureTime("textDocument/hover")) {
+             using (new DebugMeasureTime("textDocument/hover")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? await doc.GetHoverAsync(position, ct) : null;
+                return doc != null ? await doc.GetHoverAsync(position, ct) : new Hover();
             }
         }
 
@@ -35,7 +37,7 @@ namespace Microsoft.R.LanguageServer.Documents {
         public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
             using (new DebugMeasureTime("textDocument/signatureHelp")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? await doc.GetSignatureHelpAsync(position) : null;
+                return doc != null ? await doc.GetSignatureHelpAsync(position) : new SignatureHelp();
             }
         }
 
@@ -60,9 +62,9 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public CompletionList completion(TextDocumentIdentifier textDocument, Position position) {
-            using (new DebugMeasureTime("textDocument/completion")) {
+             using (new DebugMeasureTime("textDocument/completion")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
-                return doc?.GetCompletions(position);
+                return doc != null ? doc.GetCompletions(position) : new CompletionList();
             }
         }
     }
