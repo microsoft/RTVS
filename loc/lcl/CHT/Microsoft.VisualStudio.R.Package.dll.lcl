@@ -6753,6 +6753,9 @@
         <Item ItemId=";{ad87578c-b324-44dc-a12a-b01a6ed5c6e3},910" ItemType=";CommandName" PsrId="240" Leaf="true">
           <Str Cat="Button">
             <Val><![CDATA[Show Containers Window]]></Val>
+            <Tgt Cat="Button" Stat="Loc" Orig="New">
+              <Val><![CDATA[顯示容器視窗]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
         </Item>
