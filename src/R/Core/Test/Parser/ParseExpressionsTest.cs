@@ -342,5 +342,29 @@ namespace Microsoft.R.Core.Test.Parser {
 ";
             ParserTest.VerifyParse(expected, "if(!a()) { }");
         }
+        [Test]
+        public void ParseBangExpression04() {
+            const string expected = @"GlobalScope  [Global]
+    ExpressionStatement  [a <- !b]
+        Expression  [a <- !b]
+            TokenOperator  [<- [2...4)]
+                Variable  [a]
+                TokenNode  [<- [2...4)]
+                TokenOperator  [! [5...6)]
+                    TokenNode  [! [5...6)]
+                    Expression  [b]
+                        Variable  [b]
+    If  []
+        TokenNode  [if [8...10)]
+        TokenNode  [( [10...11)]
+        Expression  [TRUE]
+            LogicalValue  [TRUE [11...15)]
+        TokenNode  [) [15...16)]
+        Scope  []
+            TokenNode  [{ [17...18)]
+            TokenNode  [} [19...20)]
+";
+            ParserTest.VerifyParse(expected, "a <- !b\nif(TRUE) { }");
+        }
     }
 }
