@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
@@ -15,14 +16,11 @@ namespace Microsoft.R.Core.Test.Parser {
             _files = files;
         }
 
-        [Test]
-        public void ParseFile_CheckR() {
-            ParseFiles.ParseFile(_files, @"Parser\Check.r");
-        }
-
-        [Test]
-        public void ParseFile_FrametoolsR() {
-            ParseFiles.ParseFile(_files, @"Parser\frametools.r");
+        [CompositeTest]
+        [InlineData("Check.r")]
+        [InlineData("frametools.r")]
+        public void ParseFile(string fileName) {
+            ParseFiles.ParseFile(_files, $@"Parser\{fileName}");
         }
     }
 }
