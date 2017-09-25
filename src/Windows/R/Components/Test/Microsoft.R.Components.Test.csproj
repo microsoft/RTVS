@@ -153,6 +153,10 @@
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Containers\Impl\Microsoft.R.Containers.csproj">
+      <Project>{baea19c5-e1f7-4580-ae19-9fb3c890570b}</Project>
+      <Name>Microsoft.R.Containers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -172,6 +176,10 @@
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Containers\Impl\Microsoft.R.Containers.Windows.csproj">
+      <Project>{8ed6ef0a-08a9-4f77-8ec1-f1630aad2ddb}</Project>
+      <Name>Microsoft.R.Containers.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
       <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
