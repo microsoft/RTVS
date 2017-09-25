@@ -331,10 +331,10 @@
     <value>Local R installations</value>
   </data>
   <data name="ConnectionManager_LocalDockerConnections" xml:space="preserve">
-    <value>Local Docker</value>
+    <value>Local Running Containers</value>
   </data>
   <data name="ConnectionManager_LocalDockerConnections_Tooltip" xml:space="preserve">
-    <value>Local Docker Connections</value>
+    <value>Local Containers Connections</value>
   </data>
   <data name="ConnectionManager_RemoteConnections" xml:space="preserve">
     <value>Remote</value>
@@ -349,7 +349,7 @@
     <value>Edit local connection '{0}'</value>
   </data>
   <data name="ConnectionManager_EditLocalDockerTooltip_Format" xml:space="preserve">
-    <value>Edit local Docker connection '{0}'</value>
+    <value>Edit local container connection '{0}'</value>
   </data>
   <data name="ConnectionManager_EditRemoteTooltip_Format" xml:space="preserve">
     <value>Edit remote connection '{0}'</value>
@@ -370,7 +370,7 @@
     <value>Add Connection</value>
   </data>
   <data name="ConnectionManager_ShowContainers" xml:space="preserve">
-    <value>Containers</value>
+    <value>Containers...</value>
   </data>
   <data name="ConnectionManager_Save" xml:space="preserve">
     <value>Save</value>
@@ -459,7 +459,7 @@ If you want to delete all data on the remote machine you must delete your user p
 To start working with containers, run Docker for Windows and restart Visual Studio.</value>
   </data>
   <data name="ContainerManager_LocalDocker" xml:space="preserve">
-    <value>Local Docker Containers</value>
+    <value>Local Containers</value>
   </data>
   <data name="ContainerManager_CreateLocalDocker" xml:space="preserve">
     <value>Create</value>
@@ -605,7 +605,7 @@ All data will be lost. Do you wish to proceed?</value>
     <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>
   </data>
   <data name="ConnectionManager_DeleteLocalDockerDisabledTooltip" xml:space="preserve">
-    <value>Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.</value>
+    <value>Default entry for the running local container cannot be deleted. It will be removed when container is stopped or deleted.</value>
   </data>
   <data name="ConnectionManager_Connected" xml:space="preserve">
     <value>Connected</value>

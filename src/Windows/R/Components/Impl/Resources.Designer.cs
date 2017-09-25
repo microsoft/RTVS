@@ -331,7 +331,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted..
+        ///   Looks up a localized string similar to Default entry for the running local container cannot be deleted. It will be removed when container is stopped or deleted..
         /// </summary>
         public static string ConnectionManager_DeleteLocalDockerDisabledTooltip {
             get {
@@ -367,7 +367,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit local Docker connection &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Edit local container connection &apos;{0}&apos;.
         /// </summary>
         public static string ConnectionManager_EditLocalDockerTooltip_Format {
             get {
@@ -461,7 +461,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local Docker.
+        ///   Looks up a localized string similar to Local Running Containers.
         /// </summary>
         public static string ConnectionManager_LocalDockerConnections {
             get {
@@ -470,7 +470,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local Docker Connections.
+        ///   Looks up a localized string similar to Local Containers Connections.
         /// </summary>
         public static string ConnectionManager_LocalDockerConnections_Tooltip {
             get {
@@ -612,7 +612,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Containers.
+        ///   Looks up a localized string similar to Containers....
         /// </summary>
         public static string ConnectionManager_ShowContainers {
             get {
@@ -900,7 +900,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Local Docker Containers.
+        ///   Looks up a localized string similar to Local Containers.
         /// </summary>
         public static string ContainerManager_LocalDocker {
             get {

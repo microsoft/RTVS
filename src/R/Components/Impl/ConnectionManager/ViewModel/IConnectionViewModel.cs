@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsPathValid { get; }
         bool IsRenamed { get; }
         bool IsRemote { get; }
-        
+        bool IsContainer { get; }
         void Reset();
         
         /// <summary>
