@@ -26,10 +26,10 @@ namespace Microsoft.R.LanguageServer.Documents {
         private IIdleTimeNotification IdleTimeNotification => _idleTimeNotification ?? (_idleTimeNotification = Services.GetService<IIdleTimeNotification>());
 
         [JsonRpcMethod]
-        public async Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
-             using (new DebugMeasureTime("textDocument/hover")) {
+        public Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
+            using (new DebugMeasureTime("textDocument/hover")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? await doc.GetHoverAsync(position, ct) : new Hover();
+                return doc != null ? doc.GetHoverAsync(position, ct) : Task.FromResult((Hover)null);
             }
         }
 
@@ -62,7 +62,7 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         [JsonRpcMethod]
         public CompletionList completion(TextDocumentIdentifier textDocument, Position position) {
-             using (new DebugMeasureTime("textDocument/completion")) {
+            using (new DebugMeasureTime("textDocument/completion")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
                 return doc != null ? doc.GetCompletions(position) : new CompletionList();
             }

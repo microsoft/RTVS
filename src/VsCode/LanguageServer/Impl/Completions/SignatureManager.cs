@@ -37,11 +37,7 @@ namespace Microsoft.R.LanguageServer.Completions {
            var tcs = new TaskCompletionSource<Hover>();
             using (context.AstReadLock()) {
                 var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
-                    if (!ct.IsCancellationRequested) {
-                        tcs.TrySetResult(ToHover(e.ToList(), context.EditorBuffer));
-                    } else {
-                        tcs.TrySetCanceled();
-                    }
+                    tcs.TrySetResult(!ct.IsCancellationRequested ? ToHover(e.ToList(), context.EditorBuffer) : null);
                 });
 
                 if (infos != null) {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Languages.Core.Text;
@@ -9,8 +10,10 @@ using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.R.LanguageServer.Text {
     internal sealed class EditorBufferSnapshot : IEditorBufferSnapshot {
+        private readonly object _lock = new object();
         private readonly string _content;
         private TextRangeCollection<EditorLine> _lines;
+
         public EditorBufferSnapshot(IEditorBuffer editorBuffer, string content, int version) {
             EditorBuffer = editorBuffer;
             _content = content;
@@ -75,25 +78,28 @@ namespace Microsoft.R.LanguageServer.Text {
                 return;
             }
 
-            _lines = new TextRangeCollection<EditorLine>();
-            var lineStart = 0;
+            lock (_lock) {
+                var lines = new List<EditorLine>();
+                var lineStart = 0;
 
-            for (var i = 0; i < _content.Length; i++) {
-                var ch = _content[i];
-                if (ch.IsLineBreak()) {
-                    var lineBreakLength = 1;
-                    if (ch == '\r' && i + 1 < _content.Length && _content[i + 1] == '\n') {
-                        i++;
-                        lineBreakLength++;
-                    } else if (ch == '\n' && i + 1 < _content.Length && _content[i + 1] == '\r') {
-                        i++;
-                        lineBreakLength++;
+                for (var i = 0; i < _content.Length; i++) {
+                    var ch = _content[i];
+                    if (ch.IsLineBreak()) {
+                        var lineBreakLength = 1;
+                        if (ch == '\r' && i + 1 < _content.Length && _content[i + 1] == '\n') {
+                            i++;
+                            lineBreakLength++;
+                        } else if (ch == '\n' && i + 1 < _content.Length && _content[i + 1] == '\r') {
+                            i++;
+                            lineBreakLength++;
+                        }
+                        lines.Add(new EditorLine(this, lineStart, i + 1 - lineStart, lineBreakLength, lines.Count));
+                        lineStart = i + 1;
                     }
-                    _lines.Add(new EditorLine(this, lineStart, i + 1 - lineStart, lineBreakLength, _lines.Count));
-                    lineStart = i + 1;
                 }
+                lines.Add(new EditorLine(this, lineStart, _content.Length - lineStart, 0, lines.Count));
+                _lines = new TextRangeCollection<EditorLine>(lines);
             }
-            _lines.Add(new EditorLine(this, lineStart, _content.Length - lineStart, 0, _lines.Count));
         }
 
 #pragma warning disable 67
