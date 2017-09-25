@@ -37,8 +37,7 @@ namespace Microsoft.R.Editor.RData.Parser {
             var signatures = new List<ISignatureInfo>();
 
             // Must be at '\usage{'
-            int startTokenIndex, endTokenIndex;
-            if (RdParseUtility.GetKeywordArgumentBounds(tokens, out startTokenIndex, out endTokenIndex)) {
+            if (RdParseUtility.GetKeywordArgumentBounds(tokens, out var startTokenIndex, out var endTokenIndex)) {
                 // Get inner content of the \usage{...} block cleaned up for R parsing
                 var usage = GetRText(context, startTokenIndex, endTokenIndex);
                 var sigs = ParseSignatures(usage);
@@ -72,6 +71,9 @@ namespace Microsoft.R.Editor.RData.Parser {
                 } else {
                     if (token.TokenType == RdTokenType.Keyword && context.TextProvider.GetText(token) == "\\dots") {
                         sb.Append("...");
+                    } else if (token.TokenType == RdTokenType.OpenSquareBracket || token.TokenType == RdTokenType.CloseSquareBracket) {
+                        // Copy verbatim
+                        sb.Append(context.TextProvider.GetText(token));
                     }
                     fragmentStart = context.Tokens[i].End;
                     fragmentEnd = context.Tokens[i + 1].Start;
@@ -142,11 +144,6 @@ namespace Microsoft.R.Editor.RData.Parser {
                          tokens, tokenizer.CommentTokens);
 
             while (!tokens.IsEndOfStream()) {
-                // Filter out '\method{...}{}(signature)
-                if (tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace) {
-                    // Check if { is preceded by \method
-                }
-
                 if (tokens.CurrentToken.TokenType != RTokenType.Identifier) {
                     break;
                 }
@@ -172,40 +169,35 @@ namespace Microsoft.R.Editor.RData.Parser {
                 var functionCall = new FunctionCall();
                 functionCall.Parse(context, context.AstRoot);
 
-                for (var i = 0; i < functionCall.Arguments.Count; i++) {
-                    var arg = functionCall.Arguments[i];
-
+                foreach (var arg in functionCall.Arguments) {
                     string argName = null;
                     string argDefaultValue = null;
                     var isEllipsis = false;
-                    var isOptional = false;
 
-                    var expArg = arg as ExpressionArgument;
-                    if (expArg != null) {
+                    if (arg is ExpressionArgument expArg) {
                         argName = context.TextProvider.GetText(expArg.ArgumentValue);
                     } else {
                         if (arg is NamedArgument nameArg) {
                             argName = context.TextProvider.GetText(nameArg.NameRange);
                             argDefaultValue = nameArg.DefaultValue != null ?
-                                 RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue)) : string.Empty;
-                        } else {
-                            if (arg is EllipsisArgument) {
-                                argName = "...";
-                                isEllipsis = true;
-                            } else {
-                                argName = string.Empty;
-                            }
+                                RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue)) : string.Empty;
+                        } else if (arg is MissingArgument) {
+                            argName = string.Empty;
+                        } else if (arg is EllipsisArgument) {
+                            argName = "...";
+                            isEllipsis = true;
                         }
                     }
 
-                    var argInfo = new ArgumentInfo(argName) {
-                        DefaultValue = argDefaultValue,
-                        IsEllipsis = isEllipsis,
-                        IsOptional = isOptional
-                    };
-                    // TODO: actually parse
-
-                    signatureArguments.Add(argInfo);
+                    if (!string.IsNullOrEmpty(argName)) {
+                        var argInfo = new ArgumentInfo(argName) {
+                            DefaultValue = argDefaultValue,
+                            IsEllipsis = isEllipsis,
+                            IsOptional = false
+                        };
+                        // TODO: actually parse
+                        signatureArguments.Add(argInfo);
+                    }
                 }
             }
 
