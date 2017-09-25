@@ -102,3 +102,4 @@ TestFiles/
 *.tmp_proj
 *.ide
 *.ide-journal
+*.lock
