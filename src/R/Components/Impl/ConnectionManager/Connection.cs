@@ -48,6 +48,6 @@ namespace Microsoft.R.Components.ConnectionManager {
         public Uri Uri => BrokerConnectionInfo.Uri;
         public string ContainerName => Container?.Name;
         public bool IsRemote => BrokerConnectionInfo.IsUrlBased && !Uri.IsLoopback;
-        public bool IsDocker => Container != null;
+        public bool IsContainer => Container != null;
     }
 }

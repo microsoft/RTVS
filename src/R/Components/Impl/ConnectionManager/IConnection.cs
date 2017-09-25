@@ -17,6 +17,6 @@ namespace Microsoft.R.Components.ConnectionManager {
         /// </summary>
         bool IsRemote { get; }
 
-        bool IsDocker { get; }
+        bool IsContainer { get; }
     }
 }
