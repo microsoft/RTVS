@@ -532,6 +532,9 @@
       <Item ItemId=";ConnectionManager_DeleteLocalDockerDisabledTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[실행 중인 로컬 Docker 컨테이너의 기본 항목은 삭제할 수 없습니다. 컨테이너가 중지 또는 삭제되면 제거됩니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -556,6 +559,9 @@
       <Item ItemId=";ConnectionManager_EditLocalDockerTooltip_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit local Docker connection '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로컬 Docker 연결 '{0}' 편집]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -598,6 +604,9 @@
       <Item ItemId=";ConnectionManager_InformationTooltipFormatLocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host: {0}]D;]A;Container name: {1}]D;]A;Arguments: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[호스트: {0}]D;]A;컨테이너 이름: {1}]D;]A;인수: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -973,12 +982,18 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_Port" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Port]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로컬 포트]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_CreateLocalDocker_PortTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Localhost port used to connect to R daemon in the container.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[컨테이너의 R 디먼에 연결하는 데 사용되는 Localhost 포트입니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1012,7 +1027,7 @@
       <Item ItemId=";ContainerManager_CreateTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new Docker container]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[새 Docker 컨테이너 만들기]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -1096,12 +1111,18 @@
       <Item ItemId=";ContainerManager_Start_ActivePortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]D;]A;All unsaved data will be lost!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 컨테이너는 해당 포트를 '{1}' 컨테이너에서 사용 중이므로 시작할 수 없습니다.]D;]A;'{1}'을(를) 중지한 후 '{0}'을(를) 시작하시겠습니까?]D;]A;저장하지 않은 데이터는 모두 손실됩니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_Start_PortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 컨테이너는 해당 포트를 '{1}' 컨테이너에서 사용 중이므로 시작할 수 없습니다.]D;]A;'{1}'을(를) 중지한 후 '{0}'을(를) 시작하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
