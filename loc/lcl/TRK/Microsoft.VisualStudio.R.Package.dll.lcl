@@ -1478,7 +1478,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Interactive Prompts]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Etkileşimli Penceresi Komut İstemleri]]></Val>
+            <Val><![CDATA[R Etkileşim Penceresi Komut İstemleri]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1613,7 +1613,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Please briefly describe what you were doing that led to the issue, if applicable:]D;]A;]D;]A;...]D;]A;]D;]A;If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.]D;]A;]D;]A;A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including information about installed packages and their contents, your complete R Interactive command history and outputs, and values of variables in your present and past sessions.]D;]A;]D;]A;]D;]A;]D;]A;Additional information:]D;]A;]D;]A;{1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Geçerliyse, lütfen sorun oluştuğunda ne yapmakta olduğunuzu açıklayın:]D;]A;]D;]A;...]D;]A;]D;]A;Sorunu gösteren ekran görüntüleriniz varsa, sorunu daha iyi tanılayabilmemiz için lütfen bunları da ekleyin.]D;]A;]D;]A;{0} konumunda ayrıntılı bir tanılama günlüğü oluşturuldu ve bir Windows Explorer penceresi açılarak bu konum için günlük dosyası seçildi. Sorunu daha iyi tanılamamıza yardımcı olmak için, bu dosyayı e-postaya ekleyebilirsiniz. Ancak günlüğün yüklü paketler ve içerikleri, tam R Etkileşimli Penceresi komut geçmişiniz ve şimdiki veya geçmiş oturumlarınızdaki değerlerle değişkenler gibi hassas bilgiler içerebileceğini unutmayın.]D;]A;]D;]A;]D;]A;]D;]A;Ek bilgiler:]D;]A;]D;]A;{1}]]></Val>
+            <Val><![CDATA[Geçerliyse, lütfen sorun oluştuğunda ne yapmakta olduğunuzu açıklayın:]D;]A;]D;]A;...]D;]A;]D;]A;Sorunu gösteren ekran görüntüleriniz varsa, sorunu daha iyi tanılayabilmemiz için lütfen bunları da ekleyin.]D;]A;]D;]A;{0} konumunda ayrıntılı bir tanılama günlüğü oluşturuldu ve bir Windows Explorer penceresi açılarak bu konum için günlük dosyası seçildi. Sorunu daha iyi tanılamamıza yardımcı olmak için, bu dosyayı e-postaya ekleyebilirsiniz. Ancak günlüğün yüklü paketler ve içerikleri, tam R Etkileşim Penceresi komut geçmişiniz ve şimdiki veya geçmiş oturumlarınızdaki değerlerle değişkenler gibi hassas bilgiler içerebileceğini unutmayın.]D;]A;]D;]A;]D;]A;]D;]A;Ek bilgiler:]D;]A;]D;]A;{1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2774,7 +2774,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R geçmişi penceresinde tek tıklama R'ye gönderilen tüm parçayı seçer. R Etkileşimli Penceresinde Yukarı/Aşağı okları tek satırlar yerine öbekler arasında gezinmeyi sağlar.]]></Val>
+            <Val><![CDATA[R geçmişi penceresinde tek tıklama R'ye gönderilen tüm parçayı seçer. R Etkileşim Penceresinde Yukarı/Aşağı okları tek satırlar yerine öbekler arasında gezinmeyi sağlar.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3620,7 +3620,7 @@
         <Str Cat="Text">
           <Val><![CDATA[No R Interactive]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R Etkileşimli Penceresi yok]]></Val>
+            <Val><![CDATA[Seçili öğeleri R Etkileşimli Penceresine gönder]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -4372,7 +4372,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Send selected to R Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Seçili öğeleri R Etkileşimli Penceresine gönder]]></Val>
+              <Val><![CDATA[Seçili öğeleri R Etkileşim Penceresine gönder]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -4432,7 +4432,7 @@
           <Str Cat="Menu Item">
             <Val><![CDATA[R Interactive Window]]></Val>
             <Tgt Cat="Menu Item" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Etkileşimli Penceresi]]></Val>
+              <Val><![CDATA[R Etkileşim Penceresi]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5380,7 +5380,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Attach to R Interactive]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Etkileşimli Penceresine Ekle]]></Val>
+              <Val><![CDATA[R Etkileşim'e Ekle]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -5389,7 +5389,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Attach to R I&nteractive]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[R İ&nteraktif'e Ekle]]></Val>
+              <Val><![CDATA[R E&tkileşim'e Ekle]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -6472,7 +6472,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Show R Interactive Window]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[R Etkileşimli Penceresini Göster]]></Val>
+              <Val><![CDATA[R Etkileşim Penceresini Göster]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
@@ -6753,6 +6753,9 @@
         <Item ItemId=";{ad87578c-b324-44dc-a12a-b01a6ed5c6e3},910" ItemType=";CommandName" PsrId="240" Leaf="true">
           <Str Cat="Button">
             <Val><![CDATA[Show Containers Window]]></Val>
+            <Tgt Cat="Button" Stat="Loc" Orig="New">
+              <Val><![CDATA[Kapsayıcılar Penceresini Göster]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
         </Item>
@@ -7079,7 +7082,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provides project system, R Interactive window, plotting, and more for the R programming language.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R programlama dili için proje sistemi, R Etkileşimli penceresi, çizim oluşturma ve daha fazlasını sağlar.]]></Val>
+            <Val><![CDATA[R programlama dili için proje sistemi, R Etkileşim penceresi, çizim oluşturma ve daha fazlasını sağlar.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
