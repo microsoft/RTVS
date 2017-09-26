@@ -38,15 +38,14 @@ namespace Microsoft.R.Host.Client.Host {
             // Allow "true" and non-zero integer to enable, otherwise disable.
             var rtvsShowConsole = Environment.GetEnvironmentVariable("RTVS_SHOW_CONSOLE");
             if (!bool.TryParse(rtvsShowConsole, out ShowConsole)) {
-                int n;
-                if (int.TryParse(rtvsShowConsole, out n) && n != 0) {
+                if (int.TryParse(rtvsShowConsole, out int n) && n != 0) {
                     ShowConsole = true;
                 }
             }
         }
 
-        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, string rhostDirectory = null)
-            : base(name, connectionInfo, _credentials, console, services) {
+        public LocalBrokerClient(string name, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, string rhostDirectory = null, IRSessionProvider sessionProvider = null)
+            : base(name, connectionInfo, _credentials, console, services, sessionProvider) {
             _rHome = connectionInfo.Uri.LocalPath;
             _services = services;
             _rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
