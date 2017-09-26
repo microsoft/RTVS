@@ -6,34 +6,40 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
+using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.LanguageServer.Client;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Extensions;
 using Microsoft.R.LanguageServer.Text;
+using Microsoft.R.LanguageServer.Validation;
 
 namespace Microsoft.R.LanguageServer.Documents {
     internal sealed class DocumentEntry : IDisposable {
         private readonly IServiceContainer _services;
         private readonly CompletionManager _completionManager;
         private readonly SignatureManager _signatureManager;
+        private readonly DiagnosticsPublisher _diagnosticsPublisher;
 
         public IEditorView View { get; }
         public IEditorBuffer EditorBuffer { get; }
         public IREditorDocument Document { get; }
 
-        public DocumentEntry(string content, IServiceContainer services) {
+        public DocumentEntry(string content, Uri uri, IServiceContainer services) {
             _services = services;
-
+ 
             EditorBuffer = new EditorBuffer(content, "R");
             View = new EditorView(EditorBuffer);
             Document = new REditorDocument(EditorBuffer, services, false);
+
             _completionManager = new CompletionManager(services);
             _signatureManager = new SignatureManager(services);
+            _diagnosticsPublisher = new DiagnosticsPublisher(services.GetService<IVsCodeClient>(), Document, uri, services);
         }
 
         public void ProcessChanges(ICollection<TextDocumentContentChangeEvent> contentChanges) {

@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.Services;
 using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Server {

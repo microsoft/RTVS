@@ -18,7 +18,7 @@ namespace Microsoft.R.LanguageServer.Documents {
 
         public void AddDocument(string content, Uri uri) {
             Check.InvalidOperation(() => !_documents.ContainsKey(uri));
-            var entry = new DocumentEntry(content, _services);
+            var entry = new DocumentEntry(content, uri, _services);
             _documents[uri] = entry;
         }
 
