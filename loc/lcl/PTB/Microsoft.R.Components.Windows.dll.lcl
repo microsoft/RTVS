@@ -532,6 +532,9 @@
       <Item ItemId=";ConnectionManager_DeleteLocalDockerDisabledTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não é possível excluir a entrada padrão para o contêiner do Docker local em execução. Ela será removida quando o contêiner for interrompido ou excluído.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -556,6 +559,9 @@
       <Item ItemId=";ConnectionManager_EditLocalDockerTooltip_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit local Docker connection '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Edite a conexão '{0}' do Docker local]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -598,6 +604,9 @@
       <Item ItemId=";ConnectionManager_InformationTooltipFormatLocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host: {0}]D;]A;Container name: {1}]D;]A;Arguments: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Host: {0}]D;]A;Nome do contêiner: {1}]D;]A;Argumentos: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1018,8 +1027,8 @@
       <Item ItemId=";ContainerManager_CreateTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new Docker container]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Criar um novo contêiner do Docker]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crie um novo contêiner do Docker]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create new docker container]]></Val>
@@ -1102,12 +1111,18 @@
       <Item ItemId=";ContainerManager_Start_ActivePortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]D;]A;All unsaved data will be lost!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não é possível iniciar o contêiner '{0}' porque sua porta está sendo usada pelo contêiner '{1}'.]D;]A;Deseja interromper '{1}' e iniciar '{0}'?]D;]A;Todos os dados não salvos serão perdidos.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_Start_PortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Não é possível iniciar o contêiner '{0}' porque sua porta está sendo usada pelo contêiner '{1}'.]D;]A;Deseja interromper '{1}' e iniciar '{0}'?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
