@@ -532,6 +532,9 @@
       <Item ItemId=";ConnectionManager_DeleteLocalDockerDisabledTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法刪除執行中本機 Docker 容器的預設項目。容器停止或刪除後，就會予以移除。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -556,6 +559,9 @@
       <Item ItemId=";ConnectionManager_EditLocalDockerTooltip_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit local Docker connection '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[編輯本機 Docker 連線 '{0}']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -598,6 +604,9 @@
       <Item ItemId=";ConnectionManager_InformationTooltipFormatLocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host: {0}]D;]A;Container name: {1}]D;]A;Arguments: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[主機: {0}]D;]A;容器名稱: {1}]D;]A;引數: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1018,8 +1027,8 @@
       <Item ItemId=";ContainerManager_CreateTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new Docker container]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[建立新 Docker 容器]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[建立新的 Docker 容器]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create new docker container]]></Val>
@@ -1105,12 +1114,18 @@
       <Item ItemId=";ContainerManager_Start_ActivePortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]D;]A;All unsaved data will be lost!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法啟動容器 '{0}'，原因是容器 '{1}' 使用了其連接埠。]D;]A;要停止 '{1}' 然後啟動 '{0}' 嗎?]D;]A;所有未儲存的資料都會遺失!]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_Start_PortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法啟動容器 '{0}'，原因是容器 '{1}' 使用了其連接埠。]D;]A;要停止 '{1}' 然後啟動 '{0}' 嗎?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
