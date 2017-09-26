@@ -15,18 +15,20 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation;
 using Microsoft.R.Editor.Validation.Errors;
+using Microsoft.R.LanguageServer.Client;
+using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.Extensions;
 
 namespace Microsoft.R.LanguageServer.Validation {
     internal sealed class DiagnosticsPublisher {
-        private readonly ITextDocument _client;
+        private readonly IVsCodeClient _client;
         private readonly ConcurrentQueue<IValidationError> _resultsQueue;
         private readonly IREditorSettings _settings;
         private readonly IIdleTimeService _idleTime;
         private readonly Uri _documentUri;
         private IREditorDocument _document;
 
-        public DiagnosticsPublisher(ITextDocument client, Uri documentUri, IREditorDocument document, IServiceContainer services) {
+        public DiagnosticsPublisher(IVsCodeClient client, IREditorDocument document, Uri documentUri, IServiceContainer services) {
             _client = client;
             _document = document;
             _documentUri = documentUri;
@@ -62,7 +64,7 @@ namespace Microsoft.R.LanguageServer.Validation {
                     });
                 }
             }
-            _client.PublishDiagnostics(_documentUri, diagnostic);
+            _client.TextDocument.PublishDiagnostics(_documentUri, diagnostic);
         }
 
         private static DiagnosticSeverity ToDiagnosticSeverity(ErrorSeverity s) {
@@ -91,7 +93,7 @@ namespace Microsoft.R.LanguageServer.Validation {
         }
 
         private void ClearAllDiagnostic() {
-            _client.PublishDiagnostics(_documentUri, new Diagnostic[0]);
+            _client.TextDocument.PublishDiagnostics(_documentUri, new Diagnostic[0]);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {

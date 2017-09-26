@@ -13,6 +13,7 @@ using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor.Completions;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.LanguageServer.Client;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Extensions;
 using Microsoft.R.LanguageServer.Text;
@@ -29,16 +30,16 @@ namespace Microsoft.R.LanguageServer.Documents {
         public IEditorBuffer EditorBuffer { get; }
         public IREditorDocument Document { get; }
 
-        public DocumentEntry(string content, ITextDocument client, Uri uri, IServiceContainer services) {
+        public DocumentEntry(string content, Uri uri, IServiceContainer services) {
             _services = services;
-
+ 
             EditorBuffer = new EditorBuffer(content, "R");
             View = new EditorView(EditorBuffer);
             Document = new REditorDocument(EditorBuffer, services, false);
 
             _completionManager = new CompletionManager(services);
             _signatureManager = new SignatureManager(services);
-            _diagnosticsPublisher = new DiagnosticsPublisher(client, uri, Document, services);
+            _diagnosticsPublisher = new DiagnosticsPublisher(services.GetService<IVsCodeClient>(), Document, uri, services);
         }
 
         public void ProcessChanges(ICollection<TextDocumentContentChangeEvent> contentChanges) {

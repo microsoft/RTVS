@@ -16,6 +16,7 @@ using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
+using Microsoft.R.LanguageServer.Client;
 using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Server {
@@ -61,7 +62,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 var session = new LanguageServerSession(client, contractResolver);
                 var output = new Output(session.Client.Window, _serviceContainer.GetService<IActionLog>());
                 _serviceContainer.AddService(output);
-                _serviceContainer.AddService(session.Client);
+                _serviceContainer.AddService(new VsCodeClient(session.Client));
 
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);
                 var serverHandler = new StreamRpcServerHandler(host,
