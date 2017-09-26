@@ -108,14 +108,17 @@ namespace Microsoft.R.Editor.Functions {
                     Debug.WriteLine("R function host start: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Fetch list of package functions from R session
+                    _disposableBag.ThrowIfDisposed();
                     await LoadInstalledPackagesIndexAsync();
                     Debug.WriteLine("Fetch list of package functions from R session: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Try load missing functions from cache or explicitly
+                    _disposableBag.ThrowIfDisposed();
                     await LoadRemainingPackagesFunctions();
                     Debug.WriteLine("Try load missing functions from cache or explicitly: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Build index
+                    _disposableBag.ThrowIfDisposed();
                     await _functionIndex.BuildIndexAsync(this);
                     Debug.WriteLine("R function index total: {0} ms", stopwatch.ElapsedMilliseconds);
 
@@ -124,7 +127,8 @@ namespace Microsoft.R.Editor.Functions {
             } catch (RHostDisconnectedException ex) {
                 Debug.WriteLine(ex.Message);
                 ScheduleIdleTimeRebuild();
-            } finally {
+            } catch (ObjectDisposedException) { }
+            finally {
                 lockToken.Set();
             }
         }
@@ -180,6 +184,10 @@ namespace Microsoft.R.Editor.Functions {
 
         private async Task LoadInstalledPackagesIndexAsync() {
             var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv);
+            if (packagesFunctions == null) {
+                return;
+            }
+
             foreach (var package in packagesFunctions) {
                 var name = package.Value<string>("Package");
                 var description = package.Value<string>("Description");
@@ -211,6 +219,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private async Task LoadRemainingPackagesFunctions() {
             foreach (var pi in _packages.Values.Where(p => !p.Functions.Any())) {
+                _disposableBag.ThrowIfDisposed();
                 await pi.LoadFunctionsIndexAsync();
             }
         }

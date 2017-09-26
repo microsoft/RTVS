@@ -146,10 +146,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 }
 
                 _previousOperationType = currentOperationType;
-
-                if (!endOfExpression) {
-                    endOfExpression = CheckEndOfExpression(context, currentOperationType);
-                }
+                endOfExpression = CheckEndOfExpression(context, currentOperationType);
             }
 
             if (errorType != ParseErrorType.None) {
@@ -242,15 +239,18 @@ namespace Microsoft.R.Core.AST.Expressions {
                 }
 
                 return false;
-            } else if (currentOperationType == OperationType.BinaryOperator && context.Tokens.IsEndOfStream()) {
+            }
+            if (currentOperationType == OperationType.BinaryOperator && context.Tokens.IsEndOfStream()) {
                 // 'operator <EOF>' sequence is an error
                 context.AddError(new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
                 return false;
-            } else if (_previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator) {
+            }
+            if (_previousOperationType == OperationType.UnaryOperator && currentOperationType == OperationType.BinaryOperator) {
                 // unary followed by binary doesn't make sense 
                 context.AddError(new ParseError(ParseErrorType.IndentifierExpected, ErrorLocation.Token, GetOperatorErrorRange(context)));
                 return false;
-            } else if (_previousOperationType == OperationType.BinaryOperator && currentOperationType == OperationType.EndOfExpression) {
+            }
+            if (_previousOperationType == OperationType.BinaryOperator && currentOperationType == OperationType.EndOfExpression) {
                 // missing list selector: z$ }
                 context.AddError(new ParseError(ParseErrorType.RightOperandExpected, ErrorLocation.Token, GetErrorRange(context)));
                 return false;
@@ -382,8 +382,8 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType) {
-            errorType = HandleOperator(context, out bool isUnary);
-            return isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
+            errorType = HandleOperator(context, out OperationType operationType);
+            return operationType;
         }
 
         private OperationType HandleKeyword(ParseContext context, out ParseErrorType errorType) {
@@ -442,10 +442,11 @@ namespace Microsoft.R.Core.AST.Expressions {
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleOperator(ParseContext context, out bool isUnary) {
-            var currentOperator = new TokenOperator(firstInExpression: (_operands.Count == 0));
+        private ParseErrorType HandleOperator(ParseContext context, out OperationType operationType) {
+            var currentOperator = new TokenOperator(firstInExpression: _operands.Count == 0);
             currentOperator.Parse(context, null);
-            isUnary = currentOperator.IsUnary;
+            var isUnary = currentOperator.IsUnary;
+            operationType = isUnary? OperationType.UnaryOperator: OperationType.BinaryOperator;
 
             if (currentOperator.OperatorType == OperatorType.Not) {
                 //This comes from the fact that
@@ -466,6 +467,7 @@ namespace Microsoft.R.Core.AST.Expressions {
 
                 _operators.Push(currentOperator);
                 _operands.Push(exp);
+                operationType = OperationType.Operand;
                 return ParseErrorType.None;
             }
             return HandleOperatorPrecedence(context, currentOperator);

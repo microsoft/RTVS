@@ -208,7 +208,7 @@ namespace Microsoft.R.Editor {
         /// </summary>
         public static bool IsInObjectMemberName(this ITextProvider textProvider, int position) {
             if (position > 0) {
-                for (var i = position - 1; i >= 0; i--) {
+                for (var i = position - 1; i >= 0 && i < textProvider.Length; i--) {
                     var ch = textProvider[i];
 
                     if (ch == '$' || ch == '@') {

@@ -31,6 +31,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private CancellationTokenSource _testingConnectionCts;
         private bool _isTestConnectionSucceeded;
         private bool _isRemote;
+        private bool _isContainer;
         private bool _hasChanges;
         private bool _isValid;
         private bool _isNameValid;
@@ -118,6 +119,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsRemote {
             get { return _isRemote; }
             private set { SetProperty(ref _isRemote, value); }
+        }
+
+        public bool IsContainer {
+            get { return _isContainer; }
+            private set { SetProperty(ref _isContainer, value); }
         }
 
         public bool IsValid {
@@ -244,9 +250,15 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             }
 
             if (IsValid && uri != null) {
-                IsRemote = !(uri.IsAbsoluteUri && uri.IsFile);
+                IsContainer = uri.IsAbsoluteUri && uri.IsLoopback && !uri.IsFile;
             } else {
-                IsRemote = true;
+                IsContainer = false;
+            }
+
+            if (IsValid && uri != null) {
+                IsRemote = !IsContainer && uri.IsAbsoluteUri && !uri.IsFile;
+            } else {
+                IsRemote = false;
             }
         }
 

@@ -10,6 +10,8 @@ using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
+using Microsoft.R.Containers;
+using Microsoft.R.Containers.Docker;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
@@ -40,7 +42,8 @@ namespace Microsoft.R.Components.Test.Fixtures {
                 .AddWindowsRComponentsServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRPlotExportDialog, TestPlotExportDialog>()
-                .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
+                .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName))
+                .AddService<IContainerService, WindowsDockerService>();
         }
     }
 }

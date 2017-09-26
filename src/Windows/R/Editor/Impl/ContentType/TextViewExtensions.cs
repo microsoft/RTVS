@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -54,7 +56,7 @@ namespace Microsoft.R.Editor {
                         SpanTrackingMode.EdgeInclusive,
                         textView.TextBuffer
                     )) {
-                        spans.Add(upperSpan);
+                        spans.Add(lowerSpan);
                         newStart = upperSpan.End;
                     }
                 }

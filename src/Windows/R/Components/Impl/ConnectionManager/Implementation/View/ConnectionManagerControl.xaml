@@ -284,7 +284,7 @@
                                                 Grayscale="{Binding Path=IsUserCreated, Converter={x:Static rwpf:Converters.Not}}" />
                         </Button>
 
-                        <ContentPresenter Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="6"
+                        <ContentPresenter Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5"
                                           ContentTemplate="{StaticResource EditConnectionDataTemplate}"
                                           Visibility="{Binding Path=IsEditing, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
@@ -341,18 +341,24 @@
             <!-- Add button and settings panel -->
             <DockPanel DockPanel.Dock="Top" Margin="16,0,0,0"
                        Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
-                <WrapPanel DockPanel.Dock="Top" Margin="1,4,0,6">
-                    <Button x:Name="ToggleButtonAdd" Style="{StaticResource HyperlinkDownArrowButton}"
+                <Grid HorizontalAlignment="Stretch" DockPanel.Dock="Top" Margin="1,4,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="ToggleButtonAdd" Grid.Column="0" Style="{StaticResource HyperlinkDownArrowButton}"
                             IsEnabled="{Binding Path=IsEditingNew, Converter={x:Static rwpf:Converters.Not}}"
                             Content="{x:Static components:Resources.ConnectionManager_Add}"
+                            HorizontalAlignment="Left"
                             AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_Add}"
                             Click="ButtonAdd_Click" />
-                    <Button x:Name="ButtonShowContainers" Margin="6,0,0,0" MinWidth="75" MinHeight="23"
+                    <Button x:Name="ButtonShowContainers" Grid.Column="1" Style="{StaticResource HyperlinkButton}"
+                            Margin="0,0,6,0" MinWidth="75" MinHeight="23"
                             VerticalAlignment="Center" Click="ButtonShowContainers_Click" 
-                            Style="{StaticResource ToolWindowButtonStyle}"
+                            HorizontalAlignment="Right"
                             Content="{x:Static components:Resources.ConnectionManager_ShowContainers}" 
                             AutomationProperties.Name="{x:Static components:Resources.ConnectionManager_ShowContainers}" />
-                </WrapPanel>
+                </Grid>
 
                 <!-- Add options panel -->
                 <Border DockPanel.Dock="Top" Margin="0,0,6,6" Style="{StaticResource InputBorderStyle}"
@@ -377,7 +383,7 @@
             <ListBox x:Name="LocalDockerList"
                      DockPanel.Dock="Top" Style="{StaticResource ConnectionsListBox}" Margin="11,0,6,16" ItemsSource="{Binding Path=LocalDockerConnections}" 
                      Visibility="{Binding ElementName=ToggleButtonLocalDockerConnections, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
-            
+
             <!-- Remote connections header -->
             <controls:ExpandCollapseButton x:Name="ToggleButtonRemoteConnections" Style="{StaticResource ExpandCollapseButtonRemoteConnectionsStyle}" DockPanel.Dock="Top" />
 

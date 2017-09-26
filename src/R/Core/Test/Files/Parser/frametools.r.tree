@@ -679,9 +679,78 @@ GlobalScope  [Global]
                                                                     Variable  [`_data`]
                                                         TokenNode  [) [2354...2355)]
                                         TokenNode  [) [2355...2356)]
-                        ExpressionStatement  [matched]
-                            Expression  [matched]
-                                Variable  [matched]
+                        ExpressionStatement  [matched <- !is.na(inx)]
+                            Expression  [matched <- !is.na(inx)]
+                                TokenOperator  [<- [2370...2372)]
+                                    Variable  [matched]
+                                    TokenNode  [<- [2370...2372)]
+                                    TokenOperator  [! [2373...2374)]
+                                        TokenNode  [! [2373...2374)]
+                                        Expression  [is.na(inx)]
+                                            FunctionCall  [2374...2384)
+                                                Variable  [is.na]
+                                                TokenNode  [( [2379...2380)]
+                                                ArgumentList  [2380...2383)
+                                                    ExpressionArgument  [2380...2383)
+                                                        Expression  [inx]
+                                                            Variable  [inx]
+                                                TokenNode  [) [2383...2384)]
+                        If  []
+                            TokenNode  [if [2390...2392)]
+                            TokenNode  [( [2393...2394)]
+                            Expression  [any(matched)]
+                                FunctionCall  [2394...2406)
+                                    Variable  [any]
+                                    TokenNode  [( [2397...2398)]
+                                    ArgumentList  [2398...2405)
+                                        ExpressionArgument  [2398...2405)
+                                            Expression  [matched]
+                                                Variable  [matched]
+                                    TokenNode  [) [2405...2406)]
+                            TokenNode  [) [2406...2407)]
+                            Scope  []
+                                TokenNode  [{ [2408...2409)]
+                                ExpressionStatement  [`_data`[inx[matched]] <- e[matched]]
+                                    Expression  [`_data`[inx[matched]] <- e[matched]]
+                                        TokenOperator  [<- [2434...2436)]
+                                            Indexer  [2412...2433)
+                                                Variable  [`_data`]
+                                                TokenNode  [[ [2419...2420)]
+                                                ArgumentList  [2420...2432)
+                                                    ExpressionArgument  [2420...2432)
+                                                        Expression  [inx[matched]]
+                                                            Indexer  [2420...2432)
+                                                                Variable  [inx]
+                                                                TokenNode  [[ [2423...2424)]
+                                                                ArgumentList  [2424...2431)
+                                                                    ExpressionArgument  [2424...2431)
+                                                                        Expression  [matched]
+                                                                            Variable  [matched]
+                                                                TokenNode  [] [2431...2432)]
+                                                TokenNode  [] [2432...2433)]
+                                            TokenNode  [<- [2434...2436)]
+                                            Indexer  [2437...2447)
+                                                Variable  [e]
+                                                TokenNode  [[ [2438...2439)]
+                                                ArgumentList  [2439...2446)
+                                                    ExpressionArgument  [2439...2446)
+                                                        Expression  [matched]
+                                                            Variable  [matched]
+                                                TokenNode  [] [2446...2447)]
+                                ExpressionStatement  [`_data` <- data.frame(`_data`)]
+                                    Expression  [`_data` <- data.frame(`_data`)]
+                                        TokenOperator  [<- [2458...2460)]
+                                            Variable  [`_data`]
+                                            TokenNode  [<- [2458...2460)]
+                                            FunctionCall  [2461...2480)
+                                                Variable  [data.frame]
+                                                TokenNode  [( [2471...2472)]
+                                                ArgumentList  [2472...2479)
+                                                    ExpressionArgument  [2472...2479)
+                                                        Expression  [`_data`]
+                                                            Variable  [`_data`]
+                                                TokenNode  [) [2479...2480)]
+                                TokenNode  [} [2486...2487)]
                         If  []
                             TokenNode  [if [2493...2495)]
                             TokenNode  [( [2496...2497)]
@@ -812,5 +881,3 @@ GlobalScope  [Global]
                                         EllipsisArgument  [...]
                                             TokenNode  [... [2985...2988)]
                                     TokenNode  [) [2988...2989)]
-
-UnexpectedToken Token [2493...2495)

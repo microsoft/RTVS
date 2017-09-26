@@ -98,13 +98,13 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             if (codeBlock.Column > 0 || fencedCodeBlock?.Info == null) {
                 if (codeBlock.Span.Length > 0) {
                     var text = new string(' ', codeBlock.Column) + _documentText.Substring(codeBlock.Span.Start, codeBlock.Span.Length);
-                    renderer.Write(HtmlFormatter.FormatCode(text, "background-color: rgba(0, 0, 0, 0.04);"));
+                    renderer.Write(GetCodeHtml(text));
                 }
                 return;
             }
 
             // For R blocks indent count must be zero (no whitespace before ```{r}
-            if (MarkdownUtility.GetRCodeBlockSeparatorLength(fencedCodeBlock.Info, out int start)) {
+            if (MarkdownUtility.GetRCodeBlockSeparatorLength(fencedCodeBlock.Info, out var start)) {
                 var text = fencedCodeBlock.GetText();
                 var rCodeBlock = new RCodeBlock(_blockNumber, text, fencedCodeBlock.Arguments);
 
@@ -116,7 +116,10 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
                     _blocks.Add(rCodeBlock);
 
                     // Write placeholder first. We will insert actual data when the evaluation is done.
-                    renderer.Write(GetBlockPlaceholder(elementId, text));
+                    var renderText = rCodeBlock.Eval
+                            ? GetBlockPlaceholder(elementId, text)
+                            : GetCodeHtml(text);
+                    renderer.Write(renderText);
                 }
                 _blockNumber++;
             }
@@ -168,6 +171,9 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
         private static string GetStaticPlaceholder(string elementId, string text)
             => Invariant($"<div id='{elementId}'></div>");
         #endregion
+
+        private static string GetCodeHtml(string code)
+            => HtmlFormatter.FormatCode(code, "background-color: rgba(0, 0, 0, 0.04);");
 
         public void Dispose() {
             _blockEvalCts.Cancel();

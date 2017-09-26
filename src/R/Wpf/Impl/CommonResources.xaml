@@ -598,6 +598,57 @@
                     <Setter Property="OverlayVisibility" Value="Collapsed"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
+            
+            <!-- Containers -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRunning}" Value="True" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                    <Condition Binding="{Binding Path=IsContainer}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StructurePublic}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                    <Condition Binding="{Binding Path=IsContainer}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StructurePublic}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
+                    <Condition Binding="{Binding Path=IsConnected}" Value="False" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
+                    <Condition Binding="{Binding Path=IsContainer}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StructurePublic}"/>
+                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
+                    <Setter Property="OverlayVisibility" Value="Visible"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding Path=IsContainer}" Value="True" />
+                    <Condition Binding="{Binding Path=IsActive}" Value="False" />
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StructurePublic}"/>
+                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
         </Style.Triggers>
     </Style>
 </ResourceDictionary>
