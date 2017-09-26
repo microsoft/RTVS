@@ -973,12 +973,18 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_Port" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Port]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Port lokalny]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_CreateLocalDocker_PortTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Localhost port used to connect to R daemon in the container.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Port hosta lokalnego użyty do nawiązania połączenia z demonem języka R w kontenerze.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
