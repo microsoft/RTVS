@@ -38,10 +38,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
         private readonly IServiceContainer _services;
         private readonly IRSession _session;
+        private readonly IIdleTimeService _idleTime;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent(IServiceContainer services) {
             _services = services;
+            _idleTime = _services.GetService<IIdleTimeService>();
 
             _codeColorBuilder = _services.GetService<IVignetteCodeColorBuilder>();
             var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
@@ -233,14 +235,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Refresh button clicked. Current document state is 'complete'.
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
-            DisconnectBrowser();
+            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object(), _idleTime);
         }
 
         private void SetThemeColorsWhenReady() {
             if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
-                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), _services.GetService<IIdleTimeService>());
+                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), _idleTime);
             }
         }
 
