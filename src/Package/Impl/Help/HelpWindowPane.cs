@@ -9,6 +9,7 @@ using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Help.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -81,7 +82,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             private Task SearchAsync(string searchString) {
                 var session = _workflowProvider.GetOrCreate().RSession;
-                return session.ExecuteAsync(Invariant($"rtvs:::show_help({searchString.ToRStringLiteral()})"));
+                try {
+                    return session.ExecuteAsync(Invariant($"rtvs:::show_help({searchString.ToRStringLiteral()})"));
+                } catch(RException) { } catch (RHostDisconnectedException) { }
+                return Task.CompletedTask;
             }
 
 
