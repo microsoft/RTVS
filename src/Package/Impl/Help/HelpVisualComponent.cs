@@ -291,7 +291,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private bool ConnectBrowser() {
             var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
-            if (doc?.body != null && Browser.ReadyState == WebBrowserReadyState.Complete) {
+            if (doc?.body != null && (Browser.ReadyState == WebBrowserReadyState.Complete || Browser.ReadyState == WebBrowserReadyState.Interactive)) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
                 // Reconnect browser control to the window
