@@ -35,9 +35,11 @@ namespace Microsoft.R.Containers.Docker {
             var hostPorts = new List<int>();
             try {
                 dynamic portMap = ((dynamic)containerObject).HostConfig.PortBindings["5444/tcp"];
-                foreach (dynamic pm in portMap) {
-                    if (int.TryParse(pm.HostPort.Value, out int port)) {
-                        hostPorts.Add(port);
+                if (portMap != null) {
+                    foreach (dynamic pm in portMap) {
+                        if (int.TryParse(pm.HostPort.Value, out int port)) {
+                            hostPorts.Add(port);
+                        }
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
