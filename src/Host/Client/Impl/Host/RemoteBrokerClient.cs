@@ -69,8 +69,8 @@ namespace Microsoft.R.Host.Client.Host {
                 var fullpath = url;
                 try {
                     var session = _sessionProvider.GetOrCreate("REPL");
-                    if (!url.StartsWithIgnoreCase("http://") && await session.FileExistsAsync(url)) {
-                        fullpath = $"file:///{await session.NormalizePathAsync(url)}";
+                    if (!url.StartsWithIgnoreCase("http://") && await session.FileExistsAsync(url, cancellationToken)) {
+                        fullpath = $"file:///{await session.NormalizePathAsync(url, cancellationToken)}";
                     }
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     // This is best effort to find the resource

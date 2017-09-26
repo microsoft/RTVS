@@ -249,8 +249,8 @@ namespace Microsoft.R.Host.Client.Host {
                 _sessionProvider != null) {
                 try {
                     IRExpressionEvaluator session = _sessionProvider.GetOrCreate("REPL");
-                    if (await session.FileExistsAsync(url)) {
-                        var fullPath = await session.NormalizePathAsync(url);
+                    if (await session.FileExistsAsync(url, cancellationToken)) {
+                        var fullPath = await session.NormalizePathAsync(url, cancellationToken);
                         var remotingService = _services.GetService<IRemotingWebServer>();
                         var fs = _services.GetService<IFileSystem>();
                         return await remotingService.HandleLocalStaticFileUrlAsync(fullPath, _console, cancellationToken);
