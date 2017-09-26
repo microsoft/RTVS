@@ -328,7 +328,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 foreach (var connection in ConnectionManager.RecentConnections.OrderBy(c => c.Name)) {
                     if (connection.IsRemote) {
                         CreateRemoteConnectionViewModel(connection);
-                    } else if (connection.IsDocker) {
+                    } else if (connection.IsContainer) {
                         CreateLocalDockerConnectionViewModel(connection);
                     } else {
                         CreateLocalConnectionViewModel(connection);
