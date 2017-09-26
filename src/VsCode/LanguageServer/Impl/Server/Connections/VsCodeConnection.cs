@@ -61,6 +61,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 var session = new LanguageServerSession(client, contractResolver);
                 var output = new Output(session.Client.Window, _serviceContainer.GetService<IActionLog>());
                 _serviceContainer.AddService(output);
+                _serviceContainer.AddService(session.Client);
 
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);
                 var serverHandler = new StreamRpcServerHandler(host,

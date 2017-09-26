@@ -6,13 +6,14 @@
 
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.R.LanguageServer.Services;
 
 namespace Microsoft.R.LanguageServer.Server {
     internal static class Program {
         public static void Main(string[] args) {
             var debugMode = CheckDebugMode(args);
-            using (Session.Create()) {
-                var connection = new VsCodeConnection(Session.Current.ServiceContainer);
+            using (CoreShell.Create()) {
+                var connection = new VsCodeConnection(CoreShell.Current.ServiceContainer);
                 connection.Connect(debugMode);
             }
         }
