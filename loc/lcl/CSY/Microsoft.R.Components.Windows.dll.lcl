@@ -532,6 +532,9 @@
       <Item ItemId=";ConnectionManager_DeleteLocalDockerDisabledTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default entry for the running local Docker container cannot be deleted. It will be removed when container is stopped or deleted.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Výchozí položku pro běžící kontejner místního Dockeru nejde odstranit. Bude odebrána po zastavení nebo odstranění kontejneru.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -556,6 +559,9 @@
       <Item ItemId=";ConnectionManager_EditLocalDockerTooltip_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Edit local Docker connection '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Upravit místní připojení Dockeru {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -598,6 +604,9 @@
       <Item ItemId=";ConnectionManager_InformationTooltipFormatLocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Host: {0}]D;]A;Container name: {1}]D;]A;Arguments: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hostitel: {0}]D;]A;Název kontejneru: {1}]D;]A;Argumenty: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -901,18 +910,27 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed. To start working with containers,]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Služba Docker není nainstalovaná. Pokud chcete začít pracovat s kontejnery,]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_SecondPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[install Docker for Windows]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[nainstalujte Docker pro Windows]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[and restart Visual Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[a restartuje Visual Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -964,12 +982,18 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_Port" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Port]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Místní port]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_CreateLocalDocker_PortTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Localhost port used to connect to R daemon in the container.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Port místního hostitele používaný pro připojení k démonu R v kontejneru.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1003,8 +1027,8 @@
       <Item ItemId=";ContainerManager_CreateTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new Docker container]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Vytvořit nový kontejner dockeru]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vytvořit nový kontejner Dockeru]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Create new docker container]]></Val>
@@ -1033,6 +1057,9 @@
       <Item ItemId=";ContainerManager_DeleteRunningWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Container '{0}' is currently running.]D;]A;It has to be stopped before deleting. All data will be lost.]D;]A;Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontejner {0} aktuálně běží.]D;]A;Před odstraněním je nutné ho zastavit. Všechna data budou ztracena.]D;]A;Chcete pokračovat?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1048,6 +1075,9 @@
       <Item ItemId=";ContainerManager_DeleteWarning_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You're going to delete container '{0}'.]D;]A;All data will be lost. Do you wish to proceed?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Chystáte se odstranit kontejner {0}.]D;]A;Všechna data budou ztracena. Chcete pokračovat?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1081,12 +1111,18 @@
       <Item ItemId=";ContainerManager_Start_ActivePortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]D;]A;All unsaved data will be lost!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontejner {0} nejde spustit, protože jeho port je obsazen kontejnerem {1}.]D;]A;Chcete zastavit {1} a potom spustit {0}?]D;]A;Všechna neuložená data budou ztracena!]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_Start_PortIsBusy_Format" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Can't start container '{0}' because its port is taken by container '{1}'.]D;]A;Do you want to stop '{1}' and then start '{0}'?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontejner {0} nejde spustit, protože jeho port je obsazen kontejnerem {1}.]D;]A;Chcete zastavit {1} a potom spustit {0}?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
