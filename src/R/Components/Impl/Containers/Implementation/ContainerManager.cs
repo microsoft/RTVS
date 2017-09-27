@@ -135,14 +135,15 @@ EXPOSE 5444";
 
         private async Task UpdateContainersOnceAsync(CancellationToken token) {
             try {
-                UpdateContainers(await _containerService.ListContainersAsync(true, token)); 
-            } catch (OperationCanceledException) {
+                UpdateContainers(await _containerService.ListContainersAsync(true, token));
             } catch (ContainerServiceNotInstalledException) {
                 _containersChangedCountdown.Reset();
                 Status = ContainersStatus.NotInstalled;
             } catch (ContainerServiceNotRunningException) {
                 _containersChangedCountdown.Reset();
                 Status = ContainersStatus.Stopped;
+            } catch (ContainerException) {
+            } catch (OperationCanceledException) {
             }
         }
 
