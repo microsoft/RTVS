@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
-using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
@@ -16,6 +17,7 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.LanguageServer.Client;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Extensions;
+using Microsoft.R.LanguageServer.Formatting;
 using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Validation;
 
@@ -25,6 +27,7 @@ namespace Microsoft.R.LanguageServer.Documents {
         private readonly CompletionManager _completionManager;
         private readonly SignatureManager _signatureManager;
         private readonly DiagnosticsPublisher _diagnosticsPublisher;
+        private readonly CodeFormatter _formatter;
 
         public IEditorView View { get; }
         public IEditorBuffer EditorBuffer { get; }
@@ -40,6 +43,7 @@ namespace Microsoft.R.LanguageServer.Documents {
             _completionManager = new CompletionManager(services);
             _signatureManager = new SignatureManager(services);
             _diagnosticsPublisher = new DiagnosticsPublisher(services.GetService<IVsCodeClient>(), Document, uri, services);
+            _formatter = new CodeFormatter(_services);
         }
 
         public void ProcessChanges(ICollection<TextDocumentContentChangeEvent> contentChanges) {
@@ -62,8 +66,10 @@ namespace Microsoft.R.LanguageServer.Documents {
             }
         }
 
+        [DebuggerStepThrough]
         public void Dispose() => Document?.Close();
 
+        [DebuggerStepThrough]
         public CompletionList GetCompletions(Position position)
             => _completionManager.GetCompletions(CreateContext(position));
 
@@ -72,8 +78,17 @@ namespace Microsoft.R.LanguageServer.Documents {
             return signatures != null ? new SignatureHelp(signatures) : null;
         }
 
+        [DebuggerStepThrough]
         public Task<Hover> GetHoverAsync(Position position, CancellationToken ct)
             => _signatureManager.GetHoverAsync(CreateContext(position), ct);
+
+        [DebuggerStepThrough]
+        public TextEdit[] Format() 
+            => _formatter.Format(EditorBuffer.CurrentSnapshot);
+
+        [DebuggerStepThrough]
+        public TextEdit[] FormatRange(Range range) 
+            => _formatter.FormatRange(EditorBuffer.CurrentSnapshot, range);
 
         private IRIntellisenseContext CreateContext(Position position) {
             var bufferPosition = EditorBuffer.ToStreamPosition(position);

@@ -27,7 +27,10 @@ namespace Microsoft.R.Editor.Formatting {
             _settings = services.GetService<IREditorSettings>();
         }
 
-        public bool FormatRange(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
+        public bool FormatRange(IEditorView editorView
+            , IEditorBuffer editorBuffer
+            , ITextRange formatRange
+            , IIncrementalWhitespaceChangeHandler changeHandler = null) {
             var snapshot = editorBuffer.CurrentSnapshot;
             var start = formatRange.Start;
             var end = formatRange.End;
@@ -70,10 +73,13 @@ namespace Microsoft.R.Editor.Formatting {
             var startPosition = FindStartOfExpression(editorBuffer, startLine.Start);
 
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
-            return FormatRangeExact(editorView, editorBuffer, formatRange);
+            return FormatRangeExact(editorView, editorBuffer, formatRange, changeHandler);
         }
 
-        private bool FormatRangeExact(IEditorView editorView, IEditorBuffer editorBuffer, ITextRange formatRange) {
+        private bool FormatRangeExact(IEditorView editorView
+            , IEditorBuffer editorBuffer
+            , ITextRange formatRange
+            , IIncrementalWhitespaceChangeHandler changeHandler = null) {
             var snapshot = editorBuffer.CurrentSnapshot;
             var spanText = snapshot.GetText(formatRange);
             var trimmedSpanText = spanText.Trim();
@@ -92,8 +98,8 @@ namespace Microsoft.R.Editor.Formatting {
             var oldTokens = tokenizer.Tokenize(spanText);
             var newTokens = tokenizer.Tokenize(formattedText);
 
-            var wsChangeHandler = _services.GetService<IIncrementalWhitespaceChangeHandler>();
-            wsChangeHandler.ApplyChange(
+            changeHandler = changeHandler ?? _services.GetService<IIncrementalWhitespaceChangeHandler>();
+            changeHandler.ApplyChange(
                 editorBuffer,
                 new TextStream(spanText), new TextStream(formattedText),
                 oldTokens, newTokens,

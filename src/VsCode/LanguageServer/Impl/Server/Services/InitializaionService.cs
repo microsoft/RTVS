@@ -32,7 +32,9 @@ namespace Microsoft.R.LanguageServer.Server {
                     OpenClose = true,
                     WillSave = true,
                     Change = TextDocumentSyncKind.Incremental
-                }
+                },
+                DocumentFormattingProvider = true,
+                DocumentRangeFormattingProvider = true
             });
         }
 

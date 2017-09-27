@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using LanguageServer.VsCode.Contracts;
-using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
@@ -16,7 +16,6 @@ using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation;
 using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.R.LanguageServer.Client;
-using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.Extensions;
 
 namespace Microsoft.R.LanguageServer.Validation {
@@ -27,6 +26,7 @@ namespace Microsoft.R.LanguageServer.Validation {
         private readonly IIdleTimeService _idleTime;
         private readonly Uri _documentUri;
         private IREditorDocument _document;
+        private List<Diagnostic> _lastDisgnostic = new List<Diagnostic>();
 
         public DiagnosticsPublisher(IVsCodeClient client, IREditorDocument document, Uri documentUri, IServiceContainer services) {
             _client = client;
@@ -64,7 +64,11 @@ namespace Microsoft.R.LanguageServer.Validation {
                     });
                 }
             }
-            _client.TextDocument.PublishDiagnostics(_documentUri, diagnostic);
+
+            if (!diagnostic.SequenceEqual(_lastDisgnostic, new DiagnosticComparer())) {
+                _lastDisgnostic = diagnostic;
+                _client.TextDocument.PublishDiagnostics(_documentUri, diagnostic);
+            }
         }
 
         private static DiagnosticSeverity ToDiagnosticSeverity(ErrorSeverity s) {
@@ -104,6 +108,14 @@ namespace Microsoft.R.LanguageServer.Validation {
                 _document.Closing -= OnDocumentClosing;
                 _document = null;
             }
+        }
+
+        private class DiagnosticComparer: IEqualityComparer<Diagnostic> {
+            public bool Equals(Diagnostic x, Diagnostic y) 
+                => x.Range == y.Range && x.Message == y.Message;
+
+            public int GetHashCode(Diagnostic obj) 
+                => obj != null ? obj.GetHashCode() : 0;
         }
     }
 }

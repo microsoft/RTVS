@@ -3,8 +3,6 @@
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
@@ -65,6 +63,21 @@ namespace Microsoft.R.LanguageServer.Documents {
             using (new DebugMeasureTime("textDocument/completion")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
                 return doc != null ? doc.GetCompletions(position) : new CompletionList();
+            }
+        }
+
+        [JsonRpcMethod]
+        public TextEdit[] formatting(TextDocumentIdentifier textDocument, FormattingOptions options) {
+            using (new DebugMeasureTime("textDocument/formatting")) {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc != null ? doc.Format() : new TextEdit[0];
+            }
+        }
+        [JsonRpcMethod]
+        public TextEdit[] rangeFormatting(TextDocumentIdentifier textDocument, Range range, FormattingOptions options) {
+            using (new DebugMeasureTime("textDocument/rangeFormatting")) {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc != null ? doc.FormatRange(range) : new TextEdit[0];
             }
         }
     }

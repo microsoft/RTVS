@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using LanguageServer.VsCode.Contracts;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 
 namespace Microsoft.R.LanguageServer.Extensions {
@@ -21,8 +22,17 @@ namespace Microsoft.R.LanguageServer.Extensions {
                 End = editorBuffer.CurrentSnapshot.ToLinePosition(end)
             };
 
+        public static Range ToLineRange(this ITextRange textRange, IEditorBuffer editorBuffer)
+            => new Range {
+                Start = editorBuffer.CurrentSnapshot.ToLinePosition(textRange.Start),
+                End = editorBuffer.CurrentSnapshot.ToLinePosition(textRange.End)
+            };
+
         public static Range ToLineRange(this IEditorBufferSnapshot snapshot, int start, int end)
             => new Range { Start = snapshot.ToLinePosition(start), End = snapshot.ToLinePosition(end) };
+
+        public static Range ToLineRange(this ITextRange textRange, IEditorBufferSnapshot snapshot)
+            => new Range { Start = snapshot.ToLinePosition(textRange.Start), End = snapshot.ToLinePosition(textRange.End) };
 
         public static Position ToLinePosition(this IEditorBufferSnapshot snapshot, int position) {
             var line = snapshot.GetLineFromPosition(position);
@@ -34,6 +44,11 @@ namespace Microsoft.R.LanguageServer.Extensions {
         public static int ToStreamPosition(this IEditorBufferSnapshot snapshot, int lineNumber, int charNumber) {
             var line = snapshot.GetLineFromLineNumber(lineNumber);
             return line?.Start + charNumber ?? 0;
+        }
+        public static ITextRange ToTextRange(this Range range, IEditorBufferSnapshot snapshot) {
+            var start = snapshot.ToStreamPosition(range.Start);
+            var end = snapshot.ToStreamPosition(range.End);
+            return TextRange.FromBounds(start, end);
         }
     }
 }
