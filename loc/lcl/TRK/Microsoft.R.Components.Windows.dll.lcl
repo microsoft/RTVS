@@ -532,8 +532,8 @@
       <Item ItemId=";ConnectionManager_DeleteLocalDockerDisabledTooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default entry for the running local container cannot be deleted. It will be removed when container is stopped or deleted.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Çalışan yerel Docker kapsayıcısının varsayılan girişi silinemez. Kapsayıcı durdurulduğunda veya silindiğinde giriş de kaldırılmalıdır.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Çalışan yerel kapsayıcının varsayılan girişi silinemez. Kapsayıcı durdurulduğunda veya silindiğinde giriş de kaldırılır.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -658,8 +658,8 @@
       <Item ItemId=";ConnectionManager_LocalDockerConnections" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Running Containers]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Local Docker]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Çalışan Yerel Kapsayıcılar]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Local Docker]]></Val>
@@ -670,8 +670,8 @@
       <Item ItemId=";ConnectionManager_LocalDockerConnections_Tooltip" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Containers Connections]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Yerel Docker Bağlantıları]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Yerel Kapsayıcı Bağlantıları]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Local Docker Connections]]></Val>
@@ -808,8 +808,8 @@
       <Item ItemId=";ConnectionManager_ShowContainers" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Containers...]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Kapsayıcılar]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kapsayıcılar...]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Containers]]></Val>
@@ -1093,8 +1093,8 @@
       <Item ItemId=";ContainerManager_LocalDocker" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local Containers]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Yerel Docker Kapsayıcıları]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Yerel Kapsayıcılar]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Local Docker Containers]]></Val>
