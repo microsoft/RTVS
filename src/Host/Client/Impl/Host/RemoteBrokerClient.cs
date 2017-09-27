@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Client.Host {
@@ -57,18 +58,29 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         public override async Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
-            if (!url.StartsWithIgnoreCase("http://") && !url.StartsWithIgnoreCase("file://") && !url.StartsWithIgnoreCase("/")) {
+            var remotingService = _services.GetService<IRemotingWebServer>();
+            Uri uri = new Uri(url);
+            if (url.StartsWithIgnoreCase("http://")) {
+                return await remotingService.HandleRemoteWebUrlAsync(url, HttpClient.BaseAddress.ToString(), Name, _console, cancellationToken);
+            } else if (uri.AbsoluteUri.StartsWithIgnoreCase("file://") || url.StartsWithIgnoreCase("/")) {
+                var fs = _services.GetService<IFileSystem>();
+                return await remotingService.HandleRemoteStaticFileUrlAsync(url, _sessionProvider, _console, cancellationToken);
+            } else if (!url.StartsWithIgnoreCase("http://") && _sessionProvider != null) {
+                var fullpath = url;
+                try {
+                    var session = _sessionProvider.GetOrCreate("REPL");
+                    if (!url.StartsWithIgnoreCase("http://") && await session.FileExistsAsync(url, cancellationToken)) {
+                        fullpath = $"file:///{await session.NormalizePathAsync(url, cancellationToken)}";
+                    }
+                } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    // This is best effort to find the resource
+                }
+                var fs = _services.GetService<IFileSystem>();
+                return await remotingService.HandleRemoteStaticFileUrlAsync(fullpath, _sessionProvider, _console, cancellationToken);
+            } else {
                 _console.WriteError(string.Format(Resources.Error_RemoteUriNotSupported, url));
                 return null;
             }
-
-            var remotingService = _services.GetService<IRemotingWebServer>();
-            if (url.StartsWithIgnoreCase("file://") || url.StartsWithIgnoreCase("/")) {
-                var fs = _services.GetService<IFileSystem>();
-                return await remotingService.HandleRemoteStaticFileUrlAsync(url, _sessionProvider, _console, cancellationToken);
-            }
-
-            return await remotingService.HandleRemoteWebUrlAsync(url, HttpClient.BaseAddress.ToString(), Name, _console, cancellationToken);
         }
 
         protected override async Task<Exception> HandleHttpRequestExceptionAsync(HttpRequestException exception) {

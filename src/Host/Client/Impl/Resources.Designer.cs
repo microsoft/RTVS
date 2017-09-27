@@ -20,7 +20,7 @@ namespace Microsoft.R.Host.Client {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -207,7 +207,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remote R requested to open {0}, but only http:// URIs are supported for remote..
+        ///   Looks up a localized string similar to Remote R requested to open {0}, but only http:// or file:// URIs are supported for remote..
         /// </summary>
         internal static string Error_RemoteUriNotSupported {
             get {
@@ -345,6 +345,15 @@ namespace Microsoft.R.Host.Client {
         internal static string Error_UnknownError {
             get {
                 return ResourceManager.GetString("Error_UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the resource at {0}.
+        /// </summary>
+        internal static string Error_UriPathNotFound {
+            get {
+                return ResourceManager.GetString("Error_UriPathNotFound", resourceCulture);
             }
         }
         

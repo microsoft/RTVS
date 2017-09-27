@@ -279,5 +279,8 @@ grDevices::deviceIsInteractive('ide')
 
         public static Task<bool> FileExistsAsync(this IRExpressionEvaluator evaluation, string path, CancellationToken cancellationToken = default(CancellationToken)) =>
             evaluation.EvaluateAsync<bool>(Invariant($"file.exists({path.ToRPath().ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
+
+        public static Task<string> NormalizePathAsync(this IRExpressionEvaluator evaluation, string path, CancellationToken cancellationToken = default(CancellationToken)) =>
+            evaluation.EvaluateAsync<string>(Invariant($"normalizePath({path.ToRPath().ToRStringLiteral()})"), REvaluationKind.Normal, cancellationToken);
     }
 }

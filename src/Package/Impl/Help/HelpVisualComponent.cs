@@ -19,6 +19,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
@@ -252,14 +253,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static bool IsHelpUrl(string url) {
-            Uri uri = new Uri(url);
-            if(uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
+            try {
+                Uri uri = new Uri(url);
+                if (uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
+                    return false;
+                }
+                // dynamicHelp.R (startDynamicHelp function):
+                // # Choose 10 random port numbers between 10000 and 32000
+                // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
+                return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
+            } catch(Exception ex) when (!ex.IsCriticalException()) {
                 return false;
             }
-            // dynamicHelp.R (startDynamicHelp function):
-            // # Choose 10 random port numbers between 10000 and 32000
-            // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
-            return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
         }
 
         public void Dispose() {
