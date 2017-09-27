@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
-using Microsoft.R.LanguageServer.Server.Settings;
+using Microsoft.R.LanguageServer.Server;
 
 namespace Microsoft.R.LanguageServer.Settings {
     public sealed class SettingsRoot {
-        public VsCodeRSettings VsCodeRSettings { get; set; }
+        public LanguageServerSettings R { get; set; }
     }
 }

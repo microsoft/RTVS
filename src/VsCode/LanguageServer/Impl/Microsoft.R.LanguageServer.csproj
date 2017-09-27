@@ -37,6 +37,9 @@
     <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
     <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Server\Settings\" />
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />

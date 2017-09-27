@@ -7,7 +7,6 @@ using JsonRpc.Standard.Client;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.R.LanguageServer.Server.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
     public class LanguageServerSession {
@@ -24,7 +23,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public CancellationToken CancellationToken => cts.Token;
         public JsonRpcClient RpcClient { get; }
         public ClientProxy Client { get; }
-        public VsCodeRSettings Settings { get; set; } = new VsCodeRSettings();
+        public LanguageServerSettings Settings { get; set; } = new LanguageServerSettings();
         public void StopServer() => cts.Cancel();
     }
 }
