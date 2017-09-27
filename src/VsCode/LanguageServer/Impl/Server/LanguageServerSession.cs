@@ -2,15 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
-using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using JsonRpc.Standard.Client;
 using JsonRpc.Standard.Contracts;
-using LanguageServer.VsCode.Contracts;
 using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.R.LanguageServer.Settings;
+using Microsoft.R.LanguageServer.Server.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
     public class LanguageServerSession {
@@ -27,7 +24,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public CancellationToken CancellationToken => cts.Token;
         public JsonRpcClient RpcClient { get; }
         public ClientProxy Client { get; }
-        public LanguageServerSettings Settings { get; set; } = new LanguageServerSettings();
+        public VsCodeRSettings Settings { get; set; } = new VsCodeRSettings();
         public void StopServer() => cts.Cancel();
     }
 }

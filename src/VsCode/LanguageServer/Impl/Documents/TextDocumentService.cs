@@ -23,6 +23,10 @@ namespace Microsoft.R.LanguageServer.Documents {
         private IDocumentCollection Documents => _documents ?? (_documents = Services.GetService<IDocumentCollection>());
         private IIdleTimeNotification IdleTimeNotification => _idleTimeNotification ?? (_idleTimeNotification = Services.GetService<IIdleTimeNotification>());
 
+        public TextDocumentService() {
+
+        }
+
         [JsonRpcMethod]
         public Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
             using (new DebugMeasureTime("textDocument/hover")) {

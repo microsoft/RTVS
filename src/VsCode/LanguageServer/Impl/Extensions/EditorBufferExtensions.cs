@@ -38,7 +38,7 @@ namespace Microsoft.R.LanguageServer.Extensions {
             var line = snapshot.GetLineFromPosition(position);
             return new Position { Line = line.LineNumber, Character = position - line.Start };
         }
-        public static int ToStreamPosition(this IEditorBufferSnapshot snapshot, Position position)
+        public static int ToStreamPosition(this Position position, IEditorBufferSnapshot snapshot)
             => snapshot.ToStreamPosition(position.Line, position.Character);
 
         public static int ToStreamPosition(this IEditorBufferSnapshot snapshot, int lineNumber, int charNumber) {
@@ -46,8 +46,8 @@ namespace Microsoft.R.LanguageServer.Extensions {
             return line?.Start + charNumber ?? 0;
         }
         public static ITextRange ToTextRange(this Range range, IEditorBufferSnapshot snapshot) {
-            var start = snapshot.ToStreamPosition(range.Start);
-            var end = snapshot.ToStreamPosition(range.End);
+            var start = range.Start.ToStreamPosition(snapshot);
+            var end = range.End.ToStreamPosition(snapshot);
             return TextRange.FromBounds(start, end);
         }
     }

@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "publisher": "Microsoft",
   "license": "MIT",
+  "preview": true,
   "homepage": "https://www.visualstudio.com/vs/rtvs/",
   "bugs": {
     "url": "https://github.com/Microsoft/Rtvs/issues",
@@ -19,19 +20,236 @@
     "vscode": "^1.15.0"
   },
   "categories": [
-    "Other"
+    "Languages",
+    "Formatters",
+    "Linters",
+    "Snippets"
   ],
   "activationEvents": [
-    "onLanguage:r"
+    "onLanguage:r",
+    "onCommand:r.execInTerminal",
+    "onCommand:r.setInterpreter",
+    "onCommand:r.execSelectionInTerminal"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
       {
-        "command": "extension.selectR",
-        "title": "Select R"
+        "command": "r.setInterpreter",
+        "title": "Select R Interpreter",
+        "category": "R"
+      },
+      {
+        "command": "r.sourceFile",
+        "title": "Source File",
+        "category": "R"
+      },
+      {
+        "command": "r.execInTerminal",
+        "title": "Execute In Terminal",
+        "category": "R"
+      },
+      {
+        "command": "r.execInTerminal",
+        "title": "Execute Line In Terminal",
+        "category": "R"
+      },
+      {
+        "command": "r.execSelectionInTerminal",
+        "title": "Execute Selection In Terminal",
+        "category": "R"
+      },
+      {
+        "command": "r.startREPL",
+        "title": "Open R Terminal",
+        "category": "R"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "r.execInTerminal",
+        "key": "ctrl+enter",
+        "when": "editorFocus"
+      },
+      {
+        "command": "r.execSelectionInTerminal",
+        "key": "ctrl+shift+enter",
+        "when": "editorFocus"
+      },
+      {
+        "command": "r.sourceFile",
+        "key": "ctrl+shift+s",
+        "when": "editorFocus"
+      }
+    ],
+    "languages": [
+      {
+        "id": "r",
+        "aliases": [ "R Language" ],
+        "extensions": [ ".r" ]
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "R Configuration",
+      "properties": {
+        "r.editor.formatScope": {
+          "type": "boolean",
+          "default": true,
+          "description": "Format the entire scope upon '}'."
+        },
+        "r.editor.tabSize": {
+          "type": "number",
+          "default": 2,
+          "description": "R editor tab size. Default is 2."
+        },
+        "r.editor.spaceAfterKeyword": {
+          "type": "boolean",
+          "default": true,
+          "description": "Insert space after keyword and before opening brace such as in case of 'if', 'while', 'repeat'"
+        },
+        "r.editor.spacesAroundEquals": {
+          "type": "boolean",
+          "default": true,
+          "description": "Place spaces around equals sign."
+        },
+        "r.editor.spaceBeforeCurly": {
+          "type": "boolean",
+          "default": true,
+          "description": "Insert space before opening curly brace."
+        },
+        "r.editor.breakMultipleStatements": {
+          "type": "boolean",
+          "default": true,
+          "description": "When there are multiple statements on the same line, break them into separate lines."
+        },
+        "r.linting.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable R code linting."
+        },
+        "r.linting.camelCase": {
+          "type": "boolean",
+          "default": false,
+          "description": "Flag camelCase names."
+        },
+        "r.linting.snakeCase": {
+          "type": "boolean",
+          "default": false,
+          "description": "Flag snake_case names."
+        },
+        "r.linting.pascalCase": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag PascalCase names."
+        },
+        "r.linting.upperCase": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag UPPERCASE names."
+        },
+        "r.linting.multipleDots": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag names with.multiple.dots."
+        },
+        "r.linting.nameLength": {
+          "type": "boolean",
+          "default": false,
+          "description": "Verify that name lengths are below the limit."
+        },
+        "r.linting.maxNameLength": {
+          "type": "number",
+          "default": 32,
+          "description": "Max name length."
+        },
+        "r.linting.trueFalseNames": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag when 'T' or 'F' used instead of 'TRUE' and 'FALSE'."
+        },
+        "r.linting.assignmentType": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check that ’<-’ is always used for assignments."
+        },
+        "r.linting.spacesAroundComma": {
+          "type": "boolean",
+          "default": true,
+          "description": "Comma should have space after and no space before unless followed by another comma or closing brace. Space between command and ] or ]] is required."
+        },
+        "r.linting.spacesAroundOperators": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check that infix operators are surrounded by spaces unless it is a named parameter assignment."
+        },
+        "r.linting.closeCurlySeparateLine": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check that } is on a separate line unless followed by 'else'"
+        },
+        "r.linting.spaceBeforeOpenBrace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open brace must have space before it unless it is a function call."
+        },
+        "r.linting.spacesInsideParenthesis": {
+          "type": "boolean",
+          "default": true,
+          "description": "There should be no space after (, [ or [[ and no space before ), ] or ]] unless ] or ]] is preceded by a comma as in x[1, ]."
+        },
+        "r.linting.noSpaceAfterFunctionName": {
+          "type": "boolean",
+          "default": true,
+          "description": "Verify that there is no space after the function name."
+        },
+        "r.linting.openCurlyPosition": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check that open curly brace is not on its own line and is followed by a new line."
+        },
+        "r.linting.noTabs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Verify there are no tabs in the file."
+        },
+        "r.linting.trailingWhitespace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check there is no trailing whitespace in lines."
+        },
+        "r.linting.trailingBlankLines": {
+          "type": "boolean",
+          "default": true,
+          "description": "Verify there is no trailing blank lines in the file."
+        },
+        "r.linting.doubleQuotes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Verify that only double quotes are used around strings."
+        },
+        "r.linting.lineLength": {
+          "type": "boolean",
+          "default": false,
+          "description": "Check line lengths in the file."
+        },
+        "r.linting.maxLineLength": {
+          "type": "number",
+          "default": 80,
+          "description": "Max line length."
+        },
+        "r.linting.semicolons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag semicolons in the file."
+        },
+        "r.linting.multipleStatements": {
+          "type": "boolean",
+          "default": true,
+          "description": "Flag multiple statements in the same line."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",

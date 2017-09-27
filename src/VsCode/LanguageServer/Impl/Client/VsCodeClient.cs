@@ -4,8 +4,9 @@
 using LanguageServer.VsCode.Contracts.Client;
 
 namespace Microsoft.R.LanguageServer.Client {
-    internal sealed class VsCodeClient: IVsCodeClient {
+    internal sealed class VsCodeClient : IVsCodeClient {
         private readonly ClientProxy _client;
+
         public VsCodeClient(ClientProxy client) {
             _client = client;
         }

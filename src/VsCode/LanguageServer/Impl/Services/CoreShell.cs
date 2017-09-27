@@ -5,7 +5,6 @@ using System;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.LanguageServer.Server;
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class CoreShell : ICoreShell, IDisposable {

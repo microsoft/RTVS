@@ -35,26 +35,21 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions: languageClient.ServerOptions = {
-        run: { command: "dotnet", args: [serverModule, "--debug", "--diagnostics"], options: commandOptions },
-        debug: { command: "dotnet", args: [serverModule, "--debug", "--diagnostics"], options: commandOptions }
+        run: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions },
+        debug: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions }
     };
     
     // Options to control the language client
     const clientOptions: languageClient.LanguageClientOptions = {
-        // Register the server for plain text documents
+        // Register the server for R documents
         documentSelector: ["r"],
         synchronize: {
-            configurationSection: "RLanguage",
-            // Notify the server about file changes to '.clientrc files contain in the workspace
-            fileEvents: [
-                vscode.workspace.createFileSystemWatcher("**/.clientrc"),
-                vscode.workspace.createFileSystemWatcher("**/.demo")
-            ]
+            configurationSection: "r"
         }
     };
     
     // Create the language client and start the client.
-    let disposable = new languageClient.LanguageClient("R", "R Tools", serverOptions, clientOptions).start();
+    let disposable = new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start();
     
     // Push the disposable to the context's subscriptions so that the 
     // client can be deactivated on extension deactivation
