@@ -33,14 +33,14 @@ namespace Microsoft.Common.Core.Disposables {
 
         public IDisposable Link(ref CancellationToken token) {
             if (!token.CanBeCanceled) {
-                token = _cts.Token;
+                token = CancellationToken;
                 token.ThrowIfCancellationRequested();
                 return Disposable.Empty;
             }
 
             CancellationTokenSource linkedCts;
             try {
-                linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, token);
+                linkedCts = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken, token);
             } catch (ObjectDisposedException) {
                 throw CreateException();
             }
