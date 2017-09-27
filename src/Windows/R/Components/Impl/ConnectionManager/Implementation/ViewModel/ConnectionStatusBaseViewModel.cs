@@ -10,6 +10,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     public abstract class ConnectionStatusBaseViewModel : BindableBase, IDisposable {
         private readonly DisposableBag _disposableBag;
 
+        private bool _isContainer;
         private bool _isRemote;
         private bool _isActive;
         private bool _isConnected;
@@ -47,6 +48,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRunning = ConnectionManager.IsConnected && ConnectionManager.IsRunning;
             IsActive = ConnectionManager.ActiveConnection != null;
             IsRemote = ConnectionManager.ActiveConnection?.IsRemote ?? false;
+            IsContainer = ConnectionManager.ActiveConnection?.IsContainer ?? false;
             UpdateConnections();
         }
 
@@ -68,6 +70,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsRemote {
             get => _isRemote;
             set => SetProperty(ref _isRemote, value);
+        }
+        public bool IsContainer {
+            get => _isContainer;
+            set => SetProperty(ref _isContainer, value);
         }
     }
 }

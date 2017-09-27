@@ -9,6 +9,7 @@ using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Help.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public const string WindowGuidString = "9E909526-A616-43B2-A82B-FD639DCD40CB";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public HelpWindowPane(IServiceContainer services): base(services) {
+        public HelpWindowPane(IServiceContainer services) : base(services) {
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
             ToolBar = new System.ComponentModel.Design.CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
@@ -79,9 +80,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 }
             }
 
-            private Task SearchAsync(string searchString) {
+            private async Task SearchAsync(string searchString) {
                 var session = _workflowProvider.GetOrCreate().RSession;
-                return session.ExecuteAsync(Invariant($"rtvs:::show_help({searchString.ToRStringLiteral()})"));
+                try {
+                    await session.ExecuteAsync(Invariant($"rtvs:::show_help({searchString.ToRStringLiteral()})"));
+                } catch (Exception ex) when (!ex.IsCriticalException()) { }
             }
 
 
