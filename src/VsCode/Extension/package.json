@@ -52,6 +52,11 @@
         "command": "r.startREPL",
         "title": "Open R Terminal",
         "category": "R"
+      },
+      {
+        "command": "r.getInterpreter",
+        "title": "Current R interpreter path",
+        "category": "R"
       }
     ],
     "keybindings": [

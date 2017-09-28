@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 using Microsoft.R.LanguageServer.Client;
+using Microsoft.R.LanguageServer.Commands;
 using Microsoft.R.LanguageServer.Server.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
@@ -60,9 +61,8 @@ namespace Microsoft.R.LanguageServer.Server {
 
                 var session = new LanguageServerSession(client, contractResolver);
                 _serviceManager.AddService(new SettingsManager(_serviceManager));
-
-                var vsc = new VsCodeClient(session.Client, _serviceManager);
-                _serviceManager.AddService(vsc);
+                _serviceManager.AddService(new VsCodeClient(session.Client, _serviceManager));
+                _serviceManager.AddService(new Controller(_serviceManager));
 
                 // Configure & build service host
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);

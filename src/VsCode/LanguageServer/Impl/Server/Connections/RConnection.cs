@@ -50,7 +50,7 @@ namespace Microsoft.R.LanguageServer.Server {
             _output = _services.GetService<IOutput>();
 
             var e = GetREngine();
-             var log = _services.Log();
+            var log = _services.Log();
             var info = BrokerConnectionInfo.Create(_services.Security(), "VSCR", e.InstallPath, string.Empty, false);
 
             var start = DateTime.Now;
@@ -85,7 +85,7 @@ namespace Microsoft.R.LanguageServer.Server {
         private IRInterpreterInfo GetREngine() {
             var ris = _services.GetService<IRInstallationService>();
             var engines = ris.GetCompatibleEngines(new SupportedRVersionRange(3, 2, 3, 9)).ToList();
-            if(engines.Count == 0) {
+            if (engines.Count == 0) {
                 const string message = "Unable to find R intepreter.";
                 _output.Write(message + " Terminating.");
                 throw new InvalidOperationException(message);
@@ -98,7 +98,7 @@ namespace Microsoft.R.LanguageServer.Server {
             _output.Write("You can specify the desired interpreter index in the R settings");
 
             var rs = _services.GetService<IREngineSettings>();
-            if(rs.InterpreterIndex < 0 || rs.InterpreterIndex > engines.Count) {
+            if (rs.InterpreterIndex < 0 || rs.InterpreterIndex > engines.Count) {
                 _output.Write($"WARNING: selected interpreter [{rs.InterpreterIndex}] does not exist. Using [0] instead");
                 rs.InterpreterIndex = 0;
             } else {

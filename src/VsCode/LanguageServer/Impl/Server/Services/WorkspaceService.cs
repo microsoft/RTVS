@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.R.LanguageServer.Commands;
 using Microsoft.R.LanguageServer.Server.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
@@ -21,5 +22,9 @@ namespace Microsoft.R.LanguageServer.Server {
 
         [JsonRpcMethod(IsNotification = true)]
         public void DidChangeWatchedFiles(ICollection<FileEvent> changes) { }
+
+        [JsonRpcMethod]
+        public object ExecuteCommand(string command, params object[] args)
+            => Services.GetService<IController>().Execute(command, args);
     }
 }

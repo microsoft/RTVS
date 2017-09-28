@@ -50,7 +50,9 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
     
     // Create the language client and start the client.
     let disposable = new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start();
-    
+    let interpreterPath = vscode.commands.executeCommand("r.getInterpreterPath") + "RScript.exe";
+    let terminal = vscode.window.createTerminal("R", interpreterPath);
+
     // Push the disposable to the context's subscriptions so that the 
     // client can be deactivated on extension deactivation
     context.subscriptions.push(disposable);

@@ -6,17 +6,16 @@ using System;
 using JsonRpc.Standard;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
-using Microsoft.R.LanguageServer.Logging;
+using Microsoft.R.LanguageServer.Commands;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.LanguageServer.Server {
     public sealed class InitializaionService : LanguageServiceBase {
         private const string TriggerCharacters = "`:$@_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        private IOutput Output => Services.GetService<IOutput>();
 
         [JsonRpcMethod(AllowExtensionData = true)]
         public InitializeResult Initialize(
-            int processId, 
+            int processId,
             ClientCapabilities capabilities,
             JToken initializationOptions = null,
             Uri rootUri = null,
@@ -33,7 +32,10 @@ namespace Microsoft.R.LanguageServer.Server {
                 },
                 DocumentFormattingProvider = true,
                 DocumentRangeFormattingProvider = true,
-                DocumentSymbolProvider = true
+                DocumentSymbolProvider = true,
+                ExecuteCommandProvider = new ExecuteCommandOptions {
+                    Commands = Controller.Commands
+                }
             });
         }
 
