@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts.Client;
@@ -15,6 +16,8 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Settings;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.LanguageServer.Server {
     /// <summary>
@@ -35,20 +38,20 @@ namespace Microsoft.R.LanguageServer.Server {
             _workflow = provider.GetOrCreate();
             _output = _services.GetService<IOutput>();
 
-            var path = @"C:\Program Files\R\R-3.4.0";
-            var log = _services.Log();
-            var info = BrokerConnectionInfo.Create(_services.Security(), "VSCR", path, string.Empty, false);
+            var e = GetREngine();
+             var log = _services.Log();
+            var info = BrokerConnectionInfo.Create(_services.Security(), "VSCR", e.InstallPath, string.Empty, false);
 
             var start = DateTime.Now;
-            var message = $"Starting R Process with {path}...";
+            var message = $"Starting R Process with {e.InstallPath}...";
             _output.Write(message);
 
-            log.Write(LogVerbosity.Normal, MessageCategory.General, "Switching local broker");
+            log.Write(LogVerbosity.Normal, MessageCategory.General, $"Switching local broker to {e.InstallPath}");
             if (await _workflow.RSessions.TrySwitchBrokerAsync("VSCR", info, ct)) {
                 try {
                     await _workflow.RSession.StartHostAsync(new RHostStartupInfo(), new RSessionCallback(), Debugger.IsAttached ? 100000 : 20000, ct);
-                } catch(Exception ex) {
-                     _output.WriteError($"Unable to start R process. Exception: {ex.Message}");
+                } catch (Exception ex) {
+                    _output.WriteError($"Unable to start R process. Exception: {ex.Message}");
                     return;
                 }
 
@@ -67,5 +70,31 @@ namespace Microsoft.R.LanguageServer.Server {
         }
 
         public void Dispose() => _workflow?.Dispose();
+
+        private IRInterpreterInfo GetREngine() {
+            var ris = _services.GetService<IRInstallationService>();
+            var engines = ris.GetCompatibleEngines(new SupportedRVersionRange(3, 2, 3, 9)).ToList();
+            if(engines.Count == 0) {
+                var message = "Unable to find R intepreter.";
+                _output.Write(message + " Terminating.");
+                throw new InvalidOperationException(message);
+            }
+
+            _output.Write("Available R interpreters:");
+            for (var i = 0; i < engines.Count; i++) {
+                _output.Write($"[{i}] {engines[i].Name}");
+            }
+            _output.Write("You can specify the desired interpreter index in the R settings");
+
+            var rs = _services.GetService<IREngineSettings>();
+            if(rs.EngineIndex < 0 || rs.EngineIndex > engines.Count) {
+                _output.Write($"WARNING: selected interpreter [{rs.EngineIndex}] does not exist. Using [0] instead");
+                rs.EngineIndex = 0;
+            } else {
+                _output.Write($"Selected interpreter: [{engines[rs.EngineIndex].Name}].");
+            }
+
+            return engines[rs.EngineIndex];
+        }
     }
 }

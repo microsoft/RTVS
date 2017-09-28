@@ -30,6 +30,9 @@ namespace Microsoft.R.LanguageServer.Server {
             es.FormatOptions.SpacesAroundEquals = e.SpacesAroundEquals;
 
             es.LintOptions = settings.R.Linting;
+
+            var rs = Services.GetService<IREngineSettings>();
+            rs.EngineIndex = settings.R.Interpreter;
         }
 
         [JsonRpcMethod(IsNotification = true)]

@@ -13,7 +13,6 @@ using JsonRpc.Streams;
 using LanguageServer.VsCode;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 using Microsoft.R.LanguageServer.Client;

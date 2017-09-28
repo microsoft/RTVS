@@ -93,6 +93,11 @@
       "type": "object",
       "title": "R",
       "properties": {
+        "r.interpreter": {
+          "type": "number",
+          "default": 0,
+          "description": "R interpreter index."
+        },
         "r.editor.formatScope": {
           "type": "boolean",
           "default": true,

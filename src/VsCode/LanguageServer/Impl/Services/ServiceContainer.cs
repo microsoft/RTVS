@@ -51,6 +51,7 @@ namespace Microsoft.R.LanguageServer.Services {
                 .AddService(new IdleTimeService(_services))
                 .AddService(new DocumentCollection(_services))
                 .AddService(new ViewSignatureBroker())
+                .AddService(new REngineSettings())
                 .AddEditorServices();
 
             AddPlatformSpecificServices();
