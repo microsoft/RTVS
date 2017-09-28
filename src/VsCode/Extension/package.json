@@ -28,25 +28,14 @@
   "activationEvents": [
     "onLanguage:r",
     "onCommand:r.execInTerminal",
-    "onCommand:r.setInterpreter",
     "onCommand:r.execSelectionInTerminal"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
       {
-        "command": "r.setInterpreter",
-        "title": "Select R Interpreter",
-        "category": "R"
-      },
-      {
         "command": "r.sourceFile",
         "title": "Source File",
-        "category": "R"
-      },
-      {
-        "command": "r.execInTerminal",
-        "title": "Execute In Terminal",
         "category": "R"
       },
       {

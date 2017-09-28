@@ -77,7 +77,7 @@ namespace Microsoft.R.Editor.Functions {
                     if (candidate != null && candidate.StartsWithOrdinal("package:")) {
                         packageName = candidate.Substring(8);
                     }
-                } catch (RException) { } catch(OperationCanceledException) { }
+                } catch (REvaluationException) { } catch(OperationCanceledException) { }
             }
 
             return packageName;

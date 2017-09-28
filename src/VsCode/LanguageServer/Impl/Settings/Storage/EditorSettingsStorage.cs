@@ -9,6 +9,7 @@ namespace Microsoft.R.LanguageServer.Settings {
         public void Dispose() {
         }
 
+#pragma warning disable 67
         public event EventHandler<EventArgs> SettingsChanged;
 
         public T Get<T>(string name, T defaultValue) => defaultValue;

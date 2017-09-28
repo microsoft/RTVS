@@ -23,10 +23,6 @@ namespace Microsoft.R.LanguageServer.Documents {
         private IDocumentCollection Documents => _documents ?? (_documents = Services.GetService<IDocumentCollection>());
         private IIdleTimeNotification IdleTimeNotification => _idleTimeNotification ?? (_idleTimeNotification = Services.GetService<IIdleTimeNotification>());
 
-        public TextDocumentService() {
-
-        }
-
         [JsonRpcMethod]
         public Task<Hover> Hover(TextDocumentIdentifier textDocument, Position position, CancellationToken ct) {
             using (new DebugMeasureTime("textDocument/hover")) {
@@ -77,11 +73,20 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return doc != null ? doc.Format() : new TextEdit[0];
             }
         }
+
         [JsonRpcMethod]
         public TextEdit[] rangeFormatting(TextDocumentIdentifier textDocument, Range range, FormattingOptions options) {
             using (new DebugMeasureTime("textDocument/rangeFormatting")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
                 return doc != null ? doc.FormatRange(range) : new TextEdit[0];
+            }
+        }
+
+        [JsonRpcMethod]
+        public SymbolInformation[] documentSymbol(TextDocumentIdentifier textDocument, FormattingOptions options) {
+            using (new DebugMeasureTime("textDocument/formatting")) {
+                var doc = Documents.GetDocument(textDocument.Uri);
+                return doc != null ? doc.GetSymbols(textDocument.Uri) : new SymbolInformation[0];
             }
         }
     }

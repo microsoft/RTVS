@@ -13,7 +13,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public static void Main(string[] args) {
             var debugMode = CheckDebugMode(args);
             using (CoreShell.Create()) {
-                var connection = new VsCodeConnection(CoreShell.Current.ServiceContainer);
+                var connection = new VsCodeConnection(CoreShell.Current.ServiceManager);
                 connection.Connect(debugMode);
             }
         }

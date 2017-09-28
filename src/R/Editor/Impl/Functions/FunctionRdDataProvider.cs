@@ -44,10 +44,10 @@ namespace Microsoft.R.Editor.Functions {
             await TaskUtilities.SwitchToBackgroundThread();
             await _host.StartSessionAsync();
 
-            string command = GetCommandText(functionName, packageName);
+            var command = GetCommandText(functionName, packageName);
             try {
                 return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
-            } catch (RException) { }
+            } catch (REvaluationException) { }
 
             // Sometimes there is no information in a specific package.
             // For example, Matrix exports 'as.matrix' and base does it as well.
@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Functions {
             command = GetCommandText(functionName, null);
             try {
                 return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
-            } catch (RException) { }
+            } catch (REvaluationException) { }
 
             return string.Empty;
         }

@@ -28,6 +28,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public VsCodeConnection(IServiceManager serviceManager) {
             _serviceManager = serviceManager;
         }
+
         public void Connect(bool debugMode) {
             var logWriter = CreateLogWriter(debugMode);
 
@@ -58,7 +59,10 @@ namespace Microsoft.R.LanguageServer.Server {
                 }
 
                 var session = new LanguageServerSession(client, contractResolver);
-                InitializeConnections(session);
+                _serviceManager.AddService(new SettingsManager(_serviceManager));
+
+                var vsc = new VsCodeClient(session.Client, _serviceManager);
+                _serviceManager.AddService(vsc);
 
                 // Configure & build service host
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);
@@ -78,13 +82,6 @@ namespace Microsoft.R.LanguageServer.Server {
                 }
                 logWriter?.WriteLine("Exited");
             }
-        }
-
-        private void InitializeConnections(LanguageServerSession session) {
-            var settings = new SettingsManager(_serviceManager);
-            _serviceManager
-                .AddService(new VsCodeClient(session.Client, _serviceManager))
-                .AddService(settings);
         }
 
         private static IJsonRpcServiceHost BuildServiceHost(TextWriter logWriter,

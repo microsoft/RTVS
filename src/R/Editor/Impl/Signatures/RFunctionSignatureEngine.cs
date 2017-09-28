@@ -81,6 +81,8 @@ namespace Microsoft.R.Editor.Signatures {
                 if (callback != null) {
                     GetSignaturesAsync(signatureInfo, context, signatures => callback(MakeQuickInfos(signatures, applicableRange)));
                 }
+            } else {
+                callback?.Invoke(Enumerable.Empty<IRFunctionQuickInfo>());
             }
             return null;
         }

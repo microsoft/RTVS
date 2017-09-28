@@ -67,13 +67,13 @@ namespace Microsoft.R.LanguageServer.Server {
                 }
 
                 // Start package building
-                _output.Write($"complete in {(DateTime.Now - start)}");
+                _output.Write($"complete in {(DateTime.Now - start):ss}");
                 start = DateTime.Now;
                 _output.Write("Building IntelliSense index...");
 
                 _packageIndex = _services.GetService<IPackageIndex>();
                 _packageIndex.BuildIndexAsync(ct).ContinueWith(t => {
-                    _output.Write($"complete in {(DateTime.Now - start)}");
+                    _output.Write($"complete in {(DateTime.Now - start):ss}");
                 }, ct).DoNotWait();
             } else {
                 _output.WriteError("Unable to start R process");

@@ -18,6 +18,7 @@ using Microsoft.R.LanguageServer.Client;
 using Microsoft.R.LanguageServer.Completions;
 using Microsoft.R.LanguageServer.Extensions;
 using Microsoft.R.LanguageServer.Formatting;
+using Microsoft.R.LanguageServer.Symbols;
 using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Validation;
 
@@ -28,6 +29,7 @@ namespace Microsoft.R.LanguageServer.Documents {
         private readonly SignatureManager _signatureManager;
         private readonly DiagnosticsPublisher _diagnosticsPublisher;
         private readonly CodeFormatter _formatter;
+        private readonly DocumentSymbolsProvider _symbolsProvider;
 
         public IEditorView View { get; }
         public IEditorBuffer EditorBuffer { get; }
@@ -44,6 +46,7 @@ namespace Microsoft.R.LanguageServer.Documents {
             _signatureManager = new SignatureManager(services);
             _diagnosticsPublisher = new DiagnosticsPublisher(services.GetService<IVsCodeClient>(), Document, uri, services);
             _formatter = new CodeFormatter(_services);
+            _symbolsProvider = new DocumentSymbolsProvider();
         }
 
         public void ProcessChanges(ICollection<TextDocumentContentChangeEvent> contentChanges) {
@@ -87,6 +90,10 @@ namespace Microsoft.R.LanguageServer.Documents {
         [DebuggerStepThrough]
         public TextEdit[] FormatRange(Range range) 
             => _formatter.FormatRange(EditorBuffer.CurrentSnapshot, range);
+
+        [DebuggerStepThrough]
+        public SymbolInformation[] GetSymbols(Uri uri)
+            => _symbolsProvider.GetSymbols(Document, uri);
 
         private IRIntellisenseContext CreateContext(Position position) {
             var bufferPosition = EditorBuffer.ToStreamPosition(position);

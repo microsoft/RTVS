@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,11 +44,7 @@ namespace Microsoft.R.LanguageServer.Completions {
                 var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
                     tcs.TrySetResult(!ct.IsCancellationRequested ? ToHover(e.ToList(), context.EditorBuffer) : null);
                 });
-
-                if (infos != null) {
-                    return Task.FromResult(ToHover(infos.ToList(), context.EditorBuffer));
-                }
-                return tcs.Task;
+                return infos != null ? Task.FromResult(ToHover(infos.ToList(), context.EditorBuffer)) : tcs.Task;
             }
         }
 

@@ -11,8 +11,8 @@ namespace Microsoft.R.LanguageServer.Services {
         private static CoreShell _instance;
 
         public static CoreShell Current => _instance;
-        public IServiceManager ServiceContainer { get; } = new ServiceContainer();
-        public IServiceContainer Services => ServiceContainer;
+        public IServiceManager ServiceManager { get; } = new ServiceContainer();
+        public IServiceContainer Services => ServiceManager;
 
         public static IDisposable Create() {
             Check.InvalidOperation(() => _instance == null);
@@ -20,6 +20,13 @@ namespace Microsoft.R.LanguageServer.Services {
             return _instance;
         }
 
-        public void Dispose() => ServiceContainer?.Dispose();
+        private CoreShell() {
+            ServiceManager.AddService(this);
+        }
+
+        public void Dispose() {
+            ServiceManager?.RemoveService(this);
+            ServiceManager?.Dispose();
+        }
     }
 }

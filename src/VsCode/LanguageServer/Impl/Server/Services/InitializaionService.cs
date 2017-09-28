@@ -24,7 +24,7 @@ namespace Microsoft.R.LanguageServer.Server {
 
             return new InitializeResult(new ServerCapabilities {
                 HoverProvider = true,
-                SignatureHelpProvider = new SignatureHelpOptions("()"),
+                SignatureHelpProvider = new SignatureHelpOptions("(,)"),
                 CompletionProvider = new CompletionOptions(true, TriggerCharacters),
                 TextDocumentSync = new TextDocumentSyncOptions {
                     OpenClose = true,
@@ -32,7 +32,8 @@ namespace Microsoft.R.LanguageServer.Server {
                     Change = TextDocumentSyncKind.Incremental
                 },
                 DocumentFormattingProvider = true,
-                DocumentRangeFormattingProvider = true
+                DocumentRangeFormattingProvider = true,
+                DocumentSymbolProvider = true
             });
         }
 

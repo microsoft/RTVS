@@ -29,7 +29,7 @@ namespace Microsoft.R.LanguageServer.Services {
             var mt = new MainThread();
             SynchronizationContext.SetSynchronizationContext(mt.SynchronizationContext);
 
-                AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
+             AddService<IActionLog>(s => new Logger("VSCode-R", Path.GetTempPath(), s))
             .AddService(mt)
             .AddService(new ContentTypeServiceLocator())
             .AddService<ISettingsStorage, SettingsStorage>()
@@ -37,7 +37,6 @@ namespace Microsoft.R.LanguageServer.Services {
             .AddService<IImageService, ImageService>()
             .AddService(new Application())
             .AddService<IRInteractiveWorkflowProvider, RInteractiveWorkflowProvider>()
-            .AddService<ICoreShell, CoreShell>()
             .AddService(new IdleTimeService(this))
             .AddService(new DocumentCollection(this))
             .AddService(new ViewSignatureBroker())
