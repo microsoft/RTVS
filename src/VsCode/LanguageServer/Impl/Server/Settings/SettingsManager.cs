@@ -45,7 +45,11 @@ namespace Microsoft.R.LanguageServer.Server.Settings {
 
             _editorSettings.LintOptions = vscodeSettings.Linting;
             _engineSettings.InterpreterIndex = vscodeSettings.Interpreter;
+
+            SettingsChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        public event EventHandler SettingsChanged;
 
         private sealed class REngineSettings : IREngineSettings {
             public int InterpreterIndex { get; set; }

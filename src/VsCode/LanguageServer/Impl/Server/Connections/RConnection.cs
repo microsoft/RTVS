@@ -15,6 +15,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Logging;
+using Microsoft.R.LanguageServer.Server.Settings;
 using Microsoft.R.LanguageServer.Settings;
 using Microsoft.R.Platform.Interpreters;
 
@@ -24,15 +25,26 @@ namespace Microsoft.R.LanguageServer.Server {
     /// </summary>
     internal sealed class RConnection : IDisposable {
         private readonly IServiceContainer _services;
+        private readonly CancellationToken _cancellationToken;
         private IRInteractiveWorkflow _workflow;
         private IPackageIndex _packageIndex;
         private IOutput _output;
 
-        public RConnection(IServiceContainer services) {
+        public RConnection(IServiceContainer services, CancellationToken cancellationToken) {
             _services = services;
+            _cancellationToken = cancellationToken;
+
+            var settings = _services.GetService<ISettingsManager>();
+            settings.SettingsChanged += OnSettingsChanged;
         }
 
-        public async Task ConnectAsync(CancellationToken ct) {
+        private void OnSettingsChanged(object s, EventArgs e) {
+            var settings = _services.GetService<ISettingsManager>();
+            settings.SettingsChanged -= OnSettingsChanged;
+            ConnectAsync(_cancellationToken).DoNotWait();
+        }
+
+        private async Task ConnectAsync(CancellationToken ct) {
             var provider = _services.GetService<IRInteractiveWorkflowProvider>();
             _workflow = provider.GetOrCreate();
             _output = _services.GetService<IOutput>();
@@ -62,7 +74,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 _packageIndex = _services.GetService<IPackageIndex>();
                 _packageIndex.BuildIndexAsync(ct).ContinueWith(t => {
                     _output.Write($"complete in {(DateTime.Now - start)}");
-                }).DoNotWait();
+                }, ct).DoNotWait();
             } else {
                 _output.WriteError("Unable to start R process");
             }
@@ -74,14 +86,14 @@ namespace Microsoft.R.LanguageServer.Server {
             var ris = _services.GetService<IRInstallationService>();
             var engines = ris.GetCompatibleEngines(new SupportedRVersionRange(3, 2, 3, 9)).ToList();
             if(engines.Count == 0) {
-                var message = "Unable to find R intepreter.";
+                const string message = "Unable to find R intepreter.";
                 _output.Write(message + " Terminating.");
                 throw new InvalidOperationException(message);
             }
 
             _output.Write("Available R interpreters:");
             for (var i = 0; i < engines.Count; i++) {
-                _output.Write($"[{i}] {engines[i].Name}");
+                _output.Write($"\t[{i}] {engines[i].Name}");
             }
             _output.Write("You can specify the desired interpreter index in the R settings");
 
@@ -90,7 +102,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 _output.Write($"WARNING: selected interpreter [{rs.InterpreterIndex}] does not exist. Using [0] instead");
                 rs.InterpreterIndex = 0;
             } else {
-                _output.Write($"Selected interpreter: [{engines[rs.InterpreterIndex].Name}].");
+                _output.Write($"Selected interpreter: [{rs.InterpreterIndex}] {engines[rs.InterpreterIndex].Name}.\n");
             }
 
             return engines[rs.InterpreterIndex];

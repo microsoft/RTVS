@@ -11,7 +11,6 @@ using JsonRpc.Standard.Contracts;
 using JsonRpc.Standard.Server;
 using JsonRpc.Streams;
 using LanguageServer.VsCode;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
@@ -57,31 +56,35 @@ namespace Microsoft.R.LanguageServer.Server {
                         }
                     };
                 }
-                // Configure & build service host
+
                 var session = new LanguageServerSession(client, contractResolver);
-                _serviceManager
-                    .AddService(new VsCodeClient(session.Client, _serviceManager))
-                    .AddService(new SettingsManager(_serviceManager));
-                
+                InitializeConnections(session);
+
+                // Configure & build service host
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);
                 var serverHandler = new StreamRpcServerHandler(host,
                     StreamRpcServerHandlerOptions.ConsistentResponseSequence |
                     StreamRpcServerHandlerOptions.SupportsRequestCancellation);
                 serverHandler.DefaultFeatures.Set(session);
 
-
                 var cts = new CancellationTokenSource();
                 // If we want server to stop, just stop the "source"
                 using (serverHandler.Attach(reader, writer))
                 using (clientHandler.Attach(reader, writer))
-                using (var rConnection = new RConnection(_serviceManager)) {
-                    rConnection.ConnectAsync(cts.Token).DoNotWait();
+                using (new RConnection(_serviceManager, cts.Token)) {
                     // Wait for the "stop" request.
                     session.CancellationToken.WaitHandle.WaitOne();
                     cts.Cancel();
                 }
                 logWriter?.WriteLine("Exited");
             }
+        }
+
+        private void InitializeConnections(LanguageServerSession session) {
+            var settings = new SettingsManager(_serviceManager);
+            _serviceManager
+                .AddService(new VsCodeClient(session.Client, _serviceManager))
+                .AddService(settings);
         }
 
         private static IJsonRpcServiceHost BuildServiceHost(TextWriter logWriter,

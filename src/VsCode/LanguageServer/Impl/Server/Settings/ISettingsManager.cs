@@ -11,5 +11,6 @@ namespace Microsoft.R.LanguageServer.Server.Settings {
     /// </summary>
     internal interface ISettingsManager: IDisposable {
         void UpdateSettings(LanguageServerSettings vscodeSettings);
+        event EventHandler SettingsChanged;
     }
 }

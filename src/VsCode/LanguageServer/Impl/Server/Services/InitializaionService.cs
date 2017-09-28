@@ -37,7 +37,7 @@ namespace Microsoft.R.LanguageServer.Server {
         }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void Initialized() => Output.Write("R language server started.");
+        public void Initialized() { }
 
         [JsonRpcMethod]
         public void Shutdown() { }
