@@ -10,7 +10,7 @@ using Microsoft.R.Editor.Validation.Errors;
 
 namespace Microsoft.R.Editor.Validation.Lint {
     internal partial class LintValidator {
-        private static IValidationError TabCheck(CharacterStream cs, LintOptions options) {
+        private static IValidationError TabCheck(CharacterStream cs, ILintOptions options) {
             if (options.NoTabs && cs.CurrentChar == '\t' && cs.Position < cs.Length) {
                 // // no_tab_linter: check that only spaces are used, never tabs
                 return new ValidationWarning(new TextRange(cs.Position, 1), Resources.Lint_Tabs, ErrorLocation.Token);
@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IValidationError TrailingWhitespaceCheck(CharacterStream cs, LintOptions options) {
+        private static IValidationError TrailingWhitespaceCheck(CharacterStream cs, ILintOptions options) {
             if (options.TrailingWhitespace) {
                 if (cs.IsWhiteSpace() && !cs.CurrentChar.IsLineBreak() && (cs.NextChar.IsLineBreak() || cs.Position == cs.Length - 1)) {
                     // trailing_whitespace_linter: check there are no trailing whitespace characters.
@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return null;
         }
 
-        private static IEnumerable<IValidationError> TrailingBlankLinesCheck(ITextProvider tp, LintOptions options, bool projectedBuffer) {
+        private static IEnumerable<IValidationError> TrailingBlankLinesCheck(ITextProvider tp, ILintOptions options, bool projectedBuffer) {
             if (options.TrailingBlankLines && !projectedBuffer && tp.Length > 1) {
                 // trailing_blank_lines_linter: check there are no trailing blank lines
                 var trailingWhitespace = string.Empty;
@@ -63,7 +63,7 @@ namespace Microsoft.R.Editor.Validation.Lint {
             return Enumerable.Empty<IValidationError>();
         }
 
-        private static IEnumerable<IValidationError> LineLengthCheck(ITextProvider tp, LintOptions options, bool projectedBuffer) {
+        private static IEnumerable<IValidationError> LineLengthCheck(ITextProvider tp, ILintOptions options, bool projectedBuffer) {
             if (!options.LineLength || tp.Length <= 1) {
                 return Enumerable.Empty<IValidationError>();
             }

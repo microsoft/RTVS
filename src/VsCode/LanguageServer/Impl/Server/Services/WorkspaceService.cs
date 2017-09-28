@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.R.Editor;
 using Microsoft.R.LanguageServer.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
@@ -17,10 +18,21 @@ namespace Microsoft.R.LanguageServer.Server {
         /// <param name="settings"></param>
         [JsonRpcMethod(IsNotification = true)]
         public void DidChangeConfiguration(SettingsRoot settings) {
+            var es = Services.GetService<IREditorSettings>();
+
+            var e = settings.R.Editor;
+            es.FormatScope = e.FormatScope;
+            es.FormatOptions.BreakMultipleStatements = e.BreakMultipleStatements;
+            es.FormatOptions.IndentSize = e.TabSize;
+            es.FormatOptions.TabSize = e.TabSize;
+            es.FormatOptions.SpaceAfterKeyword = e.SpaceAfterKeyword;
+            es.FormatOptions.SpaceBeforeCurly = e.SpaceBeforeCurly;
+            es.FormatOptions.SpacesAroundEquals = e.SpacesAroundEquals;
+
+            es.LintOptions = settings.R.Linting;
         }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void DidChangeWatchedFiles(ICollection<FileEvent> changes) {
-        }
+        public void DidChangeWatchedFiles(ICollection<FileEvent> changes) { }
     }
 }

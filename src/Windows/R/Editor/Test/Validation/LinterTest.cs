@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Test.Roxygen {
         private readonly ConcurrentQueue<IValidationError> _results = new ConcurrentQueue<IValidationError>();
         private readonly IServiceContainer _services;
         private readonly IValidatorAggregator _validator;
-        private readonly LintOptions _options;
+        private readonly ILintOptions _options;
 
         public LinterTest(IServiceContainer services) {
             _services = services;

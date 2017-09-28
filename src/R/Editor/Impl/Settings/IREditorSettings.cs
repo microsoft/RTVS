@@ -10,59 +10,59 @@ namespace Microsoft.R.Editor {
         /// <summary>
         /// Format range on paste
         /// </summary>
-        bool FormatOnPaste { get; }
+        bool FormatOnPaste { get; set; }
 
         /// <summary>
         /// Format the entire scope upon '}'
         /// </summary>
-        bool FormatScope { get; }
+        bool FormatScope { get; set; }
 
         /// <summary>
         /// Commit completion on Space ley
         /// </summary>
-        bool CommitOnSpace { get; }
+        bool CommitOnSpace { get; set; }
 
         /// <summary>
         /// Commit completion on Enter key
         /// </summary>
-        bool CommitOnEnter { get; }
+        bool CommitOnEnter { get; set; }
 
         /// <summary>
         /// Show completion on first character typed (C# style)
         /// </summary>
-        bool ShowCompletionOnFirstChar { get; }
+        bool ShowCompletionOnFirstChar { get; set; }
 
         /// <summary>
         /// Show completion on Tab key (RStudio style)
         /// </summary>
-        bool ShowCompletionOnTab { get; }
+        bool ShowCompletionOnTab { get; set; }
 
         /// <summary>
         /// Enable syntax checking in REPL
         /// </summary>
-        bool SyntaxCheckInRepl { get; }
+        bool SyntaxCheckInRepl { get; set; }
 
-        bool PartialArgumentNameMatch { get; }
+        bool PartialArgumentNameMatch { get; set; }
 
         /// <summary>
         /// Enable code outlining (collapsible regions)
         /// </summary>
-        bool EnableOutlining { get; }
+        bool EnableOutlining { get; set; }
 
         /// <summary>
         /// During smart indent align caret by function
         /// argument rather than indent one level deeper
         /// </summary>
-        bool SmartIndentByArgument { get; }
+        bool SmartIndentByArgument { get; set; }
 
         /// <summary>
         /// Formatter options
         /// </summary>
-        RFormatOptions FormatOptions { get; }
+        RFormatOptions FormatOptions { get; set; }
 
         /// <summary>
         /// Lint checker options
         /// </summary>
-        LintOptions LintOptions { get; }
+        ILintOptions LintOptions { get; set; }
     }
 }

@@ -12,6 +12,11 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Server\Settings\**" />
+    <EmbeddedResource Remove="Server\Settings\**" />
+    <None Remove="Server\Settings\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
@@ -36,9 +41,6 @@
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj" />
     <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
     <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Server\Settings\" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

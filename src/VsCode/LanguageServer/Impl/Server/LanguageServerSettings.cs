@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.R.Editor.Validation.Lint;
 
 namespace Microsoft.R.LanguageServer.Server {
     /// <summary>
@@ -30,7 +31,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public bool BreakMultipleStatements { get; set; }
     }
 
-    public sealed class LinterSettings {
+    public sealed class LinterSettings: ILintOptions {
         public bool Enabled { get; set; }
         public bool CamelCase { get; set; }
         public bool SnakeCase { get; set; }

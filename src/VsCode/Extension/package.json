@@ -91,7 +91,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "R Configuration",
+      "title": "R",
       "properties": {
         "r.editor.formatScope": {
           "type": "boolean",

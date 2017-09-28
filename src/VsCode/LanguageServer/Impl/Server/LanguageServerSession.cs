@@ -23,7 +23,6 @@ namespace Microsoft.R.LanguageServer.Server {
         public CancellationToken CancellationToken => cts.Token;
         public JsonRpcClient RpcClient { get; }
         public ClientProxy Client { get; }
-        public LanguageServerSettings Settings { get; set; } = new LanguageServerSettings();
         public void StopServer() => cts.Cancel();
     }
 }

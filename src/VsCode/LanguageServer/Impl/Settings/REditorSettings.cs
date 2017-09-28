@@ -20,26 +20,26 @@ namespace Microsoft.R.LanguageServer.Settings {
         public void Dispose() => _storage.Dispose();
 
         public event EventHandler<EventArgs> SettingsChanged;
-        public bool AutoFormat { get; } = true;
-        public bool CompletionEnabled { get; } = true;
-        public int IndentSize { get; } = 2;
-        public IndentType IndentType { get; } = IndentType.Spaces;
-        public int TabSize { get; } = 2;
-        public IndentStyle IndentStyle { get; } = IndentStyle.Smart;
-        public bool SyntaxCheckEnabled { get; } = true;
-        public bool SignatureHelpEnabled { get; } = true;
-        public bool InsertMatchingBraces { get; } = true;
-        public bool FormatOnPaste { get; }
-        public bool FormatScope { get; }
-        public bool CommitOnSpace { get; } = false;
-        public bool CommitOnEnter { get; } = true;
-        public bool ShowCompletionOnFirstChar { get; } = true;
-        public bool ShowCompletionOnTab { get; } = true;
-        public bool SyntaxCheckInRepl { get; }
-        public bool PartialArgumentNameMatch { get; }
-        public bool EnableOutlining { get; }
-        public bool SmartIndentByArgument { get; } = true;
-        public RFormatOptions FormatOptions { get; } = new RFormatOptions();
-        public LintOptions LintOptions { get; }
+        public bool AutoFormat { get; set; } = true;
+        public bool CompletionEnabled { get; set; } = true;
+        public int IndentSize { get; set; } = 2;
+        public IndentType IndentType { get; set; } = IndentType.Spaces;
+        public int TabSize { get; set; } = 2;
+        public IndentStyle IndentStyle { get; set; } = IndentStyle.Smart;
+        public bool SyntaxCheckEnabled { get; set; } = true;
+        public bool SignatureHelpEnabled { get; set; } = true;
+        public bool InsertMatchingBraces { get; set; } = true;
+        public bool FormatOnPaste { get; set; }
+        public bool FormatScope { get; set; }
+        public bool CommitOnSpace { get; set; } = false;
+        public bool CommitOnEnter { get; set; } = true;
+        public bool ShowCompletionOnFirstChar { get; set; } = true;
+        public bool ShowCompletionOnTab { get; set; } = true;
+        public bool SyntaxCheckInRepl { get; set; }
+        public bool PartialArgumentNameMatch { get; set; }
+        public bool EnableOutlining { get; set; }
+        public bool SmartIndentByArgument { get; set; } = true;
+        public RFormatOptions FormatOptions { get; set; } = new RFormatOptions();
+        public ILintOptions LintOptions { get; set; }
     }
 }
