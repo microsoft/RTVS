@@ -73,10 +73,8 @@ namespace Microsoft.R.LanguageServer.Documents {
         public CompletionList GetCompletions(Position position)
             => _completionManager.GetCompletions(CreateContext(position));
 
-        public async Task<SignatureHelp> GetSignatureHelpAsync(Position position) {
-            var signatures = await _signatureManager.GetSignaturesAsync(CreateContext(position));
-            return signatures != null ? new SignatureHelp(signatures) : null;
-        }
+        public Task<SignatureHelp> GetSignatureHelpAsync(Position position)
+            => _signatureManager.GetSignatureHelpAsync(CreateContext(position));
 
         [DebuggerStepThrough]
         public Task<Hover> GetHoverAsync(Position position, CancellationToken ct)
