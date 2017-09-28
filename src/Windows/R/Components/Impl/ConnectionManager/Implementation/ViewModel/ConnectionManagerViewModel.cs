@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
@@ -19,10 +20,12 @@ using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Interpreters;
+using Microsoft.VisualStudio.Imaging;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
         private readonly IUIService _ui;
+        private readonly IImageService _images;
         private readonly IRSettings _settings;
         private readonly IRInstallationService _installationService;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
@@ -36,6 +39,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public ConnectionManagerViewModel(IServiceContainer services) :
             base(services) {
             _ui = services.UI();
+            _images = services.GetService<IImageService>();
             _settings = services.GetService<IRSettings>();
             _installationService = services.GetService<IRInstallationService>();
 
@@ -102,7 +106,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool TryEditNew() {
             Services.MainThread().Assert();
-            IsEditingNew = TryStartEditing(new ConnectionViewModel());
+            IsEditingNew = TryStartEditing(new ConnectionViewModel(_images));
             return IsEditingNew;
         }
 
@@ -345,45 +349,39 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         private void CreateRemoteConnectionViewModel(IConnection connection) {
-            var cvm = CreateConnectionViewModel(connection);
+            var cvm = new ConnectionViewModel(connection, ConnectionManager, _images);
             var commandLine = GetConnectionTooltipCommandLine(connection);
 
             cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(connection.Path, commandLine);
             cvm.ButtonEditTooltip = Resources.ConnectionManager_EditRemoteTooltip_Format.FormatInvariant(connection.Name);
+            cvm.Icon = _images.GetImage("Cloud");
             _remoteConnections.Add(cvm);
         }
 
         private void CreateLocalDockerConnectionViewModel(IConnection connection) {
-            var cvm = CreateConnectionViewModel(connection);
+            var cvm = new ConnectionViewModel(connection, ConnectionManager, _images);
             var commandLine = GetConnectionTooltipCommandLine(connection);
 
             cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatLocalDocker.FormatInvariant(connection.Path, connection.ContainerName, commandLine);
             cvm.ButtonEditTooltip = Resources.ConnectionManager_EditLocalDockerTooltip_Format.FormatInvariant(connection.Name);
             cvm.ButtonDeleteDisabledTooltip = Resources.ConnectionManager_DeleteLocalDockerDisabledTooltip;
+            cvm.Icon = _images.GetImage("StructurePublic");
             _localDockerConnections.Add(cvm);
         }
 
         private void CreateLocalConnectionViewModel(IConnection connection) {
-            var cvm = CreateConnectionViewModel(connection);
+            var cvm = new ConnectionViewModel(connection, ConnectionManager, _images);
             var commandLine = GetConnectionTooltipCommandLine(connection);
 
             cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(connection.Path, commandLine);
             cvm.ButtonEditTooltip = Resources.ConnectionManager_EditLocalTooltip_Format.FormatInvariant(connection.Name);
             cvm.ButtonDeleteDisabledTooltip = Resources.ConnectionManager_DeleteLocalDisabledTooltip;
+            cvm.Icon = _images.GetImage("Computer");
             _localConnections.Add(cvm);
         }
 
         private static string GetConnectionTooltipCommandLine(IConnectionInfo connection) => !string.IsNullOrWhiteSpace(connection.RCommandLineArguments)
             ? connection.RCommandLineArguments
             : Resources.ConnectionManager_None;
-
-        private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
-            var isActive = connection == ConnectionManager.ActiveConnection;
-            return new ConnectionViewModel(connection) {
-                IsActive = isActive,
-                IsConnected = isActive && ConnectionManager.IsConnected,
-                IsRunning = isActive && ConnectionManager.IsRunning
-            };
-        }
     }
 }

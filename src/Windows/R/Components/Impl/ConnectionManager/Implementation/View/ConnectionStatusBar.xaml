@@ -35,7 +35,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
-        <controls:IconWithOverlay Margin="0,0,7,0" Width="18" Style="{StaticResource ConnectionStyle}"/>
+        <Grid Margin="0,0,7,0">
+            <Image Width="18" Height="18" Source="{Binding Path=Icon}" />
+            <Image Margin="8,8,0,0" Width="10" Height="10" Source="{Binding Path=OverlayIcon}"
+                   Visibility="{Binding Path=IsActive, Converter={x:Static wpf:Converters.TrueIsNotCollapsed}}"/>
+        </Grid>
+
         <TextBlock Text="{Binding Path=SelectedConnection}" Margin="0,0,7,0" MaxWidth="300"
                    Foreground="{DynamicResource {x:Static wpf:Brushes.StatusBarDefaultTextBrushKey}}"
                    FontSize="{DynamicResource {x:Static wpf:FontKeys.EnvironmentFontSizeKey}}"
