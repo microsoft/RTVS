@@ -11,7 +11,7 @@ namespace Microsoft.R.LanguageServer.Services {
         private static CoreShell _instance;
 
         public static CoreShell Current => _instance;
-        public ServiceContainer ServiceContainer { get; } = new ServiceContainer();
+        public IServiceManager ServiceContainer { get; } = new ServiceContainer();
         public IServiceContainer Services => ServiceContainer;
 
         public static IDisposable Create() {

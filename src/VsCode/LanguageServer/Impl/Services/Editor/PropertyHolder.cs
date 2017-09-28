@@ -6,7 +6,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Text;
 
-namespace Microsoft.R.LanguageServer.Services {
+namespace Microsoft.R.LanguageServer.Services.Editor {
     /// <summary>
     /// Base class for objects that have properties and services
     /// such as <see cref="IEditorBuffer" /> and <see cref="IEditorView"/>.

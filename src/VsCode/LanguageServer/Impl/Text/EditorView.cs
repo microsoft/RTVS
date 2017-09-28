@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Services.Editor;
 
 namespace Microsoft.R.LanguageServer.Text {
     internal sealed class EditorView : ServiceAndPropertyHolder, IEditorView {

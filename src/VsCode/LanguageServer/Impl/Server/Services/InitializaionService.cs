@@ -3,12 +3,10 @@
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
 using System;
-using System.Threading.Tasks;
 using JsonRpc.Standard;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
-using Microsoft.Common.Core.Logging;
-using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.LanguageServer.Server {

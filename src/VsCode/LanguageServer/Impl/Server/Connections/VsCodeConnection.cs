@@ -12,11 +12,11 @@ using JsonRpc.Standard.Server;
 using JsonRpc.Streams;
 using LanguageServer.VsCode;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 using Microsoft.R.LanguageServer.Client;
-using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Server.Settings;
 
 namespace Microsoft.R.LanguageServer.Server {
     /// <summary>
@@ -24,10 +24,10 @@ namespace Microsoft.R.LanguageServer.Server {
     /// Listens on stdin/stdout for the language protocol JSON RPC
     /// </summary>
     internal sealed class VsCodeConnection {
-        private readonly ServiceContainer _serviceContainer;
+        private readonly IServiceManager _serviceManager;
 
-        public VsCodeConnection(ServiceContainer serviceContainer) {
-            _serviceContainer = serviceContainer;
+        public VsCodeConnection(IServiceManager serviceManager) {
+            _serviceManager = serviceManager;
         }
         public void Connect(bool debugMode) {
             var logWriter = CreateLogWriter(debugMode);
@@ -59,10 +59,10 @@ namespace Microsoft.R.LanguageServer.Server {
                 }
                 // Configure & build service host
                 var session = new LanguageServerSession(client, contractResolver);
-                var output = new Output(session.Client.Window, _serviceContainer.GetService<IActionLog>());
-                _serviceContainer.AddService(output);
-                _serviceContainer.AddService(new VsCodeClient(session.Client));
-
+                _serviceManager
+                    .AddService(new VsCodeClient(session.Client, _serviceManager))
+                    .AddService(new SettingsManager(_serviceManager));
+                
                 var host = BuildServiceHost(logWriter, contractResolver, debugMode);
                 var serverHandler = new StreamRpcServerHandler(host,
                     StreamRpcServerHandlerOptions.ConsistentResponseSequence |
@@ -74,7 +74,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 // If we want server to stop, just stop the "source"
                 using (serverHandler.Attach(reader, writer))
                 using (clientHandler.Attach(reader, writer))
-                using (var rConnection = new RConnection(_serviceContainer)) {
+                using (var rConnection = new RConnection(_serviceManager)) {
                     rConnection.ConnectAsync(cts.Token).DoNotWait();
                     // Wait for the "stop" request.
                     session.CancellationToken.WaitHandle.WaitOne();

@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.R.Editor.Validation.Lint;
 
-namespace Microsoft.R.LanguageServer.Server {
+namespace Microsoft.R.LanguageServer.Server.Settings {
     /// <summary>
     /// Settings that match 'configuration' section in package.json
     /// </summary>

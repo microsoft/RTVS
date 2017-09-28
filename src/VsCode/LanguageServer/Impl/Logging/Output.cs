@@ -6,7 +6,7 @@ using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Logging;
 
-namespace Microsoft.R.LanguageServer.Services {
+namespace Microsoft.R.LanguageServer.Logging {
     internal sealed class Output : IOutput {
         private readonly IWindow _window;
         private readonly IActionLog _log;

@@ -6,7 +6,7 @@ using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Signatures;
 using Microsoft.Languages.Editor.Text;
 
-namespace Microsoft.R.LanguageServer.Completions {
+namespace Microsoft.R.LanguageServer.Services.Editor {
     internal sealed class ViewSignatureBroker : IViewSignatureBroker {
         public IReadOnlyList<IEditorIntellisenseSession> GetSessions(IEditorView view) => new List<IEditorIntellisenseSession>();
         public void TriggerSignatureSession(IEditorView view) { }

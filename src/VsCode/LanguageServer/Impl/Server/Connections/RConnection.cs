@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LanguageServer.VsCode.Contracts.Client;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
@@ -15,7 +14,7 @@ using Microsoft.R.Editor.Functions;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
-using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Logging;
 using Microsoft.R.LanguageServer.Settings;
 using Microsoft.R.Platform.Interpreters;
 
@@ -87,14 +86,14 @@ namespace Microsoft.R.LanguageServer.Server {
             _output.Write("You can specify the desired interpreter index in the R settings");
 
             var rs = _services.GetService<IREngineSettings>();
-            if(rs.EngineIndex < 0 || rs.EngineIndex > engines.Count) {
-                _output.Write($"WARNING: selected interpreter [{rs.EngineIndex}] does not exist. Using [0] instead");
-                rs.EngineIndex = 0;
+            if(rs.InterpreterIndex < 0 || rs.InterpreterIndex > engines.Count) {
+                _output.Write($"WARNING: selected interpreter [{rs.InterpreterIndex}] does not exist. Using [0] instead");
+                rs.InterpreterIndex = 0;
             } else {
-                _output.Write($"Selected interpreter: [{engines[rs.EngineIndex].Name}].");
+                _output.Write($"Selected interpreter: [{engines[rs.InterpreterIndex].Name}].");
             }
 
-            return engines[rs.EngineIndex];
+            return engines[rs.InterpreterIndex];
         }
     }
 }

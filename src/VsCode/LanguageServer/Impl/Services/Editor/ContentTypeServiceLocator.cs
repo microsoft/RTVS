@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Editor.Services;
 
-namespace Microsoft.R.LanguageServer.Services {
+namespace Microsoft.R.LanguageServer.Services.Editor {
     internal sealed class ContentTypeServiceLocator: IContentTypeServiceLocator {
         public T GetService<T>(string contentType) where T : class => default(T);
         public IEnumerable<T> GetAllServices<T>(string contentType) where T : class => Enumerable.Empty<T>();

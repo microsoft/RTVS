@@ -3,6 +3,6 @@
 
 namespace Microsoft.R.LanguageServer.Settings {
     public interface IREngineSettings {
-        int EngineIndex { get; set; }
+        int InterpreterIndex { get; set; }
     }
 }

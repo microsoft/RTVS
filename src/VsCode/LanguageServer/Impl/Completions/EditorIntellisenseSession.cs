@@ -5,7 +5,7 @@ using System;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.LanguageServer.Services;
+using Microsoft.R.LanguageServer.Services.Editor;
 
 namespace Microsoft.R.LanguageServer.Completions {
     internal sealed class EditorIntellisenseSession : PropertyHolder, IEditorIntellisenseSession {
