@@ -69,6 +69,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e) => ViewModel.DeleteAsync(GetContainer(e)).DoNotWait();
 
+        private void RefreshDocker(object sender, RequestNavigateEventArgs e) => ViewModel.RefreshDocker();
+
         private void RepositoryUri_RequestNavigate(object sender, RequestNavigateEventArgs e) => _services.Process().Start(e.Uri.AbsoluteUri);
 
         private static ContainerViewModel GetContainer(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as ContainerViewModel;

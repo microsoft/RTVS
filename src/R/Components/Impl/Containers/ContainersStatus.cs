@@ -4,6 +4,7 @@
 namespace Microsoft.R.Components.Containers {
     public enum ContainersStatus {
         Running,
+        HasErrors,
         Stopped,
         NotInstalled
     }

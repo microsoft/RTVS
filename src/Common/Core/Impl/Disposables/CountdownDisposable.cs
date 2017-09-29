@@ -30,10 +30,5 @@ namespace Microsoft.Common.Core.Disposables {
                 _disposeAction();
             }
         }
-
-        public void Reset() {
-            Interlocked.Exchange(ref _count, 0);
-            _disposeAction();
-        }
     }
 }
