@@ -56,9 +56,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var conn = _cmvm.LocalConnections.First(c => c.Name == connection.Name);
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeTrue();
-
-            conn.IsRunning = false;
-            conn.IsConnected.Should().BeTrue();
         }
 
         [Test(ThreadType.UI)]
