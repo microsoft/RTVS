@@ -452,11 +452,32 @@ If you want to delete all data on the remote machine you must delete your user p
     <value>install Docker for Windows</value>
   </data>
   <data name="ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" xml:space="preserve">
-    <value>and restart Visual Studio.</value>
+    <value>and click</value>
   </data>
-  <data name="ContainerManager_ContainerServiceIsNotRunning" xml:space="preserve">
+  <data name="ContainerManager_ContainerServiceIsNotInstalled_FourthPart" xml:space="preserve">
+    <value>refresh</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceIsNotRunning_FirstPart" xml:space="preserve">
     <value>Docker service isn't running.
-To start working with containers, run Docker for Windows and restart Visual Studio.</value>
+To start working with containers, run Docker for Windows and click</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceIsNotRunning_SecondPart" xml:space="preserve">
+    <value>refresh</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceHasErrors_FirstPart" xml:space="preserve">
+    <value>Docker service fails because of the following error:
+
+</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceHasErrors_SecondPart" xml:space="preserve">
+    <value>
+Please click</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceHasErrors_ThirdPart" xml:space="preserve">
+    <value>refresh</value>
+  </data>
+  <data name="ContainerManager_ContainerServiceHasErrors_FourthPart" xml:space="preserve">
+    <value>when erros is fixed.</value>
   </data>
   <data name="ContainerManager_LocalDocker" xml:space="preserve">
     <value>Local Containers</value>

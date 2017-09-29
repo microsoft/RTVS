@@ -21,7 +21,6 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         public bool IsTestConnectionSucceeded { get; set; }
         public string TestConnectionFailedText { get; set; }
         public bool IsRemote { get; set; }
-        public bool IsContainer { get; set; }
 
         public string OriginalName => Name;
         public string NameTextBoxTooltip => string.Empty;

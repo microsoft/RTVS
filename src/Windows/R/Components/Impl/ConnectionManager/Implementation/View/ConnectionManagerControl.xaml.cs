@@ -55,7 +55,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e) {
             if (ViewModel?.TryEdit(GetConnection(e)) == true) {
-                ScrollEditedIntoView();
+                ScrollEditedIntoView((FrameworkElement)e.Source);
             }
         }
 
@@ -65,9 +65,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View {
 
         private static IConnectionViewModel GetConnection(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as IConnectionViewModel;
 
-        private void ScrollEditedIntoView() {
+        private void ScrollEditedIntoView(FrameworkElement editedElement) {
             var model = ViewModel;
-            if (model != null && !model.IsEditingNew && model.EditedConnection != null) {
+            if (ViewModel != null && !ViewModel.IsEditingNew && ViewModel.EditedConnection != null) {
                 var list = model.EditedConnection.IsRemote ? RemoteList : LocalList;
                 list.ScrollIntoView(model.EditedConnection);
                 list.SelectedItems.Add(model.EditedConnection);

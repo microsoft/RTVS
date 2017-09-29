@@ -218,11 +218,6 @@
                 </Grid>
             </DataTemplate>
 
-            <DataTemplate x:Key="ConnectButtonDataTemplate" DataType="{x:Type viewModel:IConnectionViewModel}">
-                <!-- Connection icon -->
-                <rcontrols:IconWithOverlay Margin="4,1,6,1" Width="18" Height="18" Style="{StaticResource ConnectionStyle}" />
-            </DataTemplate>
-
             <DataTemplate DataType="{x:Type viewModel:IConnectionViewModel}">
                 <Border BorderThickness="0,0,0,0" 
                         BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" x:Name="Container">
@@ -245,8 +240,9 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Connection icon -->
-                        <ContentPresenter DataContext="{Binding}" Grid.Column="1" 
-                                          ContentTemplate="{StaticResource ConnectButtonDataTemplate}" />
+                        <Image Grid.Column="1" Margin="4,1,6,1" Width="18" Height="18" Source="{Binding Path=Icon}" />
+                        <Image Grid.Column="1" Margin="14,11,6,1" Width="10" Height="10" Source="{Binding Path=OverlayIcon}"
+                               Visibility="{Binding Path=IsActive, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"/>
 
                         <!-- Name, path  -->
                         <TextBlock Grid.Row="0" Grid.Column="2" Margin="0,1,6,2" Text="{Binding Path=Name}"

@@ -12,6 +12,7 @@ namespace Microsoft.R.Components.Containers {
         event EventHandler ContainersStatusChanged;
 
         ContainersStatus Status { get; }
+        string Error { get; }
 
         IReadOnlyList<IContainer> GetContainers();
         IReadOnlyList<IContainer> GetRunningContainers();
@@ -21,5 +22,6 @@ namespace Microsoft.R.Components.Containers {
         Task StopAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
         Task DeleteAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
         Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken));
+        void Restart();
     }
 }

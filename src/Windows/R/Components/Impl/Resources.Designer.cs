@@ -723,11 +723,59 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Docker service fails because of the following error:
+        ///
+        ///.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_FirstPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to when erros is fixed..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_FourthPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_FourthPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///Please click.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_ThirdPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Docker service isn&apos;t installed. To start working with containers,.
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotInstalled_FirstPart {
             get {
                 return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_FourthPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FourthPart", resourceCulture);
             }
         }
         
@@ -741,7 +789,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to and restart Visual Studio..
+        ///   Looks up a localized string similar to and click.
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotInstalled_ThirdPart {
             get {
@@ -751,11 +799,20 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to Docker service isn&apos;t running.
-        ///To start working with containers, run Docker for Windows and restart Visual Studio..
+        ///To start working with containers, run Docker for Windows and click.
         /// </summary>
-        public static string ContainerManager_ContainerServiceIsNotRunning {
+        public static string ContainerManager_ContainerServiceIsNotRunning_FirstPart {
             get {
-                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning", resourceCulture);
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_SecondPart", resourceCulture);
             }
         }
         

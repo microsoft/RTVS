@@ -34,6 +34,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private CreateLocalDockerViewModel _newLocalDocker;
         private bool _containerServiceIsNotInstalled;
         private bool _containerServiceIsNotRunning;
+        private string _containerServiceError;
 
         public ReadOnlyObservableCollection<ContainerViewModel> LocalContainers { get; }
 
@@ -50,6 +51,11 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public bool ContainerServiceIsNotRunning {
             get => _containerServiceIsNotRunning;
             private set => SetProperty(ref _containerServiceIsNotRunning, value);
+        }
+
+        public string ContainerServiceError {
+            get => _containerServiceError;
+            private set => SetProperty(ref _containerServiceError, value);
         }
 
         public ContainerManagerViewModel(IServiceContainer services) {
@@ -80,6 +86,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private void ContainersStatusChangedMainThread() {
             ContainerServiceIsNotInstalled = _containers.Status == ContainersStatus.NotInstalled;
             ContainerServiceIsNotRunning = _containers.Status == ContainersStatus.Stopped;
+            ContainerServiceError = _containers.Status == ContainersStatus.HasErrors ? _containers.Error : null;
         }
 
         public void Dispose() => _disposable.TryDispose();
@@ -202,7 +209,6 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private bool IsActiveConnectionToContainer(ContainerViewModel container) 
             => _connections.ActiveConnection?.ContainerName?.EqualsOrdinal(container.Name) ?? false;
 
-        public void ShowConnections() 
-            => _services.GetService<IRInteractiveWorkflowToolWindowService>().Connections().Show(true, true);
+        public void RefreshDocker() => _containers.Restart();
     }
 }

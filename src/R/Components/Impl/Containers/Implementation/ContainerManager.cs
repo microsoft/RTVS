@@ -24,6 +24,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
         private ImmutableArray<IContainer> _runningContainers;
         private CancellationTokenSource _updateContainersCts;
         private int _status;
+        private string _error;
         private event Action ContainersChanged;
 
         public event EventHandler ContainersStatusChanged;
@@ -34,6 +35,10 @@ namespace Microsoft.R.Components.Containers.Implementation {
                     ContainersStatusChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
+        }
+        public string Error {
+            get => _error;
+            private set => Interlocked.Exchange(ref _error, value);
         }
 
         public ContainerManager(IRInteractiveWorkflow interactiveWorkflow) {
@@ -118,13 +123,23 @@ EXPOSE 5444";
             }
         }
 
+        public void Restart() {
+            var cts = new CancellationTokenSource();
+            var oldCts = Interlocked.Exchange(ref _updateContainersCts, cts);
+            oldCts.Cancel();
+            if (_containersChangedCountdown.Count > 0) {
+                UpdateContainersAsync(cts.Token).DoNotWait();
+            }
+        }
+
         public void Dispose() => _updateContainersCts.Cancel();
 
-        private void StartUpdatingContainers() => UpdateContainersAsync().DoNotWait();
+        private void StartUpdatingContainers() => UpdateContainersAsync(_updateContainersCts.Token).DoNotWait();
         private void EndUpdatingContainers() => Interlocked.Exchange(ref _updateContainersCts, new CancellationTokenSource()).Cancel();
 
-        private async Task UpdateContainersAsync() {
-            var updateContainersCancellationToken = _updateContainersCts.Token;
+        private async Task UpdateContainersAsync(CancellationToken updateContainersCancellationToken) {
+            Error = null;
+            Status = ContainersStatus.Running;
             while (!updateContainersCancellationToken.IsCancellationRequested) {
                 var cts = CancellationTokenSource.CreateLinkedTokenSource(updateContainersCancellationToken);
                 cts.CancelAfter(5000);
@@ -137,12 +152,19 @@ EXPOSE 5444";
             try {
                 UpdateContainers(await _containerService.ListContainersAsync(true, token));
             } catch (ContainerServiceNotInstalledException) {
-                _containersChangedCountdown.Reset();
+                EndUpdatingContainers();
                 Status = ContainersStatus.NotInstalled;
             } catch (ContainerServiceNotRunningException) {
-                _containersChangedCountdown.Reset();
+                EndUpdatingContainers();
                 Status = ContainersStatus.Stopped;
-            } catch (ContainerException) {
+            } catch (ContainerException ex) {
+                var message = ex.Message;
+                if (message.EqualsOrdinal(Error)) {
+                    EndUpdatingContainers();
+                    Status = ContainersStatus.HasErrors;
+                } else {
+                    Error = ex.Message;
+                }
             } catch (OperationCanceledException) {
             }
         }

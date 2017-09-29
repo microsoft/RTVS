@@ -235,23 +235,42 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <TextBlock Style="{StaticResource WatermarkTextBlock}" Visibility="{Binding Path=ContainerServiceIsNotInstalled, Converter={x:Static rwpf:Converters.FalseIsHidden}}">
+        <TextBlock Style="{StaticResource WatermarkTextBlock}" Visibility="{Binding Path=ContainerServiceIsNotInstalled, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
             <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotInstalled_FirstPart}" />
             <Hyperlink NavigateUri="https://www.docker.com/docker-windows" Style="{StaticResource HyperlinkStyle}" RequestNavigate="RepositoryUri_RequestNavigate">
                 <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotInstalled_SecondPart}" />    
             </Hyperlink>
             <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotInstalled_ThirdPart}" />
+            <Hyperlink RequestNavigate="RefreshDocker" NavigateUri="about:blank">
+                <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotInstalled_FourthPart}" />    
+            </Hyperlink>
         </TextBlock>
 
         <TextBlock Style="{StaticResource WatermarkTextBlock}"
-                   Visibility="{Binding Path=ContainerServiceIsNotRunning, Converter={x:Static rwpf:Converters.FalseIsHidden}}"
-                   Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotRunning}" />
+                   Visibility="{Binding Path=ContainerServiceIsNotRunning, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
+            <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotRunning_FirstPart}" />
+            <Hyperlink RequestNavigate="RefreshDocker" NavigateUri="about:blank">
+                <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceIsNotRunning_SecondPart}" />    
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Style="{StaticResource WatermarkTextBlock}"
+                   Visibility="{Binding Path=ContainerServiceError, Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
+            <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_FirstPart}" />
+            <Run Text="{Binding Path=ContainerServiceError}" />
+            <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_SecondPart}" />
+            <Hyperlink RequestNavigate="RefreshDocker" NavigateUri="about:blank">
+                <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_ThirdPart}" />    
+            </Hyperlink>
+            <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_FourthPart}" />
+        </TextBlock>
 
         <ScrollViewer x:Name="Root" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <ScrollViewer.Visibility>
                 <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsCollapsed}">
                     <Binding Path="ContainerServiceIsNotInstalled" />
                     <Binding Path="ContainerServiceIsNotRunning" />
+                    <Binding Path="ContainerServiceError" Converter="{x:Static rwpf:Converters.NullIsFalse}" />
                 </MultiBinding>
             </ScrollViewer.Visibility>
             <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250">
