@@ -1,99 +1,63 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
-
 "use strict";
+// The module 'vscode' contains the VS Code extensibility API
+// Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { EOL } from "os";
-import { Commands, RLanguage } from "./constants";
+import * as languageClient from "vscode-languageclient";
+import * as path from "path";
+import * as fs from "fs";
 
-let terminal: vscode.Terminal;
+// this method is called when your extension is activated
+// your extension is activated the very first time the command is executed
+export function activate(context: vscode.ExtensionContext) {
+    console.log("Activating R Tools...");
+    activateLanguageServer(context);
+    console.log("R Tools is now activated.");
 
-export function activateExecInTerminalProvider(): vscode.Disposable[] {
-    const disposables: vscode.Disposable[] = [];
-    disposables.push(vscode.commands.registerCommand(Commands.StartRepl, startRepl));
-    disposables.push(vscode.commands.registerCommand(Commands.SourceFile, sourceFile));
-    disposables.push(vscode.commands.registerCommand(Commands.ExecInTerminal, execInTerminal));
-    disposables.push(vscode.window.onDidCloseTerminal((closedTerminal: vscode.Terminal) => {
-        if (terminal === closedTerminal) {
-            terminal = null;
+    // The command has been defined in the package.json file
+    // Now provide the implementation of the command with  registerCommand
+    // The commandId parameter must match the command field in package.json
+    const disposable = vscode.commands.registerCommand("extension.sayHello", () => {
+        // The code you place here will be executed every time your command is executed
+
+        // Display a message box to the user
+        vscode.window.showInformationMessage("Hello World!");
+    });
+
+    context.subscriptions.push(disposable);
+}
+
+export function activateLanguageServer(context: vscode.ExtensionContext) {
+
+    // The server is implemented in C#
+    const commandOptions = { stdio: "pipe" };
+    const serverModule = context.extensionPath + "/server/Microsoft.R.LanguageServer.dll";
+
+    // If the extension is launched in debug mode then the debug server options are used
+    // Otherwise the run options are used
+    const serverOptions: languageClient.ServerOptions = {
+        run: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions },
+        debug: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions }
+    };
+
+    // Options to control the language client
+    const clientOptions: languageClient.LanguageClientOptions = {
+        // Register the server for R documents
+        documentSelector: ["r"],
+        synchronize: {
+            configurationSection: "r"
         }
-    }));
-    return disposables;
+    };
+
+    // Create the language client and start the client.
+    let disposable = new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start();
+    let interpreterPath = vscode.commands.executeCommand("r.getInterpreterPath") + "RScript.exe";
+    let terminal = vscode.window.createTerminal("R", interpreterPath);
+
+    // Push the disposable to the context's subscriptions so that the 
+    // client can be deactivated on extension deactivation
+    context.subscriptions.push(disposable);
 }
 
-async function sourceFile(fileUri?: vscode.Uri) {
-    let filePath: string;
-
-    if (fileUri === undefined || fileUri === null || typeof fileUri.fsPath !== "string") {
-        const activeEditor = vscode.window.activeTextEditor;
-        if (activeEditor !== undefined) {
-            if (!activeEditor.document.isUntitled) {
-                if (activeEditor.document.languageId === RLanguage.language) {
-                    filePath = activeEditor.document.fileName;
-                } else {
-                    vscode.window.showErrorMessage("The active file is not a R source file");
-                    return;
-                }
-            } else {
-                vscode.window.showErrorMessage("The active file needs to be saved before it can be run");
-                return;
-            }
-        } else {
-            vscode.window.showErrorMessage("No open R file to run in terminal");
-            return;
-        }
-    } else {
-        filePath = fileUri.fsPath;
-    }
-
-    if (filePath.indexOf(" ") > 0) {
-        filePath = `"${filePath}"`;
-    }
-
-    await startRepl();
-    terminal.sendText(`source("${filePath}")`);
-}
-
-async function execInTerminal() {
-    const activeEditor = vscode.window.activeTextEditor;
-    if (!activeEditor) {
-        return;
-    }
-
-    const selection = vscode.window.activeTextEditor.selection;
-    let code: string;
-    if (selection.isEmpty) {
-        code = vscode.window.activeTextEditor.document.lineAt(selection.start.line).text;
-    }
-    else {
-        const textRange = new vscode.Range(selection.start, selection.end);
-        code = vscode.window.activeTextEditor.document.getText(textRange);
-    }
-
-    if (code.length === 0) {
-        return;
-    }
-
-    await startRepl();
-    terminal.sendText(removeBlankLines(code));
-}
-
-async function startRepl() {
-    terminal = terminal ? terminal : await createTerminal();
-    terminal.show();
-}
-
-async function createTerminal(): Promise<vscode.Terminal> {
-    const interpreterPath = await vscode.commands.executeCommand<string>("r.getInterpreterPath") + "RScript.exe";
-    return vscode.window.createTerminal("R", interpreterPath);
-}
-
-function removeBlankLines(code: string): string {
-    const codeLines = code.split(/\r?\n/g);
-    const codeLinesWithoutEmptyLines = codeLines.filter(line => line.trim().length > 0);
-    const lastLineIsEmpty = codeLines.length > 0 && codeLines[codeLines.length - 1].trim().length === 0;
-    if (lastLineIsEmpty) {
-        codeLinesWithoutEmptyLines.unshift("");
-    }
-    return codeLinesWithoutEmptyLines.join(EOL);
+// this method is called when your extension is deactivated
+export function deactivate() {
 }
