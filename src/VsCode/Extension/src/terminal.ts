@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 "use strict";
@@ -84,7 +84,10 @@ async function startRepl() {
 }
 
 async function createTerminal(): Promise<vscode.Terminal> {
-    const interpreterPath = await vscode.commands.executeCommand<string>("r.getInterpreterPath") + "RScript.exe";
+    // const hover = await vscode.commands.executeCommand("vscode.executeHoverProvider", 
+    //     vscode.window.activeTextEditor.document.uri, vscode.window.activeTextEditor.selection.start);
+    // const binPath = await vscode.commands.executeCommand("r.getInterpreterPath");
+    const interpreterPath = "C:\\Program Files\\R\\R-3.4.0\\bin\\x64\\R.exe";
     return vscode.window.createTerminal("R", interpreterPath);
 }
 

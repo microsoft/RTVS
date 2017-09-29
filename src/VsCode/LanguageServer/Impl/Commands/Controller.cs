@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 
 namespace Microsoft.R.LanguageServer.Commands {
@@ -19,12 +20,12 @@ namespace Microsoft.R.LanguageServer.Commands {
 
         public static string[] Commands => _commands.Keys.ToArray();
 
-        public object Execute(string command, params object[] args) {
+        public Task<object> ExecuteAsync(string command, params object[] args) {
             if (_commands.TryGetValue(command, out var cmd)) {
-                return cmd.Execute(_services, args);
+                return cmd.ExecuteAsync(_services, args);
             }
             Debug.Fail($"Unknown command {command}");
-            return null;
+            return Task.FromResult(default(object));
         }
     }
 }

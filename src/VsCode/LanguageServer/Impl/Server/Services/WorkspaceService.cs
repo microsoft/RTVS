@@ -3,6 +3,7 @@
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.R.LanguageServer.Commands;
@@ -24,7 +25,7 @@ namespace Microsoft.R.LanguageServer.Server {
         public void DidChangeWatchedFiles(ICollection<FileEvent> changes) { }
 
         [JsonRpcMethod]
-        public object ExecuteCommand(string command, params object[] args)
-            => Services.GetService<IController>().Execute(command, args);
+        public Task<object> ExecuteCommand(string command, object[] arguments)
+            => Services.GetService<IController>().ExecuteAsync(command, arguments);
     }
 }

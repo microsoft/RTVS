@@ -67,13 +67,13 @@ namespace Microsoft.R.LanguageServer.Server {
                 }
 
                 // Start package building
-                _output.Write($"complete in {(DateTime.Now - start):ss}");
+                _output.Write($"complete in {FormatElapsed(DateTime.Now - start)}");
                 start = DateTime.Now;
                 _output.Write("Building IntelliSense index...");
 
                 _packageIndex = _services.GetService<IPackageIndex>();
                 _packageIndex.BuildIndexAsync(ct).ContinueWith(t => {
-                    _output.Write($"complete in {(DateTime.Now - start):ss}");
+                    _output.Write($"complete in {FormatElapsed(DateTime.Now - start)}");
                 }, ct).DoNotWait();
             } else {
                 _output.WriteError("Unable to start R process");
@@ -107,5 +107,7 @@ namespace Microsoft.R.LanguageServer.Server {
 
             return engines[rs.InterpreterIndex];
         }
+
+        private static string FormatElapsed(TimeSpan ts) => ts.ToString("mm':'ss':'fff");
     }
 }

@@ -51,6 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\extension.ts" />
+    <TypeScriptCompile Include="src\terminal.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\constants.ts" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />

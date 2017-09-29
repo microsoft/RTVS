@@ -35,17 +35,12 @@
     "commands": [
       {
         "command": "r.sourceFile",
-        "title": "Source File",
+        "title": "Source file",
         "category": "R"
       },
       {
         "command": "r.execInTerminal",
-        "title": "Execute Line In Terminal",
-        "category": "R"
-      },
-      {
-        "command": "r.execSelectionInTerminal",
-        "title": "Execute Selection In Terminal",
+        "title": "Execute current line selection in terminal",
         "category": "R"
       },
       {
@@ -54,7 +49,7 @@
         "category": "R"
       },
       {
-        "command": "r.getInterpreter",
+        "command": "r.getInterpreterPath",
         "title": "Current R interpreter path",
         "category": "R"
       }
