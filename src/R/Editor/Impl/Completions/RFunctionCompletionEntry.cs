@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Editor.Functions;
 using static System.FormattableString;
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Completions {
         private void SetDescription(IFunctionInfo fi) {
             if (fi != null && !_session.IsDismissed) {
                 var sig = (fi.Signatures.Count > 0) ? fi.Signatures[0].GetSignatureString(DisplayText) : null;
-                Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description}") : fi.Description;
+                Description = (sig != null) ? Invariant($"{sig}{Environment.NewLine}{Environment.NewLine}{fi.Description.RemoveLineBreaks()}") : fi.Description;
             }
         }
     }

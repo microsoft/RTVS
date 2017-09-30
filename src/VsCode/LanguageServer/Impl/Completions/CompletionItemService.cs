@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.Common.Core;
 using Microsoft.R.Editor.Functions;
 using Microsoft.R.LanguageServer.Server;
 using Newtonsoft.Json.Linq;
@@ -25,7 +26,7 @@ namespace Microsoft.R.LanguageServer.Completions {
             }
             var info = await FunctionIndex.GetFunctionInfoAsync(item.Label, item.Data.Type == JTokenType.String ? (string)item.Data : null);
             if (info != null) {
-                item.Documentation = info.Description;
+                item.Documentation = info.Description.RemoveLineBreaks();
             }
             return item;
         }

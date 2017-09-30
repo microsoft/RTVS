@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Completions;
@@ -58,10 +59,10 @@ namespace Microsoft.R.LanguageServer.Completions {
             }
             var sigInfos = signatures.Select(s => new SignatureInformation {
                 Label = s.Content,
-                Documentation = s.Documentation,
+                Documentation = s.Documentation.RemoveLineBreaks(),
                 Parameters = s.Parameters.Select(p => new ParameterInformation {
                     Label = p.Name,
-                    Documentation = p.Documentation
+                    Documentation = p.Documentation.RemoveLineBreaks()
                 }).ToList()
             }).ToList();
 

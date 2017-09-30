@@ -79,8 +79,10 @@ async function execInTerminal() {
 }
 
 async function startRepl() {
-    terminal = terminal ? terminal : await createTerminal();
-    terminal.show();
+    if (terminal === null || terminal === undefined) {
+        terminal = await createTerminal();
+        terminal.show();
+    }
 }
 
 async function createTerminal(): Promise<vscode.Terminal> {
