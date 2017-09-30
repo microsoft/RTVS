@@ -59,10 +59,10 @@ namespace Microsoft.R.LanguageServer.Documents {
             => MainThreadPriority.Post(() => Documents.RemoveDocument(textDocument.Uri), ThreadPostPriority.Normal);
 
         [JsonRpcMethod]
-        public CompletionList completion(TextDocumentIdentifier textDocument, Position position) {
+        public async Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) {
             using (new DebugMeasureTime("textDocument/completion")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? doc.GetCompletions(position) : new CompletionList();
+                return doc != null ? await doc.GetCompletions(position) : new CompletionList();
             }
         }
 

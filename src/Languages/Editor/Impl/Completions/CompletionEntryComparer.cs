@@ -15,6 +15,7 @@ namespace Microsoft.Languages.Editor.Completions {
             if (x == null || y == null) {
                 return -1;
             }
+
             return string.Compare(x.DisplayText, y.DisplayText, _comparison);
         }
     }

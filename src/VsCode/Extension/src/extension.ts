@@ -1,10 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 "use strict";
+
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
-import * as path from "path";
-import * as fs from "fs";
+import {activateExecInTerminalProvider} from "./terminal";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -12,18 +14,6 @@ export function activate(context: vscode.ExtensionContext) {
     console.log("Activating R Tools...");
     activateLanguageServer(context);
     console.log("R Tools is now activated.");
-
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    const disposable = vscode.commands.registerCommand("extension.sayHello", () => {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
-        vscode.window.showInformationMessage("Hello World!");
-    });
-
-    context.subscriptions.push(disposable);
 }
 
 export function activateLanguageServer(context: vscode.ExtensionContext) {
@@ -49,13 +39,8 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
     };
 
     // Create the language client and start the client.
-    let disposable = new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start();
-    let interpreterPath = vscode.commands.executeCommand("r.getInterpreterPath") + "RScript.exe";
-    let terminal = vscode.window.createTerminal("R", interpreterPath);
-
-    // Push the disposable to the context's subscriptions so that the 
-    // client can be deactivated on extension deactivation
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start());
+    context.subscriptions.push(...activateExecInTerminalProvider());
 }
 
 // this method is called when your extension is deactivated

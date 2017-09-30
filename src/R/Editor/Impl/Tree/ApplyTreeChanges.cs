@@ -15,6 +15,8 @@ namespace Microsoft.R.Editor.Tree {
                 return;
             }
 
+            Debug.WriteLine("AST: changes applied");
+
             // Since we have write lock we cannot fire events. If we fire an event,
             // listener may try and access the tree while a) tree not ready and
             // b) accessing AstRoot may check tree readiness and since tree is not

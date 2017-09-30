@@ -8,7 +8,8 @@ using Microsoft.R.Editor.QuickInfo;
 
 namespace Microsoft.R.Editor.Signatures {
     public interface IRFunctionSignatureEngine {
-        IEnumerable<IRFunctionSignatureHelp> GetSignaturesAsync(IRIntellisenseContext context, Action<IEnumerable<IRFunctionSignatureHelp>> callback);
+        IEnumerable<IRFunctionSignatureHelp> GetSignaturesAsync(IRIntellisenseContext context , Action<IEnumerable<IRFunctionSignatureHelp>> callback);
+
         IEnumerable<IRFunctionQuickInfo> GetQuickInfosAsync(IRIntellisenseContext context, Action<IEnumerable<IRFunctionQuickInfo>> callback);
     }
 }

@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Completions
         /// </summary>
         /// <param name="context">Completion context</param>
         /// <returns>List of completion entries</returns>
-        IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context);
+        IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context, string prefixFilter = null);
 
         /// <summary>
         /// Allows or disallows sorting of the provided entries.

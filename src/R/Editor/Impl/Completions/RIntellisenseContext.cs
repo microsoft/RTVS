@@ -14,9 +14,10 @@ namespace Microsoft.R.Editor.Completions {
     /// caret position and other necessary data for the completion engine.
     /// </summary>
     public sealed class RIntellisenseContext : IntellisenseContext, IRIntellisenseContext {
-        private readonly Guid _treeUserId = Guid.NewGuid();
+        private readonly object _lock = new object();
         private readonly IREditorTree _editorTree;
         private AstRoot _lockedAstRoot;
+        private int _lockCount;
 
         public bool InternalFunctions { get; set; }
         public bool AutoShownCompletion { get; }
@@ -39,11 +40,22 @@ namespace Microsoft.R.Editor.Completions {
         public AstRoot AstRoot => _lockedAstRoot ?? _editorTree.AstRoot;
 
         public IDisposable AstReadLock() {
-            _lockedAstRoot = _editorTree.AcquireReadLock(_treeUserId);
-            return Disposable.Create(() => {
-                _editorTree.ReleaseReadLock(_treeUserId);
-                _lockedAstRoot = null;
-            });
+            lock (_lock) {
+                var guid = Guid.NewGuid();
+
+                if (_lockedAstRoot == null) {
+                    _lockedAstRoot = _editorTree.AcquireReadLock(guid);
+                }
+                _lockCount++;
+
+                return Disposable.Create(() => {
+                    _lockCount--;
+                    if (_lockCount == 0) {
+                        _editorTree.ReleaseReadLock(guid);
+                        _lockedAstRoot = null;
+                    }
+                });
+            }
         }
     }
 }

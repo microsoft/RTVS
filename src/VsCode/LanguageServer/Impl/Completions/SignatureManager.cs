@@ -7,9 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Editor;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Functions;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
@@ -25,28 +27,35 @@ namespace Microsoft.R.LanguageServer.Completions {
             _signatureEngine = new RFunctionSignatureEngine(services);
         }
 
-        public Task<SignatureHelp> GetSignatureHelpAsync(IRIntellisenseContext context) {
-            using (context.AstReadLock()) {
-                var tcs = new TaskCompletionSource<SignatureHelp>();
-                var sigs = _signatureEngine.GetSignaturesAsync(context, e => tcs.TrySetResult(ToSignatureHelp(e, context)));
-                if (sigs != null) {
-                    return Task.FromResult(ToSignatureHelp(sigs, context));
-                }
-                return tcs.Task;
+        public async Task<SignatureHelp> GetSignatureHelpAsync(IRIntellisenseContext context) {
+            await _services.MainThread().SwitchToAsync();
+            context.EditorBuffer.GetEditorDocument<IREditorDocument>().EditorTree.EnsureTreeReady();
+
+            var tcs = new TaskCompletionSource<SignatureHelp>();
+            var sigs = _signatureEngine.GetSignaturesAsync(context, e => {
+                tcs.TrySetResult(ToSignatureHelp(e.ToList(), context));
+            });
+            if (sigs != null) {
+                return ToSignatureHelp(sigs.ToList(), context);
             }
+            return await tcs.Task;
         }
 
         public Task<Hover> GetHoverAsync(IRIntellisenseContext context, CancellationToken ct) {
             var tcs = new TaskCompletionSource<Hover>();
             using (context.AstReadLock()) {
                 var infos = _signatureEngine.GetQuickInfosAsync(context, e => {
-                    tcs.TrySetResult(!ct.IsCancellationRequested ? ToHover(e.ToList(), context.EditorBuffer) : null);
+                    var r = !ct.IsCancellationRequested ? ToHover(e.ToList(), context.EditorBuffer) : null;
+                    tcs.TrySetResult(r);
                 });
                 return infos != null ? Task.FromResult(ToHover(infos.ToList(), context.EditorBuffer)) : tcs.Task;
             }
         }
 
-        private SignatureHelp ToSignatureHelp(IEnumerable<IRFunctionSignatureHelp> signatures, IRIntellisenseContext context) {
+        private SignatureHelp ToSignatureHelp(IReadOnlyList<IRFunctionSignatureHelp> signatures, IRIntellisenseContext context) {
+            if (signatures == null) {
+                return null;
+            }
             var sigInfos = signatures.Select(s => new SignatureInformation {
                 Label = s.Content,
                 Documentation = s.Documentation,
@@ -63,18 +72,19 @@ namespace Microsoft.R.LanguageServer.Completions {
         }
 
         private static Hover ToHover(IReadOnlyList<IRFunctionQuickInfo> e, IEditorBuffer buffer) {
-            if (e.Count > 0) {
-                var info = e[0];
-                var content = info.Content?.FirstOrDefault();
-                if (!string.IsNullOrEmpty(content)) {
-                    var snapshot = buffer.CurrentSnapshot;
-                    var start = info.ApplicableToRange.GetStartPoint(snapshot);
-                    var end = info.ApplicableToRange.GetEndPoint(snapshot);
-                    return new Hover {
-                        Contents = content,
-                        Range = buffer.ToLineRange(start, end)
-                    };
-                }
+            if (e == null || e.Count == 0) {
+                return new Hover();
+            }
+            var info = e[0];
+            var content = info.Content?.FirstOrDefault();
+            if (!string.IsNullOrEmpty(content)) {
+                var snapshot = buffer.CurrentSnapshot;
+                var start = info.ApplicableToRange.GetStartPoint(snapshot);
+                var end = info.ApplicableToRange.GetEndPoint(snapshot);
+                return new Hover {
+                    Contents = content,
+                    Range = buffer.ToLineRange(start, end)
+                };
             }
             return new Hover();
         }

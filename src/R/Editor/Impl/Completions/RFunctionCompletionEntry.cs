@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.Completions {
         public override string Description {
             get {
                 if (string.IsNullOrEmpty(base.Description) && !_session.IsDismissed) {
-                    _functionIndex.GetFunctionInfoAsync(DisplayText, _packageName, (fi, o) => SetDescription(fi), null, false);
+                    _functionIndex.GetFunctionInfoAsync(DisplayText, _packageName, (fi, o) => SetDescription(fi), null);
                 }
                 return base.Description;
             }

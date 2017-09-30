@@ -16,7 +16,7 @@ namespace Microsoft.R.LanguageServer.Services {
         private DateTime _lastActivityTime = DateTime.Now;
 
         public IdleTimeService(IServiceContainer services) {
-            _timer = new Timer(OnTimer, this, 200, 50);
+            _timer = new Timer(OnTimer, this, 50, 50);
             _mainThread = services.GetService<IMainThreadPriority>();
         }
 
