@@ -84,7 +84,7 @@ namespace Microsoft.R.Editor.RData.Parser {
                 foreach (var sigInfo in signatureInfos) {
                     // Add missing arguments from the \arguments{} section
                     foreach (var arg in sigInfo.Arguments) {
-                        if (argumentDescriptions.TryGetValue(arg.Name, out var description)) {
+                        if (!string.IsNullOrEmpty(arg.Name) && argumentDescriptions.TryGetValue(arg.Name, out var description)) {
                             ((NamedItemInfo)arg).Description = description ?? string.Empty;
                         }
                     }

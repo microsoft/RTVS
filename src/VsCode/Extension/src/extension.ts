@@ -6,17 +6,17 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
-import {activateExecInTerminalProvider} from "./terminal";
+import * as term from "./terminal";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     console.log("Activating R Tools...");
-    activateLanguageServer(context);
+    await activateLanguageServer(context);
     console.log("R Tools is now activated.");
 }
 
-export function activateLanguageServer(context: vscode.ExtensionContext) {
+export async function activateLanguageServer(context: vscode.ExtensionContext) {
 
     // The server is implemented in C#
     const commandOptions = { stdio: "pipe" };
@@ -40,7 +40,9 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
 
     // Create the language client and start the client.
     context.subscriptions.push(new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start());
-    context.subscriptions.push(...activateExecInTerminalProvider());
+    context.subscriptions.push(...term.activateExecInTerminalProvider());
+
+    await term.startRepl();
 }
 
 // this method is called when your extension is deactivated

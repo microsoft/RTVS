@@ -78,7 +78,7 @@ async function execInTerminal() {
     terminal.sendText(removeBlankLines(code));
 }
 
-async function startRepl() {
+export async function startRepl() {
     if (terminal === null || terminal === undefined) {
         terminal = await createTerminal();
         terminal.show();
