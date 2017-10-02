@@ -23,5 +23,9 @@
     [ "\"", "\"" ],
     [ "'", "'" ],
     [ "`", "`" ]
-  ]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*((else|elseif|for|function|if|repeat|while)|(.*\\sdo\\b))\\b[^\\{;]*$",
+    "decreaseIndentPattern": "^\\s*([}\\]]([,)]?\\s*(#_|$)|\\.[a-zA-Z_]\\w*\\b)|(else|elseif)\\b)"
+  }
 }

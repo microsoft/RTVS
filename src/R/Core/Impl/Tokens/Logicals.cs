@@ -5,18 +5,11 @@ using System;
 
 namespace Microsoft.R.Core.Tokens {
     public static class Logicals {
-        public static string[] LogicalsList {
-            get { return _logicals; }
-        }
-
-        public static bool IsLogical(string candidate) {
-            // R is case sensitive language
-            return Array.BinarySearch<string>(_logicals, candidate) >= 0;
-        }
+        public static bool IsLogical(string candidate)
+            => Array.BinarySearch(LogicalsList, candidate) >= 0; // R is case sensitive language
 
         // must be sorted
-        internal static string[] _logicals = new string[]
-        {
+        public static string[] LogicalsList { get; } = new [] {
             "F",
             "FALSE",
             "T",

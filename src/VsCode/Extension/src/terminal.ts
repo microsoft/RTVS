@@ -5,6 +5,7 @@
 import * as vscode from "vscode";
 import { EOL } from "os";
 import { Commands, RLanguage } from "./constants";
+import { getInterpreterPath } from "./connection";
 
 let terminal: vscode.Terminal;
 
@@ -78,9 +79,9 @@ async function execInTerminal() {
     terminal.sendText(removeBlankLines(code));
     // Move caret down
     await vscode.commands.executeCommand("cursorMove", {
-            to: "down",
-            by: "line"
-        });
+        to: "down",
+        by: "line"
+    });
 }
 
 export async function startRepl() {
@@ -93,8 +94,8 @@ export async function startRepl() {
 async function createTerminal(): Promise<vscode.Terminal> {
     // const hover = await vscode.commands.executeCommand("vscode.executeHoverProvider", 
     //     vscode.window.activeTextEditor.document.uri, vscode.window.activeTextEditor.selection.start);
-    // const binPath = await vscode.commands.executeCommand("r.getInterpreterPath");
-    const interpreterPath = "C:\\Program Files\\R\\R-3.4.0\\bin\\x64\\R.exe";
+    const interpreterPath = await getInterpreterPath();
+    //const interpreterPath = "C:\\Program Files\\R\\R-3.4.0\\bin\\x64\\R.exe";
     return vscode.window.createTerminal("R", interpreterPath);
 }
 

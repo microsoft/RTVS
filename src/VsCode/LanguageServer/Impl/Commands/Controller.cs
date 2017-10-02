@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Services;
 namespace Microsoft.R.LanguageServer.Commands {
     internal sealed class Controller : IController {
         private static readonly Dictionary<string, ICommand> _commands = new Dictionary<string, ICommand> {
-            {GetInterpreterPathCommand.Name, new GetInterpreterPathCommand()}
         };
 
         private readonly IServiceContainer _services;

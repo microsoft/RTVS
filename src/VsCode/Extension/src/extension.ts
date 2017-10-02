@@ -8,6 +8,8 @@ import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
 import * as term from "./terminal";
 
+export let client: languageClient.LanguageClient;
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
@@ -39,7 +41,8 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     };
 
     // Create the language client and start the client.
-    context.subscriptions.push(new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions).start());
+    client = new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions);
+    context.subscriptions.push(client.start());
     context.subscriptions.push(...term.activateExecInTerminalProvider());
 
     await term.startRepl();
@@ -47,4 +50,5 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+    client = null;
 }
