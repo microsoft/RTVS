@@ -255,9 +255,9 @@
         </TextBlock>
 
         <TextBlock Style="{StaticResource WatermarkTextBlock}"
-                   Visibility="{Binding Path=ContainerServiceError, Converter={x:Static rwpf:Converters.NullIsCollapsed}}">
+                   Visibility="{Binding Path=ContainerServiceError, Converter={x:Static rwpf:Converters.NullIsCollapsed}, Mode=OneWay}">
             <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_FirstPart}" />
-            <Run Text="{Binding Path=ContainerServiceError}" />
+            <Run Text="{Binding Path=ContainerServiceError, Mode=OneWay}" />
             <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_SecondPart}" />
             <Hyperlink RequestNavigate="RefreshDocker" NavigateUri="about:blank">
                 <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_ThirdPart}" />    
@@ -270,7 +270,7 @@
                 <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsCollapsed}">
                     <Binding Path="ContainerServiceIsNotInstalled" />
                     <Binding Path="ContainerServiceIsNotRunning" />
-                    <Binding Path="ContainerServiceError" Converter="{x:Static rwpf:Converters.NullIsFalse}" />
+                    <Binding Path="ContainerServiceError" Converter="{x:Static rwpf:Converters.NullIsFalse}"  Mode="OneWay"/>
                 </MultiBinding>
             </ScrollViewer.Visibility>
             <DockPanel x:Name="RootContent" LastChildFill="True" MinWidth="250">

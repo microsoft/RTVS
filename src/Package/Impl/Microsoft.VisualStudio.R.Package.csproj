@@ -1608,6 +1608,9 @@
       <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
+      <VSIXSourceItem Include="$(OutputPath)\DockerfileTemplate">
+        <VSIXSubPath>DockerTemplate</VSIXSubPath>
+      </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\Templates\ProjectTemplates\EmptyProject\*.*">
         <VSIXSubPath>ProjectTemplates\EmptyProject</VSIXSubPath>
       </VSIXSourceItem>

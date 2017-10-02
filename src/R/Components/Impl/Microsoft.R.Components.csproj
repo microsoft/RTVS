@@ -54,8 +54,19 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Containers\Implementation\DockerfileTemplate">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
   <Import Project="$(SourceDirectory)R.Workarounds.targets" />
+  <ItemGroup>
+    <DockerfileTemplate Include="Containers\Implementation\DockerfileTemplate" />
+  </ItemGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(DockerfileTemplate)" DestinationFolder="$(BinDirectory)\$(Configuration)" />
+  </Target>
 </Project>
