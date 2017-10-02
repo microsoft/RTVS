@@ -79,8 +79,6 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Determines if contained language line can be formatted.
         /// </summary>
-        /// <param name="editorView">Editor view</param>
-        /// <param name="editorBuffer">Contained language buffer</param>
         /// <param name="position">Position in the contained language buffer</param>
         /// <param name="typedChar">Typed character</param>
         /// <remarks>In R Markdown lines with ```{r should not be formatted</remarks>
@@ -127,7 +125,7 @@ namespace Microsoft.R.Editor.Formatting {
                 var lineNumber = snapshot.GetLineNumberFromPosition(position);
                 var line = snapshot.GetLineFromLineNumber(lineNumber);
                 var lineText = line.GetText();
-                if (lineText.TrimEnd().EndsWith("}", StringComparison.Ordinal)) {
+                if (lineText.TrimEnd().EndsWithOrdinal("}")) {
                     var scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(position);
                     return scopeStatement;
                 }

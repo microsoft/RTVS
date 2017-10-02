@@ -33,15 +33,15 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
                 // Union with constants like TRUE and other common things
                 var keywords = Keywords.KeywordList.Concat(Logicals.LogicalsList).Concat(Constants.ConstantsList);
-                foreach (string keyword in keywords) {
-                    bool? isSnippet = infoSource?.IsSnippet(keyword);
+                foreach (var keyword in keywords) {
+                    var isSnippet = infoSource?.IsSnippet(keyword);
                     if (!isSnippet.HasValue || !isSnippet.Value) {
                         completions.Add(new EditorCompletionEntry(keyword, keyword, string.Empty, keyWordGlyph));
                     }
                 }
 
                 var buildInGlyph = _imageService.GetImage(ImageType.Keyword);
-                foreach (string s in Builtins.BuiltinList) {
+                foreach (var s in Builtins.BuiltinList) {
                     completions.Add(new EditorCompletionEntry(s, s, string.Empty, buildInGlyph));
                 }
             }

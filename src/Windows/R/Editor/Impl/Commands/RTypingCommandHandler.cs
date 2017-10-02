@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
                 if (_autoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
-                    _autoFormat.HandleAutoformat(typedChar);
+                    _autoFormat.HandleTyping(typedChar);
                 }
             }
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -41,9 +41,8 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
                 if (_autoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
-                    _autoFormat.HandleAutoformat(typedChar);
+                    _autoFormat.HandleTyping(typedChar);
                 }
-
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
             }
         }

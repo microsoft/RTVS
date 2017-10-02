@@ -4,16 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
@@ -24,7 +23,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
     /// Provides list of files and folder in the current directory
     /// </summary>
     internal sealed class FilesCompletionProvider : IRCompletionListProvider {
-        enum Mode {
+        private enum Mode {
             WorkingDirectory,
             UserDirectory,
             Other
@@ -33,7 +32,6 @@ namespace Microsoft.R.Editor.Completions.Providers {
         private readonly IFileSystem _fs;
         private readonly IImageService _imageService;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IRSettings _settings;
         private readonly string _enteredDirectory;
         private readonly bool _forceR; // for tests
         private readonly Task<string> _task;
@@ -47,7 +45,6 @@ namespace Microsoft.R.Editor.Completions.Providers {
             _fs = services.GetService<IFileSystem>();
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
             _imageService = services.GetService<IImageService>();
-            _settings = services.GetService<IRSettings>();
             _forceR = forceR;
 
             _enteredDirectory = ExtractDirectory(directoryCandidate);
@@ -58,7 +55,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
             if (userProvidedDirectory.Length == 0 || userProvidedDirectory.StartsWithOrdinal(".")) {
                 _mode = Mode.WorkingDirectory;
                 return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetWorkingDirectoryAsync());
-            } else if (_enteredDirectory.StartsWithOrdinal("~\\")) {
+            }
+            if (_enteredDirectory.StartsWithOrdinal("~" + Path.DirectorySeparatorChar)) {
                 _mode = Mode.UserDirectory;
                 return Task.Run(async () => _rootDirectory = await _workflow.RSession.GetRUserDirectoryAsync());
             }
@@ -70,7 +68,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
 
         public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context, string prefixFilter = null) {
             var completions = new List<ICompletionEntry>();
-            string directory = _enteredDirectory;
+            var directory = _enteredDirectory;
 
             try {
                 // If we are running async directory fetching, wait a bit
@@ -118,12 +116,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     var dirs = await session.EvaluateAsync<JArray>(Invariant($"as.list(list.dirs(path = {rPath}, full.names = FALSE, recursive = FALSE))"), REvaluationKind.Normal);
 
                     var folderGlyph = _imageService.GetImage(ImageType.OpenFolder);
-                    foreach (var d in dirs) {
-                        completions.Add(new EditorCompletionEntry((string)d, (string)d + "/", string.Empty, folderGlyph));
-                    }
-                    foreach (var f in files) {
-                        completions.Add(new EditorCompletionEntry((string)f, (string)f, string.Empty, folderGlyph));
-                    }
+                    completions.AddRange(dirs.Select(d => new EditorCompletionEntry((string) d, (string) d + "/", string.Empty, folderGlyph)));
+                    completions.AddRange(files.Select(f => new EditorCompletionEntry((string) f, (string) f, string.Empty, folderGlyph)));
 
                 } catch (RException) { } catch (OperationCanceledException) { }
 
@@ -139,11 +133,11 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     var di = new DirectoryInfo(dir);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
                         var dirName = Path.GetFileName(dir);
-                        yield return new EditorCompletionEntry(dirName, dirName + "/", string.Empty, folderGlyph);
+                        yield return new EditorCompletionEntry(dirName, dirName + Path.DirectorySeparatorChar, string.Empty, folderGlyph);
                     }
                 }
 
-                foreach (string file in _fs.GetFiles(directory)) {
+                foreach (var file in _fs.GetFiles(directory)) {
                     var di = new FileInfo(file);
                     if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
                         var fileGlyph = _imageService.GetFileIcon(file);
@@ -163,7 +157,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
                     directory = directory.Substring(0, directory.Length - 1);
                 }
             }
-            return directory.Replace('/', '\\');
+            return directory.Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }

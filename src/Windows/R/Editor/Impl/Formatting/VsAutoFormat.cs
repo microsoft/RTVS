@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
-    internal sealed class VsAutoFormat : AutoFormat {
+    public sealed class VsAutoFormat : AutoFormat {
         private readonly ITextView _textView;
 
         public VsAutoFormat(ITextView textView, IServiceContainer services) :
@@ -30,8 +30,6 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Determines if contained language line can be formatted.
         /// </summary>
-        /// <param name="editorView">Editor view</param>
-        /// <param name="editorBuffer">Contained language buffer</param>
         /// <param name="position">Position in the contained language buffer</param>
         /// <param name="typedChar">Typed character</param>
         /// <remarks>In R Markdown lines with ```{r should not be formatted</remarks>

@@ -60,14 +60,14 @@ async function execInTerminal() {
         return;
     }
 
-    const selection = vscode.window.activeTextEditor.selection;
+    const selection = activeEditor.selection;
     let code: string;
     if (selection.isEmpty) {
-        code = vscode.window.activeTextEditor.document.lineAt(selection.start.line).text;
+        code = activeEditor.document.lineAt(selection.start.line).text;
     }
     else {
         const textRange = new vscode.Range(selection.start, selection.end);
-        code = vscode.window.activeTextEditor.document.getText(textRange);
+        code = activeEditor.document.getText(textRange);
     }
 
     if (code.length === 0) {
@@ -76,6 +76,11 @@ async function execInTerminal() {
 
     await startRepl();
     terminal.sendText(removeBlankLines(code));
+    // Move caret down
+    await vscode.commands.executeCommand("cursorMove", {
+            to: "down",
+            by: "line"
+        });
 }
 
 export async function startRepl() {
