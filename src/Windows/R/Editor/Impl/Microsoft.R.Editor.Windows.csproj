@@ -71,7 +71,7 @@
     <Compile Include="ViewModel\REditorViewModel.cs" />
     <Compile Include="ViewModel\REditorViewModelFactory.cs" />
     <Compile Include="Extensions\EditorTreeExtensions.cs" />
-    <Compile Include="Formatting\AutoFormat.cs" />
+    <Compile Include="Formatting\VsAutoFormat.cs" />
     <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
     <Compile Include="Formatting\FormatSelectionCommand.cs" />

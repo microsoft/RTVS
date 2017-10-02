@@ -92,6 +92,10 @@ namespace Microsoft.R.LanguageServer.Documents {
             => _formatter.FormatRange(EditorBuffer.CurrentSnapshot, range);
 
         [DebuggerStepThrough]
+        public TextEdit[] Autoformat(Position position, string typeChar)
+            => _formatter.Autoformat(EditorBuffer.CurrentSnapshot, position, typeChar);
+        
+        [DebuggerStepThrough]
         public SymbolInformation[] GetSymbols(Uri uri)
             => _symbolsProvider.GetSymbols(Document, uri);
 

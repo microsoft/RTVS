@@ -17,12 +17,12 @@ namespace Microsoft.R.Editor.Commands {
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler {
         private readonly IServiceContainer _services;
-        private readonly AutoFormat _autoFormat;
+        private readonly VsAutoFormat _autoFormat;
 
         public RTypingCommandHandler(ITextView textView, IServiceContainer services)
             : base(textView) {
             _services = services;
-            _autoFormat = new AutoFormat(textView, services);
+            _autoFormat = new VsAutoFormat(textView, services);
         }
 
         #region ICommand

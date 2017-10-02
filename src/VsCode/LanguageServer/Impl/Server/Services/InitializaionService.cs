@@ -32,6 +32,9 @@ namespace Microsoft.R.LanguageServer.Server {
                 },
                 DocumentFormattingProvider = true,
                 DocumentRangeFormattingProvider = true,
+                DocumentOnTypeFormattingProvider = new DocumentOnTypeFormattingOptions {
+                    FirstTriggerCharacter = ';'
+                },
                 DocumentSymbolProvider = true,
                 ExecuteCommandProvider = new ExecuteCommandOptions {
                     Commands = Controller.Commands
