@@ -919,18 +919,27 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service fails because of the following error:]D;]A;]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Docker-Dienst:]D;]A;]D;]A;]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_FourthPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[when erros is fixed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[wenn der Fehler behoben wurde.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_SecondPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[]D;]A;Please click]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[]D;]A;Klicken Sie auf]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -973,8 +982,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[and click]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[und starten Sie Visual Studio neu.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[und klicken Sie auf]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[and restart Visual Studio.]]></Val>
@@ -985,6 +994,9 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotRunning_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Docker-Dienst wird nicht ausgeführt.]D;]A;Um mit Containern zu arbeiten, führen Sie Docker für Windows aus, und klicken Sie auf]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
