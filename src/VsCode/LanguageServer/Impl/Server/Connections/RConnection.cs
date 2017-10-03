@@ -84,7 +84,11 @@ namespace Microsoft.R.LanguageServer.Server {
 
         private IRInterpreterInfo GetREngine() {
             var ris = _services.GetService<IRInstallationService>();
-            var engines = ris.GetCompatibleEngines(new SupportedRVersionRange(3, 2, 3, 9)).ToList();
+            var engines = ris
+                .GetCompatibleEngines(new SupportedRVersionRange(3, 2, 3, 9))
+                .OrderBy(x => x.Version)
+                .ToList();
+
             if (engines.Count == 0) {
                 const string message = "Unable to find R intepreter.";
                 _output.Write(message + " Terminating.");
