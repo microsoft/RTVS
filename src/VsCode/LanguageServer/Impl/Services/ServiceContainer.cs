@@ -14,6 +14,7 @@ using Microsoft.R.Editor;
 using Microsoft.R.LanguageServer.Documents;
 using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Services.Editor;
+using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Threading;
 
 #if NETCOREAPP1_1
@@ -40,6 +41,7 @@ namespace Microsoft.R.LanguageServer.Services {
             .AddService(new IdleTimeService(this))
             .AddService(new DocumentCollection(this))
             .AddService(new ViewSignatureBroker())
+            .AddService(new EditorSupport())
             .AddEditorServices();
 
             AddPlatformSpecificServices();

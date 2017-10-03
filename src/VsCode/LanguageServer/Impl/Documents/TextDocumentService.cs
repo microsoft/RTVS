@@ -83,10 +83,10 @@ namespace Microsoft.R.LanguageServer.Documents {
         }
 
         [JsonRpcMethod]
-        public TextEdit[] onTypeFormatting(TextDocumentIdentifier textDocument, Position position, string typeChar, FormattingOptions options) {
+        public TextEdit[] onTypeFormatting(TextDocumentIdentifier textDocument, Position position, string ch, FormattingOptions options) {
             using (new DebugMeasureTime("textDocument/onTypeFormatting")) {
                 var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? doc.Autoformat(position, typeChar) : new TextEdit[0];
+                return doc != null ? doc.Autoformat(position, ch) : new TextEdit[0];
             }
         }
 

@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Commands {
         public RTypingCommandHandler(ITextView textView, IServiceContainer services)
             : base(textView) {
             _services = services;
-            _autoFormat = new VsAutoFormat(textView, services);
+            _autoFormat = new VsAutoFormat(services, textView);
         }
 
         #region ICommand

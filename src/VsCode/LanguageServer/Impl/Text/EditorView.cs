@@ -8,9 +8,9 @@ using Microsoft.R.LanguageServer.Services.Editor;
 
 namespace Microsoft.R.LanguageServer.Text {
     internal sealed class EditorView : ServiceAndPropertyHolder, IEditorView {
-        public EditorView(IEditorBuffer editorBuffer) {
+        public EditorView(IEditorBuffer editorBuffer, int caretPosition) {
             EditorBuffer = editorBuffer;
-            Caret = new ViewCaret(this);
+            Caret = new ViewCaret(this, caretPosition);
         }
         public T As<T>() where T : class => throw new NotSupportedException();
 

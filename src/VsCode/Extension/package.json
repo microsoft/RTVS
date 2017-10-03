@@ -47,7 +47,7 @@
         "command": "r.startREPL",
         "title": "Open R Terminal",
         "category": "R"
-      },
+      }
     ],
     "keybindings": [
       {

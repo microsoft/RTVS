@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Formatting;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
@@ -13,43 +14,55 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.SmartIndent;
 
 namespace Microsoft.R.Editor.Formatting {
-    public static class FormatOperations {
+    public sealed class FormatOperations {
+        private readonly IServiceContainer _services;
+        private readonly IEditorView _editorView;
+        private readonly IEditorBuffer _editorBuffer;
+        private readonly IIncrementalWhitespaceChangeHandler _changeHandler;
+
+        public FormatOperations(IServiceContainer services, IEditorView editorView, IEditorBuffer editorBuffer, IIncrementalWhitespaceChangeHandler changeHandler = null) {
+            _services = services;
+            _editorView = editorView;
+            _editorBuffer = editorBuffer;
+            _changeHandler = changeHandler ?? _services.GetService<IIncrementalWhitespaceChangeHandler>();
+        }
+
         /// <summary>
         /// Formats statement that the caret is at
         /// </summary>
-        public static void FormatCurrentStatement(IEditorView editorView, IEditorBuffer textBuffer, IServiceContainer services, bool limitAtCaret = false, int caretOffset = 0) {
-            var caretPoint = editorView.GetCaretPosition(textBuffer);
+        public void FormatCurrentStatement(bool limitAtCaret = false, int caretOffset = 0) {
+            var caretPoint = _editorView.GetCaretPosition(_editorBuffer);
             if (caretPoint == null) {
                 return;
             }
-            var document = textBuffer.GetEditorDocument<IREditorDocument>();
+            var document = _editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document != null) {
                 var ast = document.EditorTree.AstRoot;
                 var node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Position + caretOffset)) as IAstNode;
-                FormatNode(editorView, textBuffer, services, node, limit: caretPoint.Position);
+                FormatNode(node, limit: caretPoint.Position);
             }
         }
 
         /// <summary>
         /// Formats specific AST node 
         /// </summary>
-        public static void FormatNode(IEditorView editorView, IEditorBuffer textBuffer, IServiceContainer services, IAstNode node, int limit = -1) {
+        public void FormatNode(IAstNode node, int limit = -1) {
             if (node != null) {
                 if (limit >= 0 && limit < node.Start) {
-                    throw new ArgumentException(nameof(limit));
+                    throw new ArgumentOutOfRangeException(nameof(limit));
                 }
                 var range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
-                UndoableFormatRange(editorView, textBuffer, range, services);
+                UndoableFormatRange(range);
             }
         }
 
-        public static void FormatCurrentScope(IEditorView editorView, IEditorBuffer textBuffer, IServiceContainer services, bool indentCaret) {
+        public void FormatCurrentScope(bool indentCaret) {
             // Figure out caret position in the document text buffer
-            var document = textBuffer.GetEditorDocument<IREditorDocument>();
+            var document = _editorBuffer.GetEditorDocument<IREditorDocument>();
             if (document == null) {
                 return;
             }
-            var caretPoint = editorView.GetCaretPosition(textBuffer);
+            var caretPoint = _editorView.GetCaretPosition(_editorBuffer);
             if (caretPoint == null) {
                 return;
             }
@@ -60,21 +73,21 @@ namespace Microsoft.R.Editor.Formatting {
             // Find scope to format
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Position);
 
-            var es = services.GetService<IEditorSupport>();
-            using (var undoAction = es.CreateUndoAction(editorView)) {
-                var settings = services.GetService<IREditorSettings>();
+            var es = _services.GetService<IEditorSupport>();
+            using (var undoAction = es.CreateUndoAction(_editorView)) {
+                var settings = _services.GetService<IREditorSettings>();
                 undoAction.Open(Resources.AutoFormat);
                 // Now format the scope
-                var formatter = new RangeFormatter(services);
-                var changed = formatter.FormatRange(editorView, textBuffer, scope);
+                var formatter = new RangeFormatter(_services, _editorView, _editorBuffer, _changeHandler);
+                var changed = formatter.FormatRange(scope);
                 if (indentCaret) {
                     // Formatting may change AST and the caret position so we need to reacquire both
-                    caretPoint = editorView.GetCaretPosition(textBuffer);
+                    caretPoint = _editorView.GetCaretPosition(_editorBuffer);
                     if (caretPoint != null) {
                         document.EditorTree.EnsureTreeReady();
                         ast = document.EditorTree.AstRoot;
                         scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Position);
-                        IndentCaretInNewScope(editorView, scope, caretPoint, settings.FormatOptions);
+                        IndentCaretInNewScope(scope, caretPoint, settings.FormatOptions);
                     }
                 }
                 if (changed) {
@@ -86,33 +99,33 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats line the caret is currently at
         /// </summary>
-        public static void FormatViewLine(IEditorView editorView, IEditorBuffer textBuffer, int offset, IServiceContainer services) {
-            var caretPoint = editorView.GetCaretPosition(textBuffer);
+        public void FormatViewLine(int offset) {
+            var caretPoint = _editorView.GetCaretPosition(_editorBuffer);
             if (caretPoint == null) {
                 return;
             }
 
-            var snapshot = textBuffer.CurrentSnapshot;
+            var snapshot = _editorBuffer.CurrentSnapshot;
             var lineNumber = snapshot.GetLineNumberFromPosition(caretPoint.Position);
             var line = snapshot.GetLineFromLineNumber(lineNumber + offset);
             var formatRange = new TextRange(line.Start, line.Length);
 
-            UndoableFormatRange(editorView, textBuffer, formatRange, services);
+            UndoableFormatRange(formatRange);
         }
 
-        public static void UndoableFormatRange(IEditorView editorView, IEditorBuffer textBuffer, ITextRange formatRange, IServiceContainer services) {
-            var es = services.GetService<IEditorSupport>();
-            using (var undoAction = es.CreateUndoAction(editorView)) {
+        public void UndoableFormatRange(ITextRange formatRange) {
+            var es = _services.GetService<IEditorSupport>();
+            using (var undoAction = es.CreateUndoAction(_editorView)) {
                 undoAction.Open(Resources.AutoFormat);
-                var formatter = new RangeFormatter(services);
-                var result = formatter.FormatRange(editorView, textBuffer, formatRange);
+                var formatter = new RangeFormatter(_services, _editorView, _editorBuffer, _changeHandler);
+                var result = formatter.FormatRange(formatRange);
                 if (result) {
                     undoAction.Commit();
                 }
             }
         }
 
-        public static IAstNode GetIndentDefiningNode(AstRoot ast, int position) {
+        public IAstNode GetIndentDefiningNode(AstRoot ast, int position) {
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
             // Scope indentation is defined by its parent statement.
             var parentStatement = scope.Parent as IAstNodeWithScope;
@@ -122,7 +135,7 @@ namespace Microsoft.R.Editor.Formatting {
             return scope;
         }
 
-        private static void IndentCaretInNewScope(IEditorView editorView, IScope scope, ISnapshotPoint caretBufferPoint, RFormatOptions options) {
+        private void IndentCaretInNewScope(IScope scope, ISnapshotPoint caretBufferPoint, RFormatOptions options) {
             if (scope?.OpenCurlyBrace == null) {
                 return;
             }
@@ -141,10 +154,10 @@ namespace Microsoft.R.Editor.Formatting {
             indentLine = rTextBuffer.CurrentSnapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
 
             // Map new caret position back to the view
-            var positionInView = editorView.MapToView(rTextBuffer.CurrentSnapshot, indentLine.Start);
+            var positionInView = _editorView.MapToView(rTextBuffer.CurrentSnapshot, indentLine.Start);
             if (positionInView != null) {
-                var viewIndentLine = editorView.EditorBuffer.CurrentSnapshot.GetLineFromPosition(positionInView.Position);
-                editorView.Caret.MoveTo(viewIndentLine.Start, innerIndentSize);
+                var viewIndentLine = _editorView.EditorBuffer.CurrentSnapshot.GetLineFromPosition(positionInView.Position);
+                _editorView.Caret.MoveTo(viewIndentLine.Start, innerIndentSize);
             }
         }
     }

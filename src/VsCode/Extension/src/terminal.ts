@@ -92,10 +92,7 @@ export async function startRepl() {
 }
 
 async function createTerminal(): Promise<vscode.Terminal> {
-    // const hover = await vscode.commands.executeCommand("vscode.executeHoverProvider", 
-    //     vscode.window.activeTextEditor.document.uri, vscode.window.activeTextEditor.selection.start);
     const interpreterPath = await getInterpreterPath();
-    //const interpreterPath = "C:\\Program Files\\R\\R-3.4.0\\bin\\x64\\R.exe";
     return vscode.window.createTerminal("R", interpreterPath);
 }
 

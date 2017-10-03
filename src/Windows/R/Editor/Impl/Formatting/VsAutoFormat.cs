@@ -15,8 +15,8 @@ namespace Microsoft.R.Editor.Formatting {
     public sealed class VsAutoFormat : AutoFormat {
         private readonly ITextView _textView;
 
-        public VsAutoFormat(ITextView textView, IServiceContainer services) :
-            base(textView.ToEditorView(), null, services) {
+        public VsAutoFormat(IServiceContainer services, ITextView textView) :
+            base(services, textView.ToEditorView(), null, null) {
             _textView = textView;
         }
 

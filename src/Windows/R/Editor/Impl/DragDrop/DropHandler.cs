@@ -82,8 +82,8 @@ namespace Microsoft.R.Editor.DragDrop {
                 textBuffer.Replace(new Span(dropPosition, 0), text);
 
                 if (_settings.FormatOnPaste) {
-                    var formatter = new RangeFormatter(_services);
-                    formatter.FormatRange(_wpfTextView.ToEditorView(), document.EditorBuffer, new TextRange(dropPosition, text.Length));
+                    var formatter = new RangeFormatter(_services, _wpfTextView.ToEditorView(), document.EditorBuffer);
+                    formatter.FormatRange(new TextRange(dropPosition, text.Length));
                 }
 
                 if (_wpfTextView.Selection != null) {

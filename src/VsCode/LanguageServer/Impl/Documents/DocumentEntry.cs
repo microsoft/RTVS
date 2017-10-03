@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
@@ -31,15 +30,13 @@ namespace Microsoft.R.LanguageServer.Documents {
         private readonly CodeFormatter _formatter;
         private readonly DocumentSymbolsProvider _symbolsProvider;
 
-        public IEditorView View { get; }
         public IEditorBuffer EditorBuffer { get; }
         public IREditorDocument Document { get; }
 
         public DocumentEntry(string content, Uri uri, IServiceContainer services) {
             _services = services;
- 
+
             EditorBuffer = new EditorBuffer(content, "R");
-            View = new EditorView(EditorBuffer);
             Document = new REditorDocument(EditorBuffer, services, false);
 
             _completionManager = new CompletionManager(services);
@@ -84,24 +81,24 @@ namespace Microsoft.R.LanguageServer.Documents {
             => _signatureManager.GetHoverAsync(CreateContext(position), ct);
 
         [DebuggerStepThrough]
-        public TextEdit[] Format() 
+        public TextEdit[] Format()
             => _formatter.Format(EditorBuffer.CurrentSnapshot);
 
         [DebuggerStepThrough]
-        public TextEdit[] FormatRange(Range range) 
+        public TextEdit[] FormatRange(Range range)
             => _formatter.FormatRange(EditorBuffer.CurrentSnapshot, range);
 
         [DebuggerStepThrough]
         public TextEdit[] Autoformat(Position position, string typeChar)
             => _formatter.Autoformat(EditorBuffer.CurrentSnapshot, position, typeChar);
-        
+
         [DebuggerStepThrough]
         public SymbolInformation[] GetSymbols(Uri uri)
             => _symbolsProvider.GetSymbols(Document, uri);
 
         private IRIntellisenseContext CreateContext(Position position) {
             var bufferPosition = EditorBuffer.ToStreamPosition(position);
-            var session = new EditorIntellisenseSession(View, _services);
+            var session = new EditorIntellisenseSession(new EditorView(EditorBuffer, position.ToStreamPosition(EditorBuffer.CurrentSnapshot)), _services);
             return new RIntellisenseContext(session, EditorBuffer, Document.EditorTree, bufferPosition);
         }
     }

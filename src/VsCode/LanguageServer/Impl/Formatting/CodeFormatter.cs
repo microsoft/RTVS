@@ -37,43 +37,20 @@ namespace Microsoft.R.LanguageServer.Formatting {
 
         public TextEdit[] FormatRange(IEditorBufferSnapshot snapshot, Range range) {
             var changeHandler = new IncrementalTextChangeHandler();
-            var rangeFormatter = new RangeFormatter(_services);
-            rangeFormatter.FormatRange(null, snapshot.EditorBuffer, range.ToTextRange(snapshot), changeHandler);
+            var editorBuffer = snapshot.EditorBuffer;
+            var editorView = new EditorView(editorBuffer, range.ToTextRange(snapshot).Start);
+            var rangeFormatter = new RangeFormatter(_services, editorView, editorBuffer, changeHandler);
+            rangeFormatter.FormatRange(range.ToTextRange(snapshot));
             return changeHandler.Result;
         }
 
         public TextEdit[] Autoformat(IEditorBufferSnapshot snapshot, Position position, string typedChar) {
-            var settings = _services.GetService<IREditorSettings>();
+            var changeHandler = new IncrementalTextChangeHandler();
             var editorBuffer = snapshot.EditorBuffer;
-            var formatter = new AutoFormat(new EditorView(editorBuffer), editorBuffer, _services);
-            // Attach event handler for recording
-            using (var recorder = new TextEditRecorder(editorBuffer)) { 
-                formatter.HandleTyping(typedChar[0], position.ToStreamPosition(snapshot));
-                return recorder.Edits.ToArray();
-            };
-        }
-
-        private class TextEditRecorder : IDisposable {
-            private readonly IEditorBuffer _editorBuffer;
-            private readonly IEditorBufferSnapshot _snapshot;
-            private readonly List<TextEdit> _edits = new List<TextEdit>();
-
-            public TextEditRecorder(IEditorBuffer editorBuffer) {
-                _editorBuffer = editorBuffer;
-                _snapshot = _editorBuffer.CurrentSnapshot;
-                _editorBuffer.Changed += OnTextChanged;
-            }
-
-            public IReadOnlyList<TextEdit> Edits => _edits;
-
-            public void Dispose() => _editorBuffer.Changed -= OnTextChanged;
-
-            private void OnTextChanged(object sender, TextChangeEventArgs e) {
-                _edits.Add(new TextEdit {
-                    Range = e.Change.OldRange.ToLineRange(_snapshot),
-                    NewText = e.Change.NewText
-                });
-            }
+            var editorView = new EditorView(editorBuffer, position.ToStreamPosition(snapshot));
+            var formatter = new AutoFormat(_services, editorView, editorBuffer, changeHandler);
+            formatter.HandleTyping(typedChar[0], position.ToStreamPosition(snapshot));
+            return changeHandler.Result;
         }
     }
 }

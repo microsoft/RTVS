@@ -7,6 +7,7 @@
 import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
 import * as term from "./terminal";
+import {RLanguage} from "./constants";
 
 export let client: languageClient.LanguageClient;
 
@@ -19,7 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export async function activateLanguageServer(context: vscode.ExtensionContext) {
-
+    const r = RLanguage.language;
     // The server is implemented in C#
     const commandOptions = { stdio: "pipe" };
     const serverModule = context.extensionPath + "/server/Microsoft.R.LanguageServer.dll";
@@ -34,14 +35,14 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     // Options to control the language client
     const clientOptions: languageClient.LanguageClientOptions = {
         // Register the server for R documents
-        documentSelector: ["r"],
+        documentSelector: [r],
         synchronize: {
-            configurationSection: "r"
+            configurationSection: r
         }
     };
 
     // Create the language client and start the client.
-    client = new languageClient.LanguageClient("r", "R Tools", serverOptions, clientOptions);
+    client = new languageClient.LanguageClient(r, "R Tools", serverOptions, clientOptions);
     context.subscriptions.push(client.start());
     context.subscriptions.push(...term.activateExecInTerminalProvider());
 
@@ -52,3 +53,4 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
 export function deactivate() {
     client = null;
 }
+
