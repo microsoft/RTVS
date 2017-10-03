@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Linq;
+using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Formatting;
@@ -38,16 +40,18 @@ namespace Microsoft.R.LanguageServer.Formatting {
             var editorView = new EditorView(editorBuffer, range.ToTextRange(snapshot).Start);
             var rangeFormatter = new RangeFormatter(_services, editorView, editorBuffer, changeHandler);
             rangeFormatter.FormatRange(range.ToTextRange(snapshot));
-            return changeHandler.Result.Reverse().ToArray();
+            return changeHandler.Result;
         }
 
-        public TextEdit[] Autoformat(IEditorBufferSnapshot snapshot, Position position, string typedChar) {
+        public async Task<TextEdit[]> AutoformatAsync(IEditorBufferSnapshot snapshot, Position position, string typedChar) {
             var changeHandler = new IncrementalTextChangeHandler();
             var editorBuffer = snapshot.EditorBuffer;
             var editorView = new EditorView(editorBuffer, position.ToStreamPosition(snapshot));
             var formatter = new AutoFormat(_services, editorView, editorBuffer, changeHandler);
+
+            await _services.MainThread().SwitchToAsync();
             formatter.HandleTyping(typedChar[0], position.ToStreamPosition(snapshot));
-            return changeHandler.Result.Reverse().ToArray();
+            return changeHandler.Result;
         }
     }
 }
