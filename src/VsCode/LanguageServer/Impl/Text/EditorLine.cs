@@ -8,8 +8,8 @@ namespace Microsoft.R.LanguageServer.Text {
     internal sealed class EditorLine : TextRange, IEditorLine {
         public int LineBreakLength { get; }
 
-        public EditorLine(IEditorBufferSnapshot snapshot, int start, int totalLength, int lineBreakLength, int lineNumber) :
-            base(start, totalLength) {
+        public EditorLine(IEditorBufferSnapshot snapshot, int start, int length, int lineBreakLength, int lineNumber) :
+            base(start, length) {
             LineBreakLength = lineBreakLength;
             Snapshot = snapshot;
             LineNumber = lineNumber;

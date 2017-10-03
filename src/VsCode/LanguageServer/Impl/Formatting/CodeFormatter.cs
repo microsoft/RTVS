@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
@@ -10,6 +11,7 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.LanguageServer.Extensions;
 using Microsoft.R.LanguageServer.Text;
@@ -48,6 +50,11 @@ namespace Microsoft.R.LanguageServer.Formatting {
             var editorBuffer = snapshot.EditorBuffer;
             var editorView = new EditorView(editorBuffer, position.ToStreamPosition(snapshot));
             var formatter = new AutoFormat(_services, editorView, editorBuffer, changeHandler);
+
+            var document = editorBuffer.GetEditorDocument<IREditorDocument>();
+            if(!document.EditorTree.IsReady) {
+                SpinWait.SpinUntil(() => document.EditorTree.IsReady, 50);
+            }
 
             await _services.MainThread().SwitchToAsync();
             formatter.HandleTyping(typedChar[0], position.ToStreamPosition(snapshot));

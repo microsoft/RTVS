@@ -12,7 +12,7 @@ namespace Microsoft.R.LanguageServer.Text {
     internal sealed class EditorBufferSnapshot : IEditorBufferSnapshot {
         private readonly object _lock = new object();
         private readonly string _content;
-        private TextRangeCollection<EditorLine> _lines;
+        private TextRangeCollection<FullRangeLine> _lineData;
 
         public EditorBufferSnapshot(IEditorBuffer editorBuffer, string content, int version) {
             EditorBuffer = editorBuffer;
@@ -46,40 +46,40 @@ namespace Microsoft.R.LanguageServer.Text {
         public int LineCount {
             get {
                 MakeLinesData();
-                return _lines.Count;
+                return _lineData.Count;
             }
         }
 
         public IEditorLine GetLineFromPosition(int position) {
             MakeLinesData();
-            var lineIndex = position == Length 
-                ? _lines.Count - 1
-                : _lines.GetItemContaining(position);
+            var lineIndex = position == Length
+                ? _lineData.Count - 1
+                : _lineData.GetItemContaining(position);
 
-            return lineIndex < 0 ? null : _lines[lineIndex];
+            return lineIndex < 0 ? null : _lineData[lineIndex].Line;
         }
 
         public IEditorLine GetLineFromLineNumber(int lineNumber) {
             Check.ArgumentOutOfRange(nameof(lineNumber), () => lineNumber < 0 || lineNumber >= LineCount);
-            return _lines[lineNumber];
+            return _lineData[lineNumber].Line;
         }
 
         public int GetLineNumberFromPosition(int position) {
             Check.ArgumentOutOfRange(nameof(position), () => position < 0 || position >= _content.Length);
             MakeLinesData();
-            return _lines.GetItemContaining(position);
+            return _lineData.GetItemContaining(position);
         }
 
         public ITrackingTextRange CreateTrackingRange(ITextRange range) => new TrackingTextRange(range);
         #endregion
 
         private void MakeLinesData() {
-            if (_lines != null) {
+            if (_lineData != null) {
                 return;
             }
 
             lock (_lock) {
-                var lines = new List<EditorLine>();
+                var data = new List<FullRangeLine>();
                 var lineStart = 0;
 
                 for (var i = 0; i < _content.Length; i++) {
@@ -93,14 +93,23 @@ namespace Microsoft.R.LanguageServer.Text {
                             i++;
                             lineBreakLength++;
                         }
-                        lines.Add(new EditorLine(this, lineStart, i + 1 - lineStart, lineBreakLength, lines.Count));
+                        data.Add(new FullRangeLine(new EditorLine(this, lineStart, i + 1 - lineStart - lineBreakLength, lineBreakLength, data.Count)));
                         lineStart = i + 1;
                     }
                 }
-                lines.Add(new EditorLine(this, lineStart, _content.Length - lineStart, 0, lines.Count));
-                _lines = new TextRangeCollection<EditorLine>(lines);
+                data.Add(new FullRangeLine(new EditorLine(this, lineStart, _content.Length - lineStart, 0, data.Count)));
+                _lineData = new TextRangeCollection<FullRangeLine>(data);
             }
         }
+
+        private class FullRangeLine : TextRange {
+            public FullRangeLine(EditorLine line) :
+                base(line.Start, line.Length + line.LineBreakLength) {
+                Line = line;
+            }
+            public EditorLine Line { get; set; }
+        }
+
 
 #pragma warning disable 67
         public event EventHandler<TextChangeEventArgs> OnTextChange;

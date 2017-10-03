@@ -40,49 +40,47 @@ namespace Microsoft.R.Editor.Formatting {
 
             EditorBuffer = editorBuffer ?? EditorBuffer;
             var document = EditorBuffer.GetEditorDocument<IREditorDocument>();
-            var ast = document.EditorTree.AcquireReadLock(_treeUserId);
-            try {
-                // Make sure we are not formatting damaging the projected range in R Markdown
-                // which looks like ```{r. 'r' should not separate from {.
-                if (!CanFormatContainedLanguageLine(position, typedChar)) {
-                    return;
-                }
+            // AST may or may not be ready. Upto the caller to decide if it is worth waiting.
+            var ast = document.EditorTree.AstRoot; 
 
-                // We don't want to auto-format inside strings
-                if (ast.IsPositionInsideString(position)) {
-                    return;
-                }
+            // Make sure we are not formatting damaging the projected range in R Markdown
+            // which looks like ```{r. 'r' should not separate from {.
+            if (!CanFormatContainedLanguageLine(position, typedChar)) {
+                return;
+            }
 
-                var fo = new FormatOperations(Services, EditorView, EditorBuffer, _changeHandler);
-                if (typedChar.IsLineBreak()) {
-                    // Special case for hitting caret after } and before 'else'. We do want to format
-                    // the construct as '} else {' but if user types Enter after } and we auto-format
-                    // it will look as if the editor just eats the Enter. Instead, we will not be
-                    // autoformatting in this specific case. User can always format either the document
-                    // or select the block and reformat it.
-                    if (!IsBetweenCurlyAndElse(position)) {
-                        var scopeStatement = GetFormatScope(position, ast);
-                        // Do not format large scope blocks for performance reasons
-                        if (scopeStatement != null && scopeStatement.Length < 200) {
-                            fo.FormatNode(scopeStatement);
-                        } else if (CanFormatLine(position, -1)) {
-                            fo.FormatViewLine(-1);
-                        }
+            // We don't want to auto-format inside strings
+            if (ast.IsPositionInsideString(position)) {
+                return;
+            }
+
+            var fo = new FormatOperations(Services, EditorView, EditorBuffer, _changeHandler);
+            if (typedChar.IsLineBreak()) {
+                // Special case for hitting caret after } and before 'else'. We do want to format
+                // the construct as '} else {' but if user types Enter after } and we auto-format
+                // it will look as if the editor just eats the Enter. Instead, we will not be
+                // autoformatting in this specific case. User can always format either the document
+                // or select the block and reformat it.
+                if (!IsBetweenCurlyAndElse(position)) {
+                    var scopeStatement = GetFormatScope(position, ast);
+                    // Do not format large scope blocks for performance reasons
+                    if (scopeStatement != null && scopeStatement.Length < 200) {
+                        fo.FormatNode(scopeStatement);
+                    } else if (CanFormatLine(position, -1)) {
+                        fo.FormatViewLine(-1);
                     }
-                } else if (typedChar == ';') {
-                    // Verify we are at the end of the string and not in a middle
-                    // of another string or inside a statement.
-                    var line = EditorBuffer.CurrentSnapshot.GetLineFromPosition(position);
-                    var positionInLine = position - line.Start;
-                    var lineText = line.GetText();
-                    if (positionInLine >= lineText.TrimEnd().Length) {
-                        fo.FormatViewLine(0);
-                    }
-                } else if (typedChar == '}') {
-                    fo.FormatCurrentStatement(limitAtCaret: true, caretOffset: -1);
                 }
-            } finally {
-                document.EditorTree.ReleaseReadLock(_treeUserId);
+            } else if (typedChar == ';') {
+                // Verify we are at the end of the string and not in a middle
+                // of another string or inside a statement.
+                var line = EditorBuffer.CurrentSnapshot.GetLineFromPosition(position);
+                var positionInLine = position - line.Start;
+                var lineText = line.GetText();
+                if (positionInLine >= lineText.TrimEnd().Length) {
+                    fo.FormatViewLine(0);
+                }
+            } else if (typedChar == '}') {
+                fo.FormatCurrentStatement(limitAtCaret: true, caretOffset: -1);
             }
         }
 
