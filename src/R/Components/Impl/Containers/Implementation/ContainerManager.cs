@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -92,20 +93,10 @@ namespace Microsoft.R.Components.Containers.Implementation {
                 version = "latest";
             }
 
-            var dockerImageContent = $@"FROM kvnadig/rtvsd-ub1604:{version}
-RUN apt upgrade -y
-
-RUN apt-get install -y git
-RUN mkdir /tmp/rtvsfiles && cd /tmp/rtvsfiles && git clone https://github.com/karthiknadig/docker-stuff.git && cd /
-RUN cd /tmp/rtvsfiles 
-RUN find -name *.deb | xargs dpkg -i
-RUN apt-get -f install
-RUN rm -R /tmp/rtvsfiles
-
-RUN useradd --create-home {username}
-RUN echo ""{username}:{password}"" | chpasswd
-
-EXPOSE 5444";
+            var basePath = Path.GetDirectoryName(GetType().GetTypeInfo().Assembly.GetAssemblyPath());
+            var dockerTempaltePath = Path.Combine(basePath, "DockerTemplate\\DockerfileTemplate");
+            var dockerTemplateContent = File.ReadAllText(dockerTempaltePath);
+            var dockerImageContent = string.Format(dockerTemplateContent, version, username, password);
 
             var guid = dockerImageContent.ToGuid().ToString();
             var folder = Path.Combine(Path.GetTempPath(), guid);

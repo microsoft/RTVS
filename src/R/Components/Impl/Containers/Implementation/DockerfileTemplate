@@ -1,0 +1,15 @@
+﻿# R version should be substituted here. see tags for details.
+FROM kvnadig/rtvsd-ub1604:{0}
+
+RUN apt upgrade -y && apt-get install -y git wget
+RUN mkdir /tmp/rtvsfiles && cd /tmp/rtvsfiles && git clone https://github.com/karthiknadig/docker-stuff.git && cd /
+RUN cd /tmp/rtvsfiles 
+RUN find -name *.deb | xargs dpkg -i
+RUN apt-get -f install
+RUN rm -R /tmp/rtvsfiles
+
+# Linux user credentials 1= username, 2= password
+RUN useradd --create-home {1}
+RUN echo ""{1}:{2}"" | chpasswd
+
+EXPOSE 5444
