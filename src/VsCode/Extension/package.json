@@ -247,7 +247,7 @@
     "test": "node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "dotnet": "1.1.4",
+    "opn": "^5.1.0",
     "typescript": "^2.5.2",
     "vscode": "^1.1.5",
     "mocha": "^3.5.3",

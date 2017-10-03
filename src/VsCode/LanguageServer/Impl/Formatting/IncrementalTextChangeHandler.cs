@@ -85,6 +85,7 @@ namespace Microsoft.R.LanguageServer.Formatting {
                 Range = snapshot.ToLineRange(r.Start, r.End)
              });
 
+            additionalAction?.Invoke();
             Result = edits.ToArray();
         }
     }

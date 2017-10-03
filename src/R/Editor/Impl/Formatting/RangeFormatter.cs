@@ -138,7 +138,7 @@ namespace Microsoft.R.Editor.Formatting {
                 var indent = SmartIndenter.GetSmartIndent(line, _settings, ast, originalIndentSizeInSpaces, formatting: true);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
-                    int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), _settings.TabSize);
+                    var currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), _settings.TabSize);
                     indent = Math.Max(0, indent - currentIndentSize);
                     if (indent > 0) {
                         var indentString = IndentBuilder.GetIndentString(indent, _settings.IndentType, _settings.TabSize);

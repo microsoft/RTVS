@@ -8,15 +8,25 @@ import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
 import * as term from "./terminal";
 import {RLanguage} from "./constants";
+import * as utils from "./utils";
 
 export let client: languageClient.LanguageClient;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+    checkDependencies();
+
     console.log("Activating R Tools...");
     await activateLanguageServer(context);
     console.log("R Tools is now activated.");
+}
+
+function checkDependencies() {
+    if (!utils.IsDotNetInstalled()) {
+        vscode.window.showErrorMessage("R Tools require .NET Core. Please install the framework and restart.")
+        utils.InstallDotNet();
+    }
 }
 
 export async function activateLanguageServer(context: vscode.ExtensionContext) {
@@ -46,7 +56,8 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     context.subscriptions.push(client.start());
     context.subscriptions.push(...term.activateExecInTerminalProvider());
 
-    await term.startRepl();
+    await client.onReady();
+    term.startRepl();
 }
 
 // this method is called when your extension is deactivated

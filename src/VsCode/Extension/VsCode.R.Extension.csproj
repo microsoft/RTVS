@@ -53,6 +53,7 @@
     <TypeScriptCompile Include="src\connection.ts" />
     <TypeScriptCompile Include="src\extension.ts" />
     <TypeScriptCompile Include="src\terminal.ts" />
+    <TypeScriptCompile Include="src\utils.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\constants.ts" />

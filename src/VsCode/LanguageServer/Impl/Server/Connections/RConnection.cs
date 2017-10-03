@@ -86,7 +86,7 @@ namespace Microsoft.R.LanguageServer.Server {
             var ris = _services.GetService<IRInstallationService>();
             var engines = ris
                 .GetCompatibleEngines(new SupportedRVersionRange(3, 2, 3, 9))
-                .OrderBy(x => x.Version)
+                .OrderByDescending(x => x.Version)
                 .ToList();
 
             if (engines.Count == 0) {
