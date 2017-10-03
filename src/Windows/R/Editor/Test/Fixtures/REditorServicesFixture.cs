@@ -10,6 +10,7 @@ using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
+using Microsoft.R.Containers;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
@@ -44,6 +45,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             base.SetupServices(serviceManager, testInput);
             serviceManager
                 .AddRComponentsServices()
+                .AddWindowsContainerServices()
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

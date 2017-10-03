@@ -28,6 +28,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
             await base.AfterTestAssemblyStartingAsync();
 
             _assemblyLoaders = AssemblyLoaderAttribute.GetAssemblyLoaders(TestAssembly.Assembly);
+            foreach (var assemblyLoader in _assemblyLoaders) {
+                assemblyLoader.Initialize();
+            }
 
             var assembly = TestAssembly.Assembly;
             var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof (AssemblyFixtureImportAttribute))
