@@ -44,9 +44,11 @@ Please use {nameof(AssemblyLoaderAttribute)}-derived types to provide paths for 
         }
 
         private static Assembly LoadAssembly(string assemblyFile) {
-            var assemblyName = Path.GetExtension(assemblyFile).EqualsIgnoreCase(".dll") 
-                ? Path.GetFileNameWithoutExtension(assemblyFile) ?? assemblyFile
-                : assemblyFile;
+            var assemblyName = new AssemblyName {
+                Name = Path.GetExtension(assemblyFile).EqualsIgnoreCase(".dll")
+                    ? Path.GetFileNameWithoutExtension(assemblyFile) ?? assemblyFile
+                    : assemblyFile
+            };
 
             try {
                 return Assembly.Load(assemblyName);

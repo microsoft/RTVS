@@ -10,6 +10,7 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -45,15 +46,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         public async Task InitializeAsync() {
-            await _sessionProvider.TrySwitchBrokerAsync(GetType().Name);
+            await _sessionProvider.TrySwitchBrokerAsync(nameof(GridDataTest));
             await _session.StartHostAsync(new RHostStartupInfo(), new RHostClientTestApp(), 50000);
+            var packages = (await _session.InstalledPackagesAsync()).Select(p => p.ToObject<RPackage>()).ToList();
 
-            var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            await workflow.RSessions.TrySwitchBrokerAsync(nameof(GridDataTest));
-
-            var packages = await workflow.Packages.GetInstalledPackagesAsync();
-            if (!packages.Any(p => p.Package.EqualsIgnoreCase("QuantMod"))) {
-                await workflow.Packages.InstallPackageAsync("QuantMod", null);
+            if (!packages.Any(p => p.Package.EqualsIgnoreCase("quantmod"))) {
+                using (var request = await _session.BeginInteractionAsync()) {
+                    await request.InstallPackageAsync("quantmod");
+                }
             }
         }
 

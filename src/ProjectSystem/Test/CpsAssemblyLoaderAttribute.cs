@@ -6,14 +6,9 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test {
     [ExcludeFromCodeCoverage]
-    public class Dev15CpsAssemblyLoaderAttribute : AssemblyLoaderAttribute {
-        public Dev15CpsAssemblyLoaderAttribute() 
-            : base(Paths, AssembliesToResolve) {}
-
-        private static string[] Paths { get; } = {
-            UnitTests.Core.Paths.VsPrivateAssemblies,
-            UnitTests.Core.Paths.VsCommonExtensions
-        };
+    public class CpsAssemblyLoaderAttribute : VsAssemblyLoaderAttribute {
+        public CpsAssemblyLoaderAttribute() 
+            : base(AssembliesToResolve) {}
 
         private static string[] AssembliesToResolve { get; } = {
             "Microsoft.VisualStudio.ProjectSystem.dll",

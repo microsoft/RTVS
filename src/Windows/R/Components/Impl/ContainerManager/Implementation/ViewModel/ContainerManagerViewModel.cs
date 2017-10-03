@@ -80,7 +80,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         }
 
         private void ContrainersChanged() => _mainThread.Post(ContrainersChangedMainThread);
-        private void ContrainersChangedMainThread() => _localContainers.ReplaceWith(_containers.GetContainers().Select(c => new ContainerViewModel(c)));
+        private void ContrainersChangedMainThread() 
+            => _localContainers.ReplaceWith(_containers.GetContainers().Select(c => new ContainerViewModel(c)).OrderBy(c => c.Name));
 
         private void ContainersStatusChanged(object sender, EventArgs eventArgs) => _mainThread.Post(ContainersStatusChangedMainThread);
         private void ContainersStatusChangedMainThread() {

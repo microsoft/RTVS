@@ -37,13 +37,13 @@ namespace Microsoft.R.Components.Test.Fixtures {
             base.SetupServices(serviceManager, testInput);
             serviceManager
                 .AddRComponentsServices()
+                .AddWindowsContainerServices()
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRPlotExportDialog, TestPlotExportDialog>()
-                .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName))
-                .AddService<IContainerService, WindowsDockerService>();
+                .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
         }
     }
 }
