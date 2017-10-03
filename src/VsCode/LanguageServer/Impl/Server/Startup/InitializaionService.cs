@@ -34,7 +34,7 @@ namespace Microsoft.R.LanguageServer.Server {
                 DocumentRangeFormattingProvider = true,
                 DocumentOnTypeFormattingProvider = new DocumentOnTypeFormattingOptions {
                     FirstTriggerCharacter = ';',
-                    MoreTriggerCharacter = new[] { '}', Environment.NewLine[0] }
+                    MoreTriggerCharacter = new[] { '}', '\n' }
                 },
                 DocumentSymbolProvider = true,
                 ExecuteCommandProvider = new ExecuteCommandOptions {

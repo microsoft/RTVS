@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Tree {
         [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public AstRoot AstRoot {
             get {
-                Check.InvalidOperation(() => _ownerThread == Thread.CurrentThread.ManagedThreadId, AcquireReadLockMessage);
+                Check.InvalidOperation(() => TreeLock.CheckAccess(), AcquireReadLockMessage);
                 // Do not call EnsureTreeReady here since it may slow down
                 // typing A LOT in large files. If some code needs up-to-date
                 // tree it has to call EnsureTreeReady explicitly.

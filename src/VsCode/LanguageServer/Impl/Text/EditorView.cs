@@ -18,11 +18,12 @@ namespace Microsoft.R.LanguageServer.Text {
 
         public IViewCaret Caret { get; }
 
-        public ISnapshotPoint GetCaretPosition(IEditorBuffer buffer = null)=> new SnapshotPoint(EditorBuffer.CurrentSnapshot, 0);
+        public ISnapshotPoint GetCaretPosition(IEditorBuffer buffer = null)
+            => new SnapshotPoint(EditorBuffer.CurrentSnapshot, Caret.Position.Position);
 
         public IEditorSelection Selection => new EditorSelection(TextRange.EmptyRange);
 
-        public ISnapshotPoint MapToView(IEditorBufferSnapshot snapshot, int position) 
+        public ISnapshotPoint MapToView(IEditorBufferSnapshot snapshot, int position)
             => new SnapshotPoint(EditorBuffer.CurrentSnapshot, position);
     }
 }

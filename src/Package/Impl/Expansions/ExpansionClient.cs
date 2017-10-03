@@ -173,8 +173,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 var point = textBuffer.CurrentSnapshot.CreateTrackingPoint(range.End, PointTrackingMode.Positive);
                 var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
 
-                var formatter = new RangeFormatter(_services);
-                formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
+                var formatter = new RangeFormatter(_services, TextView.ToEditorView(), textBuffer.ToEditorBuffer());
+                formatter.FormatRange(range);
 
                 // Do not trim whitespace after standalone operators
                 if (IsStandaloneOperator(text)) {

@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using static System.FormattableString;
 
@@ -15,22 +17,13 @@ namespace Microsoft.R.Editor.Tree {
     /// who is currently holding the lock.
     /// </summary>
     internal sealed class EditorTreeLock : IDisposable {
-        /// <summary>
-        /// Locks that controls access to the tree and to its element keys collection.
-        /// </summary>
-        private ReaderWriterLockSlim _treeLock;
-        private int _ownerThreadId;
+        private readonly ReaderWriterLockSlim _treeLock = new ReaderWriterLockSlim();
+        private int _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
 
         /// <summary>
         /// Tracks tree users and helps to debug mismatched lock/unlock bugs.
         /// </summary>
-        private readonly HashSet<Guid> _treeUsers;
-
-        public EditorTreeLock() {
-            _treeLock = new ReaderWriterLockSlim();
-            _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
-            _treeUsers = new HashSet<Guid>();
-        }
+        private readonly ConcurrentDictionary<Guid, int> _treeUsers = new ConcurrentDictionary<Guid, int>();
 
         internal void TakeThreadOwnership() => _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
 
@@ -40,14 +33,12 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="userID">Guid uniquely identifying caller. Used for usage tracking and debugging.</param>
         /// <returns>Tree root if lock was acquired. Null if caller already has the lock.</returns>
         public bool AcquireReadLock(Guid userID) {
-            lock (_treeUsers) {
-                if (_treeUsers.Contains(userID)) {
-                    Debug.Assert(false, string.Empty, "Reentrancy in the EditorTree.AcquireReadLock() is not allowed. User: {0}", userID);
-                    return false;
-                }
-                _treeUsers.Add(userID);
-                _treeLock.EnterReadLock();
+            if (_treeUsers.ContainsKey(userID)) {
+                Debug.Assert(false, string.Empty, "Reentrancy in the EditorTree.AcquireReadLock() is not allowed. User: {0}", userID);
+                return false;
             }
+            _treeUsers[userID] = Thread.CurrentThread.ManagedThreadId;
+            _treeLock.EnterReadLock();
             return true;
         }
 
@@ -57,14 +48,12 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="userID">Guid uniquely identifying caller. Used for usage tracking and debugging.</param>
         /// <returns>True if lock was released. False if caller didn't have read lock.</returns>
         public bool ReleaseReadLock(Guid userID) {
-            lock (_treeUsers) {
-                if (!_treeUsers.Contains(userID)) {
-                    Debug.Assert(false, string.Empty, "EditorTree.EndUse() from unknown user: {0}", userID);
-                    return false;
-                }
-                _treeUsers.Remove(userID);
-                _treeLock.ExitReadLock();
+            if (!_treeUsers.ContainsKey(userID)) {
+                Debug.Assert(false, string.Empty, "EditorTree.ReleaseReadLock() from unknown user: {0}", userID);
+                return false;
             }
+            _treeUsers.TryRemove(userID, out var _);
+            _treeLock.ExitReadLock();
             return true;
         }
 
@@ -86,13 +75,17 @@ namespace Microsoft.R.Editor.Tree {
             return true;
         }
 
+        public bool CheckAccess() {
+            var caller = Thread.CurrentThread.ManagedThreadId;
+            return caller == _ownerThreadId || _treeUsers.Values.ToArray().Contains(caller);
+        }
+
         public void Dispose() {
             if (_treeLock != null) {
                 Debug.Assert(!_treeLock.IsWriteLockHeld);
                 Debug.Assert(!_treeLock.IsReadLockHeld);
 
                 _treeLock.Dispose();
-                _treeLock = null;
             }
         }
 
