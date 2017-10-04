@@ -20,7 +20,7 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
         public RInteractiveWorkflow(IServiceContainer services) {
             _services = services;
 
-            Console = new Console();
+            Console = new Console(_services);
             RSessions = new RSessionProvider(_services, Console);
             RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
 

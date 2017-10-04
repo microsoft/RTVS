@@ -1,7 +1,7 @@
 {
   "name": "vscoder",
   "displayName": "R Tools for VsCode",
-  "description": "R Language Tools, based on R Tools for Visual Studio",
+  "description": "R Language Tools (based on RTVS)",
   "version": "0.0.1",
   "publisher": "Microsoft",
   "license": "MIT",
@@ -254,6 +254,7 @@
     "@types/mocha": "^2.2.32"
   },
   "dependencies": {
+    "getenv": "^0.7.0",
     "opn": "^5.1.0",
     "applicationinsights": "^0.22.0",
     "vscode-extension-telemetry": "^0.0.8",

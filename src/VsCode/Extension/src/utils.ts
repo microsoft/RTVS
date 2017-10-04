@@ -4,6 +4,7 @@
 
 import * as fs from "fs";
 import * as opn from "opn";
+import * as getenv from "getenv";
 
 export function IsWindows() {
     return process.platform === "win32";
@@ -18,14 +19,34 @@ export function IsLinux() {
 }
 
 export function IsDotNetInstalled() {
+    let versions = ["1.1.2", "1.1.4", "2.0.0"];
+    let prefix;
+
     if (IsWindows()) {
-        return fs.existsSync("C:\\Program Files\\dotnet\\sdk");
+        let drive = getenv("SystemDrive");
+        prefix = drive + "\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\";
+    } else {
+        prefix = "/usr/local/share/dotnet/shared/Microsoft.NETCore.App/";
     }
-    return fs.existsSync("/usr/local/share/dotnet/shared/Microsoft.NETCore.App");
+
+    for (var i = 0; i < versions.length; i++) {
+        if (fs.existsSync(prefix + versions[i])) {
+            return true;
+        }
+    }
+    return false;
 }
 
 export function InstallDotNet() {
-    opn("https://www.microsoft.com/net/core");
+    let url;
+    if (IsWindows()) {
+        url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-win-x64.1.1.4.exe";
+    } else if (IsMac()) {
+        url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-osx-x64.1.1.4.pkg";
+    } else {
+        url = "https://www.microsoft.com/net/download/linux";
+    }
+    opn(url);
 }
 
 export function InstallR() {
