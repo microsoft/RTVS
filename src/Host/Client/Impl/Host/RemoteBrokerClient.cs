@@ -108,6 +108,10 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             lock (_verificationLock) {
+                if (ConnectionInfo.IsUrlBased && ConnectionInfo.Uri.IsLoopback) {
+                    return true;
+                }
+
                 if (_certificateValidationResult.HasValue) {
                     return _certificateValidationResult.Value;
                 }
