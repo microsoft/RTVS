@@ -4,17 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using LanguageServer.VsCode.Contracts;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Formatting;
 using Microsoft.Languages.Editor.Selection;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.LanguageServer.Extensions;
 
 namespace Microsoft.R.LanguageServer.Formatting {
-    internal sealed class IncrementalTextChangeHandler : IIncrementalWhitespaceChangeHandler {
-        public TextEdit[] Result { get; private set; } = new TextEdit[0];
-
+    internal sealed class IncrementalTextChangeHandler : WhitespaceTextChangeHandler, IIncrementalWhitespaceChangeHandler {
         /// <summary>
         /// Incrementally applies whitespace change to the buffer 
         /// having old and new tokens produced from the 'before formatting' 
@@ -49,44 +45,18 @@ namespace Microsoft.R.LanguageServer.Formatting {
                 return;
             }
 
-            var snapshot = editorBuffer.CurrentSnapshot;
-            if (oldTokens.Count == 0) {
-                Result = new[] {
-                    new TextEdit {
-                        NewText = newTextProvider.GetText(TextRange.FromBounds(0, newTextProvider.Length)),
-                        Range = snapshot.ToLineRange(formatRange.Start, formatRange.End)
-                    }
-                };
-                return;
-            }
-
-            // Replace whitespace between tokens in reverse so relative positions match
-            var edits = new List<TextEdit>();
-            var oldEnd = oldTextProvider.Length;
-            var newEnd = newTextProvider.Length;
-            for (var i = newTokens.Count - 1; i >= 0; i--) {
-                var oldText = oldTextProvider.GetText(TextRange.FromBounds(oldTokens[i].End, oldEnd));
-                var newText = newTextProvider.GetText(TextRange.FromBounds(newTokens[i].End, newEnd));
-                if (oldText != newText) {
-                    var range = new TextRange(formatRange.Start + oldTokens[i].End, oldEnd - oldTokens[i].End);
-                    edits.Add(new TextEdit {
-                        Range = snapshot.ToLineRange(range.Start, range.End),
-                        NewText = newText
-                    });
-
+            var edits = CalculateChanges(oldTextProvider, newTextProvider, oldTokens, newTokens, formatRange);
+            foreach(var e in edits) {
+                if(string.IsNullOrEmpty(e.NewText)) {
+                    editorBuffer.Delete(e.Range);
+                } else if(e.Range.Length > 0) {
+                    editorBuffer.Replace(e.Range, e.NewText);
+                } else {
+                    editorBuffer.Insert(e.Range.Start, e.NewText);
                 }
-                oldEnd = oldTokens[i].Start;
-                newEnd = newTokens[i].Start;
             }
-
-            var r = new TextRange(formatRange.Start, oldEnd);
-            edits.Add(new TextEdit {
-                NewText = newTextProvider.GetText(TextRange.FromBounds(0, newEnd)),
-                Range = snapshot.ToLineRange(r.Start, r.End)
-             });
 
             additionalAction?.Invoke();
-            Result = edits.ToArray();
-        }
+         }
     }
 }

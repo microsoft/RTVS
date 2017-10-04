@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Text {
     [Export(typeof(IIncrementalWhitespaceChangeHandler))]
-    public sealed class IncrementalTextChangeApplication: IIncrementalWhitespaceChangeHandler {
+    public sealed class IncrementalTextChangeApplication : WhitespaceTextChangeHandler, IIncrementalWhitespaceChangeHandler {
         private readonly IServiceContainer _services;
 
         [ImportingConstructor]
@@ -58,25 +58,15 @@ namespace Microsoft.Languages.Editor.Text {
                 using (CreateSelectionUndo(selectionTracker, _services, transactionName)) {
                     var textBuffer = editorBuffer.As<ITextBuffer>();
                     using (var edit = textBuffer.CreateEdit()) {
-                        if (oldTokens.Count > 0) {
-                            // Replace whitespace between tokens in reverse so relative positions match
-                            var oldEnd = oldTextProvider.Length;
-                            var newEnd = newTextProvider.Length;
-                            string newText;
-                            for (var i = newTokens.Count - 1; i >= 0; i--) {
-                                var oldText = oldTextProvider.GetText(TextRange.FromBounds(oldTokens[i].End, oldEnd));
-                                newText = newTextProvider.GetText(TextRange.FromBounds(newTokens[i].End, newEnd));
-                                if (oldText != newText) {
-                                    edit.Replace(formatRange.Start + oldTokens[i].End, oldEnd - oldTokens[i].End, newText);
-                                }
-                                oldEnd = oldTokens[i].Start;
-                                newEnd = newTokens[i].Start;
+                        var edits = CalculateChanges(oldTextProvider, newTextProvider, oldTokens, newTokens, formatRange);
+                        foreach (var e in edits) {
+                            if (string.IsNullOrEmpty(e.NewText)) {
+                                edit.Delete(e.Range);
+                            } else if (e.Range.Length > 0) {
+                                edit.Replace(e.Range, e.NewText);
+                            } else {
+                                edit.Insert(e.Range.Start, e.NewText);
                             }
-                            newText = newTextProvider.GetText(TextRange.FromBounds(0, newEnd));
-                            edit.Replace(formatRange.Start, oldEnd, newText);
-                        } else {
-                            var newText = newTextProvider.GetText(TextRange.FromBounds(0, newTextProvider.Length));
-                            edit.Replace(formatRange.Start, formatRange.Length, newText);
                         }
                         edit.Apply();
                         additionalAction?.Invoke();

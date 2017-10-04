@@ -20,6 +20,7 @@ using Microsoft.R.LanguageServer.Formatting;
 using Microsoft.R.LanguageServer.Symbols;
 using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Validation;
+using TextEdit = LanguageServer.VsCode.Contracts.TextEdit;
 
 namespace Microsoft.R.LanguageServer.Documents {
     internal sealed class DocumentEntry : IDisposable {
@@ -81,12 +82,12 @@ namespace Microsoft.R.LanguageServer.Documents {
             => _signatureManager.GetHoverAsync(CreateContext(position), ct);
 
         [DebuggerStepThrough]
-        public TextEdit[] Format()
-            => _formatter.Format(EditorBuffer.CurrentSnapshot);
+        public Task<TextEdit[]> FormatAsync()
+            => _formatter.FormatAsync(EditorBuffer.CurrentSnapshot);
 
         [DebuggerStepThrough]
-        public TextEdit[] FormatRange(Range range)
-            => _formatter.FormatRange(EditorBuffer.CurrentSnapshot, range);
+        public Task<TextEdit[]> FormatRangeAsync(Range range)
+            => _formatter.FormatRangeAsync(EditorBuffer.CurrentSnapshot, range);
 
         [DebuggerStepThrough]
         public Task<TextEdit[]> AutoformatAsync(Position position, string typeChar)
