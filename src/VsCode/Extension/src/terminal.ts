@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import { EOL } from "os";
 import { Commands, RLanguage } from "./constants";
 import { getInterpreterPath } from "./connection";
+import * as utils from "./utils";
 
 let terminal: vscode.Terminal;
 
@@ -93,7 +94,12 @@ export async function startRepl() {
 
 async function createTerminal(): Promise<vscode.Terminal> {
     const interpreterPath = await getInterpreterPath();
-    return vscode.window.createTerminal("R", interpreterPath);
+    if (interpreterPath === undefined || interpreterPath === null) {
+        vscode.window.showErrorMessage("Unable to file R interpreter. Please install R and restart.");
+        utils.InstallR();
+    } else {
+        return vscode.window.createTerminal("R", interpreterPath);
+    }
 }
 
 function removeBlankLines(code: string): string {

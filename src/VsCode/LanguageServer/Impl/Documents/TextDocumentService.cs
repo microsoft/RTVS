@@ -16,6 +16,17 @@ using TextEdit = LanguageServer.VsCode.Contracts.TextEdit;
 namespace Microsoft.R.LanguageServer.Documents {
     [JsonRpcScope(MethodPrefix = "textDocument/")]
     public sealed class TextDocumentService : LanguageServiceBase {
+        /// <remarks>
+        /// In VS Code editor operations such as formatting are not supposed
+        /// to change local copy of the text buffer. Instead, they return
+        /// a set of edits that VS Code applies to its buffer and then sends
+        /// <see cref="didChange(TextDocumentIdentifier, ICollection{TextDocumentContentChangeEvent})"/>
+        /// event. However, existing R formatters works by modifying underlying buffer.
+        /// Therefore, in formatting operations we let formatter to change local copy 
+        /// of the buffer, then calculate difference with the original state and send edits
+        /// to VS Code, which then will ivokes 'didChange'. Since local buffer is already 
+        /// up to date, we must ignore this call.
+        /// </remarks>
         private static volatile bool _ignoreNextChange;
 
         private IDocumentCollection _documents;

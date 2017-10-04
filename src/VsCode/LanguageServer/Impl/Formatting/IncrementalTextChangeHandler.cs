@@ -22,10 +22,8 @@ namespace Microsoft.R.LanguageServer.Formatting {
         /// <param name="oldTokens">Tokens from the 'before' text fragment</param>
         /// <param name="newTokens">Tokens from the 'after' text fragment</param>
         /// <param name="formatRange">Range that is being formatted in the text buffer</param>
-        /// <param name="transactionName">Name of the undo transaction to open</param>
-        /// <param name="selectionTracker">
-        /// Selection tracker object that will save, 
-        /// track and restore selection after changes have been applied.</param>
+        /// <param name="transactionName">Not used in VS Code</param>
+        /// <param name="selectionTracker">Not used in VS Code</param>
         /// <param name="additionalAction">
         /// Action to perform after changes are applies by undo unit is not yet closed.
         /// </param>

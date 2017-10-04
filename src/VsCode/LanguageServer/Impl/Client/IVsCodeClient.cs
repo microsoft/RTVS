@@ -4,8 +4,12 @@
 using LanguageServer.VsCode.Contracts.Client;
 
 namespace Microsoft.R.LanguageServer.Client {
+    /// <summary>
+    /// Represents Vs Code
+    /// </summary>
     internal interface IVsCodeClient {
         IClient Client { get; }
         ITextDocument TextDocument { get; }
+        IWindow Window { get; }
     }
 }

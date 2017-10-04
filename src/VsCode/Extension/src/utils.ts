@@ -27,3 +27,15 @@ export function IsDotNetInstalled() {
 export function InstallDotNet() {
     opn("https://www.microsoft.com/net/core");
 }
+
+export function InstallR() {
+    let url;
+    if (IsWindows()) {
+        url = "https://cran.r-project.org/bin/windows/base/";
+    } else if (IsMac()) {
+        url = "https://cran.r-project.org/bin/macosx/";
+    } else {
+        url = "https://cran.r-project.org/bin/linux/";
+    }
+    opn(url);
+}

@@ -21,5 +21,6 @@ namespace Microsoft.R.LanguageServer.Client {
 
         public IClient Client => _client.Client;
         public ITextDocument TextDocument => _client.TextDocument;
+        public IWindow Window => _client.Window;
     }
 }

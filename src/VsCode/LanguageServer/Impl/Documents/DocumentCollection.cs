@@ -5,9 +5,9 @@ using System;
 using System.Collections.Concurrent;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.LanguageServer.Client;
 
 namespace Microsoft.R.LanguageServer.Documents {
+    /// <inheritdoc />
     internal sealed class DocumentCollection: IDocumentCollection {
         private readonly ConcurrentDictionary<Uri, DocumentEntry> _documents = new ConcurrentDictionary<Uri, DocumentEntry>();
         private readonly IServiceContainer _services;

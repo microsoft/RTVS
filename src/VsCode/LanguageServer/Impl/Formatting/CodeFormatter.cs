@@ -29,29 +29,28 @@ namespace Microsoft.R.LanguageServer.Formatting {
 
         public Task<TextEdit[]> FormatAsync(IEditorBufferSnapshot snapshot) {
             var settings = _services.GetService<IREditorSettings>();
-            var formatter = new RFormatter(settings.FormatOptions);
 
             return DoFormatActionAsync(snapshot, () => {
-                var formattedText = formatter.Format(snapshot.GetText());
+                var formattedText = new RFormatter(settings.FormatOptions).Format(snapshot.GetText());
                 snapshot.EditorBuffer.Replace(TextRange.FromBounds(0, snapshot.Length), formattedText);
             });
         }
 
         public Task<TextEdit[]> FormatRangeAsync(IEditorBufferSnapshot snapshot, Range range) {
-            var changeHandler = new IncrementalTextChangeHandler();
             var editorBuffer = snapshot.EditorBuffer;
             var editorView = new EditorView(editorBuffer, range.ToTextRange(snapshot).Start);
-            var rangeFormatter = new RangeFormatter(_services, editorView, editorBuffer, changeHandler);
+            var rangeFormatter = new RangeFormatter(_services, editorView, editorBuffer, new IncrementalTextChangeHandler());
 
              return DoFormatActionAsync(snapshot, () => rangeFormatter.FormatRange(range.ToTextRange(snapshot)));
         }
 
         public Task<TextEdit[]> AutoformatAsync(IEditorBufferSnapshot snapshot, Position position, string typedChar) {
-            var changeHandler = new IncrementalTextChangeHandler();
             var editorBuffer = snapshot.EditorBuffer;
             var editorView = new EditorView(editorBuffer, position.ToStreamPosition(snapshot));
-            var formatter = new AutoFormat(_services, editorView, editorBuffer, changeHandler);
+            var formatter = new AutoFormat(_services, editorView, editorBuffer, new IncrementalTextChangeHandler());
 
+            // AST build happens asynchronously, give it a chance to finish since 
+            // up -to-date AST improves outcome of the on-type formatting.
             var document = editorBuffer.GetEditorDocument<IREditorDocument>();
             if (!document.EditorTree.IsReady) {
                 SpinWait.SpinUntil(() => document.EditorTree.IsReady, 50);
@@ -73,7 +72,13 @@ namespace Microsoft.R.LanguageServer.Formatting {
             return GetDifference(before, after);
         }
 
-        private TextEdit[] GetDifference(IEditorBufferSnapshot before, IEditorBufferSnapshot after) {
+        /// <summary>
+        /// Determines whitespace difference between two snapshots
+        /// </summary>
+        /// <param name="before">Snapshot before the change</param>
+        /// <param name="after">Snapshot after the change</param>
+        /// <returns></returns>
+        private static TextEdit[] GetDifference(IEditorBufferSnapshot before, IEditorBufferSnapshot after) {
             var tokenizer = new RTokenizer();
             var oldTokens = tokenizer.Tokenize(before.GetText());
             var newTokens = tokenizer.Tokenize(after.GetText());

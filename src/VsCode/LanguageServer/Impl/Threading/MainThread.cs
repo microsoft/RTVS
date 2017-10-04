@@ -8,6 +8,14 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.R.LanguageServer.Threading {
+    /// <summary>
+    /// Implements concept of a 'main' or 'UI' thread. In the language server 
+    /// </summary>
+    /// <remarks>
+    /// for VS Code there is no UI thread and requests from the client can
+    /// come at any thread. This causes problems with code that expects to 
+    /// be called on the same thread that produced user activity.
+    /// </remarks>
     internal sealed class MainThread : IMainThreadPriority, IDisposable {
         private readonly CancellationTokenSource _ctsExit = new CancellationTokenSource();
         private readonly BufferBlock<Action> _idleTimeQueue = new BufferBlock<Action>();
