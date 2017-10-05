@@ -50,6 +50,10 @@ namespace Microsoft.R.LanguageServer.Server {
             _output = _services.GetService<IOutput>();
 
             var e = GetREngine();
+            if(e == null) {
+                return;
+            }
+
             var log = _services.Log();
             var info = BrokerConnectionInfo.Create(_services.Security(), "VSCR", e.InstallPath, string.Empty, false);
 
@@ -90,9 +94,9 @@ namespace Microsoft.R.LanguageServer.Server {
                 .ToList();
 
             if (engines.Count == 0) {
-                const string message = "Unable to find R intepreter.";
-                _output.Write(message + " Terminating.");
-                throw new InvalidOperationException(message);
+                const string message = "Unable to find R intepreter. Please install R from https://cran.r-project.org";
+                _output.Write(message);
+                return null;
             }
 
             _output.Write("Available R interpreters:");

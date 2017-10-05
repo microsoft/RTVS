@@ -10,8 +10,6 @@ using Microsoft.Common.Core.IO;
 
 namespace Microsoft.R.Platform.Host {
     public sealed class BrokerExecutableLocator {
-        private const string RHostBrokerBaseName = "Microsoft.R.Host.Broker";
-        private const string RHostExe = "Microsoft.R.Host";
         private readonly string _baseDirectory;
         private readonly IFileSystem _fs;
 
@@ -22,7 +20,7 @@ namespace Microsoft.R.Platform.Host {
 
         public string GetBrokerExecutablePath() {
             var platformName = GetPlatformName();
-            var brokerBinaryName = RHostBrokerBaseName + "." + platformName + GetDotNetExecutableExtension();
+            var brokerBinaryName = GetBrokerExecutableName();
             if (_fs.DirectoryExists(Path.Combine(_baseDirectory, @"Broker\"))) {
                  return Path.Combine(_baseDirectory, @"Broker\", platformName, brokerBinaryName);
             }
@@ -35,27 +33,32 @@ namespace Microsoft.R.Platform.Host {
             //
             // When called from broker it is
             //      ../../Host/Platform/*.exe
-            var hostPath = Path.Combine(_baseDirectory, RHostExe);
+            var rHostExeName = GetNativeExecutableName();
+            var hostPath = Path.Combine(_baseDirectory, rHostExeName);
             if (_fs.FileExists(hostPath)) {
-                return Path.Combine(_baseDirectory, RHostExe);
+                return Path.Combine(_baseDirectory, rHostExeName);
             }
 
             var hostDirectory = Path.Combine(_baseDirectory, "Host" + Path.DirectorySeparatorChar);
             if (_fs.DirectoryExists(hostDirectory)) {
-                return Path.Combine(_baseDirectory, hostDirectory, GetPlatformName(), RHostExe + GetNativeExecutableExtension());
+                return Path.Combine(_baseDirectory, hostDirectory, GetPlatformName(), rHostExeName);
             }
 
             var relativePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Host{Path.DirectorySeparatorChar}";
-            return Path.GetFullPath(Path.Combine(_baseDirectory, relativePath, GetPlatformName(), RHostExe));
+            return Path.GetFullPath(Path.Combine(_baseDirectory, relativePath, GetPlatformName(), rHostExeName));
         }
 
         private static string GetPlatformName() 
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" : "Unix";
 
-        private static string GetDotNetExecutableExtension() 
-            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : ".dll";
+        private static string GetBrokerExecutableName() {
+            var name = "Microsoft.R.Host.Broker." + GetPlatformName();
+            return name + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : ".dll");
+        }
 
-        private static string GetNativeExecutableExtension()
-            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty;
+        private static string GetNativeExecutableName() {
+            const string name = "Microsoft.R.Host";
+            return name + (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty);
+        }
     }
 }

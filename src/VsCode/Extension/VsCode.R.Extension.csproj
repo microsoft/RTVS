@@ -58,6 +58,10 @@
   <ItemGroup>
     <TypeScriptCompile Include="src\constants.ts" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="images\RLogo.png" />
+    <EmbeddedResource Include="images\R.png" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />
   </Target>

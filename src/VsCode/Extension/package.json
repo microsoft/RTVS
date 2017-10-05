@@ -3,6 +3,7 @@
   "displayName": "R Tools for VsCode",
   "description": "R Language Tools (based on RTVS)",
   "version": "0.0.1",
+  "icon": "images/R.png",
   "publisher": "Microsoft",
   "license": "MIT",
   "preview": true,

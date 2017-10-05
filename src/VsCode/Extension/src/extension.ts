@@ -65,7 +65,9 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
-    client = null;
+export async function deactivate() {
+    if (client !== undefined || client !== null) {
+        return client.stop();
+    }
 }
 
