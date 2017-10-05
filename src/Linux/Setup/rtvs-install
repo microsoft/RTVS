@@ -1,0 +1,179 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+USE_DPKG=false
+DEBIAN_DEPENDENCIES="libexplain51 libzip4 libc6 lshw ssl-cert locales"
+GETOPT_BIN=$(type getopt 2>/dev/null)
+DOTNET_SOURCE_ADDED=false
+DOTNET_INSTALLED=false
+DOTNET_BIN=$(type dotnet 2>/dev/null)
+
+SILENT=false
+LOCALE_GEN=true
+
+function error {
+  echo -e "$*" >&2
+}
+
+function message {
+  if [ ${SILENT} == true ]; then
+    return 0
+  fi
+  printf "$1"
+}
+
+function print_help {
+cat <<EOF
+  Usage: rtvs-install [OPTIONS]
+
+    -s, --silent                 perform a silent, unattended install
+    -l, --no-locale-gen          does not call locale-gen during install
+    -h, --help                   print this help text
+
+EOF
+}
+
+function parse_options {
+  local TEMP=$(getopt -o -lsuh --long no-locale-gen,silent,help -n "${PROG_NAME}" -- "$@")
+
+  if [ $? != 0 ]; then
+    echo "Option string malformed" >&2
+    exit 1
+  fi  
+
+  eval set -- "${TEMP}"
+
+  while true; do
+    case "$1" in
+      -s|--silent)                  SILENT=true               ; shift ;;
+      -l|--no-locale-gen)           LOCALE_GEN=false          ; shift ;;
+      -h|--help)                    print_help                ; exit  ;;
+      --) shift; break ;;
+      *) echo "Internal error while parsing options $*" >&2   ; exit 1 ;;
+    esac
+  done
+
+}
+
+function check_root {
+  if [[ "$(id -u)" != "0" ]]; then
+      error  "This script must be run with sudo or as root."
+      exit 1
+  fi
+}
+
+function check_getopt {
+  if [[ -z ${GETOPT_BIN} ]]; then
+    echo ""
+    echo "This script requires GNU getopt to run. Install this utility and rerun this script."
+    echo ""
+    exit 1
+  fi
+}
+
+function detect_package_manager {
+  if [ -f /etc/debian_version ]; then
+    USE_DPKG=true
+  else
+    echo "Unsupported OS"
+    exit 1
+  fi   
+}
+
+function detect_dotnet {
+    if [ -f /etc/apt/sources.list.d/dotnetdev.list ]; then
+      DOTNET_SOURCE_ADDED=true
+    fi
+
+    if [[ -z ${DOTNET_BIN} ]]; then
+      DOTNET_INSTALLED=false
+    else
+      DOTNET_INSTALLED=true
+    fi
+}
+
+function exit_message {
+
+  if [[ ${SILENT} == true ]]; then
+    return 0
+  fi
+
+  echo ""
+  echo "Thank you for installing RTVS Daemon."
+  echo "You will find logs for this installation in"
+  echo "${SCRIPT_DIR}/logs"
+  echo ""
+}
+
+function exit_error {
+
+  if [[ ${SILENT} == true ]]; then
+    return 0
+  fi
+
+  echo ""
+  echo "There was an error installing RTVS Daemon."
+  echo "Please check the logs at:"
+  echo "${SCRIPT_DIR}/logs"
+  echo ""
+  exit 1
+}
+
+function install_deb_dpkg {
+    local package=$1
+    local log=$2
+
+    message "Installing ${package}..."
+    dpkg --install ${package} > ${log} 2>&1
+    
+    if [[ $? -eq 0 ]]; then
+      message "done\n"
+    else
+      message "ERROR!\n"
+      exit_error
+    fi
+}
+
+
+function install {
+  if [[ ${USE_DPKG} == true ]]; then
+    mkdir -p ${SCRIPT_DIR}/logs
+    
+    if [[ ${DOTNET_INSTALLED} == false && ${DOTNET_SOURCE_ADDED} == false ]]; then
+      message "Adding dotnet package to source list ..."
+      sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list' > ${SCRIPT_DIR}/logs/source.list.txt 2>&1
+      apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 417A0893 > ${SCRIPT_DIR}/logs/apt-key-add.txt 2>&1
+      message "done\n"
+    fi
+
+    message "Updating apt package repositories..."
+    apt-get update > ${SCRIPT_DIR}/logs/update.txt 2>&1
+    message "done\n"
+    
+    if [[ ${DOTNET_INSTALLED} == false ]]; then
+      message "Installing dotnet package..."
+      apt-get install -y dotnet-dev-1.0.4
+      message "done\n"
+    fi
+
+    message "Installing apt package dependencies ${DEBIAN_DEPENDENCIES}..."
+    apt-get -y install ${DEBIAN_DEPENDENCIES} > ${SCRIPT_DIR}/logs/dependencies.txt 2>&1
+    LOCALE_EN_US=$(locale -a | grep en_US 2>/dev/null)
+    if [[ ${LOCALE_GEN} == true && -z ${LOCALE_EN_US} ]]; then
+      locale-gen "en_US.UTF-8" && dpkg-reconfigure -f noninteractive locales
+    fi
+    message "done\n"
+
+    install_deb_dpkg ${SCRIPT_DIR}/deb/rtvs-daemon*.deb ${SCRIPT_DIR}/logs/rtvs-daemon.txt
+    apt-get -y -f install > ${SCRIPT_DIR}/logs/apt-install.txt 2>&1
+  fi
+}
+
+check_getopt
+parse_options "$@"
+check_root
+detect_package_manager
+detect_dotnet
+install
+exit_message
