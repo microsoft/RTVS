@@ -33,10 +33,14 @@ namespace Microsoft.R.LanguageServer.Completions {
 
             var tcs = new TaskCompletionSource<SignatureHelp>();
             var sigs = _signatureEngine.GetSignaturesAsync(context, e => {
-                tcs.TrySetResult(ToSignatureHelp(e.ToList(), context));
+                using (context.AstReadLock()) {
+                    tcs.TrySetResult(ToSignatureHelp(e.ToList(), context));
+                }
             });
             if (sigs != null) {
-                return ToSignatureHelp(sigs.ToList(), context);
+                using (context.AstReadLock()) {
+                    return ToSignatureHelp(sigs.ToList(), context);
+                }
             }
             return await tcs.Task;
         }
