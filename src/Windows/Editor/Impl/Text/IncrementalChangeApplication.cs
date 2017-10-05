@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Formatting;
 using Microsoft.Languages.Editor.Selection;
+using Microsoft.R.LanguageServer.Formatting;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -61,9 +62,9 @@ namespace Microsoft.Languages.Editor.Text {
                         var edits = CalculateChanges(oldTextProvider, newTextProvider, oldTokens, newTokens, formatRange);
                         foreach (var e in edits) {
                             if (string.IsNullOrEmpty(e.NewText)) {
-                                edit.Delete(e.Range);
+                                edit.Delete(e.Range.ToSpan());
                             } else if (e.Range.Length > 0) {
-                                edit.Replace(e.Range, e.NewText);
+                                edit.Replace(e.Range.ToSpan(), e.NewText);
                             } else {
                                 edit.Insert(e.Range.Start, e.NewText);
                             }

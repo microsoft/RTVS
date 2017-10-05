@@ -11,7 +11,7 @@ using Microsoft.Common.Core.IO;
 namespace Microsoft.R.Platform.Host {
     public sealed class BrokerExecutableLocator {
         private const string RHostBrokerBaseName = "Microsoft.R.Host.Broker";
-        private const string RHostExe = "Microsoft.R.Host.exe";
+        private const string RHostExe = "Microsoft.R.Host";
         private readonly string _baseDirectory;
         private readonly IFileSystem _fs;
 
@@ -22,7 +22,7 @@ namespace Microsoft.R.Platform.Host {
 
         public string GetBrokerExecutablePath() {
             var platformName = GetPlatformName();
-            var brokerBinaryName = RHostBrokerBaseName + "." + platformName + GetExecutableExtension();
+            var brokerBinaryName = RHostBrokerBaseName + "." + platformName + GetDotNetExecutableExtension();
             if (_fs.DirectoryExists(Path.Combine(_baseDirectory, @"Broker\"))) {
                  return Path.Combine(_baseDirectory, @"Broker\", platformName, brokerBinaryName);
             }
@@ -42,28 +42,20 @@ namespace Microsoft.R.Platform.Host {
 
             var hostDirectory = Path.Combine(_baseDirectory, "Host" + Path.DirectorySeparatorChar);
             if (_fs.DirectoryExists(hostDirectory)) {
-                return Path.Combine(_baseDirectory, hostDirectory, GetPlatformName(), RHostExe);
+                return Path.Combine(_baseDirectory, hostDirectory, GetPlatformName(), RHostExe + GetNativeExecutableExtension());
             }
 
             var relativePath = $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}Host{Path.DirectorySeparatorChar}";
             return Path.GetFullPath(Path.Combine(_baseDirectory, relativePath, GetPlatformName(), RHostExe));
         }
 
-        private static string GetPlatformName() {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                return "Windows";
-            }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
-                return "Linux";
-            }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-                return "OSX";
-            }
-            Debug.Fail("GetPlatformName: Unknown OS type");
-            return string.Empty;
-        }
+        private static string GetPlatformName() 
+            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Windows" : "Unix";
 
-        private static string GetExecutableExtension() 
+        private static string GetDotNetExecutableExtension() 
             => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : ".dll";
+
+        private static string GetNativeExecutableExtension()
+            => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : string.Empty;
     }
 }

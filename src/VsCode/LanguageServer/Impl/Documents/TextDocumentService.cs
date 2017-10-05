@@ -53,7 +53,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return MainThreadPriority.SendAsync(async () => {
                     var doc = Documents.GetDocument(textDocument.Uri);
                     return doc != null ? await doc.GetSignatureHelpAsync(position) : new SignatureHelp();
-                }, ThreadPostPriority.Normal);
+                }, ThreadPostPriority.Background);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return MainThreadPriority.SendAsync(() => {
                     var doc = Documents.GetDocument(textDocument.Uri);
                     return Task.FromResult(doc != null ? doc.GetCompletions(position) : new CompletionList());
-                }, ThreadPostPriority.Normal);
+                }, ThreadPostPriority.Background);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                     var result = await doc.FormatAsync();
                     _ignoreNextChange = result.Length > 0;
                     return result;
-                }, ThreadPostPriority.Normal);
+                }, ThreadPostPriority.Background);
             }
         }
 
@@ -118,7 +118,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                     var result = await doc.FormatRangeAsync(range);
                     _ignoreNextChange = result.Length > 0;
                     return result;
-                }, ThreadPostPriority.Normal);
+                }, ThreadPostPriority.Background);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                     var result = await doc.AutoformatAsync(position, ch);
                     _ignoreNextChange = result.Length > 0;
                     return result;
-                }, ThreadPostPriority.Normal);
+                }, ThreadPostPriority.Background);
             }
         }
 
