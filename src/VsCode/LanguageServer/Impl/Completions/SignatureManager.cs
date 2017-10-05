@@ -29,7 +29,6 @@ namespace Microsoft.R.LanguageServer.Completions {
         }
 
         public async Task<SignatureHelp> GetSignatureHelpAsync(IRIntellisenseContext context) {
-            await _services.MainThread().SwitchToAsync();
             context.EditorBuffer.GetEditorDocument<IREditorDocument>().EditorTree.EnsureTreeReady();
 
             var tcs = new TaskCompletionSource<SignatureHelp>();

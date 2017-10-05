@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 // Based on https://github.com/CXuesong/LanguageServer.NET
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
@@ -46,10 +48,12 @@ namespace Microsoft.R.LanguageServer.Documents {
         }
 
         [JsonRpcMethod]
-        public async Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
+        public Task<SignatureHelp> SignatureHelp(TextDocumentIdentifier textDocument, Position position) {
             using (new DebugMeasureTime("textDocument/signatureHelp")) {
-                var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? await doc.GetSignatureHelpAsync(position) : new SignatureHelp();
+                return MainThreadPriority.SendAsync(async () => {
+                    var doc = Documents.GetDocument(textDocument.Uri);
+                    return doc != null ? await doc.GetSignatureHelpAsync(position) : new SignatureHelp();
+                }, ThreadPostPriority.Normal);
             }
         }
 
@@ -58,15 +62,22 @@ namespace Microsoft.R.LanguageServer.Documents {
             => MainThreadPriority.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri), ThreadPostPriority.Normal);
 
         [JsonRpcMethod(IsNotification = true)]
-        public void didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
+        public async Task didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
             if (_ignoreNextChange) {
                 _ignoreNextChange = false;
                 return;
             }
 
+            IdleTimeNotification.NotifyUserActivity();
+
             using (new DebugMeasureTime("textDocument/didChange")) {
-                IdleTimeNotification.NotifyUserActivity();
-                MainThreadPriority.Post(() => Documents.GetDocument(textDocument.Uri)?.ProcessChanges(contentChanges), ThreadPostPriority.Normal);
+                await MainThreadPriority.SendAsync(async () => {
+                    var doc = Documents.GetDocument(textDocument.Uri);
+                    if (doc != null) {
+                        await doc.ProcessChangesAsync(contentChanges);
+                    }
+                     return true;
+                }, ThreadPostPriority.Normal);
             }
         }
 
@@ -78,40 +89,48 @@ namespace Microsoft.R.LanguageServer.Documents {
             => MainThreadPriority.Post(() => Documents.RemoveDocument(textDocument.Uri), ThreadPostPriority.Normal);
 
         [JsonRpcMethod]
-        public async Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) {
+        public Task<CompletionList> completion(TextDocumentIdentifier textDocument, Position position) {
             using (new DebugMeasureTime("textDocument/completion")) {
-                var doc = Documents.GetDocument(textDocument.Uri);
-                return doc != null ? await doc.GetCompletions(position) : new CompletionList();
+                return MainThreadPriority.SendAsync(() => {
+                    var doc = Documents.GetDocument(textDocument.Uri);
+                    return Task.FromResult(doc != null ? doc.GetCompletions(position) : new CompletionList());
+                }, ThreadPostPriority.Normal);
             }
         }
 
         [JsonRpcMethod]
-        public async Task<TextEdit[]> formatting(TextDocumentIdentifier textDocument, FormattingOptions options) {
+        public Task<TextEdit[]> formatting(TextDocumentIdentifier textDocument, FormattingOptions options) {
             using (new DebugMeasureTime("textDocument/formatting")) {
-                var doc = Documents.GetDocument(textDocument.Uri);
-                var result = await doc.FormatAsync();
-                _ignoreNextChange = result.Length > 0;
-                return result;
+                return MainThreadPriority.SendAsync(async () => {
+                    var doc = Documents.GetDocument(textDocument.Uri);
+                    var result = await doc.FormatAsync();
+                    _ignoreNextChange = result.Length > 0;
+                    return result;
+                }, ThreadPostPriority.Normal);
             }
         }
 
         [JsonRpcMethod]
-        public async Task<TextEdit[]> rangeFormatting(TextDocumentIdentifier textDocument, Range range, FormattingOptions options) {
+        public Task<TextEdit[]> rangeFormatting(TextDocumentIdentifier textDocument, Range range, FormattingOptions options) {
             using (new DebugMeasureTime("textDocument/rangeFormatting")) {
-                var doc = Documents.GetDocument(textDocument.Uri);
-                var result = await doc.FormatRangeAsync(range);
-                _ignoreNextChange = result.Length > 0;
-                return result;
+                return MainThreadPriority.SendAsync(async () => {
+                    var doc = Documents.GetDocument(textDocument.Uri);
+                    var result = await doc.FormatRangeAsync(range);
+                    _ignoreNextChange = result.Length > 0;
+                    return result;
+                }, ThreadPostPriority.Normal);
             }
         }
 
         [JsonRpcMethod]
-        public async Task<TextEdit[]> onTypeFormatting(TextDocumentIdentifier textDocument, Position position, string ch, FormattingOptions options) {
+        public Task<TextEdit[]> onTypeFormatting(TextDocumentIdentifier textDocument, Position position, string ch, FormattingOptions options) {
             using (new DebugMeasureTime("textDocument/onTypeFormatting")) {
-                var doc = Documents.GetDocument(textDocument.Uri);
-                var result = await doc.AutoformatAsync(position, ch);
-                _ignoreNextChange = result.Length > 0;
-                return result;
+                return MainThreadPriority.SendAsync(async () => {
+                    var doc = Documents.GetDocument(textDocument.Uri);
+                    var result = await doc.AutoformatAsync(position, ch);
+                    _ignoreNextChange = result.Length > 0;
+                    return result;
+                }, ThreadPostPriority.Normal);
             }
         }
 

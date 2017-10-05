@@ -51,12 +51,17 @@ namespace Microsoft.R.LanguageServer.Text {
         }
 
         public IEditorLine GetLineFromPosition(int position) {
+            Check.ArgumentOutOfRange(nameof(position), () => position < 0 || position > _content.Length);
+
             MakeLinesData();
             var lineIndex = position == Length
                 ? _lineData.Count - 1
                 : _lineData.GetItemContaining(position);
 
-            return lineIndex < 0 ? null : _lineData[lineIndex].Line;
+            if (lineIndex >= 0) {
+                return _lineData[lineIndex].Line;
+            }
+            throw new ArgumentOutOfRangeException(nameof(position));
         }
 
         public IEditorLine GetLineFromLineNumber(int lineNumber) {
@@ -64,11 +69,7 @@ namespace Microsoft.R.LanguageServer.Text {
             return _lineData[lineNumber].Line;
         }
 
-        public int GetLineNumberFromPosition(int position) {
-            Check.ArgumentOutOfRange(nameof(position), () => position < 0 || position >= _content.Length);
-            MakeLinesData();
-            return _lineData.GetItemContaining(position);
-        }
+        public int GetLineNumberFromPosition(int position) => GetLineFromPosition(position).LineNumber;
 
         public ITrackingTextRange CreateTrackingRange(ITextRange range) => new TrackingTextRange(range);
         #endregion
@@ -107,7 +108,7 @@ namespace Microsoft.R.LanguageServer.Text {
                 base(line.Start, line.Length + line.LineBreakLength) {
                 Line = line;
             }
-            public EditorLine Line { get; set; }
+            public EditorLine Line { get; }
         }
 
 

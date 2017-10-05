@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
@@ -47,11 +48,14 @@ namespace Microsoft.R.LanguageServer.Documents {
             _symbolsProvider = new DocumentSymbolsProvider();
         }
 
-        public void ProcessChanges(ICollection<TextDocumentContentChangeEvent> contentChanges) {
+        public async Task ProcessChangesAsync(ICollection<TextDocumentContentChangeEvent> contentChanges) {
+            await _services.MainThread().SwitchToAsync();
+
             foreach (var change in contentChanges) {
                 if (!change.HasRange) {
                     continue;
                 }
+
                 var position = EditorBuffer.ToStreamPosition(change.Range.Start);
                 var range = new TextRange(position, change.RangeLength);
                 if (!string.IsNullOrEmpty(change.Text)) {
@@ -71,7 +75,7 @@ namespace Microsoft.R.LanguageServer.Documents {
         public void Dispose() => Document?.Close();
 
         [DebuggerStepThrough]
-        public Task<CompletionList> GetCompletions(Position position)
+        public CompletionList GetCompletions(Position position)
             => _completionManager.GetCompletions(CreateContext(position));
 
         public Task<SignatureHelp> GetSignatureHelpAsync(Position position)

@@ -41,13 +41,13 @@ namespace Microsoft.R.LanguageServer.Threading {
         public void Post(Action action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken))
             => Execute(action, priority, cancellationToken);
 
-        public Task<T> SendAsync<T>(Func<T> action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<T> SendAsync<T>(Func<Task<T>> action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken)) {
             var tcs = new TaskCompletionSource<T>();
-            Execute(() => {
+            Execute(async () => {
                 if (!cancellationToken.IsCancellationRequested) {
-                    tcs.TrySetResult(action());
+                    tcs.TrySetResult(await action());
                 } else {
-                    tcs.TrySetCanceled();
+                    tcs.TrySetResult(default(T));
                 }
             }, priority, cancellationToken);
 

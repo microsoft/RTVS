@@ -25,8 +25,7 @@ namespace Microsoft.R.LanguageServer.Completions {
             _completionEngine = new RCompletionEngine(services);
         }
 
-        public async Task<CompletionList> GetCompletions(IRIntellisenseContext context) {
-            await _services.MainThread().SwitchToAsync();
+        public CompletionList GetCompletions(IRIntellisenseContext context) {
             context.EditorBuffer.GetEditorDocument<IREditorDocument>().EditorTree.EnsureTreeReady();
 
             var providers = _completionEngine.GetCompletionForLocation(context);

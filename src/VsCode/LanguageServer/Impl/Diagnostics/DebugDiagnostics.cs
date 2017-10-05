@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Microsoft.R.LanguageServer.Diagnostics {
     internal sealed class DebugMeasureTime : IDisposable {
@@ -13,7 +14,7 @@ namespace Microsoft.R.LanguageServer.Diagnostics {
             _message = message;
         }
 
-        public void Dispose() 
-            => Debug.WriteLine($"{_message}: " + (DateTime.Now - _start).TotalMilliseconds);
+        public void Dispose() { }
+        //=> Debug.WriteLine($"{_message}: " + (DateTime.Now - _start).TotalMilliseconds);
     }
 }
