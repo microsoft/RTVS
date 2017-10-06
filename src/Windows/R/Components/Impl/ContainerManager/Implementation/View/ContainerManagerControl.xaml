@@ -342,14 +342,20 @@
                     </MultiBinding>
                 </DockPanel.MaxWidth>
 
+                <Button x:Name="ButtonShowWorkspaces" Margin="0,0,6,0" MinWidth="75" MinHeight="23"
+                        VerticalAlignment="Center" DockPanel.Dock="Top" HorizontalAlignment="Right"
+                        Click="ButtonShowWorkspaces_Click" Style="{StaticResource HyperlinkButton}" 
+                        Content="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" 
+                        AutomationProperties.Name="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" />
+
                 <!-- Local docker containers header -->
                 <controls:ExpandCollapseButton x:Name="ToggleButtonLocalDocker"
                                                Style="{StaticResource ExpandCollapseButtonLocalDockerStyle}"
                                                DockPanel.Dock="Top" />
 
                 <!-- Add local docker containers -->
-                <DockPanel DockPanel.Dock="Top" Margin="17,4,6,4" LastChildFill="False">
-                    <Button x:Name="ToggleButtonAddLocalDocker" DockPanel.Dock="Left"
+                <WrapPanel DockPanel.Dock="Top" Margin="17,4,6,4">
+                    <Button x:Name="ToggleButtonAddLocalDocker"
                             Style="{StaticResource HyperlinkDownArrowButton}"
                             Visibility="{Binding ElementName=ToggleButtonLocalDocker, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"
                             IsEnabled="{Binding Path=NewLocalDocker, Converter={x:Static rwpf:Converters.NullIsTrue}}"
@@ -357,20 +363,14 @@
                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker}"
                             Click="ButtonAdd_Click" />
 
-                    <Button x:Name="ToggleButtonFromFileLocalDocker" DockPanel.Dock="Left"
+                    <Button x:Name="ToggleButtonFromFileLocalDocker"
                             Style="{StaticResource HyperlinkDownArrowButton}" Margin="12,0,0,0"
                             Visibility="{Binding ElementName=ToggleButtonLocalDocker, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"
                             IsEnabled="{Binding Path=LocalDockerFile, Converter={x:Static rwpf:Converters.NullIsTrue}}"
                             Content="{x:Static components:Resources.ContainerManager_LocalDockerFromFile}"
                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_LocalDockerFromFile}"
                             Click="ButtonFromFile_Click" />
-
-                    <Button x:Name="ButtonShowWorkspaces" Margin="-6,0,0,0" MinWidth="75" MinHeight="23"
-                            VerticalAlignment="Center" DockPanel.Dock="Right" Click="ButtonShowWorkspaces_Click" 
-                            Style="{StaticResource HyperlinkButton}" 
-                            Content="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" 
-                            AutomationProperties.Name="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" />
-                </DockPanel>
+                </WrapPanel>
 
                 <Border DockPanel.Dock="Top" Margin="16,4,6,8" Padding="0,0,0,4" BorderThickness="0,0,0,1"
                         BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ControlKey}}">
