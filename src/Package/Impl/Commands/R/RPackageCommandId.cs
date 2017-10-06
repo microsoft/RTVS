@@ -18,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSendFrown = 404;
         public const int icmdImportRSettings = 405;
         public const int icmdReportIssue = 406;
-        public const int icmdSurveyNews = 407;
         public const int icmdSetupRemote = 408;
 
         // REPL

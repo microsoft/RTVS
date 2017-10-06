@@ -236,9 +236,7 @@
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
-    <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
     <Compile Include="Options\R\Commands\SetupRemoteCommand.cs" />
-    <Compile Include="Options\R\Commands\SurveyNewsCommand.cs" />
     <Compile Include="Packages\RToolbar.cs" />
     <Compile Include="ProjectSystem\Commands\ProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
@@ -508,15 +506,6 @@
     <Compile Include="Expansions\ExpansionsCache.cs" />
     <Compile Include="Expansions\ExpansionsController.cs" />
     <Compile Include="Expansions\ExpansionsControllerFactory.cs" />
-    <Compile Include="SurveyNews\ISurveyNewsFeedClient.cs" />
-    <Compile Include="SurveyNews\ISurveyNewsOptions.cs" />
-    <Compile Include="SurveyNews\ISurveyNewsService.cs" />
-    <Compile Include="SurveyNews\SurveyNewsFeed.cs" />
-    <Compile Include="SurveyNews\SurveyNewsFeedClient.cs" />
-    <Compile Include="SurveyNews\SurveyNewsFeedException.cs" />
-    <Compile Include="SurveyNews\SurveyNewsOptions.cs" />
-    <Compile Include="SurveyNews\SurveyNewsService.cs" />
-    <Compile Include="SurveyNews\SurveyNewsUrls.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
@@ -1220,8 +1209,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SurveyNews\NoSurveyNewsFeed.html" />
-    <Content Include="SurveyNews\ReadmeStyle.css" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1239,10 +1226,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\NewItem\NewRItems.vsdir">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="SurveyNews\NoSurveyNewsFeed.mht">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
