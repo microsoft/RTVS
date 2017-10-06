@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -153,6 +154,12 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 return;
             } catch (UriFormatException) {
                 _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_UriParseError_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
+                return;
+            } catch (HttpRequestException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_HttpError_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
+                return;
+            } catch (UnauthorizedAccessException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
                 return;
             }
 

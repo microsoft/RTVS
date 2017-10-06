@@ -897,11 +897,20 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t download content of the file {0}..
+        ///   Looks up a localized string similar to Can&apos;t download content of the file &apos;{0}&apos;..
         /// </summary>
         public static string ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format {
             get {
                 return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Http request to &apos;{0}&apos; has failed..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_HttpError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_HttpError_Format", resourceCulture);
             }
         }
         
@@ -915,7 +924,16 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} is not a valid URI or file path..
+        ///   Looks up a localized string similar to Can&apos;t access &apos;{0}&apos;..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URI or file path..
         /// </summary>
         public static string ContainerManager_CreateLocalDockerFromFile_UriParseError_Format {
             get {
