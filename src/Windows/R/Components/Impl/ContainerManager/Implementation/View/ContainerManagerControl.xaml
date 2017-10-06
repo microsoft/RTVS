@@ -63,10 +63,8 @@
             </Style>
 
             <DataTemplate DataType="{x:Type viewModel:ContainerViewModel}">
-                <Border BorderThickness="0,0,0,0"
-                        BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" x:Name="Container">
-                    <Grid MinHeight="20"
-                          Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
+                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" x:Name="Container">
+                    <Grid MinHeight="20" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
@@ -227,7 +225,7 @@
                     <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
                         <Button Margin="-1,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
                                 VerticalAlignment="Center" Click="ButtonCreateLocalDockerFromFile_Click"
-                                Style="{StaticResource ToolWindowButtonStyle}" ToolTipService.ShowOnDisabled="True"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="{x:Static components:Resources.ContainerManager_CreateLocalDocker}"
                                 ToolTip="{x:Static components:Resources.ContainerManager_CreateTooltip}"
                                 IsEnabled="{Binding Path=IsValid}"
@@ -257,9 +255,9 @@
                         Value="{x:Static components:Resources.ContainerManager_LocalDocker}" />
             </Style>
 
-            <Style x:Key="ContainersListBoxItemStyle" TargetType="{x:Type ListBoxItem}"
-                   BasedOn="{StaticResource FillingListBoxItemStyle}">
+            <Style x:Key="ContainersListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
                 <EventSetter Event="PreviewKeyUp" Handler="Container_PreviewKeyUp" />
+                <EventSetter Event="MouseDoubleClick" Handler="Container_MouseDoubleClick" />
                 <Setter Property="IsTabStop" Value="False" />
                 <Setter Property="Focusable" Value="False" />
                 <Setter Property="Template">
@@ -343,6 +341,12 @@
                         <Binding ElementName="RootContent" Path="MinWidth" />
                     </MultiBinding>
                 </DockPanel.MaxWidth>
+
+                <Button x:Name="ButtonShowWorkspaces" Margin="0,0,6,0" MinWidth="75" MinHeight="23"
+                        VerticalAlignment="Center" DockPanel.Dock="Top" HorizontalAlignment="Right"
+                        Click="ButtonShowWorkspaces_Click" Style="{StaticResource HyperlinkButton}" 
+                        Content="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" 
+                        AutomationProperties.Name="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" />
 
                 <!-- Local docker containers header -->
                 <controls:ExpandCollapseButton x:Name="ToggleButtonLocalDocker"

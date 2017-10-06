@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -16,7 +17,10 @@ using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.ConnectionManager.Commands;
 using Microsoft.R.Components.Containers;
+using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.View;
 using Microsoft.R.Containers;
 using Microsoft.R.Host.Client.Host;
 
@@ -154,6 +158,12 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             } catch (UriFormatException) {
                 _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_UriParseError_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
                 return;
+            } catch (HttpRequestException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_HttpError_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
+                return;
+            } catch (UnauthorizedAccessException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
+                return;
             }
 
             try {
@@ -175,7 +185,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
 
         public void BrowseDockerTemplate() {
             _mainThread.Assert();
-            NewLocalDockerFromFile.TemplatePath = _services.UI().FileDialog.ShowBrowseDirectoryDialog();
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            NewLocalDockerFromFile.TemplatePath = _services.UI().FileDialog.ShowBrowseDirectoryDialog(folder);
         }
 
         public async Task StartAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -207,6 +218,17 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 await _containers.StartAsync(container.Id, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_StartError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+            }
+        }
+
+        public async Task ConnectToContainerDefaultConnectionAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (!container.IsRunning) {
+                await StartAsync(container, cancellationToken);
+            }
+
+            var connection = _connections.GetConnection(container.Name);
+            if (connection != null) {
+                SwitchToConnectionCommand.Connect(_connections, _ui, _services.GetService<IRSettings>(), connection);
             }
         }
 
@@ -259,5 +281,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             => _connections.ActiveConnection?.ContainerName?.EqualsOrdinal(container.Name) ?? false;
 
         public void RefreshDocker() => _containers.Restart();
+
+        public void ShowConnections()
+            => _services.GetService<IRInteractiveWorkflowToolWindowService>().Connections().Show(true, true);
     }
 }

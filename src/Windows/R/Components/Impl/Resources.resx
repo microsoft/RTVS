@@ -487,6 +487,9 @@ Please click</value>
   <data name="ContainerManager_LocalDockerFromFile" xml:space="preserve">
     <value>From Template</value>
   </data>
+  <data name="ContainerManager_ShowWorkspaces" xml:space="preserve">
+    <value>Workspaces...</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker_Name" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -509,10 +512,16 @@ Please click</value>
     <value>There was an error creating the container. Please see R Containers output for details.</value>
   </data>
   <data name="ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format" xml:space="preserve">
-    <value>Can't download content of the file {0}.</value>
+    <value>Can't download content of the file '{0}'.</value>
   </data>
   <data name="ContainerManager_CreateLocalDockerFromFile_UriParseError_Format" xml:space="preserve">
-    <value>{0} is not a valid URI or file path.</value>
+    <value>'{0}' is not a valid URI or file path.</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDockerFromFile_HttpError_Format" xml:space="preserve">
+    <value>Http request to '{0}' has failed.</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format" xml:space="preserve">
+    <value>Can't access '{0}'.</value>
   </data>
   <data name="ContainerManager_CreateTooltip" xml:space="preserve">
     <value>Create new Docker container</value>
