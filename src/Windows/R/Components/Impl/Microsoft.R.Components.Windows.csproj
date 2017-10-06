@@ -87,7 +87,9 @@
     <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
     <Compile Include="ContainerManager\Implementation\ViewModel\ContainerManagerViewModel.cs" />
     <Compile Include="ContainerManager\Implementation\ViewModel\ContainerViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\CreateLocalDockerFromFileViewModel.cs" />
     <Compile Include="ContainerManager\Implementation\ViewModel\CreateLocalDockerViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\CreateLocalDockerViewModelBase.cs" />
     <Compile Include="ContainerManager\Implementation\View\ContainerManagerControl.xaml.cs">
       <DependentUpon>ContainerManagerControl.xaml</DependentUpon>
     </Compile>

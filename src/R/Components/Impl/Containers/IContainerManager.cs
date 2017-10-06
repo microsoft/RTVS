@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.Containers {
         Task StopAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
         Task DeleteAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
         Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IContainer> CreateLocalDockerFromFileAsync(string name, string filePath, int port, CancellationToken cancellationToken = default(CancellationToken));
         void Restart();
     }
 }

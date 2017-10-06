@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ using Microsoft.R.Containers;
 
 namespace Microsoft.R.Components.Containers.Implementation {
     internal class ContainerManager : IContainerManager {
+        private const string LatestVersion = "latest";
         private readonly IContainerService _containerService;
         private readonly IFileSystem _fileSystem;
         private readonly CountdownDisposable _containersChangedCountdown;
@@ -88,9 +90,9 @@ namespace Microsoft.R.Components.Containers.Implementation {
             }
         }
 
-        public async Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<IContainer> CreateLocalDockerAsync(string name, string username, string password, string version, int port, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrWhiteSpace(version)) {
-                version = "latest";
+                version = LatestVersion;
             }
 
             var basePath = Path.GetDirectoryName(GetType().GetTypeInfo().Assembly.GetAssemblyPath());
@@ -98,6 +100,27 @@ namespace Microsoft.R.Components.Containers.Implementation {
             var dockerTemplateContent = File.ReadAllText(dockerTempaltePath);
             var dockerImageContent = string.Format(dockerTemplateContent, version, username, password);
 
+            return CreateLocalDockerFromContentAsync(dockerImageContent, name, version, port, cancellationToken);
+        }
+
+        public async Task<IContainer> CreateLocalDockerFromFileAsync(string name, string filePath, int port, CancellationToken cancellationToken = default(CancellationToken)) {
+            var dockerImageContent = await LoadDockerImageContent(filePath, cancellationToken);
+            return await CreateLocalDockerFromContentAsync(dockerImageContent, name, LatestVersion, port, cancellationToken);
+        }
+
+        private static async Task<string> LoadDockerImageContent(string filePath, CancellationToken cancellationToken) {
+            using (var client = new HttpClient()) {
+                using (var result = await client.GetAsync(filePath, cancellationToken)) {
+                    if (result.IsSuccessStatusCode) {
+                        return await result.Content.ReadAsStringAsync();
+                    }
+
+                    throw new FileNotFoundException();
+                }
+            }
+        }
+
+        private async Task<IContainer> CreateLocalDockerFromContentAsync(string dockerImageContent, string name, string tag, int port, CancellationToken cancellationToken) {
             var guid = dockerImageContent.ToGuid().ToString();
             var folder = Path.Combine(Path.GetTempPath(), guid);
             var filePath = Path.Combine(folder, "Dockerfile");
@@ -108,7 +131,7 @@ namespace Microsoft.R.Components.Containers.Implementation {
             }
 
             try {
-                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, version, name, port), cancellationToken);
+                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, tag, name, port), cancellationToken);
             } finally {
                 await UpdateContainersOnceAsync(cancellationToken);
             }
