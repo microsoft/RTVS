@@ -21,6 +21,7 @@ $vsc = Resolve-Path -Path $vscPath
 
 &md -Force Host
 &xcopy /e /y /r /q "$bin\Host" "Host"
+&xcopy /e /y /r /q "$bin\..\lib\Host" "Host"
 
 &cd ..
 &vsce package

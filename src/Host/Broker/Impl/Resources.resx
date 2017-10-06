@@ -213,4 +213,7 @@
   <data name="Debug_SessionNotFound" xml:space="preserve">
     <value>Could not find session with id: {0}</value>
   </data>
+  <data name="Error_UnableToGetCertificateForEncryption" xml:space="preserve">
+    <value>Unable to retrieve certificate for encryption. Exception: {0}.</value>
+  </data>
 </root>

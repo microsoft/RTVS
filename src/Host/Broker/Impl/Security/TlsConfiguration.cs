@@ -3,11 +3,13 @@
 
 using System;
 using System.Net.Security;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Startup;
@@ -29,6 +31,7 @@ namespace Microsoft.R.Host.Broker.Security {
 
         public void Configure(KestrelServerOptions options) {
             var httpsOptions = GetHttpsOptions();
+            // Allow 
             if (httpsOptions == null) {
                 _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
                 _lifetime.StopApplication();
@@ -41,7 +44,7 @@ namespace Microsoft.R.Host.Broker.Security {
             options.UseHttps(httpsOptions);
         }
 
-        private HttpsConnectionFilterOptions GetHttpsOptions() {            
+        private HttpsConnectionFilterOptions GetHttpsOptions() {
             var cert = GetCertificate();
             if (cert != null) {
                 return new HttpsConnectionFilterOptions {
@@ -55,7 +58,14 @@ namespace Microsoft.R.Host.Broker.Security {
         }
 
         private X509Certificate2 GetCertificate() {
-            X509Certificate2 certificate = Certificates.GetCertificateForEncryption(_securityOptions);
+            X509Certificate2 certificate = null;
+            try {
+                certificate = Certificates.GetCertificateForEncryption(_securityOptions);
+            } catch (Exception ex) {
+                _logger.LogError(Resources.Error_UnableToGetCertificateForEncryption.FormatInvariant(ex.Message));
+                return null;
+            }
+
             if (certificate == null) {
                 return null;
             }

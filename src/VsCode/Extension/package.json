@@ -1,10 +1,11 @@
 {
-  "name": "vscoder",
-  "displayName": "R Tools for VsCode",
-  "description": "R Language Tools (based on RTVS)",
+  "name": "r",
+  "displayName": "R Tools",
+  "description": "R Language Tools (powered by RTVS)",
   "version": "0.0.1",
+  "author": "Microsoft Corporation",
   "icon": "images/R.png",
-  "publisher": "Microsoft",
+  "publisher": "ms-vscode",
   "license": "MIT",
   "preview": true,
   "homepage": "https://www.visualstudio.com/vs/rtvs/",
@@ -28,8 +29,7 @@
   ],
   "activationEvents": [
     "onLanguage:r",
-    "onCommand:r.execInTerminal",
-    "onCommand:r.execSelectionInTerminal"
+    "workspaceContains:**/.r"
   ],
   "main": "./out/src/extension",
   "contributes": {

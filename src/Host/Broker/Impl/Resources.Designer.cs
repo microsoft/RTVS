@@ -20,7 +20,7 @@ namespace Microsoft.R.Host.Broker {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -229,6 +229,15 @@ namespace Microsoft.R.Host.Broker {
         internal static string Error_RHostFailedToStart {
             get {
                 return ResourceManager.GetString("Error_RHostFailedToStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to retrieve certificate for encryption. Exception: {0}..
+        /// </summary>
+        internal static string Error_UnableToGetCertificateForEncryption {
+            get {
+                return ResourceManager.GetString("Error_UnableToGetCertificateForEncryption", resourceCulture);
             }
         }
         

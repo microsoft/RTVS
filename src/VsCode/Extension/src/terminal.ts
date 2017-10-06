@@ -12,7 +12,7 @@ let terminal: vscode.Terminal;
 
 export function activateExecInTerminalProvider(): vscode.Disposable[] {
     const disposables: vscode.Disposable[] = [];
-    disposables.push(vscode.commands.registerCommand(Commands.StartRepl, startRepl));
+    disposables.push(vscode.commands.registerCommand(Commands.StartRepl, () => terminal.show()));
     disposables.push(vscode.commands.registerCommand(Commands.SourceFile, sourceFile));
     disposables.push(vscode.commands.registerCommand(Commands.ExecInTerminal, execInTerminal));
     disposables.push(vscode.window.onDidCloseTerminal((closedTerminal: vscode.Terminal) => {
@@ -52,7 +52,7 @@ async function sourceFile(fileUri?: vscode.Uri) {
         filePath = `"${filePath}"`;
     }
 
-    await startRepl();
+    terminal.show();
     terminal.sendText(`source("${filePath}")`);
 }
 
@@ -76,7 +76,7 @@ async function execInTerminal() {
         return;
     }
 
-    await startRepl();
+    terminal.show();
     terminal.sendText(removeBlankLines(code));
     // Move caret down
     await vscode.commands.executeCommand("cursorMove", {
@@ -85,21 +85,9 @@ async function execInTerminal() {
     });
 }
 
-export async function startRepl() {
-    if (terminal === null || terminal === undefined) {
-        terminal = await createTerminal();
-        terminal.show();
-    }
-}
-
-async function createTerminal(): Promise<vscode.Terminal> {
-    const interpreterPath = await getInterpreterPath();
-    if (interpreterPath === undefined || interpreterPath === null) {
-        vscode.window.showErrorMessage("Unable to file R interpreter. Please install R and restart.");
-        utils.InstallR();
-    } else {
-        return vscode.window.createTerminal("R", interpreterPath);
-    }
+export async function createTerminal(interpreterPath: string) {
+    terminal = vscode.window.createTerminal("R", interpreterPath);
+    terminal.show();
 }
 
 function removeBlankLines(code: string): string {
