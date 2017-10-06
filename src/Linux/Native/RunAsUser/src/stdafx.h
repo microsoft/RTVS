@@ -41,15 +41,27 @@
 #include <grp.h>
 #include <unistd.h>
 #include <signal.h>
+#include <boost/endian/buffers.hpp>
+#include "boost/filesystem.hpp"
+
+#ifdef _APPLE
+// sudo xcode-select --install
+#include </usr/include/security/pam_appl.h>
+#else
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
-#include <boost/endian/buffers.hpp>
+#endif
+
+#ifndef _APPLE
 #include <libexplain/execv.h>
 #include <libexplain/fork.h>
 #include <libexplain/waitpid.h>
 #include <libexplain/execve.h>
 #include <libexplain/execv.h>
-
-#include "boost/filesystem.hpp"
+#endif
 
 namespace fs = boost::filesystem;
+
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 8192
+#endif
