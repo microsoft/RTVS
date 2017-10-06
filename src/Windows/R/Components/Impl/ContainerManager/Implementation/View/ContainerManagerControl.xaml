@@ -316,7 +316,7 @@
             </Hyperlink>
         </TextBlock>
 
-        <StackPanel Visibility="{Binding Path=ContainerServiceError, Converter={x:Static rwpf:Converters.NullIsCollapsed}, Mode=OneWay}" Margin="20,0,20,0">
+        <StackPanel VerticalAlignment="Center" Visibility="{Binding Path=ContainerServiceError, Converter={x:Static rwpf:Converters.NullIsCollapsed}, Mode=OneWay}" Margin="20,0,20,0">
             <TextBlock Style="{StaticResource WatermarkTextBlock}" Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_FirstPart}" />
             <TextBlock Style="{StaticResource WatermarkTextBlock}" Text="{Binding Path=ContainerServiceError, Mode=OneWay}" TextAlignment="Left" />
             <TextBlock Style="{StaticResource WatermarkTextBlock}">
