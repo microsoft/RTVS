@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completions;
+using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
@@ -26,6 +29,10 @@ namespace Microsoft.R.Editor.Test.Completions {
 
             var textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer, caretPosition);
+
+            var document = Substitute.For<IREditorDocument>();
+            document.EditorTree.AstRoot.Returns(ast);
+            textBuffer.AddService(document);
 
             if (selectedRange != null) {
                 textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
