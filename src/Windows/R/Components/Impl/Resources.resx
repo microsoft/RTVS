@@ -466,7 +466,6 @@ To start working with containers, run Docker for Windows and click</value>
   </data>
   <data name="ContainerManager_ContainerServiceHasErrors_FirstPart" xml:space="preserve">
     <value>Docker service fails because of the following error:
-
 </value>
   </data>
   <data name="ContainerManager_ContainerServiceHasErrors_SecondPart" xml:space="preserve">
@@ -485,6 +484,9 @@ Please click</value>
   <data name="ContainerManager_CreateLocalDocker" xml:space="preserve">
     <value>Create</value>
   </data>
+  <data name="ContainerManager_LocalDockerFromFile" xml:space="preserve">
+    <value>From Template</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker_Name" xml:space="preserve">
     <value>Name</value>
   </data>
@@ -497,11 +499,20 @@ Please click</value>
   <data name="ContainerManager_CreateLocalDocker_Version" xml:space="preserve">
     <value>Version</value>
   </data>
+  <data name="ContainerManager_CreateLocalDockerFromFile_Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker_VersionTooltip" xml:space="preserve">
     <value>Version of R that matches Docker image tag.</value>
   </data>
   <data name="ContainerManager_CreateLocalDocker_CreationError" xml:space="preserve">
     <value>There was an error creating the container. Please see R Containers output for details.</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format" xml:space="preserve">
+    <value>Can't download content of the file {0}.</value>
+  </data>
+  <data name="ContainerManager_CreateLocalDockerFromFile_UriParseError_Format" xml:space="preserve">
+    <value>{0} is not a valid URI or file path.</value>
   </data>
   <data name="ContainerManager_CreateTooltip" xml:space="preserve">
     <value>Create new Docker container</value>

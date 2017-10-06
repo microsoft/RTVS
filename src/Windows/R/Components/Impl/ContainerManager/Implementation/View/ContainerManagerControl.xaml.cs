@@ -40,6 +40,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void ButtonAdd_Click(object sender, RoutedEventArgs e) => ViewModel.ShowCreateLocalDocker();
 
+        private void ButtonFromFile_Click(object sender, RoutedEventArgs e) => ViewModel.ShowLocalDockerFromFile();
+
         private void Container_PreviewKeyUp(object sender, KeyEventArgs keyEventArgs) {
             if (keyEventArgs.Key == Key.Delete && !(keyEventArgs.OriginalSource is TextBox)) {
                 ViewModel.DeleteAsync(GetContainer(keyEventArgs)).DoNotWait();
@@ -59,9 +61,17 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
             }
         }
 
+        private void ButtonBrowseDockerTemplate_Click(object sender, RoutedEventArgs e) {
+            ViewModel.BrowseDockerTemplate();
+        }
+
         private void ButtonCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CreateLocalDockerAsync().DoNotWait();
 
         private void ButtonCancelCreateLocalDocker_Click(object sender, RoutedEventArgs e) => ViewModel.CancelCreateLocalDocker();
+
+        private void ButtonCreateLocalDockerFromFile_Click(object sender, RoutedEventArgs e) => ViewModel.CreateLocalDockerFromFileAsync().DoNotWait();
+
+        private void ButtonCancelLocalDockerFromFile_Click(object sender, RoutedEventArgs e) => ViewModel.CancelLocalDockerFromFile();
 
         private void ButtonStart_Click(object sender, RoutedEventArgs e) => ViewModel.StartAsync(GetContainer(e)).DoNotWait();
 

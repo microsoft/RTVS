@@ -724,7 +724,6 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to Docker service fails because of the following error:
-        ///
         ///.
         /// </summary>
         public static string ContainerManager_ContainerServiceHasErrors_FirstPart {
@@ -898,6 +897,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t download content of the file {0}..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_Path {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not a valid URI or file path..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_UriParseError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_UriParseError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new Docker container.
         /// </summary>
         public static string ContainerManager_CreateTooltip {
@@ -962,6 +988,15 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_LocalDocker {
             get {
                 return ResourceManager.GetString("ContainerManager_LocalDocker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From Template.
+        /// </summary>
+        public static string ContainerManager_LocalDockerFromFile {
+            get {
+                return ResourceManager.GetString("ContainerManager_LocalDockerFromFile", resourceCulture);
             }
         }
         

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +17,6 @@ using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Containers;
-using Microsoft.R.Components.View;
 using Microsoft.R.Containers;
 using Microsoft.R.Host.Client.Host;
 
@@ -32,6 +32,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private readonly IUIService _ui;
         private readonly ISecurityService _security;
         private CreateLocalDockerViewModel _newLocalDocker;
+        private CreateLocalDockerFromFileViewModel _newLocalDockerFromFile;
         private bool _containerServiceIsNotInstalled;
         private bool _containerServiceIsNotRunning;
         private string _containerServiceError;
@@ -41,6 +42,11 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public CreateLocalDockerViewModel NewLocalDocker {
             get => _newLocalDocker;
             private set => SetProperty(ref _newLocalDocker, value);
+        }
+
+        public CreateLocalDockerFromFileViewModel NewLocalDockerFromFile {
+            get => _newLocalDockerFromFile;
+            private set => SetProperty(ref _newLocalDockerFromFile, value);
         }
 
         public bool ContainerServiceIsNotInstalled {
@@ -94,25 +100,30 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
 
         public void ShowCreateLocalDocker() {
             _mainThread.Assert();
+            CancelLocalDockerFromFile();
             var (username, password) = _security.ReadUserCredentials(LastLocalDockerCredentials);
             NewLocalDocker = new CreateLocalDockerViewModel(username, password);
+        }
+
+        public void ShowLocalDockerFromFile() {
+            _mainThread.Assert();
+            CancelCreateLocalDocker();
+            NewLocalDockerFromFile = new CreateLocalDockerFromFileViewModel();
         }
 
         public async Task CreateLocalDockerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             _mainThread.Assert();
 
-            var name = NewLocalDocker.Name;
-            var username = NewLocalDocker.Username;
-            var password = NewLocalDocker.Password;
+            var (name, username, password, version, port) = NewLocalDocker;
+            NewLocalDocker = null;
+
             IContainer container;
             try {
-                container = await _containers.CreateLocalDockerAsync(name, username, password.ToUnsecureString(), NewLocalDocker.Version, NewLocalDocker.Port, cancellationToken);
+                container = await _containers.CreateLocalDockerAsync(name, username, password.ToUnsecureString(), version, port, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_CreateLocalDocker_CreationError, MessageButtons.OK, MessageType.Error);
                 return;
             }
-
-            NewLocalDocker = null;
 
             var securePassword = password;
             _security.SaveUserCredentials(BrokerConnectionInfo.GetCredentialAuthority(name), username, securePassword, true);
@@ -125,9 +136,46 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             }
         }
          
+        public async Task CreateLocalDockerFromFileAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            _mainThread.Assert();
+
+            var (name, filePath, port) = NewLocalDockerFromFile;
+            NewLocalDockerFromFile = null;
+
+            IContainer container;
+            try {
+                container = await _containers.CreateLocalDockerFromFileAsync(name, filePath, port, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDocker_CreationError, MessageButtons.OK, MessageType.Error);
+                return;
+            } catch (FileNotFoundException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
+                return;
+            } catch (UriFormatException) {
+                _ui.ShowMessage(Resources.ContainerManager_CreateLocalDockerFromFile_UriParseError_Format.FormatInvariant(filePath), MessageButtons.OK, MessageType.Error);
+                return;
+            }
+
+            try {
+                await _containers.StartAsync(container.Id, cancellationToken);
+            } catch (ContainerException) {
+                _ui.ShowMessage(Resources.ContainerManager_StartError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+            }
+        }
+         
         public void CancelCreateLocalDocker() {
             _mainThread.Assert();
             NewLocalDocker = null;
+        }
+
+        public void CancelLocalDockerFromFile() {
+            _mainThread.Assert();
+            NewLocalDockerFromFile = null;
+        }
+
+        public void BrowseDockerTemplate() {
+            _mainThread.Assert();
+            NewLocalDockerFromFile.TemplatePath = _services.UI().FileDialog.ShowBrowseDirectoryDialog();
         }
 
         public async Task StartAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
