@@ -292,6 +292,17 @@
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="TextWrapping" Value="Wrap" />
             </Style>
+            
+            <Style x:Key="WatermarkTextBox" TargetType="TextBox">
+                <Setter Property="Background" Value="{DynamicResource {x:Static rwpf:Brushes.WindowKey}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.WindowTextKey}}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="TextAlignment" Value="Left" />
+                <Setter Property="IsReadOnly" Value="True" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -316,7 +327,7 @@
 
         <StackPanel VerticalAlignment="Center" Visibility="{Binding Path=ContainerServiceError, Converter={x:Static rwpf:Converters.NullIsCollapsed}, Mode=OneWay}" Margin="20,0,20,0">
             <TextBlock Style="{StaticResource WatermarkTextBlock}" Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_FirstPart}" />
-            <TextBlock Style="{StaticResource WatermarkTextBlock}" Text="{Binding Path=ContainerServiceError, Mode=OneWay}" TextAlignment="Left" />
+            <TextBox Style="{StaticResource WatermarkTextBox}" Text="{Binding Path=ContainerServiceError, Mode=OneWay}" />
             <TextBlock Style="{StaticResource WatermarkTextBlock}">
                 <Run Text="{x:Static components:Resources.ContainerManager_ContainerServiceHasErrors_SecondPart}" />
                 <Hyperlink RequestNavigate="RefreshDocker" NavigateUri="about:blank">
