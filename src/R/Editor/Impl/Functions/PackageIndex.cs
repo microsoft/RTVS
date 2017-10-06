@@ -79,7 +79,9 @@ namespace Microsoft.R.Editor.Functions {
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (e.IsConnected) {
-                BuildIndexAsync().DoNotWait();
+                UpdateInstalledPackagesAsync().DoNotWait();
+            } else {
+                _updatePending = true;
             }
         }
 
