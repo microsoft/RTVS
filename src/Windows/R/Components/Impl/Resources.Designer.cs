@@ -1019,6 +1019,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Workspaces....
+        /// </summary>
+        public static string ContainerManager_ShowWorkspaces {
+            get {
+                return ResourceManager.GetString("ContainerManager_ShowWorkspaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can&apos;t start container &apos;{0}&apos; because its port is taken by container &apos;{1}&apos;.
         ///Do you want to stop &apos;{1}&apos; and then start &apos;{0}&apos;?
         ///All unsaved data will be lost!.

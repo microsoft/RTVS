@@ -63,10 +63,8 @@
             </Style>
 
             <DataTemplate DataType="{x:Type viewModel:ContainerViewModel}">
-                <Border BorderThickness="0,0,0,0"
-                        BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" x:Name="Container">
-                    <Grid MinHeight="20"
-                          Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
+                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" x:Name="Container">
+                    <Grid MinHeight="20" Background="{DynamicResource {x:Static rwpf:Brushes.ToolWindowBackgroundBrushKey}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
@@ -227,7 +225,7 @@
                     <WrapPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,0">
                         <Button Margin="-1,0,4,0" Padding="6,2,6,2" MinWidth="75" MinHeight="23"
                                 VerticalAlignment="Center" Click="ButtonCreateLocalDockerFromFile_Click"
-                                Style="{StaticResource ToolWindowButtonStyle}" ToolTipService.ShowOnDisabled="True"
+                                ToolTipService.ShowOnDisabled="True"
                                 Content="{x:Static components:Resources.ContainerManager_CreateLocalDocker}"
                                 ToolTip="{x:Static components:Resources.ContainerManager_CreateTooltip}"
                                 IsEnabled="{Binding Path=IsValid}"
@@ -257,9 +255,9 @@
                         Value="{x:Static components:Resources.ContainerManager_LocalDocker}" />
             </Style>
 
-            <Style x:Key="ContainersListBoxItemStyle" TargetType="{x:Type ListBoxItem}"
-                   BasedOn="{StaticResource FillingListBoxItemStyle}">
+            <Style x:Key="ContainersListBoxItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource FillingListBoxItemStyle}">
                 <EventSetter Event="PreviewKeyUp" Handler="Container_PreviewKeyUp" />
+                <EventSetter Event="MouseDoubleClick" Handler="Container_MouseDoubleClick" />
                 <Setter Property="IsTabStop" Value="False" />
                 <Setter Property="Focusable" Value="False" />
                 <Setter Property="Template">
@@ -350,8 +348,8 @@
                                                DockPanel.Dock="Top" />
 
                 <!-- Add local docker containers -->
-                <WrapPanel DockPanel.Dock="Top" Margin="17,4,6,4">
-                    <Button x:Name="ToggleButtonAddLocalDocker"
+                <DockPanel DockPanel.Dock="Top" Margin="17,4,6,4" LastChildFill="False">
+                    <Button x:Name="ToggleButtonAddLocalDocker" DockPanel.Dock="Left"
                             Style="{StaticResource HyperlinkDownArrowButton}"
                             Visibility="{Binding ElementName=ToggleButtonLocalDocker, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"
                             IsEnabled="{Binding Path=NewLocalDocker, Converter={x:Static rwpf:Converters.NullIsTrue}}"
@@ -359,14 +357,20 @@
                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_CreateLocalDocker}"
                             Click="ButtonAdd_Click" />
 
-                    <Button x:Name="ToggleButtonFromFileLocalDocker"
+                    <Button x:Name="ToggleButtonFromFileLocalDocker" DockPanel.Dock="Left"
                             Style="{StaticResource HyperlinkDownArrowButton}" Margin="12,0,0,0"
                             Visibility="{Binding ElementName=ToggleButtonLocalDocker, Path=IsExpanded, Converter={x:Static rwpf:Converters.TrueIsNotCollapsed}}"
                             IsEnabled="{Binding Path=LocalDockerFile, Converter={x:Static rwpf:Converters.NullIsTrue}}"
                             Content="{x:Static components:Resources.ContainerManager_LocalDockerFromFile}"
                             AutomationProperties.Name="{x:Static components:Resources.ContainerManager_LocalDockerFromFile}"
                             Click="ButtonFromFile_Click" />
-                </WrapPanel>
+
+                    <Button x:Name="ButtonShowWorkspaces" Margin="-6,0,0,0" MinWidth="75" MinHeight="23"
+                            VerticalAlignment="Center" DockPanel.Dock="Right" Click="ButtonShowWorkspaces_Click" 
+                            Style="{StaticResource HyperlinkButton}" 
+                            Content="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" 
+                            AutomationProperties.Name="{x:Static components:Resources.ContainerManager_ShowWorkspaces}" />
+                </DockPanel>
 
                 <Border DockPanel.Dock="Top" Margin="16,4,6,8" Padding="0,0,0,4" BorderThickness="0,0,0,1"
                         BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ControlKey}}">

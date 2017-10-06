@@ -50,28 +50,32 @@ namespace Microsoft.R.Components.ConnectionManager.Commands {
 
             if (index < _recentConnections.Count) {
                 var connection = _recentConnections[index];
-                var activeConnection = _connectionManager.ActiveConnection;
-                if (activeConnection != null && connection.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
-                    var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
-                    _ui.ShowMessage(text, MessageButtons.OK);
-                } else {
-                    if (activeConnection != null && _settings.ShowWorkspaceSwitchConfirmationDialog == YesNo.Yes) {
-                        var message = Resources.ConnectionManager_SwitchConfirmation.FormatCurrent(activeConnection.Name, connection.Name);
-                        if (_ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
-                            return Task.CompletedTask;
-                        }
-                    }
-
-                    var progressBarMessage = activeConnection != null
-                        ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatCurrent(activeConnection.Name, connection.Name)
-                        : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatCurrent(connection.Name);
-                    _ui.ProgressDialog.Show(ct => _connectionManager.ConnectAsync(connection, ct), progressBarMessage);
-                }
+                Connect(_connectionManager, _ui, _settings, connection);
             }
 
             return Task.CompletedTask;
         }
 
         public int MaxCount { get; } = 5;
+
+        public static void Connect(IConnectionManager connectionManager, IUIService ui, IRSettings settings, IConnection connection) {
+            var activeConnection = connectionManager.ActiveConnection;
+            if (activeConnection != null && connection.BrokerConnectionInfo == activeConnection.BrokerConnectionInfo) {
+                var text = Resources.ConnectionManager_ConnectionsAreIdentical.FormatCurrent(activeConnection.Name, connection.Name);
+                ui.ShowMessage(text, MessageButtons.OK);
+            } else {
+                if (activeConnection != null && settings.ShowWorkspaceSwitchConfirmationDialog == YesNo.Yes) {
+                    var message = Resources.ConnectionManager_SwitchConfirmation.FormatCurrent(activeConnection.Name, connection.Name);
+                    if (ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No) {
+                        return;
+                    }
+                }
+
+                var progressBarMessage = activeConnection != null
+                    ? Resources.ConnectionManager_SwitchConnectionProgressBarMessage.FormatCurrent(activeConnection.Name, connection.Name)
+                    : Resources.ConnectionManager_ConnectionToProgressBarMessage.FormatCurrent(connection.Name);
+                ui.ProgressDialog.Show(ct => connectionManager.ConnectAsync(connection, ct), progressBarMessage);
+            }
+        }
     }
 }

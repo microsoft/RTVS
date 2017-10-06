@@ -42,10 +42,17 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void ButtonFromFile_Click(object sender, RoutedEventArgs e) => ViewModel.ShowLocalDockerFromFile();
 
+        private void ButtonShowWorkspaces_Click(object sender, RoutedEventArgs e) => ViewModel.ShowConnections();
+
         private void Container_PreviewKeyUp(object sender, KeyEventArgs keyEventArgs) {
             if (keyEventArgs.Key == Key.Delete && !(keyEventArgs.OriginalSource is TextBox)) {
                 ViewModel.DeleteAsync(GetContainer(keyEventArgs)).DoNotWait();
             }
+        }
+
+        private void Container_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            ViewModel.ConnectToContainerDefaultConnectionAsync(GetContainer(e)).DoNotWait();
+            e.Handled = true;
         }
 
         private void AddLocalDocker_PreviewKeyUp(object sender, KeyEventArgs keyEventArgs) {

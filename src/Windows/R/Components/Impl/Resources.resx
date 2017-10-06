@@ -487,6 +487,9 @@ Please click</value>
   <data name="ContainerManager_LocalDockerFromFile" xml:space="preserve">
     <value>From Template</value>
   </data>
+  <data name="ContainerManager_ShowWorkspaces" xml:space="preserve">
+    <value>Workspaces...</value>
+  </data>
   <data name="ContainerManager_CreateLocalDocker_Name" xml:space="preserve">
     <value>Name</value>
   </data>
