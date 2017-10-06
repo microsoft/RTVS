@@ -1418,17 +1418,6 @@
         </Strings>
       </Button>
 
-      <!-- Survey/News -->
-      <Button guid="guidRToolsCmdSet" id="icmdSurveyNews" priority="0x600" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
-        <Icon guid="ImageCatalogGuid" id="NotificationHub"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <Strings>
-          <ButtonText>Survey/&amp;News...</ButtonText>
-          <CommandName>Survey News</CommandName>
-        </Strings>
-      </Button>
-
       <!-- Feedback flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdReportIssue" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
@@ -2724,7 +2713,6 @@
       <IDSymbol name="icmdSendFrown" value="404" />
       <IDSymbol name="icmdImportRSettings" value="405"/>
       <IDSymbol name="icmdReportIssue" value="406" />
-      <IDSymbol name="icmdSurveyNews" value="407"/>
       <IDSymbol name="icmdSetupRemote" value="408"/>
 
       <!-- REPL-->

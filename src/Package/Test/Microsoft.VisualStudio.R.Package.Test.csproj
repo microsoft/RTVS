@@ -234,21 +234,12 @@
     <Compile Include="Sql\SProcGeneratorTest.cs" />
     <Compile Include="Sql\PublishOptionsDialogTest.cs" />
     <Compile Include="Sql\CommandTest.cs" />
-    <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />
-    <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
-    <Compile Include="SurveyNews\SurveyNewsTestFilesFixture.cs" />
     <Compile Include="Telemetry\TelemetryTest.cs" />
     <Compile Include="Fixtures\ProjectTestFilesFixture.cs" />
     <Compile Include="DataInspect\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\HostBasedInteractiveTest.cs" />
     <Compile Include="Utility\InteractiveTest.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="SurveyNews\Feeds\Empty.txt" />
-    <Content Include="SurveyNews\Feeds\Invalid.txt" />
-    <Content Include="SurveyNews\Feeds\Items.txt" />
-    <Content Include="SurveyNews\Feeds\NoItems.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
