@@ -50,10 +50,12 @@
     <None Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\connection.ts" />
+    <TypeScriptCompile Include="src\editor.ts" />
+    <TypeScriptCompile Include="src\requests.ts" />
     <TypeScriptCompile Include="src\extension.ts" />
     <TypeScriptCompile Include="src\output.ts" />
-    <TypeScriptCompile Include="src\terminal.ts" />
+    <TypeScriptCompile Include="src\commands.ts" />
+    <TypeScriptCompile Include="src\repl.ts" />
     <TypeScriptCompile Include="src\utils.ts" />
   </ItemGroup>
   <ItemGroup>

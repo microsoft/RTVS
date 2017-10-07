@@ -35,35 +35,60 @@
   "contributes": {
     "commands": [
       {
+        "command": "r.execute",
+        "title": "Execute current line on selection",
+        "category": "R"
+      },
+      {
+        "command": "r.interrupt",
+        "title": "Interrupt R",
+        "category": "R"
+      },
+      {
+        "command": "r.reset",
+        "title": "Reset R",
+        "category": "R"
+      },
+      {
         "command": "r.sourceFile",
         "title": "Source file",
         "category": "R"
       },
       {
-        "command": "r.execInTerminal",
-        "title": "Execute current line selection in terminal",
+        "command": "r.openTerminal",
+        "title": "Open R Terminal",
         "category": "R"
       },
       {
-        "command": "r.startREPL",
-        "title": "Open R Terminal",
+        "command": "r.executeInTerminal",
+        "title": "Execute current line or selection in terminal",
+        "category": "R"
+      },
+      {
+        "command": "r.sourceFileToTerminal",
+        "title": "Source file",
         "category": "R"
       }
     ],
     "keybindings": [
       {
-        "command": "r.execInTerminal",
+        "command": "r.execute",
         "key": "ctrl+enter",
         "when": "editorFocus"
       },
       {
-        "command": "r.execSelectionInTerminal",
+        "command": "r.executeInTerminal",
         "key": "ctrl+shift+enter",
         "when": "editorFocus"
       },
       {
         "command": "r.sourceFile",
         "key": "ctrl+shift+s",
+        "when": "editorFocus"
+      },
+      {
+        "command": "r.sourceFileToTerminal",
+        "key": "ctrl+alt+s",
         "when": "editorFocus"
       }
     ],

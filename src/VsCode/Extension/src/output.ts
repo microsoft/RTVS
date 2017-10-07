@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 'use strict';
 
-import * as vscode from 'vscode';
-import {getOutput} from "./connection";
+import * as vscode from "vscode";
+import {getOutput} from "./requests";
 
-export class ROuputProvider implements vscode.TextDocumentContentProvider {
+export class OutputPanel implements vscode.TextDocumentContentProvider {
     private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
     private lastUri: vscode.Uri;
 

@@ -6,12 +6,14 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
-import * as term from "./terminal";
 import { RLanguage } from "./constants";
-import { getInterpreterPath } from "./connection";
+import { getInterpreterPath } from "./requests";
 import * as utils from "./utils";
+import {ReplTerminal} from "./repl";
+import { activateCommandsProvider } from "./commands";
 
 export let client: languageClient.LanguageClient;
+export let repl: ReplTerminal;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -26,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const interpreterPath = await getR();
     if (interpreterPath != null) {
-        await term.createTerminal(interpreterPath);
+        repl = new ReplTerminal(interpreterPath);
     }
 }
 
@@ -55,7 +57,7 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     // Create the language client and start the client.
     client = new languageClient.LanguageClient(r, "R Tools", serverOptions, clientOptions);
     context.subscriptions.push(client.start());
-    context.subscriptions.push(...term.activateExecInTerminalProvider());
+    context.subscriptions.push(...activateCommandsProvider());
 
     return client.onReady();
 }

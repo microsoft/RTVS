@@ -3,8 +3,4 @@
 
 export const RLanguage = { language: "r" };
 
-export namespace Commands {
-    export const SourceFile = "r.sourceFile";
-    export const StartRepl = "r.startREPL";
-    export const ExecInTerminal = "r.execInTerminal";
-}
+

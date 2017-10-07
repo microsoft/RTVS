@@ -19,17 +19,17 @@ export function IsLinux() {
 }
 
 export function IsDotNetInstalled() {
-    let versions = ["1.1.2", "1.1.4", "2.0.0"];
-    let prefix;
+    const versions = ["1.1.2", "1.1.4", "2.0.0"];
+    let prefix: string;
 
     if (IsWindows()) {
-        let drive = getenv("SystemDrive");
+        const drive = getenv("SystemDrive");
         prefix = drive + "\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\";
     } else {
         prefix = "/usr/local/share/dotnet/shared/Microsoft.NETCore.App/";
     }
 
-    for (var i = 0; i < versions.length; i++) {
+    for (let i = 0; i < versions.length; i++) {
         if (fs.existsSync(prefix + versions[i])) {
             return true;
         }
@@ -38,7 +38,7 @@ export function IsDotNetInstalled() {
 }
 
 export function InstallDotNet() {
-    let url;
+    let url: string;
     if (IsWindows()) {
         url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-win-x64.1.1.4.exe";
     } else if (IsMac()) {
@@ -50,7 +50,7 @@ export function InstallDotNet() {
 }
 
 export function InstallR() {
-    let url;
+    let url: string;
     if (IsWindows()) {
         url = "https://cran.r-project.org/bin/windows/base/";
     } else if (IsMac()) {
