@@ -52,6 +52,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="src\connection.ts" />
     <TypeScriptCompile Include="src\extension.ts" />
+    <TypeScriptCompile Include="src\output.ts" />
     <TypeScriptCompile Include="src\terminal.ts" />
     <TypeScriptCompile Include="src\utils.ts" />
   </ItemGroup>
@@ -72,6 +73,7 @@
     <CallTarget Targets="_build" />
   </Target>
   <Target Name="_build">
+    <Exec Command="dotnet publish --framework netcoreapp1.1 ..\..\Linux\Host\Broker\Impl\Microsoft.R.Host.Broker.Linux.csproj" />
     <Exec Command="dotnet publish --framework netcoreapp1.1 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="powershell -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />

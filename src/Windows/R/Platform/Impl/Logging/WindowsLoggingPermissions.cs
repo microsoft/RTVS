@@ -83,7 +83,7 @@ namespace Microsoft.R.Platform.Logging {
         private int? GetFeedbackFromRegistry() => GetValueFromRegistry(FeedbackValueName, 0, 1);
 
         private int? GetValueFromRegistry(string name, int minValue, int maxValue) {
-            if(_registry.LocalMachineHive == null) {
+            if(_registry?.LocalMachineHive == null) {
                 return maxValue;
             }
             using (var hlkm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {

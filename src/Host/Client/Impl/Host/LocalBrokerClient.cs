@@ -6,8 +6,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,15 +71,16 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
-            var locator = new BrokerExecutableLocator(_services.FileSystem());
+            var fs = _services.FileSystem();
+            var locator = new BrokerExecutableLocator(fs);
 
             var rhostExe = locator.GetHostExecutablePath();
-            if (!_services.FileSystem().FileExists(rhostExe)) {
+            if (!fs.FileExists(rhostExe)) {
                 throw new RHostBinaryMissingException();
             }
 
             var rhostBrokerExe = locator.GetBrokerExecutablePath();
-            if (!_services.FileSystem().FileExists(rhostBrokerExe)) {
+            if (!fs.FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }
 

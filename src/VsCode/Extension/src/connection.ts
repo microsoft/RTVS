@@ -6,6 +6,10 @@ import {client} from "./extension";
 
 export async function getInterpreterPath(): Promise<string> {
     await client.onReady();
-    const path = await client.sendRequest<string>("information/getInterpreterPath");
-    return path;
+    return await client.sendRequest<string>("information/getInterpreterPath");
+}
+
+export async function getOutput(): Promise<string> {
+    await client.onReady();
+    return await client.sendRequest<string>("r/execute");
 }

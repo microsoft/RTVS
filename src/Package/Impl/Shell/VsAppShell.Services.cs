@@ -46,17 +46,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void ConfigureServices() {
             _services
                 .AddService<IActionLog>(s => new Logger(VsApplication.Name, Path.GetTempPath(), s))
-                .AddService(new WindowsFileSystem())
-                .AddService(new WindowsLoggingPermissions(_services))
                 .AddService<IMainThread, VsMainThread>()
                 .AddService<IMicrosoftRClientInstaller, MicrosoftRClientInstaller>()
-                .AddService(new WindowsProcessServices())
-                .AddService(new RegistryImpl())
                 .AddService<ISettingsStorage, VsSettingsStorage>()
                 .AddService<IRSettings, RSettingsImplementation>()
-                .AddService<ISecurityService, WindowsSecurityService>()
                 .AddService<ITaskService, VsTaskService>()
-                .AddService<ITelemetryService, VsTelemetryService>();
+                .AddService<ITelemetryService, VsTelemetryService>()
+                .AddService<ISecurityService, WindowsSecurityService>();
+
         }
 
         private void ConfigurePackageServices() {
