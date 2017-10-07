@@ -6,10 +6,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
+import * as deps from "./dependencies";
 import { RLanguage } from "./constants";
 import { getInterpreterPath } from "./requests";
-import * as utils from "./utils";
-import {ReplTerminal} from "./repl";
+import { ReplTerminal } from "./repl";
 import { activateCommandsProvider } from "./commands";
 
 export let client: languageClient.LanguageClient;
@@ -73,7 +73,7 @@ async function getR(): Promise<string> {
     const interpreterPath = await getInterpreterPath();
     if (interpreterPath === undefined || interpreterPath === null) {
         if (await vscode.window.showErrorMessage("Unable to find R interpreter. Would you like to install R now?", "Yes", "No") === "Yes") {
-            utils.InstallR();
+            deps.InstallR();
             vscode.window.showWarningMessage("Please restart VS Code after R installation is complete.")
         }
         return null;
@@ -82,9 +82,9 @@ async function getR(): Promise<string> {
 }
 
 async function checkDotNet(): Promise<boolean> {
-    if (!utils.IsDotNetInstalled()) {
+    if (!deps.IsDotNetInstalled()) {
         if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?", "Yes", "No") === "Yes") {
-            utils.InstallDotNet();
+            deps.InstallDotNet();
             vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.")
         }
         return false;
@@ -93,9 +93,9 @@ async function checkDotNet(): Promise<boolean> {
 }
 
 async function checkDependencies() {
-    if (!utils.IsDotNetInstalled()) {
+    if (!deps.IsDotNetInstalled()) {
         if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?", "Yes", "No") === "Yes") {
-            utils.InstallDotNet();
+            deps.InstallDotNet();
             vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.")
         }
         return false;

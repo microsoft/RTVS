@@ -2,27 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 "use strict";
 
+import * as os from "./os";
 import * as fs from "fs";
-import * as opn from "opn";
-import * as getenv from "getenv";
-
-export function IsWindows() {
-    return process.platform === "win32";
-}
-
-export function IsMac() {
-    return process.platform === "darwin";
-}
-
-export function IsLinux() {
-    return process.platform === "linux";
-}
+import { getenv } from "getenv";
+import { opn } from "opn";
 
 export function IsDotNetInstalled() {
     const versions = ["1.1.2", "1.1.4", "2.0.0"];
     let prefix: string;
 
-    if (IsWindows()) {
+    if (os.IsWindows()) {
         const drive = getenv("SystemDrive");
         prefix = drive + "\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App\\";
     } else {
@@ -39,9 +28,9 @@ export function IsDotNetInstalled() {
 
 export function InstallDotNet() {
     let url: string;
-    if (IsWindows()) {
+    if (os.IsWindows()) {
         url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-win-x64.1.1.4.exe";
-    } else if (IsMac()) {
+    } else if (os.IsMac()) {
         url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-osx-x64.1.1.4.pkg";
     } else {
         url = "https://www.microsoft.com/net/download/linux";
@@ -51,9 +40,9 @@ export function InstallDotNet() {
 
 export function InstallR() {
     let url: string;
-    if (IsWindows()) {
+    if (os.IsWindows()) {
         url = "https://cran.r-project.org/bin/windows/base/";
-    } else if (IsMac()) {
+    } else if (os.IsMac()) {
         url = "https://cran.r-project.org/bin/macosx/";
     } else {
         url = "https://cran.r-project.org/bin/linux/";

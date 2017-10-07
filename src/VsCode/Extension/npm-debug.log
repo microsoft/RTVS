@@ -1,0 +1,101 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\Microsoft Visual Studio\\d15prerel\\Enterprise\\Web\\External\\Node.exe',
+1 verbose cli   'C:\\Program Files (x86)\\Microsoft Visual Studio\\d15prerel\\Enterprise\\Web\\External\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@3.3.4
+3 info using node@v5.4.1
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly install normalizeTree
+8 silly loadCurrentTree Finishing
+9 silly loadIdealTree Starting
+10 silly install loadIdealTree
+11 silly cloneCurrentTree Starting
+12 silly install cloneCurrentTreeToIdealTree
+13 silly cloneCurrentTree Finishing
+14 silly loadShrinkwrap Starting
+15 silly install loadShrinkwrap
+16 silly loadShrinkwrap Finishing
+17 silly loadAllDepsIntoIdealTree Starting
+18 silly install loadAllDepsIntoIdealTree
+19 silly fetchNamedPackageData @types/ejs
+20 silly mapToRegistry name @types/ejs
+21 silly mapToRegistry scope (from package name) @types
+22 verbose mapToRegistry no registry URL found in name for scope @types
+23 silly mapToRegistry using default registry
+24 silly mapToRegistry registry https://registry.npmjs.org/
+25 silly mapToRegistry uri https://registry.npmjs.org/@types%2fejs
+26 verbose request uri https://registry.npmjs.org/@types%2fejs
+27 verbose request no auth needed
+28 info attempt registry request try #1 at 2:48:27 PM
+29 verbose request id 4dd75e3e9fe83037
+30 verbose etag W/"599c5a3b-3b3d"
+31 verbose lastModified Tue, 22 Aug 2017 16:22:19 GMT
+32 http request GET https://registry.npmjs.org/@types%2fejs
+33 http 304 https://registry.npmjs.org/@types%2fejs
+34 verbose headers { date: 'Sat, 07 Oct 2017 21:48:24 GMT',
+34 verbose headers   via: '1.1 varnish',
+34 verbose headers   'cache-control': 'max-age=0',
+34 verbose headers   etag: 'W/"599c5a3b-3b3d"',
+34 verbose headers   age: '0',
+34 verbose headers   connection: 'keep-alive',
+34 verbose headers   'x-served-by': 'cache-sea1033-SEA',
+34 verbose headers   'x-cache': 'MISS',
+34 verbose headers   'x-cache-hits': '0',
+34 verbose headers   'x-timer': 'S1507412904.009602,VS0,VE18',
+34 verbose headers   vary: 'Accept-Encoding' }
+35 silly get cb [ 304,
+35 silly get   { date: 'Sat, 07 Oct 2017 21:48:24 GMT',
+35 silly get     via: '1.1 varnish',
+35 silly get     'cache-control': 'max-age=0',
+35 silly get     etag: 'W/"599c5a3b-3b3d"',
+35 silly get     age: '0',
+35 silly get     connection: 'keep-alive',
+35 silly get     'x-served-by': 'cache-sea1033-SEA',
+35 silly get     'x-cache': 'MISS',
+35 silly get     'x-cache-hits': '0',
+35 silly get     'x-timer': 'S1507412904.009602,VS0,VE18',
+35 silly get     vary: 'Accept-Encoding' } ]
+36 verbose etag https://registry.npmjs.org/@types%2fejs from cache
+37 verbose get saving @types/ejs to C:\Users\mikhaila\AppData\Roaming\npm-cache\registry.npmjs.org\_40types_252fejs\.cache.json
+38 silly fetchPackageMetaData Error: No compatible version found: @types/ejs@^4.0.35
+38 silly fetchPackageMetaData Valid install targets:
+38 silly fetchPackageMetaData ["2.3.33","2.3.32","2.3.31","2.3.30","2.3.29","2.3.28-alpha","2.3.27-alpha","2.3.26-alpha","2.3.25-alpha","2.3.24-alpha","2.3.23-alpha","2.3.22-alpha","2.3.17-alpha","2.3.16-alpha"]
+38 silly fetchPackageMetaData
+38 silly fetchPackageMetaData     at pickVersionFromRegistryDocument (C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\lib\fetch-package-metadata.js:146:16)
+38 silly fetchPackageMetaData     at C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\iferr\index.js:13:50
+38 silly fetchPackageMetaData     at C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\lib\utils\pulse-till-done.js:19:8
+38 silly fetchPackageMetaData     at saved (C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\lib\cache\caching-client.js:168:7)
+38 silly fetchPackageMetaData     at C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\node_modules\graceful-fs\polyfills.js:210:7
+38 silly fetchPackageMetaData     at FSReqWrap.oncomplete (fs.js:82:15)
+38 silly fetchPackageMetaData  error for @types/ejs@^4.0.35 [Error: No compatible version found: @types/ejs@^4.0.35
+38 silly fetchPackageMetaData Valid install targets:
+38 silly fetchPackageMetaData ["2.3.33","2.3.32","2.3.31","2.3.30","2.3.29","2.3.28-alpha","2.3.27-alpha","2.3.26-alpha","2.3.25-alpha","2.3.24-alpha","2.3.23-alpha","2.3.22-alpha","2.3.17-alpha","2.3.16-alpha"]
+38 silly fetchPackageMetaData ]
+39 silly rollbackFailedOptional Starting
+40 silly rollbackFailedOptional Finishing
+41 silly runTopLevelLifecycles Starting
+42 silly runTopLevelLifecycles Finishing
+43 silly install printInstalled
+44 verbose stack Error: No compatible version found: @types/ejs@^4.0.35
+44 verbose stack Valid install targets:
+44 verbose stack ["2.3.33","2.3.32","2.3.31","2.3.30","2.3.29","2.3.28-alpha","2.3.27-alpha","2.3.26-alpha","2.3.25-alpha","2.3.24-alpha","2.3.23-alpha","2.3.22-alpha","2.3.17-alpha","2.3.16-alpha"]
+44 verbose stack
+44 verbose stack     at pickVersionFromRegistryDocument (C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\lib\fetch-package-metadata.js:146:16)
+44 verbose stack     at C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\iferr\index.js:13:50
+44 verbose stack     at C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\lib\utils\pulse-till-done.js:19:8
+44 verbose stack     at saved (C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\lib\cache\caching-client.js:168:7)
+44 verbose stack     at C:\Program Files (x86)\Microsoft Visual Studio\d15prerel\Enterprise\Web\External\node_modules\npm\node_modules\graceful-fs\polyfills.js:210:7
+44 verbose stack     at FSReqWrap.oncomplete (fs.js:82:15)
+45 verbose cwd C:\RTVS\src\VsCode\Extension
+46 error Windows_NT 10.0.15063
+47 error argv "C:\\Program Files (x86)\\Microsoft Visual Studio\\d15prerel\\Enterprise\\Web\\External\\Node.exe" "C:\\Program Files (x86)\\Microsoft Visual Studio\\d15prerel\\Enterprise\\Web\\External\\node_modules\\npm\\bin\\npm-cli.js" "install"
+48 error node v5.4.1
+49 error npm  v3.3.4
+50 error No compatible version found: @types/ejs@^4.0.35
+50 error Valid install targets:
+50 error ["2.3.33","2.3.32","2.3.31","2.3.30","2.3.29","2.3.28-alpha","2.3.27-alpha","2.3.26-alpha","2.3.25-alpha","2.3.24-alpha","2.3.23-alpha","2.3.22-alpha","2.3.17-alpha","2.3.16-alpha"]
+51 error If you need help, you may report this error at:
+51 error     <https://github.com/npm/npm/issues>
+52 verbose exit [ 1, true ]

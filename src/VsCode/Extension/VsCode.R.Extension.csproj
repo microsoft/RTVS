@@ -46,23 +46,29 @@
     <None Include="language-configuration.json" />
     <None Include="package.json" />
     <None Include="package.ps1" />
+    <None Include="src\render\index.ejs" />
     <None Include="syntaxes\r.tmLanguage.json" />
     <None Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="src\deferred.ts" />
+    <TypeScriptCompile Include="src\dependencies.ts" />
     <TypeScriptCompile Include="src\editor.ts" />
     <TypeScriptCompile Include="src\requests.ts" />
     <TypeScriptCompile Include="src\extension.ts" />
-    <TypeScriptCompile Include="src\output.ts" />
+    <TypeScriptCompile Include="src\outputPanel.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
     <TypeScriptCompile Include="src\repl.ts" />
-    <TypeScriptCompile Include="src\utils.ts" />
+    <TypeScriptCompile Include="src\resultsServer.ts" />
+    <TypeScriptCompile Include="src\os.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\constants.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\RLogo.png" />
+    <Content Include="src\render\color-theme-dark.css" />
+    <Content Include="src\render\color-theme-light.css" />
     <EmbeddedResource Include="images\R.png" />
   </ItemGroup>
   <Target Name="BeforeBuild">

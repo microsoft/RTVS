@@ -50,8 +50,13 @@
         "category": "R"
       },
       {
-        "command": "r.sourceFile",
+        "command": "r.source",
         "title": "Source file",
+        "category": "R"
+      },
+      {
+        "command": "r.clear",
+        "title": "Clear output pane",
         "category": "R"
       },
       {
@@ -65,7 +70,7 @@
         "category": "R"
       },
       {
-        "command": "r.sourceFileToTerminal",
+        "command": "r.sourceToTerminal",
         "title": "Source file",
         "category": "R"
       }
@@ -82,12 +87,12 @@
         "when": "editorFocus"
       },
       {
-        "command": "r.sourceFile",
+        "command": "r.source",
         "key": "ctrl+shift+s",
         "when": "editorFocus"
       },
       {
-        "command": "r.sourceFileToTerminal",
+        "command": "r.sourceToTerminal",
         "key": "ctrl+alt+s",
         "when": "editorFocus"
       }
@@ -276,12 +281,33 @@
     "typescript": "^2.5.2",
     "vscode": "^1.1.5",
     "mocha": "^3.5.3",
-    "@types/node": "^6.0.40",
-    "@types/mocha": "^2.2.32"
+    "query-string": "^4.3.2",
+    "@types/classnames": "^0.0.32",
+    "@types/cors": "^2.8.0",
+    "@types/ejs": "^4.0.35",
+    "@types/express": "^4.0.35",
+    "@types/node": "^7.0.4",
+    "@types/mocha": "^2.2.32",
+    "@types/rx": "^2.5.33",
+    "@types/query-string": "^3.0.31",
+    "@types/socket.io": "^1.4.28",
+    "@types/socket.io-client": "^1.4.27",
+    "@types/uuid": "^3.3.27",
+    "@types/webpack": "^2.2.4",
+    "@types/webpack-env": "^1.13.0"
   },
   "dependencies": {
+    "classnames": "^2.2.5",
+    "cors": "^2.8.1",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
     "getenv": "^0.7.0",
     "opn": "^5.1.0",
+    "requirejs": "^2.3.3",
+    "rx": "^4.1.0",
+    "socket.io": "^2.0.3",
+    "tcp-port-used": "^0.1.2",
+    "uniqid": "^4.1.1",
     "applicationinsights": "^0.22.0",
     "vscode-extension-telemetry": "^0.0.8",
     "vscode-languageclient": "^3.4.2"

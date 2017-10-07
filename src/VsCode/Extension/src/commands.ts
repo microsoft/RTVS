@@ -12,10 +12,11 @@ export namespace Commands {
     export const Execute = "r.execute";
     export const Interrupt = "r.interrupt";
     export const Reset = "r.reset";
-    export const SourceFile = "r.sourceFile";
+    export const SourceFile = "r.source";
+    export const Clear = "r.clear";
     export const OpenTerminal = "r.openTerminal";
     export const ExecuteInTerminal = "r.executeInTerminal";
-    export const SourceFileToTerminal = "r.sourcFileToTerminal";
+    export const SourceFileToTerminal = "r.sourceToTerminal";
 }
 
 export function activateCommandsProvider(): vscode.Disposable[] {
@@ -23,18 +24,22 @@ export function activateCommandsProvider(): vscode.Disposable[] {
     disposables.push(vscode.commands.registerCommand(Commands.Execute, execute));
     disposables.push(vscode.commands.registerCommand(Commands.Interrupt, () => requests.interrupt()));
     disposables.push(vscode.commands.registerCommand(Commands.Reset, () => requests.reset()));
-    disposables.push(vscode.commands.registerCommand(Commands.SourceFile, sourceFile));
+    disposables.push(vscode.commands.registerCommand(Commands.SourceFile, source));
+    disposables.push(vscode.commands.registerCommand(Commands.Clear, clear));
     disposables.push(vscode.commands.registerCommand(Commands.OpenTerminal, () => repl.show()));
     disposables.push(vscode.commands.registerCommand(Commands.ExecuteInTerminal, executeInTerminal));
-    disposables.push(vscode.commands.registerCommand(Commands.SourceFileToTerminal, sourceFileToTerminal));
+    disposables.push(vscode.commands.registerCommand(Commands.SourceFileToTerminal, sourceToTerminal));
     return disposables;
 }
 
-async function sourceFile(fileUri?: vscode.Uri) {
+async function source(fileUri?: vscode.Uri) {
     const filePath = editor.getFilePath(fileUri);
     if (filePath.length > 0) {
         await requests.source(filePath);
     }
+}
+
+async function clear() {
 }
 
 async function execute() {
@@ -44,7 +49,7 @@ async function execute() {
     }
 }
 
-function sourceFileToTerminal(fileUri?: vscode.Uri) {
+function sourceToTerminal(fileUri?: vscode.Uri) {
     const filePath = editor.getFilePath(fileUri);
     if (filePath.length > 0) {
         repl.sendText(`source("${filePath}")`);
