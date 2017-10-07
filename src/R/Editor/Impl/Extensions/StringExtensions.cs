@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor {
         }
 
         public static string RemoveBackticks(this string name) {
-            if (!string.IsNullOrEmpty(name) && name.Length >= 2 && name[0] == '`' && name[name.Length-1] == '`') {
+            if (!string.IsNullOrEmpty(name) && name.Length >= 2 && name[0] == '`' && name[name.Length - 1] == '`') {
                 return name.Substring(1, name.Length - 2);
             }
             return name;
@@ -45,6 +45,15 @@ namespace Microsoft.R.Editor {
             }
 
             return TextRange.FromBounds(start, end + 1);
+        }
+
+        /// <summary>
+        /// Retrieves text between given position and the nearest preceding whitespace.
+        /// </summary>
+        public static string TextBeforePosition(this string s, int position) {
+            var i = position - 1;
+            for (; i >= 0 && !char.IsWhiteSpace(s[i]); i--) { }
+            return s.Substring(i + 1, position - i - 1);
         }
     }
 }
