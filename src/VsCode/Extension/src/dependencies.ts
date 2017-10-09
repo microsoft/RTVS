@@ -2,12 +2,37 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 "use strict";
 
+import * as vscode from "vscode";
 import * as os from "./os";
 import * as fs from "fs";
 import { getenv } from "getenv";
 import { opn } from "opn";
+import {REngine} from "./rengine";
 
-export function IsDotNetInstalled() {
+export async function getR(r: REngine): Promise<string> {
+    const interpreterPath = await r.getInterpreterPath();
+    if (interpreterPath === undefined || interpreterPath === null) {
+        if (await vscode.window.showErrorMessage("Unable to find R interpreter. Would you like to install R now?", "Yes", "No") === "Yes") {
+            InstallR();
+            vscode.window.showWarningMessage("Please restart VS Code after R installation is complete.")
+        }
+        return null;
+    }
+    return interpreterPath;
+}
+
+export async function checkDotNet(): Promise<boolean> {
+    if (!IsDotNetInstalled()) {
+        if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?", "Yes", "No") === "Yes") {
+            InstallDotNet();
+            vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.")
+        }
+        return false;
+    }
+    return true;
+}
+
+function IsDotNetInstalled() {
     const versions = ["1.1.2", "1.1.4", "2.0.0"];
     let prefix: string;
 
@@ -26,7 +51,7 @@ export function IsDotNetInstalled() {
     return false;
 }
 
-export function InstallDotNet() {
+function InstallDotNet() {
     let url: string;
     if (os.IsWindows()) {
         url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-win-x64.1.1.4.exe";
@@ -38,7 +63,7 @@ export function InstallDotNet() {
     opn(url);
 }
 
-export function InstallR() {
+function InstallR() {
     let url: string;
     if (os.IsWindows()) {
         url = "https://cran.r-project.org/bin/windows/base/";

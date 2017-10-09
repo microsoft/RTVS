@@ -8,28 +8,27 @@ import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
 import * as deps from "./dependencies";
 import { RLanguage } from "./constants";
-import { getInterpreterPath } from "./requests";
 import { ReplTerminal } from "./repl";
-import { activateCommandsProvider } from "./commands";
+import { ResultsServer } from "./resultsServer";
+import { REngine } from "./rengine";
+import { Commands } from "./commands";
+import {OutputPanel} from "./outputPanel";
 
-export let client: languageClient.LanguageClient;
-export let repl: ReplTerminal;
+let client: languageClient.LanguageClient;
+let repl: ReplTerminal;
+let rEngine: REngine;
+let commands: Commands;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-    if (!checkDotNet()) {
+    if (!deps.checkDotNet()) {
         return;
     }
 
     console.log("Activating R Tools...");
     await activateLanguageServer(context);
     console.log("R Tools is now activated.");
-
-    const interpreterPath = await getR();
-    if (interpreterPath != null) {
-        repl = new ReplTerminal(interpreterPath);
-    }
 }
 
 export async function activateLanguageServer(context: vscode.ExtensionContext) {
@@ -57,9 +56,25 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     // Create the language client and start the client.
     client = new languageClient.LanguageClient(r, "R Tools", serverOptions, clientOptions);
     context.subscriptions.push(client.start());
-    context.subscriptions.push(...activateCommandsProvider());
 
-    return client.onReady();
+    await client.onReady();
+
+    const resultsServer = new ResultsServer();
+    context.subscriptions.push(resultsServer);
+
+    rEngine = new REngine(client, resultsServer);
+    const settings = vscode.workspace.getConfiguration(RLanguage.language);
+
+    const interpreterPath = await deps.getR(rEngine);
+    if (interpreterPath != null && settings.get<boolean>("r.useTerminal")) {
+        repl = new ReplTerminal(interpreterPath);
+    }
+
+    commands = new Commands(rEngine, repl, resultsServer);
+    context.subscriptions.push(...commands.activateCommandsProvider());
+
+    const outputPanel = new OutputPanel();
+    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("r", outputPanel));
 }
 
 // this method is called when your extension is deactivated
@@ -68,37 +83,3 @@ export async function deactivate() {
         return client.stop();
     }
 }
-
-async function getR(): Promise<string> {
-    const interpreterPath = await getInterpreterPath();
-    if (interpreterPath === undefined || interpreterPath === null) {
-        if (await vscode.window.showErrorMessage("Unable to find R interpreter. Would you like to install R now?", "Yes", "No") === "Yes") {
-            deps.InstallR();
-            vscode.window.showWarningMessage("Please restart VS Code after R installation is complete.")
-        }
-        return null;
-    }
-    return interpreterPath;
-}
-
-async function checkDotNet(): Promise<boolean> {
-    if (!deps.IsDotNetInstalled()) {
-        if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?", "Yes", "No") === "Yes") {
-            deps.InstallDotNet();
-            vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.")
-        }
-        return false;
-    }
-    return true;
-}
-
-async function checkDependencies() {
-    if (!deps.IsDotNetInstalled()) {
-        if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?", "Yes", "No") === "Yes") {
-            deps.InstallDotNet();
-            vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.")
-        }
-        return false;
-    }
-    return true;
-}    

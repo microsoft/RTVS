@@ -54,7 +54,7 @@
     <TypeScriptCompile Include="src\deferred.ts" />
     <TypeScriptCompile Include="src\dependencies.ts" />
     <TypeScriptCompile Include="src\editor.ts" />
-    <TypeScriptCompile Include="src\requests.ts" />
+    <TypeScriptCompile Include="src\rengine.ts" />
     <TypeScriptCompile Include="src\extension.ts" />
     <TypeScriptCompile Include="src\outputPanel.ts" />
     <TypeScriptCompile Include="src\commands.ts" />

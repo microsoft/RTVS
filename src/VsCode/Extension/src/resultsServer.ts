@@ -104,9 +104,25 @@ export class ResultsServer extends EventEmitter {
         this.buffer = [];
     }
 
-    sendResults(data: any[]) {
-        // Add an id to each item (poor separation of concerns... but what ever)
-        const results = data.map(item => { return { id: uniqid("x"), value: item }; });
+    sendResults(code: string, data: string) {
+        let results: string;
+
+        if (code.length > 64) {
+            code = code.substring(0, 64).concat("...");
+        }
+        code = this.formatCode(code, null);
+        this.buffer = this.buffer.concat(code);
+
+        if (data.startsWith("$$IMAGE ")) {
+            const base64 = data.substring(8, data.length - 8);
+            results = `"<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 0 auto; text-align: center' />"`;
+        } else if (data.startsWith("$$ERROR ")) {
+            const error = data.substring(8, data.length - 8);
+            results = this.formatError(error);
+        } else {
+            results = this.formatCode(data, null);
+        }
+
         this.buffer = this.buffer.concat(results);
         this.broadcast("results", results);
     }
@@ -119,7 +135,7 @@ export class ResultsServer extends EventEmitter {
         this.server.emit(eventName, data);
     }
 
-    private onSocketConnection(socket:  SocketIO.Socket) {
+    private onSocketConnection(socket: SocketIO.Socket) {
         this.clients.push(socket);
 
         socket.on("disconnect", () => {
@@ -175,5 +191,16 @@ export class ResultsServer extends EventEmitter {
         }, timeoutMilliSeconds);
 
         return def.promise;
+    }
+
+    private formatError(text: string): string {
+        return this.formatCode(text, "color: red;");
+    }
+
+    private formatCode(code: string, style: string): string {
+        if (style === undefined || style === null) {
+            style = "";
+        }
+        return `"<code style='white-space: pre-wrap; display: block; ${style}' > ${code} </code>"`;
     }
 }

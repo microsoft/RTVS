@@ -9,42 +9,41 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
     internal sealed class RSessionCallback : IRSessionCallback {
-        public Task ShowErrorMessage(string message, CancellationToken cancellationToken = new CancellationToken()) => Task.CompletedTask;
+        internal byte[] PlotResult { get; set; }
+        internal PlotDeviceProperties PlotDeviceProperties { get; set; }
+            = new PlotDeviceProperties(800, 600, 96); // Typical RMD Document has CSS width of 900
 
-        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons,
-            CancellationToken cancellationToken = new CancellationToken()) => Task.FromResult(MessageButtons.OK);
+        public string CranUrlFromName(string name) => "https://cran.rstudio.com";
 
-        public Task ShowHelpAsync(string url, CancellationToken cancellationToken = new CancellationToken()) => Task.CompletedTask;
-
-        public Task Plot(PlotMessage plot, CancellationToken ct) => Task.CompletedTask;
-
-        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct) 
-            => Task.FromResult(LocatorResult.CreateNotClicked());
-
-        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct) 
-            => Task.FromResult(new PlotDeviceProperties(640, 480, 96));
-
-        public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) => Task.CompletedTask;
-
-        public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) => Task.FromResult(string.Empty);
-
-        public string CranUrlFromName(string name) => null;
-
-        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = new CancellationToken()) => Task.CompletedTask;
-
-        public Task ViewLibraryAsync(CancellationToken cancellationToken = new CancellationToken()) => Task.CompletedTask;
-
-        public Task ViewFile(string fileName, string tabName, bool deleteFile,
-            CancellationToken cancellationToken = new CancellationToken()) => Task.CompletedTask;
-
-        public Task<string> EditFileAsync(string content, string fileName, CancellationToken cancellationToken = new CancellationToken())
-            => Task.FromResult(string.Empty);
         public Task<string> FetchFileAsync(string remoteFileName, ulong remoteBlobId, string localPath, CancellationToken cancellationToken)
             => Task.FromResult(string.Empty);
 
-        public string GetLocalizedString(string id) => id;
+        public Task<LocatorResult> Locator(Guid deviceId, CancellationToken ct)
+            => Task.FromResult(new LocatorResult());
 
-        public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task Plot(PlotMessage plot, CancellationToken ct) {
+            PlotResult = plot.Data;
+            return Task.CompletedTask;
+        }
+
+        public Task<PlotDeviceProperties> PlotDeviceCreate(Guid deviceId, CancellationToken ct)
+            => Task.FromResult(PlotDeviceProperties);
+
+        public Task PlotDeviceDestroy(Guid deviceId, CancellationToken ct) => Task.CompletedTask;
+        public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) => Task.FromResult(string.Empty);
+        public Task ShowErrorMessage(string message, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+        public Task ShowHelpAsync(string url, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+
+        public Task<MessageButtons> ShowMessageAsync(string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken))
+            => Task.FromResult(MessageButtons.OK);
+
+        public Task ViewFile(string fileName, string tabName, bool deleteFile, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+        public Task<string> EditFileAsync(string expression, string fileName, CancellationToken cancellationToken = default(CancellationToken)) => Task.FromResult(string.Empty);
+        public Task ViewLibraryAsync(CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+        public Task ViewObjectAsync(string expression, string title, CancellationToken cancellationToken = default(CancellationToken)) => Task.CompletedTask;
+
+        public string GetLocalizedString(string id) => null;
+        public Task BeforePackagesInstalledAsync(CancellationToken ct) => Task.CompletedTask;
+        public Task AfterPackagesInstalledAsync(CancellationToken ct) => Task.CompletedTask;
     }
 }

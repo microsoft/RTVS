@@ -42,6 +42,7 @@ namespace Microsoft.R.LanguageServer.Services {
             .AddService(new DocumentCollection(this))
             .AddService(new ViewSignatureBroker())
             .AddService(new EditorSupport())
+            .AddService(new REvalSession(this))
             .AddEditorServices();
 
             AddPlatformSpecificServices();

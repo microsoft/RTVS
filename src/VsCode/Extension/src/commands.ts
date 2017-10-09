@@ -3,12 +3,14 @@
 "use strict";
 
 import * as vscode from "vscode";
-import { repl } from "./extension";
-import * as requests from "./requests";
+import * as requests from "./rengine";
 import * as editor from "./editor";
+import { ReplTerminal } from "./repl";
+import { ResultsServer } from "./resultsServer";
+import REngine = requests.REngine;
 
 // Must match package.json declarations
-export namespace Commands {
+export namespace CommandNames {
     export const Execute = "r.execute";
     export const Interrupt = "r.interrupt";
     export const Reset = "r.reset";
@@ -19,54 +21,80 @@ export namespace Commands {
     export const SourceFileToTerminal = "r.sourceToTerminal";
 }
 
-export function activateCommandsProvider(): vscode.Disposable[] {
-    const disposables: vscode.Disposable[] = [];
-    disposables.push(vscode.commands.registerCommand(Commands.Execute, execute));
-    disposables.push(vscode.commands.registerCommand(Commands.Interrupt, () => requests.interrupt()));
-    disposables.push(vscode.commands.registerCommand(Commands.Reset, () => requests.reset()));
-    disposables.push(vscode.commands.registerCommand(Commands.SourceFile, source));
-    disposables.push(vscode.commands.registerCommand(Commands.Clear, clear));
-    disposables.push(vscode.commands.registerCommand(Commands.OpenTerminal, () => repl.show()));
-    disposables.push(vscode.commands.registerCommand(Commands.ExecuteInTerminal, executeInTerminal));
-    disposables.push(vscode.commands.registerCommand(Commands.SourceFileToTerminal, sourceToTerminal));
-    return disposables;
-}
+export class Commands {
+    r: REngine;
+    repl: ReplTerminal;
+    resultsServer: ResultsServer;
 
-async function source(fileUri?: vscode.Uri) {
-    const filePath = editor.getFilePath(fileUri);
-    if (filePath.length > 0) {
-        await requests.source(filePath);
+    constructor(r: REngine, repl: ReplTerminal, resultsServer: ResultsServer) {
+        this.r = r;
+        this.repl = repl;
+        this.resultsServer = resultsServer;
+    }
+
+    activateCommandsProvider(): vscode.Disposable[] {
+        const disposables: vscode.Disposable[] = [];
+        disposables.push(vscode.commands.registerCommand(CommandNames.Execute, this.r.execute));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Interrupt, () => this.r.interrupt()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Reset, () => this.r.reset()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.SourceFile, this.r.source));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Clear, this.clear));
+        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => this.repl.show()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.ExecuteInTerminal, this.executeInTerminal));
+        disposables.push(vscode.commands.registerCommand(CommandNames.SourceFileToTerminal, this.sourceToTerminal));
+        return disposables;
+    }
+
+    async source(fileUri?: vscode.Uri) {
+        const filePath = editor.getFilePath(fileUri);
+        if (filePath.length > 0) {
+            await this.r.source(filePath);
+        }
+    }
+
+    clear() {
+        this.resultsServer.clearBuffer();
+    }
+
+    async execute() {
+        const code = editor.getSelectedText();
+        if (code.length > 0) {
+            await this.r.execute(code);
+        }
+    }
+
+    async sourceToTerminal(fileUri?: vscode.Uri) {
+        const filePath = editor.getFilePath(fileUri);
+        if (filePath.length > 0) {
+            await this.sendTextToTerminal(`source("${filePath}")`);
+        }
+    }
+
+    async executeInTerminal() {
+        const code = editor.getSelectedText();
+        if (code.length > 0) {
+            await this. sendTextToTerminal(code);
+            // Move caret down
+            await vscode.commands.executeCommand("cursorMove",
+                {
+                    to: "down",
+                    by: "line"
+                });
+        }
+    }
+
+    async sendTextToTerminal(text: string) {
+        const repl = await this.getRepl();
+        repl.sendText(text);
+    }
+
+    async getRepl() {
+        if (this.repl !== undefined && this.repl != null) {
+            return this.repl;
+        }
+        const interpreterPath = await this.r.getInterpreterPath();
+        this.repl = new ReplTerminal(interpreterPath);
+        this.repl.show();
+        return this.repl;
     }
 }
-
-async function clear() {
-}
-
-async function execute() {
-    const code = editor.getSelectedText();
-    if (code.length > 0) {
-        const result = await requests.execute(code);
-    }
-}
-
-function sourceToTerminal(fileUri?: vscode.Uri) {
-    const filePath = editor.getFilePath(fileUri);
-    if (filePath.length > 0) {
-        repl.sendText(`source("${filePath}")`);
-    }
-}
-
-async function executeInTerminal() {
-    const code = editor.getSelectedText();
-    if (code.length > 0) {
-        repl.sendText(code);
-        // Move caret down
-        await vscode.commands.executeCommand("cursorMove", {
-            to: "down",
-            by: "line"
-        });
-    }
-}
-
-
-

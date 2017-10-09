@@ -2,38 +2,31 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.R.LanguageServer.Server;
 
 namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
     [JsonRpcScope(MethodPrefix = "r/")]
     public sealed class RSessionService : LanguageServiceBase {
-        [JsonRpcMethod]
-        public string execute(string code) {
-            var workflow = Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            try {
-                workflow.RSession.ExecuteAsync(code);
-            } catch (RException) { } catch (OperationCanceledException) { }
-            return "RESULT";
+        private readonly IREvalSession _session;
+
+        public RSessionService() {
+            _session = Services.GetService<IREvalSession>();
         }
 
         [JsonRpcMethod]
-        public async Task interrupt() {
-            var workflow = Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            try {
-                await workflow.Operations.CancelAsync();
-                await workflow.RSession.CancelAllAsync();
-            } catch (OperationCanceledException) { }
-        }
+        public Task<string> execute(string code) 
+            => _session.ExecuteCodeAsync(code, CancellationToken.None);
 
         [JsonRpcMethod]
-        public void reset() {
-            var workflow = Services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            workflow.Operations.ResetAsync().DoNotWait();
-        }
+        public Task interrupt() => _session.InterruptAsync();
+
+        [JsonRpcMethod]
+        public Task reset() => _session.ResetAsync();
+
     }
 }
