@@ -23,13 +23,14 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
         private StringBuilder _errors;
 
         public REvalSession(IServiceContainer services) {
+            _services = services;
+            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
+
             _sessionCallback = new RSessionCallback {
                 PlotDeviceProperties = new PlotDeviceProperties(800, 600, 96)
             };
 
-            _services = services;
             _sessionStart = StartSessionAsync(_hostStartCts.Token);
-            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
         }
 
         #region IREvalSession

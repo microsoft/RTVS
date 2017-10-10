@@ -19,6 +19,11 @@ namespace Microsoft.R.Platform.Host {
         public BrokerExecutableLocator(IFileSystem fs) {
             _fs = fs;
             _baseDirectory = Path.GetDirectoryName(typeof(BrokerExecutableLocator).GetTypeInfo().Assembly.GetAssemblyPath());
+            var index = _baseDirectory.IndexOfIgnoreCase("server");
+            if(index > 0) {
+                // VS Code case
+                _baseDirectory = _baseDirectory.Substring(0, index + 6);
+            }
         }
 
         public string GetBrokerExecutablePath() {

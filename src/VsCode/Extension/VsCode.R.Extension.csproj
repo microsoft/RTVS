@@ -30,7 +30,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
-    <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(VSCTDefinitions)</VSCTDefinitions>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj">
@@ -85,6 +84,7 @@
     <Exec Command="dotnet publish --framework netcoreapp1.1 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="powershell -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
+    <Exec Command="vsce package" />
   </Target>
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

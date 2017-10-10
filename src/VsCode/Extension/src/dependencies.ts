@@ -7,7 +7,7 @@ import * as os from "./os";
 import * as fs from "fs";
 import { getenv } from "getenv";
 import { opn } from "opn";
-import {REngine} from "./rengine";
+import { REngine } from "./rengine";
 
 export async function getR(r: REngine): Promise<string> {
     const interpreterPath = await r.getInterpreterPath();
