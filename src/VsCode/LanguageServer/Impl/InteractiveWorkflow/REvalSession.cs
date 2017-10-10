@@ -42,12 +42,12 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
                 await ExecuteAndCaptureOutputAsync(session, code, ct);
 
                 if (_sessionCallback.PlotResult != null) {
-                    result = Convert.ToBase64String(_sessionCallback.PlotResult);
+                    result = "$$IMAGE " + Convert.ToBase64String(_sessionCallback.PlotResult);
                     _sessionCallback.PlotResult = null;
                 } else if (_output != null && _output.Length > 0) {
                     result = _output.ToString();
                 } else if (_errors != null && _errors.Length > 0) {
-                    result = _errors.ToString();
+                    result = "$$ERROR " + _errors;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 _output = _errors = null;

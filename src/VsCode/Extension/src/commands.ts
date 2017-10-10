@@ -21,12 +21,12 @@ export namespace CommandNames {
 export class Commands {
     private r: IREngine;
     private repl: IReplTerminal;
-    private resultsServer: IResultsServer;
+    private resultsView: IResultsView;
 
-    constructor(r: IREngine, repl: IReplTerminal, rs: IResultsServer) {
+    constructor(r: IREngine, repl: IReplTerminal, resultsView: IResultsView) {
         this.r = r;
         this.repl = repl;
-        this.resultsServer = rs;
+        this.resultsView = resultsView;
     }
 
     activateCommandsProvider(): vscode.Disposable[] {
@@ -50,14 +50,14 @@ export class Commands {
     }
 
     clear() {
-        this.resultsServer.clearBuffer();
+        this.resultsView.clear();
     }
 
     async execute() {
         const code = editor.getSelectedText();
         if (code.length > 0) {
             const result = await this.r.execute(code);
-            await this.resultsServer.sendResults(code, result);
+            await this.resultsView.append(code, result);
             await this.moveCaretDown();
         }
     }

@@ -4,17 +4,26 @@
 
 import * as vscode from "vscode";
 import { Disposable } from "vscode";
+import {ResultsServer} from "./resultsServer";
+import { createDeferred } from "./deferred";
+import {RPReviewSchema} from "./constants";
 
-export class OutputPanel extends Disposable implements vscode.TextDocumentContentProvider {
+const viewResultsUri = vscode.Uri.parse(RPReviewSchema + "://results");
+
+export class ResultsView extends Disposable implements vscode.TextDocumentContentProvider, IResultsView {
     private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
     private lastUri: vscode.Uri;
     private serverPort: number;
+    private server: IResultsServer;
 
     constructor() {
         super(() => { });
+        this.server = new ResultsServer();
     }
 
-    dispose() { }
+    dispose() {
+        this.server.dispose();
+    }
 
     set ServerPort(value: number) {
         this.serverPort = value;
@@ -27,6 +36,51 @@ export class OutputPanel extends Disposable implements vscode.TextDocumentConten
 
     get onDidChange(): vscode.Event<vscode.Uri> {
         return this._onDidChange.event;
+    }
+
+    clear() {
+        this.server.clearBuffer();
+    }
+    
+    async append(code: string, result: string) {
+        await this.ensureServerStarted();
+
+        if (code.length > 64) {
+            code = code.substring(0, 64).concat("...");
+        }
+        code = this.formatCode(code, null);
+
+        let output: string;
+        if (result.startsWith("$$IMAGE ")) {
+            const base64 = result.substring(8, result.length - 8);
+            output = `"<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 0 auto; text-align: center' />"`;
+        } else if (result.startsWith("$$ERROR ")) {
+            const error = result.substring(8, result.length - 8);
+            output = this.formatError(error);
+        } else {
+            output = this.formatCode(result, null);
+        }
+
+        this.server.send(code + "<br/>" + output);
+    }
+
+    private async ensureServerStarted() {
+        this.serverPort = await this.server.start();
+        this.openResultsView();
+    }
+
+    private openResultsView() {
+        const def = createDeferred<any>();
+
+        vscode.commands.executeCommand("vscode.previewHtml", viewResultsUri, vscode.ViewColumn.Two, "Results")
+            .then(() => {
+                def.resolve();
+            }, reason => {
+                def.reject(reason);
+                vscode.window.showErrorMessage(reason);
+            });
+
+        return def.promise;
     }
 
     private generateResultsView(): Promise<string> {
@@ -80,5 +134,16 @@ export class OutputPanel extends Disposable implements vscode.TextDocumentConten
             </html>`;
 
         return Promise.resolve(htmlContent);
+    }
+
+    private formatError(text: string): string {
+        return this.formatCode(text, "color: red;");
+    }
+
+    private formatCode(code: string, style: string): string {
+        if (style === undefined || style === null) {
+            style = "";
+        }
+        return `"<code style='white-space: pre-wrap; display: block; ${style}'>${code}</code>"`;
     }
 }

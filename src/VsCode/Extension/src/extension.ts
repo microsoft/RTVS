@@ -11,7 +11,7 @@ import { RLanguage } from "./constants";
 import { ResultsServer } from "./resultsServer";
 import { REngine } from "./rengine";
 import { Commands } from "./commands";
-import { OutputPanel } from "./outputPanel";
+import { ResultsView } from "./resultsView";
 import {ReplTerminal} from "./replTerminal";
 
 let client: languageClient.LanguageClient;
@@ -59,9 +59,6 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
 
     await client.onReady();
 
-    const resultsServer = new ResultsServer();
-    context.subscriptions.push(resultsServer);
-
     rEngine = new REngine(client);
     const settings = vscode.workspace.getConfiguration(RLanguage.language);
 
@@ -70,11 +67,11 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
         repl = new ReplTerminal(interpreterPath);
     }
 
-    commands = new Commands(rEngine, repl, resultsServer);
-    context.subscriptions.push(...commands.activateCommandsProvider());
+    const resultsView = new ResultsView();
+    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("r", resultsView));
 
-    const outputPanel = new OutputPanel();
-    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("r", outputPanel));
+    commands = new Commands(rEngine, repl, resultsView);
+    context.subscriptions.push(...commands.activateCommandsProvider());
 }
 
 // this method is called when your extension is deactivated

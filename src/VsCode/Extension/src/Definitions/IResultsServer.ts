@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 interface IResultsServer {
+    start(): Promise<number>;
     clearBuffer();
-    sendResults(code: string, result: string): Thenable<void>;
+    send(data: string): Thenable<void>;
+    dispose();
 }

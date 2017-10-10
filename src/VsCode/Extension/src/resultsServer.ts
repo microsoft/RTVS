@@ -12,8 +12,6 @@ import * as path from "path";
 import * as cors from "cors";
 import * as vscode from "vscode";
 
-const uniqid = require("uniqid");
-
 export class ResultsServer extends EventEmitter implements IResultsServer {
     private server: SocketIO.Server;
     private app: Express;
@@ -50,15 +48,14 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
         this.httpServer = http.createServer(this.app);
         this.server = io(this.httpServer);
 
-        const rootDirectory = path.join(__dirname, "..");
+        const root = vscode.extensions.getExtension("r").extensionPath;
+        const rootDirectory = path.join(root, "render");
+
         this.app.use(express.static(rootDirectory));
         // Required by transformime
         // It will look in the path http://localhost:port/resources/MathJax/MathJax.js
-        this.app.use(express.static(path.join(__dirname, "..", "node_modules", "mathjax-electron")));
+        // this.app.use(express.static(path.join(__dirname, "..", "node_modules", "mathjax-electron")));
         this.app.use(cors());
-        // this.app.get('/', function (req, res, next) {
-        //     res.sendFile(path.join(rootDirectory, 'index.html'));
-        // });
         this.app.get("/", (req, res, next) => {
             this.rootRequestHandler(req, res);
         });
@@ -86,7 +83,9 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
         const fontFamily = editorConfig.get<string>("fontFamily").split("'").join("").split('"').join("");
         const fontSize = editorConfig.get<number>("fontSize") + "px";
         const fontWeight = editorConfig.get<string>("fontWeight");
-        res.render(path.join(__dirname, "render", "index.ejs"),
+
+        const root = vscode.extensions.getExtension("r").extensionPath;
+        res.render(path.join(root, "render", "index.ejs"),
             {
                 theme: theme,
                 backgroundColor: backgroundColor,
@@ -104,29 +103,9 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
         this.buffer = [];
     }
 
-    async sendResults(code: string, result: string) {
-        let output: string;
-
-        await this.start();
-
-        if (code.length > 64) {
-            code = code.substring(0, 64).concat("...");
-        }
-        code = this.formatCode(code, null);
-        this.buffer = this.buffer.concat(code);
-
-        if (result.startsWith("$$IMAGE ")) {
-            const base64 = result.substring(8, result.length - 8);
-            output = `"<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 0 auto; text-align: center' />"`;
-        } else if (result.startsWith("$$ERROR ")) {
-            const error = result.substring(8, result.length - 8);
-            output = this.formatError(error);
-        } else {
-            output = this.formatCode(result, null);
-        }
-
-        this.buffer = this.buffer.concat(output);
-        this.broadcast("results", output);
+    async send(data: string) {
+        this.buffer = this.buffer.concat(data);
+        this.broadcast("results", data);
     }
 
     sendSetting(name: string, value: any) {
@@ -145,22 +124,6 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
             if (index >= 0) {
                 this.clients.splice(index, 1);
             }
-        });
-
-        socket.on("clientExists", (data: { id: string }) => {
-            console.log("clientExists, on server");
-            console.log(data);
-            if (!this.responsePromises.has(data.id)) {
-                console.log("Not found");
-                return;
-            }
-            const def = this.responsePromises.get(data.id);
-            this.responsePromises.delete(data.id);
-            def.resolve(true);
-        });
-
-        socket.on("settings.appendResults", (data: any) => {
-            this.emit("settings.appendResults", data);
         });
 
         socket.on("clearResults", () => {
@@ -193,16 +156,5 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
         }, timeoutMilliSeconds);
 
         return def.promise;
-    }
-
-    private formatError(text: string): string {
-        return this.formatCode(text, "color: red;");
-    }
-
-    private formatCode(code: string, style: string): string {
-        if (style === undefined || style === null) {
-            style = "";
-        }
-        return `"<code style='white-space: pre-wrap; display: block; ${style}' > ${code} </code>"`;
     }
 }

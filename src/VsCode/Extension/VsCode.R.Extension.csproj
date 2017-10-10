@@ -53,12 +53,13 @@
     <TypeScriptCompile Include="src\deferred.ts" />
     <TypeScriptCompile Include="src\Definitions\IReplTerminal.ts" />
     <TypeScriptCompile Include="src\Definitions\IResultsServer.ts" />
+    <TypeScriptCompile Include="src\Definitions\IResultsView.ts" />
     <TypeScriptCompile Include="src\dependencies.ts" />
     <TypeScriptCompile Include="src\editor.ts" />
     <TypeScriptCompile Include="src\Definitions\IREngine.ts" />
     <TypeScriptCompile Include="src\rengine.ts" />
     <TypeScriptCompile Include="src\extension.ts" />
-    <TypeScriptCompile Include="src\outputPanel.ts" />
+    <TypeScriptCompile Include="src\resultsView.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
     <TypeScriptCompile Include="src\replTerminal.ts" />
     <TypeScriptCompile Include="src\resultsServer.ts" />
