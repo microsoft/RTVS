@@ -3,35 +3,35 @@
 "use strict";
 
 import * as languageClient from "vscode-languageclient";
-import {ResultsServer} from "./resultsServer";
+import { ResultsServer } from "./resultsServer";
+
+let resultsServer: ResultsServer;
+let client: languageClient.LanguageClient;
 
 export class REngine {
-     resultsServer: ResultsServer;
-     client: languageClient.LanguageClient;
-
-     constructor(client: languageClient.LanguageClient, resultsServer: ResultsServer) {
-         this.client = client;
-        this.resultsServer = resultsServer;
+    constructor(c: languageClient.LanguageClient, rs: ResultsServer) {
+        client = c;
+        resultsServer = rs;
     }
 
     getInterpreterPath(): Thenable<string> {
-        return this.client.sendRequest<string>("information/getInterpreterPath");
+        return client.sendRequest<string>("information/getInterpreterPath");
     }
 
     async execute(code: string) {
-        const result = await this.client.sendRequest<string>("r/execute", code);
-        this.resultsServer.sendResults(code, result);
+        const result = await client.sendRequest<string>("r/execute", { "code": code });
+        resultsServer.sendResults(code, result);
     }
 
     async interrupt() {
-        await this.client.sendRequest("r/interrupt");
+        await client.sendRequest("r/interrupt");
     }
 
     async reset() {
-        await this.client.sendRequest("r/reset");
+        await client.sendRequest("r/reset");
     }
 
     async source(filePath: string) {
-        await this.client.sendRequest("r/source", filePath);
+        await client.sendRequest("r/source", filePath);
     }
 }

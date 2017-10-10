@@ -21,45 +21,45 @@ export namespace CommandNames {
     export const SourceFileToTerminal = "r.sourceToTerminal";
 }
 
-export class Commands {
-    r: REngine;
-    repl: ReplTerminal;
-    resultsServer: ResultsServer;
+let r: REngine;
+let repl: ReplTerminal;
+let resultsServer: ResultsServer;
 
-    constructor(r: REngine, repl: ReplTerminal, resultsServer: ResultsServer) {
-        this.r = r;
-        this.repl = repl;
-        this.resultsServer = resultsServer;
+export class Commands {
+    constructor(re: REngine, rt: ReplTerminal, rs: ResultsServer) {
+        r = re;
+        repl = rt;
+        resultsServer = rs;
     }
 
     activateCommandsProvider(): vscode.Disposable[] {
         const disposables: vscode.Disposable[] = [];
-        disposables.push(vscode.commands.registerCommand(CommandNames.Execute, this.r.execute));
-        disposables.push(vscode.commands.registerCommand(CommandNames.Interrupt, () => this.r.interrupt()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.Reset, () => this.r.reset()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.SourceFile, this.r.source));
-        disposables.push(vscode.commands.registerCommand(CommandNames.Clear, this.clear));
-        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => this.repl.show()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.ExecuteInTerminal, this.executeInTerminal));
-        disposables.push(vscode.commands.registerCommand(CommandNames.SourceFileToTerminal, this.sourceToTerminal));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Execute, () => this.execute()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Interrupt, () => r.interrupt()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Reset, () => r.reset()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.SourceFile, () => this.source()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Clear, () => this.clear()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => repl.show()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.ExecuteInTerminal, () => this.executeInTerminal()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.SourceFileToTerminal, () => this.sourceToTerminal()));
         return disposables;
     }
 
     async source(fileUri?: vscode.Uri) {
         const filePath = editor.getFilePath(fileUri);
         if (filePath.length > 0) {
-            await this.r.source(filePath);
+            await r.source(filePath);
         }
     }
 
     clear() {
-        this.resultsServer.clearBuffer();
+        resultsServer.clearBuffer();
     }
 
     async execute() {
         const code = editor.getSelectedText();
         if (code.length > 0) {
-            await this.r.execute(code);
+            await r.execute(code);
         }
     }
 
@@ -89,12 +89,12 @@ export class Commands {
     }
 
     async getRepl() {
-        if (this.repl !== undefined && this.repl != null) {
-            return this.repl;
+        if (repl !== undefined && repl != null) {
+            return repl;
         }
-        const interpreterPath = await this.r.getInterpreterPath();
-        this.repl = new ReplTerminal(interpreterPath);
-        this.repl.show();
-        return this.repl;
+        const interpreterPath = await r.getInterpreterPath();
+        repl = new ReplTerminal(interpreterPath);
+        repl.show();
+        return repl;
     }
 }

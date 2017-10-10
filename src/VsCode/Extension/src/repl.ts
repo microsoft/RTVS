@@ -4,37 +4,38 @@
 
 import * as vscode from "vscode";
 
-export class ReplTerminal {
-    terminal: vscode.Terminal;
-    interpreterPath: string;
+let terminal: vscode.Terminal;
+let interpreterPath: string;
 
-    constructor(interpreterPath: string) {
-        this.interpreterPath = interpreterPath;
+export class ReplTerminal {
+ 
+    constructor(ip: string) {
+        interpreterPath = ip;
 
         vscode.window.onDidCloseTerminal((closedTerminal: vscode.Terminal) => {
-            if (this.terminal === closedTerminal) {
-                this.terminal = undefined;
+            if (terminal === closedTerminal) {
+                terminal = undefined;
             }
         });
     }
 
     show() {
-        if (this.terminal === undefined) {
-            this.terminal = vscode.window.createTerminal("R", this.interpreterPath);
+        if (terminal === undefined) {
+            terminal = vscode.window.createTerminal("R", interpreterPath);
         }
-        this.terminal.show();
+        terminal.show();
     }
 
     close() {
-        if (this.terminal !== undefined) {
-            this.terminal.dispose();
-            this.terminal = undefined;
+        if (terminal !== undefined) {
+            terminal.dispose();
+            terminal = undefined;
         }
     }
 
     sendText(text: string) {
         this.show();
-        this.terminal.sendText(text);
+        terminal.sendText(text);
     }
 }
 

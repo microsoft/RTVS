@@ -12,7 +12,7 @@ import { ReplTerminal } from "./repl";
 import { ResultsServer } from "./resultsServer";
 import { REngine } from "./rengine";
 import { Commands } from "./commands";
-import {OutputPanel} from "./outputPanel";
+import { OutputPanel } from "./outputPanel";
 
 let client: languageClient.LanguageClient;
 let repl: ReplTerminal;
