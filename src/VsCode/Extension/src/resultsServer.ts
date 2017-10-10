@@ -14,7 +14,7 @@ import * as vscode from "vscode";
 
 const uniqid = require("uniqid");
 
-export class ResultsServer extends EventEmitter {
+export class ResultsServer extends EventEmitter implements IResultsServer {
     private server: SocketIO.Server;
     private app: Express;
     private httpServer: http.Server;
@@ -104,8 +104,10 @@ export class ResultsServer extends EventEmitter {
         this.buffer = [];
     }
 
-    sendResults(code: string, data: string) {
-        let results: string;
+    async sendResults(code: string, result: string) {
+        let output: string;
+
+        await this.start();
 
         if (code.length > 64) {
             code = code.substring(0, 64).concat("...");
@@ -113,18 +115,18 @@ export class ResultsServer extends EventEmitter {
         code = this.formatCode(code, null);
         this.buffer = this.buffer.concat(code);
 
-        if (data.startsWith("$$IMAGE ")) {
-            const base64 = data.substring(8, data.length - 8);
-            results = `"<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 0 auto; text-align: center' />"`;
-        } else if (data.startsWith("$$ERROR ")) {
-            const error = data.substring(8, data.length - 8);
-            results = this.formatError(error);
+        if (result.startsWith("$$IMAGE ")) {
+            const base64 = result.substring(8, result.length - 8);
+            output = `"<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 0 auto; text-align: center' />"`;
+        } else if (result.startsWith("$$ERROR ")) {
+            const error = result.substring(8, result.length - 8);
+            output = this.formatError(error);
         } else {
-            results = this.formatCode(data, null);
+            output = this.formatCode(result, null);
         }
 
-        this.buffer = this.buffer.concat(results);
-        this.broadcast("results", results);
+        this.buffer = this.buffer.concat(output);
+        this.broadcast("results", output);
     }
 
     sendSetting(name: string, value: any) {

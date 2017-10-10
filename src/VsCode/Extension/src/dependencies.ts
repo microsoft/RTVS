@@ -7,9 +7,8 @@ import * as os from "./os";
 import * as fs from "fs";
 import { getenv } from "getenv";
 import { opn } from "opn";
-import { REngine } from "./rengine";
 
-export async function getR(r: REngine): Promise<string> {
+export async function getR(r: IREngine): Promise<string> {
     const interpreterPath = await r.getInterpreterPath();
     if (interpreterPath === undefined || interpreterPath === null) {
         if (await vscode.window.showErrorMessage("Unable to find R interpreter. Would you like to install R now?", "Yes", "No") === "Yes") {

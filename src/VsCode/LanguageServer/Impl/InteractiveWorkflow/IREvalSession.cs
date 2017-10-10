@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
     internal interface IREvalSession {
         Task<string> ExecuteCodeAsync(string code, CancellationToken ct);
-        Task InterruptAsync();
-        Task ResetAsync();
-        Task CancelAsync();
+        Task InterruptAsync(CancellationToken ct);
+        Task ResetAsync(CancellationToken ct);
+        Task CancelAsync(CancellationToken ct);
     }
 }

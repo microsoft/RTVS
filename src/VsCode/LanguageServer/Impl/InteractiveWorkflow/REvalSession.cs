@@ -14,29 +14,25 @@ using Microsoft.R.Host.Client.Session;
 namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
     internal sealed class REvalSession : IREvalSession {
         private readonly IServiceContainer _services;
-        private readonly IRInteractiveWorkflow _workflow;
-        private readonly CancellationTokenSource _hostStartCts = new CancellationTokenSource();
         private readonly RSessionCallback _sessionCallback;
         private IRSession _session;
-        private readonly Task _sessionStart;
+        private IRInteractiveWorkflow _workflow;
         private StringBuilder _output;
         private StringBuilder _errors;
 
         public REvalSession(IServiceContainer services) {
             _services = services;
-            _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-
             _sessionCallback = new RSessionCallback {
                 PlotDeviceProperties = new PlotDeviceProperties(800, 600, 96)
             };
-
-            _sessionStart = StartSessionAsync(_hostStartCts.Token);
         }
 
         #region IREvalSession
         public async Task<string> ExecuteCodeAsync(string code, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
             var result = string.Empty;
+
+            _workflow = _workflow ?? _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
 
             try {
                 ct.ThrowIfCancellationRequested();
@@ -64,23 +60,23 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
 
             return result;
         }
-        public Task InterruptAsync() {
+        public Task InterruptAsync(CancellationToken ct) {
             try {
-                return _session.CancelAllAsync();
+                return _session.CancelAllAsync(ct);
             } catch (OperationCanceledException) { }
             return Task.CompletedTask;
         }
 
-        public async Task ResetAsync() {
+        public async Task ResetAsync(CancellationToken ct) {
             try {
-                await _session.StopHostAsync(true);
-                await StartSessionAsync(_hostStartCts.Token);
-            } catch(OperationCanceledException) { }
+                await _session.StopHostAsync(true, ct);
+                await StartSessionAsync(ct);
+            } catch (OperationCanceledException) { }
         }
 
-        public Task CancelAsync() {
+        public Task CancelAsync(CancellationToken ct) {
             try {
-                return _session.CancelAllAsync();
+                return _session.CancelAllAsync(ct);
             } catch (OperationCanceledException) { }
             return Task.CompletedTask;
         }
@@ -108,11 +104,7 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
         }
 
         private async Task<IRSession> StartSessionAsync(CancellationToken ct) {
-            if (_session == null) {
-                _session = _workflow.RSessions.GetOrCreate("VSCR_Output");
-            } else {
-                await _sessionStart;
-            }
+            _session = _session ?? _workflow.RSessions.GetOrCreate("VSCR_Output");
 
             if (!_session.IsHostRunning) {
                 await _session.EnsureHostStartedAsync(new RHostStartupInfo(isInteractive: true), _sessionCallback, 3000, ct);
@@ -125,9 +117,6 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
         public Task StopSessionAsync()
             => _session?.StopHostAsync(waitForShutdown: false) ?? Task.CompletedTask;
 
-        public void Dispose() {
-            _hostStartCts.Cancel();
-            _session?.Dispose();
-        }
+        public void Dispose() => _session?.Dispose();
     }
 }

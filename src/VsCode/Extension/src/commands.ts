@@ -3,11 +3,8 @@
 "use strict";
 
 import * as vscode from "vscode";
-import * as requests from "./rengine";
 import * as editor from "./editor";
-import { ReplTerminal } from "./repl";
-import { ResultsServer } from "./resultsServer";
-import REngine = requests.REngine;
+import { ReplTerminal } from "./replTerminal";
 
 // Must match package.json declarations
 export namespace CommandNames {
@@ -21,25 +18,25 @@ export namespace CommandNames {
     export const SourceFileToTerminal = "r.sourceToTerminal";
 }
 
-let r: REngine;
-let repl: ReplTerminal;
-let resultsServer: ResultsServer;
-
 export class Commands {
-    constructor(re: REngine, rt: ReplTerminal, rs: ResultsServer) {
-        r = re;
-        repl = rt;
-        resultsServer = rs;
+    private r: IREngine;
+    private repl: IReplTerminal;
+    private resultsServer: IResultsServer;
+
+    constructor(r: IREngine, repl: IReplTerminal, rs: IResultsServer) {
+        this.r = r;
+        this.repl = repl;
+        this.resultsServer = rs;
     }
 
     activateCommandsProvider(): vscode.Disposable[] {
         const disposables: vscode.Disposable[] = [];
         disposables.push(vscode.commands.registerCommand(CommandNames.Execute, () => this.execute()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.Interrupt, () => r.interrupt()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.Reset, () => r.reset()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Interrupt, () => this.r.interrupt()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.Reset, () => this.r.reset()));
         disposables.push(vscode.commands.registerCommand(CommandNames.SourceFile, () => this.source()));
         disposables.push(vscode.commands.registerCommand(CommandNames.Clear, () => this.clear()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => repl.show()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => this.repl.show()));
         disposables.push(vscode.commands.registerCommand(CommandNames.ExecuteInTerminal, () => this.executeInTerminal()));
         disposables.push(vscode.commands.registerCommand(CommandNames.SourceFileToTerminal, () => this.sourceToTerminal()));
         return disposables;
@@ -48,18 +45,20 @@ export class Commands {
     async source(fileUri?: vscode.Uri) {
         const filePath = editor.getFilePath(fileUri);
         if (filePath.length > 0) {
-            await r.source(filePath);
+            await this.r.source(filePath);
         }
     }
 
     clear() {
-        resultsServer.clearBuffer();
+        this.resultsServer.clearBuffer();
     }
 
     async execute() {
         const code = editor.getSelectedText();
         if (code.length > 0) {
-            await r.execute(code);
+            const result = await this.r.execute(code);
+            await this.resultsServer.sendResults(code, result);
+            await this.moveCaretDown();
         }
     }
 
@@ -73,13 +72,8 @@ export class Commands {
     async executeInTerminal() {
         const code = editor.getSelectedText();
         if (code.length > 0) {
-            await this. sendTextToTerminal(code);
-            // Move caret down
-            await vscode.commands.executeCommand("cursorMove",
-                {
-                    to: "down",
-                    by: "line"
-                });
+            await this.sendTextToTerminal(code);
+            await this.moveCaretDown();
         }
     }
 
@@ -89,12 +83,23 @@ export class Commands {
     }
 
     async getRepl() {
-        if (repl !== undefined && repl != null) {
-            return repl;
+        if (this.repl !== undefined && this.repl != null) {
+            return this.repl;
         }
-        const interpreterPath = await r.getInterpreterPath();
-        repl = new ReplTerminal(interpreterPath);
-        repl.show();
-        return repl;
+        const interpreterPath = await this.r.getInterpreterPath();
+        this.repl = new ReplTerminal(interpreterPath);
+        this.repl.show();
+        return this.repl;
+    }
+
+    private async moveCaretDown() {
+        const selectionEmpty = vscode.window.activeTextEditor.selection.isEmpty;
+        if (selectionEmpty) {
+            await vscode.commands.executeCommand("cursorMove",
+                {
+                    to: "down",
+                    by: "line"
+                });
+        }
     }
 }

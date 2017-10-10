@@ -8,15 +8,15 @@ import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
 import * as deps from "./dependencies";
 import { RLanguage } from "./constants";
-import { ReplTerminal } from "./repl";
 import { ResultsServer } from "./resultsServer";
 import { REngine } from "./rengine";
 import { Commands } from "./commands";
 import { OutputPanel } from "./outputPanel";
+import {ReplTerminal} from "./replTerminal";
 
 let client: languageClient.LanguageClient;
-let repl: ReplTerminal;
-let rEngine: REngine;
+let repl: IReplTerminal;
+let rEngine: IREngine;
 let commands: Commands;
 
 // this method is called when your extension is activated
@@ -62,7 +62,7 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     const resultsServer = new ResultsServer();
     context.subscriptions.push(resultsServer);
 
-    rEngine = new REngine(client, resultsServer);
+    rEngine = new REngine(client);
     const settings = vscode.workspace.getConfiguration(RLanguage.language);
 
     const interpreterPath = await deps.getR(rEngine);

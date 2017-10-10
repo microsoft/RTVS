@@ -21,6 +21,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 .ntvs_analysis.dat
+*.vsix
 
 # Roslyn cache directories
 *.ide/

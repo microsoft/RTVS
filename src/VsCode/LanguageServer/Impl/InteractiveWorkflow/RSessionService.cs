@@ -20,10 +20,10 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
             => _session.ExecuteCodeAsync(code, CancellationToken.None);
 
         [JsonRpcMethod]
-        public Task interrupt() => _session.InterruptAsync();
+        public Task interrupt() => _session.InterruptAsync(CancellationToken.None);
 
         [JsonRpcMethod]
-        public Task reset() => _session.ResetAsync();
+        public Task reset() => _session.ResetAsync(CancellationToken.None);
 
     }
 }
