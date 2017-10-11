@@ -6,16 +6,16 @@ beware! This release is meant for evaluation purposes only, and not for producti
 
 ### Installation
 
-Do you already have **VS2015 with Update 1** and a **64-bit R interpreter** installed?
+Latests RTVS ships with Visual Studio 2017 as part of the Data Science workload.
+You can either install release from https://www.visualstudio.com/downloads/ or
+Preview from the https://www.visualstudio.com/vs/preview/. Preview channel has the latest RTVS.
 
-If you do, then [just install RTVS](https://aka.ms/rtvs-current)!
-
-Otherwise, please see the [VS, RTVS and R Installation guide](http://microsoft.github.io/RTVS-docs/installation.html).
+You can still use older extension with VS 2015 Update 3 but it is no longer being updated. 
+You can install it from https://aka.ms/rtvs-current
 
 ### Documentation
 
 The interim docs are available here:
-
 * [RTVS Documentation](http://microsoft.github.io/RTVS-docs/)
 
 ### Bugs and feature requests
