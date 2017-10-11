@@ -8,7 +8,6 @@ import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
 import * as deps from "./dependencies";
 import { RLanguage } from "./constants";
-import { ResultsServer } from "./resultsServer";
 import { REngine } from "./rengine";
 import { Commands } from "./commands";
 import { ResultsView } from "./resultsView";

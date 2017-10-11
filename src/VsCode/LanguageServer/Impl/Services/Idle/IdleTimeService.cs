@@ -10,7 +10,7 @@ using Microsoft.R.LanguageServer.Threading;
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class IdleTimeService : IIdleTimeService, IIdleTimeSource, IIdleTimeNotification, IDisposable {
         private const int IdleDelay = 100;
-        private const int MaxTimesFired = 10;
+        private const int MaxTimesFired = 500;
         private readonly object _lock = new object();
         private readonly IMainThreadPriority _mainThread;
         private Timer _timer;

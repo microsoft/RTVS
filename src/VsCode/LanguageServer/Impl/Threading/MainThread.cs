@@ -18,6 +18,8 @@ namespace Microsoft.R.LanguageServer.Threading {
     /// </remarks>
     internal sealed class MainThread : IMainThreadPriority, IDisposable {
         private readonly CancellationTokenSource _ctsExit = new CancellationTokenSource();
+        private readonly ManualResetEventSlim _workItemsAvailable = new ManualResetEventSlim(false);
+        private readonly object _lock = new object();
         private readonly BufferBlock<Action> _idleTimeQueue = new BufferBlock<Action>();
         private readonly BufferBlock<Action> _normalPriorityQueue = new BufferBlock<Action>();
         private readonly BufferBlock<Action> _backgroundPriorityQueue = new BufferBlock<Action>();
@@ -97,11 +99,14 @@ namespace Microsoft.R.LanguageServer.Threading {
                     break;
             }
 
-            queue.Post(() => {
-                if (!cancellationToken.IsCancellationRequested) {
-                    action();
-                }
-            });
+            lock (_lock) {
+                queue.Post(() => {
+                    if (!cancellationToken.IsCancellationRequested) {
+                        action();
+                    }
+                });
+                _workItemsAvailable.Set();
+            }
         }
 
         internal Thread Thread { get; } = new Thread(o => ((MainThread)o).WorkerThread());
@@ -109,6 +114,11 @@ namespace Microsoft.R.LanguageServer.Threading {
         private void WorkerThread() {
             while (!_ctsExit.IsCancellationRequested) {
                 Action action;
+
+                _workItemsAvailable.Wait(_ctsExit.Token);
+                if(_ctsExit.IsCancellationRequested) {
+                    break;
+                }
 
                 while (!_ctsExit.IsCancellationRequested && 
                        _normalPriorityQueue.TryReceive(out action)) {
@@ -133,8 +143,16 @@ namespace Microsoft.R.LanguageServer.Threading {
                        _backgroundPriorityQueue.Count == 0) {
                     action = _idleOnceAction;
                     _idleOnceAction = null;
-                    if (action != null) {
-                        ProcessAction(action);
+                    if (action == null) {
+                        break;
+                    }
+                    ProcessAction(action);
+                }
+
+                lock(_lock) {
+                    if(_normalPriorityQueue.Count == 0 && _backgroundPriorityQueue.Count == 0 && 
+                       _idleTimeQueue.Count == 0 && _idleOnceAction == null) {
+                        _workItemsAvailable.Reset();
                     }
                 }
             }

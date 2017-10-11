@@ -45,7 +45,6 @@
     <None Include="language-configuration.json" />
     <None Include="package.json" />
     <None Include="package.ps1" />
-    <None Include="views\index.ejs" />
     <None Include="syntaxes\r.tmLanguage.json" />
     <None Include="tsconfig.json" />
   </ItemGroup>
@@ -62,7 +61,6 @@
     <TypeScriptCompile Include="src\resultsView.ts" />
     <TypeScriptCompile Include="src\commands.ts" />
     <TypeScriptCompile Include="src\replTerminal.ts" />
-    <TypeScriptCompile Include="src\resultsServer.ts" />
     <TypeScriptCompile Include="src\os.ts" />
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,7 @@ using System.Linq;
 using LanguageServer.VsCode.Contracts;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor;
@@ -17,11 +18,13 @@ using Microsoft.R.Editor.Validation;
 using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.R.LanguageServer.Client;
 using Microsoft.R.LanguageServer.Extensions;
+using Microsoft.R.LanguageServer.Threading;
 
 namespace Microsoft.R.LanguageServer.Validation {
     internal sealed class DiagnosticsPublisher {
         private readonly IVsCodeClient _client;
         private readonly ConcurrentQueue<IValidationError> _resultsQueue;
+        private readonly IMainThreadPriority _mainThread;
         private readonly IREditorSettings _settings;
         private readonly IIdleTimeService _idleTime;
         private readonly Uri _documentUri;
@@ -35,6 +38,7 @@ namespace Microsoft.R.LanguageServer.Validation {
 
             _settings = services.GetService<IREditorSettings>();
             _idleTime = services.GetService<IIdleTimeService>();
+            _mainThread = services.GetService<IMainThreadPriority>();
 
             var validator = _document.EditorBuffer.GetService<TreeValidator>();
             validator.Cleared += OnCleared;
@@ -67,7 +71,7 @@ namespace Microsoft.R.LanguageServer.Validation {
 
             if (!diagnostic.SequenceEqual(_lastDisgnostic, new DiagnosticComparer())) {
                 _lastDisgnostic = diagnostic;
-                _client.TextDocument.PublishDiagnostics(_documentUri, diagnostic);
+                _mainThread.Post(() => _client.TextDocument.PublishDiagnostics(_documentUri, diagnostic), ThreadPostPriority.Idle);
             }
         }
 
@@ -84,7 +88,7 @@ namespace Microsoft.R.LanguageServer.Validation {
         private Range? GetRange(IValidationError e) {
             try {
                 return _document.EditorBuffer.ToLineRange(e.Start, e.End);
-            } catch(ArgumentException) { }
+            } catch (ArgumentException) { }
             return null;
         }
 
@@ -110,11 +114,11 @@ namespace Microsoft.R.LanguageServer.Validation {
             }
         }
 
-        private class DiagnosticComparer: IEqualityComparer<Diagnostic> {
-            public bool Equals(Diagnostic x, Diagnostic y) 
+        private class DiagnosticComparer : IEqualityComparer<Diagnostic> {
+            public bool Equals(Diagnostic x, Diagnostic y)
                 => x.Range == y.Range && x.Message == y.Message;
 
-            public int GetHashCode(Diagnostic obj) 
+            public int GetHashCode(Diagnostic obj)
                 => obj != null ? obj.GetHashCode() : 0;
         }
     }

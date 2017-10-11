@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JsonRpc.Standard.Contracts;
@@ -58,8 +59,10 @@ namespace Microsoft.R.LanguageServer.Documents {
         }
 
         [JsonRpcMethod(IsNotification = true)]
-        public void didOpen(TextDocumentItem textDocument)
-            => MainThreadPriority.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri), ThreadPostPriority.Normal);
+        public void didOpen(TextDocumentItem textDocument) {
+            IdleTimeNotification.NotifyUserActivity();
+            MainThreadPriority.Post(() => Documents.AddDocument(textDocument.Text, textDocument.Uri), ThreadPostPriority.Normal);
+        }
 
         [JsonRpcMethod(IsNotification = true)]
         public async Task didChange(TextDocumentIdentifier textDocument, ICollection<TextDocumentContentChangeEvent> contentChanges) {
@@ -104,7 +107,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return MainThreadPriority.SendAsync(async () => {
                     var doc = Documents.GetDocument(textDocument.Uri);
                     var result = doc != null ? await doc.FormatAsync() : new TextEdit[0];
-                    _ignoreNextChange = result.Length > 0;
+                    _ignoreNextChange = !IsEmptyChange(result);
                     return result;
                 }, ThreadPostPriority.Background);
             }
@@ -116,7 +119,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return MainThreadPriority.SendAsync(async () => {
                     var doc = Documents.GetDocument(textDocument.Uri);
                     var result = await doc.FormatRangeAsync(range);
-                    _ignoreNextChange = result.Length > 0;
+                    _ignoreNextChange = !IsEmptyChange(result);
                     return result;
                 }, ThreadPostPriority.Background);
             }
@@ -128,7 +131,7 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return MainThreadPriority.SendAsync(async () => {
                     var doc = Documents.GetDocument(textDocument.Uri);
                     var result = await doc.AutoformatAsync(position, ch);
-                    _ignoreNextChange = result.Length > 0;
+                    _ignoreNextChange = !IsEmptyChange(result);
                     return result;
                 }, ThreadPostPriority.Background);
             }
@@ -141,5 +144,11 @@ namespace Microsoft.R.LanguageServer.Documents {
                 return doc != null ? doc.GetSymbols(textDocument.Uri) : new SymbolInformation[0];
             }
         }
+
+        private bool IsEmptyChange(IEnumerable<TextEdit> changes) 
+            => changes.All(x => string.IsNullOrEmpty(x.NewText) && IsRangeEmpty(x.Range));
+
+        private bool IsRangeEmpty(Range range)
+            => range.Start.Line == range.End.Line && range.Start.Character == range.End.Character;
     }
 }

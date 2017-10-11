@@ -111,7 +111,7 @@ namespace Microsoft.R.LanguageServer.Formatting {
             var r = new TextRange(0, oldEnd);
             var n = after.GetText(TextRange.FromBounds(0, newEnd));
 
-            if (r.Length > 0 || string.IsNullOrEmpty(n)) {
+            if (r.Length > 0 || !string.IsNullOrEmpty(n)) {
                 edits.Add(new TextEdit {
                     NewText = n,
                     Range = r.ToLineRange(before)
