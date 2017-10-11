@@ -12,12 +12,17 @@ If your contribution is large enough, you will be asked to sign the Microsoft CL
 
 ### Prerequisites
 
-1. Visual Studio 2015 Update 1 or higher.
-   - You must have C++, Web Tools, and VS Extensibility components (VS SDK) installed.
-1. R 3.2.2 or later; either one of:
+1. Visual Studio 2017 [Preview](https://www.visualstudio.com/vs/preview/) or at least the latest available release. 
+You must install C++, .NET Desktop, .NET Core (currently 1.1) and VS Extensibility components (VS SDK).
+**Release/1_0** *is the last branch buildable with Visual Studio 2015. Update 3 is required.*
+
+2. MSYS2. See instructions at the [R-Host submodule](https://github.com/Microsoft/R-Host/blob/master/BUILDING-WIN32.md).
+
+3. R 3.4.0 or later; either one of:
    - [CRAN R](https://cran.r-project.org/bin/windows/);
    - [Microsoft R Open](https://mran.revolutionanalytics.com/open/).
-1. [Wix Tools 3.10](https://wix.codeplex.com/releases/view/617257) (only needed if you want to build the installer).
+
+4. [Wix Tools 3.11](http://wixtoolset.org/releases/) (only needed if you want to build the remote services installer for Windows).
 
 ### Getting the source code
 
