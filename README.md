@@ -36,14 +36,11 @@ If you need to reach the team directly, email us at rtvsuserfeedback@microsoft.c
 
 ### Support and roadmap
 
-RTVS is created and fully supported by Microsoft (and the community!). Currently, support is via GitHub and email
-only, but we hope to add more channels soon.
+RTVS is created and fully supported by Microsoft (and the community!). 
+You can file bugs and ask questions via GitHub, send e-mail to **rtvsuserfeedback** AT **microsoft** DOT **com** or submit feedback via VS 2017 feedback tool.
 
-We are planning approximately monthly releases (with both bug fixes and features) as we march toward 1.0 RTM later
-this calendar year.
-
-If you'd like to see what features are likely to go in each milestone, you can filter the bug/feature list by that
-milestone. If you have a key bug or feature that should be attended to, please thumbs up / comment on it.
+If you install [ZenHub](https://github.com/marketplace/zenhub) extension for Chrome, 
+you should be able to see our milestones, releases and the overall progress.
 
 ### Builds and pull requests
 
