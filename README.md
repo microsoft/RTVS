@@ -26,6 +26,8 @@ made by using search, and if so, then upvote it by
 to it. Feel free to comment on any existing issues and feature requests with any additional feedback, clarifications,
 or questions.
 
+You can also submit feedback via VS 2017 feedback tool.
+
 When filing a bug, you can also use the **R Tools | Send Feedback | Send Frown** feature to send us the product
 logs to help us diagnose the problem better. This command will launch your email client with a prepopulated message,
 and will gather the logs and highlight them in Windows Explorer, so that they can be conveniently attached to the
@@ -34,10 +36,7 @@ and the logs may contain private information.
 
 If you need to reach the team directly, email us at rtvsuserfeedback@microsoft.com.
 
-### Support and roadmap
-
-RTVS is created and fully supported by Microsoft (and the community!). 
-You can file bugs and ask questions via GitHub, send e-mail to **rtvsuserfeedback** AT **microsoft** DOT **com** or submit feedback via VS 2017 feedback tool.
+### Roadmap
 
 If you install [ZenHub](https://github.com/marketplace/zenhub) extension for Chrome, 
 you should be able to see our milestones, releases and the overall progress.
