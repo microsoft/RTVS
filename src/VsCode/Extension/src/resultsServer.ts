@@ -17,9 +17,11 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
     private app: Express;
     private httpServer: http.Server;
     private clients: SocketIO.Socket[] = [];
+    private extensionPath: string;
 
-    constructor() {
+    constructor(extensionPath: string) {
         super();
+        this.extensionPath = extensionPath;
         this.responsePromises = new Map<string, Deferred<boolean>>();
     }
 
@@ -48,10 +50,10 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
         this.httpServer = http.createServer(this.app);
         this.server = io(this.httpServer);
 
-        const root = vscode.extensions.getExtension("r").extensionPath;
-        const rootDirectory = path.join(root, "render");
+         const viewsDirectory = path.join(this.extensionPath, "views");
 
-        this.app.use(express.static(rootDirectory));
+         this.app.set('views', viewsDirectory);
+         this.app.use(express.static(viewsDirectory));
         // Required by transformime
         // It will look in the path http://localhost:port/resources/MathJax/MathJax.js
         // this.app.use(express.static(path.join(__dirname, "..", "node_modules", "mathjax-electron")));
@@ -84,15 +86,15 @@ export class ResultsServer extends EventEmitter implements IResultsServer {
         const fontSize = editorConfig.get<number>("fontSize") + "px";
         const fontWeight = editorConfig.get<string>("fontWeight");
 
-        const root = vscode.extensions.getExtension("r").extensionPath;
-        res.render(path.join(root, "render", "index.ejs"),
+        res.render("index.ejs",
             {
                 theme: theme,
                 backgroundColor: backgroundColor,
                 color: color,
                 fontFamily: fontFamily,
                 fontSize: fontSize,
-                fontWeight: fontWeight
+                fontWeight: fontWeight,
+                content: this.buffer.toString()
             }
         );
     }

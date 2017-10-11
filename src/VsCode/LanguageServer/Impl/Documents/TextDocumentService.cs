@@ -103,7 +103,7 @@ namespace Microsoft.R.LanguageServer.Documents {
             using (new DebugMeasureTime("textDocument/formatting")) {
                 return MainThreadPriority.SendAsync(async () => {
                     var doc = Documents.GetDocument(textDocument.Uri);
-                    var result = await doc.FormatAsync();
+                    var result = doc != null ? await doc.FormatAsync() : new TextEdit[0];
                     _ignoreNextChange = result.Length > 0;
                     return result;
                 }, ThreadPostPriority.Background);

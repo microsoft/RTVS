@@ -45,7 +45,7 @@
     <None Include="language-configuration.json" />
     <None Include="package.json" />
     <None Include="package.ps1" />
-    <None Include="src\render\index.ejs" />
+    <None Include="views\index.ejs" />
     <None Include="syntaxes\r.tmLanguage.json" />
     <None Include="tsconfig.json" />
   </ItemGroup>
@@ -70,8 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\RLogo.png" />
-    <Content Include="src\render\color-theme-dark.css" />
-    <Content Include="src\render\color-theme-light.css" />
+    <Content Include="views\color-theme-dark.css" />
+    <Content Include="views\color-theme-light.css" />
     <EmbeddedResource Include="images\R.png" />
   </ItemGroup>
   <Target Name="BeforeBuild">

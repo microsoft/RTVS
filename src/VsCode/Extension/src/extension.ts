@@ -67,7 +67,7 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
         repl = new ReplTerminal(interpreterPath);
     }
 
-    const resultsView = new ResultsView();
+    const resultsView = new ResultsView(context.extensionPath);
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("r", resultsView));
 
     commands = new Commands(rEngine, repl, resultsView);
