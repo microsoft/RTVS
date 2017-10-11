@@ -38,24 +38,28 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         this.openResultsView();
 
         if (code.length > 64) {
-            code = code.substring(0, 64).concat("...");
+            code = code.substring(0, 256).concat("...");
         }
-        code = `&gt; ${this.formatCode(code, null)}`;
+        code = `&gt; ${this.formatCode(code)}`;
 
         let breaksAfterCode = "<br/>";
         let breaksAfterOutput = "";
 
         let output: string;
         if (result.startsWith("$$IMAGE ")) {
-            const base64 = result.substring(8, result.length - 8);
+            const base64 = result.substring(8, result.length);
             breaksAfterCode = breaksAfterCode + "<br/>";
             breaksAfterOutput = "<br/>";
             output = `<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 8,0,8,0; text-align: center; width: 90%' />`;
         } else if (result.startsWith("$$ERROR ")) {
-            const error = result.substring(8, result.length - 8);
+            const error = result.substring(8, result.length);
             output = this.formatError(error);
         } else {
-            output = this.formatCode(result, null);
+            if (result.length === 0) {
+                output = "<span style='color: green'>[done]</span><br />";
+            } else {
+                output = this.formatOutput(result);
+            }
         }
 
         this.buffer = this.buffer.concat(code + breaksAfterCode + output + breaksAfterOutput);
@@ -96,13 +100,26 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
     }
 
     private formatError(text: string): string {
-        return this.formatCode(text, "color: red;");
+        return `<span style='color: red'>${this.encodeHtml(text)}</span><br />`;
     }
 
-    private formatCode(code: string, style: string): string {
-        if (style === undefined || style === null) {
-            style = "";
-        }
-        return `<span style='${style}'>${code}</span>`;
+    private formatOutput(code: string): string {
+        return `<pre>${this.encodeHtml(code)}</pre>`;
+    }
+
+    private formatCode(code: string): string {
+        return `<span style='${this.getTextStyle()}'>${this.encodeHtml(code)}</span>`;
+    }
+
+    private encodeHtml(html: string): string {
+        return html.replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    private getTextStyle(): string {
+        const editorConfig = vscode.workspace.getConfiguration("editor");
+        const fontFamily = editorConfig.get<string>("fontFamily").split("'").join("").split('"').join("");
+        const fontSize = editorConfig.get<number>("fontSize") + "px";
+        const fontWeight = editorConfig.get<string>("fontWeight");
+        return `fontFamily: ${fontFamily}; fontSize: ${fontSize}; fontWeight: ${fontWeight};`;
     }
 }

@@ -68,8 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="images\RLogo.png" />
-    <Content Include="views\color-theme-dark.css" />
-    <Content Include="views\color-theme-light.css" />
     <EmbeddedResource Include="images\R.png" />
   </ItemGroup>
   <Target Name="BeforeBuild">
