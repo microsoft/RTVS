@@ -11,10 +11,8 @@ import { RLanguage } from "./constants";
 import { REngine } from "./rengine";
 import { Commands } from "./commands";
 import { ResultsView } from "./resultsView";
-import {ReplTerminal} from "./replTerminal";
 
 let client: languageClient.LanguageClient;
-let repl: IReplTerminal;
 let rEngine: IREngine;
 let commands: Commands;
 
@@ -61,15 +59,10 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     rEngine = new REngine(client);
     const settings = vscode.workspace.getConfiguration(RLanguage.language);
 
-    const interpreterPath = await deps.getR(rEngine);
-    if (interpreterPath != null && settings.get<boolean>("r.useTerminal")) {
-        repl = new ReplTerminal(interpreterPath);
-    }
-
     const resultsView = new ResultsView(context.extensionPath);
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("r", resultsView));
 
-    commands = new Commands(rEngine, repl, resultsView);
+    commands = new Commands(rEngine, resultsView);
     context.subscriptions.push(...commands.activateCommandsProvider());
 }
 

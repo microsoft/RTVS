@@ -23,9 +23,8 @@ export class Commands {
     private repl: IReplTerminal;
     private resultsView: IResultsView;
 
-    constructor(r: IREngine, repl: IReplTerminal, resultsView: IResultsView) {
+    constructor(r: IREngine, resultsView: IResultsView) {
         this.r = r;
-        this.repl = repl;
         this.resultsView = resultsView;
     }
 
@@ -36,7 +35,7 @@ export class Commands {
         disposables.push(vscode.commands.registerCommand(CommandNames.Reset, () => this.r.reset()));
         disposables.push(vscode.commands.registerCommand(CommandNames.SourceFile, () => this.source()));
         disposables.push(vscode.commands.registerCommand(CommandNames.Clear, () => this.clear()));
-        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => this.repl.show()));
+        disposables.push(vscode.commands.registerCommand(CommandNames.OpenTerminal, () => this.openTerminal()));
         disposables.push(vscode.commands.registerCommand(CommandNames.ExecuteInTerminal, () => this.executeInTerminal()));
         disposables.push(vscode.commands.registerCommand(CommandNames.SourceFileToTerminal, () => this.sourceToTerminal()));
         return disposables;
@@ -82,14 +81,23 @@ export class Commands {
         repl.sendText(text);
     }
 
-    async getRepl() {
-        if (this.repl !== undefined && this.repl != null) {
-            return this.repl;
+    async openTerminal() {
+        await this.createTerminal();
+        this.repl.show();
+    }
+
+    private async getRepl() {
+        await this.createTerminal();
+        this.repl.show();
+        return this.repl;
+    }
+
+    private async createTerminal() {
+        if (this.repl !== undefined && this.repl !== null) {
+            return;
         }
         const interpreterPath = await this.r.getInterpreterPath();
         this.repl = new ReplTerminal(interpreterPath);
-        this.repl.show();
-        return this.repl;
     }
 
     private async moveCaretDown() {

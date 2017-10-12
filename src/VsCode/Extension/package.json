@@ -113,11 +113,6 @@
           "default": 0,
           "description": "R interpreter index."
         },
-        "r.useTerminal": {
-          "type": "boolean",
-          "default": false,
-          "description": "Open terminal connected to R.exe."
-        },
         "r.editor.formatScope": {
           "type": "boolean",
           "default": true,
