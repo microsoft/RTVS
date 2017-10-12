@@ -57,9 +57,7 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     await client.onReady();
 
     rEngine = new REngine(client);
-    const settings = vscode.workspace.getConfiguration(RLanguage.language);
-
-    const resultsView = new ResultsView(context.extensionPath);
+    const resultsView = new ResultsView();
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("r", resultsView));
 
     commands = new Commands(rEngine, resultsView);
@@ -69,6 +67,6 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export async function deactivate() {
     if (client !== undefined || client !== null) {
-        return client.stop();
+        client.stop();
     }
 }

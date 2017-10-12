@@ -14,7 +14,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
     private uri: vscode.Uri;
     private buffer: string = "";
 
-    constructor(extensionPath: string) {
+    constructor() {
         super(() => { });
     }
 
@@ -72,6 +72,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         vscode.commands.executeCommand("vscode.previewHtml", viewResultsUri, vscode.ViewColumn.Two, "Results")
             .then(() => {
                 def.resolve();
+                vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, false);
             }, reason => {
                 def.reject(reason);
                 vscode.window.showErrorMessage(reason);
@@ -108,11 +109,14 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
     }
 
     private formatCode(code: string): string {
-        return `<span style='${this.getTextStyle()}'>${this.encodeHtml(code)}</span>`;
+        return `<span style='${this.getTextStyle()}; white-space: pre-wrap'>${this.encodeHtml(code)}</span>`;
     }
 
     private encodeHtml(html: string): string {
-        return html.replace("<", "&lt;").replace(">", "&gt;");
+        return html.replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\n", "<br />")
+            .replace("\r", "");
     }
 
     private getTextStyle(): string {

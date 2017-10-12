@@ -57,8 +57,8 @@ export class Commands {
         if (code.length > 0) {
             const result = await this.r.execute(code);
             await this.resultsView.append(code, result);
-            await this.moveCaretDown();
         }
+        await this.moveCaretDown();
     }
 
     async sourceToTerminal(fileUri?: vscode.Uri) {
@@ -72,8 +72,8 @@ export class Commands {
         const code = editor.getSelectedText();
         if (code.length > 0) {
             await this.sendTextToTerminal(code);
-            await this.moveCaretDown();
         }
+        await this.moveCaretDown();
     }
 
     async sendTextToTerminal(text: string) {
