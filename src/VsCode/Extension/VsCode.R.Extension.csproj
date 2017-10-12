@@ -109,9 +109,6 @@
     <None Include="images\RLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="images\R.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />

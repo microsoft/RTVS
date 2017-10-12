@@ -4,7 +4,7 @@
   "description": "R Language Tools (powered by RTVS)",
   "version": "0.0.1",
   "author": "Microsoft Corporation",
-  "icon": "images/R.png",
+  "icon": "images/RLogo.png",
   "publisher": "ms-vscode",
   "license": "MIT",
   "preview": true,
@@ -17,7 +17,11 @@
     "type": "git",
     "url": "https://github.com/Microsoft/RTVS"
   },
-  "keywords": [ "R", "RTVS", "R Tools" ],
+  "keywords": [
+    "R",
+    "RTVS",
+    "R Tools"
+  ],
   "engines": {
     "vscode": "^1.15.0"
   },
@@ -100,8 +104,12 @@
     "languages": [
       {
         "id": "r",
-        "aliases": [ "R Language" ],
-        "extensions": [ ".r" ]
+        "aliases": [
+          "R Language"
+        ],
+        "extensions": [
+          ".r"
+        ]
       }
     ],
     "configuration": {
@@ -191,7 +199,7 @@
         "r.linting.assignmentType": {
           "type": "boolean",
           "default": true,
-          "description": "Check that ’<-’ is always used for assignments."
+          "description": "Check that ï¿½<-ï¿½ is always used for assignments."
         },
         "r.linting.spacesAroundComma": {
           "type": "boolean",
