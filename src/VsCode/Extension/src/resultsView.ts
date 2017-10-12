@@ -18,8 +18,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         super(() => { });
     }
 
-    dispose() {
-    }
+    dispose() { }
 
     provideTextDocumentContent(uri: vscode.Uri, token: vscode.CancellationToken): Thenable<string> {
         this.uri = uri;
@@ -31,7 +30,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
     }
 
     clear() {
-        this.buffer = "";
+        this.updateBuffer("");
     }
 
     async append(code: string, result: string) {
@@ -62,8 +61,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
             }
         }
 
-        this.buffer = this.buffer.concat(code + breaksAfterCode + output + breaksAfterOutput);
-        this._onDidChange.fire(this.uri);
+        this.updateBuffer(this.buffer.concat(code + breaksAfterCode + output + breaksAfterOutput));
     }
 
     private openResultsView() {
@@ -72,7 +70,6 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         vscode.commands.executeCommand("vscode.previewHtml", viewResultsUri, vscode.ViewColumn.Two, "Results")
             .then(() => {
                 def.resolve();
-                vscode.window.showTextDocument(vscode.window.activeTextEditor.document, vscode.ViewColumn.One, false);
             }, reason => {
                 def.reject(reason);
                 vscode.window.showErrorMessage(reason);
@@ -109,14 +106,11 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
     }
 
     private formatCode(code: string): string {
-        return `<span style='${this.getTextStyle()}; white-space: pre-wrap'>${this.encodeHtml(code)}</span>`;
+        return `<span style='${this.getTextStyle()}'>${this.encodeHtml(code)}</span>`;
     }
 
     private encodeHtml(html: string): string {
-        return html.replace("<", "&lt;")
-            .replace(">", "&gt;")
-            .replace("\n", "<br />")
-            .replace("\r", "");
+        return html.replace("<", "&lt;").replace(">", "&gt;");
     }
 
     private getTextStyle(): string {
@@ -125,5 +119,11 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         const fontSize = editorConfig.get<number>("fontSize") + "px";
         const fontWeight = editorConfig.get<string>("fontWeight");
         return `fontFamily: ${fontFamily}; fontSize: ${fontSize}; fontWeight: ${fontWeight};`;
+    }
+
+    private updateBuffer(content: string) {
+        this.buffer = content;
+        this._onDidChange.fire(this.uri);
+
     }
 }

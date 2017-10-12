@@ -38,37 +38,80 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".vscodeignore" />
+    <None Include=".vscodeignore">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include=".vscode\launch.json" />
     <None Include=".vscode\settings.json" />
     <None Include=".vscode\tasks.json" />
-    <None Include="language-configuration.json" />
-    <None Include="package.json" />
+    <None Include="language-configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="package.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="package.ps1" />
-    <None Include="syntaxes\r.tmLanguage.json" />
-    <None Include="tsconfig.json" />
+    <None Include="run-vcse.cmd" />
+    <None Include="syntaxes\r.tmLanguage.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="tsconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\deferred.ts" />
-    <TypeScriptCompile Include="src\Definitions\IReplTerminal.ts" />
-    <TypeScriptCompile Include="src\Definitions\IResultsServer.ts" />
-    <TypeScriptCompile Include="src\Definitions\IResultsView.ts" />
-    <TypeScriptCompile Include="src\dependencies.ts" />
-    <TypeScriptCompile Include="src\editor.ts" />
-    <TypeScriptCompile Include="src\Definitions\IREngine.ts" />
-    <TypeScriptCompile Include="src\rengine.ts" />
-    <TypeScriptCompile Include="src\extension.ts" />
-    <TypeScriptCompile Include="src\resultsView.ts" />
-    <TypeScriptCompile Include="src\commands.ts" />
-    <TypeScriptCompile Include="src\replTerminal.ts" />
-    <TypeScriptCompile Include="src\os.ts" />
+    <None Include="src\deferred.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\Definitions\IReplTerminal.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\Definitions\IResultsServer.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\Definitions\IResultsView.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\dependencies.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\editor.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\Definitions\IREngine.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\rengine.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\extension.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\resultsView.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\commands.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\replTerminal.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="src\os.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="src\constants.ts" />
+    <None Include="src\constants.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="images\RLogo.png" />
-    <EmbeddedResource Include="images\R.png" />
+    <None Include="images\RLogo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="images\R.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />
@@ -83,8 +126,8 @@
     <Exec Command="dotnet publish --framework netcoreapp1.1 ..\..\Linux\Host\Broker\Impl\Microsoft.R.Host.Broker.Linux.csproj" />
     <Exec Command="dotnet publish --framework netcoreapp1.1 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
-    <Exec Command="powershell -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
-    <Exec Command="vsce package" />
+    <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
+    <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
   </Target>
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

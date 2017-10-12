@@ -2,12 +2,13 @@
 .vscode-test/**
 out/test/**
 test/**
-src/**
 **/*.map
 *.csproj
 *.user
 *.ps1
 *.pdb
+*.log
+*.vsix
 .gitignore
 tsconfig.json
 vsc-extension-quickstart.md
