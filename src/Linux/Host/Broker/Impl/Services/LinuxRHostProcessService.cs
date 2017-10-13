@@ -28,11 +28,15 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, ClaimsPrincipal principal, string commandLine) {
-            var args = ParseArgumentsIntoList(commandLine);
-            var environment = GetHostEnvironment(interpreter, profilePath, userName);
-            var password = principal.FindFirst(UnixClaims.RPassword).Value;
-
-            var process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
+            IProcess process;
+            if (principal.HasClaim((c) => c.Type == UnixClaims.RPassword)) {
+                var args = ParseArgumentsIntoList(commandLine);
+                var environment = GetHostEnvironment(interpreter, profilePath, userName);
+                var password = principal.FindFirst(UnixClaims.RPassword).Value;
+                process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
+            } else {
+                process = Utility.RunAsCurrentUser(_sessionLogger, _ps, commandLine, GetRHomePath(interpreter), GetLoadLibraryPath(interpreter));
+            }
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode != 0) {
                 var message = _ps.MessageFromExitCode(process.ExitCode);
@@ -45,13 +49,17 @@ namespace Microsoft.R.Host.Broker.Services {
             return process;
         }
 
-        private string GetLoadLibraryPath(string binPath) {
+        private string GetRHomePath(Interpreter interpreter) {
+            return interpreter.RInterpreterInfo.InstallPath;
+        }
+
+        private string GetLoadLibraryPath(Interpreter interpreter) {
             string value = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
             if (string.IsNullOrEmpty(value)) {
-                return binPath;
+                return interpreter.RInterpreterInfo.BinPath;
             }
 
-            return $"{binPath}:{value}";
+            return $"{interpreter.RInterpreterInfo.BinPath}:{value}";
         }
 
         private IDictionary<string, string> GetHostEnvironment(Interpreter interpreter, string profilePath, string userName) {
@@ -60,9 +68,9 @@ namespace Microsoft.R.Host.Broker.Services {
                 { "HOME"                    , profilePath},
                 { "PATH"                    , Environment.GetEnvironmentVariable("PATH")},
                 { "PWD"                     , profilePath},
-                { "R_HOME"                  , interpreter.RInterpreterInfo.InstallPath},
+                { "R_HOME"                  , GetRHomePath(interpreter)},
                 { "USER"                    , Utility.GetUnixUserName(userName)},
-                { "LD_LIBRARY_PATH"         , GetLoadLibraryPath(interpreter.RInterpreterInfo.BinPath)}
+                { "LD_LIBRARY_PATH"         , GetLoadLibraryPath(interpreter)}
             };
 
             // set optional environment variables if available
