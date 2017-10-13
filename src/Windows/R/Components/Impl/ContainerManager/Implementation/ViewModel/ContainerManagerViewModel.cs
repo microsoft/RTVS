@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -10,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
@@ -23,6 +26,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Containers;
 using Microsoft.R.Host.Client.Host;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
     internal sealed class ContainerManagerViewModel : BindableBase, IDisposable {
@@ -40,6 +44,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private bool _containerServiceIsNotInstalled;
         private bool _containerServiceIsNotRunning;
         private string _containerServiceError;
+        private IReadOnlyList<string> _localDockerVersions;
 
         public ReadOnlyObservableCollection<ContainerViewModel> LocalContainers { get; }
 
@@ -100,6 +105,18 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             ContainerServiceError = _containers.Status == ContainersStatus.HasErrors ? _containers.Error : null;
         }
 
+        private async Task PopulateVersionsAsync(CancellationToken cancellationToken = default (CancellationToken)) {
+            await _mainThread.SwitchToAsync(cancellationToken);
+            var versions = (await _containers.GetLocalDockerVersions(cancellationToken)).ToList();
+            if (NewLocalDocker == null) {
+                return;
+            }
+
+            _localDockerVersions = versions;
+            NewLocalDocker.Versions = versions;
+            NewLocalDocker.Version = versions.Count > 0 ? versions[0] : null;
+        }
+        
         public void Dispose() => _disposable.TryDispose();
 
         public void ShowCreateLocalDocker() {
@@ -107,6 +124,12 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             CancelLocalDockerFromFile();
             var (username, password) = _security.ReadUserCredentials(LastLocalDockerCredentials);
             NewLocalDocker = new CreateLocalDockerViewModel(username, password);
+            if (_localDockerVersions == null) {
+                PopulateVersionsAsync().DoNotWait();
+            } else {
+                NewLocalDocker.Versions = _localDockerVersions;
+                NewLocalDocker.Version = _localDockerVersions.Count > 0 ? _localDockerVersions[0] : null;
+            }
         }
 
         public void ShowLocalDockerFromFile() {
@@ -186,7 +209,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public void BrowseDockerTemplate() {
             _mainThread.Assert();
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            NewLocalDockerFromFile.TemplatePath = _services.UI().FileDialog.ShowBrowseDirectoryDialog(folder);
+            NewLocalDockerFromFile.TemplatePath = _services.UI().FileDialog.ShowOpenFileDialog("Dockerfile|Dockerfile", folder);
         }
 
         public async Task StartAsync(ContainerViewModel container, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -281,6 +304,16 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             => _connections.ActiveConnection?.ContainerName?.EqualsOrdinal(container.Name) ?? false;
 
         public void RefreshDocker() => _containers.Restart();
+
+        public void RefreshDockerVersions() {
+            _mainThread.Assert();
+            if (NewLocalDocker != null) {
+                NewLocalDocker.Versions = null;
+                NewLocalDocker.Version = null;
+            }
+
+            PopulateVersionsAsync().DoNotWait();
+        }
 
         public void ShowConnections()
             => _services.GetService<IRInteractiveWorkflowToolWindowService>().Connections().Show(true, true);

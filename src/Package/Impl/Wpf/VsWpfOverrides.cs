@@ -151,10 +151,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             ImageSources.ImageBackground = new SolidColorBrush(Color.FromArgb(color.A, color.R, color.G, color.B));
         }
 
-        private static void OverrideStyleKeys()
-        {
-            var comboBoxType = ExtensionsExplorerUIAssemblyLazy.Value.GetType("Microsoft.VisualStudio.ExtensionsExplorer.UI.AutomationComboBox");
-            StyleKeys.ThemedComboStyleKey = new ComponentResourceKey(comboBoxType, "ThemedComboBoxStyle");
+        private static void OverrideStyleKeys() {
+            StyleKeys.ComboBoxStyleKey = VsResourceKeys.ComboBoxStyleKey;
             StyleKeys.ScrollBarStyleKey = VsResourceKeys.ScrollBarStyleKey;
             StyleKeys.ScrollViewerStyleKey = VsResourceKeys.ScrollViewerStyleKey;
             StyleKeys.ButtonStyleKey = VsResourceKeys.ButtonStyleKey;

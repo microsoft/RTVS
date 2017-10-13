@@ -58,7 +58,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Containers\Implementation\DockerfileTemplate">
+    <None Update="Containers\Implementation\Dockerfile">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -67,9 +67,9 @@
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
   <Import Project="$(SourceDirectory)R.Workarounds.targets" />
   <ItemGroup>
-    <DockerfileTemplate Include="Containers\Implementation\DockerfileTemplate" />
+    <Dockerfile Include="Containers\Implementation\Dockerfile" />
   </ItemGroup>
   <Target Name="AfterBuild">
-    <Copy SourceFiles="@(DockerfileTemplate)" DestinationFolder="$(BinDirectory)\$(Configuration)" />
+    <Copy SourceFiles="@(Dockerfile)" DestinationFolder="$(BinDirectory)\$(Configuration)" />
   </Target>
 </Project>

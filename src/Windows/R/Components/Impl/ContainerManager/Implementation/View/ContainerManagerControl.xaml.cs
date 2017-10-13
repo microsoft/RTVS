@@ -88,6 +88,8 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.View {
 
         private void RefreshDocker(object sender, RequestNavigateEventArgs e) => ViewModel.RefreshDocker();
 
+        private void RefreshDockerVersions(object sender, RequestNavigateEventArgs e) => ViewModel.RefreshDockerVersions();
+
         private void RepositoryUri_RequestNavigate(object sender, RequestNavigateEventArgs e) => _services.Process().Start(e.Uri.AbsoluteUri);
 
         private static ContainerViewModel GetContainer(RoutedEventArgs e) => ((FrameworkElement)e.Source).DataContext as ContainerViewModel;

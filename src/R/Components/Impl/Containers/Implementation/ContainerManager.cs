@@ -12,16 +12,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Containers;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Components.Containers.Implementation {
     internal class ContainerManager : IContainerManager {
+        private const string RtvsImageName = "rtvs-image";
         private const string LatestVersion = "latest";
         private readonly IContainerService _containerService;
-        private readonly IFileSystem _fileSystem;
         private readonly CountdownDisposable _containersChangedCountdown;
         private ImmutableArray<IContainer> _containers;
         private ImmutableArray<IContainer> _runningContainers;
@@ -46,7 +45,6 @@ namespace Microsoft.R.Components.Containers.Implementation {
 
         public ContainerManager(IRInteractiveWorkflow interactiveWorkflow) {
             _containerService = interactiveWorkflow.Services.GetService<IContainerService>();
-            _fileSystem = interactiveWorkflow.Services.FileSystem();
             _updateContainersCts = new CancellationTokenSource();
             _containers = ImmutableArray<IContainer>.Empty;
             _runningContainers = ImmutableArray<IContainer>.Empty;
@@ -57,6 +55,21 @@ namespace Microsoft.R.Components.Containers.Implementation {
 
         public IReadOnlyList<IContainer> GetContainers() => _containers;
         public IReadOnlyList<IContainer> GetRunningContainers() => _runningContainers;
+
+        public async Task<IEnumerable<string>> GetLocalDockerVersions(CancellationToken cancellationToken = default (CancellationToken)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            const string imageName = "microsoft/rtvs"; // change to microsoft/rtvs;
+            try {
+                return await GetVersionsFromDockerHubAsync(imageName, cancellationToken);
+            } catch (Exception ex) when (!(ex is OperationCanceledException)) {
+                try {
+                    return await GetVersionsFromLocalImagesAsync(imageName, cancellationToken);
+                } catch (ContainerException) {
+                    return Enumerable.Empty<string>();
+                }
+            }
+        }
+
         public IDisposable SubscribeOnChanges(Action containersChanged) {
             ContainersChanged += containersChanged;
             _containersChangedCountdown.Increment();
@@ -96,42 +109,23 @@ namespace Microsoft.R.Components.Containers.Implementation {
             }
 
             var basePath = Path.GetDirectoryName(GetType().GetTypeInfo().Assembly.GetAssemblyPath());
-            var dockerTempaltePath = Path.Combine(basePath, "DockerTemplate\\DockerfileTemplate");
-            var dockerTemplateContent = File.ReadAllText(dockerTempaltePath);
-            var dockerImageContent = string.Format(dockerTemplateContent, version, username, password);
+            var dockerfilePath = Path.Combine(basePath, "DockerTemplate\\Dockerfile");
 
-            return CreateLocalDockerFromContentAsync(dockerImageContent, name, version, port, cancellationToken);
+            var hash = $"{username}|{password}".ToGuid().ToString("N");
+            var parameters = new BuildImageParameters(dockerfilePath, $"{RtvsImageName}{hash}", version, new Dictionary<string, string> {
+                ["RTVS_VERSION"] = version,
+                ["USERNAME"] = username,
+                ["PASSWORD"] = password
+            }, name, port);
+            return CreateLocalDockerFromContentAsync(parameters, cancellationToken);
         }
 
-        public async Task<IContainer> CreateLocalDockerFromFileAsync(string name, string filePath, int port, CancellationToken cancellationToken = default(CancellationToken)) {
-            var dockerImageContent = await LoadDockerImageContent(filePath, cancellationToken);
-            return await CreateLocalDockerFromContentAsync(dockerImageContent, name, LatestVersion, port, cancellationToken);
-        }
+        public Task<IContainer> CreateLocalDockerFromFileAsync(string name, string filePath, int port, CancellationToken cancellationToken = default(CancellationToken)) 
+            => CreateLocalDockerFromContentAsync(new BuildImageParameters(filePath, Guid.NewGuid().ToString(), LatestVersion, name, port), cancellationToken);
 
-        private static async Task<string> LoadDockerImageContent(string filePath, CancellationToken cancellationToken) {
-            using (var client = new HttpClient()) {
-                using (var result = await client.GetAsync(filePath, cancellationToken)) {
-                    if (result.IsSuccessStatusCode) {
-                        return await result.Content.ReadAsStringAsync();
-                    }
-
-                    throw new FileNotFoundException();
-                }
-            }
-        }
-
-        private async Task<IContainer> CreateLocalDockerFromContentAsync(string dockerImageContent, string name, string tag, int port, CancellationToken cancellationToken) {
-            var guid = dockerImageContent.ToGuid().ToString();
-            var folder = Path.Combine(Path.GetTempPath(), guid);
-            var filePath = Path.Combine(folder, "Dockerfile");
-
-            if (!_fileSystem.DirectoryExists(folder)) {
-                _fileSystem.CreateDirectory(folder);
-                _fileSystem.WriteAllText(filePath, dockerImageContent);
-            }
-
+        private async Task<IContainer> CreateLocalDockerFromContentAsync(BuildImageParameters buildOptions, CancellationToken cancellationToken) {
             try {
-                return await _containerService.CreateContainerFromFileAsync(new BuildImageParameters(filePath, guid, tag, name, port), cancellationToken);
+                return await _containerService.CreateContainerFromFileAsync(buildOptions, cancellationToken);
             } finally {
                 await UpdateContainersOnceAsync(cancellationToken);
             }
@@ -147,6 +141,32 @@ namespace Microsoft.R.Components.Containers.Implementation {
         }
 
         public void Dispose() => _updateContainersCts.Cancel();
+        
+        private static async Task<IEnumerable<string>> GetVersionsFromDockerHubAsync(string imageName, CancellationToken cancellationToken) {
+            using (var client = new HttpClient()) {
+                var uri = new Uri($"https://registry.hub.docker.com/v1/repositories/{imageName}/tags", UriKind.Absolute);
+                using (var response = await client.GetAsync(uri, cancellationToken)) {
+                    if (!response.IsSuccessStatusCode) {
+                        throw new HttpRequestException();
+                    }
+
+                    var result = await response.Content.ReadAsStringAsync();
+                    return JArray.Parse(result)
+                        .OfType<JObject>()
+                        .Select(o => o.GetValue("name"))
+                        .OfType<JValue>()
+                        .Select(v => (string) v.Value)
+                        .Where(s => !s.EndsWith("-base"));
+                }
+            }
+        }
+
+        private async Task<IEnumerable<string>> GetVersionsFromLocalImagesAsync(string imageName, CancellationToken cancellationToken) {
+            var images = await _containerService.ListImagesAsync(true, cancellationToken);
+            return images
+                .Where(i => i.Name.EqualsIgnoreCase(imageName))
+                .Select(i => i.Tag);
+        }
 
         private void StartUpdatingContainers() => UpdateContainersAsync(_updateContainersCts.Token).DoNotWait();
         private void EndUpdatingContainers() => Interlocked.Exchange(ref _updateContainersCts, new CancellationTokenSource()).Cancel();
