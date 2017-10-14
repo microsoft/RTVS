@@ -51,15 +51,7 @@ function IsDotNetInstalled() {
 }
 
 function InstallDotNet() {
-    let url: string;
-    if (os.IsWindows()) {
-        url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-win-x64.1.1.4.exe";
-    } else if (os.IsMac()) {
-        url = "https://download.microsoft.com/download/6/F/B/6FB4F9D2-699B-4A40-A674-B7FF41E0E4D2/dotnet-osx-x64.1.1.4.pkg";
-    } else {
-        url = "https://www.microsoft.com/net/download/linux";
-    }
-    opn(url);
+    opn("https://www.microsoft.com/net/download/core#/runtime");
 }
 
 function InstallR() {
