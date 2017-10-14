@@ -14,6 +14,7 @@
     <BuildDependsOn>ValidateAssemblyName;$(BuildDependsOn)</BuildDependsOn>
     <DefineConstants Condition="'$(TargetFramework)' == 'net46'">DESKTOP;$(DefineConstants)</DefineConstants>
     <LibuvVersion>1.10.0</LibuvVersion>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
     <PackageReference Include="NETStandard.Library" Version="1.6.1" />
