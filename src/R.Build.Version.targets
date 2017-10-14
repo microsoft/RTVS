@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-      <NativeVersionInfoPath>$(MSBuildThisFileDirectory)\GeneratedVersion.h</NativeVersionInfoPath>
+      <NativeVersionInfoPath>$(MSBuildProjectDirectory)\GeneratedVersion.h</NativeVersionInfoPath>
       <GenerateNativeVersionInfo Condition="'$(GenerateNativeVersionInfo)' == '' AND Exists('$(NativeVersionInfoPath)')">false</GenerateNativeVersionInfo>
       <GenerateNativeVersionInfo Condition="'$(GenerateNativeVersionInfo)' == '' AND !Exists('$(NativeVersionInfoPath)')">true</GenerateNativeVersionInfo>
   </PropertyGroup>
