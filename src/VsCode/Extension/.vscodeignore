@@ -6,7 +6,6 @@ test/**
 *.csproj
 *.user
 *.ps1
-*.pdb
 *.log
 *.vsix
 .gitignore
