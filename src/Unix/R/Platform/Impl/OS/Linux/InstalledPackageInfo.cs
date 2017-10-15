@@ -8,7 +8,7 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 
-namespace Microsoft.R.Platform.OS {
+namespace Microsoft.R.Platform.OS.Linux {
     public sealed class InstalledPackageInfo {
         public string PackageName { get; }
         public string Version { get; }

@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>Microsoft.R.Platform.Linux</AssemblyName>
+    <AssemblyName>Microsoft.R.Platform.Unix</AssemblyName>
     <RootNamespace>Microsoft.R.Platform</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />

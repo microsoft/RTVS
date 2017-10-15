@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .UseConfiguration(configuration)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseKestrel()
-                .UseStartup<LinuxStartup>()
+                .UseStartup<UnixStartup>()
                 .Build();
 
             try {

@@ -10,7 +10,7 @@ using Microsoft.Common.Core.IO;
 namespace Microsoft.R.Platform.Host {
     public sealed class BrokerExecutableLocator {
         private const string WindowsBrokerName = "Microsoft.R.Host.Broker.Windows.exe";
-        private const string LinuxBrokerName = "Microsoft.R.Host.Broker.Linux.dll";
+        private const string LinuxBrokerName = "Microsoft.R.Host.Broker.Unix.dll";
         private const string HostName = "Microsoft.R.Host";
         private const string WindowsExtension = ".exe";
         private readonly string _baseDirectory;

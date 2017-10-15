@@ -7,23 +7,23 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Platform.IO;
-using Microsoft.R.Platform.OS;
+using Microsoft.R.Platform.OS.Linux;
 
-namespace Microsoft.R.Platform.Interpreters { 
-    public sealed class RInstallation : IRInstallationService {
+namespace Microsoft.R.Platform.Interpreters.Linux {
+    public sealed class RLinuxInstallation : IRInstallationService {
         private readonly IFileSystem _fileSystem;
 
-        public RInstallation() :
+        public RLinuxInstallation() :
             this(new UnixFileSystem()) {
         }
 
-        public RInstallation(IFileSystem fileSystem) {
+        public RLinuxInstallation(IFileSystem fileSystem) {
             _fileSystem = fileSystem;
         }
 
         public IRInterpreterInfo CreateInfo(string name, string path) {
             var packagesInfo = InstalledPackageInfo.GetPackages(_fileSystem);
-            string libRsoPath = Path.Combine(path, "lib/libR.so").Replace('\\', '/');
+            var libRsoPath = Path.Combine(path, "lib/libR.so").Replace('\\', '/');
 
             // In linux there is no direct way to get version from binary. So, try and find a package that 
             // has this file in the package files list. 
@@ -37,7 +37,7 @@ namespace Microsoft.R.Platform.Interpreters {
             }
 
             if(package != null) {
-                return new RInterpreterInfo(name, package, package.Version, package.GetVersion(), _fileSystem);
+                return new RLinuxInterpreterInfo(name, package, package.Version, package.GetVersion(), _fileSystem);
             }
             return null;
         }
@@ -54,14 +54,14 @@ namespace Microsoft.R.Platform.Interpreters {
         private IEnumerable<IRInterpreterInfo> GetInstalledMRO(IEnumerable<InstalledPackageInfo> packagesInfo, ISupportedRVersionRange svl) {
             var selectedPackages = packagesInfo.Where(p => p.PackageName.StartsWithIgnoreCase("microsoft-r-open-mro") && svl.IsCompatibleVersion(p.GetVersion()));
             foreach (var package in selectedPackages) {
-                yield return RInterpreterInfo.CreateFromPackage(package, "Microsoft R Open", _fileSystem);
+                yield return RLinuxInterpreterInfo.CreateFromPackage(package, "Microsoft R Open", _fileSystem);
             }
         }
 
         private IEnumerable<IRInterpreterInfo> GetInstalledCranR(IEnumerable<InstalledPackageInfo> packagesInfo, ISupportedRVersionRange svl) {
             var selectedPackages = packagesInfo.Where(p => p.PackageName.EqualsIgnoreCase("r-base-core") && svl.IsCompatibleVersion(p.GetVersion()));
             foreach (var package in selectedPackages) {
-                yield return RInterpreterInfo.CreateFromPackage(package, "CRAN R", _fileSystem);
+                yield return RLinuxInterpreterInfo.CreateFromPackage(package, "CRAN R", _fileSystem);
             }
         }
     }

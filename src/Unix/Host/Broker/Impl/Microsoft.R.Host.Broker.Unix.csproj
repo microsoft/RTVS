@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <AssemblyName>Microsoft.R.Host.Broker.Linux</AssemblyName>
+    <AssemblyName>Microsoft.R.Host.Broker.Unix</AssemblyName>
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />
@@ -19,7 +19,7 @@
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj" />
     <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.Linux.csproj" />
+    <ProjectReference Include="..\..\..\..\Unix\R\Platform\Impl\Microsoft.R.Platform.Unix.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">
@@ -39,6 +39,11 @@
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>True</Visible>
+    </Content>
+    <Content Include="$(NuGetPackageRoot)\Libuv\$(LibuvVersion)\runtimes\osx\native\*">
+        <Link>%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Visible>True</Visible>
     </Content>
     <None Update="rtvsd.config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

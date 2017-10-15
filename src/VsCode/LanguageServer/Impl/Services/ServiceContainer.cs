@@ -74,7 +74,7 @@ namespace Microsoft.R.LanguageServer.Services {
         }
 
         private static string GetPlatformServiceProviderAssemblyName() {
-            var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".Windows.dll" : ".Linux.dll";
+            var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".Windows.dll" : ".Unix.dll";
             return "Microsoft.R.Platform" + suffix;
         }
     }
