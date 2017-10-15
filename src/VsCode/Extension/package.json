@@ -4,7 +4,7 @@
   "description": "R Language Tools (powered by RTVS)",
   "version": "0.0.1",
   "author": "Microsoft Corporation",
-  "icon": "images/RLogo.png",
+  "icon": "images/rIcon.png",
   "publisher": "ms-vscode",
   "license": "MIT",
   "preview": true,
