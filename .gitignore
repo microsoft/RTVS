@@ -21,11 +21,13 @@ bld/
 [Bb]in/
 [Oo]bj/
 .ntvs_analysis.dat
+.DS_Store
 *.vsix
 
 # Roslyn cache directories
 *.ide/
 .vs/
+.idea/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

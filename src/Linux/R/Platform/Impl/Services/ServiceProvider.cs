@@ -5,6 +5,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.Logging;
 
 namespace Microsoft.R.Platform {
     /// <summary>
@@ -17,6 +18,7 @@ namespace Microsoft.R.Platform {
             services
                 .AddService(new UnixProcessServices())
                 .AddService(new UnixFileSystem())
+                .AddService(new UnixLoggingPermissions())
                 .AddService(new RInstallation());
         }
     }
