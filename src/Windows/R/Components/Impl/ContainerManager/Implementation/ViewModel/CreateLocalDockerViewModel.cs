@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using System.Security;
 
 namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
@@ -10,6 +11,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         private static readonly string ExistingPasswordWatermark = new string('●', 8);
 
         private string _username;
+        private IReadOnlyList<string> _versions;
         private string _version;
         private SecureString _password;
         private bool _isUsernameValid;
@@ -64,6 +66,11 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
         public bool IsPasswordValid {
             get => _isPasswordValid;
             set => SetProperty(ref _isPasswordValid, value);
+        }
+
+        public IReadOnlyList<string> Versions {
+            get => _versions;
+            set => SetProperty(ref _versions, value);
         }
 
         public string Version {

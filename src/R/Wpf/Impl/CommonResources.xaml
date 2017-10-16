@@ -202,7 +202,7 @@
     </ControlTemplate>
     
     <!-- Default styles -->
-    <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ThemedComboStyleKey}}"/>
+    <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ComboBoxStyleKey}}"/>
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollBarStyleKey}}"/>
     <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollViewerStyleKey}}"/>
     <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ButtonStyleKey}}"/>

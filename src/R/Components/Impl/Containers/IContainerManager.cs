@@ -16,6 +16,7 @@ namespace Microsoft.R.Components.Containers {
 
         IReadOnlyList<IContainer> GetContainers();
         IReadOnlyList<IContainer> GetRunningContainers();
+        Task<IEnumerable<string>> GetLocalDockerVersions(CancellationToken cancellationToken = default(CancellationToken));
         IDisposable SubscribeOnChanges(Action containersChanged);
 
         Task StartAsync(string containerId, CancellationToken cancellationToken = default(CancellationToken));
