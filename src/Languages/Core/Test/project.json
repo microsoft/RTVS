@@ -6,7 +6,7 @@
     "xunit.runner.visualstudio": "2.2.0"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

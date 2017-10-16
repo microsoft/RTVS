@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework Condition="'$(CoreBuild)' == 'true'">netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition="'$(CoreBuild)' != 'true'">netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Microsoft.R.Containers</AssemblyName>
     <OutputType>Library</OutputType>
   </PropertyGroup>

@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework Condition="'$(CoreBuild)' == 'true'">netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition="'$(CoreBuild)' != 'true'">netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>Microsoft.R.Host.Protocol</RootNamespace>
     <AssemblyName>Microsoft.R.Host.Protocol</AssemblyName>
   </PropertyGroup>
@@ -17,9 +18,9 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
-    <PackageReference Include="System.IO.Pipes.AccessControl" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="System.IO.Pipes.AccessControl" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />

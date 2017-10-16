@@ -18,7 +18,7 @@
     },
     "Microsoft.VisualStudio.ProjectSystem": "15.3.224",
     "Microsoft.VisualStudio.ProjectSystem.SDK.Tools": "15.3.224",
-    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "15.0.10",
+    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "15.0.12",
     "Microsoft.VisualStudio.Shell.15.0": "15.0.26606",
     "Microsoft.VisualStudio.Shell.Interop.10.0": "10.0.30319",
     "Microsoft.VisualStudio.Shell.Interop.11.0": {
@@ -27,10 +27,10 @@
     },
     "Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime": "15.0.25726-Preview5",
     "Microsoft.VisualStudio.Shell.Interop.15.0.DesignTime": "15.0.26201",
-    "Microsoft.VisualStudio.Text.Data": "15.3.1710.203",
-    "Microsoft.VisualStudio.Text.Logic": "15.3.1710.203",
-    "Microsoft.VisualStudio.Text.UI": "15.3.1710.203",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.3.1710.203",
+    "Microsoft.VisualStudio.Text.Data": "15.4.27004",
+    "Microsoft.VisualStudio.Text.Logic": "15.4.27004",
+    "Microsoft.VisualStudio.Text.UI": "15.4.27004",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
     "Microsoft.VisualStudio.TextManager.Interop.12.0": "12.0.30110",
     "Microsoft.VisualStudio.VsInteractiveWindow": "2.3.0",
     "Microsoft.VSSDK.BuildTools": "15.1.192",
@@ -38,12 +38,12 @@
     "System.IO.Compression": "4.3.0",
     "System.IO.Compression.ZipFile": "4.3.0",
     "System.Net.Http.WinHttpHandler": "4.4.0",
-    "System.Threading.Tasks.Dataflow": "4.5.24",
-    "System.ValueTuple": "4.3.0",
+    "System.Threading.Tasks.Dataflow": "4.8.0",
+    "System.ValueTuple": "4.4.0",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

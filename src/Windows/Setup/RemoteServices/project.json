@@ -3,7 +3,7 @@
     "MicroBuild.Core": "0.2.0"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

@@ -1,26 +1,26 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.VisualStudio.CoreUtility": "15.3.1710.203",
-    "Microsoft.VisualStudio.Editor": "15.3.1710.203",
+    "Microsoft.VisualStudio.CoreUtility": "15.4.27004",
+    "Microsoft.VisualStudio.Editor": "15.4.27004",
     "Microsoft.VisualStudio.ImageCatalog": "15.0.26606",
     "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": {
       "version": "15.0.25726-Preview5",
       "embedInteropTypes": "true"
     },
-    "Microsoft.VisualStudio.Language.Intellisense": "15.3.1710.203",
+    "Microsoft.VisualStudio.Language.Intellisense": "15.4.27004",
     "Microsoft.VisualStudio.OLE.Interop": "7.10.6070",
-    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "15.0.10",
+    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "15.0.12",
     "Microsoft.VisualStudio.Shell.Interop": "7.10.6071",
-    "Microsoft.VisualStudio.Text.Data": "15.3.1710.203",
-    "Microsoft.VisualStudio.Text.Logic": "15.3.1710.203",
-    "Microsoft.VisualStudio.Text.UI": "15.3.1710.203",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.3.1710.203",
+    "Microsoft.VisualStudio.Text.Data": "15.4.27004",
+    "Microsoft.VisualStudio.Text.Logic": "15.4.27004",
+    "Microsoft.VisualStudio.Text.UI": "15.4.27004",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
     "Microsoft.VisualStudio.TextManager.Interop": "7.10.6070",
     "Microsoft.VisualStudio.TextManager.Interop.8.0": "8.0.50727"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

@@ -5,7 +5,7 @@
     "NuGet.CommandLine": "3.5.0"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

@@ -5,7 +5,7 @@
         "Microsoft.VisualStudio.Imaging": "15.0.26606"
     },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

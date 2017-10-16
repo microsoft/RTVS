@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework Condition="'$(CoreBuild)' == 'true'">netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition="'$(CoreBuild)' != 'true'">netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>Microsoft.R.Core</RootNamespace>
     <AssemblyName>Microsoft.R.Core</AssemblyName>
   </PropertyGroup>

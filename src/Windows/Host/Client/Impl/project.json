@@ -6,10 +6,10 @@
     "Newtonsoft.Json": "10.0.3",
     "System.IO.Compression": "4.3.0",
     "System.Net.Http.WinHttpHandler": "4.4.0",
-    "System.Threading.Tasks.Dataflow": "4.5.24"
+    "System.Threading.Tasks.Dataflow": "4.8.0"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

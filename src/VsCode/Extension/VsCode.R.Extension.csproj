@@ -23,7 +23,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{328906A7-14C1-48C7-BE2D-AF40F5256E49}</ProjectGuid>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <UseCodebase>true</UseCodebase>
     <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>

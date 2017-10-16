@@ -4,7 +4,7 @@
     "Newtonsoft.Json": "10.0.3"
   },
   "frameworks": {
-    "net46": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}
