@@ -7,11 +7,11 @@ using Microsoft.Common.Core.IO;
 using Microsoft.R.Platform.IO;
 
 namespace Microsoft.UnitTests.Core.Linux {
-    public class TestFileSystem : FileSystem, IFileSystem {
+    public class TestLinuxFileSystem : FileSystem, IFileSystem {
         readonly UnixFileSystem _fs = new UnixFileSystem();
         private readonly bool _doPlatformDefault;
 
-        public TestFileSystem(bool doPlatformDefault = true) {
+        public TestLinuxFileSystem(bool doPlatformDefault = true) {
             _doPlatformDefault = doPlatformDefault;
         }
 

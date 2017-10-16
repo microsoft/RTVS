@@ -10,11 +10,11 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Platform.Interpreters.Linux.Test {
     [Category.Linux]
-    public class RInstallationTest {
+    public class RLinuxInstallationTest {
         [Test]
         public void RInstallationBasicTest() {
-            var fs = new TestFileSystem();
-            var rInstallation = new RInstallation(fs);
+            var fs = new TestLinuxFileSystem();
+            var rInstallation = new RLinuxInstallation(fs);
             var installs = rInstallation.GetCompatibleEngines();
             installs.Count().Should().Be(2);
 
@@ -28,8 +28,8 @@ namespace Microsoft.R.Platform.Interpreters.Linux.Test {
         [Test]
         public void CreateInterpreterInfoTest() {
             // This test is valid only on Linux
-            var fs = new TestFileSystem(false);
-            var rInstallation = new RInstallation(fs);
+            var fs = new TestLinuxFileSystem(false);
+            var rInstallation = new RLinuxInstallation(fs);
             var mro = rInstallation.CreateInfo("MRO", "/usr/lib64/microsoft-r/3.3/lib64/R");
             mro.Version.Should().Be(new Version(3, 3, 3));
         }
