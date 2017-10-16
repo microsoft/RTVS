@@ -25,7 +25,7 @@ namespace Microsoft.Common.Core {
 
             var ptr = IntPtr.Zero;
             try {
-#if NETSTANDARD1_6
+#if !DESKTOP
                 ptr = SecureStringMarshal.SecureStringToGlobalAllocUnicode(ss);
 #else
                 ptr = Marshal.SecureStringToGlobalAllocUnicode(ss);

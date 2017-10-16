@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Platform.IO;
 
 namespace Microsoft.R.Platform.Interpreters.Mac {
@@ -14,24 +15,15 @@ namespace Microsoft.R.Platform.Interpreters.Mac {
         private readonly IFileSystem _fileSystem;
 
         public RMacInstallation() :
-            this(new UnixFileSystem()) {
-        }
+            this(new UnixFileSystem()) { }
 
         public RMacInstallation(IFileSystem fileSystem) {
             _fileSystem = fileSystem;
         }
 
         public IRInterpreterInfo CreateInfo(string name, string path) {
-            if (path.StartsWithOrdinal(RootPath)) { }
-            var resPath = path.Substring(RootPath.Length, path.Length - RootPath.Length);
-            var index = resPath.IndexOf("/Resources");
-            if(index > 0) {
-                var versionString = resPath.Substring(0, index);
-                if (Version.TryParse(versionString, out var version)) {
-                    return new RMacInterpreterInfo("R " + versionString, versionString, version, _fileSystem);
-                }
-            }
-            return null;
+            var version = VersionFromPath(path, out var versionString);
+            return version != null ? new RMacInterpreterInfo("R " + versionString, versionString, version, _fileSystem) : null;
         }
 
         public IEnumerable<IRInterpreterInfo> GetCompatibleEngines(ISupportedRVersionRange svl = null) {
@@ -43,11 +35,23 @@ namespace Microsoft.R.Platform.Interpreters.Mac {
         private IEnumerable<IRInterpreterInfo> GetInstalledCranR(ISupportedRVersionRange svl) {
             var rFrameworkPath = Path.Combine("/Library/Frameworks/R.framework/Versions");
 
-            foreach (var dir in _fileSystem.GetDirectories(rFrameworkPath)) {
-                if (Version.TryParse(dir, out var version) && svl.IsCompatibleVersion(version)) {
-                    yield return new RMacInterpreterInfo("R " + dir, dir, version, _fileSystem);
+            foreach (var path in _fileSystem.GetDirectories(rFrameworkPath)) {
+                var version = VersionFromPath(path, out var versionString);
+                if (version != null && svl.IsCompatibleVersion(version)) {
+                    yield return new RMacInterpreterInfo("R " + versionString, versionString, version, _fileSystem);
                 }
             }
+        }
+
+        private static Version VersionFromPath(string path, out string versionString) {
+            versionString = null;
+            if (!path.StartsWithOrdinal(RootPath)) {
+                return null;
+            }
+            var resPath = path.Substring(RootPath.Length, path.Length - RootPath.Length);
+            var index = resPath.IndexOf("/Resources");
+            versionString = index > 0 ? resPath.Substring(0, index) : resPath;
+            return Version.TryParse(versionString, out var version) ? version : null;
         }
     }
 }

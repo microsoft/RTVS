@@ -118,8 +118,8 @@
     <CallTarget Targets="_build" />
   </Target>
   <Target Name="_build">
-    <Exec Command="dotnet publish --framework netcoreapp1.1 ..\..\Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
-    <Exec Command="dotnet publish --framework netcoreapp1.1 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
+    <Exec Command="dotnet publish --framework netcoreapp2.0 ..\..\Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
+    <Exec Command="dotnet publish --framework netcoreapp2.0 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />

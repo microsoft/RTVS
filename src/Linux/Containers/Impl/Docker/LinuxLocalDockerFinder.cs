@@ -7,7 +7,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Platform.OS;
+using Microsoft.R.Platform.OS.Linux;
 
 namespace Microsoft.R.Containers.Docker {
     public class LinuxLocalDockerFinder {

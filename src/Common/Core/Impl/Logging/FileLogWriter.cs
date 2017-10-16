@@ -28,14 +28,14 @@ namespace Microsoft.Common.Core.Logging {
             if (timerTimeout > 0) {
                 var timer = new Timer(OnTimer, null, timerTimeout, timerTimeout);
             }
-#if !NETSTANDARD1_6
+#if DESKTOP
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 #endif
         }
 
         private void OnTimer(object state) => StartWritingToFile();
-#if !NETSTANDARD1_6
+#if DESKTOP
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
             WriteToFileAsync().Wait(_maxTimeout);
         }

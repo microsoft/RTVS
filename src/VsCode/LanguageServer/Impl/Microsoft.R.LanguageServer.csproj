@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp1.1;netstandard1.6</TargetFrameworks>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <AssemblyName>Microsoft.R.LanguageServer</AssemblyName>
     <RootNamespace>Microsoft.R.LanguageServer</RootNamespace>
   </PropertyGroup>
@@ -32,12 +32,11 @@
     <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Core\Impl\Microsoft.R.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Editor\Impl\Microsoft.R.Editor.csproj" />
-    <ProjectReference Include="..\..\..\Host\Broker\Impl\Microsoft.R.Host.Broker.csproj" />
-    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
-    <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj" />
-    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="..\..\..\Unix\R\Platform\Impl\Microsoft.R.Platform.Unix.csproj" />
-    <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Broker\Impl\Microsoft.R.Host.Broker.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Components\Impl\Microsoft.R.Components.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Unix\R\Platform\Impl\Microsoft.R.Platform.Unix.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

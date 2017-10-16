@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Broker.About {
                 Is64BitOperatingSystem = RuntimeInformation.OSArchitecture == Architecture.X64,
                 Is64BitProcess = RuntimeInformation.ProcessArchitecture == Architecture.X64,
                 ProcessorCount = Environment.ProcessorCount,
-#if !NETSTANDARD1_6
+#if DESKTOP
                 WorkingSet = Environment.WorkingSet,
 #endif
                 ConnectedUserCount = _sessionManager.GetUsers().Count()

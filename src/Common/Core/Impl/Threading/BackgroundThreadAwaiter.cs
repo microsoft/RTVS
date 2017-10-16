@@ -19,7 +19,7 @@ namespace Microsoft.Common.Core.Threading {
 
         public void UnsafeOnCompleted(Action continuation) {
             Trace.Assert(continuation != null);
-#if NETSTANDARD1_6
+#if !DESKTOP
             ThreadPool.QueueUserWorkItem(WaitCallback, continuation);
 #else
             ThreadPool.UnsafeQueueUserWorkItem(WaitCallback, continuation);

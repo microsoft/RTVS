@@ -17,7 +17,7 @@ using Microsoft.R.LanguageServer.Services.Editor;
 using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Threading;
 
-#if NETCOREAPP1_1
+#if NETCOREAPP2_0
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
@@ -49,7 +49,7 @@ namespace Microsoft.R.LanguageServer.Services {
         }
 
         private void AddPlatformSpecificServices() {
-#if NETCOREAPP1_1
+#if NETCOREAPP2_0
             var thisAssembly = Assembly.GetEntryAssembly();
             Assembly assembly;
             var platformAssemblyName = GetPlatformServiceProviderAssemblyName();
