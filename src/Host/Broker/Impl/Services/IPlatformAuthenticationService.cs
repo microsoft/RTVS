@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Broker.Services {
-    public interface IAuthenticationService {
+    public interface IPlatformAuthenticationService {
         Task<ClaimsPrincipal> SignInAsync(string username, string password, string authenticationScheme);
     }
 }

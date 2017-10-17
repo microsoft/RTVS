@@ -1,13 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-// #define WAIT_FOR_DEBUGGER
-
 using System;
-using System.IO;
 using System.ServiceProcess;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
@@ -16,46 +12,21 @@ using Microsoft.R.Host.Broker.Logging;
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
         public static void Main(string[] args) {
-#if WAIT_FOR_DEBUGGER
-            while (!System.Diagnostics.Debugger.IsAttached) {
-                System.Threading.Thread.Sleep(1000);
-            }
-#endif
+            var cm = new CommonMain(args);
 
-            var configuration = new ConfigurationBuilder()
-                .AddCommandLine(args)
-                .Build();
-
-            var loggerFactory = new LoggerFactory()
-                    .AddDebug()
-                    .AddConsole(LogLevel.Trace);
-
-
-            var startupOptions = configuration.GetStartupOptions();
-            if (startupOptions != null && startupOptions.IsService) {
-                loggerFactory.AddEventLog(new EventLogSettings {
+            if (cm.IsService) {
+                cm.LoggerFactory.AddEventLog(new EventLogSettings {
                     Filter = (_, logLevel) => logLevel >= LogLevel.Warning,
                     SourceName = Resources.Text_ServiceName
                 });
             }
 
-            configuration = Startup.LoadConfiguration(loggerFactory, configuration.GetValue<string>("config"), args);
-            var loggingOptions = configuration.GetLoggingOptions();
+            var logFolder = cm.LoggingOptions != null ? cm.LoggingOptions.LogFolder : Environment.GetEnvironmentVariable("TEMP");
+            cm.LoggerFactory.AddFile(cm.Name, logFolder);
 
-            var name = startupOptions != null ? startupOptions.Name : "RTVS";
-            var logFolder = loggingOptions != null ? loggingOptions.LogFolder : Environment.GetEnvironmentVariable("TEMP");
-            loggerFactory.AddFile(name, logFolder);
+            var webHost = cm.Configure<WindowsStartup>().Build();
 
-            var webHost = new WebHostBuilder()
-                .ConfigureServices(s => s.AddSingleton(configuration))
-                .UseLoggerFactory(loggerFactory)
-                .UseConfiguration(configuration)
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseKestrel()
-                .UseStartup<WindowsStartup>()
-                .Build();
-
-            if (startupOptions != null && startupOptions.IsService) {
+            if (cm.IsService) {
                 ServiceBase.Run(new BrokerService(webHost));
             } else {
                 try {

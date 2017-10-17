@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             services.AddSingleton<IFileSystem, UnixFileSystem>()
                 .AddSingleton<IProcessServices, UnixProcessServices>()
-                .AddSingleton<IAuthenticationService, LinuxAuthenticationService>()
+                .AddSingleton<IPlatformAuthenticationService, LinuxAuthenticationService>()
                 .AddSingleton<IRHostProcessService, LinuxRHostProcessService>()
                 .AddSingleton(installation)
                 .AddSingleton<ISystemInfoService, LinuxSystemInfoService>();

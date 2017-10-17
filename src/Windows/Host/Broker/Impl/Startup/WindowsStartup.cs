@@ -19,7 +19,7 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             services
                 .AddSingleton<IFileSystem>(new WindowsFileSystem())
-                .AddSingleton<IAuthenticationService, WindowsAuthenticationService>()
+                .AddSingleton<IPlatformAuthenticationService, WindowsAuthenticationService>()
                 .AddSingleton<IRHostProcessService, WindowsRHostProcessService>()
                 .AddSingleton<IRInstallationService, RInstallation>()
                 .AddSingleton<ISystemInfoService, WindowsSystemInfoService>()

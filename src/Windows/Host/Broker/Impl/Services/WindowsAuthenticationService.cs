@@ -15,12 +15,12 @@ using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Services {
-    public class WindowsAuthenticationService : IAuthenticationService {
+    public class WindowsAuthenticationService : IPlatformAuthenticationService {
         private readonly SecurityOptions _options;
-        private readonly ILogger<IAuthenticationService> _logger;
+        private readonly ILogger<IPlatformAuthenticationService> _logger;
         private readonly UserProfileManager _userProfileManager;
 
-        public WindowsAuthenticationService(UserProfileManager userProfileManager, IOptions<SecurityOptions> options, ILogger<IAuthenticationService> logger) {
+        public WindowsAuthenticationService(UserProfileManager userProfileManager, IOptions<SecurityOptions> options, ILogger<IPlatformAuthenticationService> logger) {
             _userProfileManager = userProfileManager;
             _options = options.Value;
             _logger = logger;

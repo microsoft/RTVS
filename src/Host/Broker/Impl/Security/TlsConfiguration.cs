@@ -3,11 +3,10 @@
 
 using System;
 using System.Net.Security;
-using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,7 @@ using Microsoft.R.Host.Broker.Startup;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Security {
-    public sealed class TlsConfiguration : IConfigureOptions<KestrelServerOptions> {
+    public sealed class TlsConfiguration {
         private readonly IApplicationLifetime _lifetime;
         private readonly ILogger<TlsConfiguration> _logger;
         private readonly StartupOptions _startupOptions;
@@ -29,8 +28,8 @@ namespace Microsoft.R.Host.Broker.Security {
             _securityOptions = securityOptions.Value;
         }
 
-        public void Configure(KestrelServerOptions options) {
-            var httpsOptions = GetHttpsOptions();
+        public HttpsConnectionAdapterOptions GetHttpsOptions(KestrelServerOptions options) {
+            var httpsOptions = CreateOptions();
             // Allow 
             if (httpsOptions == null) {
                 _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
@@ -40,14 +39,13 @@ namespace Microsoft.R.Host.Broker.Security {
                     Environment.Exit((int)BrokerExitCodes.NoCertificate);
                 }
             }
-
-            options.UseHttps(httpsOptions);
+            return httpsOptions;
         }
 
-        private HttpsConnectionFilterOptions GetHttpsOptions() {
+        private HttpsConnectionAdapterOptions CreateOptions() {
             var cert = GetCertificate();
             if (cert != null) {
-                return new HttpsConnectionFilterOptions {
+                return new HttpsConnectionAdapterOptions {
                     ServerCertificate = cert,
                     ClientCertificateValidation = ClientCertificateValidationCallback,
                     ClientCertificateMode = ClientCertificateMode.NoCertificate,
@@ -76,8 +74,7 @@ namespace Microsoft.R.Host.Broker.Security {
             return certificate;
         }
 
-        private static bool ClientCertificateValidationCallback(X509Certificate2 certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
-            return sslPolicyErrors == SslPolicyErrors.None;
-        }
+        private static bool ClientCertificateValidationCallback(X509Certificate2 certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+            => sslPolicyErrors == SslPolicyErrors.None;
     }
 }

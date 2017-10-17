@@ -8,23 +8,22 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Security;
-
+using Microsoft.AspNetCore.Authentication;
 
 namespace Microsoft.R.Host.Broker.Services {
-    public class LinuxAuthenticationService : IAuthenticationService {
+    public class LinuxAuthenticationService : IPlatformAuthenticationService {
         private readonly SecurityOptions _options;
         private readonly IProcessServices _ps;
-        private readonly ILogger<IAuthenticationService> _logger;
+        private readonly ILogger<IPlatformAuthenticationService> _logger;
 
-        public LinuxAuthenticationService(IOptions<SecurityOptions> options, ILogger<IAuthenticationService> logger, IProcessServices ps) {
+        public LinuxAuthenticationService(IOptions<SecurityOptions> options, ILogger<IPlatformAuthenticationService> logger, IProcessServices ps) {
             _options = options.Value;
             _ps = ps;
             _logger = logger;
         }
 
         public Task<ClaimsPrincipal> SignInAsync(string username, string password, string authenticationScheme) {
-            string profileDir;
-            if(Utility.AuthenticateUser(_logger, _ps, username, password, _options.AllowedGroup, out profileDir)) {
+            if (Utility.AuthenticateUser(_logger, _ps, username, password, _options.AllowedGroup, out var profileDir)) {
                 var identity = new GenericIdentity(username, "login");
                 var principal = new ClaimsPrincipal(identity);
                 var claims = new[] {

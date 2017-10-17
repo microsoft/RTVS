@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Sessions;
-using Microsoft.R.Host.Broker.Startup;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -46,7 +44,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
         public static IProcess AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
             var proc = CreateRunAsUserProcess(ps, true);
-            using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
+            using (var writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
                 var message = new AuthenticateAndRunMessage() {
                     Username = GetUnixUserName(username),
                     Password = password,
@@ -54,7 +52,7 @@ namespace Microsoft.R.Host.Broker.Services {
                     Environment = environment.Select(e => $"{e.Key}={e.Value}"),
                     WorkingDirectory = profileDir
                 };
-                string json = JsonConvert.SerializeObject(message, GetJsonSettings());
+                var json = JsonConvert.SerializeObject(message, GetJsonSettings());
                 var jsonBytes = Encoding.UTF8.GetBytes(json);
                 writer.Write(jsonBytes.Length);
                 writer.Write(jsonBytes);
@@ -64,16 +62,16 @@ namespace Microsoft.R.Host.Broker.Services {
             return proc;
         }
 
-        public static bool AuthenticateUser(ILogger<IAuthenticationService> logger, IProcessServices ps,  string username, string password, string allowedGroup, out string profileDir) {
-            bool retval = false;
+        public static bool AuthenticateUser(ILogger<IPlatformAuthenticationService> logger, IProcessServices ps,  string username, string password, string allowedGroup, out string profileDir) {
+            var retval = false;
             IProcess proc = null;
-            string userDir = string.Empty;
+            var userDir = string.Empty;
             try {
                 proc = CreateRunAsUserProcess(ps, false);
-                using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true))
-                using (BinaryReader reader = new BinaryReader(proc.StandardOutput.BaseStream, Encoding.UTF8, true)) {
+                using (var writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true))
+                using (var reader = new BinaryReader(proc.StandardOutput.BaseStream, Encoding.UTF8, true)) {
                     var message = new AuthenticationOnlyMessage() { Username = GetUnixUserName(username), Password = password, AllowedGroup = allowedGroup };
-                    string json = JsonConvert.SerializeObject(message, GetJsonSettings());
+                    var json = JsonConvert.SerializeObject(message, GetJsonSettings());
                     var jsonBytes = Encoding.UTF8.GetBytes(json);
                     writer.Write(jsonBytes.Length);
                     writer.Write(jsonBytes);
@@ -82,7 +80,7 @@ namespace Microsoft.R.Host.Broker.Services {
                     proc.WaitForExit(3000);
 
                     if (proc.HasExited && proc.ExitCode == 0) {
-                        int size = reader.ReadInt32();
+                        var size = reader.ReadInt32();
                         var bytes = reader.ReadBytes(size);
                         var arr = JsonConvert.DeserializeObject<JArray>(Encoding.UTF8.GetString(bytes));
                         if(arr.Count > 1) {

@@ -80,10 +80,6 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddRouting()
                 .AddMvc()
                 .AddApplicationPart(typeof(Startup).GetTypeInfo().Assembly);
-            
-            if (!IsLocalConnection()) {
-                services.AddSingleton<IConfigureOptions<KestrelServerOptions>, TlsConfiguration>();
-            }
         }
 
         public virtual void Configure(IApplicationBuilder app
@@ -157,14 +153,6 @@ namespace Microsoft.R.Host.Broker.Startup {
             await Task.Delay(10000);
             _logger.LogCritical(Resources.Critical_TimeOutShutdown);
             Environment.Exit((int)BrokerExitCodes.Timeout);
-        }
-
-        private bool IsLocalConnection() {
-           var url = Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey, null);
-            if (url != null && Uri.TryCreate(url, UriKind.Absolute, out Uri uri) && uri.IsLoopback) {
-                return true;
-            }
-            return false;
         }
     }
 }
