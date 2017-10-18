@@ -1,28 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.Common.Wpf</RootNamespace>
     <AssemblyName>Microsoft.R.Common.Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xaml" />
@@ -33,38 +24,13 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
-    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="Automation\AutomationPropertyChangedBase.cs" />
-    <Compile Include="Controls\BindableBase.cs" />
-    <Compile Include="Collections\BatchObservableCollection.cs" />
-    <Compile Include="Controls\ExpandCollapseAutomationPeer.cs" />
-    <Compile Include="Controls\ExpandCollapseButton.cs" />
-    <Compile Include="Controls\ExpandCollapseMode.cs" />
-    <Compile Include="Controls\Overlay.cs" />
-    <Compile Include="Extensions\DoubleExtensions.cs" />
-    <Compile Include="Extensions\RectExtensions.cs" />
-    <Compile Include="Extensions\VisualExtensions.cs" />
-    <Compile Include="Extensions\VisualTreeExtensions.cs" />
-    <Compile Include="Imaging\BitmapImageFactory.cs" />
-    <Compile Include="LambdaConverter\ILambdaConverterProvider.cs" />
-    <Compile Include="LambdaConverter\LambdaConverter.cs" />
-    <Compile Include="LambdaConverter\LambdaExtension.cs" />
-    <Compile Include="LambdaConverter\LambdaProperties.cs" />
-    <Compile Include="LambdaConverter\StyleSetterExtension.cs" />
-    <Compile Include="Selectors\TypeDataTemplateSelector.cs" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />
+    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
-      <Name>Microsoft.R.Common.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

@@ -12,7 +12,7 @@
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
