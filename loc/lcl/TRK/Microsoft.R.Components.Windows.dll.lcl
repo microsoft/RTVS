@@ -943,7 +943,7 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_SecondPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[]D;]A;Please click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[]D;]A;Lütfen tıklayın]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -973,7 +973,7 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed. To start working with containers, ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Docker hizmeti yüklü değil. Kapsayıcılarla çalışmaya başlamak için,]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -1015,7 +1015,7 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotRunning_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Docker hizmeti çalışmıyor.]D;]A;Kapsayıcılarla çalışmaya başlamak için Windows için Docker'ı çalıştırın ve tıklayın]]></Val>
           </Tgt>
           <Prev Cat="Text">
