@@ -3,8 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Containers
-{
+namespace Microsoft.R.Containers {
     public class ContainerServicePermissionException : ContainerException {
         public ContainerServicePermissionException() { }
 
