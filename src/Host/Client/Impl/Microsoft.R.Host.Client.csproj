@@ -1,7 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework Condition="'$(CoreBuild)' == 'true'">netstandard2.0</TargetFramework>
-    <TargetFrameworks Condition="'$(CoreBuild)' != 'true'">netstandard2.0;net461</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Microsoft.R.Host.Client</AssemblyName>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.NetCore.props" />

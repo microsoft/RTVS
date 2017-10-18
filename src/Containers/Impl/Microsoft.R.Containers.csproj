@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework Condition="'$(CoreBuild)' == 'true'">netstandard2.0</TargetFramework>
-    <TargetFrameworks Condition="'$(CoreBuild)' != 'true'">netstandard2.0;net461</TargetFrameworks>
+    <TargetFramework Condition="'$(OS)' != 'Windows_NT'">netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Microsoft.R.Containers</AssemblyName>
     <OutputType>Library</OutputType>
   </PropertyGroup>
@@ -15,6 +15,10 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Desktop)' == 'true' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />

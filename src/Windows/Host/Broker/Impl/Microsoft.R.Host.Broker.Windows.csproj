@@ -89,6 +89,18 @@
     <Compile Include="UserProfile\UserProfileManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
       <Name>Microsoft.R.Common.Core</Name>
@@ -132,7 +144,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="project.json" />
   </ItemGroup>
   <!-- libuv.dll is not properly copied to output directory by NuGet -->
   <ItemGroup>

@@ -1,16 +1,17 @@
 ﻿// From https://github.com/Kukkimonsuta/Odachi/tree/master/src/Odachi.AspNetCore.Authentication.Basic
 
-using Microsoft.AspNetCore.Authentication;
 using System;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
-using Microsoft.Extensions.Logging;
+using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 
 namespace Odachi.AspNetCore.Authentication.Basic {
     internal class BasicHandler : AuthenticationHandler<BasicOptions> {
@@ -33,6 +34,14 @@ namespace Odachi.AspNetCore.Authentication.Basic {
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
             try {
+                // .NET Core does not support HTTP auth on sockets
+                if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
+                    if (uri.IsLoopback && !Request.IsHttps) {
+                        var t = CreateTicket("RUser", string.Empty);
+                        return AuthenticateResult.Success(t);
+                    }
+                }
+
                 // retrieve authorization header
                 string authorization = Request.Headers[HeaderNames.Authorization];
 
@@ -99,7 +108,6 @@ namespace Odachi.AspNetCore.Authentication.Basic {
                 }
 
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-
                 var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
 
                 return AuthenticateResult.Success(ticket);
@@ -122,6 +130,25 @@ namespace Odachi.AspNetCore.Authentication.Basic {
             Response.Headers.Append(HeaderNames.WWWAuthenticate, $"Basic realm=\"{Options.Realm}\"");
 
             return Task.CompletedTask;
+        }
+
+        private AuthenticationTicket CreateTicket(string username, string password) {
+            List<Claim> claims;
+            var credentials = Options.Credentials.FirstOrDefault(c => c.Username == username && c.Password == password);
+            if (credentials != null) {
+                claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+                if (claims.All(c => c.Type != ClaimTypes.Name)) {
+                    claims.Add(new Claim(ClaimTypes.Name, username));
+                }
+            } else {
+                claims = new List<Claim> {
+                    new Claim(ClaimTypes.Name, username),
+                    new Claim("RUser", "")
+                };
+            }
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
+            return new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
         }
     }
 }

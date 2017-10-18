@@ -15,7 +15,7 @@
     <LibuvVersion>1.10.0</LibuvVersion>
     <DebugType>portable</DebugType>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>DESKTOP;$(DefineConstants)</DefineConstants>
     <Desktop>true</Desktop>

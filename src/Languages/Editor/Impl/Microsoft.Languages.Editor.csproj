@@ -1,7 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework Condition="'$(CoreBuild)' == 'true'">netstandard2.0</TargetFramework>
-    <TargetFrameworks Condition="'$(CoreBuild)' != 'true'">netstandard2.0;net461</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Microsoft.Languages.Editor</RootNamespace>
     <AssemblyName>Microsoft.Languages.Editor</AssemblyName>
   </PropertyGroup>

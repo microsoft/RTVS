@@ -72,13 +72,18 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddSingleton<InterpreterManager>()
                 .AddSingleton<SessionManager>()
 
+                .AddRouting();
+
+            services
+                .AddMvc()
+                .AddApplicationPart(typeof(Startup).GetTypeInfo().Assembly);
+
+            services
                 .AddAuthorization(options => options.AddPolicy(
                     Policies.RUser,
                     policy => policy.RequireClaim(Claims.RUser)))
+                .AddAuthentication().AddBasic();
 
-                .AddRouting()
-                .AddMvc()
-                .AddApplicationPart(typeof(Startup).GetTypeInfo().Assembly);
         }
 
         public virtual void Configure(IApplicationBuilder app
