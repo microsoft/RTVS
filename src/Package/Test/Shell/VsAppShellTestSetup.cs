@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
-                .AddService(new TestTaskService())
+                .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestPlatformServices())
                 .AddService(new RSettingsStub())
                 .AddService(new REditorSettings(new TestSettingsStorage()))
