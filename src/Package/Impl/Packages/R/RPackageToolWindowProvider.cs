@@ -51,9 +51,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private IInteractiveWindowVisualComponent CreateInteractiveWindow(int id) {
             var workflow = _workflowProvider.GetOrCreate();
-            var task = workflow.GetOrCreateVisualComponentAsync(id);
-            _services.Tasks().Wait(task);
-            return task.GetAwaiter().GetResult();
+            _services.Tasks().Wait(() => workflow.GetOrCreateVisualComponentAsync(id), out var result);
+            return result;
         }
 
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
