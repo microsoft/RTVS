@@ -937,8 +937,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_FourthPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ when erros is fixed.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[當錯誤修正時。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ 當錯誤修正時。]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[when erros is fixed.]]></Val>
@@ -949,7 +949,7 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_SecondPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[]D;]A;Please click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[]D;]A;請按一下]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -979,7 +979,7 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed. To start working with containers, ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Docker 服務未安裝。若要開始使用容器，]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -1009,8 +1009,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ and click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[然後按一下]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ 然後按一下]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[and click]]></Val>
@@ -1021,7 +1021,7 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotRunning_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Docker 服務未執行。]D;]A;若要開始使用容器，請執行 Docker for Windows，然後按一下]]></Val>
           </Tgt>
           <Prev Cat="Text">

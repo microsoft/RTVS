@@ -931,8 +931,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_FourthPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ when erros is fixed.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[wenn der Fehler behoben wurde.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ wenn der Fehler behoben wurde.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[when erros is fixed.]]></Val>
@@ -943,8 +943,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_SecondPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[]D;]A;Please click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[]D;]A;Klicken Sie auf]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[]D;]A;Klicken Sie auf ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[]D;]A;Please click]]></Val>
@@ -973,8 +973,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't installed. To start working with containers, ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Der Docker-Dienst ist nicht installiert. Für das Arbeiten mit Containern sind folgende Schritte erforderlich:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Docker-Dienst ist nicht installiert. Für das Arbeiten mit Containern sind folgende Schritte erforderlich: ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Docker service isn't installed. To start working with containers,]]></Val>
@@ -1003,8 +1003,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ and click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[und klicken Sie auf]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ und klicken Sie auf ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[and click]]></Val>
@@ -1015,8 +1015,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotRunning_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Der Docker-Dienst wird nicht ausgeführt.]D;]A;Um mit Containern zu arbeiten, führen Sie Docker für Windows aus, und klicken Sie auf]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Docker-Dienst wird nicht ausgeführt.]D;]A;Um mit Containern zu arbeiten, starten Sie Docker für Windows und klicken auf ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click]]></Val>
