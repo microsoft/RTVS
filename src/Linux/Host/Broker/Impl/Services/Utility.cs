@@ -149,11 +149,19 @@ namespace Microsoft.R.Host.Broker.Services {
         public static string GetUnixUserName(string source) {
             // This is needed because the windows credential UI uses domain\username format.
             // This will not be required if we can show generic credential UI for Linux remote.
-            // <<unix>>\<username> format should be used to for local accounts only.
+            // <<unix>>\<username>, #unix\<username> or #local\<username> format should be used 
+            // to for local accounts only.
             const string unixPrefix = "<<unix>>\\";
+            const string unixPrefix2 = "#unix\\";
+            const string localPrefix = "#local\\";
             if (source.StartsWithIgnoreCase(unixPrefix)) {
                 return source.Substring(unixPrefix.Length);
+            } else if (source.StartsWithIgnoreCase(unixPrefix2)) {
+                return source.Substring(unixPrefix2.Length);
+            } else if (source.StartsWithIgnoreCase(localPrefix)) {
+                return source.Substring(localPrefix.Length);
             }
+
             return source;
         }
 

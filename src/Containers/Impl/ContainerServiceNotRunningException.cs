@@ -5,10 +5,18 @@ using System;
 
 namespace Microsoft.R.Containers {
     public class ContainerServiceNotRunningException : ContainerException {
-        public ContainerServiceNotRunningException() { }
+        public ContainerServiceNotRunningException(string serviceName) {
+            ServiceName = serviceName;
+        }
 
-        public ContainerServiceNotRunningException(string message) : base(message) { }
+        public ContainerServiceNotRunningException(string serviceName, string message) : base(message) {
+            ServiceName = serviceName;
+        }
 
-        public ContainerServiceNotRunningException(string message, Exception innerException) : base(message, innerException) { }
+        public ContainerServiceNotRunningException(string serviceName, string message, Exception innerException) : base(message, innerException) {
+            ServiceName = serviceName;
+        }
+
+        public string ServiceName { get; }
     }
 }
