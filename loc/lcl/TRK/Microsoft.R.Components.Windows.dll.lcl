@@ -931,8 +931,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceHasErrors_FourthPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ when erros is fixed.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[hata düzeltildiğinde.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ hata düzeltildiğinde.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[when erros is fixed.]]></Val>
@@ -1003,8 +1003,8 @@
       <Item ItemId=";ContainerManager_ContainerServiceIsNotInstalled_ThirdPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ and click ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[ve tıklayın]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ ve tıklayın ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[and click]]></Val>
