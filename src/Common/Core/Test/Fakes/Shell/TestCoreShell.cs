@@ -80,7 +80,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
                 .AddService<IOutputService, TestOutputService>()
                 .AddService(registry ?? new RegistryImpl())
                 .AddService(ps ?? new ProcessServices())
-                .AddService(new TestTaskService())
+                .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestImageService())
                 .AddService(new TestPlatformServices())
