@@ -35,7 +35,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService<IOutputService, TestOutputService>()
                 .AddService(new RegistryImpl())
                 .AddService(new ProcessServices())
-                .AddService(new TestTaskService())
+                .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestPlatformServices())
                 .AddService(new TestApplication())

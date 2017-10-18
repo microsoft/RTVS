@@ -19,7 +19,7 @@ namespace Microsoft.R.Containers {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -141,6 +141,15 @@ namespace Microsoft.R.Containers {
         internal static string Error_ServiceNotAvailable {
             get {
                 return ResourceManager.GetString("Error_ServiceNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have permissions to use docker. Please add user &quot;{0}&quot; to &quot;{1}&quot; group..
+        /// </summary>
+        internal static string Error_UserNotInDockerUsersGroup {
+            get {
+                return ResourceManager.GetString("Error_UserNotInDockerUsersGroup", resourceCulture);
             }
         }
         

@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -51,9 +52,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
             _packageManagerViewModel = (IRPackageManagerViewModel)_packageManagerToolWindow.ViewModel;
         }
 
-        public Task DisposeAsync() {
+        public async Task DisposeAsync() {
+            await _services.MainThread().SwitchToAsync();
             _packageManagerToolWindow.Dispose();
-            return Task.CompletedTask;
         }
 
         [Test]

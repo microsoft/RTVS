@@ -73,7 +73,7 @@ namespace Microsoft.Common.Core.Test.Disposables {
             _disposeToken.TryMarkDisposed();
             var token = default(CancellationToken);
             Action a = () => _disposeToken.Link(ref token);
-            a.ShouldThrow<ObjectDisposedException>();
+            a.ShouldThrow<OperationCanceledException>();
         }
 
         public void Dispose() {

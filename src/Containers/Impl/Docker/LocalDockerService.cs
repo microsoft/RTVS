@@ -210,7 +210,11 @@ namespace Microsoft.R.Containers.Docker {
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error) && !IsSecurityWarning(error)) {
                 Output.WriteError(Resources.LocalDockerErrorFormat.FormatInvariant(outputPrefix, error));
-                throw new ContainerException(error);
+                if (IsServiceNotReady(error)) {
+                    throw new ContainerServiceNotReadyException(error);
+                } else {
+                    throw new ContainerException(error);
+                }
             }
              
             return result.ToString();
@@ -218,6 +222,11 @@ namespace Microsoft.R.Containers.Docker {
 
         private bool IsSecurityWarning(string error) {
             return error.ContainsIgnoreCase("SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host.");
+        }
+
+        private bool IsServiceNotReady(string error) {
+            return error.ContainsIgnoreCase("open //./pipe/docker_engine: The system cannot find the file specified") ||
+                error.ContainsIgnoreCase("docker daemon is not running");
         }
     }
 }

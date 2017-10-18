@@ -84,7 +84,7 @@ namespace Microsoft.R.Host.Client.Session {
             var sessions = GetSessions().ToList();
             var stopHostTasks = sessions.Select(session => session.StopHostAsync(false));
             try {
-                _taskService.Wait(Task.WhenAll(stopHostTasks));
+                _taskService.Wait(() => Task.WhenAll(stopHostTasks));
             } catch (Exception ex) when (!ex.IsCriticalException()) { }
 
             foreach (var session in sessions) {

@@ -71,8 +71,6 @@ namespace Microsoft.R.Containers.Docker {
 
         protected override LocalDocker GetLocalDocker() {
             _docker = _docker ?? _dockerFinder.GetLocalDocker();
-            _dockerFinder.CheckIfServiceIsRunning();
-
             return _docker;
         }
     }

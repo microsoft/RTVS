@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
@@ -41,6 +43,7 @@ namespace Microsoft.R.Components.Test.Fixtures {
                 .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
+                .AddService<IImageService, TestImageService>()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRPlotExportDialog, TestPlotExportDialog>()
                 .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
