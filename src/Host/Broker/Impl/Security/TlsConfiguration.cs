@@ -5,44 +5,21 @@ using System;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.R.Host.Broker.Startup;
-using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Security {
     public sealed class TlsConfiguration {
-        private readonly IApplicationLifetime _lifetime;
         private readonly ILogger<TlsConfiguration> _logger;
-        private readonly StartupOptions _startupOptions;
         private readonly SecurityOptions _securityOptions;
 
-        public TlsConfiguration(IApplicationLifetime lifetime, ILogger<TlsConfiguration> logger, IOptions<StartupOptions> startupOptions, IOptions<SecurityOptions> securityOptions) {
-            _lifetime = lifetime;
+        public TlsConfiguration(ILogger<TlsConfiguration> logger, SecurityOptions securityOptions) {
             _logger = logger;
-            _startupOptions = startupOptions.Value;
-            _securityOptions = securityOptions.Value;
+            _securityOptions = securityOptions;
         }
 
-        public HttpsConnectionAdapterOptions GetHttpsOptions(KestrelServerOptions options) {
-            var httpsOptions = CreateOptions();
-            // Allow 
-            if (httpsOptions == null) {
-                _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
-                _lifetime.StopApplication();
-
-                if (!_startupOptions.IsService) {
-                    Environment.Exit((int)BrokerExitCodes.NoCertificate);
-                }
-            }
-            return httpsOptions;
-        }
-
-        private HttpsConnectionAdapterOptions CreateOptions() {
+        public HttpsConnectionAdapterOptions GetHttpsOptions() {
             var cert = GetCertificate();
             if (cert != null) {
                 return new HttpsConnectionAdapterOptions {
@@ -56,7 +33,7 @@ namespace Microsoft.R.Host.Broker.Security {
         }
 
         private X509Certificate2 GetCertificate() {
-            X509Certificate2 certificate = null;
+            X509Certificate2 certificate;
             try {
                 certificate = Certificates.GetCertificateForEncryption(_securityOptions);
             } catch (Exception ex) {

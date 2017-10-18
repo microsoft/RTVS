@@ -8,11 +8,11 @@ using System.IO.Pipes;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Server.Kestrel;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +26,6 @@ using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
-using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public class Startup {
@@ -93,7 +92,7 @@ namespace Microsoft.R.Host.Broker.Startup {
 
             _logger = logger;
             var serverAddresses = app.ServerFeatures.Get<IServerAddressesFeature>();
-            string pipeName = startupOptions.Value.WriteServerUrlsToPipe;
+            var pipeName = startupOptions.Value.WriteServerUrlsToPipe;
             if (pipeName != null) {
                 NamedPipeClientStream pipe;
                 try {
@@ -109,7 +108,7 @@ namespace Microsoft.R.Host.Broker.Startup {
 
                 applicationLifetime.ApplicationStarted.Register(() => Task.Run(() => {
                     using (pipe) {
-                        string serverUriStr = JsonConvert.SerializeObject(serverAddresses.Addresses);
+                        var serverUriStr = JsonConvert.SerializeObject(serverAddresses.Addresses);
                         logger.LogTrace(Resources.Trace_ServerUrlsToPipeBegin, pipeName, Environment.NewLine, serverUriStr);
 
                         var serverUriData = Encoding.UTF8.GetBytes(serverUriStr);
@@ -134,13 +133,12 @@ namespace Microsoft.R.Host.Broker.Startup {
             routeBuilder.MapRoute("help_and_shiny", "remoteuri");
             app.UseRouter(routeBuilder.Build());
 
-            app.UseBasicAuthentication(options => options.Events = new BasicEvents { OnSignIn = securityManager.SignInAsync });
-
             app.Use((context, next) => context.User.Identity.IsAuthenticated 
                 ? next() 
-                : context.Authentication.ChallengeAsync());
+                : context.AuthenticateAsync());
 
             app.UseMvc();
+            app.UseAuthentication();
 
             if (!startupOptions.Value.IsService) {
                 applicationLifetime.ApplicationStopping.Register(ExitAfterTimeout);

@@ -7,10 +7,13 @@ using System;
 using System.IO;
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Logging;
+using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Startup {
     public sealed class CommonMain {
@@ -32,7 +35,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddCommandLine(args)
                 .Build();
 
-            LoggerFactory = new LoggerFactory()
+            LoggerFactory = new LoggerFactory2()
                     .AddDebug()
                     .AddConsole(LogLevel.Trace);
 
@@ -58,17 +61,34 @@ namespace Microsoft.R.Host.Broker.Startup {
                 })
                 .UseStartup<T>();
 
-            if(Url?.IsLoopback != true) {
-                builder.UseKestrel(options => {
-                    options.Listen(IPAddress.Any, Url.Port, lo => {
-                        lo.UseHttps(ho => Get)
-                    });
-                });
+            var httpsOptions = ConfigureHttps();
+            if (Url?.IsLoopback != true) {
+                builder.UseKestrel(options => options.Listen(IPAddress.Any, Url.Port, lo => lo.UseHttps(httpsOptions)));
             } else {
                 builder.UseKestrel();
             }
 
             return builder;
         }
+
+        private HttpsConnectionAdapterOptions ConfigureHttps() {
+            var securityOptions = Configuration.GetSecuritySection().Get<SecurityOptions>();
+
+            var logger = LoggerFactory.CreateLogger<TlsConfiguration>();
+            var tlsConfig = new TlsConfiguration(logger, securityOptions);
+
+            var httpsOptions = tlsConfig.GetHttpsOptions();
+            if (httpsOptions != null) {
+                return httpsOptions;
+            }
+
+            logger.LogCritical(Resources.Critical_NoTlsCertificate, securityOptions.X509CertificateName);
+            if (!IsService) {
+                Environment.Exit((int)BrokerExitCodes.NoCertificate);
+            }
+            return null;
+        }
+
+        private class LoggerFactory2 : LoggerFactory, ILoggerProvider { }
     }
 }

@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Broker.Lifetime {
 
         public void Initialize() {
             if (_options.ParentProcessID != null) {
-                int pid = _options.ParentProcessID.Value;
+                var pid = _options.ParentProcessID.Value;
                 Process process;
                 try {
                     process = Process.GetProcessById(pid);
