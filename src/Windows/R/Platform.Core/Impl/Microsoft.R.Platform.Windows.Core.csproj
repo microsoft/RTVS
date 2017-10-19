@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Microsoft.R.Platform.Windows</AssemblyName>
+    <AssemblyName>Microsoft.R.Platform.Windows.Core</AssemblyName>
     <RootNamespace>Microsoft.R.Platform</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />

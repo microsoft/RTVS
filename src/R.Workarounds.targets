@@ -5,4 +5,12 @@
   <Target Name="GetCopyToOutputDirectoryItems" />
   <Target Name="SatelliteDllsProjectOutputGroup" />
   <Target Name="DebugSymbolsProjectOutputGroup" />
+
+    <!-- https://github.com/dotnet/project-system/issues/2488 - .g.cs files don't get built -->
+    <!-- https://github.com/dotnet/sdk/issues/810 -->
+  <Target Name="WorkaroundForXAMLIntellisenseBuildIssue" AfterTargets="_CheckCompileDesignTimePrerequisite">
+    <PropertyGroup>
+        <BuildingProject>false</BuildingProject>
+    </PropertyGroup>
+  </Target>
 </Project>

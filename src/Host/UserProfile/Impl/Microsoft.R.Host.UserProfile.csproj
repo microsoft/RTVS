@@ -113,9 +113,13 @@
       <Project>{9000D374-E37E-4DF2-A703-08D29F3FBE61}</Project>
       <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
+    <ProjectReference Include="..\..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj">
+      <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
+      <Name>Microsoft.R.Platform.Windows.Dektop</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{C46E5F53-4CAF-4C65-B173-CA8140FB41E0}</Project>

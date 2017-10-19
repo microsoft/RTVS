@@ -1,7 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework Condition="'$(OS)' != 'Windows_NT'">netstandard2.0</TargetFramework>
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netstandard2.0;net461</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Microsoft.R.Components</AssemblyName>
     <RootNamespace>Microsoft.R.Components</RootNamespace>
   </PropertyGroup>
@@ -19,29 +18,11 @@
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SourceDirectory)Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
-      <Name>Microsoft.R.Host.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SourceDirectory)Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
-      <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
-      <Name>Microsoft.R.Host.Protocol</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj">
-      <Project>{25CD8690-6208-4740-B123-6DBCE6B9444A}</Project>
-      <Name>Microsoft.Languages.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SourceDirectory)R\Core\Impl\Microsoft.R.Core.csproj">
-      <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
-      <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Core\Impl\Microsoft.R.Core.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

@@ -53,9 +53,9 @@
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
+    <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj">
+      <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
+      <Name>Microsoft.R.Platform.Windows.Dektop</Name>
     </ProjectReference>
     <ProjectReference Include="..\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>

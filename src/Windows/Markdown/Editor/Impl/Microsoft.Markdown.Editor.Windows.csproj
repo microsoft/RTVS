@@ -192,9 +192,9 @@
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
+    <ProjectReference Include="..\..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj">
+      <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
+      <Name>Microsoft.R.Platform.Windows.Dektop</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

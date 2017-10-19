@@ -314,9 +314,9 @@
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
+    <ProjectReference Include="..\..\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

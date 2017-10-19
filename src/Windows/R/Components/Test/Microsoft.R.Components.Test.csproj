@@ -196,9 +196,9 @@
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
+    <ProjectReference Include="..\..\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

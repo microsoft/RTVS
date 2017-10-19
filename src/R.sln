@@ -38,13 +38,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Client.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package.Test", "Package\Test\Microsoft.VisualStudio.R.Package.Test.csproj", "{C1B7FFE8-4D64-485E-A504-D041B05D7132}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Wpf", "Common\Wpf\Impl\Microsoft.Common.Wpf.csproj", "{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Common.Wpf", "Common\Wpf\Impl\Microsoft.Common.Wpf.csproj", "{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.R.Host", "Host\Process\src\Microsoft.R.Host.vcxproj", "{DBBED91F-BF32-4C77-9445-8666532225BC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Interactive.Test", "Package\TestApp\Microsoft.VisualStudio.R.Interactive.Test.csproj", "{0D80F608-CF60-42F8-A5E1-4E0ACFA384AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Wpf", "R\Wpf\Impl\Microsoft.R.Wpf.csproj", "{F951311C-D665-4987-95A4-72A2DE37E263}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Wpf", "R\Wpf\Impl\Microsoft.R.Wpf.csproj", "{F951311C-D665-4987-95A4-72A2DE37E263}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Common.Wpf.Test", "Common\Wpf\Test\Microsoft.Common.Wpf.Test.csproj", "{A3978461-5C39-43AE-9067-D755D51E7B26}"
 EndProject
@@ -52,11 +52,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.UserProfil
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{BD32A9DB-6AC3-4495-8682-E04ACC4917D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.Windows", "Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj", "{D1895FA9-65F5-4048-A364-F6AB8D1DC981}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Languages.Editor.Windows", "Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj", "{D1895FA9-65F5-4048-A364-F6AB8D1DC981}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.Test", "Windows\Editor\Test\Microsoft.Languages.Editor.Test.csproj", "{5340191E-31E5-43A0-A485-B6678D391B10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Editor.Windows", "Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj", "{D6EEEF87-CE3A-4804-A409-39966B96C850}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Editor.Windows", "Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj", "{D6EEEF87-CE3A-4804-A409-39966B96C850}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Editor.Test", "Windows\R\Editor\Test\Microsoft.R.Editor.Test.csproj", "{9066522E-780E-4409-B410-2525E6A621FC}"
 EndProject
@@ -72,7 +72,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Components.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Components", "R\Components\Impl\Microsoft.R.Components.csproj", "{C6648F60-513A-4052-9A34-61B156058EC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Host.Broker.Windows", "Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj", "{2CC10E50-392E-4B5D-98E4-D38F0061D363}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Host.Broker.Windows", "Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj", "{2CC10E50-392E-4B5D-98E4-D38F0061D363}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Host.Broker", "Host\Broker\Impl\Microsoft.R.Host.Broker.csproj", "{29E4FC48-39FB-45A1-B641-3E98E7D6CEEF}"
 EndProject
@@ -96,7 +96,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Common.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Containers", "Containers\Impl\Microsoft.R.Containers.csproj", "{BAEA19C5-E1F7-4580-AE19-9FB3C890570B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Containers.Windows", "Windows\Containers\Impl\Microsoft.R.Containers.Windows.csproj", "{8ED6EF0A-08A9-4F77-8EC1-F1630AAD2DDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Containers.Windows", "Windows\Containers\Impl\Microsoft.R.Containers.Windows.csproj", "{8ED6EF0A-08A9-4F77-8EC1-F1630AAD2DDB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Containers.Linux", "Linux\Containers\Impl\Microsoft.R.Containers.Linux.csproj", "{D84CC0CF-40A7-49E0-964B-5D4114710EC1}"
 EndProject
@@ -104,11 +104,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Containers.Wind
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform", "R\Platform\Impl\Microsoft.R.Platform.csproj", "{9000D374-E37E-4DF2-A703-08D29F3FBE61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Windows", "Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj", "{DE1EC50A-C588-45A9-B22C-981419CD7CD4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{3987C806-DCFB-4F0C-A560-D8F59B2FD8B9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Platform.Windows.Test", "Windows\R\Platform\Test\Microsoft.R.Platform.Windows.Test.csproj", "{D73325D8-2406-47FF-9E7A-E295A847268B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mocks", "Mocks", "{78F73552-7877-4B72-A1BD-8728BA8ABD3B}"
 EndProject
@@ -116,7 +112,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Edit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Shell.Mocks", "Windows\Mocks\VisualStudio\Microsoft.VisualStudio.Shell.Mocks.csproj", "{BEF9464F-FF58-4693-AF12-A6FA75033A5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger", "Windows\Debugger\Impl\Microsoft.R.Debugger.csproj", "{6D62DF0D-D9C3-49A7-A693-ACD0691BA69D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Debugger", "Windows\Debugger\Impl\Microsoft.R.Debugger.csproj", "{6D62DF0D-D9C3-49A7-A693-ACD0691BA69D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.Application", "Windows\EditorTestApp\Microsoft.Languages.Editor.Application.csproj", "{9174C912-E757-4ECD-9D6E-9604BEF74900}"
 EndProject
@@ -124,7 +120,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSCode", "VSCode", "{59FAA3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.LanguageServer", "VsCode\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj", "{17EB0BF8-C7FF-4778-B66B-DEA11613DC4D}"
 	ProjectSection(ProjectDependencies) = postProject
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4} = {DE1EC50A-C588-45A9-B22C-981419CD7CD4}
 		{DBBED91F-BF32-4C77-9445-8666532225BC} = {DBBED91F-BF32-4C77-9445-8666532225BC}
 		{29E4FC48-39FB-45A1-B641-3E98E7D6CEEF} = {29E4FC48-39FB-45A1-B641-3E98E7D6CEEF}
 		{2CC10E50-392E-4B5D-98E4-D38F0061D363} = {2CC10E50-392E-4B5D-98E4-D38F0061D363}
@@ -133,7 +128,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.LanguageServer"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VsCode.R.Extension", "VsCode\Extension\VsCode.R.Extension.csproj", "{328906A7-14C1-48C7-BE2D-AF40F5256E49}"
 	ProjectSection(ProjectDependencies) = postProject
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4} = {DE1EC50A-C588-45A9-B22C-981419CD7CD4}
 		{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5} = {0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}
 		{DBBED91F-BF32-4C77-9445-8666532225BC} = {DBBED91F-BF32-4C77-9445-8666532225BC}
 		{29E4FC48-39FB-45A1-B641-3E98E7D6CEEF} = {29E4FC48-39FB-45A1-B641-3E98E7D6CEEF}
@@ -168,7 +162,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Unix.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Host.Broker.Unix", "Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj", "{D41DA64B-B461-4007-971F-5450445E0A2D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Windows.Composition", "Windows\R\Composition\Impl\Microsoft.R.Platform.Windows.Composition.csproj", "{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Windows.Core", "Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj", "{56765882-9963-44B5-9FE1-D66F78FA24DE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Platform.Windows.Dektop", "Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj", "{79AFE755-2E63-472C-A892-8851D118F460}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -700,30 +696,6 @@ Global
 		{9000D374-E37E-4DF2-A703-08D29F3FBE61}.Release|x64.Build.0 = Release|Any CPU
 		{9000D374-E37E-4DF2-A703-08D29F3FBE61}.Release|x86.ActiveCfg = Release|Any CPU
 		{9000D374-E37E-4DF2-A703-08D29F3FBE61}.Release|x86.Build.0 = Release|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Debug|x64.Build.0 = Debug|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Debug|x86.Build.0 = Debug|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Release|x64.ActiveCfg = Release|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Release|x64.Build.0 = Release|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Release|x86.ActiveCfg = Release|Any CPU
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4}.Release|x86.Build.0 = Release|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x64.Build.0 = Debug|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Debug|x86.Build.0 = Debug|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x64.ActiveCfg = Release|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x64.Build.0 = Release|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x86.ActiveCfg = Release|Any CPU
-		{D73325D8-2406-47FF-9E7A-E295A847268B}.Release|x86.Build.0 = Release|Any CPU
 		{5FCB86D5-4B25-4039-858C-B5A06EB702E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FCB86D5-4B25-4039-858C-B5A06EB702E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FCB86D5-4B25-4039-858C-B5A06EB702E1}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -892,18 +864,30 @@ Global
 		{D41DA64B-B461-4007-971F-5450445E0A2D}.Release|x64.Build.0 = Release|Any CPU
 		{D41DA64B-B461-4007-971F-5450445E0A2D}.Release|x86.ActiveCfg = Release|Any CPU
 		{D41DA64B-B461-4007-971F-5450445E0A2D}.Release|x86.Build.0 = Release|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Debug|x64.Build.0 = Debug|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Debug|x86.Build.0 = Debug|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Release|x64.ActiveCfg = Release|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Release|x64.Build.0 = Release|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Release|x86.ActiveCfg = Release|Any CPU
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E}.Release|x86.Build.0 = Release|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Debug|x64.Build.0 = Debug|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Debug|x86.Build.0 = Debug|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Release|x64.ActiveCfg = Release|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Release|x64.Build.0 = Release|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Release|x86.ActiveCfg = Release|Any CPU
+		{56765882-9963-44B5-9FE1-D66F78FA24DE}.Release|x86.Build.0 = Release|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Debug|x64.Build.0 = Debug|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Debug|x86.Build.0 = Debug|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Release|x64.ActiveCfg = Release|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Release|x64.Build.0 = Release|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Release|x86.ActiveCfg = Release|Any CPU
+		{79AFE755-2E63-472C-A892-8851D118F460}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -941,9 +925,7 @@ Global
 		{8ED6EF0A-08A9-4F77-8EC1-F1630AAD2DDB} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 		{D84CC0CF-40A7-49E0-964B-5D4114710EC1} = {3CF8DD8A-9533-498F-8B65-AF3F5AA580C7}
 		{62E1CA8E-8398-46FC-B14F-DE0C5759DD2D} = {42121523-E799-4CFE-8B0D-ADED9BE77612}
-		{DE1EC50A-C588-45A9-B22C-981419CD7CD4} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 		{3987C806-DCFB-4F0C-A560-D8F59B2FD8B9} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
-		{D73325D8-2406-47FF-9E7A-E295A847268B} = {42121523-E799-4CFE-8B0D-ADED9BE77612}
 		{78F73552-7877-4B72-A1BD-8728BA8ABD3B} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{5FCB86D5-4B25-4039-858C-B5A06EB702E1} = {78F73552-7877-4B72-A1BD-8728BA8ABD3B}
 		{BEF9464F-FF58-4693-AF12-A6FA75033A5C} = {78F73552-7877-4B72-A1BD-8728BA8ABD3B}
@@ -961,7 +943,8 @@ Global
 		{F0C03C70-E80D-4860-875F-FBBC5CABDB93} = {3CF8DD8A-9533-498F-8B65-AF3F5AA580C7}
 		{B074371F-134D-4DCC-B8B7-40C62F7AB32F} = {3987C806-DCFB-4F0C-A560-D8F59B2FD8B9}
 		{D41DA64B-B461-4007-971F-5450445E0A2D} = {3CF8DD8A-9533-498F-8B65-AF3F5AA580C7}
-		{15F1DF9F-8AF1-498E-96AB-7B23B6A9A29E} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
+		{56765882-9963-44B5-9FE1-D66F78FA24DE} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
+		{79AFE755-2E63-472C-A892-8851D118F460} = {BD32A9DB-6AC3-4495-8682-E04ACC4917D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {78E1EA9E-4708-4DE9-B4DF-D10E3B0119FA}

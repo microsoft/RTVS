@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-#if DESKTOP
 using System.IO.Pipes;
 using System.Security.Principal;
 using Microsoft.R.Platform.IO;
@@ -19,4 +18,3 @@ namespace Microsoft.R.Platform.Core.IO {
         }
     }
 }
-#endif

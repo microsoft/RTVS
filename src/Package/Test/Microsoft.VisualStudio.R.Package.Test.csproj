@@ -21,7 +21,6 @@
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Condition="'$(VisualStudioVersion)'=='14.0'" Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -149,10 +148,6 @@
       <Project>{bef9464f-ff58-4693-af12-a6fa75033a5c}</Project>
       <Name>Microsoft.VisualStudio.Shell.Mocks</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\R\Composition\Impl\Microsoft.R.Platform.Windows.Composition.csproj">
-      <Project>{15f1df9f-8af1-498e-96ab-7b23b6a9a29e}</Project>
-      <Name>Microsoft.R.Platform.Windows.Composition</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor.Windows</Name>
@@ -169,9 +164,13 @@
       <Project>{2aa8762f-3a84-4cd5-9aa0-77829a766769}</Project>
       <Name>Microsoft.R.Components.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj">
-      <Project>{de1ec50a-c588-45a9-b22c-981419cd7cd4}</Project>
-      <Name>Microsoft.R.Platform.Windows</Name>
+    <ProjectReference Include="..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj">
+      <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
+      <Name>Microsoft.R.Platform.Windows.Dektop</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>

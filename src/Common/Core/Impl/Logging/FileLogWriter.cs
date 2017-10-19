@@ -28,22 +28,18 @@ namespace Microsoft.Common.Core.Logging {
             if (timerTimeout > 0) {
                 var timer = new Timer(OnTimer, null, timerTimeout, timerTimeout);
             }
-#if DESKTOP
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+            AppDomain.CurrentDomain.DomainUnload += OnProcessExit;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-#endif
         }
 
         private void OnTimer(object state) => StartWritingToFile();
-#if DESKTOP
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
-            WriteToFileAsync().Wait(_maxTimeout);
-        }
 
-        private void OnProcessExit(object sender, EventArgs e) {
-            WriteToFileAsync().Wait(_maxTimeout);
-        }
-#endif
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) 
+            => WriteToFileAsync().Wait(_maxTimeout);
+
+        private void OnProcessExit(object sender, EventArgs e) => WriteToFileAsync().Wait(_maxTimeout);
+
         private void StartWritingToFile() {
             if (!_messages.IsEmpty) {
                 WriteToFileAsync().DoNotWait();

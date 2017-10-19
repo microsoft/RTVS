@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <TargetFramework>net461</TargetFramework>
-    <AssemblyName>Microsoft.R.Platform.Windows.Composition</AssemblyName>
+    <AssemblyName>Microsoft.R.Platform.Windows.Desktop</AssemblyName>
     <RootNamespace>Microsoft.R.Platform</RootNamespace>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />
@@ -12,11 +12,10 @@
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

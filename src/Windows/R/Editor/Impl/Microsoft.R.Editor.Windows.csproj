@@ -47,8 +47,6 @@
     <ProjectReference Include="$(SourceDirectory)Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\R\Platform\Impl\Microsoft.R.Platform.Windows.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\R\Composition\Impl\Microsoft.R.Platform.Windows.Composition.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
