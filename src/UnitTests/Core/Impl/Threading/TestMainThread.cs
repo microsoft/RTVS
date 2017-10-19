@@ -13,7 +13,7 @@ using Microsoft.Common.Core.UI;
 
 namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
-    public class TestMainThread : IProgressDialog, IMainThread, IDisposable {
+    public class TestMainThread : ITaskService, IProgressDialog, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly AsyncLocal<BlockingLoop> _blockingLoop = new System.Threading.AsyncLocal<BlockingLoop>();
@@ -49,6 +49,19 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         public T Show<T>(Func<IProgress<ProgressDialogData>, CancellationToken, Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
             => BlockUntilCompleted(() => method(new Progress<ProgressDialogData>(), CancellationToken.None));
+
+        public bool Wait(Func<Task> method, int ms = Timeout.Infinite, CancellationToken cancellationToken = default(CancellationToken)) {
+            var delayTask = Task.Delay(ms, cancellationToken);
+            var resultTask = BlockUntilCompleted(() => Task.WhenAny(method(), delayTask));
+            return resultTask != delayTask;
+        }
+
+        public bool Wait<T>(Func<Task<T>> method, out T result, int ms = Timeout.Infinite, CancellationToken cancellationToken = default(CancellationToken)) {
+            var delayTask = Task.Delay(ms, cancellationToken);
+            var resultTask = BlockUntilCompleted(() => Task.WhenAny(method(), delayTask));
+            result = resultTask is Task<T> task ? task.GetAwaiter().GetResult() : default(T);
+            return resultTask != delayTask;
+        }
 
         private void BlockUntilCompleted(Func<Task> func) => BlockUntilCompletedImpl(func);
 

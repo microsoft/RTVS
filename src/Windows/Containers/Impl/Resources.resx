@@ -147,6 +147,9 @@
   <data name="Error_ServiceNotAvailable" xml:space="preserve">
     <value>Container service is not available. Check if "{0}" is installed and running.</value>
   </data>
+  <data name="Error_UserNotInDockerUsersGroup" xml:space="preserve">
+    <value>You don't have permissions to use docker. Please add user "{0}" to "{1}" group.</value>
+  </data>
   <data name="Info_ServiceAvailable" xml:space="preserve">
     <value>Container service is available.</value>
   </data>

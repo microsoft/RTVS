@@ -165,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private void BeforeRSessionsDisposed(object sender, EventArgs args) {
-            _coreShell.Services.Tasks().Wait(ProjectUnloadingAsync(sender, args));
+            _coreShell.Services.Tasks().Wait(() => ProjectUnloadingAsync(sender, args));
         }
 
         private async Task ProjectUnloadingAsync(object sender, EventArgs args) {

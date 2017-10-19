@@ -6,7 +6,7 @@ using System.Windows.Controls.Primitives;
 
 namespace Microsoft.R.Wpf {
     public static class StyleKeys {
-        public static object ThemedComboStyleKey { get; set; } = typeof(ComboBox);
+        public static object ComboBoxStyleKey { get; set; } = typeof(ComboBox);
         public static object ScrollBarStyleKey { get; set; } = typeof(ScrollBar);
         public static object ScrollViewerStyleKey { get; set; } = typeof(ScrollViewer);
         public static object ButtonStyleKey { get; set; } = typeof(Button);

@@ -16,6 +16,7 @@ using Microsoft.R.Containers.Docker;
 using Microsoft.UnitTests.Core.XUnit;
 using System.IO;
 using System;
+using System.Collections.Generic;
 using NSubstitute;
 
 namespace Microsoft.R.Containers.Windows.Test {

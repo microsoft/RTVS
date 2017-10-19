@@ -733,7 +733,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to when erros is fixed..
+        ///   Looks up a localized string similar to  when erros is fixed..
         /// </summary>
         public static string ContainerManager_ContainerServiceHasErrors_FourthPart {
             get {
@@ -743,7 +743,7 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///Please click.
+        ///Please click .
         /// </summary>
         public static string ContainerManager_ContainerServiceHasErrors_SecondPart {
             get {
@@ -761,7 +761,16 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Docker service isn&apos;t installed. To start working with containers,.
+        ///   Looks up a localized string similar to ..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_FifthPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FifthPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t installed. To start working with containers, .
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotInstalled_FirstPart {
             get {
@@ -788,7 +797,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to and click.
+        ///   Looks up a localized string similar to  and click .
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotInstalled_ThirdPart {
             get {
@@ -798,7 +807,7 @@ namespace Microsoft.R.Components {
         
         /// <summary>
         ///   Looks up a localized string similar to Docker service isn&apos;t running.
-        ///To start working with containers, run Docker for Windows and click.
+        ///To start working with containers, run Docker for Windows and click .
         /// </summary>
         public static string ContainerManager_ContainerServiceIsNotRunning_FirstPart {
             get {
@@ -812,6 +821,15 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_ContainerServiceIsNotRunning_SecondPart {
             get {
                 return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_ThirdPart", resourceCulture);
             }
         }
         
@@ -830,6 +848,15 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_CreateLocalDocker_CreationError {
             get {
                 return ResourceManager.GetString("ContainerManager_CreateLocalDocker_CreationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading available versions....
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_LoadingVersions {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_LoadingVersions", resourceCulture);
             }
         }
         
@@ -884,6 +911,33 @@ namespace Microsoft.R.Components {
         public static string ContainerManager_CreateLocalDocker_Version {
             get {
                 return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No images on docker hub or local images have been found. Please check internet connection and click .
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionsNotFound_FirstPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionsNotFound_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionsNotFound_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionsNotFound_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionsNotFound_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionsNotFound_ThirdPart", resourceCulture);
             }
         }
         

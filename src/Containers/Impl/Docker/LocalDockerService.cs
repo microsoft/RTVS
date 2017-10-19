@@ -37,13 +37,15 @@ namespace Microsoft.R.Containers.Docker {
         public async Task<IContainer> CreateContainerFromFileAsync(BuildImageParameters buildParams, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var (dockerFile, imageName, imageTag, imageParams, containerName, containerPort) = buildParams;
             var images = await ListImagesAsync(true, ct);
-            if (!images.Any(i => i.Name.EqualsOrdinal(buildParams.Image) && i.Tag.EqualsOrdinal(buildParams.Tag))) {
-                var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} \"{Path.GetDirectoryName(buildParams.DockerfilePath)}\"";
+            if (!images.Any(i => i.Name.EqualsOrdinal(imageName) && i.Tag.EqualsOrdinal(imageTag))) {
+                var buildArgs = string.Join(" ", imageParams.Select(p => $"--build-arg {p.Key}={p.Value}"));
+                var buildOptions = $"-t {imageName}:{imageTag} {buildArgs} \"{Path.GetDirectoryName(dockerFile)}\"";
                 await BuildImageAsync(buildOptions, ct);
             }
 
-            var createOptions = Invariant($"-p {buildParams.Port}:5444 --name {buildParams.Name} {buildParams.Image}:{buildParams.Tag} rtvsd");
+            var createOptions = Invariant($"-p {containerPort}:5444 --name {containerName} {imageName}:{imageTag} rtvsd");
             var containerId = await CreateContainerAsync(createOptions, ct);
             return await GetContainerAsync(containerId, ct);
         }
@@ -208,7 +210,11 @@ namespace Microsoft.R.Containers.Docker {
             var error = await process.StandardError.ReadToEndAsync();
             if (!string.IsNullOrEmpty(error) && !IsSecurityWarning(error)) {
                 Output.WriteError(Resources.LocalDockerErrorFormat.FormatInvariant(outputPrefix, error));
-                throw new ContainerException(error);
+                if (IsServiceNotReady(error)) {
+                    throw new ContainerServiceNotReadyException(error);
+                } else {
+                    throw new ContainerException(error);
+                }
             }
              
             return result.ToString();
@@ -216,6 +222,11 @@ namespace Microsoft.R.Containers.Docker {
 
         private bool IsSecurityWarning(string error) {
             return error.ContainsIgnoreCase("SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host.");
+        }
+
+        private bool IsServiceNotReady(string error) {
+            return error.ContainsIgnoreCase("open //./pipe/docker_engine: The system cannot find the file specified") ||
+                error.ContainsIgnoreCase("docker daemon is not running");
         }
     }
 }

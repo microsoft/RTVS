@@ -26,6 +26,24 @@ namespace Microsoft.R.Host.Broker.Services {
         private const string RtvsResult = "rtvs-result";
         private const string RtvsError = "rtvs-error";
 
+        public static IProcess RunAsCurrentUser(ILogger<Session> logger, IProcessServices ps, string arguments, string rHomePath, string loadLibPath) {
+            var psi = new ProcessStartInfo {
+                FileName = PathConstants.RunHostBinPath,
+                Arguments = arguments,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                WorkingDirectory = Environment.GetEnvironmentVariable("PWD")
+            };
+
+            // All other should be same as the broker environment. Only these are set based on interpreters. 
+            // R_HOME is explictly set on the R-Host.
+            psi.Environment.Add("R_HOME", rHomePath);
+            psi.Environment.Add("LD_LIBRARY_PATH", loadLibPath);
+
+            return ps.Start(psi);
+        }
+
         public static IProcess AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
             var proc = CreateRunAsUserProcess(ps, true);
             using (BinaryWriter writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {
@@ -131,11 +149,19 @@ namespace Microsoft.R.Host.Broker.Services {
         public static string GetUnixUserName(string source) {
             // This is needed because the windows credential UI uses domain\username format.
             // This will not be required if we can show generic credential UI for Linux remote.
-            // <<unix>>\<username> format should be used to for local accounts only.
+            // <<unix>>\<username>, #unix\<username> or #local\<username> format should be used 
+            // to for local accounts only.
             const string unixPrefix = "<<unix>>\\";
+            const string unixPrefix2 = "#unix\\";
+            const string localPrefix = "#local\\";
             if (source.StartsWithIgnoreCase(unixPrefix)) {
                 return source.Substring(unixPrefix.Length);
+            } else if (source.StartsWithIgnoreCase(unixPrefix2)) {
+                return source.Substring(unixPrefix2.Length);
+            } else if (source.StartsWithIgnoreCase(localPrefix)) {
+                return source.Substring(localPrefix.Length);
             }
+
             return source;
         }
 

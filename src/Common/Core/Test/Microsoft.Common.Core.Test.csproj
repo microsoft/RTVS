@@ -81,7 +81,6 @@
     </Compile>
     <Compile Include="Services\ServiceManagerTests.cs" />
     <Compile Include="Stubs\Shell\SecurityServiceStub.cs" />
-    <Compile Include="Fakes\Shell\TestTaskService.cs" />
     <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />
     <Compile Include="Match\MatchNull.cs" />
