@@ -17,8 +17,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
-    <DefineConstants>DESKTOP;$(DefineConstants)</DefineConstants>
     <Desktop>true</Desktop>
+    <DefineConstants>DESKTOP;$(DefineConstants)</DefineConstants>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
