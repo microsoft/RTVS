@@ -3,12 +3,14 @@
     <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
     <AssemblyName>Microsoft.R.Host.Broker.Windows</AssemblyName>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\..\R.Settings.props" />
   <PropertyGroup>
     <DebugType>portable</DebugType>
+    <OutputPath>$(OutputPath)\Broker\Windows\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />

@@ -31,6 +31,9 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
   </ItemGroup>
+    <ItemGroup>
+    <ProjectReference Include="..\Wpf\Impl\Microsoft.Common.Wpf.csproj" />
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />

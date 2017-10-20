@@ -1,6 +1,0 @@
-﻿{
-    "buildOptions": {
-        "emitEntryPoint": true,
-        "debugType": "portable"
-    }
-}
