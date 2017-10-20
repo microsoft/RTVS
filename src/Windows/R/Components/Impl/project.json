@@ -1,9 +1,9 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.Data.ConnectionUI": "15.0.26201",
-    "Microsoft.VisualStudio.ImageCatalog": "15.0.26606",
-    "Microsoft.VisualStudio.Imaging": "15.0.26606",
+    "Microsoft.Data.ConnectionUI": "15.4.27004",
+    "Microsoft.VisualStudio.ImageCatalog": "15.4.27004",
+    "Microsoft.VisualStudio.Imaging": "15.4.27004",
     "Microsoft.VisualStudio.InteractiveWindow": "2.3.0",
     "Microsoft.VisualStudio.Text.Data": "15.4.27004",
     "Microsoft.VisualStudio.Text.Logic": "15.4.27004",

@@ -17,14 +17,15 @@
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="FluentAssertions" Version="4.19.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="NSubstitute" Version="2.0.3" />
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="15.4.27004" />
+    <PackageReference Include="NSubstitute" Version="3.0.1" />
+    <PackageReference Include="xunit" Version="2.3.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(Desktop)' == 'true'">
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="15.0.26606" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="15.4.27004" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.8.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <Reference Include="System" />

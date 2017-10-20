@@ -33,8 +33,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.0.26606" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="15.0.26606" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="15.4.27004" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj" />

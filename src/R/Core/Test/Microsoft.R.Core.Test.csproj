@@ -1,176 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{58D86BE4-FA8B-4F59-91FE-A9B348C70ED2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.R.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Core.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise />
-  </Choose>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
-      <Name>Microsoft.R.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
-      <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
-      <Name>Microsoft.Common.Core.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
-      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
-      <Name>Microsoft.Languages.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
-      <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
-      <Name>Microsoft.Languages.Core.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
-      <Name>Microsoft.UnitTests.Core.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
-      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
-      <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <None Include="Files\Formatting\AllEqual.r" />
-    <None Include="Files\Formatting\args.r" />
-    <None Include="Files\Formatting\args.r.formatted" />
-    <None Include="Files\Parser\Check.r" />
-    <None Include="Files\Formatting\ifelse.r" />
-    <None Include="Files\Formatting\ifelse.r.formatted" />
-    <None Include="Files\Formatting\lsfit.r" />
-    <None Include="Files\Formatting\lsfit.r.formatted" />
-    <None Include="Files\Parser\Check.r.tree" />
-    <None Include="Files\Parser\frametools.R" />
-    <None Include="Files\Parser\frametools.r.tree" />
-    <None Include="Files\Tokenization\Expressions.r.tokens" />
-    <None Include="Files\Tokenization\Identifiers.r" />
-    <None Include="Files\Tokenization\Floats.r" />
-    <None Include="Files\Tokenization\Expressions.r" />
-    <None Include="Files\Tokenization\Floats.r.tokens" />
-    <None Include="Files\Tokenization\Functions.r" />
-    <None Include="Files\Tokenization\Functions.r.tokens" />
-    <None Include="Files\Tokenization\Hex.r" />
-    <None Include="Files\Tokenization\Hex.r.tokens" />
-    <None Include="Files\Tokenization\Identifiers.r.tokens" />
-    <None Include="Files\Tokenization\Integers.r.tokens" />
-    <None Include="Files\Tokenization\lsfit.r" />
-    <None Include="Files\Tokenization\lsfit.r.tokens" />
-    <None Include="Files\Tokenization\Operators.r" />
-    <None Include="Files\Tokenization\Integers.r" />
-    <None Include="project.json" />
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs">
-      <Link>Properties\AssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="DataTips\DataTipTest.cs" />
-    <Compile Include="Formatting\FormatLineBreaksTest.cs" />
-    <Compile Include="Formatting\FormatOperatorsTest.cs" />
-    <Compile Include="Formatting\FormatMultilineTest.cs" />
-    <Compile Include="Parser\ParseNamespaceTest.cs" />
-    <Compile Include="Parser\ParsePrecedenceTest.cs" />
-    <Compile Include="Parser\ParseUnaryTest.cs" />
-    <Compile Include="Parser\ParseSelectorsTest.cs" />
-    <Compile Include="Parser\ParseSequenceTest.cs" />
-    <Compile Include="Parser\ParseNumbersTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AssertionExtensions.cs" />
-    <Compile Include="Assertions\RTokenAssertions.cs" />
-    <Compile Include="AST\AstSearchTest.cs" />
-    <Compile Include="AST\AstNodeTest.cs" />
-    <Compile Include="AST\RDataTypesTest.cs" />
-    <Compile Include="AST\AstShiftTest.cs" />
-    <Compile Include="Formatting\FormatScopeTest.cs" />
-    <Compile Include="Formatting\FormatConditionalsTest.cs" />
-    <Compile Include="Formatting\FormatFunctionTest.cs" />
-    <Compile Include="Formatting\FormatSamplesFilesTest.cs" />
-    <Compile Include="Formatting\FormatFilesFiles.cs" />
-    <Compile Include="Parser\ParseBuiltInsTest.cs" />
-    <Compile Include="Parser\ParseFilesTest.cs" />
-    <Compile Include="Parser\ParseCommentsTest.cs" />
-    <Compile Include="Parser\ParseLambdaTest.cs" />
-    <Compile Include="Parser\ParseInlineIfElseTest.cs" />
-    <Compile Include="Parser\ParseScopeTest.cs" />
-    <Compile Include="Parser\ParseFunctionDefinitionTest.cs" />
-    <Compile Include="Parser\ParseExponentTest.cs" />
-    <Compile Include="Parser\ParseComplexNumbersTest.cs" />
-    <Compile Include="Parser\ParseIfElseTest.cs" />
-    <Compile Include="Parser\ParseMultilineExpressionsTest.cs" />
-    <Compile Include="Parser\ParseExpressionErrorsTest.cs" />
-    <Compile Include="Parser\ParseEmptyStatementTest.cs" />
-    <Compile Include="Parser\ParseKeywordStatementTest.cs" />
-    <Compile Include="Parser\ParseLoopsTest.cs" />
-    <Compile Include="Parser\ParseFunctionsTest.cs" />
-    <Compile Include="Parser\ParseKnownConstantsTest.cs" />
-    <Compile Include="Parser\ParseIndexerTest.cs" />
-    <Compile Include="Parser\ParseAssignmentsTest.cs" />
-    <Compile Include="Parser\ParseConditionalExpressionsTest.cs" />
-    <Compile Include="Parser\ParseExpressionsTest.cs" />
-    <Compile Include="Parser\ParseStringContstantsTest.cs" />
-    <Compile Include="Parser\ParseLogicalContstantsTest.cs" />
-    <Compile Include="Parser\ParseSimpleExpressionsTest.cs" />
-    <Compile Include="Tokens\TokenizeConstantsTest.cs" />
-    <Compile Include="Tokens\TokenizeBuiltinsTest.cs" />
-    <Compile Include="Tokens\TokenizeRandomStringsTest.cs" />
-    <Compile Include="Tokens\TokenizeOperatorsTest.cs" />
-    <Compile Include="Tokens\TokenizeIndexerTest.cs" />
-    <Compile Include="Tokens\TokenizeIdentifierTest.cs" />
-    <Compile Include="Utility\ParseFiles.cs" />
-    <Compile Include="Tokens\TokenizeSampleFilesTest.cs" />
-    <Compile Include="Tokens\TokenizeComplexTest.cs" />
-    <Compile Include="Tokens\VerifySortedTables.cs" />
-    <Compile Include="Tokens\TokenizeFloatsTest.cs" />
-    <Compile Include="Tokens\TokenizeExpressionsTest.cs" />
-    <Compile Include="Tokens\TokenizeFunctionsTest.cs" />
-    <Compile Include="Tokens\TokenizeIntegersTest.cs" />
-    <Compile Include="Utility\ParserTest.cs" />
-    <Compile Include="CoreTestFilesFixture.cs" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="FluentAssertions" Version="4.19.3" />
+    <PackageReference Include="xunit" Version="2.3.0" />
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Test\Microsoft.Languages.Core.Test.csproj" />
+    <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
+    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

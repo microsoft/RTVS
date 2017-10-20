@@ -1,22 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿
+<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B0C3A5C2-F713-40C9-BF08-20A1014D74DE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.VisualStudio.R.Sql</RootNamespace>
     <AssemblyName>Microsoft.VisualStudio.R.Sql</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
+  <PropertyGroup>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
@@ -24,54 +22,22 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs">
-      <Link>Properties\AssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Publish\DacPacBuilder.cs" />
-    <Compile Include="Publish\DacPackageServices.cs" />
-    <Compile Include="Publish\SqlPublishException.cs" />
-    <Compile Include="Publish\DacPackageImpl.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.SqlServer.DacFx.x86" Version="140.3745.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0" Version="10.0.30319" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.11.0" Version="11.0.61030" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Components\Impl\Microsoft.R.Components.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
-      <Name>Microsoft.R.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
-      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
-      <Name>Microsoft.Languages.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
-      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
-      <Name>Microsoft.Languages.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
-      <Name>Microsoft.R.Components.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
-      <Name>Microsoft.R.Components</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>
