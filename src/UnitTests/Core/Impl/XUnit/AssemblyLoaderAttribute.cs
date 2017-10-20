@@ -33,7 +33,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 throw new ArgumentException($"{nameof(paths)} should not be empty", nameof(paths));
             }
 
-            foreach (var path in new[] { Paths.Bin }.Concat(paths)) {
+            foreach (var path in new[] { PathsBase.Bin }.Concat(paths)) {
                 EnumerateAssemblies(path);
             }
 

@@ -15,6 +15,9 @@
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.MSXML">
+      <HintPath>..\..\..\..\lib\Microsoft.MSXML.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
