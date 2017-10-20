@@ -21,9 +21,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Drawing" />
     <Reference Include="WindowsBase" />
-    <Reference Include="Microsoft.MSXML, Version=8.0.0.0">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />

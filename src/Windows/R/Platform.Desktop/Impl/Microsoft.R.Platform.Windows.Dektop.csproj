@@ -17,6 +17,9 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
