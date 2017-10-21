@@ -34,6 +34,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             _settings = settings;
         }
 
+        [Test]
         public void AutomaticSync() {
             var tv = Substitute.For<ITextView>();
 

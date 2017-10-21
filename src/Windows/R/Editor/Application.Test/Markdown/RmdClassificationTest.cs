@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Category.Interactive]
         [InlineData("01.rmd")]
         public async Task RColors(string fileName) {
-            string content = _files.LoadDestinationFile(fileName);
+            var content = _files.LoadDestinationFile(fileName);
             using (var script = await _editorHost.StartScript(_services, content, fileName, MdContentTypeDefinition.ContentType, null)) {
                 script.DoIdle(500);
                 var spans = script.GetClassificationSpans();
@@ -40,9 +40,9 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
             }
         }
 
-        public void VerifyClassifications(string testFileName, string actual) {
+        private void VerifyClassifications(string testFileName, string actual) {
             var testFilePath = _files.GetDestinationPath(testFileName);
-            string baselineFile = testFilePath + ".colors";
+            var baselineFile = testFilePath + ".colors";
 
             if (_regenerateBaselineFiles) {
                 baselineFile = Path.Combine(_files.SourcePath, testFileName) + ".colors";

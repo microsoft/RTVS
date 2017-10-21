@@ -2,7 +2,8 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\R.Settings.props" />
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.1.192\tools\vssdk\Microsoft.VsSDK.props" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.1.192\tools\vssdk\Microsoft.VsSDK.props')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.props" 
+          Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -1699,11 +1700,21 @@
   </Target>
   <!-- CPS XAML rule handling -->
   <PropertyGroup>
-    <MarkupCompilePass1DependsOn>
+    <CoreCompileDependsOn>
       GenerateRuleSourceFromXaml;
-      $(MarkupCompilePass1DependsOn)
-    </MarkupCompilePass1DependsOn>
+      $(CoreCompileDependsOn)
+    </CoreCompileDependsOn>
   </PropertyGroup>
+ <ItemDefinitionGroup>
+    <XamlPropertyRule>
+      <DataAccess>IRule</DataAccess>
+      <Generator>MSBuild:GenerateRuleSourceFromXaml</Generator>
+      <OutputPath>$(IntermediateOutputPath)</OutputPath>
+      <Namespace>Microsoft.VisualStudio.R.Package</Namespace>
+      <RuleInjectionClassName>ProjectProperties</RuleInjectionClassName>
+      <RuleInjection>ProjectLevel</RuleInjection>
+    </XamlPropertyRule>
+  </ItemDefinitionGroup>
   <Target Name="GenerateRulePrep">
     <ItemGroup>
       <_XamlPropertyRuleSource Include="@(XamlPropertyRule->'$(IntermediateOutputPath)%(FileName)$(DefaultLanguageSourceExtension)')" />
@@ -1719,11 +1730,34 @@
   <!-- The target needs to run so the task can populate the output items correctly. 
     The task does an up to date check on the files themselves
    -->
-  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.3.224\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
-  <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
-    <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" NamespaceName="%(XamlPropertyRule.Namespace)" RuleMissingError="%(XamlPropertyRule.RuleMissingError)" PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)" Inputs="@(XamlPropertyRule)" OutputDirectory="%(XamlPropertyRule.OutputPath)" DataAccess="%(XamlPropertyRule.DataAccess)" RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" RuleInjection="%(XamlPropertyRule.RuleInjection)" RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
+  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" 
+             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.751\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
+  
+<Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
+    <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" 
+                    NamespaceName="%(XamlPropertyRule.Namespace)" 
+                    RuleMissingError="%(XamlPropertyRule.RuleMissingError)" 
+                    PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)"
+                    Inputs="@(XamlPropertyRule)" 
+                    OutputDirectory="%(XamlPropertyRule.OutputPath)" 
+                    DataAccess="%(XamlPropertyRule.DataAccess)" 
+                    RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" 
+                    RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" 
+                    RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" 
+                    RuleInjection="%(XamlPropertyRule.RuleInjection)" 
+                    RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" 
+                    RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" 
+                    RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" 
+                    ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" 
+                    IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" 
+                    IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" 
+                    ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" 
+                    IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" 
+                    IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
       <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource" />
     </XamlRuleToCode>
   </Target>
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.1.192\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.1.192\tools\vssdk\Microsoft.VsSDK.targets')" />
+
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.targets" 
+          Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>
