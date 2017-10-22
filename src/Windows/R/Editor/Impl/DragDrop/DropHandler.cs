@@ -12,7 +12,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Windows;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

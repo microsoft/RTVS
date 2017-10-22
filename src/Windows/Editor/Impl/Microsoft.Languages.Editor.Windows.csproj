@@ -27,9 +27,7 @@
     <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5">
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
@@ -46,5 +44,4 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

@@ -11,8 +11,16 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Markdown\PreviewTemplate.html" />
+    <None Remove="Preview\Images\Loading.gif" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Markdown\PreviewTemplate.html" />
+    <Content Include="Preview\Images\Loading.gif" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -35,7 +43,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" EmbedInteropTypes="true" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />
     <PackageReference Include="Markdig.Signed" Version="0.13.4" />
     <PackageReference Include="Unofficial.Microsoft.mshtml">
@@ -60,15 +68,29 @@
     <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Preview\Images\Loading.gif" />
+    <Content Update="Preview\Images\Loading.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Markdown\PreviewTemplate.html">
+    <Content Update="Markdown\PreviewTemplate.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup> 
+     <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

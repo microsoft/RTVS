@@ -48,8 +48,20 @@
     <ProjectReference Include="$(SourceDirectory)Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj" />
   </ItemGroup>
+     <ItemGroup>
+    <Compile Update="Windows.Resources.Designer.cs">
+      <DependentUpon>Windows.Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Windows.Resources.resx">
+      <LastGenOutput>Windows.Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

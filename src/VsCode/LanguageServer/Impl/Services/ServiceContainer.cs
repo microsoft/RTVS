@@ -2,8 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
+using System.Text;
 using System.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
@@ -16,13 +20,6 @@ using Microsoft.R.LanguageServer.InteractiveWorkflow;
 using Microsoft.R.LanguageServer.Services.Editor;
 using Microsoft.R.LanguageServer.Text;
 using Microsoft.R.LanguageServer.Threading;
-
-#if NETCOREAPP2_0
-using System.Reflection;
-using System.Runtime.Loader;
-using System.Text;
-using Microsoft.Common.Core;
-#endif
 
 namespace Microsoft.R.LanguageServer.Services {
     internal sealed class ServiceContainer : ServiceManager {
@@ -49,7 +46,6 @@ namespace Microsoft.R.LanguageServer.Services {
         }
 
         private void AddPlatformSpecificServices() {
-#if NETCOREAPP2_0
             var thisAssembly = Assembly.GetEntryAssembly();
             Assembly assembly;
             var platformAssemblyName = GetPlatformServiceProviderAssemblyName();
@@ -70,11 +66,10 @@ namespace Microsoft.R.LanguageServer.Services {
             var classType = assembly.GetType("Microsoft.R.Platform.ServiceProvider");
             var mi = classType.GetMethod("ProvideServices", BindingFlags.Static | BindingFlags.Public);
             mi.Invoke(null, new object[] { this });
-#endif
         }
 
         private static string GetPlatformServiceProviderAssemblyName() {
-            var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".Windows.dll" : ".Unix.dll";
+            var suffix = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".Windows.Core.dll" : ".Unix.dll";
             return "Microsoft.R.Platform" + suffix;
         }
     }

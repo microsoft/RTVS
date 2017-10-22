@@ -19,10 +19,10 @@ namespace Microsoft.Markdown.Editor {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Microsoft.Markdown.Editor {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Markdown.Editor.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace Microsoft.Markdown.Editor {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Pause automatic view synchronization.
         /// </summary>
-        public static string AutomaticSyncPauseTooltip {
+        internal static string AutomaticSyncPauseTooltip {
             get {
                 return ResourceManager.GetString("AutomaticSyncPauseTooltip", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Activate automatic view synchronization.
         /// </summary>
-        public static string AutomaticSyncPlayTooltip {
+        internal static string AutomaticSyncPlayTooltip {
             get {
                 return ResourceManager.GetString("AutomaticSyncPlayTooltip", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to An unexpected exception occurred.
         /// </summary>
-        public static string BrowserView_Error {
+        internal static string BrowserView_Error {
             get {
                 return ResourceManager.GetString("BrowserView_Error", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Alt Text.
         /// </summary>
-        public static string ColorName_MD_AltText {
+        internal static string ColorName_MD_AltText {
             get {
                 return ResourceManager.GetString("ColorName_MD_AltText", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Blockquote.
         /// </summary>
-        public static string ColorName_MD_Blockquote {
+        internal static string ColorName_MD_Blockquote {
             get {
                 return ResourceManager.GetString("ColorName_MD_Blockquote", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Bold Text.
         /// </summary>
-        public static string ColorName_MD_Bold {
+        internal static string ColorName_MD_Bold {
             get {
                 return ResourceManager.GetString("ColorName_MD_Bold", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Bold Italic Text.
         /// </summary>
-        public static string ColorName_MD_BoldItalic {
+        internal static string ColorName_MD_BoldItalic {
             get {
                 return ResourceManager.GetString("ColorName_MD_BoldItalic", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Code Block.
         /// </summary>
-        public static string ColorName_MD_Code {
+        internal static string ColorName_MD_Code {
             get {
                 return ResourceManager.GetString("ColorName_MD_Code", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Code Background.
         /// </summary>
-        public static string ColorName_MD_CodeBackground {
+        internal static string ColorName_MD_CodeBackground {
             get {
                 return ResourceManager.GetString("ColorName_MD_CodeBackground", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Heading.
         /// </summary>
-        public static string ColorName_MD_Heading {
+        internal static string ColorName_MD_Heading {
             get {
                 return ResourceManager.GetString("ColorName_MD_Heading", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Italic Text.
         /// </summary>
-        public static string ColorName_MD_Italic {
+        internal static string ColorName_MD_Italic {
             get {
                 return ResourceManager.GetString("ColorName_MD_Italic", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown List Item.
         /// </summary>
-        public static string ColorName_MD_ListItem {
+        internal static string ColorName_MD_ListItem {
             get {
                 return ResourceManager.GetString("ColorName_MD_ListItem", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Markdown Monospace Text.
         /// </summary>
-        public static string ColorName_MD_Monospace {
+        internal static string ColorName_MD_Monospace {
             get {
                 return ResourceManager.GetString("ColorName_MD_Monospace", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
         /// </summary>
-        public static string Error_PackageMissing {
+        internal static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
             }
@@ -191,7 +191,7 @@ namespace Microsoft.Markdown.Editor {
         ///    
         ///Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes..
         /// </summary>
-        public static string Error_PandocMissingLocal {
+        internal static string Error_PandocMissingLocal {
             get {
                 return ResourceManager.GetString("Error_PandocMissingLocal", resourceCulture);
             }
@@ -202,7 +202,7 @@ namespace Microsoft.Markdown.Editor {
         ///    
         ///Click OK to open the Pandoc download page in default browser. R Remote Services process may need to be restarted when the Pandoc setup completes..
         /// </summary>
-        public static string Error_PandocMissingRemote {
+        internal static string Error_PandocMissingRemote {
             get {
                 return ResourceManager.GetString("Error_PandocMissingRemote", resourceCulture);
             }
@@ -214,7 +214,7 @@ namespace Microsoft.Markdown.Editor {
         ///Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.
         ///.
         /// </summary>
-        public static string Error_PdfLatexMissingLocal {
+        internal static string Error_PdfLatexMissingLocal {
             get {
                 return ResourceManager.GetString("Error_PdfLatexMissingLocal", resourceCulture);
             }
@@ -226,7 +226,7 @@ namespace Microsoft.Markdown.Editor {
         ///Click OK to open MiKTeX download page in the default browser. R Remote Services process may need to be restarted when the MiKTeX setup completes.
         ///.
         /// </summary>
-        public static string Error_PdfLatexMissingRemote {
+        internal static string Error_PdfLatexMissingRemote {
             get {
                 return ResourceManager.GetString("Error_PdfLatexMissingRemote", resourceCulture);
             }
@@ -235,7 +235,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Format Document.
         /// </summary>
-        public static string FormatDocument {
+        internal static string FormatDocument {
             get {
                 return ResourceManager.GetString("FormatDocument", resourceCulture);
             }
@@ -244,7 +244,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Saving published output file: {0}.
         /// </summary>
-        public static string Info_MarkdownGetOutputFile {
+        internal static string Info_MarkdownGetOutputFile {
             get {
                 return ResourceManager.GetString("Info_MarkdownGetOutputFile", resourceCulture);
             }
@@ -253,7 +253,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Finished publishing markdown file: {0}.
         /// </summary>
-        public static string Info_MarkdownPublishComplete {
+        internal static string Info_MarkdownPublishComplete {
             get {
                 return ResourceManager.GetString("Info_MarkdownPublishComplete", resourceCulture);
             }
@@ -262,7 +262,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Publishing markdown file: {0}.
         /// </summary>
-        public static string Info_MarkdownPublishingFile {
+        internal static string Info_MarkdownPublishingFile {
             get {
                 return ResourceManager.GetString("Info_MarkdownPublishingFile", resourceCulture);
             }
@@ -271,7 +271,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Sending markdown input file to R: {0}.
         /// </summary>
-        public static string Info_MarkdownSendingInputFile {
+        internal static string Info_MarkdownSendingInputFile {
             get {
                 return ResourceManager.GetString("Info_MarkdownSendingInputFile", resourceCulture);
             }
@@ -280,7 +280,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        public static System.Drawing.Bitmap Loading {
+        internal static System.Drawing.Bitmap Loading {
             get {
                 object obj = ResourceManager.GetObject("Loading", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -290,7 +290,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Update HTML view.
         /// </summary>
-        public static string ManualUpdateTooltip {
+        internal static string ManualUpdateTooltip {
             get {
                 return ResourceManager.GetString("ManualUpdateTooltip", resourceCulture);
             }
@@ -299,7 +299,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to R Code Chunk Output.
         /// </summary>
-        public static string OutputPlaceholder {
+        internal static string OutputPlaceholder {
             get {
                 return ResourceManager.GetString("OutputPlaceholder", resourceCulture);
             }
@@ -308,7 +308,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Knit and preview HTML.
         /// </summary>
-        public static string PreviewHtmlTooltip {
+        internal static string PreviewHtmlTooltip {
             get {
                 return ResourceManager.GetString("PreviewHtmlTooltip", resourceCulture);
             }
@@ -317,7 +317,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Knit and preview PDF file.
         /// </summary>
-        public static string PreviewPdfTooltip {
+        internal static string PreviewPdfTooltip {
             get {
                 return ResourceManager.GetString("PreviewPdfTooltip", resourceCulture);
             }
@@ -326,7 +326,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Knit and preview Word file.
         /// </summary>
-        public static string PreviewWordTooltip {
+        internal static string PreviewWordTooltip {
             get {
                 return ResourceManager.GetString("PreviewWordTooltip", resourceCulture);
             }
@@ -335,7 +335,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Run all chunks above.
         /// </summary>
-        public static string SuggestedAction_RunAllChunksAbove {
+        internal static string SuggestedAction_RunAllChunksAbove {
             get {
                 return ResourceManager.GetString("SuggestedAction_RunAllChunksAbove", resourceCulture);
             }
@@ -344,7 +344,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Run current chunk.
         /// </summary>
-        public static string SuggestedAction_RunCurrentChunk {
+        internal static string SuggestedAction_RunCurrentChunk {
             get {
                 return ResourceManager.GetString("SuggestedAction_RunCurrentChunk", resourceCulture);
             }
@@ -353,7 +353,7 @@ namespace Microsoft.Markdown.Editor {
         /// <summary>
         ///   Looks up a localized string similar to Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?.
         /// </summary>
-        public static string Warning_SaveInUtf8 {
+        internal static string Warning_SaveInUtf8 {
             get {
                 return ResourceManager.GetString("Warning_SaveInUtf8", resourceCulture);
             }

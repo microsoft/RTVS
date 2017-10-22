@@ -1477,6 +1477,7 @@
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
+      <VSIXSourceItem Include="$(OutputPath)\netstandard.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Markdig.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\YamlDotNet.dll" />
@@ -1486,7 +1487,8 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Containers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Containers.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.Windows.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.Windows.Core.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.Windows.Desktop.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Protocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Languages.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Languages.Editor.dll" />
@@ -1731,7 +1733,7 @@
     The task does an up to date check on the files themselves
    -->
   <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" 
-             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.751\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
+             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.3.224\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
   
 <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
     <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" 

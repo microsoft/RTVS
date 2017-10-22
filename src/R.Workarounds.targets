@@ -1,10 +1,10 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Work around VSIX packaging bug that expects certain targets to always exist -->
-  <Target Name="BuiltProjectOutputGroup" />
+  <!-- <Target Name="BuiltProjectOutputGroup" />
   <Target Name="BuiltProjectOutputGroupDependencies" />
   <Target Name="GetCopyToOutputDirectoryItems" />
   <Target Name="SatelliteDllsProjectOutputGroup" />
-  <Target Name="DebugSymbolsProjectOutputGroup" />
+  <Target Name="DebugSymbolsProjectOutputGroup" /> -->
 
     <!-- https://github.com/dotnet/project-system/issues/2488 - .g.cs files don't get built -->
     <!-- https://github.com/dotnet/sdk/issues/810 -->
