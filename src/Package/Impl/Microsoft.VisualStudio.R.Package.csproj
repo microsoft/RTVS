@@ -2,8 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\R.Settings.props" />
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.props" 
-          Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.props')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.props" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,17 +34,6 @@
     <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
     <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <CreateVsixContainer>True</CreateVsixContainer>
-    <DeployExtension>True</DeployExtension>
-    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
-    <StartAction>Program</StartAction>
-    <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
-    <StartArguments>/rootsuffix Exp</StartArguments>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <CreateVsixContainer>True</CreateVsixContainer>
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
@@ -1089,59 +1077,73 @@
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
       <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
       <Name>Microsoft.R.Common.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Containers\Impl\Microsoft.R.Containers.csproj">
       <Project>{baea19c5-e1f7-4580-ae19-9fb3c890570b}</Project>
       <Name>Microsoft.R.Containers</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Protocol\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
       <Name>Microsoft.R.Host.Protocol</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
       <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
       <Name>Microsoft.R.Platform</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Containers\Impl\Microsoft.R.Containers.Windows.csproj">
       <Project>{8ed6ef0a-08a9-4f77-8ec1-f1630aad2ddb}</Project>
       <Name>Microsoft.R.Containers.Windows</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Debugger\Impl\Microsoft.R.Debugger.csproj">
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
       <Name>Microsoft.R.Host.Broker.Windows</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41AA8769-0FBC-4A80-8498-21C833F0C2AC}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
@@ -1150,46 +1152,56 @@
     <ProjectReference Include="..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{F951311C-D665-4987-95A4-72A2DE37E263}</Project>
       <Name>Microsoft.R.Wpf</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
       <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
       <Name>Microsoft.Languages.Editor.Windows</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
       <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
       <Name>Microsoft.Markdown.Editor.Windows</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor.Windows</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
       <Name>Microsoft.R.Host.Broker.Windows</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
       <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
       <Name>Microsoft.R.Platform.Windows.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj">
       <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
       <Name>Microsoft.R.Platform.Windows.Dektop</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Sql\Impl\Microsoft.VisualStudio.R.Sql.csproj">
       <Project>{b0c3a5c2-f713-40c9-bf08-20a1014d74de}</Project>
       <Name>Microsoft.VisualStudio.R.Sql</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -1481,18 +1493,25 @@
       <VSIXSourceItem Include="$(OutputPath)\Markdig.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\YamlDotNet.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Data.ConnectionUI.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Common.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Containers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Containers.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.Windows.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Platform.Windows.Desktop.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Protocol.dll" />
+      
+
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Languages.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Languages.Editor.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Languages.Editor.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Core.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Editor.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Editor.Windows.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Markdown.Editor.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Components.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Components.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Debugger.dll" />
@@ -1500,49 +1519,36 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Wpf.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.VisualStudio.R.Sql.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Protocol.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Client.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Client.Windows.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Windows.exe" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Windows.exe.config" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Config.json" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Caching.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Caching.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Caching.Memory.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.Binder.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.CommandLine.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.EnvironmentVariables.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.FileExtensions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.Json.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.DependencyInjection.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.DependencyModel.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileProviders.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileProviders.Composite.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileProviders.Physical.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileSystemGlobbing.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Globalization.CultureInfoCache.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Localization.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Localization.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Console.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Debug.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.EventLog.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.ObjectPool.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Options.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.PlatformAbstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.WebEncoders.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\libuv.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\Microsoft.R.Host.exe" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libzip-5.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libbz2-1.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\zlib1.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libwinpthread-1.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Antiforgery.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authorization.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Core.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authorization.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authorization.Policy.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Cors.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Cryptography.Internal.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.DataProtection.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.DataProtection.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Diagnostics.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Diagnostics.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Hosting.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Hosting.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" />
@@ -1551,6 +1557,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Http.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Http.Extensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Http.Features.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.HttpOverrides.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.JsonPatch.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Localization.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.Abstractions.dll" />
@@ -1562,74 +1569,199 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.Formatters.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.Localization.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.Razor.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.Razor.Host.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.Razor.Extensions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.RazorPages.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.TagHelpers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Mvc.ViewFeatures.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Razor.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Razor.Language.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Razor.Runtime.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.ResponseCaching.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Routing.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Routing.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.WebListener.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.WebListener.dll" />    
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.Server.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebUtilities.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.CSharp.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.Razor.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.DotNet.PlatformAbstractions.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Caching.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Caching.Memory.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.Binder.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.CommandLine.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.EnvironmentVariables.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.FileExtensions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.Json.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Configuration.UserSecrets.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.DependencyInjection.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.DependencyModel.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileProviders.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileProviders.Composite.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileProviders.Physical.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.FileSystemGlobbing.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Hosting.Abstractions.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Localization.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Localization.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Configuration.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Console.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Debug.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.EventLog.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.ObjectPool.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Options.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.WebEncoders.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Net.Http.Server.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Win32.Registry.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Win32.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.DotNet.PlatformAbstractions.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Buffers.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.Concurrent.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.Immutable.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.NonGeneric.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.Specialized.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.Annotations.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.EventBasedAsync.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.TypeConverter.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Composition.AttributedModel.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Composition.Convention.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Composition.Hosting.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Composition.Runtime.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Composition.TypedParts.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.DiagnosticSource.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Console.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Data.Common.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Contracts.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Debug.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.DiagnosticSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.FileVersionInfo.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Process.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.StackTrace.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.TraceSource.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.StackTrace.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.TextWriterTraceListener.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tools.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tracing.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Drawing.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Dynamic.Runtime.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.Calendars.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.Extensions.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Compression.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Compression.ZipFile.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.AccessControl.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.DriveInfo.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.Watcher.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.IsolatedStorage.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.MemoryMappedFiles.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Pipes.AccessControl.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Pipes.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.UnmanagedMemoryStream.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.Expressions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.Parallel.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.Queryable.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Http.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Http.WinHttpHandler.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.NameResolution.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.NetworkInformation.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Ping.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Requests.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Security.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Sockets.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebHeaderCollection.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebSockets.Client.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebSockets.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Numerics.Vectors.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ObjectModel.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Reflection.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Reflection.Metadata.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Reflection.Primitives.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Resources.Reader.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Resources.ResourceManager.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Resources.Writer.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.CompilerServices.Unsafe.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Extensions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Handles.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.InteropServices.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.InteropServices.RuntimeInformation.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Numerics.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Formatters.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Json.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Primitives.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Xml.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.AccessControl.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Claims.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Algorithms.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Csp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Encoding.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.X509Certificates.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Xml.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Principal.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Principal.Windows.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.SecureString.dll" />
+      
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encoding.CodePages.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encoding.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encoding.Extensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encodings.Web.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.RegularExpressions.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Overlapped.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Dataflow.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Extensions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Parallel.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Thread.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.ThreadPool.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Timer.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ValueTuple.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.ReaderWriter.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XmlDocument.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XmlSerializer.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XPath.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XPath.XDocument.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.CSharp.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\libuv.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\Microsoft.R.Host.exe" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libzip-5.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\zlib1.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libwinpthread-1.dll" />
+
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.TraceSource.dll" />
+
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
       <VSIXSourceItem Include="$(OutputPath)\Templates\ProjectTemplates\EmptyProject\*.*">
         <VSIXSubPath>ProjectTemplates\EmptyProject</VSIXSubPath>
@@ -1707,7 +1839,7 @@
       $(CoreCompileDependsOn)
     </CoreCompileDependsOn>
   </PropertyGroup>
- <ItemDefinitionGroup>
+  <ItemDefinitionGroup>
     <XamlPropertyRule>
       <DataAccess>IRule</DataAccess>
       <Generator>MSBuild:GenerateRuleSourceFromXaml</Generator>
@@ -1732,34 +1864,11 @@
   <!-- The target needs to run so the task can populate the output items correctly. 
     The task does an up to date check on the files themselves
    -->
-  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" 
-             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.3.224\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
-  
-<Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
-    <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" 
-                    NamespaceName="%(XamlPropertyRule.Namespace)" 
-                    RuleMissingError="%(XamlPropertyRule.RuleMissingError)" 
-                    PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)"
-                    Inputs="@(XamlPropertyRule)" 
-                    OutputDirectory="%(XamlPropertyRule.OutputPath)" 
-                    DataAccess="%(XamlPropertyRule.DataAccess)" 
-                    RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" 
-                    RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" 
-                    RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" 
-                    RuleInjection="%(XamlPropertyRule.RuleInjection)" 
-                    RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" 
-                    RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" 
-                    RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" 
-                    ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" 
-                    IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" 
-                    IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" 
-                    ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" 
-                    IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" 
-                    IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
+  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.3.224\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
+  <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
+    <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" NamespaceName="%(XamlPropertyRule.Namespace)" RuleMissingError="%(XamlPropertyRule.RuleMissingError)" PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)" Inputs="@(XamlPropertyRule)" OutputDirectory="%(XamlPropertyRule.OutputPath)" DataAccess="%(XamlPropertyRule.DataAccess)" RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" RuleInjection="%(XamlPropertyRule.RuleInjection)" RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
       <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource" />
     </XamlRuleToCode>
   </Target>
-
-  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.targets" 
-          Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.5.72\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>

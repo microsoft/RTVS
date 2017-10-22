@@ -18,7 +18,7 @@
   <ItemGroup>
     <Page Include="**\*.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
   </ItemGroup>
@@ -40,6 +40,7 @@
     <ProjectReference Include="$(SourceDirectory)\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(SourceDirectory)Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
   <Import Project="$(SourceDirectory)R.Workarounds.targets" />

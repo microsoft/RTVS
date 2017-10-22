@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-// #define WAIT_FOR_DEBUGGER
+#define WAIT_FOR_DEBUGGER
 
 using System;
 using System.IO;
@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Broker.Startup {
         public StartupOptions StartupOptions { get; }
         public LoggingOptions LoggingOptions { get; }
         public bool IsService => StartupOptions?.IsService == true;
-        public string Name => StartupOptions.Name ?? "RTVS";
+        public string Name => StartupOptions?.Name ?? "RTVS";
         public Uri Url { get; }
         public CommonMain(string[] args) {
 #if WAIT_FOR_DEBUGGER
@@ -61,8 +61,8 @@ namespace Microsoft.R.Host.Broker.Startup {
                 })
                 .UseStartup<T>();
 
-            var httpsOptions = ConfigureHttps();
             if (Url?.IsLoopback != true) {
+                var httpsOptions = ConfigureHttps();
                 builder.UseKestrel(options => options.Listen(IPAddress.Any, Url.Port, lo => lo.UseHttps(httpsOptions)));
             } else {
                 builder.UseKestrel();
