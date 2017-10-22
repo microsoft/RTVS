@@ -156,15 +156,19 @@ namespace Microsoft.R.Host.Client.Session {
         public async Task RemoveBrokerAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             using (_disposeToken.Link(ref cancellationToken)) {
                 await TaskUtilities.SwitchToBackgroundThread();
-                using (await _connectArwl.WriterLockAsync(cancellationToken)) {
-                    BrokerChanging?.Invoke(this, EventArgs.Empty);
 
+                var lockToken = await _connectArwl.WriterLockAsync(cancellationToken);
+                try {
+                    BrokerChanging?.Invoke(this, EventArgs.Empty);
                     await StopSessionsAsync(_sessions.Values, false, cancellationToken);
                     var oldBroker = _brokerProxy.Set(new NullBrokerClient());
                     oldBroker?.Dispose();
-
-                    OnBrokerChanged();
+                } finally {
+                    await CheckInterpretersAsync(_disposeToken.CancellationToken, lockToken.Reentrancy);
+                    lockToken.Dispose();
                 }
+
+                OnBrokerChanged();
             }
         }
 
@@ -229,10 +233,10 @@ namespace Microsoft.R.Host.Client.Session {
                     }
                     throw;
                 } finally {
+                    await CheckInterpretersAsync(_disposeToken.CancellationToken, lockToken.Reentrancy);
                     lockToken.Dispose();
                 }
 
-                IsConnected = true;
                 OnBrokerChanged();
                 return true;
             }
@@ -279,11 +283,8 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private Task StopSessionsAsync(IEnumerable<RSession> sessions, bool waitForShutdown, CancellationToken cancellationToken) {
-            var stopSessionsTask = WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(waitForShutdown, cancellationToken), cancellationToken);
-            IsConnected = false;
-            return stopSessionsTask;
-        }
+        private Task StopSessionsAsync(IEnumerable<RSession> sessions, bool waitForShutdown, CancellationToken cancellationToken) 
+            => WhenAllCancelOnFailure(sessions, (s, ct) => s.StopHostAsync(waitForShutdown, ct), cancellationToken);
 
         private async Task ReconnectAsync(CancellationToken cancellationToken) {
             var sessions = _sessions.Values.ToList();
@@ -378,12 +379,12 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private async Task CheckInterpretersAsync(CancellationToken ct = default(CancellationToken)) {
-            using (await _connectArwl.ReaderLockAsync(ct)) {
+        private async Task CheckInterpretersAsync(CancellationToken cancellationToken = default(CancellationToken), ReentrancyToken reentrancyToken = default(ReentrancyToken)) {
+            using (await _connectArwl.ReaderLockAsync(cancellationToken, reentrancyToken)) {
                 try {
-                    var interpreters = await Broker.GetHostInformationAsync<IEnumerable<InterpreterInfo>>(ct);
+                    var interpreters = await Broker.GetHostInformationAsync<IEnumerable<InterpreterInfo>>(cancellationToken);
                     IsConnected = interpreters != null && interpreters.Any();
-                } catch (OperationCanceledException) when (!ct.IsCancellationRequested) {
+                } catch (Exception) when (!cancellationToken.IsCancellationRequested) {
                     IsConnected = false;
                 }
             }
