@@ -13,6 +13,7 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
             set {
                 if (SetProperty(ref _templatePath, value)) {
                     IsTemplatePathValid = Uri.TryCreate(value, UriKind.Absolute, out _);
+                    UpdateIsValid();
                 }
             }
         }

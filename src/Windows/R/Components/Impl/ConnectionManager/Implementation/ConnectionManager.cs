@@ -57,12 +57,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             _services.GetService<IContainerService>();
 
             _disposableBag = DisposableBag.Create<ConnectionManager>()
+                .Add(() => _sessionProvider.BrokerChanged -= BrokerChanged)
                 .Add(() => _sessionProvider.BrokerStateChanged -= BrokerStateChanged)
                 .Add(() => _interactiveWorkflow.RSession.Connected -= SessionConnected)
                 .Add(() => _interactiveWorkflow.RSession.Disconnected -= SessionDisconnected)
                 .Add(() => _interactiveWorkflow.ActiveWindowChanged -= ActiveWindowChanged)
                 .Add(_containers.SubscribeOnChanges(ContainersChanged));
 
+            _sessionProvider.BrokerChanged += BrokerChanged;
             _sessionProvider.BrokerStateChanged += BrokerStateChanged;
             _interactiveWorkflow.RSession.Connected += SessionConnected;
             _interactiveWorkflow.RSession.Disconnected += SessionDisconnected;
@@ -288,9 +290,14 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
             return false;
         }
 
+        private void BrokerChanged(object sender, EventArgs eventArgs) {
+            UpdateActiveConnection();
+        }
+
         private void BrokerStateChanged(object sender, BrokerStateChangedEventArgs eventArgs) {
+            var isConnected = _sessionProvider.IsConnected;
             lock (_syncObj) {
-                IsConnected = _sessionProvider.IsConnected;
+                IsConnected = isConnected;
                 IsRunning &= IsConnected;
             }
             UpdateActiveConnection();
@@ -298,38 +305,51 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation {
         }
 
         private void SessionConnected(object sender, EventArgs args) {
+            var isConnected = _sessionProvider.IsConnected;
             lock (_syncObj) {
-                IsConnected = _sessionProvider.IsConnected;
+                IsConnected = isConnected;
                 IsRunning = true;
             }
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void SessionDisconnected(object sender, EventArgs args) {
+            var isConnected = _sessionProvider.IsConnected;
             lock (_syncObj) {
-                IsConnected = _sessionProvider.IsConnected;
+                IsConnected = isConnected;
                 IsRunning = false;
             }
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ActiveWindowChanged(object sender, ActiveWindowChangedEventArgs eventArgs) {
-            IsConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
-            IsRunning &= IsConnected;
+            var isConnected = _sessionProvider.IsConnected && eventArgs.Window != null;
+            lock (_syncObj) {
+                IsConnected = isConnected;
+                IsRunning &= IsConnected;
+            }
             UpdateActiveConnection();
             ConnectionStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ContainersChanged() {
             var activeConnection = ActiveConnection;
+            IContainer connectedContainer = null;
             foreach (var container in _containers.GetContainers()) {
                 if (container.IsRunning) {
                     _connections.GetOrAdd(container.Name, Connection.Create(_securityService, container, string.Empty, false, _settings.ShowHostLoadMeter));
                 } else {
                     _connections.TryRemove(container.Name, out IConnection _);
-                    if (activeConnection != null && container.Name.EqualsOrdinal(activeConnection.Name)) {
-                        _sessionProvider.RemoveBrokerAsync().DoNotWait();
-                    }
+                }
+
+                if (activeConnection != null && container.Name.EqualsOrdinal(activeConnection.Name)) {
+                    connectedContainer = container;
+                }
+            }
+
+            if (activeConnection != null && activeConnection.IsContainer) {
+                if (connectedContainer == null || !connectedContainer.IsRunning) {
+                    _sessionProvider.RemoveBrokerAsync().DoNotWait();
                 }
             }
 
