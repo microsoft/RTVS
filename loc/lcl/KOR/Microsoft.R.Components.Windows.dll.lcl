@@ -1114,6 +1114,9 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_LoadingVersions" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading available versions...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[사용 가능한 버전을 로드하는 중...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1183,6 +1186,9 @@
       <Item ItemId=";ContainerManager_CreateLocalDocker_VersionsNotFound_FirstPart" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No images on docker hub or local images have been found. Please check internet connection and click ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Docker 허브의 이미지나 로컬 이미지를 찾았습니다. 인터넷 연결을 확인하고 ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
