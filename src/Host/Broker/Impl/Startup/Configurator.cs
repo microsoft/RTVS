@@ -14,9 +14,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Logging;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
+using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Broker.Startup {
-    public sealed class CommonMain {
+    public sealed class Configurator {
         public IConfigurationRoot Configuration { get; }
         public ILoggerFactory LoggerFactory { get; }
         public ILoggerProvider LoggerProvider => (ILoggerProvider)LoggerFactory;
@@ -25,7 +26,8 @@ namespace Microsoft.R.Host.Broker.Startup {
         public bool IsService => StartupOptions?.IsService == true;
         public string Name => StartupOptions?.Name ?? "RTVS";
         public Uri Url { get; }
-        public CommonMain(string[] args) {
+
+        public Configurator(string[] args) {
 #if WAIT_FOR_DEBUGGER
             while (!System.Diagnostics.Debugger.IsAttached) {
                 System.Threading.Thread.Sleep(1000);
@@ -39,7 +41,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                     .AddDebug()
                     .AddConsole(LogLevel.Trace);
 
-            Configuration = Startup.LoadConfiguration(LoggerFactory, Configuration.GetValue<string>("config"), args);
+            Configuration = LoadConfiguration(LoggerFactory, Configuration.GetValue<string>("config"), args);
             StartupOptions = Configuration.GetStartupOptions();
             LoggingOptions = Configuration.GetLoggingOptions();
 
@@ -49,7 +51,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
         }
 
-        public IWebHostBuilder Configure<T>() where T : Startup {
+        public IWebHostBuilder Configure() {
             var builder = new WebHostBuilder()
                 .ConfigureServices(s => s.AddSingleton(Configuration))
                 .UseConfiguration(Configuration)
@@ -58,8 +60,7 @@ namespace Microsoft.R.Host.Broker.Startup {
                     logging.AddConsole()
                     .AddDebug()
                     .AddProvider(LoggerProvider);
-                })
-                .UseStartup<T>();
+                });
 
             if (Url?.IsLoopback != true) {
                 var httpsOptions = ConfigureHttps();
@@ -90,5 +91,25 @@ namespace Microsoft.R.Host.Broker.Startup {
         }
 
         private class LoggerFactory2 : LoggerFactory, ILoggerProvider { }
+
+        private IConfigurationRoot LoadConfiguration(ILoggerFactory loggerFactory, string configPath, string[] args) {
+            var configuration = new ConfigurationBuilder().AddCommandLine(args);
+
+            if (configPath != null) {
+                try {
+                    configuration.AddJsonFile(configPath, optional: false);
+                } catch (IOException ex) {
+                    loggerFactory.CreateLogger<Configurator>()
+                        .LogCritical(Resources.Error_ConfigLoadFailed, ex.Message);
+                    Environment.Exit((int)BrokerExitCodes.BadConfigFile);
+                } catch (JsonException ex) {
+                    loggerFactory.CreateLogger<Configurator>()
+                        .LogCritical(Resources.Error_ConfigParseFailed, ex.Message);
+                    Environment.Exit((int)BrokerExitCodes.BadConfigFile);
+                }
+            }
+
+            return configuration.Build();
+        }
     }
 }

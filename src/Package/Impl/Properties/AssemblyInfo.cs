@@ -6,8 +6,6 @@ using System.Runtime.CompilerServices;
 
 [assembly: ProvideBindingRedirection(AssemblyName = "Microsoft.Win32.Primitives",
     OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.0.3.0", NewVersion = "4.0.3.0")]
-[assembly: ProvideBindingRedirection(AssemblyName = "System.Diagnostics.DiagnosticSource",
-    OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.0.2.1", NewVersion = "4.0.2.1")]
 [assembly: ProvideBindingRedirection(AssemblyName = "System.Net.Http",
     OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.2.0.0", NewVersion = "4.2.0.0")]
 

@@ -9,13 +9,17 @@ using Microsoft.R.Host.Broker.Logging;
 namespace Microsoft.R.Host.Broker.Startup {
     public class Program {
         public static void Main(string[] args) {
-            var cm = new CommonMain(args);
+            var cm = new Configurator(args);
 
             if (cm.LoggingOptions != null) {
                 cm.LoggerFactory.AddFile(cm.Name, cm.LoggingOptions.LogFolder);
             }
 
-            var webHost = cm.Configure<UnixStartup>().Build();
+            var webHost = cm
+                .Configure()
+                .UseStartup<UnixStartup>()
+                .Build();
+
             try {
                 webHost.Run();
             } catch (Exception ex) {

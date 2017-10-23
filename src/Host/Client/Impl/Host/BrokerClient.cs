@@ -176,6 +176,7 @@ namespace Microsoft.R.Host.Client.Host {
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             using (Log.Measure(LogVerbosity.Normal, Invariant($"Connect to broker session \"{name}\""))) {
                 var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
+                    // Host = "localhost.fiddler",
                     Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
                     Path = $"sessions/{name}/pipe"
                 }.Uri;

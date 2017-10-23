@@ -16,7 +16,7 @@ namespace Microsoft.R.Host.Broker {
         public static void HandleWebHostStartExceptions(this Exception ex, IServiceProvider services, bool isService) {
             var configuration = services.GetRequiredService<IConfigurationRoot>();
             var lifetime = services.GetRequiredService<IApplicationLifetime>();
-            var logger = services.GetService<ILogger<Startup.Startup>>();
+            var logger = services.GetService<ILogger<StartupBase>>();
 
             switch (ex) {
                 case IOException ioException when (ioException.InnerException as AggregateException).IsPortInUseException():

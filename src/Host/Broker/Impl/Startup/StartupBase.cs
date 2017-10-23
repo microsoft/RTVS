@@ -26,34 +26,15 @@ using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
+using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Startup {
-    public class Startup {
-        public static IConfigurationRoot LoadConfiguration(ILoggerFactory loggerFactory, string configPath, string[] args) {
-            var configuration = new ConfigurationBuilder().AddCommandLine(args);
-
-            if (configPath != null) {
-                try {
-                    configuration.AddJsonFile(configPath, optional: false);
-                } catch (IOException ex) {
-                    loggerFactory.CreateLogger<Startup>()
-                        .LogCritical(Resources.Error_ConfigLoadFailed, ex.Message);
-                    Environment.Exit((int)BrokerExitCodes.BadConfigFile);
-                } catch (JsonException ex) {
-                    loggerFactory.CreateLogger<Startup>()
-                        .LogCritical(Resources.Error_ConfigParseFailed, ex.Message);
-                    Environment.Exit((int)BrokerExitCodes.BadConfigFile);
-                }
-            }
-
-            return configuration.Build();
-        }
-
-        private ILogger<Startup> _logger;
+    public abstract class StartupBase {
+        private ILogger _logger;
         protected ILoggerFactory LoggerFactory { get; }
         protected IConfigurationRoot Configuration { get; }
 
-        protected Startup(ILoggerFactory loggerFactory, IConfigurationRoot configuration) {
+        protected StartupBase(ILoggerFactory loggerFactory, IConfigurationRoot configuration) {
             LoggerFactory = loggerFactory;
             Configuration = configuration;
         }
@@ -74,23 +55,24 @@ namespace Microsoft.R.Host.Broker.Startup {
 
                 .AddRouting();
 
+            var asm = typeof(SessionsController).GetTypeInfo().Assembly;
             services
                 .AddMvc()
-                .AddApplicationPart(typeof(Startup).GetTypeInfo().Assembly);
+                .AddApplicationPart(asm);
 
             services
                 .AddAuthorization(options => options.AddPolicy(
                     Policies.RUser,
                     policy => policy.RequireClaim(Claims.RUser)))
-                .AddAuthentication().AddBasic();
+                .AddAuthentication(BasicDefaults.AuthenticationScheme).AddBasic();
 
         }
 
-        public virtual void Configure(IApplicationBuilder app
+        public virtual void Configure<T>(IApplicationBuilder app
             , IApplicationLifetime applicationLifetime
             , IHostingEnvironment env
             , IOptions<StartupOptions> startupOptions
-            , ILogger<Startup> logger
+            , ILogger logger
             , LifetimeManager lifetimeManager
             , InterpreterManager interpreterManager
             , SecurityManager securityManager) {
@@ -128,8 +110,10 @@ namespace Microsoft.R.Host.Broker.Startup {
             lifetimeManager.Initialize();
             interpreterManager.Initialize();
 
+            app.UseMvc();
+            app.UseAuthentication();
+
             app.UseWebSockets(new WebSocketOptions {
-                ReplaceFeature = true,
                 KeepAliveInterval = TimeSpan.FromMilliseconds(1000000000),
                 ReceiveBufferSize = 0x10000
             });
@@ -141,9 +125,6 @@ namespace Microsoft.R.Host.Broker.Startup {
             app.Use((context, next) => context.User.Identity.IsAuthenticated 
                 ? next() 
                 : context.AuthenticateAsync());
-
-            app.UseMvc();
-            app.UseAuthentication();
 
             if (!startupOptions.Value.IsService) {
                 applicationLifetime.ApplicationStopping.Register(ExitAfterTimeout);

@@ -1532,7 +1532,7 @@
 
       <VSIXSourceItem Include="$(OutputPath)\Host\Windows\Microsoft.R.Host.exe" />
       <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libzip-5.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libbz2-1.dll" />
+      <!-- <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libbz2-1.dll" /> -->
       <VSIXSourceItem Include="$(OutputPath)\Host\Windows\zlib1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libwinpthread-1.dll" />
 
@@ -1585,8 +1585,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.WebListener.dll" />    
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.Server.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebUtilities.dll" />
 
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.CSharp.dll" />
@@ -1658,7 +1657,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.FileVersionInfo.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Process.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.StackTrace.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.TraceSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.TextWriterTraceListener.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tools.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tracing.dll" />
@@ -1759,8 +1757,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XmlSerializer.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XPath.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XPath.XDocument.dll" />
-
-      <VSIXSourceItem Include="$(OutputPath)\Microsoft.Extensions.Logging.TraceSource.dll" />
 
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
       <VSIXSourceItem Include="$(OutputPath)\Templates\ProjectTemplates\EmptyProject\*.*">
