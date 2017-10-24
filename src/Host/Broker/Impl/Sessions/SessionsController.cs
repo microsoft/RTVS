@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Sessions {
-    [Authorize(Policy = Policies.RUser, AuthenticationSchemes = BasicDefaults.AuthenticationScheme)]
+    [Authorize(Policy = Policies.RUser)]
     [Route("/sessions")]
     public class SessionsController : Controller {
         private readonly InterpreterManager _interpManager;

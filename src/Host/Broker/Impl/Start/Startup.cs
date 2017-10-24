@@ -9,9 +9,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +31,7 @@ using Newtonsoft.Json;
 using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Start {
-    public abstract class Startup {
+    public abstract class Startup : StartupBase {
         private ILogger<Startup> _logger;
         protected ILoggerFactory LoggerFactory { get; }
         protected IConfigurationRoot Configuration { get; }
@@ -39,7 +41,8 @@ namespace Microsoft.R.Host.Broker.Start {
             Configuration = configuration;
         }
 
-        public virtual void ConfigureServices(IServiceCollection services) {
+        public override void ConfigureServices(IServiceCollection services) {
+            base.ConfigureServices(services);
             services
                 .AddOptions()
                 .Configure<LifetimeOptions>(Configuration.GetLifetimeSection())
@@ -56,26 +59,29 @@ namespace Microsoft.R.Host.Broker.Start {
                 .AddRouting()
                 .AddAuthorization(options => options.AddPolicy(
                     Policies.RUser,
-                    policy => {
-                        policy.RequireClaim(Claims.RUser);
-                        policy.AddAuthenticationSchemes(new[] { BasicDefaults.AuthenticationScheme });
-                    }))
+                    policy => policy.RequireClaim(Claims.RUser)))
 
-                .AddMvc()
+                .AddMvc(config => {
+                    var policy = new AuthorizationPolicyBuilder(new[] { BasicDefaults.AuthenticationScheme })
+                                    .RequireClaim(Claims.RUser)
+                                    .Build();
+                    config.Filters.Add(new AuthorizeFilter(policy));
+                })
                 .AddApplicationPart(typeof(SessionsController).GetTypeInfo().Assembly);
 
             services
-                .AddAuthentication(BasicDefaults.AuthenticationScheme).AddBasic();
+                .AddAuthentication(BasicDefaults.AuthenticationScheme)
+                .AddBasic();
         }
 
-        public virtual void Configure(IApplicationBuilder app
-            , IApplicationLifetime applicationLifetime
-            , IHostingEnvironment env
-            , IOptions<StartupOptions> startupOptions
-            , ILogger<Startup> logger
-            , LifetimeManager lifetimeManager
-            , InterpreterManager interpreterManager
-            , SecurityManager securityManager) {
+        public override void Configure(IApplicationBuilder app) {
+            var applicationLifetime = app.ApplicationServices.GetService<IApplicationLifetime>();
+            var env = app.ApplicationServices.GetService<IHostingEnvironment>();
+            var startupOptions = app.ApplicationServices.GetService<IOptions<StartupOptions>>();
+            var logger = app.ApplicationServices.GetService<ILogger<Startup>>();
+            var lifetimeManager = app.ApplicationServices.GetService<LifetimeManager>();
+            var interpreterManager = app.ApplicationServices.GetService<InterpreterManager>();
+            var securityManager = app.ApplicationServices.GetService<SecurityManager>();
 
             _logger = logger;
             var serverAddresses = app.ServerFeatures.Get<IServerAddressesFeature>();

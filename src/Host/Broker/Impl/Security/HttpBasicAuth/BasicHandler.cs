@@ -9,9 +9,12 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Broker.Start;
 
 namespace Odachi.AspNetCore.Authentication.Basic {
     internal class BasicHandler : AuthenticationHandler<BasicOptions> {
@@ -21,18 +24,12 @@ namespace Odachi.AspNetCore.Authentication.Basic {
             : base(options, logger, encoder, clock) {
         }
 
-        /// <summary>
-        /// The handler calls methods on the events which give the application control at certain points where processing is occurring.
-        /// If it is not provided a default instance is supplied which does nothing when the methods are called.
-        /// </summary>
-        protected new BasicEvents Events {
-            get { return (BasicEvents)base.Events; }
-            set { base.Events = value; }
-        }
-
-        protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(new BasicEvents());
+        protected override Task<object> CreateEventsAsync() 
+            => Task.FromResult<object>(new BasicEvents { OnSignIn = ProgramBase.WebHost.Services.GetService<SecurityManager>().SignInAsync });
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
+            var events = Events as BasicEvents;
+
             try {
                 // .NET Core does not support HTTP auth on sockets
                 if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
@@ -75,7 +72,7 @@ namespace Odachi.AspNetCore.Authentication.Basic {
                     Username = username,
                     Password = password,
                 };
-                await Events.SignIn(signInContext);
+                await events.SignIn(signInContext);
 
                 if (signInContext.Result != null) {
                     return signInContext.Result;
@@ -116,7 +113,7 @@ namespace Odachi.AspNetCore.Authentication.Basic {
                     Exception = ex,
                 };
 
-                await Events.AuthenticationFailed(authenticationFailedContext);
+                await events.AuthenticationFailed(authenticationFailedContext);
                 if (authenticationFailedContext.Result != null) {
                     return authenticationFailedContext.Result;
                 }
@@ -126,7 +123,7 @@ namespace Odachi.AspNetCore.Authentication.Basic {
         }
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties) {
-            Response.StatusCode = 401;
+            Response.StatusCode = 200;
             Response.Headers.Append(HeaderNames.WWWAuthenticate, $"Basic realm=\"{Options.Realm}\"");
 
             return Task.CompletedTask;
