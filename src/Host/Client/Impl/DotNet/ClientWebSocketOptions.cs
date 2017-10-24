@@ -109,13 +109,13 @@ namespace Microsoft.R.Host.Client.DotNet {
 
         public void AddSubProtocol(string subProtocol) {
             ThrowIfReadOnly();
-            WebSocketValidate.ValidateSubprotocol(subProtocol);
+            //WebSocketValidate.ValidateSubprotocol(subProtocol);
 
             // Duplicates not allowed.
             List<string> subprotocols = RequestedSubProtocols; // force initialization of the list
             foreach (string item in subprotocols) {
                 if (string.Equals(item, subProtocol, StringComparison.OrdinalIgnoreCase)) {
-                    throw new ArgumentException(SR.Format(SR.net_WebSockets_NoDuplicateProtocol, subProtocol), nameof(subProtocol));
+                    throw new ArgumentException("Sub protocol", nameof(subProtocol));
                 }
             }
             subprotocols.Add(subProtocol);
@@ -128,9 +128,7 @@ namespace Microsoft.R.Host.Client.DotNet {
             set {
                 ThrowIfReadOnly();
                 if (value != Timeout.InfiniteTimeSpan && value < TimeSpan.Zero) {
-                    throw new ArgumentOutOfRangeException(nameof(value), value,
-                        SR.Format(SR.net_WebSockets_ArgumentOutOfRange_TooSmall,
-                        Timeout.InfiniteTimeSpan.ToString()));
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "Too small");
                 }
                 _keepAliveInterval = value;
             }
@@ -144,10 +142,10 @@ namespace Microsoft.R.Host.Client.DotNet {
             ThrowIfReadOnly();
 
             if (receiveBufferSize <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(receiveBufferSize), receiveBufferSize, SR.Format(SR.net_WebSockets_ArgumentOutOfRange_TooSmall, 1));
+                throw new ArgumentOutOfRangeException(nameof(receiveBufferSize), receiveBufferSize, "Too small");
             }
             if (sendBufferSize <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(sendBufferSize), sendBufferSize, SR.Format(SR.net_WebSockets_ArgumentOutOfRange_TooSmall, 1));
+                throw new ArgumentOutOfRangeException(nameof(sendBufferSize), sendBufferSize, "Too small");
             }
 
             _receiveBufferSize = receiveBufferSize;
@@ -159,13 +157,13 @@ namespace Microsoft.R.Host.Client.DotNet {
             ThrowIfReadOnly();
 
             if (receiveBufferSize <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(receiveBufferSize), receiveBufferSize, SR.Format(SR.net_WebSockets_ArgumentOutOfRange_TooSmall, 1));
+                throw new ArgumentOutOfRangeException(nameof(receiveBufferSize), receiveBufferSize, "Too small");
             }
             if (sendBufferSize <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(sendBufferSize), sendBufferSize, SR.Format(SR.net_WebSockets_ArgumentOutOfRange_TooSmall, 1));
+                throw new ArgumentOutOfRangeException(nameof(sendBufferSize), sendBufferSize, "Too small");
             }
 
-            WebSocketValidate.ValidateArraySegment(buffer, nameof(buffer));
+            //WebSocketValidate.ValidateArraySegment(buffer, nameof(buffer));
             if (buffer.Count == 0) {
                 throw new ArgumentOutOfRangeException(nameof(buffer));
             }
@@ -186,7 +184,7 @@ namespace Microsoft.R.Host.Client.DotNet {
 
         private void ThrowIfReadOnly() {
             if (_isReadOnly) {
-                throw new InvalidOperationException(SR.net_WebSockets_AlreadyStarted);
+                throw new InvalidOperationException("Already started");
             }
         }
 

@@ -125,7 +125,7 @@ namespace Microsoft.R.Host.Client.DotNet {
                 // Issue the request.  The response must be status code 101.
                 HttpResponseMessage response = await handler.SendAsync(request, cancellationToken).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.SwitchingProtocols) {
-                    throw new WebSocketException(SR.net_webstatus_ConnectFailure);
+                    throw new WebSocketException("Connection failure");
                 }
 
                 // The Connection, Upgrade, and SecWebSocketAccept headers are required and with specific values.
@@ -144,8 +144,7 @@ namespace Microsoft.R.Host.Client.DotNet {
                     if (subprotocolArray.Length != 1 ||
                         (subprotocol = options.RequestedSubProtocols.Find(requested => string.Equals(requested, subprotocolArray[0], StringComparison.OrdinalIgnoreCase))) == null) {
                         throw new WebSocketException(
-                            WebSocketError.UnsupportedProtocol,
-                            SR.Format(SR.net_WebSockets_AcceptUnsupportedProtocol, string.Join(", ", options.RequestedSubProtocols), subprotocol));
+                            WebSocketError.UnsupportedProtocol, (int)WebSocketError.UnsupportedProtocol, "Unsupported protocol");
                     }
                 }
 
@@ -171,7 +170,7 @@ namespace Microsoft.R.Host.Client.DotNet {
                 if (exc is WebSocketException) {
                     throw;
                 }
-                throw new WebSocketException(SR.net_webstatus_ConnectFailure, exc);
+                throw new WebSocketException("Connection failure", exc);
             }
         }
 
@@ -209,10 +208,10 @@ namespace Microsoft.R.Host.Client.DotNet {
             Debug.Assert(values is string[]);
             string[] array = (string[])values;
             if (array.Length != 1 || !string.Equals(array[0], expectedValue, StringComparison.OrdinalIgnoreCase)) {
-                throw new WebSocketException(SR.Format(SR.net_WebSockets_InvalidResponseHeader, name, string.Join(", ", array)));
+                throw new WebSocketException("Invalid response header: " + string.Join(", ", array));
             }
         }
 
-        private static void ThrowConnectFailure() => throw new WebSocketException(SR.net_webstatus_ConnectFailure);
+        private static void ThrowConnectFailure() => throw new WebSocketException("Connect failure");
     }
 }
