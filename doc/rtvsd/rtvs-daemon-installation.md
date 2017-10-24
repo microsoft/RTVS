@@ -120,8 +120,8 @@ rtvsd
 Note: WSL currently does not support systemd/systemctl interfaces.
 
 
-### In a local Docker container (clean build)
-Dockerfile contents:
+### In a Docker container running locally (clean build)
+1. Dockerfile contents:
 ```
 FROM ubuntu:16.04
 
@@ -163,3 +163,25 @@ docker run -p 5444:5444 myrimage rtvsd
 ```
 2. You can connect to this container from RTVS. Use `https://localhost:5444` as the path, username `ruser1`, and password `foobar`. If the docker container is running on the remote machine then use `https://remote-host-name:5444`. The port can be changed by updating `/etc/rtvs/rtvsd.config.json`
 
+
+### In a container running on Azure Container Instances
+Use instructions from running in docker container to create a image.
+1. Push the container to docker hub or Azure Container Repository.
+3. Start the Azure CLI and logon to azure using `az login` command.
+4. Use `az container create` command to create the container. Use `--command-line "rtvsd"`, if you have not setup the container to run `rtvsd` as a `systemd` service. In the command below the image is expected to be on docker hub. You can also use Azure ACR for this, by adding ACR login arguments to the command line.
+```
+az container create --image myimage:latest --name myaz-container --resource-group myaz-container-res --ip-address public --port 5444 --cpu 2 --memory 4 --command-line "rtvsd"
+```
+5.  Use `az container list` command to check the status. Look for `provisioningState`: `Succeeded`.
+6.  If the provisioning succeeded, you can now connect to the container. Look for the public IP address, in the `ipAddress` field. Use that to connect to the container from RTVS. Rememeber to use username and password as it was in the docker file.
+
+
+## Connecting from RTVS
+
+1. Open workspaces window from R Tools > Windows > Workspaces.
+2. Click on Add Connection.
+3. Give the connection a name and add the path. Example for WSL `https://localhost:5444`, Example for acure container `https://public-ip:5444`. Hit Save.
+4. Click on connect icon or double click on the connection item.
+5. Username should be entered in the following format: `<<unix>>\ruser1`. Do not forget the `<<unix>>\` prefix for all connections to Linux remotes.
+6. If you are using self-signed certificate you may see a warning. Follow the instrcutions in the message box.
+7. You should now be connected to the Linux rtvs daemon.
