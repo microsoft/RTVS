@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.R.Host.Broker.Logging;
 
-namespace Microsoft.R.Host.Broker.Startup {
+namespace Microsoft.R.Host.Broker.Start {
     public class Program {
         public static void Main(string[] args) {
             var cm = new Configurator(args);
@@ -16,7 +16,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
 
             var webHost = cm
-                .Configure()
+                .ConfigureWebHost()
                 .UseStartup<UnixStartup>()
                 .Build();
 

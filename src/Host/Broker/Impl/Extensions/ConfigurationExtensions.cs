@@ -3,7 +3,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.R.Host.Broker.Logging;
-using Microsoft.R.Host.Broker.Startup;
+using Microsoft.R.Host.Broker.Start;
 
 namespace Microsoft.R.Host.Broker {
     public static class ConfigurationExtensions {

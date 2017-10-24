@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.R.Host.Broker.Logging;
 
-namespace Microsoft.R.Host.Broker.Startup {
+namespace Microsoft.R.Host.Broker.Start {
     public class Program {
         public static void Main(string[] args) {
             var cm = new Configurator(args);
@@ -24,7 +24,10 @@ namespace Microsoft.R.Host.Broker.Startup {
             var logFolder = cm.LoggingOptions != null ? cm.LoggingOptions.LogFolder : Environment.GetEnvironmentVariable("TEMP");
             cm.LoggerFactory.AddFile(cm.Name, logFolder);
 
-            var webHost = cm.Configure().Build();
+            var webHost = cm
+                .ConfigureWebHost()
+                .UseStartup<WindowsStartup>()
+                .Build();
 
             if (cm.IsService) {
                 ServiceBase.Run(new BrokerService(webHost));

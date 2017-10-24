@@ -10,9 +10,10 @@ using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
 
-namespace Microsoft.R.Host.Broker.Startup {
-    public sealed class WindowsStartup : StartupBase {
-        public WindowsStartup(ILoggerFactory loggerFactory, IConfigurationRoot configuration) : base(loggerFactory, configuration) { }
+namespace Microsoft.R.Host.Broker.Start {
+    public sealed class WindowsStartup : Startup {
+        public WindowsStartup(ILoggerFactory loggerFactory, IConfigurationRoot configuration) : 
+            base(loggerFactory, configuration) { }
 
         public override void ConfigureServices(IServiceCollection services) {
             base.ConfigureServices(services);

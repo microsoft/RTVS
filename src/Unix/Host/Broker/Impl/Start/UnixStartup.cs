@@ -13,8 +13,8 @@ using Microsoft.R.Platform.Interpreters.Linux;
 using Microsoft.R.Platform.Interpreters.Mac;
 using Microsoft.R.Platform.IO;
 
-namespace Microsoft.R.Host.Broker.Startup {
-    public sealed class UnixStartup : StartupBase {
+namespace Microsoft.R.Host.Broker.Start {
+    public sealed class UnixStartup : Startup {
         public UnixStartup(ILoggerFactory loggerFactory, IConfigurationRoot configuration) : base(loggerFactory, configuration) { }
 
         public override void ConfigureServices(IServiceCollection services) {

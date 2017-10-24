@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -13,6 +12,7 @@ using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
+using Odachi.AspNetCore.Authentication.Basic;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.About {

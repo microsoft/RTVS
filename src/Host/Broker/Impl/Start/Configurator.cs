@@ -16,7 +16,7 @@ using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 
-namespace Microsoft.R.Host.Broker.Startup {
+namespace Microsoft.R.Host.Broker.Start {
     public sealed class Configurator {
         public IConfigurationRoot Configuration { get; }
         public ILoggerFactory LoggerFactory { get; }
@@ -33,15 +33,11 @@ namespace Microsoft.R.Host.Broker.Startup {
                 System.Threading.Thread.Sleep(1000);
             }
 #endif
-            Configuration = new ConfigurationBuilder()
-                .AddCommandLine(args)
-                .Build();
-
             LoggerFactory = new LoggerFactory2()
                     .AddDebug()
                     .AddConsole(LogLevel.Trace);
 
-            Configuration = LoadConfiguration(LoggerFactory, Configuration.GetValue<string>("config"), args);
+            Configuration = LoadConfiguration(LoggerFactory, args);
             StartupOptions = Configuration.GetStartupOptions();
             LoggingOptions = Configuration.GetLoggingOptions();
 
@@ -51,7 +47,7 @@ namespace Microsoft.R.Host.Broker.Startup {
             }
         }
 
-        public IWebHostBuilder Configure() {
+        public IWebHostBuilder ConfigureWebHost() {
             var builder = new WebHostBuilder()
                 .ConfigureServices(s => s.AddSingleton(Configuration))
                 .UseConfiguration(Configuration)
@@ -92,7 +88,12 @@ namespace Microsoft.R.Host.Broker.Startup {
 
         private class LoggerFactory2 : LoggerFactory, ILoggerProvider { }
 
-        private IConfigurationRoot LoadConfiguration(ILoggerFactory loggerFactory, string configPath, string[] args) {
+        private static IConfigurationRoot LoadConfiguration(ILoggerFactory loggerFactory, string[] args) {
+            var configPath = new ConfigurationBuilder()
+                .AddCommandLine(args)
+                .Build()
+                .GetValue<string>("config");
+
             var configuration = new ConfigurationBuilder().AddCommandLine(args);
 
             if (configPath != null) {

@@ -28,13 +28,13 @@ using Microsoft.R.Host.Protocol;
 using Newtonsoft.Json;
 using Odachi.AspNetCore.Authentication.Basic;
 
-namespace Microsoft.R.Host.Broker.Startup {
-    public abstract class StartupBase {
-        private ILogger _logger;
+namespace Microsoft.R.Host.Broker.Start {
+    public abstract class Startup {
+        private ILogger<Startup> _logger;
         protected ILoggerFactory LoggerFactory { get; }
         protected IConfigurationRoot Configuration { get; }
 
-        protected StartupBase(ILoggerFactory loggerFactory, IConfigurationRoot configuration) {
+        protected Startup(ILoggerFactory loggerFactory, IConfigurationRoot configuration) {
             LoggerFactory = loggerFactory;
             Configuration = configuration;
         }
@@ -53,26 +53,26 @@ namespace Microsoft.R.Host.Broker.Startup {
                 .AddSingleton<InterpreterManager>()
                 .AddSingleton<SessionManager>()
 
-                .AddRouting();
-
-            var asm = typeof(SessionsController).GetTypeInfo().Assembly;
-            services
-                .AddMvc()
-                .AddApplicationPart(asm);
-
-            services
+                .AddRouting()
                 .AddAuthorization(options => options.AddPolicy(
                     Policies.RUser,
-                    policy => policy.RequireClaim(Claims.RUser)))
-                .AddAuthentication(BasicDefaults.AuthenticationScheme).AddBasic();
+                    policy => {
+                        policy.RequireClaim(Claims.RUser);
+                        policy.AddAuthenticationSchemes(new[] { BasicDefaults.AuthenticationScheme });
+                    }))
 
+                .AddMvc()
+                .AddApplicationPart(typeof(SessionsController).GetTypeInfo().Assembly);
+
+            services
+                .AddAuthentication(BasicDefaults.AuthenticationScheme).AddBasic();
         }
 
-        public virtual void Configure<T>(IApplicationBuilder app
+        public virtual void Configure(IApplicationBuilder app
             , IApplicationLifetime applicationLifetime
             , IHostingEnvironment env
             , IOptions<StartupOptions> startupOptions
-            , ILogger logger
+            , ILogger<Startup> logger
             , LifetimeManager lifetimeManager
             , InterpreterManager interpreterManager
             , SecurityManager securityManager) {
@@ -122,8 +122,8 @@ namespace Microsoft.R.Host.Broker.Startup {
             routeBuilder.MapRoute("help_and_shiny", "remoteuri");
             app.UseRouter(routeBuilder.Build());
 
-            app.Use((context, next) => context.User.Identity.IsAuthenticated 
-                ? next() 
+            app.Use((context, next) => context.User.Identity.IsAuthenticated
+                ? next()
                 : context.AuthenticateAsync());
 
             if (!startupOptions.Value.IsService) {
