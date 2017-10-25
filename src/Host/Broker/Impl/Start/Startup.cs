@@ -57,16 +57,18 @@ namespace Microsoft.R.Host.Broker.Start {
                 .AddSingleton<SessionManager>()
 
                 .AddRouting()
-                .AddAuthorization(options => options.AddPolicy(
-                    Policies.RUser,
-                    policy => policy.RequireClaim(Claims.RUser)))
+                .AddAuthorization(options => 
+                    options.AddPolicy(Policies.RUser, policy => {
+                    policy.RequireClaim(Claims.RUser);
+                    policy.AddAuthenticationSchemes(new[] { BasicDefaults.AuthenticationScheme });
+                }))
 
                 .AddMvc(config => {
-                    var policy = new AuthorizationPolicyBuilder(new[] { BasicDefaults.AuthenticationScheme })
-                                    .RequireClaim(Claims.RUser)
-                                    .Build();
-                    config.Filters.Add(new AuthorizeFilter(policy));
-                })
+                     var policy = new AuthorizationPolicyBuilder(new[] { BasicDefaults.AuthenticationScheme })
+                                     .RequireClaim(Claims.RUser)
+                                     .Build();
+                     config.Filters.Add(new AuthorizeFilter(policy));
+                 })
                 .AddApplicationPart(typeof(SessionsController).GetTypeInfo().Assembly);
 
             services
@@ -130,7 +132,7 @@ namespace Microsoft.R.Host.Broker.Start {
 
             app.Use((context, next) => context.User.Identity.IsAuthenticated
                 ? next()
-                : context.AuthenticateAsync());
+                : context.ChallengeAsync(BasicDefaults.AuthenticationScheme));
 
             if (!startupOptions.Value.IsService) {
                 applicationLifetime.ApplicationStopping.Register(ExitAfterTimeout);

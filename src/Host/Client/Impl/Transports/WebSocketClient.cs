@@ -9,6 +9,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
+using ClientWebSocket = Microsoft.R.Host.Client.DotNet.ClientWebSocket;
 
 namespace Microsoft.R.Host.Client.Transports {
     internal sealed class WebSocketClient {

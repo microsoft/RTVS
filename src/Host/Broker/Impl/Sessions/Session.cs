@@ -96,13 +96,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
                 throw new InvalidOperationException("Host process is already running");
             }
 
-            string profilePath = _principal.FindFirst(Claims.RUserProfileDir)?.Value;
+            var profilePath = _principal.FindFirst(Claims.RUserProfileDir)?.Value;
             var useridentity = User as WindowsIdentity;
             // In remote broker User Identity type is always WindowsIdentity
-            string suppressUI = useridentity == null ? string.Empty : "--rhost-suppress-ui ";
-            string isRepl = _isInteractive ? "--rhost-interactive " : string.Empty;
-            string logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
-            string arguments = Invariant($"{suppressUI}{isRepl}--rhost-r-dir \"{Interpreter.BinPath}\" --rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
+            var suppressUI = useridentity == null ? string.Empty : "--rhost-suppress-ui ";
+            var isRepl = _isInteractive ? "--rhost-interactive " : string.Empty;
+            var logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
+            var arguments = Invariant($"{suppressUI}{isRepl}--rhost-r-dir \"{Interpreter.BinPath}\" --rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, arguments);
             _process = _processService.StartHost(Interpreter, profilePath, User.Name, _principal, arguments);
@@ -183,7 +183,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
                     if (!await FillFromStreamAsync(stream, sizeBuf)) {
                         break;
                     }
-                    int size = BitConverter.ToInt32(sizeBuf, 0);
+                    var size = BitConverter.ToInt32(sizeBuf, 0);
 
                     var message = new byte[size];
                     if (!await FillFromStreamAsync(stream, message)) {
@@ -203,7 +203,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         private static async Task<bool> FillFromStreamAsync(Stream stream, byte[] buffer) {
             for (int index = 0, count = buffer.Length; count != 0;) {
-                int read = await stream.ReadAsync(buffer, index, count);
+                var read = await stream.ReadAsync(buffer, index, count);
                 if (read == 0) {
                     return false;
                 }

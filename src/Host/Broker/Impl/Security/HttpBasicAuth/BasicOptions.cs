@@ -30,8 +30,8 @@ namespace Odachi.AspNetCore.Authentication.Basic {
         /// and assign delegates only to the events it wants to process.
         /// </summary>
         public new BasicEvents Events {
-            get { return (BasicEvents)base.Events; }
-            set { base.Events = value; }
+            get => (BasicEvents)base.Events;
+            set => base.Events = value;
         }
     }
 }

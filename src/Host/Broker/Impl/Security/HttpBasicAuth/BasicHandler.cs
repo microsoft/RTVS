@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -24,7 +25,7 @@ namespace Odachi.AspNetCore.Authentication.Basic {
             : base(options, logger, encoder, clock) {
         }
 
-        protected override Task<object> CreateEventsAsync() 
+        protected override Task<object> CreateEventsAsync()
             => Task.FromResult<object>(new BasicEvents { OnSignIn = ProgramBase.WebHost.Services.GetService<SecurityManager>().SignInAsync });
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
@@ -32,12 +33,12 @@ namespace Odachi.AspNetCore.Authentication.Basic {
 
             try {
                 // .NET Core does not support HTTP auth on sockets
-                if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
-                    if (uri.IsLoopback && !Request.IsHttps) {
-                        var t = CreateTicket("RUser", string.Empty);
-                        return AuthenticateResult.Success(t);
-                    }
-                }
+                //if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
+                //    if (uri.IsLoopback && !Request.IsHttps) {
+                //        var t = CreateTicket("RUser", string.Empty);
+                //        return AuthenticateResult.Success(t);
+                //    }
+                //}
 
                 // retrieve authorization header
                 string authorization = Request.Headers[HeaderNames.Authorization];
@@ -66,46 +67,17 @@ namespace Odachi.AspNetCore.Authentication.Basic {
 
                 var username = decodedCredentials.Substring(0, index);
                 var password = decodedCredentials.Substring(index + 1);
-
-                // invoke sign in event
                 var signInContext = new BasicSignInContext(Context, Scheme, Options) {
                     Username = username,
                     Password = password,
                 };
+
                 await events.SignIn(signInContext);
-
-                if (signInContext.Result != null) {
-                    return signInContext.Result;
-                }
-
-                // allow sign in event to modify received credentials
-                username = signInContext.Username;
-                password = signInContext.Password;
-
-                // verify credentials against options
-                BasicCredential credentials = null;
-                for (var i = 0; i < Options.Credentials.Length; i++) {
-                    var currentCredentials = Options.Credentials[i];
-
-                    if (currentCredentials.Username == username && currentCredentials.Password == password) {
-                        credentials = currentCredentials;
-                        break;
-                    }
-                }
-                if (credentials == null) {
+                if (signInContext.Principal == null) {
                     return AuthenticateResult.Fail("Invalid basic authentication credentials.");
                 }
 
-                var claims = new Claim[credentials.Claims.Length + 1];
-                claims[0] = new Claim(ClaimsIdentity.DefaultNameClaimType, credentials.Username);
-                for (var i = 0; i < credentials.Claims.Length; i++) {
-                    var currentClaim = credentials.Claims[i];
-
-                    claims[i + 1] = new Claim(currentClaim.Type, currentClaim.Value);
-                }
-
-                var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-                var ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
+                var ticket = new AuthenticationTicket(signInContext.Principal, new AuthenticationProperties(), Scheme.Name);
 
                 return AuthenticateResult.Success(ticket);
             } catch (Exception ex) {
@@ -123,29 +95,28 @@ namespace Odachi.AspNetCore.Authentication.Basic {
         }
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties) {
-            Response.StatusCode = 200;
+            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             Response.Headers.Append(HeaderNames.WWWAuthenticate, $"Basic realm=\"{Options.Realm}\"");
-
             return Task.CompletedTask;
         }
 
-        private AuthenticationTicket CreateTicket(string username, string password) {
-            List<Claim> claims;
-            var credentials = Options.Credentials.FirstOrDefault(c => c.Username == username && c.Password == password);
-            if (credentials != null) {
-                claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
-                if (claims.All(c => c.Type != ClaimTypes.Name)) {
-                    claims.Add(new Claim(ClaimTypes.Name, username));
-                }
-            } else {
-                claims = new List<Claim> {
-                    new Claim(ClaimTypes.Name, username),
-                    new Claim("RUser", "")
-                };
-            }
+        //private AuthenticationTicket CreateTicket(string username, string password) {
+        //    List<Claim> claims;
+        //    var credentials = Options.Credentials.FirstOrDefault(c => c.Username == username && c.Password == password);
+        //    if (credentials != null) {
+        //        claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+        //        if (claims.All(c => c.Type != ClaimTypes.Name)) {
+        //            claims.Add(new Claim(ClaimTypes.Name, username));
+        //        }
+        //    } else {
+        //        claims = new List<Claim> {
+        //            new Claim(ClaimTypes.Name, username),
+        //            new Claim("RUser", "")
+        //        };
+        //    }
 
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-            return new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
-        }
+        //    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
+        //    return new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
+        //}
     }
 }

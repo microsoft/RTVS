@@ -9,10 +9,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
-using System.Net.Sockets;
 using System.Net.WebSockets;
-using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -115,7 +112,8 @@ namespace Microsoft.R.Host.Client.DotNet {
                 handler.UseDefaultCredentials = options.UseDefaultCredentials;
                 handler.Credentials = options.Credentials;
                 handler.Proxy = options.Proxy;
-                handler.CookieContainer = options.Cookies;
+                handler.PreAuthenticate = true;
+                //handler.CookieContainer = options.Cookies;
                 if (options._clientCertificates?.Count > 0) // use field to avoid lazily initializing the collection
                 {
                     handler.ClientCertificateOptions = ClientCertificateOption.Manual;
