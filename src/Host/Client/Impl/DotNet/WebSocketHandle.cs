@@ -178,9 +178,23 @@ namespace Microsoft.R.Host.Client.DotNet {
             request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.Upgrade, "websocket");
             request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.SecWebSocketVersion, "13");
             request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.SecWebSocketKey, secKey);
+
             if (options._requestedSubProtocols?.Count > 0) {
                 request.Headers.Add(HttpKnownHeaderNames.SecWebSocketProtocol, string.Join(", ", options.RequestedSubProtocols));
             }
+
+            var creds = options.Credentials?.GetCredential(request.RequestUri, "Basic");
+            if (creds != null) {
+                var basicCreds = ToBasicCreds(creds);
+                request.Headers.Add(HttpKnownHeaderNames.Authorization, basicCreds);
+            }
+        }
+
+        private static string ToBasicCreds(NetworkCredential cred) {
+            if (cred != null) {
+                return $"Basic {Convert.ToBase64String(Encoding.ASCII.GetBytes($"{cred.UserName}:{cred.Password}"))}";
+            }
+            return null;
         }
 
         /// <summary>

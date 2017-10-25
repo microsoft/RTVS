@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core;
@@ -118,21 +119,17 @@ namespace Microsoft.R.Host.Broker.Start {
             lifetimeManager.Initialize();
             interpreterManager.Initialize();
 
-            app.UseMvc();
-            app.UseAuthentication();
-
             app.UseWebSockets(new WebSocketOptions {
                 KeepAliveInterval = TimeSpan.FromMilliseconds(1000000000),
                 ReceiveBufferSize = 0x10000
             });
 
+            app.UseMvc();
+            app.UseAuthentication();
+
             var routeBuilder = new RouteBuilder(app, new RouteHandler(RemoteUriHelper.HandlerAsync));
             routeBuilder.MapRoute("help_and_shiny", "remoteuri");
             app.UseRouter(routeBuilder.Build());
-
-            app.Use((context, next) => context.User.Identity.IsAuthenticated
-                ? next()
-                : context.ChallengeAsync(BasicDefaults.AuthenticationScheme));
 
             if (!startupOptions.Value.IsService) {
                 applicationLifetime.ApplicationStopping.Register(ExitAfterTimeout);

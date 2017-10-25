@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
                 if (!context.WebSockets.IsWebSocketRequest) {
                     httpResponse.ReasonPhrase = "Websocket connection expected";
-                    httpResponse.StatusCode = 401;
+                    httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
                     return;
                 }
 
