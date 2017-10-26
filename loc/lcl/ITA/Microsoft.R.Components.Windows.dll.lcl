@@ -932,7 +932,7 @@
         <Str Cat="Text">
           <Val><![CDATA[ when erros is fixed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[quando l'errore viene risolto.]]></Val>
+            <Val><![CDATA[ quando l'errore viene risolto.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[when erros is fixed.]]></Val>
@@ -1016,7 +1016,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Il servizio Docker non è in esecuzione.]D;]A;Per iniziare a usare i contenitori, eseguire Docker per Windows e fare clic su]]></Val>
+            <Val><![CDATA[Il servizio Docker non è in esecuzione.]D;]A;Per iniziare a usare i contenitori, eseguire Docker per Windows e fare clic su ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Docker service isn't running.]D;]A;To start working with containers, run Docker for Windows and click]]></Val>
