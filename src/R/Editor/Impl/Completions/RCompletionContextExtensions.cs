@@ -15,13 +15,21 @@ namespace Microsoft.R.Editor.Completions {
             => context.IsCaretInNamespace(out bool unused);
 
         public static bool IsCaretInNamespace(this IRIntellisenseContext context, out bool tripleColon)
-            => context.Session.View.IsCaretInNamespace(out tripleColon);
+            => context.Session.View.IsCaretInNamespace(context.EditorBuffer, out tripleColon);
 
-        public static bool IsCaretInNamespace(this IEditorView view)
-            => view.EditorBuffer.CurrentSnapshot.IsPositionInNamespace(view.Caret.Position.Position, out bool unused);
+        public static bool IsCaretInNamespace(this IEditorView view, IEditorBuffer editorBuffer)
+            => view.IsCaretInNamespace(editorBuffer, out bool unused);
 
-        public static bool IsCaretInNamespace(this IEditorView view, out bool tripleColon)
-            => view.EditorBuffer.CurrentSnapshot.IsPositionInNamespace(view.Caret.Position.Position, out tripleColon);
+        public static bool IsCaretInNamespace(this IEditorView view, IEditorBuffer editorBuffer, out bool tripleColon) {
+            tripleColon = false;
+            // https://github.com/Microsoft/RTVS/issues/4187
+            // Do not use view buffer since in REPL access may be slow b/c of the data
+            // accumulated in the output part of the projection graph.
+            var position = view.GetCaretPosition(editorBuffer);
+            return position != null
+                ? position.Snapshot.IsPositionInNamespace(position.Position, out tripleColon)
+                : false;
+        }
 
         public static bool IsPositionInNamespace(this IEditorBufferSnapshot snapshot, int position, out bool tripleColon) {
             var doubleColon = position >= 2 && snapshot[position - 1] == ':' && snapshot[position - 2] == ':';
@@ -30,12 +38,20 @@ namespace Microsoft.R.Editor.Completions {
         }
 
         public static bool IsCaretInLibraryStatement(this IRIntellisenseContext context)
-            => context.Session.View.IsCaretInLibraryStatement();
+            => context.Session.View.IsCaretInLibraryStatement(context.EditorBuffer);
 
-        public static bool IsCaretInLibraryStatement(this IEditorView view) {
+        public static bool IsCaretInLibraryStatement(this IEditorView view, IEditorBuffer editorBuffer) {
             try {
-                var caretPosition = view.Caret.Position.Position;
-                var snapshot = view.EditorBuffer.CurrentSnapshot;
+                // https://github.com/Microsoft/RTVS/issues/4187
+                // Do not use view buffer since in REPL access may be slow b/c of the data
+                // accumulated in the output part of the projection graph.
+                var position = view.GetCaretPosition(editorBuffer);
+                if(position == null) {
+                    return false;
+                }
+
+                var snapshot = editorBuffer.CurrentSnapshot;
+                var caretPosition = position.Position;
                 var line = snapshot.GetLineFromPosition(caretPosition);
 
                 if (line.Length < 8 || caretPosition < line.Start + 8 || snapshot[caretPosition - 1] != '(') {
