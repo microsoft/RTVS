@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsMainThread : IMainThread {
@@ -19,16 +20,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public int ThreadId => _mainThread.ManagedThreadId;
 
-        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public void Post(Action action) {
             if (_mainThreadDispatcher.HasShutdownStarted) {
                 return;
             }
 
-            var awaiter = ThreadHelper.JoinableTaskFactory
-                .SwitchToMainThreadAsync(cancellationToken)
-                .GetAwaiter();
+            ThreadHelper.JoinableTaskFactory.RunAsync(() => {
+                action();
+                return Task.CompletedTask;
+            });
+        }
 
-            awaiter.OnCompleted(action);
+        public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken) {
+            return new VsMainThreadAwaiter(ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken).GetAwaiter());
         }
     }
 }
