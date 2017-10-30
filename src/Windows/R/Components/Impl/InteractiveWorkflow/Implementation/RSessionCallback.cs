@@ -83,7 +83,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public async Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
-            _services.MainThread().Post(() => _interactiveWindow.Write(prompt), ct);
+            _services.MainThread().Post(() => {
+                if (!ct.IsCancellationRequested) {
+                    _interactiveWindow.Write(prompt);
+                }
+            });
+
             var tcs = new TaskCompletionSource<string>();
             Task.Run(() => {
                 using (var reader = _interactiveWindow.ReadStandardInput()) {
@@ -96,7 +101,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             try {
                 return await tcs.Task;
             } catch (OperationCanceledException) {
-                _services.MainThread().Post(() => _interactiveWindow.Operations.TrySubmitStandardInput(), ct);
+                _services.MainThread().Post(() => {
+                    if (!ct.IsCancellationRequested) {
+                        _interactiveWindow.Operations.TrySubmitStandardInput();
+                    }
+                });
                 throw;
             }
         }

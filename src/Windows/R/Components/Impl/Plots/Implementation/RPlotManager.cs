@@ -196,9 +196,11 @@ namespace Microsoft.R.Components.Plots.Implementation {
             _locatorCancelTokenRegistration = cancellationToken.Register(() => CancelLocatorMode(device));
 
             _mainThread.Post(() => {
-                var visualComponent = GetVisualComponentForDevice(deviceId);
-                visualComponent?.Container.Show(focus: false, immediate: true);
-            }, cancellationToken);
+                if (!cancellationToken.IsCancellationRequested) {
+                    var visualComponent = GetVisualComponentForDevice(deviceId);
+                    visualComponent?.Container.Show(focus: false, immediate: true);
+                }
+            });
 
             return _locatorTcs.Task;
         }
