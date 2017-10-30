@@ -254,6 +254,7 @@
     </Compile>
     <Compile Include="Shell\CompositionCatalog.cs" />
     <Compile Include="Shell\Services\VsApplication.cs" />
+    <Compile Include="Shell\Services\VsMainThreadAwaiter.cs" />
     <Compile Include="Shell\Services\VsOutputService.cs" />
     <Compile Include="Shell\Services\VsPlotExportDialog.cs" />
     <Compile Include="Shell\VsAppShell.Test.cs" />
