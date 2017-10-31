@@ -1153,7 +1153,7 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
     <value>Flag names longer than the specified limit</value>
   </data>
   <data name="Settings_Lint_MultipleDots" xml:space="preserve">
-    <value>Flas multiple dots</value>
+    <value>Flag multiple dots</value>
   </data>
   <data name="Settings_Lint_MultipleDots_Description" xml:space="preserve">
     <value>Flag objects names with multiple dots</value>
