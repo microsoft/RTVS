@@ -2148,7 +2148,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Flas multiple dots.
+        ///   Looks up a localized string similar to Flag multiple dots.
         /// </summary>
         public static string Settings_Lint_MultipleDots {
             get {
