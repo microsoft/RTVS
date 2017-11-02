@@ -45,8 +45,8 @@
     <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop.11.0" Version="11.0.61030" />
     <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop.12.0" Version="12.0.30110" />
     <PackageReference Include="Microsoft.VisualStudio.VsInteractiveWindow" Version="2.3.0" />
-    <PackageReference Include="NSubstitute" Version="3.0.1" />
-    <PackageReference Include="xunit" Version="2.3.0" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />

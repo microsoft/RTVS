@@ -108,6 +108,7 @@
   <ItemGroup>
     <Content Include="images\rIcon.png" />
   </ItemGroup>
+  <Target Name="Clean" />
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />
   </Target>

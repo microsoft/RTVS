@@ -32,8 +32,8 @@
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />   
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />   
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />   
-    <PackageReference Include="NSubstitute" Version="3.0.1" />
-    <PackageReference Include="xunit" Version="2.3.0" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />

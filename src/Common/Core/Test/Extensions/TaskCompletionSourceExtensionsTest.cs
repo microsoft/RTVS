@@ -1,17 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
+using FluentAssertions;
+using Microsoft.UnitTests.Core.FluentAssertions;
+using Microsoft.UnitTests.Core.Threading;
+using Microsoft.UnitTests.Core.XUnit;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
-using Microsoft.UnitTests.Core.Threading;
-using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.UnitTests.Core.FluentAssertions;
-using Xunit;
 
-namespace Microsoft.Common.Core.Test.Extensions {
+namespace Microsoft.Common.Core.Test.Extensions
+{
     [ExcludeFromCodeCoverage]
     [Category.CoreExtensions]
     public class TaskCompletionSourceExtensionsTest {
