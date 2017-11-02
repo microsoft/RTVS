@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#define WAIT_FOR_DEBUGGER
-
 using System;
 using System.IO;
 using System.Net;
@@ -28,11 +26,6 @@ namespace Microsoft.R.Host.Broker.Start {
         public Uri Url { get; }
 
         public Configurator(string[] args) {
-#if WAIT_FOR_DEBUGGER
-            while (!System.Diagnostics.Debugger.IsAttached) {
-                System.Threading.Thread.Sleep(1000);
-            }
-#endif
             LoggerFactory = new LoggerFactory2()
                     .AddDebug()
                     .AddConsole(LogLevel.Trace);

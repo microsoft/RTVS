@@ -94,7 +94,6 @@ namespace Microsoft.R.Host.Broker.Services {
             var principal = new WindowsPrincipal(winIdentity);
             if (principal.IsInRole(_options.AllowedGroup)) {
                 var claims = new[] {
-                    //new Claim(ClaimTypes.Name, username),
                     new Claim(Claims.RUser, ""),
                     new Claim(Claims.RUserProfileDir, profilePath)
                 };

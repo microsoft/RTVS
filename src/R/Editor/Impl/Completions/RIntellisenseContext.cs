@@ -51,7 +51,7 @@ namespace Microsoft.R.Editor.Completions {
                 return Disposable.Create(() => {
                     _lockCount--;
                     if (_lockCount == 0) {
-                        _editorTree.ReleaseReadLock(guid);
+                        _editorTree?.ReleaseReadLock(guid);
                         _lockedAstRoot = null;
                     }
                 });

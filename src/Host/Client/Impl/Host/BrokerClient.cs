@@ -120,7 +120,7 @@ namespace Microsoft.R.Host.Client.Host {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var uniqueSessionName = $"{connectionInfo.Name}_{ConnectionInfo.ParametersId}";
+            var uniqueSessionName = $"{connectionInfo.Name}_{ConnectionInfo.ParametersId}_{Guid.NewGuid()}";
             try {
                 var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(uniqueSessionName, cancellationToken);
                 if (sessionExists) {

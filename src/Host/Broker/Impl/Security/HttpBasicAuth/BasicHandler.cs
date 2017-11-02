@@ -1,10 +1,8 @@
 ﻿// From https://github.com/Kukkimonsuta/Odachi/tree/master/src/Odachi.AspNetCore.Authentication.Basic
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -32,10 +30,19 @@ namespace Odachi.AspNetCore.Authentication.Basic {
             var events = Events as BasicEvents;
 
             try {
-                // .NET Core does not support HTTP auth on sockets
+                // .NET Core as of 2.0 does not support HTTP auth on sockets
+                // This is alternative solution to anonymous access in SessionController.GetPipe()
+                // but it only works for local connections (which may be OK for VSC but it won't work
+                // in VSC with remote or Docker containers.
+
                 //if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
                 //    if (uri.IsLoopback && !Request.IsHttps) {
-                //        var t = CreateTicket("RUser", string.Empty);
+                //        var claims = new[] {
+                //            new Claim(ClaimTypes.Name, "RTVS"),
+                //            new Claim(Claims.RUser, string.Empty),
+                //        };
+                //        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, BasicDefaults.AuthenticationScheme));
+                //        var t = new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
                 //        return AuthenticateResult.Success(t);
                 //    }
                 //}
@@ -99,24 +106,5 @@ namespace Odachi.AspNetCore.Authentication.Basic {
             Response.Headers.Append(HeaderNames.WWWAuthenticate, $"Basic realm=\"{Options.Realm}\"");
             return Task.CompletedTask;
         }
-
-        //private AuthenticationTicket CreateTicket(string username, string password) {
-        //    List<Claim> claims;
-        //    var credentials = Options.Credentials.FirstOrDefault(c => c.Username == username && c.Password == password);
-        //    if (credentials != null) {
-        //        claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
-        //        if (claims.All(c => c.Type != ClaimTypes.Name)) {
-        //            claims.Add(new Claim(ClaimTypes.Name, username));
-        //        }
-        //    } else {
-        //        claims = new List<Claim> {
-        //            new Claim(ClaimTypes.Name, username),
-        //            new Claim("RUser", "")
-        //        };
-        //    }
-
-        //    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-        //    return new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
-        //}
     }
 }

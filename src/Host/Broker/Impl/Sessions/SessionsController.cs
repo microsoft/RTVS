@@ -9,15 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Common.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Pipes;
 using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Protocol;
-using Microsoft.Extensions.Logging;
-using Odachi.AspNetCore.Authentication.Basic;
 
 namespace Microsoft.R.Host.Broker.Sessions {
-    [Authorize(Policy = Policies.RUser)]
     [Route("/sessions")]
     public class SessionsController : Controller {
         private readonly InterpreterManager _interpManager;
@@ -30,9 +28,11 @@ namespace Microsoft.R.Host.Broker.Sessions {
             _sessionLogger = sessionLogger;
         }
 
+        [Authorize(Policy = Policies.RUser)]
         [HttpGet]
         public Task<IEnumerable<SessionInfo>> GetAsync() => Task.FromResult(_sessionManager.GetSessions(User.Identity).Select(s => s.Info));
 
+        [Authorize(Policy = Policies.RUser)]
         [HttpPut("{id}")]
         public Task<IActionResult> PutAsync(string id, [FromBody] SessionCreateRequest request) {
             if (!_interpManager.Interpreters.Any()) {
@@ -57,6 +57,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             }
         }
 
+        [Authorize(Policy = Policies.RUser)]
         [HttpDelete("{id}")]
         public IActionResult Delete(string id) {
             var session = _sessionManager.GetSession(User.Identity, id);
@@ -76,9 +77,13 @@ namespace Microsoft.R.Host.Broker.Sessions {
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}/pipe")]
         public IActionResult GetPipe(string id) {
-            var session = _sessionManager.GetSession(User.Identity, id);
+            // .NET Core as of 2.0 does not support HTTP auth on sockets
+            // We therefore allow anonymous here and fetch session by unique id.
+            // User should have been authenticated when session was created.
+            var session = _sessionManager.GetSession(null, id);
             if (session?.Process?.HasExited ?? true) {
                 return NotFound();
             }

@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.Signatures {
             // Retrieve parameter positions from the current text buffer snapshot
             var signatureInfo = context.AstRoot.GetSignatureInfoFromBuffer(snapshot, context.Position);
             if (signatureInfo == null) {
-                callback(Enumerable.Empty<IRFunctionSignatureHelp>());
+                callback?.Invoke(Enumerable.Empty<IRFunctionSignatureHelp>());
                 return null;
             }
             return GetSignaturesAsync(signatureInfo, context, callback);
