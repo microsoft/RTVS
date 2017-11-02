@@ -15,6 +15,7 @@ using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Platform;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Fixtures {
@@ -43,7 +44,6 @@ namespace Microsoft.R.Editor.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
-                .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddEditorServices()
@@ -51,7 +51,9 @@ namespace Microsoft.R.Editor.Test.Fixtures {
                 .AddService(new EditorSupportMock())
                 .AddService(new TestImageService())
                 .AddService(new TestRSettings(testInput.FileSytemSafeName))
-                .AddService(new REditorSettings(new TestSettingsStorage()));
+                .AddService(new REditorSettings(new TestSettingsStorage()))
+                .AddService<IRInstallationService, RInstallation>();
+            ;
         }
     }
 }

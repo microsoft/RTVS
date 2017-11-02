@@ -3,8 +3,8 @@
     "FluentAssertions": "4.19.4",
     "MicroBuild.Core": "0.2.0",
     "NSubstitute": "3.1.0",
-    "xunit": "2.3.1",
-    "xunit.runner.visualstudio": "2.3.1"
+    "xunit": "2.3.0",
+    "xunit.runner.visualstudio": "2.3.0"
   },
   "frameworks": {
     "net461": {}

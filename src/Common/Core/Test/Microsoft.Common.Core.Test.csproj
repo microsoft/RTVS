@@ -30,15 +30,15 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
     <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
+    <ProjectReference Include="..\..\..\Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
     <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -39,7 +39,7 @@
     <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj" />
+    <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

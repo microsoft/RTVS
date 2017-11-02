@@ -7,8 +7,8 @@
     "Microsoft.VisualStudio.Text.Logic": "15.4.27004",
     "Microsoft.VisualStudio.Text.UI": "15.4.27004",
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
-    "xunit": "2.3.1",
-    "xunit.runner.visualstudio": "2.3.1"
+    "xunit": "2.3.0",
+    "xunit.runner.visualstudio": "2.3.0"
   },
   "frameworks": {
     "net461": {}

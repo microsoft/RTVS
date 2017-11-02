@@ -46,7 +46,7 @@
     <ProjectReference Include="$(SourceDirectory)Host\Broker\Impl\Microsoft.R.Host.Broker.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj" />
+    <ProjectReference Include="..\..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
   </ItemGroup>
   <!-- libuv.dll is not properly copied to output directory by NuGet -->
   <ItemGroup>

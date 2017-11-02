@@ -9,8 +9,8 @@
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
     "Microsoft.VisualStudio.VsInteractiveWindow": "2.3.0",
     "NSubstitute": "3.1.0",
-    "xunit": "2.3.1",
-    "xunit.runner.visualstudio": "2.3.1"
+    "xunit": "2.3.0",
+    "xunit.runner.visualstudio": "2.3.0"
   },
   "frameworks": {
     "net461": {}

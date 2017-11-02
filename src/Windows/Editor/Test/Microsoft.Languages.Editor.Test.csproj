@@ -96,9 +96,9 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj">
+    <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj">
       <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
-      <Name>Microsoft.R.Platform.Windows.Dektop</Name>
+      <Name>Microsoft.R.Platform.Windows.Desktop</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>

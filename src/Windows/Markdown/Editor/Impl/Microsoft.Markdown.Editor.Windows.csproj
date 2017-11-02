@@ -65,7 +65,7 @@
     <ProjectReference Include="$(SourceDirectory)Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Dektop.csproj" />
+    <ProjectReference Include="..\..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Preview\Images\Loading.gif">
