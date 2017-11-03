@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -18,6 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
 
         //private readonly IServiceContainer _services;
         private readonly string _rhostDirectory;
+        private readonly string _rhostBrokerDirectory;
 
         private readonly IFileSystem _fileSystem;
         private readonly IRInstallationService _installations;
@@ -35,7 +39,9 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
             _fileSystem = fileSystem;
             _installations = installations;
             _processServices = processServices;
-            _rhostDirectory = Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
+            var baseDirectory = Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
+            _rhostDirectory = Path.Combine(baseDirectory, @"Host\Windows");
+            _rhostBrokerDirectory = Path.Combine(baseDirectory, @"Broker\Windows");
             Password = Guid.NewGuid().ToString();
         }
 
@@ -45,7 +51,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
                 throw new RHostBinaryMissingException();
             }
 
-            var rhostBrokerExe = Path.Combine(_rhostDirectory, RHostBrokerExe);
+            var rhostBrokerExe = Path.Combine(_rhostBrokerDirectory, RHostBrokerExe);
             if (!_fileSystem.FileExists(rhostBrokerExe)) {
                 throw new RHostBrokerBinaryMissingException();
             }

@@ -15,8 +15,8 @@ using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Platform;
 using Microsoft.R.Platform.Composition;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;
@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
-                .AddWindowsPlatformServices()
+                .AddService(new RInstallation())
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 // OLE and VS specifics
