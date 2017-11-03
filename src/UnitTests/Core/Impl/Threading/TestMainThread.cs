@@ -16,7 +16,7 @@ namespace Microsoft.UnitTests.Core.Threading {
     public class TestMainThread : ITaskService, IProgressDialog, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new System.Threading.AsyncLocal<BlockingLoop>();
+        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
 
         public TestMainThread(Action onDispose) {
             _onDispose = onDispose;
@@ -26,17 +26,17 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         public void Dispose() => _onDispose();
 
-        public void Post(Action action, CancellationToken cancellationToken) {
+        public void Post(Action action) {
             var bl = _blockingLoop.Value;
             if (bl != null) {
                 bl.Post(action);
             } else {
-                var token = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token;
-                var registration = token.Register(action, false);
-                var task = UIThreadHelper.Instance.InvokeAsync(action);
-                registration.UnregisterOnCompletion(task);
+                UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
             }
         }
+
+        public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken) =>
+            new TestMainThreadAwaiter(this, cancellationToken);
 
         public void Show(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
             => BlockUntilCompleted(() => method(CancellationToken.None));
@@ -99,6 +99,14 @@ namespace Microsoft.UnitTests.Core.Threading {
         }
 
         public void CancelPendingTasks() => _cts.Cancel();
+
+        private CancellationToken GetPostCancellationToken(CancellationToken cancellationToken) {
+            try {
+                return CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token;
+            } catch (ObjectDisposedException) {
+                return _cts.Token;
+            }
+        }
 
         private class BlockingLoop {
             private readonly Func<Task> _func;

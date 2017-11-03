@@ -30,9 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
         }
 
         private void OnElapsed(object sender, ElapsedEventArgs e) {
-            _services.MainThread().Post(() => {
-                ReportWindowLayout();
-            });
+            _services.MainThread().Post(ReportWindowLayout);
         }
 
 

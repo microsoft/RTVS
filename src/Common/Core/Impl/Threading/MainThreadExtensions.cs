@@ -23,11 +23,11 @@ namespace Microsoft.Common.Core.Threading {
             }
         }
 
-        public static void ExecuteOrPost(this IMainThread mainThread, Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static void ExecuteOrPost(this IMainThread mainThread, Action action) {
             if (mainThread.CheckAccess()) {
                 action();
             } else {
-                mainThread.Post(action, cancellationToken);
+                mainThread.Post(action);
             }
         }
 

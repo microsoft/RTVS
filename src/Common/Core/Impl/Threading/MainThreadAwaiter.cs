@@ -8,32 +8,23 @@ using System.Threading;
 using Microsoft.Common.Core.Diagnostics;
 
 namespace Microsoft.Common.Core.Threading {
-    public struct MainThreadAwaiter : ICriticalNotifyCompletion {
+    public struct MainThreadAwaiter : INotifyCompletion {
         private readonly IMainThread _mainThread;
-        private readonly CancellationToken _cancellationToken;
+        private readonly IMainThreadAwaiter _awaiterImpl;
 
         public MainThreadAwaiter(IMainThread mainThread, CancellationToken cancellationToken) {
             Check.ArgumentNull(nameof(mainThread), mainThread);
             _mainThread = mainThread;
-            _cancellationToken = cancellationToken;
+            _awaiterImpl = _mainThread.CreateMainThreadAwaiter(cancellationToken);
         }
 
-        public bool IsCompleted => Thread.CurrentThread.ManagedThreadId == _mainThread.ThreadId;
+        public bool IsCompleted => _awaiterImpl.IsCompleted;
 
         public void OnCompleted(Action continuation) {
             Trace.Assert(continuation != null);
-            _mainThread.Post(continuation, _cancellationToken);
+            _awaiterImpl.OnCompleted(continuation);
         }
 
-        public void UnsafeOnCompleted(Action continuation) {
-            Trace.Assert(continuation != null);
-            _mainThread.Post(continuation, _cancellationToken);
-        }
-
-        public void GetResult() {
-            if (Thread.CurrentThread.ManagedThreadId != _mainThread.ThreadId) {
-                _cancellationToken.ThrowIfCancellationRequested();
-            }
-        }
+        public void GetResult() => _awaiterImpl.GetResult();
     }
 }
