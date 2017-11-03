@@ -11,6 +11,7 @@ using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Platform;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Components.Test.Fixtures {
@@ -33,11 +34,11 @@ namespace Microsoft.R.Components.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
-                .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRPlotExportDialog, TestPlotExportDialog>()
+                .AddService<IRInstallationService, RInstallation>()
                 .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
         }
     }

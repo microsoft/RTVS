@@ -19,7 +19,10 @@ namespace Microsoft.Common.Core.Test.Utility {
             actual = actual.TrimEnd(_whitespace);
 
             var lineNumber = BaselineCompare.CompareLines(expected, actual, out var baseLine, out var actualLine, out var index);
-            lineNumber.Should().Be(0, "there should be no difference at line {0}.\r\nExpected:{1}\r\nActual:{2}\r\nDifference at position {3}\r\n", lineNumber, baseLine, actualLine, index);
+            // Fluent does not like HTML
+            if(lineNumber != 0) {
+                actualLine.Should().Be(baseLine, $"Line number:{lineNumber}");
+            }
         }
 
         public static void UpdateBaseline(string filePath, string content) {
