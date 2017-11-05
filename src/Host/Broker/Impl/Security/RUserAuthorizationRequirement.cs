@@ -4,6 +4,6 @@
 using Microsoft.AspNetCore.Authorization;
 
 namespace Microsoft.R.Host.Broker.Security {
-    public class RUserAuthorizationRequirement : IAuthorizationRequirement {
-    }
+    //public class RUserAuthorizationRequirement : IAuthorizationRequirement {
+    //}
 }

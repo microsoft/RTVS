@@ -11,3 +11,6 @@ test/**
 .gitignore
 tsconfig.json
 vsc-extension-quickstart.md
+*.csproj
+*.user
+*.cmd

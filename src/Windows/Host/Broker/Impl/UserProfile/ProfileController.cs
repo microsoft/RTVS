@@ -6,16 +6,13 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Common.Core.OS;
-using Microsoft.R.Host.Broker.Security;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Host.Protocol;
 using Microsoft.R.Platform.OS;
 
 namespace Microsoft.R.Host.Broker.UserProfile {
-    [Authorize(Policy = Policies.RUser)]
+    //[Authorize(Policy = Policies.RUser)]
     [Route("/profile")]
     public class ProfileController : Controller {
         private readonly SessionManager _sessionManager;

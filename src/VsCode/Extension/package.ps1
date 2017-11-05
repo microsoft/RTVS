@@ -14,7 +14,7 @@ $vsc = Resolve-Path -Path $vscPath
 
 &md -Force Server
 &cd server
-&xcopy /e /y /r /q "$bin\netcoreapp1.1\publish"
+&xcopy /e /y /r /q "$bin\netcoreapp2.0\publish"
 
 &md -Force Broker
 &xcopy /e /y /r /q "$bin\Broker" "Broker"

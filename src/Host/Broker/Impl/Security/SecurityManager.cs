@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Broker.Security {
 
             var claims = new[] {
                 new Claim(ClaimTypes.Name, context.Username),
-                new Claim(Claims.RUser, "")
+                new Claim(Claims.RUser, string.Empty)
             };
 
             var identity = new ClaimsIdentity(claims, context.Scheme.Name);

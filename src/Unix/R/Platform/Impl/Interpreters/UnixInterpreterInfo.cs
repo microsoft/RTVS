@@ -12,17 +12,14 @@ using Microsoft.Common.Core.UI;
 
 namespace Microsoft.R.Platform.Interpreters {
     internal abstract class UnixInterpreterInfo: IRInterpreterInfo {
-        private readonly string _libraryName;
         private bool? _isValid;
 
         protected IFileSystem FileSystem { get; }
 
-        protected UnixInterpreterInfo(string name, Version version, IFileSystem fileSystem, string libraryName) {
+        protected UnixInterpreterInfo(string name, Version version, IFileSystem fileSystem) {
             Name = name;
             Version = version;
             FileSystem = fileSystem;
-
-            _libraryName = libraryName;
         }
 
         public string Name { get; }
@@ -37,6 +34,7 @@ namespace Microsoft.R.Platform.Interpreters {
         /// Path to the directory that contains libR.so
         /// </summary>
         public string BinPath { get; protected set; }
+        public string LibPath { get; protected set; }
         public string DocPath { get; protected set; }
         public string IncludePath { get; protected set; }
         public string RShareDir { get; protected set; }
@@ -51,11 +49,9 @@ namespace Microsoft.R.Platform.Interpreters {
             _isValid = false;
 
             svr = svr ?? new SupportedRVersionRange();
-            var libRPath = Path.Combine(BinPath, _libraryName);
-
             try {
                 if (FileSystem.DirectoryExists(InstallPath) && FileSystem.DirectoryExists(BinPath) &&
-                    FileSystem.FileExists(libRPath)) {
+                    FileSystem.FileExists(LibPath)) {
                     if (Version != null) {
                         _isValid = svr.IsCompatibleVersion(Version);
                         if (!_isValid.Value) {

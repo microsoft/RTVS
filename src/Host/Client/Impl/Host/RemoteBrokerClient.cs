@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Host {
             _sessionProvider = sessionProvider;
 
             CreateHttpClient(connectionInfo.Uri);
-            HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
+            HttpClientHandler.ServerCertificateCustomValidationCallback = ValidateCertificateHttpHandler;
         }
 
         public override async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = new CancellationToken()) {

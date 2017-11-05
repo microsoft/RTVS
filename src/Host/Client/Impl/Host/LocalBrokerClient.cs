@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -91,64 +92,21 @@ namespace Microsoft.R.Host.Client.Host {
 
                 using (var processConnectCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cts.Token))
                 using (var serverUriPipe = new NamedPipeServerStream(pipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous)) {
-                    var psi = new ProcessStartInfo {
-                        FileName = rhostBrokerExe,
-                        UseShellExecute = false,
-                        Arguments =
-                            $" --logging:logFolder \"{Log.Folder.TrimTrailingSlash()}\"" +
-                            $" --logging:logHostOutput {Log.LogVerbosity >= LogVerbosity.Normal}" +
-                            $" --logging:logPackets {Log.LogVerbosity == LogVerbosity.Traffic}" +
-                            $" --urls http://127.0.0.1:0" + // :0 means first available ephemeral port
-                            $" --startup:name \"{Name}\"" +
-                            $" --startup:writeServerUrlsToPipe {pipeName}" +
-                            $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
-                            $" --security:secret \"{_credentials.Password}\"" +
-                            $" --R:autoDetect false" +
-                            $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
-                            $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
-                    };
-
+                    var psi = GetProcessStartInfo(rhostBrokerExe, pipeName);
                     if (!ShowConsole) {
                         psi.CreateNoWindow = true;
                     }
 
                     process = StartBroker(psi);
-
-                    process.Exited += delegate {
+                    process.Exited += delegate
+                    {
                         cts.Cancel();
                         _brokerProcess = null;
                         _connectLock.EnqueueReset();
                     };
 
-                    await serverUriPipe.WaitForConnectionAsync(processConnectCts.Token);
-
-                    var serverUriData = new MemoryStream();
-                    try {
-                        // Pipes are special in that a zero-length read is not an indicator of end-of-stream.
-                        // Stream.CopyTo uses a zero-length read as indicator of end-of-stream, so it cannot 
-                        // be used here. Instead, copy the data manually, using PipeStream.IsConnected to detect
-                        // when the other side has finished writing and closed the pipe.
-                        var buffer = new byte[0x1000];
-                        do {
-                            var count = await serverUriPipe.ReadAsync(buffer, 0, buffer.Length, cts.Token);
-                            serverUriData.Write(buffer, 0, count);
-                        } while (serverUriPipe.IsConnected);
-                    } catch (OperationCanceledException) {
-                        throw new RHostDisconnectedException("Timed out while waiting for broker process to report its endpoint URI");
-                    }
-
-                    var serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());
-                    Uri[] serverUri;
-                    try {
-                        serverUri = Json.DeserializeObject<Uri[]>(serverUriStr);
-                    } catch (JsonSerializationException ex) {
-                        throw new RHostDisconnectedException($"Invalid JSON for endpoint URIs received from broker ({ex.Message}): {serverUriStr}");
-                    }
-                    if (serverUri?.Length != 1) {
-                        throw new RHostDisconnectedException($"Unexpected number of endpoint URIs received from broker: {serverUriStr}");
-                    }
-
-                    CreateHttpClient(serverUri[0]);
+                    var uri = await GetBrokerUri(serverUriPipe, processConnectCts.Token, cts.Token);
+                    CreateHttpClient(uri);
                 }
 
                 if (DisposableBag.TryAdd(DisposeBrokerProcess)) {
@@ -164,6 +122,47 @@ namespace Microsoft.R.Host.Client.Host {
                     }
                 }
             }
+        }
+
+        private async Task<Uri> GetBrokerUri(NamedPipeServerStream serverUriPipe, CancellationToken processConnectToken, CancellationToken connectionToken) {
+            await serverUriPipe.WaitForConnectionAsync(processConnectToken);
+
+            var serverUriData = new MemoryStream();
+            try {
+                // Pipes are special in that a zero-length read is not an indicator of end-of-stream.
+                // Stream.CopyTo uses a zero-length read as indicator of end-of-stream, so it cannot 
+                // be used here. Instead, copy the data manually, using PipeStream.IsConnected to detect
+                // when the other side has finished writing and closed the pipe.
+                var buffer = new byte[0x1000];
+                var totalRead = 0;
+                do {
+                    var count = await serverUriPipe.ReadAsync(buffer, 0, buffer.Length, connectionToken);
+                    serverUriData.Write(buffer, 0, count);
+                    totalRead += count;
+                    // serverUriPipe.IsConnected is not always reliable. Read tetminator instead.
+                    if (count == 0 && totalRead > 0 && buffer[totalRead - 1] == (byte)'^') {
+                        break;
+                    }
+                } while (serverUriPipe.IsConnected);
+            } catch (OperationCanceledException) {
+                throw new RHostDisconnectedException("Timed out while waiting for broker process to report its endpoint URI");
+            }
+
+            var serverUriStr = Encoding.UTF8.GetString(serverUriData.ToArray());
+            if(serverUriStr.EndsWithOrdinal("^")) {
+                serverUriStr = serverUriStr.Substring(0, serverUriStr.Length - 1);
+            }
+
+            Uri[] serverUri;
+            try {
+                serverUri = Json.DeserializeObject<Uri[]>(serverUriStr);
+            } catch (JsonSerializationException ex) {
+                throw new RHostDisconnectedException($"Invalid JSON for endpoint URIs received from broker ({ex.Message}): {serverUriStr}");
+            }
+            if (serverUri?.Length != 1) {
+                throw new RHostDisconnectedException($"Unexpected number of endpoint URIs received from broker: {serverUriStr}");
+            }
+            return serverUri[0];
         }
 
         private IProcess StartBroker(ProcessStartInfo psi) {
@@ -186,6 +185,37 @@ namespace Microsoft.R.Host.Client.Host {
             }
 
             _brokerProcess?.Dispose();
+        }
+
+        private ProcessStartInfo GetProcessStartInfo(string rhostBrokerExecutable, string pipeName) {
+            ProcessStartInfo psi;
+            var baseArguments =
+                $" --logging:logFolder \"{Log.Folder.TrimTrailingSlash()}\"" +
+                $" --logging:logHostOutput {Log.LogVerbosity >= LogVerbosity.Normal}" +
+                $" --logging:logPackets {Log.LogVerbosity == LogVerbosity.Traffic}" +
+                $" --urls http://127.0.0.1:0" + // :0 means first available ephemeral port
+                $" --startup:name \"{Name}\"" +
+                $" --startup:writeServerUrlsToPipe {pipeName}" +
+                $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
+                $" --security:secret \"{_credentials.Password}\"" +
+                $" --R:autoDetect false" +
+                $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
+                $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\"";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                psi = new ProcessStartInfo {
+                    FileName = rhostBrokerExecutable,
+                    UseShellExecute = false,
+                    Arguments = baseArguments
+                };
+            } else {
+                psi = new ProcessStartInfo {
+                    FileName = "dotnet",
+                    UseShellExecute = false,
+                    Arguments = $"{rhostBrokerExecutable} {baseArguments}"
+                };
+            }
+            return psi;
         }
     }
 }

@@ -9,7 +9,7 @@ using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Security;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
-    [Authorize(Policy = Policies.RUser)]
+    //[Authorize(Policy = Policies.RUser)]
     [Route("/interpreters")]
     public class InterpretersController : Controller {
         private readonly InterpreterManager _interpManager;

@@ -5,15 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}",
-            "sourceFileMap": {
-                "Z:\\Work\\RTVS\\src": "/Users/Misha/Work/RTVS/src"
-            }
-        },
-        {
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
@@ -52,6 +43,15 @@
             },
             "sourceFileMap": {
                 "/Views": "${workspaceRoot}/Views"
+            }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "sourceFileMap": {
+                "Z:\\Work\\RTVS\\src": "/Users/Misha/Work/RTVS/src"
             }
         }
     ]
