@@ -16,7 +16,7 @@ using Odachi.AspNetCore.Authentication.Basic;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.About {
-    [Authorize(Policy = Policies.RUser)]
+    //[Authorize(Policy = Policies.RUser)]
     [Route("/info/about")]
     public class AboutController : Controller {
         private readonly InterpreterManager _interpManager;

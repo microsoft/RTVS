@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Platform.OS.Linux;
@@ -18,13 +19,15 @@ namespace Microsoft.R.Platform.Interpreters.Linux {
         /// <param name="corePackage">Instance of the core interpreter package 
         /// (r-base-core, microsoft-r-open-mro, etc)</param>
         /// <param name="fileSystem"></param>
-        public RLinuxInterpreterInfo(string name, InstalledPackageInfo corePackage, string version, Version parsedVersion, IFileSystem fileSystem) : base(name, parsedVersion, fileSystem, "libR.so") {
+        public RLinuxInterpreterInfo(string name, InstalledPackageInfo corePackage, string version, Version parsedVersion, IFileSystem fileSystem) : 
+            base(name, parsedVersion, fileSystem) {
             var files = corePackage.GetPackageFiles(fileSystem);
             InstallPath = GetRInstallPath(files, fileSystem);
             _packageFullVersion = version;
 
             BinPath = GetRLibPath();
             DocPath = GetRDocPath(files, fileSystem);
+            LibPath = Path.Combine(InstallPath, "lib", "libR.so");
             IncludePath = GetIncludePath(files, fileSystem);
             RShareDir = GetRSharePath(files, fileSystem);
             SiteLibraryDirs = GetSiteLibraryDirs(corePackage, files, fileSystem);

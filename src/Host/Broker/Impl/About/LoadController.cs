@@ -9,7 +9,7 @@ using Microsoft.R.Host.Broker.Services;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.About {
-    [Authorize(Policy = Policies.RUser)]
+    //[Authorize(Policy = Policies.RUser)]
     [Route("/info/load")]
     public class LoadController : Controller {
         private readonly Timer _timer;

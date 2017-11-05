@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
@@ -46,7 +45,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
-        protected WinHttpHandler HttpClientHandler { get; private set; }
+        protected HttpClientHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
 
         public BrokerConnectionInfo ConnectionInfo { get; }
@@ -67,9 +66,9 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
-            HttpClientHandler = new WinHttpHandler {
+            HttpClientHandler = new HttpClientHandler {
                 PreAuthenticate = true,
-                ServerCredentials = _credentials
+                Credentials = _credentials
             };
 
             try {
@@ -181,7 +180,7 @@ namespace Microsoft.R.Host.Client.Host {
                     Path = $"sessions/{name}/pipe"
                 }.Uri;
 
-                var wsClient = new WebSocketClient(pipeUri, new List<string> { "Microsoft.R.Host" }, HeartbeatTimeout, HttpClientHandler.ServerCredentials);
+                var wsClient = new WebSocketClient(pipeUri, new List<string> { "Microsoft.R.Host" }, HeartbeatTimeout, HttpClientHandler.Credentials);
                 while (true) {
                     using (await _credentials.LockCredentialsAsync(cancellationToken)) {
                         try {

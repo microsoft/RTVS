@@ -32,12 +32,12 @@ namespace Odachi.AspNetCore.Authentication.Basic {
 
             try {
                 // .NET Core does not support HTTP auth on sockets
-                if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
-                    if (uri.IsLoopback && !Request.IsHttps) {
-                        var t = CreateTicket("RUser", string.Empty);
-                        return AuthenticateResult.Success(t);
-                    }
-                }
+                //if (Uri.TryCreate(CurrentUri, UriKind.Absolute, out var uri)) {
+                //    if (uri.IsLoopback && !Request.IsHttps) {
+                //        var t = CreateTicket("RUser", string.Empty);
+                //        return AuthenticateResult.Success(t);
+                //    }
+                //}
 
                 // retrieve authorization header
                 string authorization = Request.Headers[HeaderNames.Authorization];
@@ -122,30 +122,33 @@ namespace Odachi.AspNetCore.Authentication.Basic {
             }
         }
 
+        protected override Task HandleForbiddenAsync(AuthenticationProperties properties) 
+            => base.HandleForbiddenAsync(properties);
+
         protected override Task HandleChallengeAsync(AuthenticationProperties properties) {
-            Response.StatusCode = 200;
+            Response.StatusCode = 401;
             Response.Headers.Append(HeaderNames.WWWAuthenticate, $"Basic realm=\"{Options.Realm}\"");
 
             return Task.CompletedTask;
         }
 
-        private AuthenticationTicket CreateTicket(string username, string password) {
-            List<Claim> claims;
-            var credentials = Options.Credentials.FirstOrDefault(c => c.Username == username && c.Password == password);
-            if (credentials != null) {
-                claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
-                if (claims.All(c => c.Type != ClaimTypes.Name)) {
-                    claims.Add(new Claim(ClaimTypes.Name, username));
-                }
-            } else {
-                claims = new List<Claim> {
-                    new Claim(ClaimTypes.Name, username),
-                    new Claim("RUser", "")
-                };
-            }
+        //private AuthenticationTicket CreateTicket(string username, string password) {
+        //    List<Claim> claims;
+        //    var credentials = Options.Credentials.FirstOrDefault(c => c.Username == username && c.Password == password);
+        //    if (credentials != null) {
+        //        claims = credentials.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+        //        if (claims.All(c => c.Type != ClaimTypes.Name)) {
+        //            claims.Add(new Claim(ClaimTypes.Name, username));
+        //        }
+        //    } else {
+        //        claims = new List<Claim> {
+        //            new Claim(ClaimsIdentity.DefaultNameClaimType, Policies.RUser),
+        //            new Claim(Policies.RUser, string.Empty)
+        //        };
+        //    }
 
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-            return new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
-        }
+        //    var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
+        //    return new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
+        //}
     }
 }

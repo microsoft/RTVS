@@ -9,11 +9,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Common.Core;
 using Microsoft.Extensions.Configuration;
@@ -57,16 +55,12 @@ namespace Microsoft.R.Host.Broker.Start {
                 .AddSingleton<SessionManager>()
 
                 .AddRouting()
-                .AddAuthorization(options => options.AddPolicy(
-                    Policies.RUser,
-                    policy => policy.RequireClaim(Claims.RUser)))
+                //.AddAuthorization(options => options.AddPolicy(
+                //    Policies.RUser,
+                //    policy => policy.RequireClaim(Claims.RUser)
+                //                    .AddAuthenticationSchemes(new [] { BasicDefaults.AuthenticationScheme })))
 
-                .AddMvc(config => {
-                    var policy = new AuthorizationPolicyBuilder(new[] { BasicDefaults.AuthenticationScheme })
-                                    .RequireClaim(Claims.RUser)
-                                    .Build();
-                    config.Filters.Add(new AuthorizeFilter(policy));
-                })
+                .AddMvc()
                 .AddApplicationPart(typeof(SessionsController).GetTypeInfo().Assembly);
 
             services
@@ -106,6 +100,9 @@ namespace Microsoft.R.Host.Broker.Start {
 
                         var serverUriData = Encoding.UTF8.GetBytes(serverUriStr);
                         pipe.Write(serverUriData, 0, serverUriData.Length);
+
+                        var terminator = Encoding.UTF8.GetBytes("^");
+                        pipe.Write(terminator, 0, terminator.Length);
                         pipe.Flush();
                     }
 
