@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
-    //[Authorize(Policy = Policies.RUser)]
+    [Authorize(Policy = Policies.RUser)]
     [Route("/interpreters")]
     public class InterpretersController : Controller {
         private readonly InterpreterManager _interpManager;

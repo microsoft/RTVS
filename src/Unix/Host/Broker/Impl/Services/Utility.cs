@@ -24,24 +24,6 @@ namespace Microsoft.R.Host.Broker.Services {
         private const string RtvsResult = "rtvs-result";
         private const string RtvsError = "rtvs-error";
 
-        public static IProcess RunAsCurrentUser(ILogger<Session> logger, IProcessServices ps, string arguments, string rHomePath, string loadLibPath) {
-            var psi = new ProcessStartInfo {
-                FileName = PathConstants.RunHostBinPath,
-                Arguments = arguments,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                WorkingDirectory = Environment.GetEnvironmentVariable("PWD")
-            };
-
-            // All other should be same as the broker environment. Only these are set based on interpreters. 
-            // R_HOME is explictly set on the R-Host.
-            psi.Environment.Add("R_HOME", rHomePath);
-            psi.Environment.Add("LD_LIBRARY_PATH", loadLibPath);
-
-            return ps.Start(psi);
-        }
-
         public static IProcess AuthenticateAndRunAsUser(ILogger<Session> logger, IProcessServices ps, string username, string password, string profileDir, IEnumerable<string> arguments, IDictionary<string, string> environment) {
             var proc = CreateRunAsUserProcess(ps, true);
             using (var writer = new BinaryWriter(proc.StandardInput.BaseStream, Encoding.UTF8, true)) {

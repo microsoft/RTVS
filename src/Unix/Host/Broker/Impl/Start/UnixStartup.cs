@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
@@ -20,19 +21,23 @@ namespace Microsoft.R.Host.Broker.Start {
         public override void ConfigureServices(IServiceCollection services) {
             base.ConfigureServices(services);
 
-            IRInstallationService installation;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
-                installation = new RMacInstallation();
-            } else {
-                installation = new RLinuxInstallation();
-            }
-
-            services.AddSingleton<IFileSystem, UnixFileSystem>()
+            services
+                .AddSingleton<IFileSystem, UnixFileSystem>()
                 .AddSingleton<IProcessServices, UnixProcessServices>()
                 .AddSingleton<IPlatformAuthenticationService, LinuxAuthenticationService>()
-                .AddSingleton<IRHostProcessService, LinuxRHostProcessService>()
-                .AddSingleton(installation)
                 .AddSingleton<ISystemInfoService, LinuxSystemInfoService>();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                services
+                    .AddSingleton<IRInstallationService, RMacInstallation>()
+                    .AddSingleton<IRHostProcessService, MacRHostProcessService>();
+            } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+                services
+                    .AddSingleton<IRInstallationService, RLinuxInstallation>()
+                    .AddSingleton<IRHostProcessService, LinuxRHostProcessService>();
+            } else {
+                throw new NotSupportedException("Platform is not supported. Supported: Linux, OSX");
+            }
         }
     }
 }

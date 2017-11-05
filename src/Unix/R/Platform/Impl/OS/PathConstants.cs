@@ -7,6 +7,5 @@ namespace Microsoft.Common.Core.OS {
         // Microsoft.R.Host.RunAsUser [-q]
         //    -q: Quiet
         public const string RunAsUserBinPath = "/usr/lib/rtvs/Microsoft.R.Host.RunAsUser";
-        public const string RunHostBinPath = "/usr/lib/rtvs/Microsoft.R.Host";
     }
 }

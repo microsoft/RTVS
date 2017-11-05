@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Host.Broker.Security {
-    //public static class Policies {
-    //    public const string RUser = nameof(RUser);
-    //}
+    public static class Policies {
+        public const string RUser = nameof(RUser);
+    }
 }
