@@ -56,7 +56,7 @@ namespace Microsoft.R.LanguageServer.Services {
                 var tokenString = token != null && token.Length > 0 ? Encoding.ASCII.GetString(token) : "null";
                 var asmName = new AssemblyName($"{name}, Version={thisAssemblyName.Version}, Culture=neutral, PublicKeyToken={tokenString}");
                 assembly = Assembly.Load(asmName);
-            } catch(FileLoadException) {
+            } catch(IOException) {
                 var thisAssemblyPath = thisAssembly.GetAssemblyPath();
                 var assemblyLoc = Path.GetDirectoryName(thisAssemblyPath);
                 var platformServicesAssemblyPath = Path.Combine(assemblyLoc, platformAssemblyName);
