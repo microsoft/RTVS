@@ -31,7 +31,7 @@ namespace Microsoft.R.LanguageServer.Server {
         }
 
         public void Connect(bool debugMode) {
-            var logWriter = CreateLogWriter(debugMode);
+            var logWriter = CreateLogWriter(true);
 
             using (logWriter)
             using (var cin = Console.OpenStandardInput())
