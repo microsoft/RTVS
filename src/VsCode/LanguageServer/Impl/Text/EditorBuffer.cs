@@ -59,7 +59,7 @@ namespace Microsoft.R.LanguageServer.Text {
         public void Dispose() => Closing?.Invoke(this, EventArgs.Empty);
 
         private void FireChanged(int start, int oldLength, int newLength) {
-            var oldTextProvider = new TextStream(_currentSnapshot.GetText());
+            var oldTextProvider = new TextStream(CurrentSnapshot.GetText());
 
             _version++;
             _currentSnapshot = new EditorBufferSnapshot(this, _content.ToString(), _version);
