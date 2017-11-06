@@ -27,7 +27,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             _testName = testInput.FileSytemSafeName;
             _assemblyName = testInput.TestClass.Assembly.GetName().Name;
-            return _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName);
+            return _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName, _services);
         }
 
         public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
                 securityServiceStub.GetUserCredentialsHandler = (authority, workspaceName) => Credentials.Create(UserName, _remoteBrokerFixture.Password);
             }
 
-            await _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName);
+            await _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName, _services);
 
             var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, _testName, _remoteBrokerFixture.Address, null, false);
             return await sessionProvider.TrySwitchBrokerAsync(_testName, brokerConnectionInfo);

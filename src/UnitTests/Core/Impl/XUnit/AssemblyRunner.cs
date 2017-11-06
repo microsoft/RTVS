@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -73,18 +75,16 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return new CollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource, _assemblyFixtureMappings, _testEnvironment).RunAsync();
         }
 
-        private async Task AddAssemblyFixtureAsync(Dictionary<Type, object> fixtures, Type fixtureType) {
+        private static async Task AddAssemblyFixtureAsync(IDictionary<Type, object> fixtures, Type fixtureType) {
             var fixture = Activator.CreateInstance(fixtureType);
-            var asyncLifetime = fixture as IAsyncLifetime;
-            if (asyncLifetime != null) {
+            if (fixture is IAsyncLifetime asyncLifetime) {
                 await asyncLifetime.InitializeAsync();
             }
 
-            var methodFixtureFactory = fixtureType.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMethodFixtureFactory<>));
-            if (methodFixtureFactory != null) {
-                fixtures[methodFixtureFactory.GetGenericArguments()[0]] = fixture;
-            } else {
-                fixtures[fixtureType] = fixture;
+            fixtures[fixtureType] = fixture;
+            var methodFixtureTypes = MethodFixtureProvider.GetFactoryMethods(fixtureType).Select(mi => mi.ReturnType);
+            foreach (var type in methodFixtureTypes) {
+                fixtures[type] = fixture;
             }
         }
     }

@@ -107,7 +107,7 @@
     <Compile Include="XUnit\MessageBusInjections\VerifyGlobalProviderMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusOverride.cs" />
     <Compile Include="XUnit\MethodFixtures\ContainerHostMethodFixture.cs" />
-    <Compile Include="XUnit\MethodFixtureTypes.cs" />
+    <Compile Include="XUnit\MethodFixtureProvider.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />
     <Compile Include="XUnit\TestCase.cs" />
     <Compile Include="XUnit\TestCaseRunner.cs" />
