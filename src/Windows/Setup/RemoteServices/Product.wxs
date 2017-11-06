@@ -23,6 +23,9 @@
     <?include Feature.wxi ?>
 
     <PropertyRef Id="NETFRAMEWORK40CLIENTINSTALLROOTDIR"/>
+    <PropertyRef Id="WIX_ACCOUNT_LOCALSYSTEM" />
+    <PropertyRef Id="WIX_ACCOUNT_NETWORKSERVICE" />
+    <PropertyRef Id="WIX_ACCOUNT_USERS" />
     
     <!-- Set seclogon service to autostart -->
     <CustomAction Id='SecLogonServiceAutoStart'
@@ -50,11 +53,11 @@
         <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe" />
         <File Source="$(var.BinDir)\Microsoft.R.Host.UserProfile.exe.config" />
         <ServiceInstall Id="UserProfileServiceInstaller" Type="ownProcess" Vital="yes" Name="RUserProfileService" DisplayName="R User Profile Service"
-                        Description="Creates Windows User profile for users connecting via R Host Broker" Start="auto" Account="LocalSystem"
+                        Description="Creates Windows User profile for users connecting via R Host Broker" Start="auto" Account="[WIX_ACCOUNT_LOCALSYSTEM]"
                         ErrorControl="critical" Interactive="no" >
-          <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
-              ServiceInterrogate="yes" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
-              ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
+          <util:PermissionEx User="[WIX_ACCOUNT_USERS]" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="no"
+              ServiceInterrogate="no" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="no"
+              ServiceQueryStatus="yes" ServiceUserDefinedControl="no" />
           <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
         </ServiceInstall>
         <ServiceControl Id="UserProfileServiceUninstall" Name="RUserProfileService" Remove="uninstall" Stop="uninstall"/>
@@ -67,13 +70,13 @@
         <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Windows.exe.config" />
         <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.Config.json" />
         <ServiceInstall Id="RemoteRBrokerServiceInstaller" Type="ownProcess" Vital="yes" Name="RRemoteService" DisplayName="R Remote Service"
-                        Description="Creates and manages R Host sessions" Start="auto" Account="NT AUTHORITY\NETWORKSERVICE"
+                        Description="Creates and manages R Host sessions" Start="auto" Account="[WIX_ACCOUNT_NETWORKSERVICE]"
                         ErrorControl="normal" Interactive="no"
                         Arguments="--startup:isService true --config &quot;[INSTALLFOLDER]Microsoft.R.Host.Broker.Config.json&quot;">
 
-          <util:PermissionEx User="Authenticated Users" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="yes"
-              ServiceInterrogate="yes" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="yes"
-              ServiceQueryStatus="yes" ServiceUserDefinedControl="yes" />
+          <util:PermissionEx User="[WIX_ACCOUNT_USERS]" ServiceStart="yes" ServiceStop="yes" ServicePauseContinue="no"
+              ServiceInterrogate="no" ServiceChangeConfig="no" ServiceEnumerateDependents="yes" ServiceQueryConfig="no"
+              ServiceQueryStatus="yes" ServiceUserDefinedControl="no" />
           <util:ServiceConfig FirstFailureActionType="restart" SecondFailureActionType="restart" ThirdFailureActionType="reboot"/>
           <ServiceDependency Id="RUserProfileService" Group="no"/>
         </ServiceInstall>
