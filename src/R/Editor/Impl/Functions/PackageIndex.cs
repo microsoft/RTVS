@@ -284,7 +284,7 @@ namespace Microsoft.R.Editor.Functions {
         public string CacheFolderPath {
             get {
                 var app = _host.Services.GetService<IPlatformServices>();
-                return Path.Combine(app.ApplicationDataFolder, @"IntelliSense\");
+                return Path.Combine(app.ApplicationDataFolder, @"IntelliSense" + Path.DirectorySeparatorChar);
             }
         }
 

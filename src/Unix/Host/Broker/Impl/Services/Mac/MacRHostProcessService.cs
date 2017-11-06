@@ -10,7 +10,7 @@ using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Sessions;
 using Microsoft.R.Platform.Host;
 
-namespace Microsoft.R.Host.Broker.Services {
+namespace Microsoft.R.Host.Broker.Services.Mac {
     internal sealed class MacRHostProcessService : UnixRHostProcessService {
         private readonly IFileSystem _fs;
         public MacRHostProcessService(ILogger<Session> sessionLogger, IFileSystem fs, IProcessServices ps) : base(sessionLogger, ps) {

@@ -34,7 +34,14 @@ namespace Microsoft.R.Platform.Interpreters {
         /// Path to the directory that contains libR.so
         /// </summary>
         public string BinPath { get; protected set; }
+
+        /// <summary>
+        /// Path to R.dll (Windows) or libR.dylib (MacOS)
+        /// </summary>
         public string LibPath { get; protected set; }
+
+        public abstract string LibName { get; }
+
         public string DocPath { get; protected set; }
         public string IncludePath { get; protected set; }
         public string RShareDir { get; protected set; }
@@ -51,7 +58,7 @@ namespace Microsoft.R.Platform.Interpreters {
             svr = svr ?? new SupportedRVersionRange();
             try {
                 if (FileSystem.DirectoryExists(InstallPath) && FileSystem.DirectoryExists(BinPath) &&
-                    FileSystem.FileExists(LibPath)) {
+                    FileSystem.FileExists(Path.Combine(LibPath, LibName))) {
                     if (Version != null) {
                         _isValid = svr.IsCompatibleVersion(Version);
                         if (!_isValid.Value) {

@@ -28,6 +28,16 @@ namespace Microsoft.R.Platform.Interpreters {
         string BinPath { get; }
 
         /// <summary>
+        /// Path to R.dll (Windows) or libR.dylib (MacOS)
+        /// </summary>
+        string LibPath { get; }
+
+        /// <summary>
+        /// Name of the R dynamic library such as  R.dll (Windows) or libR.dylib (MacOS)
+        /// </summary>
+        string LibName { get; }
+
+        /// <summary>
         /// Verifies actual installation on disk
         /// </summary>
         bool VerifyInstallation(ISupportedRVersionRange svr = null, IServiceContainer services = null);

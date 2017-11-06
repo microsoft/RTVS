@@ -9,8 +9,8 @@ using Microsoft.R.Platform.OS;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Microsoft.Common.Core.OS {
-    public class UnixProcessServices : ProcessServices {
+namespace Microsoft.Common.Core.OS.Linux {
+    public sealed class LinuxProcessServices : ProcessServices {
         /// <remarks>
         /// On Linux this calls the native strerror_r to get the message
         /// see: https://github.com/dotnet/corefx/blob/master/src/Microsoft.Win32.Primitives/src/System/ComponentModel/Win32Exception.Unix.cs

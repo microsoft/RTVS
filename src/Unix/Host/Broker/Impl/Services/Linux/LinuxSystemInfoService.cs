@@ -15,7 +15,7 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Protocol;
 
-namespace Microsoft.R.Host.Broker.Services {
+namespace Microsoft.R.Host.Broker.Services.Linux {
     public class LinuxSystemInfoService : ISystemInfoService {
         private readonly ILogger<ISystemInfoService> _logger;
         private readonly IFileSystem _fs;
@@ -51,29 +51,29 @@ namespace Microsoft.R.Host.Broker.Services {
             Thread.Sleep(500);
             var current = GetCurrentCpuUsage();
 
-            long initTimeSinceBoot = initial.user + initial.nice + initial.system + initial.idle + initial.iowait + initial.irq + initial.softirq + initial.steal;
-            long currentTimeSinceBoot = current.user + current.nice + current.system + current.idle + current.iowait + current.irq + current.softirq + current.steal;
-            long deltaTimeSinceBoot = currentTimeSinceBoot - initTimeSinceBoot;
+            var initTimeSinceBoot = initial.user + initial.nice + initial.system + initial.idle + initial.iowait + initial.irq + initial.softirq + initial.steal;
+            var currentTimeSinceBoot = current.user + current.nice + current.system + current.idle + current.iowait + current.irq + current.softirq + current.steal;
+            var deltaTimeSinceBoot = currentTimeSinceBoot - initTimeSinceBoot;
 
-            long initIdleTime = initial.idle + initial.iowait;
-            long currentIdleTime = current.idle + current.iowait;
-            long deltaIdleTime = currentIdleTime - initIdleTime;
+            var initIdleTime = initial.idle + initial.iowait;
+            var currentIdleTime = current.idle + current.iowait;
+            var deltaIdleTime = currentIdleTime - initIdleTime;
 
-            long deltaUsage = deltaTimeSinceBoot - deltaIdleTime;
+            var deltaUsage = deltaTimeSinceBoot - deltaIdleTime;
             return deltaUsage / deltaTimeSinceBoot;
         }
 
         public (long TotalVirtualMemory, long FreeVirtualMemory, long TotalPhysicalMemory, long FreePhysicalMemory) GetMemoryInformation() {
             try {
-                string memInfoFile = "/proc/meminfo";
+                var memInfoFile = "/proc/meminfo";
                 var data = _fs.FileReadAllLines(memInfoFile);
 
-                Dictionary<string, long> meminfo = new Dictionary<string, long>();
-                foreach (string line in data) {
-                    string[] split = line.Split(_memInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
+                var meminfo = new Dictionary<string, long>();
+                foreach (var line in data) {
+                    var split = line.Split(_memInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
                     if (split.Length == 3) {
-                        if (split.Length > 2 && long.TryParse(split[1], out long value)) {
-                            if (!_sizeLUT.TryGetValue(split[2].ToUpper(), out long multiplier)) {
+                        if (split.Length > 2 && long.TryParse(split[1], out var value)) {
+                            if (!_sizeLUT.TryGetValue(split[2].ToUpper(), out var multiplier)) {
                                 multiplier = 1;
                             }
                             meminfo.Add(split[0], value * multiplier);
@@ -125,7 +125,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 // Figure out how many bytes were sent and received within 500ms
                 // and calculate adapter load depending on speed. Take the highest value.
                 double maxLoad = 0;
-                for (int i = 0; i < initialBytes.Length; i++) {
+                for (var i = 0; i < initialBytes.Length; i++) {
                     // 16 = 8 bits per byte in 1/2 second. Speed it in bits per second.
                     var load = 16.0 * (currentBytes[i] - initialBytes[i]) / interfaces[i].Speed;
                     maxLoad = Math.Max(maxLoad, load);
@@ -157,15 +157,15 @@ namespace Microsoft.R.Host.Broker.Services {
             var dmesgData = ExecuteAndGetOutput("dmesg", null).Where(s => s.ContainsIgnoreCase(vramPart)).ToArray();
 
             foreach (var displayData in lshwDisplayData) {
-                displayData.TryGetValue("product", out string productName);
-                displayData.TryGetValue("vendor", out string vendorName);
+                displayData.TryGetValue("product", out var productName);
+                displayData.TryGetValue("vendor", out var vendorName);
 
                 long vram = 0;
-                if (displayData.TryGetValue("bus info", out string busInfo)) {
-                    int index = busInfo.IndexOf('@');
+                if (displayData.TryGetValue("bus info", out var busInfo)) {
+                    var index = busInfo.IndexOf('@');
                     if (index >= 0 && index < busInfo.Length) {
-                        string busvalue = busInfo.Substring(index + 1);
-                        for (int j = 0; j < dmesgData.Length; ++j) {
+                        var busvalue = busInfo.Substring(index + 1);
+                        for (var j = 0; j < dmesgData.Length; ++j) {
                             if (dmesgData[j].ContainsIgnoreCase(busvalue)) {
                                 var match = _ramPattern.Match(dmesgData[j]);
                                 if (match.Success) {
@@ -185,7 +185,7 @@ namespace Microsoft.R.Host.Broker.Services {
             }
 
             var seperatorMatch = _indentPattern.Match(lines.First());
-            int separatorIndentation = 0;
+            var separatorIndentation = 0;
             if (seperatorMatch.Success) {
                 separatorIndentation = seperatorMatch.Groups["indent"].Length;
             } else {
@@ -193,7 +193,7 @@ namespace Microsoft.R.Host.Broker.Services {
             }
 
             Dictionary<string, string> data = null;
-            foreach (string line in lines) {
+            foreach (var line in lines) {
                 var match = _indentPattern.Match(line);
                 if (match.Success && match.Groups["indent"].Length == separatorIndentation) {
                     if (data != null) {
@@ -210,8 +210,8 @@ namespace Microsoft.R.Host.Broker.Services {
 
                 match = _keyValuePairsPattern.Match(line);
                 if (match.Success) {
-                    string key = match.Groups["key"].Value.Trim();
-                    string value = match.Groups["value"].Value.Trim();
+                    var key = match.Groups["key"].Value.Trim();
+                    var value = match.Groups["value"].Value.Trim();
                     data[key] = value;
                 }
             }
@@ -238,9 +238,9 @@ namespace Microsoft.R.Host.Broker.Services {
 
         private IEnumerable<string> ExecuteAndGetOutput(string command, string arguments) {
             IProcess proc = null;
-            List<string> standardOutData = new List<string>();
+            var standardOutData = new List<string>();
             try {
-                ProcessStartInfo psi = new ProcessStartInfo() {
+                var psi = new ProcessStartInfo() {
                     Arguments = arguments,
                     FileName = command,
                     RedirectStandardInput = true,
@@ -268,7 +268,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
         private static char[] _cpuInfoSplitter = new char[] { ' ', ':', '\t' };
         private (long user, long nice, long system, long idle, long iowait, long irq, long softirq, long steal) GetCurrentCpuUsage() {
-            string cpuLoadInfo = "/proc/stat";
+            var cpuLoadInfo = "/proc/stat";
             var lines = _fs.FileReadAllLines(cpuLoadInfo).ToArray();
             if (lines.Length > 0) {
                 var split = lines[0].Split(_cpuInfoSplitter, StringSplitOptions.RemoveEmptyEntries);
@@ -324,7 +324,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
         private static string GetPart(string[] lines, string part, ref int index) {
             if (index < lines.Length) {
-                string line = lines[index];
+                var line = lines[index];
                 while (!line.StartsWithOrdinal(part)) {
                     if (++index >= lines.Length) {
                         return null;

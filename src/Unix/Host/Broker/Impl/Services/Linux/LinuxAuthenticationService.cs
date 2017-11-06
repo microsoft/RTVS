@@ -5,12 +5,11 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.OS;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Security;
-using Microsoft.AspNetCore.Authentication;
 
-namespace Microsoft.R.Host.Broker.Services {
+namespace Microsoft.R.Host.Broker.Services.Linux {
     public class LinuxAuthenticationService : IPlatformAuthenticationService {
         private readonly SecurityOptions _options;
         private readonly IProcessServices _ps;

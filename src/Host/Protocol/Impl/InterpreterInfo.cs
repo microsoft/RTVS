@@ -15,6 +15,8 @@ namespace Microsoft.R.Host.Protocol {
 
         public string BinPath { get; set; }
 
+        public string LibPath { get; set; }
+
         [JsonConverter(typeof(VersionConverter))]
         public Version Version { get; set; }
     }

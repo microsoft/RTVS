@@ -48,8 +48,8 @@ namespace Microsoft.R.Host.Broker.Pipes {
                         // so that it can gracefully disconnect from its end.
                         try {
                             await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", context.RequestAborted);
-                        } catch(OperationCanceledException ocx) {
-                            _logger.LogError(Resources.Error_GracefulDisconnectFailed.FormatInvariant(ocx.Message));
+                        } catch(Exception ex) {
+                            _logger.LogError(Resources.Error_GracefulDisconnectFailed.FormatInvariant(ex.Message));
                         }
                     } else {
                         // If the client disconnected, then just cancel any outstanding reads from the pipe.

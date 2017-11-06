@@ -35,6 +35,16 @@ namespace Microsoft.R.Platform.Interpreters {
         /// </summary>
         public string BinPath { get; }
 
+        /// <summary>
+        /// Path to R.dll (Windows) or libR.dylib (MacOS)
+        /// </summary>
+        public string LibPath => BinPath;
+
+        /// <summary>
+        /// Name of the R dynamic library such as  R.dll (Windows) or libR.dylib (MacOS)
+        /// </summary>
+        public string LibName => "R.dll";
+
         public string DocPath { get; }
 
         public string IncludePath { get; }
@@ -66,7 +76,7 @@ namespace Microsoft.R.Platform.Interpreters {
             svr = svr ?? new SupportedRVersionRange();
 
             // Normalize path so it points to R root and not to bin or bin\x64
-            var rDllPath = Path.Combine(BinPath, "R.dll");
+            var rDllPath = Path.Combine(BinPath, LibName);
             var rGraphAppPath = Path.Combine(BinPath, "Rgraphapp.dll");
             var rTermPath = Path.Combine(BinPath, "RTerm.exe");
             var rScriptPath = Path.Combine(BinPath, "RScript.exe");
@@ -104,9 +114,7 @@ namespace Microsoft.R.Platform.Interpreters {
         private Version GetRVersionFromBinary(IFileSystem fs, string basePath) {
             var rDllPath = Path.Combine(BinPath, "R.dll");
             var fvi = fs.GetFileVersion(rDllPath);
-            int minor, revision;
-
-            GetRVersionPartsFromFileMinorVersion(fvi.Minor, out minor, out revision);
+            GetRVersionPartsFromFileMinorVersion(fvi.Minor, out var minor, out var revision);
             return new Version(fvi.Major, minor, revision);
         }
 

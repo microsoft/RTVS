@@ -17,9 +17,11 @@ namespace Microsoft.R.Platform.Interpreters.Mac {
             InstallPath = $"/Library/Frameworks/R.framework/Versions/{version}/Resources";
             BinPath = Path.Combine(InstallPath, "bin");
             DocPath = Path.Combine(InstallPath, "doc");
-            LibPath = Path.Combine(InstallPath, "lib", "libR.dylib");
+            LibPath = Path.Combine(InstallPath, "lib");
             IncludePath = Path.Combine(InstallPath, "include");
             RShareDir = Path.Combine(InstallPath, "share");
         }
+
+        public override string LibName => "libR.dylib";
     }
 }

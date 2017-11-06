@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
             // Get R_HOME value
             var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
-            NativeMethods.GetShortPathName(interpreter.Info.Path, shortHome, shortHome.Capacity);
+            NativeMethods.GetShortPathName(interpreter.InstallPath, shortHome, shortHome.Capacity);
 
             var useridentity = principal.Identity as WindowsIdentity;
             var loggedOnUser = useridentity != null && WindowsIdentity.GetCurrent().User != useridentity.User;
@@ -62,7 +62,7 @@ namespace Microsoft.R.Host.Broker.Services {
             // add additional variables to the environment block
             eb["R_HOME"] = shortHome.ToString();
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "R_HOME", eb["R_HOME"]);
-            eb["PATH"] = FormattableString.Invariant($"{interpreter.Info.BinPath};{Environment.GetEnvironmentVariable("PATH")}");
+            eb["PATH"] = FormattableString.Invariant($"{interpreter.BinPath};{Environment.GetEnvironmentVariable("PATH")}");
             _sessionLogger.LogTrace(Resources.Trace_EnvironmentVariable, "PATH", eb["PATH"]);
 
             Win32Process win32Process;
@@ -76,7 +76,7 @@ namespace Microsoft.R.Host.Broker.Services {
 
             win32Process.Exited += (s, e) => {
             };
-            ;
+
             win32Process.WaitForExit(250);
             if (win32Process.HasExited && win32Process.ExitCode < 0) {
                 var message = ErrorCodeConverter.MessageFromErrorCode(win32Process.ExitCode);

@@ -102,7 +102,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
             var suppressUI = useridentity == null ? string.Empty : "--rhost-suppress-ui ";
             var isRepl = _isInteractive ? "--rhost-interactive " : string.Empty;
             var logFolderParam = string.IsNullOrEmpty(logFolder) ? string.Empty : Invariant($"--rhost-log-dir \"{logFolder}\"");
-            var arguments = Invariant($"{suppressUI}{isRepl}--rhost-r-dir \"{Interpreter.BinPath}\" --rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
+            var arguments = Invariant($"{suppressUI}{isRepl}--rhost-r-dir \"{Interpreter.InstallPath}\" --rhost-name \"{Id}\" {logFolderParam} --rhost-log-verbosity {(int)verbosity} {CommandLineArguments}");
 
             _sessionLogger.LogInformation(Resources.Info_StartingRHost, Id, User.Name, arguments);
             _process = _processService.StartHost(Interpreter, profilePath, User.Name, _principal, arguments);

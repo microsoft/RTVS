@@ -7,45 +7,26 @@ using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     public class Interpreter {
-        public InterpreterManager Manager { get; }
-
         public string Id { get; }
 
         public string Name { get; }
 
-        public string Path { get; }
+        public string InstallPath => RInterpreterInfo.InstallPath;
 
-        public string BinPath { get; }
+        public string BinPath => RInterpreterInfo.BinPath;
 
-        public Version Version { get; }
+        public string LibPath => RInterpreterInfo.LibPath;
 
-        public InterpreterInfo Info => new InterpreterInfo {
-            Id = Id,
-            Name = Name,
-            Path = Path,
-            BinPath = BinPath,
-            Version = Version
-        };
+        public Version Version => RInterpreterInfo.Version;
 
         public IRInterpreterInfo RInterpreterInfo { get; }
 
-        public Interpreter(InterpreterManager manager, string id, IRInterpreterInfo rInterpreterInfo) {
-            Manager = manager;
-            Id = id;
-            Name = rInterpreterInfo.Name;
-            Path = rInterpreterInfo.InstallPath;
-            BinPath = rInterpreterInfo.BinPath;
-            Version = rInterpreterInfo.Version;
-            RInterpreterInfo = rInterpreterInfo;
-        }
+        public Interpreter(string id, IRInterpreterInfo rInterpreterInfo) :
+            this(id, rInterpreterInfo.Name, rInterpreterInfo) { }
 
-        public Interpreter(InterpreterManager manager, string id, string name, IRInterpreterInfo rInterpreterInfo) {
-            Manager = manager;
+        public Interpreter(string id, string name, IRInterpreterInfo rInterpreterInfo) {
             Id = id;
             Name = name;
-            Path = rInterpreterInfo.InstallPath;
-            BinPath = rInterpreterInfo.BinPath;
-            Version = rInterpreterInfo.Version;
             RInterpreterInfo = rInterpreterInfo;
         }
     }

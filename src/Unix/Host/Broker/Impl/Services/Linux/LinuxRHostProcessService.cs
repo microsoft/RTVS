@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.R.Host.Broker.Interpreters;
 using Microsoft.R.Host.Broker.Sessions;
 
-namespace Microsoft.R.Host.Broker.Services {
+namespace Microsoft.R.Host.Broker.Services.Linux {
     internal sealed class LinuxRHostProcessService : UnixRHostProcessService {
         public LinuxRHostProcessService(ILogger<Session> sessionLogger, IProcessServices ps) :
             base(sessionLogger, ps) { }
