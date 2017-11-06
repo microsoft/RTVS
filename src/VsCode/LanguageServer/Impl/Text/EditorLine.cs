@@ -17,7 +17,7 @@ namespace Microsoft.R.LanguageServer.Text {
         public int LineNumber { get; }
         public string GetText() => Snapshot.GetText(this);
         public string LineBreak 
-            => LineBreakLength > 0 ? Snapshot.GetText(new TextRange(End - LineBreakLength, LineBreakLength)) : string.Empty;
+            => LineBreakLength > 0 ? Snapshot.GetText(new TextRange(End, LineBreakLength)) : string.Empty;
 
         public IEditorBufferSnapshot Snapshot { get; }
     }

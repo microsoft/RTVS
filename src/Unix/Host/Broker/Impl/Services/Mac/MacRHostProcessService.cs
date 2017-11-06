@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Broker.Services.Mac {
         }
 
         protected override string GetRHostBinaryPath() {
-            var locator = new BrokerExecutableLocator(_fs);
+            var locator = BrokerExecutableLocator.Create(_fs);
             return locator.GetHostExecutablePath();
         }
 

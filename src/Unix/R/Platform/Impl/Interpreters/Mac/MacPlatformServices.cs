@@ -9,9 +9,7 @@ using Microsoft.Common.Core.Shell;
 namespace Microsoft.R.Platform.Interpreters.Mac {
     class MacPlatformServices : IPlatformServices {
         public IntPtr ApplicationWindowHandle => IntPtr.Zero;
-
         public string ApplicationDataFolder => "~/Library/Application Support/RTVS";
-
         public string ApplicationFolder => Path.GetDirectoryName(typeof(MacPlatformServices).Assembly.GetAssemblyPath());
     }
 }

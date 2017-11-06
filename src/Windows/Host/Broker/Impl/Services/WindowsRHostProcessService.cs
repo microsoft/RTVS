@@ -25,7 +25,7 @@ namespace Microsoft.R.Host.Broker.Services {
         }
 
         public IProcess StartHost(Interpreter interpreter, string profilePath, string userName, ClaimsPrincipal principal, string commandLine) {
-            var locator = new BrokerExecutableLocator(new WindowsFileSystem());
+            var locator = BrokerExecutableLocator.Create(new WindowsFileSystem());
             var rhostExePath = locator.GetHostExecutablePath();
 
             commandLine = FormattableString.Invariant($"\"{rhostExePath}\" {commandLine}");

@@ -31,7 +31,7 @@ namespace Microsoft.R.Platform {
             services
                 .AddWindowsPlatformServices()
                 .AddService(new TelemetryServiceStub())
-                .AddService(new PlatformServices());
+                .AddService(new WindowsPlatformServices());
         }
     }
 }

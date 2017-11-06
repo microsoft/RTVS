@@ -73,7 +73,7 @@ namespace Microsoft.R.Host.Client.Host {
         private async Task ConnectToBrokerWorker(CancellationToken cancellationToken) {
             Trace.Assert(_brokerProcess == null);
             var fs = _services.FileSystem();
-            var locator = new BrokerExecutableLocator(fs);
+            var locator = BrokerExecutableLocator.Create(fs);
 
             var rhostExe = locator.GetHostExecutablePath();
             if (!fs.FileExists(rhostExe)) {

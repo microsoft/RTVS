@@ -29,7 +29,7 @@ namespace Microsoft.R.LanguageServer.Test.Text {
                 lineFromNumber.LineNumber.Should().Be(i);
 
                 var lineStart = expectedStarts[i];
-                var lineEnd = expectedStarts[i] + expectedLengths[i] + expectedLineBreakLengths[i];
+                var lineEnd = expectedStarts[i] + expectedLengths[i];
 
                 lineFromNumber.Start.Should().Be(lineStart);
                 lineFromNumber.End.Should().Be(lineEnd);

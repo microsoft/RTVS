@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsPlatformServices : IPlatformServices {
         public VsPlatformServices() {
             var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
-            uiShell.GetDialogOwnerHwnd(out IntPtr handle);
+            uiShell.GetDialogOwnerHwnd(out var handle);
             ApplicationWindowHandle = handle;
         }
 

@@ -9,31 +9,45 @@ using Microsoft.Common.Core.IO;
 
 namespace Microsoft.R.Platform.Host {
     public sealed class BrokerExecutableLocator {
-        private const string WindowsBrokerName = "Microsoft.R.Host.Broker.Windows.exe";
-        private const string UnixBrokerName = "Microsoft.R.Host.Broker.Unix.dll";
-        private const string HostName = "Microsoft.R.Host";
-        private const string WindowsExtension = ".exe";
-        private readonly string _baseDirectory;
-        private readonly IFileSystem _fs;
+        public const string WindowsBrokerName = "Microsoft.R.Host.Broker.Windows.exe";
+        public const string UnixBrokerName = "Microsoft.R.Host.Broker.Unix.dll";
+        public const string HostName = "Microsoft.R.Host";
+        public const string WindowsExtension = ".exe";
 
-        public BrokerExecutableLocator(IFileSystem fs) {
-            _fs = fs;
-            _baseDirectory = Path.GetDirectoryName(typeof(BrokerExecutableLocator).GetTypeInfo().Assembly.GetAssemblyPath());
-            var index = _baseDirectory.IndexOfIgnoreCase("server");
-            if(index > 0) {
-                // VS Code case
-                _baseDirectory = _baseDirectory.Substring(0, index + 6);
+        private readonly IFileSystem _fs;
+        private readonly OSPlatform _platform;
+
+        public static BrokerExecutableLocator Create(IFileSystem fs) {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                return new BrokerExecutableLocator(fs, OSPlatform.Windows);
             }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                return new BrokerExecutableLocator(fs, OSPlatform.OSX);
+            }
+            return new BrokerExecutableLocator(fs, OSPlatform.Linux);
         }
+
+        public BrokerExecutableLocator(IFileSystem fs, OSPlatform platform) {
+            _fs = fs;
+            _platform = platform;
+            BaseDirectory = Path.GetDirectoryName(typeof(BrokerExecutableLocator).GetTypeInfo().Assembly.GetAssemblyPath());
+        }
+
+        public string BaseDirectory { get; }
 
         public string GetBrokerExecutablePath() {
             // Broker can be Windows or .NET Core (Linux). NET Core broker 
             // does not have special folder, it sits where VS Code language 
             // server is since they share most of the .NET Core assemblies.
-            var windowsVsBroker = Path.Combine(_baseDirectory, WindowsBrokerName);
-            return _fs.FileExists(windowsVsBroker)
-                ? windowsVsBroker
-                : Path.Combine(_baseDirectory, GetBrokerMultiplatformSubpath());
+            if (_platform == OSPlatform.Windows) {
+                var windowsVsBroker = Path.Combine(BaseDirectory, WindowsBrokerName);
+                if (_fs.FileExists(windowsVsBroker)) {
+                    return windowsVsBroker;
+                }
+            }
+
+            var path = Path.Combine(BaseDirectory, GetBrokerMultiplatformSubpath());
+            return _fs.FileExists(path) ? path : null;
         }
 
         public string GetHostExecutablePath() {
@@ -42,20 +56,20 @@ namespace Microsoft.R.Platform.Host {
             // or next to the broker (in remote services case)
 
             // Windows
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+            if (_platform == OSPlatform.Windows) {
                 // Try next to the broker
                 var hostName = HostName + WindowsExtension;
-                var windowsHost = Path.Combine(_baseDirectory, hostName);
-                if(_fs.FileExists(windowsHost)) {
+                var windowsHost = Path.Combine(BaseDirectory, hostName);
+                if (_fs.FileExists(windowsHost)) {
                     return windowsHost;
                 }
                 // Try up above (VS IDE)
-                windowsHost = Path.GetFullPath(Path.Combine(_baseDirectory, @"..\..\Host\Windows", hostName));
+                windowsHost = Path.GetFullPath(Path.Combine(BaseDirectory, @"..\..\Host\Windows", hostName));
                 if (_fs.FileExists(windowsHost)) {
                     return windowsHost;
                 }
                 // Try below broker (VS Code)
-                windowsHost = Path.GetFullPath(Path.Combine(_baseDirectory, @"Host\Windows", hostName));
+                windowsHost = Path.GetFullPath(Path.Combine(BaseDirectory, @"Host\Windows", hostName));
                 if (_fs.FileExists(windowsHost)) {
                     return windowsHost;
                 }
@@ -64,24 +78,25 @@ namespace Microsoft.R.Platform.Host {
 
             // Unix
             // Try next to broker
-            var unixHost = Path.Combine(_baseDirectory, HostName);
+            var unixHost = Path.Combine(BaseDirectory, HostName);
             if (_fs.FileExists(unixHost)) {
                 return unixHost;
             }
             // VS Code on Unix (Host/Mac or Host/Linux)
-            return Path.Combine(_baseDirectory, GetUnixMultiplatformSubPath());
+            var path = Path.Combine(BaseDirectory, GetUnixMultiplatformSubPath());
+            return _fs.FileExists(path) ? path : null;
         }
 
-        private static string GetBrokerMultiplatformSubpath() {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+        private string GetBrokerMultiplatformSubpath() {
+            if (_platform == OSPlatform.Windows) {
                 return @"Broker\Windows\" + WindowsBrokerName;
             }
             return UnixBrokerName;
         }
 
-        private static string GetUnixMultiplatformSubPath() {
+        private string GetUnixMultiplatformSubPath() {
             string folder;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+            if (_platform == OSPlatform.OSX) {
                 folder = "/Mac/";
             } else {
                 folder = "/Linux/";

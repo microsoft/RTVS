@@ -9,7 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Platform.Shell {
-    internal sealed class PlatformServices : IPlatformServices {
+    internal sealed class WindowsPlatformServices : IPlatformServices {
         private string _appDataFolder;
 
         public IntPtr ApplicationWindowHandle => IntPtr.Zero;
@@ -31,7 +31,7 @@ namespace Microsoft.R.Platform.Shell {
 
         public string ApplicationFolder {
             get {
-                var asmPath = typeof(PlatformServices).GetTypeInfo().Assembly.GetAssemblyPath();
+                var asmPath = typeof(WindowsPlatformServices).GetTypeInfo().Assembly.GetAssemblyPath();
                 return Path.GetDirectoryName(asmPath);
             }
         }
