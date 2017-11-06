@@ -18,10 +18,8 @@ using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
 
 namespace Microsoft.Common.Core.Test.Fixtures {
-    public class ServiceManagerFixture : IMethodFixtureFactory<IServiceContainer> {
-        public IServiceContainer Dummy { get; } = new TestServiceManager(null);
-
-        public IMethodFixture Create() => CreateFixture();
+    public class ServiceManagerFixture : IMethodFixtureFactory {
+        public IServiceContainer Create() => CreateFixture();
 
         protected virtual TestServiceManager CreateFixture() => new TestServiceManager(SetupServices).AddLog();
 

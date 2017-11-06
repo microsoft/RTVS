@@ -8,8 +8,5 @@ namespace Microsoft.UnitTests.Core.XUnit {
     /// 
     /// IMethodFixtureFactory implementation should have method T Create(...), which can have other IMethodFixture isntances as arguments
     /// </summary>
-    /// <typeparam name="T">Type of the IMethodFixture</typeparam>
-    public interface IMethodFixtureFactory<out T> where T : class {
-        T Dummy { get; }
-    }
+    public interface IMethodFixtureFactory {}
 }

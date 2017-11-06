@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.UnitTests.Core.Threading;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -17,24 +18,26 @@ using Xunit.Sdk;
 namespace Microsoft.UnitTests.Core.XUnit {
     internal sealed class TestMethodRunner : XunitTestMethodRunner {
         private readonly IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
+        private readonly IReadOnlyDictionary<int, Type> _methodFixtureTypes;
         private readonly XunitTestEnvironment _testEnvironment;
         private readonly IMessageSink _diagnosticMessageSink;
         private readonly object[] _constructorArguments;
         private readonly Stopwatch _stopwatch;
 
-        public TestMethodRunner(ITestMethod testMethod, IReflectionTypeInfo @class, IReflectionMethodInfo method, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, object[] constructorArguments, IReadOnlyDictionary<Type, object> assemblyFixtureMappings, XunitTestEnvironment testEnvironment)
+        public TestMethodRunner(ITestMethod testMethod, IReflectionTypeInfo @class, IReflectionMethodInfo method, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, object[] constructorArguments, IReadOnlyDictionary<int, Type> methodFixtureTypes, IReadOnlyDictionary<Type, object> assemblyFixtureMappings, XunitTestEnvironment testEnvironment)
             : base(testMethod, @class, method, testCases, diagnosticMessageSink, messageBus, aggregator, cancellationTokenSource, constructorArguments) {
             _assemblyFixtureMappings = assemblyFixtureMappings;
             _testEnvironment = testEnvironment;
             _diagnosticMessageSink = diagnosticMessageSink;
             _constructorArguments = constructorArguments;
+            _methodFixtureTypes = methodFixtureTypes;
             _stopwatch = new Stopwatch();
         }
 
         protected override async Task<RunSummary> RunTestCaseAsync(IXunitTestCase testCase) {
             using (var testMainThread = UIThreadHelper.Instance.CreateTestMainThread())
             using (var taskObserver = _testEnvironment.UseTaskObserver()) {
-                if (_constructorArguments.OfType<IMethodFixture>().Any()) {
+                if (_methodFixtureTypes.Any()) {
                     return await RunTestCaseWithMethodFixturesAsync(testCase, taskObserver, testMainThread);
                 }
 
@@ -66,19 +69,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return runSummary;
         }
 
-        private IDictionary<Type, object> CreateMethodFixtures(IXunitTestCase testCase, RunSummary runSummary) {
-            var methodFixtureTypes = _constructorArguments
-                .OfType<IMethodFixture>()
-                .Select(f => f.GetType())
-                .ToList();
-
-            var methodFixtureFactories = _assemblyFixtureMappings.Values
-                .OfType<IMethodFixtureFactory<object>>()
-                .ToList();
-
+        private IDictionary<int, object> CreateMethodFixtures(IXunitTestCase testCase, RunSummary runSummary) {
             try {
                 _stopwatch.Restart();
-                var methodFixtures = MethodFixtureTypes.CreateMethodFixtures(methodFixtureTypes, methodFixtureFactories);
+                var methodFixtures = MethodFixtureProvider.CreateMethodFixtures(_methodFixtureTypes, _assemblyFixtureMappings);
                 _stopwatch.Stop();
                 runSummary.Aggregate(new RunSummary { Time = (decimal)_stopwatch.Elapsed.TotalSeconds });
                 return methodFixtures;
@@ -89,7 +83,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private async Task<object[]> InitializeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<Type, object> methodFixtures) {
+        private async Task<object[]> InitializeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<int, object> methodFixtures) {
             var constructorArguments = GetConstructorArguments(methodFixtures);
             var testInput = CreateTestInput(testCase, constructorArguments);
 
@@ -100,7 +94,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return constructorArguments;
         }
 
-        private async Task DisposeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<Type, object> methodFixtures) {
+        private async Task DisposeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<int, object> methodFixtures) {
             foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>().Distinct()) {
                 await RunAsync(testCase, () => methodFixture.DisposeAsync(runSummary, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to dispose");
             }
@@ -121,15 +115,15 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 testCase.TestMethodArguments);
         }
 
-        private object[] GetConstructorArguments(IDictionary<Type, object> methodFixtures) {
+        private object[] GetConstructorArguments(IDictionary<int, object> methodFixtures) {
             var testCaseConstructorArguments = new object[_constructorArguments.Length];
 
             for (var i = 0; i < _constructorArguments.Length; i++) {
                 var argument = _constructorArguments[i];
-                if (methodFixtures.TryGetValue(argument.GetType(), out object fixture)) {
+                if (argument == null && methodFixtures.TryGetValue(i, out var fixture)) {
                     testCaseConstructorArguments[i] = fixture;
                 } else {
-                    testCaseConstructorArguments[i] = _constructorArguments[i];
+                    testCaseConstructorArguments[i] = argument;
                 }
             }
 
