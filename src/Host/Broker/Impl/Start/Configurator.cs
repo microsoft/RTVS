@@ -33,13 +33,14 @@ namespace Microsoft.R.Host.Broker.Start {
                 System.Threading.Thread.Sleep(1000);
             }
 #endif
-            LoggerFactory = new LoggerFactory2()
-                    .AddDebug()
-                    .AddConsole(LogLevel.Trace);
 
             Configuration = LoadConfiguration(LoggerFactory, args);
             StartupOptions = Configuration.GetStartupOptions();
             LoggingOptions = Configuration.GetLoggingOptions();
+
+            LoggerFactory = new LoggerFactory2(StartupOptions, LoggingOptions)
+                    .AddDebug()
+                    .AddConsole(LogLevel.Trace);
 
             var s = Configuration.GetValue<string>(WebHostDefaults.ServerUrlsKey, null) ?? "https://0.0.0.0:5444";
             if (Uri.TryCreate(s, UriKind.Absolute, out var uri)) {
@@ -53,9 +54,10 @@ namespace Microsoft.R.Host.Broker.Start {
                 .UseConfiguration(Configuration)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureLogging((c, logging) => {
-                    logging.AddConsole()
-                    .AddDebug()
-                    .AddProvider(LoggerProvider);
+                    logging
+                        .AddConsole()
+                        .AddDebug()
+                        .AddProvider(LoggerProvider);
                 });
 
             if (Url?.IsLoopback != true) {
@@ -85,8 +87,6 @@ namespace Microsoft.R.Host.Broker.Start {
             return httpsOptions;
         }
 
-        private class LoggerFactory2 : LoggerFactory, ILoggerProvider { }
-
         private static IConfigurationRoot LoadConfiguration(ILoggerFactory loggerFactory, string[] args) {
             var configPath = new ConfigurationBuilder()
                 .AddCommandLine(args)
@@ -110,6 +110,14 @@ namespace Microsoft.R.Host.Broker.Start {
             }
 
             return configuration.Build();
+        }
+
+        private class LoggerFactory2 : LoggerFactory, ILoggerProvider {
+            public LoggerFactory2(StartupOptions startupOptions, LoggingOptions loggingOptions) {
+                var name = startupOptions.Name;
+                var folder = loggingOptions.LogFolder;
+                this.AddFile(name, folder);
+            }
         }
     }
 }

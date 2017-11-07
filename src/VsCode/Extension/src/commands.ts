@@ -101,6 +101,8 @@ export class Commands {
     }
 
     private async moveCaretDown() {
+        // Take focus back to the editor
+        vscode.window.activeTextEditor.show();
         const selectionEmpty = vscode.window.activeTextEditor.selection.isEmpty;
         if (selectionEmpty) {
             await vscode.commands.executeCommand("cursorMove",
