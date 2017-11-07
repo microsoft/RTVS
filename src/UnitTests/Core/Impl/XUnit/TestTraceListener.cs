@@ -37,14 +37,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 }
             });
 
+            void Restore(object o, EventArgs e) => disposable.Dispose();
 
-#if DESKTOP
-            EventHandler restore = (o, e) => disposable.Dispose();
-            AppDomain.CurrentDomain.DomainUnload += restore;
-            AppDomain.CurrentDomain.ProcessExit += restore;
-#else
-            System.Runtime.Loader.AssemblyLoadContext.Default.Unloading += c => disposable.Dispose();
-#endif
+            AppDomain.CurrentDomain.ProcessExit += Restore;
+            AppDomain.CurrentDomain.DomainUnload += Restore;
             return disposable;
         }
 

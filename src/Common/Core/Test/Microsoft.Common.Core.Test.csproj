@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.Common.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Common.Core.Test</AssemblyName>
   </PropertyGroup>
@@ -17,16 +17,19 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="FluentAssertions" Version="4.19.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="xunit" Version="2.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BlueSquare.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

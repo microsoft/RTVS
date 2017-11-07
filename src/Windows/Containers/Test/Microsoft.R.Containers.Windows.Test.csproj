@@ -49,6 +49,10 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Microsoft.R.Platform.Windows.Core.Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4b9914b0-f089-4544-9adb-a4691d33f957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
       <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
       <Name>Microsoft.R.Platform</Name>

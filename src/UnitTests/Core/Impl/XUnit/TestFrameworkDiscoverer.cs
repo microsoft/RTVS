@@ -9,11 +9,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public class TestFrameworkDiscoverer : XunitTestFrameworkDiscoverer {
         public TestFrameworkDiscoverer(IAssemblyInfo assemblyInfo, ISourceInformationProvider sourceProvider, IMessageSink diagnosticMessageSink, IList<AssemblyLoaderAttribute> assemblyLoaders, IXunitTestCollectionFactory collectionFactory = null)
             : base(assemblyInfo, sourceProvider, diagnosticMessageSink, collectionFactory) {
-#if DESKTOP
+
             foreach (var assemblyLoader in assemblyLoaders) {
                 DisposalTracker.Add(assemblyLoader);
             }
-#endif
         }
     }
 }

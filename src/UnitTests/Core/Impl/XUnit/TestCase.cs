@@ -46,11 +46,14 @@ namespace Microsoft.UnitTests.Core.XUnit {
             var testMethodArguments = GetTestMethodArguments();
             var runner = new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
-            if (ThreadType == ThreadType.UI) {
-                return UIThreadHelper.Instance.Invoke(runner.RunAsync);
+            switch (ThreadType) {
+                case ThreadType.UI:
+                    return runner.RunAsync();// UIThreadHelper.Instance.Invoke(runner.RunAsync);
+                case ThreadType.Background:
+                    return Task.Run(() => runner.RunAsync());
+                default:
+                    return runner.RunAsync();
             }
-
-            return ThreadType == ThreadType.Background ? Task.Run(() => runner.RunAsync()) : runner.RunAsync();
         }
 
         protected virtual object[] GetTestMethodArguments() => TestMethodArguments;

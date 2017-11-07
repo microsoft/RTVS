@@ -84,11 +84,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private static bool IsGenericType(Type t)
-#if DESKTOP
-            => t.IsGenericType;
-#else
-            =>  t.GetTypeInfo().IsGenericType;
-#endif
+        private static bool IsGenericType(Type t) =>  t.GetTypeInfo().IsGenericType;
     }
 }

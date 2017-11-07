@@ -5,10 +5,6 @@ using System.IO.Pipes;
 
 namespace Microsoft.R.Platform.IO {
     public interface IUserProfileNamedPipeFactory {
-#if !DESKTOP
-        NamedPipeServerStream CreatePipe(string name, int maxInstances = -1);
-#else
         NamedPipeServerStream CreatePipe(string name, int maxInstances = NamedPipeServerStream.MaxAllowedServerInstances);
-#endif
     }
 }

@@ -85,6 +85,10 @@
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Microsoft.R.Platform.Windows.Core.Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
       <Name>Microsoft.R.Components</Name>

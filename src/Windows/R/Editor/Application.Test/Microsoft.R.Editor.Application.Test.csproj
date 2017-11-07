@@ -32,6 +32,10 @@
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Microsoft.R.Platform.Windows.Core.Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
       <Name>Microsoft.R.Editor</Name>
