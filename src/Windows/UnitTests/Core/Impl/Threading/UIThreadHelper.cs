@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#if DESKTOP
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -13,25 +13,27 @@ using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.Threading {
+    [ExcludeFromCodeCoverage]
     public class UIThreadHelper {
         [DllImport("ole32.dll", ExactSpelling = true, SetLastError = true)]
         private static extern int OleInitialize(IntPtr value);
+
         private static readonly Lazy<UIThreadHelper> LazyInstance = new Lazy<UIThreadHelper>(Create, LazyThreadSafetyMode.ExecutionAndPublication);
 
         private static UIThreadHelper Create() {
-            var uiThreadHelper = new UIThreadHelper();
-            var initialized = new ManualResetEventSlim();
-
+            UIThreadHelper uiThreadHelper = new UIThreadHelper();
+            ManualResetEventSlim initialized = new ManualResetEventSlim();
 
             AppDomain.CurrentDomain.DomainUnload += uiThreadHelper.Destroy;
             AppDomain.CurrentDomain.ProcessExit += uiThreadHelper.Destroy;
+
             // We want to maintain an application on a single STA thread
             // set Background so that it won't block process exit.
-            var thread = new Thread(uiThreadHelper.RunMainThread) { Name = "WPF Dispatcher Thread" };
+            Thread thread = new Thread(uiThreadHelper.RunMainThread) { Name = "WPF Dispatcher Thread" };
             thread.SetApartmentState(ApartmentState.STA);
             thread.IsBackground = true;
             thread.Start(initialized);
@@ -77,7 +79,7 @@ namespace Microsoft.UnitTests.Core.Threading {
         private void RemoveTestMainThread() => _testMainThread.Value = null;
 
         public void Invoke(Action action) {
-            var exception = Thread == Thread.CurrentThread
+            ExceptionDispatchInfo exception = Thread == Thread.CurrentThread
                ? CallSafe(action)
                : _application.Dispatcher.Invoke(() => CallSafe(action));
 
@@ -246,4 +248,3 @@ namespace Microsoft.UnitTests.Core.Threading {
         }
     }
 }
-#endif

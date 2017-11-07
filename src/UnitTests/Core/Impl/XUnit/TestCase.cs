@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UnitTests.Core.Threading;
-using Microsoft.UnitTests.Core.XUnit.MessageBusInjections;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -44,9 +43,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) {
             TestTraceListener.Ensure();
-            var messageBusOverride = new MessageBusOverride(messageBus)
-                .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, TestMethod.TestClass.Class));
-
             var testMethodArguments = GetTestMethodArguments();
             var runner = new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
@@ -54,9 +50,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 return UIThreadHelper.Instance.Invoke(runner.RunAsync);
             }
 
-#if DESKTOP
-            messageBusOverride.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
-#endif
             return ThreadType == ThreadType.Background ? Task.Run(() => runner.RunAsync()) : runner.RunAsync();
         }
 

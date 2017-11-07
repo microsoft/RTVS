@@ -7,7 +7,7 @@ using System.Reflection;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Test.Fakes.Shell {
-    internal sealed class TestApplication : IApplication {
+    public sealed class TestApplication : IApplication {
         public string Name => "RTVS_Test";
         public int LocaleId => 1033;
 

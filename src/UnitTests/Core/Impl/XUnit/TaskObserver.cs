@@ -30,9 +30,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public void Add(Task task) {
             Interlocked.Increment(ref _count);
-#if DESKTOP
             _stackTraces.TryAdd(task.Id, new StackTrace(2).ToString());
-#endif
             var postToMainThread = UIThreadHelper.Instance.MainThread.CheckAccess();
             task.ContinueWith(_afterTaskCompleted, postToMainThread, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }

@@ -14,7 +14,7 @@ namespace Microsoft.UnitTests.Core.Threading {
     public class TestMainThread : IProgressDialog, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new System.Threading.AsyncLocal<BlockingLoop>();
+        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
 
         public TestMainThread(Action onDispose) {
             _onDispose = onDispose;

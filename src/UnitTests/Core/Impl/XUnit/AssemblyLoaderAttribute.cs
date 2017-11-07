@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using Xunit.Abstractions;
-
-#if DESKTOP
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -100,12 +98,3 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
     }
 }
-#else
-namespace Microsoft.UnitTests.Core.XUnit {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public abstract class AssemblyLoaderAttribute : Attribute, IDisposable {
-        public static IList<AssemblyLoaderAttribute> GetAssemblyLoaders(IAssemblyInfo assemblyInfo) => new List<AssemblyLoaderAttribute>();
-        public void Dispose() { }
-    }
-}
-#endif
