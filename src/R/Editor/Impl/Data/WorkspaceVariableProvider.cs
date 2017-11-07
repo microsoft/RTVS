@@ -166,7 +166,8 @@ namespace Microsoft.R.Editor.Data {
                         }
                     }
                 }
-            } catch (REvaluationException) { } finally {
+            } catch (REvaluationException) { } catch(ObjectDisposedException) { }
+            finally {
                 _updating = false;
             }
         }
