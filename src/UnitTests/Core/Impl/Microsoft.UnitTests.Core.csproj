@@ -31,7 +31,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Threading\TestMainThread.cs" />
-    <Compile Include="Threading\TestMainThreadAwaiter.cs" />
     <Compile Include="XUnit\TaskObserver.cs" />
     <Compile Include="XUnit\VsAssemblyLoaderAttribute.cs" />
     <Compile Include="XUnit\XunitTestEnvironment.cs" />

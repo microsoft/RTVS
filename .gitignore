@@ -103,7 +103,3 @@ TestFiles/
 *.ide
 *.ide-journal
 *.lock
-/src/.vs/R/v15/sqlite3/storage.ide-wal
-/src/.vs/R/v15/sqlite3/storage.ide-shm
-/src/.vs/R/v15/Server/sqlite3/storage.ide-wal
-/src/.vs/R/v15/Server/sqlite3/storage.ide-shm
