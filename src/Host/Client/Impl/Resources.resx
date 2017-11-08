@@ -235,14 +235,12 @@ Server at {0} http://{1}:{2} connects to {3} {4}.</value>
 {0}</value>
   </data>
   <data name="Error_RemoteVersionHigher" xml:space="preserve">
-    <value>Version of R Services on the remote machine ({0})
-is higher than the version of R Tools on the local computer ({1}). 
-Please upgrade local R Tools installation to match.</value>
+    <value>Version of R Services on machine ({0})
+is higher than the version of R Tools on the local computer ({1}).</value>
   </data>
   <data name="Error_RemoteVersionLower" xml:space="preserve">
-    <value>Version of R Services on the remote machine ({0})
-is lower than the version of R Tools on the local computer ({1}). 
-Please upgrade remote R Services installation to match.</value>
+    <value>Version of R Services on machine ({0})
+is lower than the version of R Tools on the local computer ({1}).</value>
   </data>
   <data name="Error_RemoteUriNotSupported" xml:space="preserve">
     <value>Remote R requested to open {0}, but only http:// or file:// URIs are supported for remote.</value>

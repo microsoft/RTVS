@@ -216,9 +216,8 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
-        ///is higher than the version of R Tools on the local computer ({1}). 
-        ///Please upgrade local R Tools installation to match..
+        ///   Looks up a localized string similar to Version of R Services on machine ({0})
+        ///is higher than the version of R Tools on the local computer ({1})..
         /// </summary>
         internal static string Error_RemoteVersionHigher {
             get {
@@ -227,9 +226,8 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Version of R Services on the remote machine ({0})
-        ///is lower than the version of R Tools on the local computer ({1}). 
-        ///Please upgrade remote R Services installation to match..
+        ///   Looks up a localized string similar to Version of R Services on machine ({0})
+        ///is lower than the version of R Tools on the local computer ({1})..
         /// </summary>
         internal static string Error_RemoteVersionLower {
             get {
