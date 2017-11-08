@@ -5,13 +5,13 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.UnitTests.Core.Threading;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class TestCase : XunitTestCase {
         public ThreadType ThreadType { get; private set; }
+        public ITestMainThreadFixture MainThreadFixture { get; set; }
 
         public TestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod, TestParameters parameters, object[] testMethodArguments = null) 
             : base(diagnosticMessageSink, defaultMethodDisplay, testMethod, testMethodArguments) {
@@ -48,7 +48,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             switch (ThreadType) {
                 case ThreadType.UI:
-                    return runner.RunAsync();// UIThreadHelper.Instance.Invoke(runner.RunAsync);
+                    return MainThreadFixture.Invoke(runner.RunAsync);
                 case ThreadType.Background:
                     return Task.Run(() => runner.RunAsync());
                 default:

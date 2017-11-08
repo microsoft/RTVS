@@ -2,8 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Markdown.Editor.Test;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 
 [assembly: TestFrameworkOverride]
 [assembly: VsAssemblyLoader]
-[assembly: AssemblyFixtureImport(typeof(MarkdownEditorServicesFixture))]
+[assembly: AssemblyFixtureImport(typeof(MarkdownEditorServicesFixture), typeof(TestMainThreadFixture))]

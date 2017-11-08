@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     /// <summary>
@@ -12,6 +14,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public interface ITestMainThreadFixture {
         ITestMainThread CreateTestMainThread();
         bool CheckAccess();
-        void Post(Action<object> action, object argument);
+        Task<T> Invoke<T>(Func<Task<T>> action);
+        void Post(SendOrPostCallback action, object argument);
     }
 }

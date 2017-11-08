@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class NullTestMainThreadFixture : ITestMainThreadFixture {
@@ -8,7 +10,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public ITestMainThread CreateTestMainThread() => new NullTestMainThread();
         public bool CheckAccess() => false;
-        public void Post(Action<object> action, object argument) => throw new NotSupportedException();
+        public Task<T> Invoke<T>(Func<Task<T>> action) => throw new NotSupportedException();
+        public void Post(SendOrPostCallback action, object argument) => throw new NotSupportedException();
 
         private class NullTestMainThread : ITestMainThread {
             public void CancelPendingTasks() {}
