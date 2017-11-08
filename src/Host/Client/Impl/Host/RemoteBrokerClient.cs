@@ -47,13 +47,13 @@ namespace Microsoft.R.Host.Client.Host {
 
         public override async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = new CancellationToken()) {
             var host = await base.ConnectAsync(connectionInfo, cancellationToken);
-
-            var aboutHost = await GetHostInformationAsync<AboutHost>(cancellationToken);
-            var brokerIncompatibleMessage = aboutHost?.IsHostVersionCompatible();
-            if (brokerIncompatibleMessage != null) {
-                throw new RHostDisconnectedException(brokerIncompatibleMessage);
+            if (connectionInfo.IsInteractive) {
+                var aboutHost = await GetHostInformationAsync<AboutHost>(cancellationToken);
+                var brokerVersionMessage = aboutHost?.IsHostVersionCompatible();
+                if (brokerVersionMessage != null) {
+                    _console.WriteError(brokerVersionMessage);
+                }
             }
-
             return host;
         }
 
