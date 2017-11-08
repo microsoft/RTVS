@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Platform.Composition;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
 
@@ -29,6 +30,15 @@ namespace Microsoft.Common.Core.Test.Fixtures {
         protected virtual ComposablePartCatalog FilterCatalog(ComposablePartCatalog catalog) => catalog;
 
         protected abstract IEnumerable<string> GetAssemblyNames();
+
+        protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
+            base.SetupServices(serviceManager, testInput);
+            serviceManager
+                .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
+                .AddService(UIThreadHelper.Instance.MainThread)
+                .AddService(new TestTaskService())
+                .AddService(new TestIdleTimeService());
+        }
 
         protected override TestServiceManager CreateFixture() {
             return new TestServiceManagerWithMef(_catalogLazy.Value, SetupServices)

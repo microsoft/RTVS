@@ -9,12 +9,13 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
+using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.UnitTests.Core.Threading {
-    public class TestMainThread : IProgressDialog, IMainThread, IDisposable {
+    public class TestMainThread : IProgressDialog, ITestMainThread, IMainThread {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new System.Threading.AsyncLocal<BlockingLoop>();
+        private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
 
         public TestMainThread(Action onDispose) {
             _onDispose = onDispose;

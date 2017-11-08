@@ -96,6 +96,10 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Platform.Core\Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4b9914b0-f089-4544-9adb-a4691d33f957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj">
       <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
       <Name>Microsoft.R.Platform.Windows.Desktop</Name>

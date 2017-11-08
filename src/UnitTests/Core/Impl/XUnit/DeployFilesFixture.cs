@@ -15,18 +15,17 @@ namespace Microsoft.UnitTests.Core.XUnit {
         /// Implementation assumes that repository has structure
         /// > [repo root]
         ///   > bin
-        ///     > [Configuration]
+        ///     > [build artifacts]
         ///   > src
         ///   > TestFiles
         ///     > [yyyy-MM-dd HH-mm-ss]
-        /// and Microsoft.UnitTests.Core.dll is in [repo root]\bin\[Configuration]
+        /// and Microsoft.UnitTests.Core.dll is somewhere in [repo root]\bin\[build artifacts]
         /// </summary>
         private static readonly Lazy<string> RepoRootLazy = new Lazy<string>(() => {
             var path = Assembly.GetExecutingAssembly().GetAssemblyPath();
             var directory = Path.GetDirectoryName(path);
-            
-            // Cut bin\Debug or bin\Release from path;
-            return Path.GetDirectoryName(Path.GetDirectoryName(directory));
+            var indexOfBin = directory.LastIndexOf(@"\bin\", StringComparison.Ordinal);
+            return directory.Substring(0, indexOfBin);
         });
 
         private static readonly Lazy<string> TestFilesRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "TestFiles", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")));

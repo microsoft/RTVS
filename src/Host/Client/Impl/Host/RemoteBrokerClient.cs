@@ -27,10 +27,8 @@ namespace Microsoft.R.Host.Client.Host {
         private bool? _certificateValidationResult;
 
         static RemoteBrokerClient() {
-#if DESKTOP
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-#endif
         }
 
         public RemoteBrokerClient(string name, IRSessionProvider sessionProvider, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)

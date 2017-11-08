@@ -9,8 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Common.Core.Test.Extensions
-{
+namespace Microsoft.Common.Core.Test.Extensions {
     [ExcludeFromCodeCoverage]
     [Category.CoreExtensions]
     public class TaskCompletionSourceExtensionsTest {

@@ -19,12 +19,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return true;
         }
 
-        internal TaskObserver UseTaskObserver() {
+        internal TaskObserver UseTaskObserver(ITestMainThreadFixture testMainThreadFixture) {
             if (_taskObserver.Value != null) {
                 throw new InvalidOperationException("AsyncLocal<TaskObserver> reentrancy");
             }
 
-            var context = new TaskObserver(RemoveTaskObserver);
+            var context = new TaskObserver(testMainThreadFixture, RemoveTaskObserver);
             _taskObserver.Value = context;
             return context;
         }

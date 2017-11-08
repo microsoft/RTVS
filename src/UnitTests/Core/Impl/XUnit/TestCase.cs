@@ -5,14 +5,13 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.UnitTests.Core.Threading;
-using Microsoft.UnitTests.Core.XUnit.MessageBusInjections;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class TestCase : XunitTestCase {
         public ThreadType ThreadType { get; private set; }
+        public ITestMainThreadFixture MainThreadFixture { get; set; }
 
         public TestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod, TestParameters parameters, object[] testMethodArguments = null) 
             : base(diagnosticMessageSink, defaultMethodDisplay, testMethod, testMethodArguments) {
@@ -21,7 +20,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         /// <summary />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public TestCase() : base(null, default(TestMethodDisplay), null, null) { }
+        public TestCase() : base(new NullMessageSink(), default(TestMethodDisplay), null, null) { }
 
         protected override void Initialize() {
             base.Initialize();
@@ -44,20 +43,17 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public override Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) {
             TestTraceListener.Ensure();
-            var messageBusOverride = new MessageBusOverride(messageBus)
-                .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, TestMethod.TestClass.Class));
-
             var testMethodArguments = GetTestMethodArguments();
             var runner = new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
-            if (ThreadType == ThreadType.UI) {
-                return UIThreadHelper.Instance.Invoke(runner.RunAsync);
+            switch (ThreadType) {
+                case ThreadType.UI:
+                    return MainThreadFixture.Invoke(runner.RunAsync);
+                case ThreadType.Background:
+                    return Task.Run(() => runner.RunAsync());
+                default:
+                    return runner.RunAsync();
             }
-
-#if DESKTOP
-            messageBusOverride.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
-#endif
-            return ThreadType == ThreadType.Background ? Task.Run(() => runner.RunAsync()) : runner.RunAsync();
         }
 
         protected virtual object[] GetTestMethodArguments() => TestMethodArguments;

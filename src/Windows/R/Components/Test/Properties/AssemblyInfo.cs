@@ -3,8 +3,9 @@
 
 using Microsoft.R.Components.Test.Fixtures;
 using Microsoft.R.Host.Client.Test.Fixtures;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 
 [assembly: TestFrameworkOverride]
 [assembly: VsAssemblyLoader]
-[assembly: AssemblyFixtureImport(typeof(RComponentsServicesFixture), typeof(RemoteBrokerFixture))]
+[assembly: AssemblyFixtureImport(typeof(RComponentsServicesFixture), typeof(RemoteBrokerFixture), typeof(TestMainThreadFixture))]

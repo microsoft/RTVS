@@ -7,14 +7,11 @@ using FluentAssertions;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.Common.Core.Test.Disposables
-{
+namespace Microsoft.Common.Core.Test.Disposables {
     [ExcludeFromCodeCoverage]
-    public class CountdownDisposableTest
-    {
+    public class CountdownDisposableTest {
         [Test]
-        public void Create()
-        {
+        public void Create() {
             var callCount = 0;
             Action callback = () => callCount++;
 
@@ -32,8 +29,7 @@ namespace Microsoft.Common.Core.Test.Disposables
         }
 
         [Test]
-        public void Increment()
-        {
+        public void Increment() {
             var countdownDisposable = new CountdownDisposable(() => { });
             countdownDisposable.Count.Should().Be(0);
 

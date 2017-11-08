@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RootNamespace>Microsoft.Languages.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.Languages.Core.Test</AssemblyName>
   </PropertyGroup>
@@ -17,19 +17,18 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="FluentAssertions" Version="4.19.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="xunit" Version="2.3.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0" />	
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
     <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
     <ProjectReference Include="..\Impl\Microsoft.Languages.Core.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

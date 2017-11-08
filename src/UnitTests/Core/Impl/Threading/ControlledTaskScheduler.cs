@@ -78,8 +78,7 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         private void Resume() {
             _paused = false;
-            Task task;
-            while (_pendingTasks.TryPeek(out task)) {
+            while (_pendingTasks.TryPeek(out var task)) {
                 _syncContext.Post(_callback, task);
                 _pendingTasks.TryDequeue(out task);
             }

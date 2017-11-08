@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.UnitTests.Core.Threading {
     public static class UIThreadTools {
-#if DESKTOP
         public static Task DoEvents() => UIThreadHelper.Instance.DoEventsAsync();
-#endif
         public static Task InUI(Action action) => UIThreadHelper.Instance.InvokeAsync(action);
         public static Task<TResult> InUI<TResult>(Func<TResult> function) => UIThreadHelper.Instance.InvokeAsync(function);
         public static Task InUI(Func<Task> function) => UIThreadHelper.Instance.InvokeAsync(function).Unwrap();

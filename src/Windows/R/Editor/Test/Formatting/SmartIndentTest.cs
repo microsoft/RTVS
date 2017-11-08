@@ -47,7 +47,6 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("{\n    {\n\n    }\n}", 4, 0)]
         [InlineData("{\n    {\n\n    }\n\n}", 4, 4)]
         [InlineData("if(1) {\n", 1, 4)]
-        [InlineData("if(1) {\n", 1, 4)]
         [InlineData("library(abind)\n", 1, 0)]
         [InlineData("if (x > 1) {\n\n}", 2, 0)]
         [InlineData("while (TRUE) {\n    if (x > 1) {\n\n    }\n}", 4, 0)]
@@ -62,7 +61,6 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
         [InlineData("x <- \n", 1, 4)]
-        [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
         [InlineData("x <- \n\n    a", 1, 4)]
         [InlineData("x <- \n      a+\n", 2, 6)]
         public void Scope(string content, int lineNum, int expectedIndent) {

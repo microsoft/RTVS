@@ -20,6 +20,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         private readonly XunitTestEnvironment _testEnvironment;
         private readonly IMessageSink _diagnosticMessageSink;
         private readonly object[] _constructorArguments;
+        private readonly ITestMainThreadFixture _testMainThreadFixture;
         private readonly Stopwatch _stopwatch;
 
         public TestMethodRunner(ITestMethod testMethod, IReflectionTypeInfo @class, IReflectionMethodInfo method, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageBus messageBus, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource, object[] constructorArguments, IReadOnlyDictionary<Type, object> assemblyFixtureMappings, XunitTestEnvironment testEnvironment)
@@ -28,23 +29,26 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _testEnvironment = testEnvironment;
             _diagnosticMessageSink = diagnosticMessageSink;
             _constructorArguments = constructorArguments;
+            _testMainThreadFixture = assemblyFixtureMappings.TryGetValue(typeof(ITestMainThreadFixture), out object fixture)
+                ? (ITestMainThreadFixture) fixture
+                : NullTestMainThreadFixture.Instance;
             _stopwatch = new Stopwatch();
         }
 
         protected override async Task<RunSummary> RunTestCaseAsync(IXunitTestCase testCase) {
-            using (var testMainThread = UIThreadHelper.Instance.CreateTestMainThread())
-            using (var taskObserver = _testEnvironment.UseTaskObserver()) {
+            using (var testMainThread = _testMainThreadFixture.CreateTestMainThread())
+            using (var taskObserver = _testEnvironment.UseTaskObserver(_testMainThreadFixture)) {
                 if (_constructorArguments.OfType<IMethodFixture>().Any()) {
                     return await RunTestCaseWithMethodFixturesAsync(testCase, taskObserver, testMainThread);
                 }
 
-                var testCaseRunSummay = await GetTestRunSummary(base.RunTestCaseAsync(testCase), taskObserver.Task);
+                var testCaseRunSummay = await GetTestRunSummary(RunTestCaseAsync(testCase, _constructorArguments), taskObserver.Task);
                 await WaitForObservedTasksAsync(testCase, testCaseRunSummay, taskObserver, testMainThread);
                 return testCaseRunSummay;
             }
         }
 
-        private async Task<RunSummary> RunTestCaseWithMethodFixturesAsync(IXunitTestCase testCase, TaskObserver taskObserver, TestMainThread testMainThread) {
+        private async Task<RunSummary> RunTestCaseWithMethodFixturesAsync(IXunitTestCase testCase, TaskObserver taskObserver, ITestMainThread testMainThread) {
             var runSummary = new RunSummary();
             var methodFixtures = CreateMethodFixtures(testCase, runSummary);
 
@@ -55,8 +59,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             var testCaseConstructorArguments = await InitializeMethodFixturesAsync(testCase, runSummary, methodFixtures);
 
             if (!Aggregator.HasExceptions) {
-                var testCaseRunTask = testCase.RunAsync(_diagnosticMessageSink, MessageBus, testCaseConstructorArguments, new ExceptionAggregator(Aggregator), CancellationTokenSource);
-                var testCaseRunSummary = await GetTestRunSummary(testCaseRunTask, taskObserver.Task);
+                var testCaseRunSummary = await GetTestRunSummary(RunTestCaseAsync(testCase, testCaseConstructorArguments), taskObserver.Task);
                 runSummary.Aggregate(testCaseRunSummary);
             }
 
@@ -94,7 +97,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             var testInput = CreateTestInput(testCase, constructorArguments);
 
             foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>().Distinct()) {
-                await RunAsync(testCase, () => methodFixture.InitializeAsync(testInput, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to initialize");
+                await RunActionAsync(testCase, () => methodFixture.InitializeAsync(testInput, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to initialize");
             }
 
             return constructorArguments;
@@ -102,14 +105,14 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         private async Task DisposeMethodFixturesAsync(IXunitTestCase testCase, RunSummary runSummary, IDictionary<Type, object> methodFixtures) {
             foreach (var methodFixture in methodFixtures.Values.OfType<IMethodFixture>().Distinct()) {
-                await RunAsync(testCase, () => methodFixture.DisposeAsync(runSummary, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to dispose");
+                await RunActionAsync(testCase, () => methodFixture.DisposeAsync(runSummary, MessageBus), runSummary, $"Method fixture {methodFixture.GetType()} needs too much time to dispose");
             }
         }
 
-        private Task WaitForObservedTasksAsync(IXunitTestCase testCase, RunSummary runSummary, TaskObserver taskObserver, TestMainThread testMainThread) {
+        private Task WaitForObservedTasksAsync(IXunitTestCase testCase, RunSummary runSummary, TaskObserver taskObserver, ITestMainThread testMainThread) {
             testMainThread.CancelPendingTasks();
             taskObserver.TestCompleted();
-            return RunAsync(testCase, () => taskObserver.Task, runSummary, "Tasks that have been started during test run are still not completed");
+            return RunActionAsync(testCase, () => taskObserver.Task, runSummary, "Tasks that have been started during test run are still not completed");
         }
 
         private ITestInput CreateTestInput(IXunitTestCase testCase, object[] testCaseConstructorArguments) {
@@ -135,7 +138,15 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             return testCaseConstructorArguments;
         }
-        
+
+        private Task<RunSummary> RunTestCaseAsync(IXunitTestCase xunitTestCase, object[] constructorArguments) {
+            if (xunitTestCase is TestCase testCase) {
+                testCase.MainThreadFixture = _testMainThreadFixture;
+            }
+
+            return xunitTestCase.RunAsync(_diagnosticMessageSink, MessageBus, constructorArguments, new ExceptionAggregator(Aggregator), CancellationTokenSource);
+        }
+
         private async Task<RunSummary> GetTestRunSummary(Task<RunSummary> testCaseRunTask, Task<Exception> taskObserverTask) {
             await Task.WhenAny(testCaseRunTask, taskObserverTask);
             if (testCaseRunTask.IsCompleted) {
@@ -153,15 +164,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return testCaseSummary;
         }
 
-        private async Task RunAsync(IXunitTestCase testCase, Func<Task> action, RunSummary runSummary, string timeoutMessage) {
+        private async Task RunActionAsync(IXunitTestCase testCase, Func<Task> action, RunSummary runSummary, string timeoutMessage) {
             Exception exception = null;
             _stopwatch.Restart();
             try {
                 var task = action();
-#if DESKTOP
                 await ParallelTools.When(task, 60_000, timeoutMessage);
-#endif
-                await task;
             } catch (Exception ex) {
                 exception = ex;    
             }

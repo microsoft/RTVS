@@ -71,9 +71,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         private async Task AddAssemblyFixtureAsync(Dictionary<Type, object> fixtures, Type fixtureType) {
             var fixture = Activator.CreateInstance(fixtureType);
-            var asyncLifetime = fixture as IAsyncLifetime;
-            if (asyncLifetime != null) {
+            if (fixture is IAsyncLifetime asyncLifetime) {
                 await asyncLifetime.InitializeAsync();
+            }
+
+            if (typeof(ITestMainThreadFixture).IsAssignableFrom(fixtureType)) {
+                fixtures[typeof(ITestMainThreadFixture)] = fixture;
             }
 
             var methodFixtureFactory = fixtureType.GetInterfaces().FirstOrDefault(i => IsGenericType(i) && i.GetGenericTypeDefinition() == typeof(IMethodFixtureFactory<>));
@@ -84,11 +87,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private static bool IsGenericType(Type t)
-#if DESKTOP
-            => t.IsGenericType;
-#else
-            =>  t.GetTypeInfo().IsGenericType;
-#endif
+        private static bool IsGenericType(Type t) =>  t.GetTypeInfo().IsGenericType;
     }
 }

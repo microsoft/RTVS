@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RootNamespace>Microsoft.Common.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Common.Core.Test</AssemblyName>
   </PropertyGroup>
@@ -15,37 +15,23 @@
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="FluentAssertions" Version="4.19.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="xunit" Version="2.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
-    <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
-    <ProjectReference Include="..\..\..\Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
-    <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BlueSquare.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj" />
+  </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>
