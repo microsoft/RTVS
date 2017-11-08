@@ -1,12 +1,10 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <RootNamespace>Microsoft.Languages.Core.Test</RootNamespace>
-    <AssemblyName>Microsoft.Languages.Core.Test</AssemblyName>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
-  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="..\..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="..\..\..\R.Settings.props" />
+  <Import Project="..\..\..\..\R.Settings.props" />
   <PropertyGroup>
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -23,10 +21,14 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
-    <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
-    <ProjectReference Include="..\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

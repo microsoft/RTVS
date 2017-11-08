@@ -84,10 +84,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Microsoft.R.Platform.Windows.Core.Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
-      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
-      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ProjectSystem\Impl\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.csproj">
       <Project>{41aa8769-0fbc-4a80-8498-21c833f0c2ac}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
@@ -171,6 +167,10 @@
     <ProjectReference Include="..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
       <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
       <Name>Microsoft.R.Platform.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Windows\R\Platform.Core\Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj">
       <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>

@@ -69,10 +69,6 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Microsoft.R.Platform.Windows.Core.Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
-      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
-      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
       <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
       <Name>Microsoft.R.Platform</Name>
@@ -132,6 +128,10 @@
     <ProjectReference Include="..\..\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
       <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
       <Name>Microsoft.R.Platform.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platform.Core\Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Editor.Windows.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>

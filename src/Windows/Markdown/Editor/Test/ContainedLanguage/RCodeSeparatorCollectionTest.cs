@@ -20,7 +20,6 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [InlineData("a```", 0)]
         [InlineData("```{r}", 1)]
         [InlineData("a\n```{r}\n", 1)]
-        [InlineData("a\n```{r}\n", 1)]
         [InlineData("a\n```{r}\n```\n```{r}\n", 2)]
         public void BuildTest(string content, int expectedTokens) {
             var tokenizer = new MdTokenizer();

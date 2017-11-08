@@ -72,10 +72,6 @@
       <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Microsoft.R.Platform.Windows.Core.Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
-      <Project>{4B9914B0-F089-4544-9ADB-A4691D33F957}</Project>
-      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
@@ -99,6 +95,10 @@
     <ProjectReference Include="..\..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Platform.Core\Test\Microsoft.R.Platform.Windows.Core.Test.csproj">
+      <Project>{4b9914b0-f089-4544-9adb-a4691d33f957}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj">
       <Project>{79afe755-2e63-472c-a892-8851d118f460}</Project>
