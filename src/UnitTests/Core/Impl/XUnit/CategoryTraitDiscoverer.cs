@@ -10,7 +10,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public class CategoryTraitDiscoverer : ITraitDiscoverer {
         public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute) {
             var categories = traitAttribute.GetNamedArgument<string[]>(nameof(CategoryAttribute.Categories));
-            return categories.Select(category => new KeyValuePair<string, string>(category, null));
+            return categories.Select(category => new KeyValuePair<string, string>("Category", category));
         }
     }
 }

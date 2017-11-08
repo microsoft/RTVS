@@ -22,7 +22,6 @@ namespace Microsoft.Common.Core.Test.Extensions {
         [InlineData(@"C:\abc\def.x", @"c:\abc\", "def.x")]
         [InlineData(@"C:\abc\def.x\", @"c:\abc\", @"def.x\")]
         [InlineData(@"c:\abc", @"c:\a", @"c:\abc")]
-        [InlineData("", "", "")]
         public void MakeRelativePath(string path, string basePath, string expected) {
             path.MakeRelativePath(basePath).Should().Be(expected);
         }

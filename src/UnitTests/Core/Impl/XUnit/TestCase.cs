@@ -20,7 +20,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         /// <summary />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public TestCase() : base(null, default(TestMethodDisplay), null, null) { }
+        public TestCase() : base(new NullMessageSink(), default(TestMethodDisplay), null, null) { }
 
         protected override void Initialize() {
             base.Initialize();

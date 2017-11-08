@@ -34,8 +34,6 @@ namespace Microsoft.Common.Core.Test.Tasks {
                     try {
                         SynchronizationContext.SetSynchronizationContext(new BlockingCollectionSynchronizationContext(actions));
                         action();
-                    } catch (Exception ex) {
-                        exceptions.Enqueue(ex);
                     } finally {
                         SynchronizationContext.SetSynchronizationContext(syncContext);
                     }
@@ -51,8 +49,11 @@ namespace Microsoft.Common.Core.Test.Tasks {
                 try {
                     Thread.CurrentThread.Should().Be(thread);
                     await BackgroundThreadAction();
+                } catch (Exception ex) {
+                    exceptions.Enqueue(ex);
                 } finally {
                     Thread.CurrentThread.Should().Be(thread);
+                    actions.CompleteAdding();
                 }
             }
         }
