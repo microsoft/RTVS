@@ -212,6 +212,8 @@ namespace Microsoft.R.Host.Client.Host {
                 psi = new ProcessStartInfo {
                     FileName = "dotnet",
                     UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     Arguments = $"{rhostBrokerExecutable} {baseArguments}"
                 };
             }
