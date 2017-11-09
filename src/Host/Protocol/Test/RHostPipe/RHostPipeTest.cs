@@ -11,7 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.R.Platform.Host;
 using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.XUnit;
 
 using static System.FormattableString;
@@ -33,9 +35,8 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
         public async Task RHostPipeFuzzTest(int iteration) {
             var input = GenerateInput();
 
-            var RHostExe = "Microsoft.R.Host.exe";
-            var brokerPath = Path.GetDirectoryName(typeof(RHostPipeTest).Assembly.GetAssemblyPath());
-            var rhostExePath = Path.Combine(brokerPath, RHostExe);
+            var locator = BrokerExecutableLocator.Create(new WindowsFileSystem());
+            var rhostExePath = locator.GetHostExecutablePath();
             var arguments = Invariant($"--rhost-name \"FuzzTest\" --rhost-r-dir \"{_interpreter.BinPath}\"");
 
             var psi = new ProcessStartInfo(rhostExePath) {

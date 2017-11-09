@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Test.Telemetry;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
 

@@ -73,7 +73,7 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             , IProcessServices ps = null) {
             ServiceManager
                 .AddService(this)
-                .AddService(UIThreadHelper.Instance.MainThread)
+                .AddService(new TestMainThread(() => {}))
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
