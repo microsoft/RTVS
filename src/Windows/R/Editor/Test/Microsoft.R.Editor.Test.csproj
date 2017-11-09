@@ -49,7 +49,7 @@
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+    <ProjectReference Include="..\..\..\..\Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
@@ -89,9 +89,9 @@
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Components\Test\Microsoft.R.Components.Test.csproj">
+    <ProjectReference Include="..\..\Components\Test\Microsoft.R.Components.Windows.Test.csproj">
       <Project>{2AA8762F-3A84-4CD5-9AA0-77829A766769}</Project>
-      <Name>Microsoft.R.Components.Test</Name>
+      <Name>Microsoft.R.Components.Windows.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{AE67EBA1-AFF1-4425-8C89-4F0045A6BFD9}</Project>

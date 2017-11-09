@@ -1,8 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
-    <RootNamespace>Microsoft.R.Core.Test</RootNamespace>
-    <AssemblyName>Microsoft.R.Core.Test</AssemblyName>
+    <RootNamespace>Microsoft.R.Components.Test</RootNamespace>
+    <AssemblyName>Microsoft.R.Components.Test</AssemblyName>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
