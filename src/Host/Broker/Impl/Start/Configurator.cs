@@ -114,9 +114,11 @@ namespace Microsoft.R.Host.Broker.Start {
 
         private class LoggerFactory2 : LoggerFactory, ILoggerProvider {
             public LoggerFactory2(StartupOptions startupOptions, LoggingOptions loggingOptions) {
-                var name = startupOptions.Name;
-                var folder = loggingOptions.LogFolder;
-                this.AddFile(name, folder);
+                if (startupOptions != null && loggingOptions != null) {
+                    var name = !string.IsNullOrEmpty(startupOptions.Name) ? startupOptions.Name : "RTVS";
+                    var folder = loggingOptions.LogFolder;
+                    this.AddFile(name, folder);
+                }
             }
         }
     }

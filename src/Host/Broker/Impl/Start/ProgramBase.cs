@@ -12,10 +12,6 @@ namespace Microsoft.R.Host.Broker.Start {
         protected static void MainEntry<T>(string[] args) where T : Startup {
             var cm = new Configurator(args);
 
-            if (cm.LoggingOptions != null) {
-                cm.LoggerFactory.AddFile(cm.Name, cm.LoggingOptions.LogFolder);
-            }
-
             WebHost = cm
                 .ConfigureWebHost()
                 .UseStartup<T>()

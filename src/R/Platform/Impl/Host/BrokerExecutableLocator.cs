@@ -39,6 +39,13 @@ namespace Microsoft.R.Platform.Host {
             // Broker can be Windows or .NET Core (Linux). NET Core broker 
             // does not have special folder, it sits where VS Code language 
             // server is since they share most of the .NET Core assemblies.
+
+            // We prefer Broker\Windows first rather than bin\Debug
+            var path = Path.Combine(BaseDirectory, GetBrokerMultiplatformSubpath());
+            if(_fs.FileExists(path)) {
+                return path;
+            }
+
             if (_platform == OSPlatform.Windows) {
                 var windowsVsBroker = Path.Combine(BaseDirectory, WindowsBrokerName);
                 if (_fs.FileExists(windowsVsBroker)) {
@@ -46,8 +53,7 @@ namespace Microsoft.R.Platform.Host {
                 }
             }
 
-            var path = Path.Combine(BaseDirectory, GetBrokerMultiplatformSubpath());
-            return _fs.FileExists(path) ? path : null;
+            return null;
         }
 
         public string GetHostExecutablePath() {

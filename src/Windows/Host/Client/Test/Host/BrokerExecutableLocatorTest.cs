@@ -44,6 +44,17 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public void Linux(string brokerSubPath, string hostSubPath)
             => TestPlatform(brokerSubPath, hostSubPath, OSPlatform.Linux);
 
+        [Test]
+        public void Duplicate() {
+            var locator = new BrokerExecutableLocator(_fs, OSPlatform.Windows);
+            var brokerPath1 = Path.Combine(locator.BaseDirectory, BrokerExecutableLocator.WindowsBrokerName);
+            var brokerPath2 = Path.Combine(locator.BaseDirectory, @"Broker\Windows\" + BrokerExecutableLocator.WindowsBrokerName);
+
+            _fs.FileExists(brokerPath1).Returns(true);
+            _fs.FileExists(brokerPath2).Returns(true);
+            locator.GetBrokerExecutablePath().Should().Be(brokerPath2);
+        }
+
         private void TestPlatform(string brokerSubPath, string hostSubPath, OSPlatform platform) {
             var locator = new BrokerExecutableLocator(_fs, platform);
             var brokerPath = Path.Combine(locator.BaseDirectory, brokerSubPath);
