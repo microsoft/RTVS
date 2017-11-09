@@ -16,42 +16,34 @@ namespace Microsoft.R.Containers.Windows.Test {
     [ExcludeFromCodeCoverage]
     [Category.Threads]
     public class WindowsDockerFinderTests {
+        private readonly IServiceManager _services;
+
+        public WindowsDockerFinderTests() {
+            _services = new ServiceManager()
+                .AddService(GetFileSystemMock())
+                .AddService<IProcessServices, WindowsProcessServices>();
+        }
+
         [Test]
         public void FindDockerInstallationTest() {
-            var services = new ServiceManager()
-                .AddService(GetFileSystemMock())
-                .AddService<IProcessServices, ProcessServices>()
-                .AddService(new RegistryMock(GetDefaultInstallKey(), GetServiceInstallKey()));
-
-            var finder = new WindowsLocalDockerFinder(services);
-            var docker = finder.GetLocalDocker();
-            docker.Should().NotBeNull();
-            docker.BinPath.Should().NotBeEmpty();
-            docker.DockerCommandPath.Should().NotBeEmpty();
+            _services.AddService(new RegistryMock(GetDefaultInstallKey(), GetServiceInstallKey()));
+            RunTest();
         }
 
         [Test]
         public void FindDockerInstallationUsingServiceTest() {
-            var services = new ServiceManager()
-                .AddService(GetFileSystemMock())
-                .AddService<IProcessServices, WindowsProcessServices>()
-                .AddService(new RegistryMock(GetServiceInstallKey()));
-
-            var finder = new WindowsLocalDockerFinder(services);
-            var docker = finder.GetLocalDocker();
-            docker.Should().NotBeNull();
-            docker.BinPath.Should().NotBeEmpty();
-            docker.DockerCommandPath.Should().NotBeEmpty();
+            _services.AddService(new RegistryMock(GetServiceInstallKey()));
+            RunTest();
         }
 
         [Test]
         public void FindDockerInstallationUsingProgramFilesTest() {
-            var services = new ServiceManager()
-                .AddService(GetFileSystemMock())
-                .AddService<IProcessServices, ProcessServices>()
-                .AddService(new RegistryMock());
+            _services.AddService(new RegistryMock());
+            RunTest();
+        }
 
-            var finder = new WindowsLocalDockerFinder(services);
+        private void RunTest() {
+            var finder = new WindowsLocalDockerFinder(_services);
             var docker = finder.GetLocalDocker();
             docker.Should().NotBeNull();
             docker.BinPath.Should().NotBeEmpty();
