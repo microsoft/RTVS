@@ -11,6 +11,8 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.R.Platform.Composition;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -37,7 +39,10 @@ namespace Microsoft.Common.Core.Test.Fixtures {
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(new TestTaskService())
-                .AddService(new TestIdleTimeService());
+                .AddService(new TestIdleTimeService())
+                .AddService(new WindowsFileSystem())
+                .AddService(new WindowsProcessServices())
+                .AddService<IRegistry, RegistryImpl>();
         }
 
         protected override TestServiceManager CreateFixture() {
@@ -62,7 +67,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
                 AddService(new TestCompositionCatalog(_compositionContainer));
                 AddService(_compositionContainer);
- 
+
                 return this;
             }
 
