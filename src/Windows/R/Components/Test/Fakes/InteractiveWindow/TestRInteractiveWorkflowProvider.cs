@@ -21,7 +21,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IRInteractiveWorkflowVisualProvider))]
     [Export(typeof(TestRInteractiveWorkflowProvider))]
     [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
-    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowVisualProvider, IRInteractiveWorkflowProvider, IDisposable {
+    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowVisualProvider, IRInteractiveWorkflowProvider {
         private readonly IConnectionManagerProvider _connectionManagerProvider;
         private readonly IRHistoryProvider _historyProvider;
         private readonly IRPackageManagerProvider _packagesProvider;

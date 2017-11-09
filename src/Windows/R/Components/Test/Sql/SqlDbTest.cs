@@ -20,7 +20,7 @@ using Xunit;
 namespace Microsoft.R.Components.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
-    public class ConnectiionStringTest {
+    public class ConnectionStringTest {
         [CompositeTest]
         [InlineData(null, null)]
         [InlineData("Driver={SQL Server};Server=ABC;Database=AdventureWorks2016CTP3;Trusted_Connection=yes",

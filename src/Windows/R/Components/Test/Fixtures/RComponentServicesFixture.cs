@@ -10,7 +10,6 @@ using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Platform;
 using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 
