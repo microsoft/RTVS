@@ -12,7 +12,8 @@ namespace Microsoft.R.Editor.Application.Test.Fixtures {
     public class REditorApplicationServicesFixture : MarkdownEditorServicesFixture {
         protected override IEnumerable<string> GetAssemblyNames() => base.GetAssemblyNames().Concat(new[] {
             "Microsoft.Languages.Editor.Application.dll",
-            "Microsoft.R.Editor.Application.Test.dll"
+            "Microsoft.R.Editor.Application.Test.dll",
+            "Microsoft.R.Components.Windows.Test.dll"
         });
     }
 }
