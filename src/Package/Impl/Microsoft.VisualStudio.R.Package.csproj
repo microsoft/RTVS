@@ -1079,7 +1079,7 @@
       <Name>Microsoft.R.Common.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+    <ProjectReference Include="..\..\Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
       <Private>False</Private>

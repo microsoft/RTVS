@@ -43,7 +43,7 @@
     <ProjectReference Include="$(SourceDirectory)R\Core\Impl\Microsoft.R.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Editor\Impl\Microsoft.R.Editor.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Wpf\Impl\Microsoft.R.Wpf.csproj" />
-    <ProjectReference Include="$(SourceDirectory)Common\Wpf\Impl\Microsoft.Common.Wpf.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\R\Components\Impl\Microsoft.R.Components.Windows.csproj" />
