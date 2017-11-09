@@ -28,6 +28,7 @@
     <ProjectReference Include="$(SourceDirectory)Languages\Core\Test\Microsoft.Languages.Core.Test.csproj" />
     <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj" />
+    <ProjectReference Include="..\Impl\Microsoft.R.Components.csproj" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
