@@ -9,6 +9,8 @@ using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
@@ -24,9 +26,12 @@ namespace Microsoft.R.Components.Security {
             _services = services;
         }
 
-        public Credentials GetUserCredentials(string authority, string workspaceName) {
-            _services.MainThread().CheckAccess();
-            return ReadSavedCredentials(authority) ?? PromptForWindowsCredentials(authority, workspaceName);
+        public async Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken) {
+            var creds = ReadSavedCredentials(authority);
+            if (creds != null) {
+                return creds;
+            }
+            return await PromptForWindowsCredentialsAsync(authority, workspaceName, cancellationToken);
         }
 
         public bool ValidateX509Certificate(X509Certificate certificate, string message) {
@@ -82,7 +87,9 @@ namespace Microsoft.R.Components.Security {
             }
         }
 
-        private Credentials PromptForWindowsCredentials(string authority, string workspaceName) {
+        private async Task<Credentials> PromptForWindowsCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken) {
+            await _services.MainThread().SwitchToAsync(cancellationToken);
+
             var credui = new NativeMethods.CREDUI_INFO {
                 cbSize = Marshal.SizeOf(typeof(NativeMethods.CREDUI_INFO)),
                 hwndParent = _services.GetService<IPlatformServices>().ApplicationWindowHandle,

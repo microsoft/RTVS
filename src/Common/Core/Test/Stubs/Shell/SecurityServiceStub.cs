@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core.Security;
 
 namespace Microsoft.Common.Core.Test.Stubs.Shell {
@@ -20,11 +22,11 @@ namespace Microsoft.Common.Core.Test.Stubs.Shell {
         public Action<string> DeleteCredentialsHandler { get; set; } = authority => {};
         public Func<string, string> GetUserNameHandler { get; set; } = authority => authority;
 
-        public Credentials GetUserCredentials(string authority, string workspaceName) {
+        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken) {
             GetUserCredentialsCalls.Enqueue(new Tuple<string, string>(authority, workspaceName));
             var handler = GetUserCredentialsHandler;
             if (handler != null) {
-                return handler(authority, workspaceName);
+                return Task.FromResult(handler(authority, workspaceName));
             }
 
             throw new NotImplementedException();
