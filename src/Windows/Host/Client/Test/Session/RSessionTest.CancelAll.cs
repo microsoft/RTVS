@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public CancelAll(IServiceContainer services, TestMethodFixture testMethod) {
                 _callback = new RSessionCallbackStub();
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(CancelAll));
-                _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
+                _session = new RSession(0, testMethod.FileSystemSafeName, services, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => {});
             }
 
             public async Task InitializeAsync() {

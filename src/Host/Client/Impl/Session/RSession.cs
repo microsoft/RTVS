@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Platform.Host;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -26,6 +29,7 @@ namespace Microsoft.R.Host.Client.Session {
         private static readonly Task<IRSessionInteraction> CanceledBeginInteractionTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
+        private readonly IServiceContainer _services;
 
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RAfterRequestEventArgs> AfterRequest;
@@ -85,11 +89,12 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
+        public RSession(int id, string name, IServiceContainer services, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
             Id = id;
             Name = name;
             BrokerClient = brokerClient;
             _onDispose = onDispose;
+            _services = services;
 
             _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
@@ -490,7 +495,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private const int rtvsPackageVersion = 1;
 
-        private static async Task LoadRtvsPackage(IRExpressionEvaluator eval, bool isRemote) {
+        private async Task LoadRtvsPackage(IRExpressionEvaluator eval, bool isRemote) {
             // Load RTVS R package before doing anything in R since the calls
             // below calls may depend on functions exposed from the RTVS package
             var libPath = isRemote ? await GetRemoteRtvsPackagePath(eval) : Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
@@ -505,10 +510,26 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 "));
         }
 
-        private static async Task<string> GetRemoteRtvsPackagePath(IRExpressionEvaluator eval) {
-            const string windowsPath = ".";
-            const string unixPath = "/usr/share/rtvs";
-            return await eval.IsRSessionPlatformWindowsAsync() ? windowsPath : unixPath;
+        private async Task<string> GetRemoteRtvsPackagePath(IRExpressionEvaluator eval) {
+            var isWindows = await eval.IsRSessionPlatformWindowsAsync();
+            if (!isWindows) {
+                // Remote Linux
+                return "/usr/share/rtvs";
+            }
+            // Check if there is 'rtvs' folder on remote
+            var rtvsExists = await eval.FileExistsAsync("./rtvs/NAMESPACE");
+            if (rtvsExists) {
+                return ".";
+            }
+            // Most probably tests are running remote broker locally
+            var locator = BrokerExecutableLocator.Create(_services.FileSystem());
+            var hostPath = locator.GetHostExecutablePath();
+            rtvsExists = _services.FileSystem().FileExists(Path.Combine(hostPath, @"rtvs\NAMESPACE"));
+            if(rtvsExists) {
+                return hostPath;
+            }
+            var binPath = Path.GetFullPath(Path.Combine(hostPath, @"..\..\.."));
+            return binPath;
         }
 
         private static Task SuppressUI(IRExpressionEvaluator eval) {

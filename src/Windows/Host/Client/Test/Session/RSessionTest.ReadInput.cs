@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public ReadInput(IServiceContainer services, TestMethodFixture testMethod) {
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(ReadInput));
-                _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _session = new RSession(0, testMethod.FileSystemSafeName, services, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 _callback = new RSessionCallbackStub();
             }
 
