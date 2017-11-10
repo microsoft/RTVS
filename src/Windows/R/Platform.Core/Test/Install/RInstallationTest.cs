@@ -46,7 +46,7 @@ namespace Microsoft.R.Interpreters.Test {
             Directory.Exists(engine.InstallPath).Should().BeTrue();
             Directory.Exists(engine.BinPath).Should().BeTrue();
 
-            string path = Path.Combine(engine.InstallPath, @"bin\x64");
+            var path = Path.Combine(engine.InstallPath, @"bin\x64");
             Directory.Exists(path).Should().BeTrue();
         }
 
@@ -54,8 +54,8 @@ namespace Microsoft.R.Interpreters.Test {
         public void Simulate01() {
             var tr = new RegistryMock(SimulateRegistry01());
 
-            string dir = @"C:\Program Files\MRO\R-3.2.3";
-            string dir64 = dir + @"\bin\x64\";
+            var dir = @"C:\Program Files\MRO\R-3.2.3";
+            var dir64 = dir + @"\bin\x64\";
             var fs = Substitute.For<IFileSystem>();
             PretendRFilesAvailable(fs, dir);
 
@@ -100,7 +100,7 @@ namespace Microsoft.R.Interpreters.Test {
 
             ri.GetCompatibleEngines(svl).Should().BeEmpty();
 
-            string dir = @"C:\Program Files\RRO\R-3.1.3";
+            var dir = @"C:\Program Files\RRO\R-3.1.3";
             var fsi = Substitute.For<IFileSystemInfo>();
             fsi.Attributes.Returns(FileAttributes.Directory);
             fsi.FullName.Returns(dir);
@@ -116,7 +116,7 @@ namespace Microsoft.R.Interpreters.Test {
             var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 1, 3, 9);
 
-            string dir = @"C:\Program Files\R\R-3.1.3";
+            var dir = @"C:\Program Files\R\R-3.1.3";
             var fs = Substitute.For<IFileSystem>();
             var fsi = Substitute.For<IFileSystemInfo>();
             fsi.Attributes.Returns(FileAttributes.Directory);
@@ -135,14 +135,17 @@ namespace Microsoft.R.Interpreters.Test {
 
             svl = new SupportedRVersionRange(3, 2, 3, 9);
             var coreShell = Substitute.For<ICoreShell>();
-
-            e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
-            e.VerifyInstallation(svl, new ServiceManager().AddService(coreShell)).Should().BeFalse();
-            coreShell.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
+            var ui = Substitute.For<IUIService>();
+            ui.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("not compatible");
             });
-            coreShell.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
+
+            e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
+            var sm = new ServiceManager().AddService(coreShell).AddService(ui);
+
+            e.VerifyInstallation(svl, sm).Should().BeFalse();
+            ui.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
 
@@ -152,7 +155,7 @@ namespace Microsoft.R.Interpreters.Test {
             var svl = new SupportedRVersionRange(3, 1, 3, 9);
 
             var root = @"C:\Program Files\R";
-            string dir = Path.Combine(root, "R-3.1.3");
+            var dir = Path.Combine(root, "R-3.1.3");
             var fs = Substitute.For<IFileSystem>();
             fs.DirectoryExists(root).Returns(true);
             fs.DirectoryExists(dir).Returns(true);
@@ -172,7 +175,7 @@ namespace Microsoft.R.Interpreters.Test {
             var tr = new RegistryMock(SimulateRegistry02());
             var svl = new SupportedRVersionRange(3, 1, 3, 4);
 
-            string dir = @"C:\Program Files\R\R-3.1.3";
+            var dir = @"C:\Program Files\R\R-3.1.3";
             var fs = Substitute.For<IFileSystem>();
             var fsi = Substitute.For<IFileSystemInfo>();
             fsi.Attributes.Returns(FileAttributes.Directory);
@@ -191,13 +194,16 @@ namespace Microsoft.R.Interpreters.Test {
             fs = Substitute.For<IFileSystem>();
             e = new RInterpreterInfo(e.Name, e.InstallPath, fs);
             var coreShell = Substitute.For<ICoreShell>();
-            e.VerifyInstallation(svl, new ServiceManager().AddService(coreShell)).Should().BeFalse();
-
-            coreShell.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
+            var ui = Substitute.For<IUIService>();
+            ui.When(x => x.ShowMessage(Arg.Any<string>(), MessageButtons.OK)).Do(x => {
                 var s = x.Args()[0] as string;
                 s.Should().Contain("Cannot find");
             });
-            coreShell.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
+
+            var sm = new ServiceManager().AddService(coreShell).AddService(ui);
+            e.VerifyInstallation(svl, sm).Should().BeFalse();
+
+            ui.Received().ShowMessage(Arg.Any<string>(), MessageButtons.OK);
         }
 
         [Test]
@@ -205,7 +211,7 @@ namespace Microsoft.R.Interpreters.Test {
             var tr = new RegistryMock(SimulateDuplicates());
             var svl = new SupportedRVersionRange(3, 2, 3, 4);
 
-            string dir = @"C:\Program Files\Microsoft\R Client\R_SERVER";
+            var dir = @"C:\Program Files\Microsoft\R Client\R_SERVER";
             var fs = Substitute.For<IFileSystem>();
             var fsi = Substitute.For<IFileSystemInfo>();
             fsi.Attributes.Returns(FileAttributes.Directory);
@@ -241,19 +247,19 @@ namespace Microsoft.R.Interpreters.Test {
             return new[] {
                 new RegistryKeyMock(
                      @"SOFTWARE\R-core\R64", 
-                     new RegistryKeyMock(@"3.2.2.803",
-                         new RegistryKeyMock[0],
-                         new[] {"InstallPath"},
-                         new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" }),
                      new RegistryKeyMock(@"3.2.2.803 Microsoft R Client",
                          new RegistryKeyMock[0],
                          new[] {"InstallPath"},
                          new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER" })),
+                new RegistryKeyMock(@"3.2.2.803",
+                    new RegistryKeyMock[0],
+                    new[] {"InstallPath"},
+                    new[] { @"C:\Program Files\Microsoft\R Client\R_SERVER\" })
             };
         }
 
         private void PretendRFilesAvailable(IFileSystem fs, string dir) {
-            string dir64 = dir + @"\bin\x64\";
+            var dir64 = dir + @"\bin\x64\";
             fs.DirectoryExists(dir).Returns(true);
             fs.DirectoryExists(dir64).Returns(true);
             fs.FileExists(dir64 + "R.dll").Returns(true);
