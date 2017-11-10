@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             }
 
             var content = @"x <- as.matrix(x)";
-            var session = await TriggerSessionAsync(content, 15);
+            var session = await TriggerSessionAsync(content, 13);
             var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 10);
 
             session.ApplicableSpan.Should().NotBeNull();
@@ -61,8 +61,8 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             // and as.Date.character appears as alias. We verify as.Date.character is shown in the signature info.
             var content = @"x <- as.Date.character(x)";
 
-            var session = await TriggerSessionAsync(content, 23);
-            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 23);
+            var session = await TriggerSessionAsync(content, 21);
+            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 20);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()
@@ -75,7 +75,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             var content = @"x <- select()";
 
             using (new RHostScript(Services)) {
-                var session = await TriggerSessionAsync(content, 12);
+                var session = await TriggerSessionAsync(content, 8);
 
                 session.ApplicableSpan.Should().BeNull();
                 session.QuickInfoContent.Should().BeEmpty();
@@ -85,14 +85,14 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
                 await Workflow.RSession.ExecuteAsync("library(MASS)");
                 EventsPump.DoEvents(500);
-                session = await TriggerSessionAsync(content, 12);
+                session = await TriggerSessionAsync(content, 8);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(formula");
 
                 await Workflow.RSession.ExecuteAsync("library(dplyr)");
                 EventsPump.DoEvents(500);
-                session = await TriggerSessionAsync(content, 12);
+                session = await TriggerSessionAsync(content, 8);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("select(.data");
@@ -106,13 +106,13 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             using (new RHostScript(Services)) {
                 await EnsurePackageInstalled("dplyr");
 
-                var session = await TriggerSessionAsync(content, 3);
+                var session = await TriggerSessionAsync(content, 1);
 
                 session.ApplicableSpan.Should().BeNull();
                 session.QuickInfoContent.Should().BeEmpty();
 
                 await Workflow.RSession.ExecuteAsync("library(dplyr)");
-                session = await TriggerSessionAsync(content, 3);
+                session = await TriggerSessionAsync(content, 1);
 
                 session.ApplicableSpan.Should().NotBeNull();
                 session.QuickInfoContent.Should().ContainSingle().Which.ToString().Should().StartWith("do(.data");
@@ -120,7 +120,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
                 await Workflow.RSession.ExecuteAsync("detach(\"package:dplyr\", unload = TRUE)");
                 EventsPump.DoEvents(1000);
 
-                session = await TriggerSessionAsync(content, 3);
+                session = await TriggerSessionAsync(content, 1);
                 session.QuickInfoContent.Should().BeEmpty();
             }
         }
