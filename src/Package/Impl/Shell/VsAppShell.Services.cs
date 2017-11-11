@@ -14,6 +14,8 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Settings;
+using Microsoft.R.Common.Core.Output;
+using Microsoft.R.Containers;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Security;
 using Microsoft.R.Components.Settings;
@@ -48,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<IActionLog>(s => new Logger(VsApplication.Name, Path.GetTempPath(), s))
                 .AddService<IMainThread, VsMainThread>()
                 .AddService<IMicrosoftRClientInstaller, MicrosoftRClientInstaller>()
+                .AddService<IOutputService, VsOutputService>()
                 .AddService<ISettingsStorage, VsSettingsStorage>()
                 .AddService<IRSettings, RSettingsImplementation>()
                 .AddService<ITaskService, VsTaskService>()
@@ -77,6 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService(new RMarkdownEditorSettings(this))
                 .AddService<IStatusBar, VsStatusBar>()
                 .AddService<RPackageToolWindowProvider>()
+                .AddRComponentsServices()
                 .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

@@ -3,8 +3,8 @@
 
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
@@ -17,11 +17,24 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
         private readonly IServiceContainer _services;
         private readonly DisposableBag _disposableBag;
 
-        public RInteractiveWorkflow(IServiceContainer services) {
-            _services = services;
+        public IServiceContainer Services => _services;
+        public IConsole Console => _services.GetService<IConsole>();
+        public IRSessionProvider RSessions => _services.GetService<IRSessionProvider>();
+        public IContainerManager Containers { get; }
 
-            Console = new Console(_services);
-            RSessions = new RSessionProvider(_services, Console);
+        public IRSession RSession { get; }
+        public IConnectionManager Connections { get; }
+        public IRHistory History { get; }
+        public IRPackageManager Packages { get; }
+        public IRPlotManager Plots { get; }
+        public IRInteractiveWorkflowOperations Operations { get; }
+
+        public RInteractiveWorkflow(IServiceContainer services) {
+            _services = services.Extend()
+                .AddService<IRInteractiveWorkflow>(this)
+                .AddService<IConsole, Console>()
+                .AddService<IRSessionProvider, RSessionProvider>();
+
             RSession = RSessions.GetOrCreate(SessionNames.InteractiveWindow);
 
             _disposableBag = DisposableBag.Create<RInteractiveWorkflow>()
@@ -29,15 +42,5 @@ namespace Microsoft.R.LanguageServer.InteractiveWorkflow {
         }
 
         public void Dispose() => _disposableBag.TryDispose();
-
-        public ICoreShell Shell => _services.GetService<ICoreShell>();
-        public IConnectionManager Connections { get; }
-        public IConsole Console { get; }
-        public IRHistory History { get; }
-        public IRPackageManager Packages { get; }
-        public IRPlotManager Plots { get; }
-        public IRSessionProvider RSessions { get; }
-        public IRSession RSession { get; }
-        public IRInteractiveWorkflowOperations Operations { get; }
     }
 }

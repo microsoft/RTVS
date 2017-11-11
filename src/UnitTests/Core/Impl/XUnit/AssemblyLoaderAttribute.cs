@@ -12,6 +12,9 @@ using Microsoft.Common.Core;
 namespace Microsoft.UnitTests.Core.XUnit {
     [AttributeUsage(AttributeTargets.Assembly)]
     public abstract class AssemblyLoaderAttribute : Attribute, IDisposable {
+        private readonly string[] _paths;
+        private readonly string[] _assembliesToResolve;
+
         public static IList<AssemblyLoaderAttribute> GetAssemblyLoaders(IAssemblyInfo assemblyInfo) {
             return assemblyInfo.GetCustomAttributes(typeof(AssemblyLoaderAttribute))
                 .OfType<IReflectionAttributeInfo>()
@@ -30,19 +33,19 @@ namespace Microsoft.UnitTests.Core.XUnit {
             if (paths.Length == 0) {
                 throw new ArgumentException($"{nameof(paths)} should not be empty", nameof(paths));
             }
+            _paths = paths;
+            _assembliesToResolve = assembliesToResolve;
+        }
 
-            foreach (var path in new[] { PathsBase.Bin }.Concat(paths)) {
+        public void Initialize() {
+            foreach (var path in _paths.Concat(new [] {Paths.Bin})) {
                 EnumerateAssemblies(path);
             }
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            foreach (var assembly in assembliesToResolve) {
-                var assemblyName = Path.GetExtension(assembly).EqualsIgnoreCase(".dll")
-                    ? Path.GetFileNameWithoutExtension(assembly) ?? assembly
-                    : assembly;
-
-                Assembly.Load(assemblyName);
+            foreach (var assemblyName in _assembliesToResolve) {
+                ResolveAssembly(assemblyName, AssemblyLoad);
             }
         }
 
@@ -52,17 +55,20 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
             var assemblyName = new AssemblyName(args.Name).Name;
+            return ResolveAssembly(assemblyName, AssemblyLoadFrom);
+        }
+
+        private Assembly ResolveAssembly(string assemblyName, Func<string, string, Assembly> assemblyLoader) {
             if (!Path.GetExtension(assemblyName).EqualsOrdinal(".dll")) {
                 assemblyName += ".dll";
             }
 
-            List<string> assemblyPaths;
-            if (!_knownAssemblies.TryGetValue(assemblyName, out assemblyPaths)) {
+            if (!_knownAssemblies.TryGetValue(assemblyName, out var assemblyPaths)) {
                 return null;
             }
 
             foreach (var assemblyPath in assemblyPaths) {
-                var assembly = LoadAssembly(assemblyPath);
+                var assembly = assemblyLoader(assemblyName, assemblyPath);
                 if (assembly != null) {
                     return assembly;
                 }
@@ -70,8 +76,23 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             return null;
         }
+        
+        private static Assembly AssemblyLoad(string assemblyName, string assemblyPath) {
+            try {
+                return Assembly.Load(new AssemblyName {
+                    Name = assemblyName,
+                    CodeBase = new Uri(assemblyPath).AbsoluteUri
+                });
+            } catch (FileLoadException) {
+                return null;
+            } catch (IOException) {
+                return null;
+            } catch (BadImageFormatException) {
+                return null;
+            }
+        }
 
-        private static Assembly LoadAssembly(string assemblyPath) {
+        private static Assembly AssemblyLoadFrom(string assemblyName, string assemblyPath) {
             try {
                 return Assembly.LoadFrom(assemblyPath);
             } catch (FileLoadException) {

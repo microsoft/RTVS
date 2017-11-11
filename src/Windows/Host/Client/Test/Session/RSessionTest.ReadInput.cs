@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,7 +27,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public ReadInput(IServiceContainer services, TestMethodFixture testMethod) {
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(ReadInput));
-                _session = new RSession(0, testMethod.FileSystemSafeName, services, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _session = new RSession(0, testMethod.FileSystemSafeName, services.FileSystem(), _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
                 _callback = new RSessionCallbackStub();
             }
 

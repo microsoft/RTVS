@@ -7,7 +7,7 @@ using System.Text;
 using Microsoft.Common.Core;
 
 namespace Microsoft.UnitTests.Core {
-    public sealed class Paths: PathsBase {
+    public sealed class VsPaths: Paths {
         private static object _lock = new object();
         private static string _vsRoot;
         public static string VsRoot {
@@ -34,7 +34,6 @@ namespace Microsoft.UnitTests.Core {
         private static Lazy<string> VsCommonExtensionsLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"CommonExtensions\"));
         private static Lazy<string> VsPrivateAssembliesLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"PrivateAssemblies\"));
         private static Lazy<string> VsPublicAssembliesLazy { get; } = Lazy.Create(() => Path.Combine(VsRoot, @"PublicAssemblies\"));
-        private static Lazy<string> BinLazy { get; } = Lazy.Create(() => Path.GetDirectoryName(typeof(Paths).Assembly.GetAssemblyPath()));
 
         public static string VsCommonExtensions => VsCommonExtensionsLazy.Value;
         public static string VsPrivateAssemblies => VsPrivateAssembliesLazy.Value;

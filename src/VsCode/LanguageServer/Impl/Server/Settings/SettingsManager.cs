@@ -116,10 +116,6 @@ namespace Microsoft.R.LanguageServer.Server.Settings {
             public YesNoAsk LoadRDataOnProjectLoad { get; set; }
             public YesNoAsk SaveRDataOnProjectUnload { get; set; }
             public IEnumerable<string> WorkingDirectoryList { get; set; }
-            public SurveyNewsPolicy SurveyNewsCheck { get; set; }
-            public DateTime SurveyNewsLastCheck { get; set; }
-            public string SurveyNewsFeedUrl { get; set; }
-            public string SurveyNewsIndexUrl { get; set; }
             public string WebHelpSearchString { get; set; }
             public BrowserType WebHelpSearchBrowserType { get; set; }
             public BrowserType HtmlBrowserType { get; set; }

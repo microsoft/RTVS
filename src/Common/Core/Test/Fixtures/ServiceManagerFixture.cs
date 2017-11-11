@@ -10,19 +10,20 @@ using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.Test.Telemetry;
+using Microsoft.R.Common.Core.Output;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit.Sdk;
 
 namespace Microsoft.Common.Core.Test.Fixtures {
-    public class ServiceManagerFixture : IMethodFixtureFactory<IServiceContainer> {
-        public IServiceContainer Dummy { get; } = new TestServiceManager(null);
-
-        public IMethodFixture Create() => CreateFixture();
+    public class ServiceManagerFixture : IMethodFixtureFactory {
+        public IServiceContainer Create() => CreateFixture();
 
         protected virtual TestServiceManager CreateFixture() => new TestServiceManager(SetupServices).AddLog();
 
         protected virtual void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             serviceManager
+                .AddService<IOutputService, TestOutputService>()
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())

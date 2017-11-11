@@ -6,8 +6,8 @@ using System.IO;
 using Microsoft.Common.Core;
 
 namespace Microsoft.UnitTests.Core {
-    public class PathsBase {
-        private static Lazy<string> BinLazy { get; } = Lazy.Create(() => Path.GetDirectoryName(typeof(PathsBase).Assembly.GetAssemblyPath()));
+    public class Paths {
+        private static Lazy<string> BinLazy { get; } = Lazy.Create(() => Path.GetDirectoryName(typeof(Paths).Assembly.GetAssemblyPath()));
         public static string Bin => BinLazy.Value;
     }
 }

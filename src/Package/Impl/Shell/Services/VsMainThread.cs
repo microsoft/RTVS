@@ -27,10 +27,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return;
             }
 
-            ThreadHelper.JoinableTaskFactory.RunAsync(() => {
-                action();
-                return Task.CompletedTask;
-            });
+            ThreadHelper.JoinableTaskFactory
+                .SwitchToMainThreadAsync()
+                .GetAwaiter()
+                .OnCompleted(action);
         }
 
         public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken) {

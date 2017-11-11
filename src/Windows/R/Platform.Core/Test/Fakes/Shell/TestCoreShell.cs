@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Platform.IO;
 using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;
@@ -73,14 +74,15 @@ namespace Microsoft.Common.Core.Test.Fakes.Shell {
             , IProcessServices ps = null) {
             ServiceManager
                 .AddService(this)
-                .AddService(new TestMainThread(() => {}))
+                .AddService(UIThreadHelper.Instance.MainThread)
                 .AddService(log ?? Substitute.For<IActionLog>())
                 .AddService(new SecurityServiceStub())
                 .AddService(loggingPermissions ?? Substitute.For<ILoggingPermissions>())
                 .AddService(fs ?? new WindowsFileSystem())
+                .AddService<IOutputService, TestOutputService>()
                 .AddService(registry ?? new RegistryImpl())
                 .AddService(ps ?? new WindowsProcessServices())
-                .AddService(new TestTaskService())
+                .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestImageService())
                 .AddService(new TestPlatformServices())

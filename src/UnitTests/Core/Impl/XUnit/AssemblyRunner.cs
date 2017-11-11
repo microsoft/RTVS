@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -27,6 +28,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
             await base.AfterTestAssemblyStartingAsync();
 
             _assemblyLoaders = AssemblyLoaderAttribute.GetAssemblyLoaders(TestAssembly.Assembly);
+            foreach (var assemblyLoader in _assemblyLoaders) {
+                assemblyLoader.Initialize();
+            }
 
             var assembly = TestAssembly.Assembly;
             var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof(AssemblyFixtureImportAttribute))
@@ -69,7 +73,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return new CollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource, _assemblyFixtureMappings, _testEnvironment).RunAsync();
         }
 
-        private async Task AddAssemblyFixtureAsync(Dictionary<Type, object> fixtures, Type fixtureType) {
+        private static async Task AddAssemblyFixtureAsync(IDictionary<Type, object> fixtures, Type fixtureType) {
             var fixture = Activator.CreateInstance(fixtureType);
             if (fixture is IAsyncLifetime asyncLifetime) {
                 await asyncLifetime.InitializeAsync();
@@ -79,11 +83,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 fixtures[typeof(ITestMainThreadFixture)] = fixture;
             }
 
-            var methodFixtureFactory = fixtureType.GetInterfaces().FirstOrDefault(i => IsGenericType(i) && i.GetGenericTypeDefinition() == typeof(IMethodFixtureFactory<>));
-            if (methodFixtureFactory != null) {
-                fixtures[methodFixtureFactory.GetGenericArguments()[0]] = fixture;
-            } else {
-                fixtures[fixtureType] = fixture;
+            fixtures[fixtureType] = fixture;
+            var methodFixtureTypes = MethodFixtureProvider.GetFactoryMethods(fixtureType).Select(mi => mi.ReturnType);
+            foreach (var type in methodFixtureTypes) {
+                fixtures[type] = fixture;
             }
         }
 

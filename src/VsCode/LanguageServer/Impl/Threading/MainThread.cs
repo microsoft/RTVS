@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.LanguageServer.Threading {
     /// <summary>
@@ -35,23 +36,23 @@ namespace Microsoft.R.LanguageServer.Threading {
         #region IMainThread
         public int ThreadId => Thread.ManagedThreadId;
 
-        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken))
-            => Execute(action, ThreadPostPriority.Background, cancellationToken);
+        public void Post(Action action)
+            => Execute(action, ThreadPostPriority.Normal);
+
+
+        public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken)
+            => throw new NotImplementedException();
         #endregion
 
         #region IMainThreadPriority
-        public void Post(Action action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken))
-            => Execute(action, priority, cancellationToken);
+        public void Post(Action action, ThreadPostPriority priority)
+            => Execute(action, priority);
 
-        public Task<T> SendAsync<T>(Func<Task<T>> action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<T> SendAsync<T>(Func<Task<T>> action, ThreadPostPriority priority) {
             var tcs = new TaskCompletionSource<T>();
             Execute(async () => {
-                if (!cancellationToken.IsCancellationRequested) {
-                    tcs.TrySetResult(await action());
-                } else {
-                    tcs.TrySetResult(default(T));
-                }
-            }, priority, cancellationToken);
+                tcs.TrySetResult(await action());
+            }, priority);
 
             return tcs.Task;
         }
@@ -61,8 +62,8 @@ namespace Microsoft.R.LanguageServer.Threading {
 
         #region SynchronizationContext
         public SynchronizationContext SynchronizationContext { get; }
-        public void Post(Action<object> action, object state) => Execute(() => action(state), ThreadPostPriority.Background, CancellationToken.None);
-        public void Send(Action<object> action, object state) => Execute(() => action(state), ThreadPostPriority.Background, CancellationToken.None);
+        public void Post(Action<object> action, object state) => Execute(() => action(state), ThreadPostPriority.Background);
+        public void Send(Action<object> action, object state) => Execute(() => action(state), ThreadPostPriority.Background);
         #endregion
 
         #region IDisposable
@@ -75,7 +76,7 @@ namespace Microsoft.R.LanguageServer.Threading {
         }
         #endregion
 
-        private void Execute(Action action, ThreadPostPriority priority, CancellationToken cancellationToken) {
+        private void Execute(Action action, ThreadPostPriority priority) {
             _disposableBag.ThrowIfDisposed();
 
             if (ThreadId == Thread.CurrentThread.ManagedThreadId) {
@@ -100,11 +101,7 @@ namespace Microsoft.R.LanguageServer.Threading {
             }
 
             lock (_lock) {
-                queue.Post(() => {
-                    if (!cancellationToken.IsCancellationRequested) {
-                        action();
-                    }
-                });
+                queue.Post(action);
                 _workItemsAvailable.Set();
             }
         }

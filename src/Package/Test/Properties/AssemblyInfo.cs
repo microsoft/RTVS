@@ -3,8 +3,9 @@
 
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test;
 using Microsoft.VisualStudio.R.Package.Test.Fixtures;
 
 [assembly: TestFrameworkOverride]
-[assembly: VsAssemblyLoader]
+[assembly: CpsAssemblyLoader]
 [assembly: AssemblyFixtureImport(typeof(RPackageServicesFixture), typeof(TestMainThreadFixture))]

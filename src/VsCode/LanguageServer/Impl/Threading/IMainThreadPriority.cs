@@ -8,8 +8,8 @@ using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.R.LanguageServer.Threading {
     internal interface IMainThreadPriority: IMainThread {
-        void Post(Action action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken));
-        Task<T> SendAsync<T>(Func<Task<T>> action, ThreadPostPriority priority, CancellationToken cancellationToken = default(CancellationToken));
+        void Post(Action action, ThreadPostPriority priority);
+        Task<T> SendAsync<T>(Func<Task<T>> action, ThreadPostPriority priority);
         void CancelIdle();
     }
 }

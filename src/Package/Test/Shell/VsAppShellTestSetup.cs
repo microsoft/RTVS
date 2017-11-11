@@ -5,11 +5,14 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
 using Microsoft.Language.Editor.Test.Settings;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.Stubs;
@@ -62,15 +65,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new WindowsFileSystem())
+                .AddService<IOutputService, TestOutputService>()
                 .AddService(new RegistryImpl())
                 .AddService(new WindowsProcessServices())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
-                .AddService(new TestTaskService())
+                .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestPlatformServices())
                 .AddService(new RSettingsStub())
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
+                .AddRComponentsServices()
                 .AddService(new RInstallation())
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()

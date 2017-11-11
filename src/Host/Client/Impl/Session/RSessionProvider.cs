@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private RSession CreateRSession(string sessionId) {
-            var session = new RSession(Interlocked.Increment(ref _sessionCounter), sessionId, _services, Broker, _connectArwl.CreateExclusiveReaderLock(), () => DisposeSession(sessionId));
+            var session = new RSession(Interlocked.Increment(ref _sessionCounter), sessionId, _services.FileSystem(), Broker, _connectArwl.CreateExclusiveReaderLock(), () => DisposeSession(sessionId));
             session.Connected += RSessionOnConnected;
             return session;
         }
@@ -357,7 +357,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return new RemoteBrokerClient(name, this, connectionInfo, _services, _console, cancellationToken);
             }
 
-            return new LocalBrokerClient(name, connectionInfo, _services, _console, null, this);
+            return new LocalBrokerClient(name, connectionInfo, _services, _console, this);
         }
 
         private async Task UpdateHostLoadLoopAsync() {
