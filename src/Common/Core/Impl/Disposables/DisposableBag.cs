@@ -11,9 +11,10 @@ namespace Microsoft.Common.Core.Disposables {
         private readonly string _message;
         private ConcurrentStack<Action> _disposables;
 
-        public static DisposableBag Create<T>(IDisposable disposable) where T : IDisposable => Create<T>().Add(disposable);
-        public static DisposableBag Create<T>(Action action) where T : IDisposable => Create<T>().Add(action);
-        public static DisposableBag Create<T>() where T : IDisposable => new DisposableBag(typeof(T).Name, FormattableString.Invariant($"{typeof(T).Name} instance is disposed"));
+        public static DisposableBag Create(IDisposable instance) => Create(instance.GetType());
+        public static DisposableBag Create<T>() where T : IDisposable => Create(typeof(T));
+
+        private static DisposableBag Create(Type type) => new DisposableBag(type.Name, FormattableString.Invariant($"{type.Name} instance is disposed"));
 
         public DisposableBag(string objectName, string message = null) {
             _objectName = objectName;

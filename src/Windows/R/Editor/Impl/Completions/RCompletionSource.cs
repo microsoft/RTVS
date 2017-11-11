@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Core;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
@@ -80,7 +80,7 @@ namespace Microsoft.R.Editor.Completions {
             var providers = _completionEngine.GetCompletionForLocation(context);
 
             // Position is in R as is the applicable spa, so no need to map down
-            var applicableSpan = GetApplicableSpan(position, session);
+            var applicableSpan = GetApplicableSpan(context, session);
             if (applicableSpan.HasValue) {
                 var snapshot = context.EditorBuffer.CurrentSnapshot.As<ITextSnapshot>();
                 var trackingSpan = snapshot.CreateTrackingSpan(applicableSpan.Value, SpanTrackingMode.EdgeInclusive);
@@ -113,7 +113,7 @@ namespace Microsoft.R.Editor.Completions {
         /// tracking span as user types and filter completion session
         /// based on the data inside the tracking span.
         /// </summary>
-        private Span? GetApplicableSpan(int position, ICompletionSession session) {
+        private Span? GetApplicableSpan(IRIntellisenseContext context, ICompletionSession session) {
             var selectedSpans = session.TextView.Selection.SelectedSpans;
             if (selectedSpans.Count == 1 && selectedSpans[0].Span.Length > 0) {
                 var spans = session.TextView.MapDownToR(selectedSpans[0]);
@@ -124,9 +124,17 @@ namespace Microsoft.R.Editor.Completions {
             }
 
             var snapshot = _textBuffer.CurrentSnapshot;
-            var line = snapshot.GetLineFromPosition(position);
+            var line = snapshot.GetLineFromPosition(context.Position);
             var lineText = snapshot.GetText(line.Start, line.Length);
-            var linePosition = position - line.Start;
+            var linePosition = context.Position - line.Start;
+
+            // If completion is in comment, such as in Roxygen, 
+            // allow any text since it is no longer language-specific
+            var document = context.EditorBuffer.GetEditorDocument<IREditorDocument>();
+            if(document.IsPositionInComment(context.Position)) {
+                var typedText = lineText.TextBeforePosition(linePosition);
+                return new Span(context.Position - typedText.Length, typedText.Length);
+            }
 
             var start = 0;
             var end = line.Length;
@@ -151,7 +159,7 @@ namespace Microsoft.R.Editor.Completions {
                 return new Span(start + line.Start, end - start);
             }
 
-            return new Span(position, 0);
+            return new Span(context.Position, 0);
         }
 
         public void Dispose() { }

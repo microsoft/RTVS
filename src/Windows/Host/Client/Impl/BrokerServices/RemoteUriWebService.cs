@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebSockets.Protocol;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 

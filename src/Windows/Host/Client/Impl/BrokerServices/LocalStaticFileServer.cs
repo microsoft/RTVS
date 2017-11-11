@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Common.Core.Output;
 
 namespace Microsoft.R.Host.Client.BrokerServices {
     internal class LocalStaticFileServer : StaticFileServerBase {

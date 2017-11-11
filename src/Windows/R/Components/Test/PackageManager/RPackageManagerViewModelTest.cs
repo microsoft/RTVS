@@ -6,10 +6,13 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Test.Fakes.ToolWindows;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -25,7 +28,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private readonly TestFilesFixture _testFiles;
         private readonly MethodInfo _testMethod;
         private readonly IRInteractiveWorkflow _workflow;
-        private IRPackageManagerVisualComponent _packageManagerComponent;
+        private TestToolWindow _packageManagerToolWindow;
         private IRPackageManagerViewModel _packageManagerViewModel;
 
         public RPackageManagerViewModelTest(IServiceContainer services, TestMethodFixture testMethod, TestFilesFixture testFiles) {
@@ -45,14 +48,13 @@ namespace Microsoft.R.Components.Test.PackageManager {
             await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _testFiles);
             await TestLibraries.SetLocalLibraryAsync(_workflow.RSession, _testMethod, _testFiles);
 
-            var componentContainerFactory = _services.GetService<IRPackageManagerVisualComponentContainerFactory>();
-            _packageManagerComponent = await InUI(() => _workflow.Packages.GetOrCreateVisualComponent(componentContainerFactory));
-            _packageManagerViewModel = await InUI(() => _packageManagerComponent.Control.DataContext) as IRPackageManagerViewModel;
+            _packageManagerToolWindow = (TestToolWindow)await InUI(() => ((IRInteractiveWorkflowVisual)_workflow).ToolWindows.Packages());
+            _packageManagerViewModel = (IRPackageManagerViewModel)_packageManagerToolWindow.ViewModel;
         }
 
-        public Task DisposeAsync() {
-            _packageManagerComponent.Dispose();
-            return Task.CompletedTask;
+        public async Task DisposeAsync() {
+            await _services.MainThread().SwitchToAsync();
+            _packageManagerToolWindow.Dispose();
         }
 
         [Test]

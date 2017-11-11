@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -28,8 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return null;
         }
 
-        public static void PostCommand(this ICoreShell shell, Guid guid, int id) {
-            var uiShell = shell.GetService<IVsUIShell>(typeof(SVsUIShell));
+        public static void PostCommand(this IServiceContainer services, Guid guid, int id) {
+            var uiShell = services.GetService<IVsUIShell>(typeof(SVsUIShell));
             var o = new object();
             uiShell.PostExecCommand(ref guid, (uint)id, 0, ref o);
         }

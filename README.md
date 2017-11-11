@@ -6,16 +6,16 @@ beware! This release is meant for evaluation purposes only, and not for producti
 
 ### Installation
 
-Do you already have **VS2015 with Update 1** and a **64-bit R interpreter** installed?
+Latests RTVS ships with Visual Studio 2017 as part of the Data Science workload.
+You can either install release from https://www.visualstudio.com/downloads/ or
+Preview from the https://www.visualstudio.com/vs/preview/. Preview channel has the latest RTVS.
 
-If you do, then [just install RTVS](https://aka.ms/rtvs-current)!
-
-Otherwise, please see the [VS, RTVS and R Installation guide](http://microsoft.github.io/RTVS-docs/installation.html).
+You can still use older extension with VS 2015 Update 3 but it is no longer being updated. 
+You can install it from https://aka.ms/rtvs-current
 
 ### Documentation
 
 The interim docs are available here:
-
 * [RTVS Documentation](http://microsoft.github.io/RTVS-docs/)
 
 ### Bugs and feature requests
@@ -26,6 +26,8 @@ made by using search, and if so, then upvote it by
 to it. Feel free to comment on any existing issues and feature requests with any additional feedback, clarifications,
 or questions.
 
+You can also submit feedback via VS 2017 feedback tool.
+
 When filing a bug, you can also use the **R Tools | Send Feedback | Send Frown** feature to send us the product
 logs to help us diagnose the problem better. This command will launch your email client with a prepopulated message,
 and will gather the logs and highlight them in Windows Explorer, so that they can be conveniently attached to the
@@ -34,16 +36,10 @@ and the logs may contain private information.
 
 If you need to reach the team directly, email us at rtvsuserfeedback@microsoft.com.
 
-### Support and roadmap
+### Roadmap
 
-RTVS is created and fully supported by Microsoft (and the community!). Currently, support is via GitHub and email
-only, but we hope to add more channels soon.
-
-We are planning approximately monthly releases (with both bug fixes and features) as we march toward 1.0 RTM later
-this calendar year.
-
-If you'd like to see what features are likely to go in each milestone, you can filter the bug/feature list by that
-milestone. If you have a key bug or feature that should be attended to, please thumbs up / comment on it.
+If you install [ZenHub](https://github.com/marketplace/zenhub) extension for Chrome, 
+you should be able to see our milestones, releases and the overall progress.
 
 ### Builds and pull requests
 

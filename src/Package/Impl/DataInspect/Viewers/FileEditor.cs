@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor;

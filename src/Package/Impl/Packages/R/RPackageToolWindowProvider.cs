@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -19,6 +18,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal sealed class RPackageToolWindowProvider {
         private readonly IServiceContainer _services;
         private readonly IRInteractiveWorkflowVisualProvider _workflowProvider;
+        private VsRInteractiveWorkflowToolWindowService WorkflowToolWindows 
+            => (VsRInteractiveWorkflowToolWindowService)_workflowProvider.GetOrCreate().ToolWindows;
 
         public RPackageToolWindowProvider(IServiceContainer services) {
             _services = services;
@@ -26,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public ToolWindowPane CreateToolWindow(Guid toolWindowGuid, int id) 
-            => CreateVisualComponent(toolWindowGuid, id)?.Container as ToolWindowPane;
+            => WorkflowToolWindows.GetOrCreate(toolWindowGuid, id) ?? CreateVisualComponent(toolWindowGuid, id)?.Container as ToolWindowPane;
 
         private IVisualComponent CreateVisualComponent(Guid toolWindowGuid, int id) {
             if (toolWindowGuid == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -35,14 +36,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             if (toolWindowGuid == HistoryWindowPane.WindowGuid) {
                 return CreateHistoryToolWindow(id);
-            }
-
-            if (toolWindowGuid == ConnectionManagerWindowPane.WindowGuid) {
-                return CreateConnectionManagerToolWindow(id);
-            }
-
-            if (toolWindowGuid == PackageManagerWindowPane.WindowGuid) {
-                return CreatePackageManagerToolWindow(id);
             }
 
             if (toolWindowGuid == PlotDeviceWindowPane.WindowGuid) {
@@ -58,9 +51,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         private IInteractiveWindowVisualComponent CreateInteractiveWindow(int id) {
             var workflow = _workflowProvider.GetOrCreate();
-            var task = workflow.GetOrCreateVisualComponentAsync(id);
-            _services.Tasks().Wait(task);
-            return task.GetAwaiter().GetResult();
+            _services.Tasks().Wait(() => workflow.GetOrCreateVisualComponentAsync(id), out var result);
+            return result;
         }
 
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
@@ -68,19 +60,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var workflow = _workflowProvider.GetOrCreate();
             return workflow.History.GetOrCreateVisualComponent(factory, id);
         }
-
-        private IConnectionManagerVisual CreateConnectionManagerToolWindow(int id) {
-            var workflow = _workflowProvider.GetOrCreate();
-            var componentProvider = _services.GetService<IConnectionManagerVisualProvider>();
-            return componentProvider?.GetOrCreate(workflow.Connections, id);
-        }
-
-        private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {
-            var factory = _services.GetService<IRPackageManagerVisualComponentContainerFactory>();
-            var workflow = _workflowProvider.GetOrCreate();
-            return workflow.Packages.GetOrCreateVisualComponent(factory, id);
-        }
-
+        
         private IRPlotDeviceVisualComponent CreatePlotDeviceToolWindow(int id) {
             var factory = _services.GetService<IRPlotDeviceVisualComponentContainerFactory>();
             var workflow = _workflowProvider.GetOrCreate();

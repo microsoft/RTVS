@@ -163,21 +163,24 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int FormatSpan(IVsTextLines vsTextLines, TextSpan[] ts) {
-            var startPos = -1;
-            var endPos = -1;
-            if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
-                ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
+            if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out var startPos)) &&
+                ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out var endPos))) {
                 var textBuffer = vsTextLines.ToITextBuffer(_services);
                 var range = TextRange.FromBounds(startPos, endPos);
 
-                var point = textBuffer.CurrentSnapshot.CreateTrackingPoint(range.End, PointTrackingMode.Positive);
-                var text = textBuffer.CurrentSnapshot.GetText(range.ToSpan());
+                var snapshot = textBuffer.CurrentSnapshot;
+                var point = snapshot.CreateTrackingPoint(range.End, PointTrackingMode.Positive);
+                var text = snapshot.GetText(range.ToSpan());
+
+
+                var line = snapshot.GetLineFromPosition(range.Start);
+                var lineTail = snapshot.GetText(Span.FromBounds(range.End, line.End));
 
                 var formatter = new RangeFormatter(_services, TextView.ToEditorView(), textBuffer.ToEditorBuffer());
                 formatter.FormatRange(range);
 
                 // Do not trim whitespace after standalone operators
-                if (IsStandaloneOperator(text)) {
+                if (IsStandaloneOperator(text) && string.IsNullOrEmpty(lineTail)) {
                     textBuffer.Insert(point.GetPosition(textBuffer.CurrentSnapshot), " ");
                 }
             }

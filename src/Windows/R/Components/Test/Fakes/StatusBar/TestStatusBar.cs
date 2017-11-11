@@ -13,7 +13,7 @@ using NSubstitute;
 namespace Microsoft.R.Components.Test.Fakes.StatusBar {
     [ExcludeFromCodeCoverage]
     public sealed class TestStatusBar : IStatusBar {
-        public IDisposable AddItem(Func<UIElement> itemFactory, object dataContext) => Disposable.Empty;
+        public IDisposable AddItem(UIElement item) => Disposable.Empty;
         public Task<string> GetTextAsync(CancellationToken ct = new CancellationToken()) => Task.FromResult(string.Empty);
         public Task SetTextAsync(string text, CancellationToken ct = new CancellationToken()) => Task.CompletedTask;
 

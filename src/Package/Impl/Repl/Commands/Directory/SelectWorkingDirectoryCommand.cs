@@ -26,8 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void Handle() {
-            var ps = _workflow.Shell.GetService<IPlatformServices>();
-            var settings = _workflow.Shell.GetService<IRSettings>();
+            var ps = _workflow.Services.GetService<IPlatformServices>();
+            var settings = _workflow.Services.GetService<IRSettings>();
             var currentDirectory = settings.WorkingDirectory;
             var newDirectory = Dialogs.BrowseForDirectory(ps.ApplicationWindowHandle, currentDirectory, Resources.ChooseDirectory);
             if (!string.IsNullOrEmpty(newDirectory)) {

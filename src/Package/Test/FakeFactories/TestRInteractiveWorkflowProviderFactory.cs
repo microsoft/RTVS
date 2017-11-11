@@ -3,6 +3,7 @@
 
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -19,6 +20,7 @@ using NSubstitute;
 namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
     public static class TestRInteractiveWorkflowProviderFactory {
         public static TestRInteractiveWorkflowProvider Create(IConnectionManagerProvider connectionsProvider = null
+            , IContainerManagerProvider containerProvider = null
             , IRHistoryProvider historyProvider = null
             , IRPackageManagerProvider packagesProvider = null
             , IRPlotManagerProvider plotsProvider = null
@@ -27,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             , ICoreShell shell = null
             , IRSettings settings = null) {
             connectionsProvider = connectionsProvider ?? ConnectionManagerProviderStubFactory.CreateDefault();
+            containerProvider = containerProvider ?? ContainerManagerProviderStubFactory.CreateDefault();
             historyProvider = historyProvider ?? RHistoryProviderStubFactory.CreateDefault();
             packagesProvider = packagesProvider ?? RPackageManagerProviderStubFactory.CreateDefault();
             plotsProvider = plotsProvider ?? RPlotManagerProviderStubFactory.CreateDefault();
@@ -36,8 +39,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             shell = shell ?? VsAppShell.Current;
 
             return new TestRInteractiveWorkflowProvider(
-                connectionsProvider, historyProvider, packagesProvider, plotsProvider,
-                activeTextViewTracker, debuggerModeTracker, shell);
+                connectionsProvider, containerProvider, historyProvider, packagesProvider,
+                plotsProvider, activeTextViewTracker, debuggerModeTracker, shell);
         }
     }
 }

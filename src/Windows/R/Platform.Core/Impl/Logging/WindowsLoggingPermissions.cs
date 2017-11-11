@@ -89,7 +89,7 @@ namespace Microsoft.R.Platform.Logging {
             using (var hlkm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                 try {
                     using (var key = hlkm.OpenSubKey(_registry.LocalMachineHive)) {
-                        var value = (int?)key.GetValue(name);
+                        var value = (int?)key?.GetValue(name);
                         if (value.HasValue && value.Value >= minValue && value.Value <= maxValue) {
                             return value;
                         }

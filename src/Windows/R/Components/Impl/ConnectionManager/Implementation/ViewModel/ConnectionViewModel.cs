@@ -5,8 +5,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
@@ -15,6 +18,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private const int DefaultPort = 5444;
 
         private readonly IConnection _connection;
+        private readonly IImageService _images;
 
         private string _name;
         private string _path;
@@ -24,6 +28,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private string _pathTextBoxTooltip;
         private string _saveButtonTooltip;
         private string _testConnectionResult;
+        private object _icon;
+        private object _overlayIcon;
         private bool _isActive;
         private bool _isEditing;
         private bool _isConnected;
@@ -38,13 +44,20 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         private bool _isRenamed;
         private string _previousPath;
 
-        public ConnectionViewModel() {
+        public ConnectionViewModel(IImageService images) {
+            _images = images;
             IsUserCreated = true;
             UpdateCalculated();
         }
 
-        public ConnectionViewModel(IConnection connection) {
+        public ConnectionViewModel(IConnection connection, IConnectionManager connectionManager, IImageService images) {
             _connection = connection;
+            _images = images;
+
+            var isActive = connection == connectionManager.ActiveConnection;
+            IsActive = isActive;
+            IsConnected = isActive && connectionManager.IsConnected;
+            IsRunning = isActive && connectionManager.IsRunning;
             Reset();
         }
 
@@ -52,7 +65,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         /// User-friendly name of the connection.
         /// </summary>
         public string Name {
-            get { return _name; }
+            get => _name;
             set {
                 SetProperty(ref _name, value);
                 UpdateCalculated();
@@ -65,7 +78,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         /// just the machine name and assume default protocol and port are suppied.
         /// </summary>
         public string Path {
-            get { return _path; }
+            get => _path;
             set {
                 SetProperty(ref _path, value);
                 UpdateName();
@@ -77,7 +90,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         /// Optional command line arguments to R interpreter.
         /// </summary>
         public string RCommandLineArguments {
-            get { return _rCommandLineArguments; }
+            get => _rCommandLineArguments;
             set {
                 SetProperty(ref _rCommandLineArguments, value);
                 UpdateCalculated();
@@ -85,30 +98,32 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool IsUserCreated {
-            get { return _isUserCreated; }
-            private set { SetProperty(ref _isUserCreated, value); }
+            get => _isUserCreated;
+            private set => SetProperty(ref _isUserCreated, value);
         }
 
         public string SaveButtonTooltip {
-            get { return _saveButtonTooltip; }
-            private set { SetProperty(ref _saveButtonTooltip, value); }
+            get => _saveButtonTooltip;
+            private set => SetProperty(ref _saveButtonTooltip, value);
         }
 
         public string NameTextBoxTooltip {
-            get { return _nameTextBoxTooltip; }
-            private set { SetProperty(ref _nameTextBoxTooltip, value); }
+            get => _nameTextBoxTooltip;
+            private set => SetProperty(ref _nameTextBoxTooltip, value);
         }
+
         public string PathTextBoxTooltip {
-            get { return _pathTextBoxTooltip; }
-            private set { SetProperty(ref _pathTextBoxTooltip, value); }
+            get => _pathTextBoxTooltip;
+            private set => SetProperty(ref _pathTextBoxTooltip, value);
         }
+
         public bool IsActive {
-            get { return _isActive; }
-            set { SetProperty(ref _isActive, value); }
+            get => _isActive;
+            private set => SetProperty(ref _isActive, value);
         }
 
         public bool IsEditing {
-            get { return _isEditing; }
+            get => _isEditing;
             set {
                 SetProperty(ref _isEditing, value);
                 _previousPath = Path;
@@ -116,82 +131,91 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         }
 
         public bool IsRemote {
-            get { return _isRemote; }
-            private set { SetProperty(ref _isRemote, value); }
+            get => _isRemote;
+            private set => SetProperty(ref _isRemote, value);
         }
-
+        
         public bool IsValid {
-            get { return _isValid; }
-            private set { SetProperty(ref _isValid, value); }
+            get => _isValid;
+            private set => SetProperty(ref _isValid, value);
         }
 
         public bool IsNameValid {
-            get { return _isNameValid; }
-            private set {
-                SetProperty(ref _isNameValid, value);
-            }
+            get => _isNameValid;
+            private set => SetProperty(ref _isNameValid, value);
         }
+
         public bool IsPathValid {
-            get { return _isPathValid; }
-            private set {
-                SetProperty(ref _isPathValid, value);
-            }
+            get => _isPathValid;
+            private set => SetProperty(ref _isPathValid, value);
         }
 
         public bool IsRenamed {
-            get { return _isRenamed; }
-            private set { SetProperty(ref _isRenamed, value); }
+            get => _isRenamed;
+            private set => SetProperty(ref _isRenamed, value);
         }
 
         public bool HasChanges {
-            get { return _hasChanges; }
-            private set { SetProperty(ref _hasChanges, value); }
+            get => _hasChanges;
+            private set => SetProperty(ref _hasChanges, value);
         }
 
         public bool IsConnected {
-            get { return _isConnected; }
-            set { SetProperty(ref _isConnected, value); }
+            get => _isConnected;
+            private set => SetProperty(ref _isConnected, value);
         }
 
         public bool IsRunning {
-            get { return _isRunning; }
-            set { SetProperty(ref _isRunning, value); }
+            get => _isRunning;
+            private set => SetProperty(ref _isRunning, value);
         }
 
         public CancellationTokenSource TestingConnectionCts {
-            get { return _testingConnectionCts; }
-            set { SetProperty(ref _testingConnectionCts, value); }
+            get => _testingConnectionCts;
+            set => SetProperty(ref _testingConnectionCts, value);
         }
 
         public bool IsTestConnectionSucceeded {
-            get { return _isTestConnectionSucceeded; }
-            set { SetProperty(ref _isTestConnectionSucceeded, value); }
+            get => _isTestConnectionSucceeded;
+            set => SetProperty(ref _isTestConnectionSucceeded, value);
         }
 
         public string TestConnectionFailedText {
-            get { return _testConnectionResult; }
-            set { SetProperty(ref _testConnectionResult, value); }
+            get => _testConnectionResult;
+            set => SetProperty(ref _testConnectionResult, value);
         }
+
+        public DateTime LastUsed {
+            get => _connection?.LastUsed ?? DateTime.MinValue;
+            set => _connection.LastUsed = value;
+        }
+
+        public string OriginalName => _connection?.Name;
 
         /// <summary>
         /// Tooltip when hovered over connection name
         /// </summary>
-        public string ConnectionTooltip {
-            get {
-                var cmdLineInfo = !string.IsNullOrWhiteSpace(RCommandLineArguments) ? RCommandLineArguments : Resources.ConnectionManager_None;
-                var format = IsRemote
-                                ? Resources.ConnectionManager_InformationTooltipFormatRemote
-                                : Resources.ConnectionManager_InformationTooltipFormatLocal;
-                return format.FormatInvariant(Path, cmdLineInfo);
-            }
+        public string ConnectionTooltip { get; set; }
+
+        /// <summary>
+        /// Tooltip when hovered over connection edit button
+        /// </summary>
+        public string ButtonEditTooltip { get; set; }
+
+        /// <summary>
+        /// Tooltip when hovered over connection delete button
+        /// </summary>
+        public string ButtonDeleteDisabledTooltip { get; set; }
+
+        public object Icon {
+            get => _icon;
+            set => SetProperty(ref _icon, value);
         }
 
-        public DateTime LastUsed {
-            get { return _connection?.LastUsed ?? DateTime.MinValue; }
-            set { _connection.LastUsed = value; }
+        public object OverlayIcon {
+            get => _overlayIcon;
+            private set => SetProperty(ref _overlayIcon, value);
         }
-
-        public string OriginalName => _connection?.Name;
 
         public void Reset() {
             Name = _connection?.Name;
@@ -224,8 +248,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 NameTextBoxTooltip = null;
             }
 
-            Uri uri;
-            IsPathValid = IsValidConnectionUrl(Path, out uri);
+            IsPathValid = IsValidConnectionUrl(Path, out var uri);
             if (!IsPathValid) {
                 PathTextBoxTooltip = string.IsNullOrEmpty(Path)
                     ? Resources.ConnectionManager_ShouldHavePath
@@ -241,11 +264,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
                 SaveButtonTooltip = !IsNameValid ? NameTextBoxTooltip : PathTextBoxTooltip;
             }
 
-            if (IsValid && uri != null) {
-                IsRemote = !(uri.IsAbsoluteUri && uri.IsFile);
-            } else {
-                IsRemote = true;
-            }
+            IsRemote = IsValid && uri != null && !(uri.IsAbsoluteUri && uri.IsFile) && !uri.IsLoopback;
+            OverlayIcon = IsRunning ? _images.GetImage("StatusOK") : IsConnected ? _images.GetImage("StatusWarning") : _images.GetImage("StatusError");
         }
 
         /// <summary>
@@ -282,14 +302,9 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         internal static string GetProposedName(string path) {
             try {
-                Uri uri;
                 path = path.TrimEnd(':');
-                if (Uri.TryCreate(path, UriKind.Absolute, out uri)) {
-                    if (!string.IsNullOrEmpty(uri.Host)) {
-                        return uri.Host;
-                    } else {
-                        return uri.AbsolutePath;
-                    }
+                if (Uri.TryCreate(path, UriKind.Absolute, out var uri)) {
+                    return !string.IsNullOrEmpty(uri.Host) ? uri.Host : uri.AbsolutePath;
                 }
             } catch (InvalidOperationException) { } catch (ArgumentException) { } catch (UriFormatException) { }
             return path.ToLower();
@@ -304,8 +319,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             // http://FOO -> https://foo:5444
             // http://FOO:80 -> https://foo:80
             // foo->https://foo:5444
-            Uri uri;
-            if (Uri.TryCreate(path, UriKind.Absolute, out uri) && uri.IsFile) {
+            if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && uri.IsFile) {
                 return path;
             }
 

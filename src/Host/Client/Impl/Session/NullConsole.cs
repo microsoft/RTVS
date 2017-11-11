@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
     public class NullConsole : IConsole {
-        public void WriteError(string text) {}
-        public void WriteErrorLine(string text) { }
         public void Write(string text) { }
-        public void WriteLine(string text) { }
+        public void WriteError(string text) {}
         public Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken) => Task.FromResult(true);
     }
 }

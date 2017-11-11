@@ -11,16 +11,13 @@ using Microsoft.R.Core.Utility;
 
 namespace Microsoft.R.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public static class ParserTest
-    {
-        public static void VerifyParse(string expected, string expression)
-        {
+    public static class ParserTest {
+        public static void VerifyParse(string expected, string expression) {
             var ast = RParser.Parse(new TextStream(expression));
             CompareTrees(expected, ast);
-         }
+        }
 
-        public static void CompareTrees(string expected, AstRoot actualTree)
-        {
+        public static void CompareTrees(string expected, AstRoot actualTree) {
             var astWriter = new AstWriter();
             var actual = astWriter.WriteTree(actualTree);
 

@@ -28,12 +28,12 @@ namespace Microsoft.Common.Core.Shell {
         /// <summary>
         /// Displays application-specific modal progress window
         /// </summary>
-        public static IProgressDialog ProgressDialog(this ICoreShell shell) => shell.Services.ProgressDialog();
+        public static IProgressDialog ProgressDialog(this ICoreShell shell) => shell.Services.UI().ProgressDialog;
 
         /// <summary>
         /// Displays platform-specific file selection window
         /// </summary>
-        public static IFileDialog FileDialog(this ICoreShell shell) => shell.Services.FileDialog();
+        public static IFileDialog FileDialog(this ICoreShell shell) => shell.Services.UI().FileDialog;
 
         /// <summary>
         /// Displays error message in a host-specific UI

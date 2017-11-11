@@ -9,7 +9,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -27,14 +29,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
         private IInteractiveWindow _interactiveWindow;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRInteractiveWorkflow _workflow;
         private Task _shinyRunningTask;
 
-        public RInteractiveWorkflowOperations(IRInteractiveWorkflow workflow, IDebuggerModeTracker debuggerModeTracker, ICoreShell coreShell) {
+        public RInteractiveWorkflowOperations(IRInteractiveWorkflow workflow, IDebuggerModeTracker debuggerModeTracker, IServiceContainer services) {
             _workflow = workflow;
             _debuggerModeTracker = debuggerModeTracker;
-            _coreShell = coreShell;
+            _services = services;
         }
 
         internal IInteractiveWindow InteractiveWindow {
@@ -59,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            _coreShell.AssertIsOnMainThread();
+            _services.MainThread().Assert();
             InteractiveWindow.AddInput(expression);
 
             var buffer = InteractiveWindow.CurrentLanguageBuffer;
@@ -76,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            _coreShell.AssertIsOnMainThread();
+            _services.MainThread().Assert();
 
             var curBuffer = InteractiveWindow.CurrentLanguageBuffer;
             var documentPoint = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, curBuffer);
@@ -131,7 +133,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            _coreShell.AssertIsOnMainThread();
+            _services.MainThread().Assert();
             var textBuffer = InteractiveWindow.CurrentLanguageBuffer;
             var span = new Span(0, textBuffer.CurrentSnapshot.Length);
             if (!textBuffer.IsReadOnly(span)) {
@@ -144,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            _coreShell.AssertIsOnMainThread();
+            _services.MainThread().Assert();
             var textView = InteractiveWindow.TextView;
             // Click on text view will move the caret so we need 
             // to move caret to the prompt after view finishes its
@@ -165,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public void SourceFiles(IEnumerable<string> files, bool echo) {
             Task.Run(async () => {
                 var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
-                _coreShell.MainThread().Post(() => {
+                _services.MainThread().Post(() => {
                     foreach (var name in shortNames) {
                         EnqueueExpression(GetSourceExpression(name, echo), addNewLine: true);
                     }
@@ -176,7 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public async Task SourceFileAsync(string file, bool echo, Encoding encoding = null, CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
             file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file, cancellationToken);
-            await _coreShell.SwitchToMainThreadAsync(cancellationToken);
+            await _services.MainThread().SwitchToAsync(cancellationToken);
             ExecuteExpression(GetSourceExpression(file, echo, encoding));
         }
 

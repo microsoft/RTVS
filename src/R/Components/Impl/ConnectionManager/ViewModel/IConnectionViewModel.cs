@@ -10,10 +10,10 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         new string Path { get; set; }
         new string RCommandLineArguments { get; set; }
 
-        bool IsActive { get; set; }
+        bool IsActive { get; }
         bool IsEditing { get; set; }
-        bool IsConnected { get; set; }
-        bool IsRunning { get; set; }
+        bool IsConnected { get; }
+        bool IsRunning { get; }
         CancellationTokenSource TestingConnectionCts { get; set; }
         bool IsTestConnectionSucceeded { get; set; }
         string TestConnectionFailedText { get; set; }
@@ -28,9 +28,7 @@ namespace Microsoft.R.Components.ConnectionManager.ViewModel {
         bool IsPathValid { get; }
         bool IsRenamed { get; }
         bool IsRemote { get; }
-        
         void Reset();
-        string ConnectionTooltip { get; }
         
         /// <summary>
         /// Update the path with a default scheme and port, if possible.

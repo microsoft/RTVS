@@ -3,6 +3,7 @@
 
 using System.Windows;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;

@@ -50,24 +50,24 @@ namespace Microsoft.R.Containers.Docker {
             }
         }
 
-        async Task IContainerService.DeleteContainerAsync(IContainer container, CancellationToken ct) {
-            var result = await DeleteContainerAsync(container, ct);
-            if (!result.StartsWithIgnoreCase(container.Id)) {
-                throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(container.Id, result));
+        async Task IContainerService.DeleteContainerAsync(string containerId, CancellationToken ct) {
+            var result = await DeleteContainerAsync(containerId, ct);
+            if (!result.StartsWithIgnoreCase(containerId)) {
+                throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(containerId, result));
             }
         }
 
-        async Task IContainerService.StartContainerAsync(IContainer container, CancellationToken ct) {
-            var result = await StartContainerAsync(container, ct);
-            if (!result.StartsWithIgnoreCase(container.Id)) {
-                throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(container.Id, result));
+        async Task IContainerService.StartContainerAsync(string containerId, CancellationToken ct) {
+            var result = await StartContainerAsync(containerId, ct);
+            if (!result.StartsWithIgnoreCase(containerId)) {
+                throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(containerId, result));
             }
         }
 
-        async Task IContainerService.StopContainerAsync(IContainer container, CancellationToken ct) {
-            var result = await StopContainerAsync(container, ct);
-            if (!result.StartsWithIgnoreCase(container.Id)) {
-                throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(container.Id, result));
+        async Task IContainerService.StopContainerAsync(string containerId, CancellationToken ct) {
+            var result = await StopContainerAsync(containerId, ct);
+            if (!result.StartsWithIgnoreCase(containerId)) {
+                throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(containerId, result));
             }
         }
 

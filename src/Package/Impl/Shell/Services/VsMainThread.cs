@@ -22,16 +22,19 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #region IMainThread
         public int ThreadId => _mainThread.ManagedThreadId;
 
-        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public void Post(Action action) {
             if (_mainThreadDispatcher.HasShutdownStarted) {
                 return;
             }
 
-            var awaiter = ThreadHelper.JoinableTaskFactory
-                .SwitchToMainThreadAsync(cancellationToken)
-                .GetAwaiter();
+            ThreadHelper.JoinableTaskFactory.RunAsync(() => {
+                action();
+                return Task.CompletedTask;
+            });
+        }
 
-            awaiter.OnCompleted(action);
+        public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken) {
+            return new VsMainThreadAwaiter(ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken).GetAwaiter());
         }
         #endregion
     }

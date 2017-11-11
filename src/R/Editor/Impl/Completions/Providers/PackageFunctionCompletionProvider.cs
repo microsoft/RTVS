@@ -103,9 +103,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 return GetSpecificPackage(context);
             }
 
-            var t = GetAllFilePackagesAsync(context);
-            return _taskService.Wait(t, CancellationToken.None, _asyncWaitTimeout)
-                        ? t.Result
+            return _taskService.Wait(() => GetAllFilePackagesAsync(context), out var result, _asyncWaitTimeout)
+                        ? result
                         : Enumerable.Empty<IPackageInfo>();
         }
 

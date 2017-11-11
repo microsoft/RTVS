@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
 using Microsoft.R.Components.History;
@@ -31,9 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var settings = _interactiveWorkflow.Shell.GetService<IRSettings>();
+            var settings = _interactiveWorkflow.Services.GetService<IRSettings>();
             var initialPath = settings.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(settings.WorkingDirectory) : null;
-            var file = _interactiveWorkflow.Shell.FileDialog().ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
+            var file = _interactiveWorkflow.Services.UI().FileDialog.ShowOpenFileDialog(Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
             if (file != null) {
                 _history.TryLoadFromFile(file);
             }

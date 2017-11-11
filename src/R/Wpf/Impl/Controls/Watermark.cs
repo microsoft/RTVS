@@ -8,33 +8,52 @@ using static Microsoft.Common.Wpf.Controls.Overlay;
 
 namespace Microsoft.R.Wpf.Controls {
     public class Watermark {
-        public static string GetTextBoxHint(TextBox frameworkElement) {
-            return (string)frameworkElement.GetValue(TextBoxHintProperty);
-        }
-
-        public static void SetTextBoxHint(TextBox textBox, string value) {
-            textBox.SetValue(TextBoxHintProperty, value);
-        }
-
         public static readonly DependencyProperty TextBoxHintProperty =
             DependencyProperty.RegisterAttached("TextBoxHint", typeof(string), typeof(Watermark),
-                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnTextBoxHintChanged));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnHintChanged));
 
-        private static void OnTextBoxHintChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
-            var oldValue = args.OldValue as string;
+        public static readonly DependencyProperty PasswordBoxHintProperty =
+            DependencyProperty.RegisterAttached("PasswordBoxHint", typeof(string), typeof(Watermark),
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnHintChanged));
+
+        public static string GetTextBoxHint(TextBox textBox) => (string)textBox.GetValue(TextBoxHintProperty);
+
+        public static void SetTextBoxHint(TextBox textBox, string value) => textBox.SetValue(TextBoxHintProperty, value);
+
+        public static string GetPasswordBoxHint(PasswordBox passwordBox) => (string)passwordBox.GetValue(PasswordBoxHintProperty);
+
+        public static void SetPasswordBoxHint(PasswordBox passwordBox, string value) => passwordBox.SetValue(PasswordBoxHintProperty, value);
+
+        private static void OnHintChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args) {
             var newValue = args.NewValue as string;
-            if (Equals(oldValue, newValue)) {
+            if (Equals(args.OldValue, newValue)) {
                 return;
             }
 
-            var textBox = obj as TextBox;
-            if (textBox == null) {
+            if (!(obj is FrameworkElement frameworkElement)) {
                 return;
             }
 
-            var textBlock = EnsureAdorner(textBox);
+            var textBlock = EnsureAdorner(frameworkElement);
+            if (textBlock == null) {
+                return;
+            }
+
             textBlock.Text = newValue;
-            textBox.ToolTip = newValue;
+            if (frameworkElement.ToolTip == null || string.Empty.Equals(frameworkElement.ToolTip)) {
+                frameworkElement.ToolTip = newValue;
+            }
+        }
+
+        private static TextBlock EnsureAdorner(FrameworkElement frameworkElement) {
+            switch (frameworkElement) {
+                case TextBox textBox:
+                    return EnsureAdorner(textBox);
+                case PasswordBox passwordBox:
+                    return EnsureAdorner(passwordBox);
+                default:
+                    return null;
+            }
         }
 
         private static TextBlock EnsureAdorner(TextBox textBox) {
@@ -43,20 +62,44 @@ namespace Microsoft.R.Wpf.Controls {
                 return (TextBlock)content;
             } 
 
-            var textBlock = new TextBlock {
-                Foreground = (Brush)textBox.FindResource(Brushes.GrayTextBrushKey),
-                Margin = new Thickness(2,0,0,0),
-                VerticalAlignment = VerticalAlignment.Center,
-                Visibility = string.IsNullOrEmpty(textBox.Text) ? Visibility.Visible : Visibility.Collapsed
-            };
-
-            textBox.TextChanged += (sender, args) => {
-                textBlock.Visibility = string.IsNullOrEmpty(textBox.Text) ? Visibility.Visible : Visibility.Collapsed;
-            };
+            var textBlock = CreateTextBlock(textBox);
+            SetTextBlockVisibility();
+            textBox.TextChanged += Handler;
+            textBox.IsVisibleChanged += Handler;
 
             SetAdornerContent(textBox, textBlock);
 
             return textBlock;
+
+            void SetTextBlockVisibility() => textBlock.Visibility = string.IsNullOrEmpty(textBox.Text) && textBox.IsVisible ? Visibility.Visible : Visibility.Collapsed;
+            void Handler<TArgs>(object sender, TArgs args) => SetTextBlockVisibility();
+        }
+
+        private static TextBlock EnsureAdorner(PasswordBox passwordBox) {
+            var content = GetAdornerContent(passwordBox);
+            if (content != null) {
+                return (TextBlock)content;
+            }
+
+            var textBlock = CreateTextBlock(passwordBox);
+            SetTextBlockVisibility();
+            passwordBox.PasswordChanged += Handler;
+            passwordBox.IsVisibleChanged += Handler;
+
+            SetAdornerContent(passwordBox, textBlock);
+
+            return textBlock;
+
+            void SetTextBlockVisibility() => textBlock.Visibility = passwordBox.SecurePassword.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+            void Handler<TArgs>(object sender, TArgs args) => SetTextBlockVisibility();
+        }
+
+        private static TextBlock CreateTextBlock(FrameworkElement frameworkElement) {
+            return new TextBlock {
+                Foreground = (Brush)frameworkElement.FindResource(Brushes.GrayTextBrushKey),
+                Margin = new Thickness(2, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
         }
     }
 }

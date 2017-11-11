@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.Settings {
         /// May not be in list of  <see cref="Connections"/>
         /// </summary>
         ConnectionInfo LastActiveConnection { get; set; }
-        
+
         /// <summary>
         /// Selected CRAN mirror
         /// </summary>
@@ -76,20 +76,6 @@ namespace Microsoft.R.Components.Settings {
         /// Most recently used directories in REPL
         /// </summary>
         IEnumerable<string> WorkingDirectoryList { get; set; }
-
-        /// <summary>
-        /// The frequency at which to check for updated news. Default is once per week.
-        /// </summary>
-        SurveyNewsPolicy SurveyNewsCheck { get; set; }
-
-        /// <summary>
-        /// The date/time when the last check for news occurred.
-        /// </summary>
-        DateTime SurveyNewsLastCheck { get; set; }
-
-        string SurveyNewsFeedUrl { get; set; }
-
-        string SurveyNewsIndexUrl { get; set; }
 
         /// <summary>
         /// Site to search in 'Search Web for'... commands

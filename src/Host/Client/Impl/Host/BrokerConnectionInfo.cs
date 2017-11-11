@@ -7,12 +7,12 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Security;
 
 namespace Microsoft.R.Host.Client.Host {
-    [DebuggerDisplay("{Uri}, IsRemote={IsRemote}, InterpreterId={InterpreterId}")]
+    [DebuggerDisplay("{Uri}, IsUrlBased={IsUrlBased}, InterpreterId={InterpreterId}")]
     public struct BrokerConnectionInfo {
         public string Name { get; }
         public Uri Uri { get; }
         public bool IsValid { get; }
-        public bool IsRemote { get; }
+        public bool IsUrlBased { get; }
         public string ParametersId { get; }
         public string RCommandLineArguments { get; }
         public string InterpreterId { get; }
@@ -40,11 +40,11 @@ namespace Microsoft.R.Host.Client.Host {
                 Password = null
             };
             uri = ub.Uri;
-            var username = securityService.GetUserName(GetCredentialAuthority(name));
+            var (username, _) = securityService.ReadUserCredentials(GetCredentialAuthority(name));
             return new BrokerConnectionInfo(name, uri, rCommandLineArguments, interpreterId, true, username, fetchHostLoad);
         }
 
-        private BrokerConnectionInfo(string name, Uri uri, string rCommandLineArguments, string interpreterId, bool isRemote, string username, bool fetchHostLoad) {
+        private BrokerConnectionInfo(string name, Uri uri, string rCommandLineArguments, string interpreterId, bool isUrlBased, string username, bool fetchHostLoad) {
             Name = name;
             IsValid = true;
             Uri = uri;
@@ -53,13 +53,11 @@ namespace Microsoft.R.Host.Client.Host {
             ParametersId = string.IsNullOrEmpty(rCommandLineArguments) && string.IsNullOrEmpty(interpreterId) && string.IsNullOrEmpty(username)
                 ? string.Empty 
                 : $"{rCommandLineArguments}/{interpreterId}/{username}".GetSHA256FileSystemSafeHash();
-            IsRemote = isRemote;
+            IsUrlBased = isUrlBased;
             FetchHostLoad = fetchHostLoad;
         }
 
-        private static string GetCredentialAuthority(string name) {
-            return $"RTVS:{name}";
-        }
+        public static string GetCredentialAuthority(string name) => $"RTVS:{name}";
 
         public override bool Equals(object obj) => obj is BrokerConnectionInfo && Equals((BrokerConnectionInfo)obj);
 

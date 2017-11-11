@@ -77,6 +77,10 @@
       <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Containers\Impl\Microsoft.R.Containers.Windows.csproj">
+      <Project>{8ED6EF0A-08A9-4F77-8EC1-F1630AAD2DDB}</Project>
+      <Name>Microsoft.R.Containers.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>

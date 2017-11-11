@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Editor.Roxygen;
@@ -23,13 +24,13 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var line = context.EditorBuffer.CurrentSnapshot.GetLineFromPosition(context.Position);
             var rawLineText = line.GetText();
             var lineText = rawLineText.TrimStart();
+            var positionInLine = context.Position - line.Start;
+            var typedText = lineText.TextBeforePosition(positionInLine);
 
-            // Check that we are inside the Roxygen comment
-            if (!lineText.StartsWith("#'") || context.Position < rawLineText.Length - lineText.Length + 2) {
-                return completions;
+            // Check that we are inside the Roxygen comment AND just typed character is @
+            if (lineText.StartsWith("#'") && positionInLine >= 2 && typedText.StartsWithOrdinal("@")) {
+                completions.AddRange(RoxygenKeywords.Keywords.Select(k => new EditorCompletionEntry(k, k, string.Empty, _glyph)));
             }
-
-            completions.AddRange(RoxygenKeywords.Keywords.Select(k => new EditorCompletionEntry(k, k, string.Empty, _glyph)));
             return completions;
         }
     }

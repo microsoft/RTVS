@@ -2,6 +2,20 @@
 
 set -e
 
+make_snakeoil_pem_key() {
+    if [ -f "/etc/ssl/certs/ssl-cert-snakeoil.pem" ] && [ -f "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
+        echo "Using the existing snakeoil pem and key."
+    else
+        echo "Generating snakeoil pem and key."
+        make-ssl-cert generate-default-snakeoil
+    fi
+}
+
+make_snakeoil_pfx(){
+    make_snakeoil_pem_key
+    openssl pkcs12 -export -out /etc/rtvs/ssl-cert-snakeoil.pfx -inkey /etc/ssl/private/ssl-cert-snakeoil.key -in /etc/ssl/certs/ssl-cert-snakeoil.pem -password pass:SnakeOil
+}
+
 case "$1" in
     configure)
         if ! getent group rtvssvc > /dev/null; then
@@ -13,6 +27,12 @@ case "$1" in
         fi
 
         chown -R rtvssvc:rtvssvc /home/rtvssvc
+
+        if [ -f "/etc/rtvs/ssl-cert-snakeoil.pfx" ]; then
+            echo "Using the existing /etc/rtvs/ssl-cert-snakeoil.pfx."
+        else
+            make_snakeoil_pfx
+        fi
     ;;
 esac
 

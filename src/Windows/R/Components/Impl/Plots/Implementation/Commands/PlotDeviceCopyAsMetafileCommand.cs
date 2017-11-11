@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -28,12 +28,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     PixelsToInches(VisualComponent.Device.PixelHeight),
                     VisualComponent.Device.Resolution);
 
-                InteractiveWorkflow.Shell.MainThread().Post(() => {
+                InteractiveWorkflow.Services.MainThread().Post(() => {
                     try {
                         var mf = new System.Drawing.Imaging.Metafile(filePath);
                         Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
                     } catch (Exception e) when (!e.IsCriticalException()) {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(Resources.Plots_CopyToClipboardError.FormatInvariant(e.Message));
+                        InteractiveWorkflow.Services.ShowErrorMessage(Resources.Plots_CopyToClipboardError.FormatInvariant(e.Message));
                     } finally {
                         try {
                             File.Delete(filePath);
@@ -42,7 +42,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     }
                 });
             } catch (RPlotManagerException ex) {
-                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                InteractiveWorkflow.Services.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
         }

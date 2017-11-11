@@ -3,23 +3,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Containers.Docker {
     public class LocalDockerContainer : IContainer {
-        private static readonly Regex _containerIdMatcher64 = new Regex("[0-9a-f]{64}", RegexOptions.IgnoreCase);
-        private static readonly Regex _containerIdMatcher12 = new Regex("[0-9a-f]{12}", RegexOptions.IgnoreCase);
-
         public string Id { get; }
         public string Name { get; }
-
         /// <summary>
         /// Possible values for Docker Container:
         /// "created", "restarting", "running", "removing", "paused", "exited", "dead"
         /// </summary>
         public string Status { get; }
+        public bool IsRunning => Status.EqualsOrdinal("running");
         public bool IsShortId => Id.Length < 64;
 
         public IEnumerable<int> HostPorts { get; }
@@ -38,10 +34,12 @@ namespace Microsoft.R.Containers.Docker {
         private IEnumerable<int> GetHostPorts(JToken containerObject) {
             var hostPorts = new List<int>();
             try {
-                dynamic portMap = ((dynamic)containerObject).NetworkSettings.Ports["5444/tcp"];
-                foreach (dynamic pm in portMap) {
-                    if (int.TryParse(pm.HostPort.Value, out int port)) {
-                        hostPorts.Add(port);
+                dynamic portMap = ((dynamic)containerObject).HostConfig.PortBindings["5444/tcp"];
+                if (portMap != null) {
+                    foreach (dynamic pm in portMap) {
+                        if (int.TryParse(pm.HostPort.Value, out int port)) {
+                            hostPorts.Add(port);
+                        }
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {

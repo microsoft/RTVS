@@ -159,10 +159,13 @@
       </Item>
       <Item ItemId=";Error_RemoteUriNotSupported" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
+          <Val><![CDATA[Remote R requested to open {0}, but only http:// or file:// URIs are supported for remote.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[遠端 R 已要求開啟 {0}，但對遠端僅支援 http:// URI。]]></Val>
+            <Val><![CDATA[遠端 R 已要求要開啟 {0}，但對遠端僅支援 http:// 或 file:// URI。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -283,6 +286,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";Error_UriPathNotFound" ItemType="0" PsrId="211" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Could not find the resource at {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[於 {0} 處找不到資源]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";HttpErrorCreatingSession" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[HTTP error while creating session on the machine '{0}'. Exception: {1}]]></Val>
@@ -379,7 +391,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30827.920]]></Val>
+        <Val><![CDATA[1.3.30928.1017]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -400,7 +412,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30827.0920]]></Val>
+        <Val><![CDATA[1.3.30928.1017]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -436,7 +448,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30827.0920]]></Val>
+        <Val><![CDATA[1.3.30928.1017]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

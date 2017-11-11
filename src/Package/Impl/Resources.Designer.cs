@@ -232,6 +232,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Containers.
+        /// </summary>
+        public static string ContainersWindowCaption {
+            get {
+                return ResourceManager.GetString("ContainersWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Converting....
         /// </summary>
         public static string Converting {
@@ -3057,24 +3066,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Survey/News Check.
-        /// </summary>
-        public static string Settings_SurveyNewsCheck {
-            get {
-                return ResourceManager.GetString("Settings_SurveyNewsCheck", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Specifies how often R Tools should check with the server for news and survey updates..
-        /// </summary>
-        public static string Settings_SurveyNewsCheck_Description {
-            get {
-                return ResourceManager.GetString("Settings_SurveyNewsCheck_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Syntax check.
         /// </summary>
         public static string Settings_SyntaxCheckCategory {
@@ -3542,42 +3533,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SurrondWithSnippet {
             get {
                 return ResourceManager.GetString("SurrondWithSnippet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Once a day.
-        /// </summary>
-        public static string SurveyNewsPolicyCheckOnceDay {
-            get {
-                return ResourceManager.GetString("SurveyNewsPolicyCheckOnceDay", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Once a month.
-        /// </summary>
-        public static string SurveyNewsPolicyCheckOnceMonth {
-            get {
-                return ResourceManager.GetString("SurveyNewsPolicyCheckOnceMonth", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Once a week.
-        /// </summary>
-        public static string SurveyNewsPolicyCheckOnceWeek {
-            get {
-                return ResourceManager.GetString("SurveyNewsPolicyCheckOnceWeek", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Never.
-        /// </summary>
-        public static string SurveyNewsPolicyDisabled {
-            get {
-                return ResourceManager.GetString("SurveyNewsPolicyDisabled", resourceCulture);
             }
         }
         

@@ -12,8 +12,7 @@ using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal sealed class ClassRunner : XunitTestClassRunner {
-        private static readonly IDictionary<Type, object> _dummies = new Dictionary<Type, object>();
-
+        private readonly Dictionary<int, Type> _methodFixtureTypes = new Dictionary<int, Type>();
         private readonly IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
         private readonly XunitTestEnvironment _testEnvironment;
 
@@ -23,32 +22,32 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _testEnvironment = testEnvironment;
         }
 
-        protected override Task<RunSummary> RunTestMethodAsync(ITestMethod testMethod, IReflectionMethodInfo method, IEnumerable<IXunitTestCase> testCases, object[] constructorArguments) {
-            return new TestMethodRunner(testMethod, Class, method, testCases, DiagnosticMessageSink, MessageBus, new ExceptionAggregator(Aggregator), CancellationTokenSource, constructorArguments, _assemblyFixtureMappings, _testEnvironment).RunAsync();
-        }
+        protected override Task<RunSummary> RunTestMethodAsync(ITestMethod testMethod, IReflectionMethodInfo method, IEnumerable<IXunitTestCase> testCases, object[] constructorArguments) 
+            => new TestMethodRunner(testMethod, Class, method, testCases, DiagnosticMessageSink, MessageBus, new ExceptionAggregator(Aggregator), CancellationTokenSource, constructorArguments, _methodFixtureTypes, _assemblyFixtureMappings, _testEnvironment).RunAsync();
 
         protected override bool TryGetConstructorArgument(ConstructorInfo constructor, int index, ParameterInfo parameter, out object argumentValue) 
-            => TryGetArgumentDummy(parameter, out argumentValue)
+            => TryGetArgumentDummy(parameter, index, out argumentValue)
                || base.TryGetConstructorArgument(constructor, index, parameter, out argumentValue) 
                || _assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out argumentValue);
 
-        private bool TryGetArgumentDummy(ParameterInfo parameter, out object argumentValue) {
-            if (_dummies.TryGetValue(parameter.ParameterType, out argumentValue)) {
-                return true;
-            }
-
-            IMethodFixtureFactory<object> methodFixtureFactory;
-            if (_assemblyFixtureMappings.TryGetValue(parameter.ParameterType, out object assemblyFixture) &&
-                (methodFixtureFactory = assemblyFixture as IMethodFixtureFactory<object>) != null) {
-                argumentValue = methodFixtureFactory.Dummy;
-            } else if (typeof(IMethodFixture).IsAssignableFrom(parameter.ParameterType)) {
-                argumentValue = Activator.CreateInstance(parameter.ParameterType);
-            } else {
+        private bool TryGetArgumentDummy(ParameterInfo parameter, int index, out object argumentValue) {
+            argumentValue = null; // real value will be calculated later, cause it should be separate instance for every test case 
+            var type = parameter.ParameterType;
+            if (type.IsValueType) {
                 return false;
             }
 
-            _dummies[parameter.ParameterType] = argumentValue;
-            return true;
+            if (_assemblyFixtureMappings.TryGetValue(type, out var assemblyFixture) && assemblyFixture is IMethodFixtureFactory) {
+                _methodFixtureTypes[index] = type;
+                return true;
+            }
+
+            if (typeof(IMethodFixture).IsAssignableFrom(parameter.ParameterType)) {
+                _methodFixtureTypes[index] = type;
+                return true;
+            }
+
+            return false;
         }
     }
 }

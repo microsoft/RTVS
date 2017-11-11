@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+LOG_DIR="/var/log/rtvs-install"
+
+USE_DPKG=false
+DEBIAN_DEPENDENCIES="libexplain51 libzip4 libc6 lshw ssl-cert"
+GETOPT_BIN=$(type getopt 2>/dev/null)
+DOTNET_SOURCE_ADDED=false
+DOTNET_INSTALLED=false
+DOTNET_BIN=$(type dotnet 2>/dev/null)
+DOTNET_KEY_ACCEPTED=false
+DOTNET_PKG=dotnet-dev-1.0.4
+
+SILENT=false
+LOCALE_GEN=true
+
+
+function error {
+  echo -e "$*" >&2
+}
+
+function message {
+  if [ ${SILENT} == true ]; then
+    return 0
+  fi
+  printf "$1"
+}
+
+function print_help {
+cat <<EOF
+  Usage: rtvs-install [OPTIONS]
+
+    -s, --silent                 perform a silent, unattended install
+    -k, --accept-trusted-key     accept dotnet trusted signing key
+    -l, --no-locale-gen          does not call locale-gen during install
+    -h, --help                   print this help text
+
+EOF
+}
+
+function parse_options {
+  local TEMP=$(getopt -o -klsh --long accept-trusted-key,no-locale-gen,silent,help -n "${PROG_NAME}" -- "$@")
+
+  if [ $? != 0 ]; then
+    echo "Option string malformed" >&2
+    exit 1
+  fi  
+
+  eval set -- "${TEMP}"
+
+  while true; do
+    case "$1" in
+      -s|--silent)                  SILENT=true               ; shift ;;
+      -k|--accept-trusted-key)      DOTNET_KEY_ACCEPTED=true  ; shift ;;
+      -l|--no-locale-gen)           LOCALE_GEN=false          ; shift ;;
+      -h|--help)                    print_help                ; exit  ;;
+      --) shift; break ;;
+      *) echo "Internal error while parsing options $*" >&2   ; exit 1 ;;
+    esac
+  done
+
+  if [[ ${SILENT} == true ]]; then
+    DOTNET_KEY_ACCEPTED=true
+  fi
+}
+
+function check_root {
+  if [[ "$(id -u)" != "0" ]]; then
+      error  "This script must be run with sudo or as root."
+      exit 1
+  fi
+}
+
+function check_getopt {
+  if [[ -z ${GETOPT_BIN} ]]; then
+    echo ""
+    echo "This script requires GNU getopt to run. Install this utility and rerun this script."
+    echo ""
+    exit 1
+  fi
+}
+
+function detect_package_manager {
+  if [ -f /etc/debian_version ]; then
+    USE_DPKG=true
+  else
+    echo "Unsupported OS"
+    exit 1
+  fi   
+}
+
+function detect_dotnet {
+    if [ -f /etc/apt/sources.list.d/dotnetdev.list ]; then
+      DOTNET_SOURCE_ADDED=true
+    fi
+
+    if [[ -z ${DOTNET_BIN} ]]; then
+      DOTNET_INSTALLED=false
+    else
+      DOTNET_INSTALLED=true
+    fi
+}
+
+function exit_message {
+
+  if [[ ${SILENT} == true ]]; then
+    return 0
+  fi
+
+  echo ""
+  echo "Thank you for installing RTVS Daemon."
+  echo "You will find logs for this installation in"
+  echo "${LOG_DIR}"
+  echo ""
+}
+
+function exit_error {
+
+  if [[ ${SILENT} == true ]]; then
+    return 0
+  fi
+
+  echo ""
+  echo "There was an error installing RTVS Daemon."
+  echo "Please check the logs at:"
+  echo "${LOG_DIR}"
+  echo ""
+  exit 1
+}
+
+function prompt_yes_no {
+    echo ""
+    echo "Dotnet package installation requires us to add a new trusted signing key."
+    echo "Do you want to continue?"
+    select result in "Yes" "No"; do
+      case $result in
+        Yes)    DOTNET_KEY_ACCEPTED=true; break;;
+        No)     echo "Please install ${DOTNET_PKG} manually, before continuing."; exit;;
+      esac
+    done
+}
+
+function install {
+  if [[ ${USE_DPKG} == true ]]; then
+    mkdir -p ${LOG_DIR}
+    chmod -R 766 ${LOG_DIR}
+
+    if [[ ${DOTNET_INSTALLED} == false && ${DOTNET_SOURCE_ADDED} == false ]]; then
+      if [[ ${DOTNET_KEY_ACCEPTED} == false ]]; then
+        prompt_yes_no
+      fi
+      
+      message "Adding dotnet package source to source list..."
+      sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list' 2>&1 | tee ${LOG_DIR}/source.list.txt
+      message "done\n"
+      
+      message "Adding trusted signing key...\n"
+      apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 417A0893 2>&1 | tee ${LOG_DIR}/apt-key-add.txt 
+      message "done\n"
+    fi
+
+    message "Updating apt package repositories...\n"
+    apt-get update 2>&1 | tee ${LOG_DIR}/update.txt
+    message "done\n"
+    
+    if [[ ${DOTNET_INSTALLED} == false ]]; then
+      message "Installing dotnet package...\n"
+      apt-get install -y ${DOTNET_PKG} 2>&1 | tee ${LOG_DIR}/apt-install-dotnet.txt
+      message "done\n"
+    fi
+
+    message "Installing rtvs-daemon package dependencies ${DEBIAN_DEPENDENCIES}..."
+    apt-get -y install ${DEBIAN_DEPENDENCIES} 2>&1 | tee ${LOG_DIR}/dependencies.txt 
+    message "done\n"
+
+    message "Installing rtvs-daemon...\n"
+    dpkg --install ${SCRIPT_DIR}/deb/rtvs-daemon*.deb 2>&1 | tee ${LOG_DIR}/apt-install-rtvs-daemon.txt
+    apt-get -yf install 2>&1 | tee -a ${LOG_DIR}/apt-install-rtvs-daemon.txt
+    message "done\n"
+
+    message "Installing locales...\n"
+    apt-get install -y locales 2>&1 | tee ${LOG_DIR}/apt-install-locales.txt 
+    LOCALE_EN_US=$(locale -a | grep en_US 2>/dev/null)
+    if [[ ${LOCALE_GEN} == true && -z ${LOCALE_EN_US} ]]; then
+      locale-gen "en_US.UTF-8" && dpkg-reconfigure -f noninteractive locales
+    fi
+    message "done\n"
+
+  fi
+}
+
+check_getopt
+parse_options "$@"
+check_root
+detect_package_manager
+detect_dotnet
+install
+exit_message

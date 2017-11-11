@@ -4,6 +4,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 

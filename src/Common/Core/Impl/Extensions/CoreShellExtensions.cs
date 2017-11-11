@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 
@@ -19,9 +20,9 @@ namespace Microsoft.Common.Core.Shell {
             coreShell.UI().ShowErrorMessage(message);
         }
 
-        public static async Task<MessageButtons> ShowMessageAsync(this ICoreShell coreShell, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
-            await coreShell.SwitchToMainThreadAsync(cancellationToken);
-            return coreShell.UI().ShowMessage(message, buttons);
+        public static async Task<MessageButtons> ShowMessageAsync(this IServiceContainer services, string message, MessageButtons buttons, CancellationToken cancellationToken = default(CancellationToken)) {
+            await services.MainThread().SwitchToAsync(cancellationToken);
+            return services.UI().ShowMessage(message, buttons);
         }
 
         [Conditional("TRACE")]

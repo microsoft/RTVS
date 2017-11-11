@@ -11,6 +11,7 @@ namespace Microsoft.Common.Core.Telemetry {
     public enum TelemetryArea {
         // Keep these sorted
         Build,
+        Containers,
         Configuration,
         DataGrid,
         Debugger,

@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             _interactiveWorkflow = interactiveWorkflow;
             _activeTextViewTracker = activeTextViewTracker;
             _echo = echo;
-            _fs = _interactiveWorkflow.Shell.FileSystem();
+            _fs = _interactiveWorkflow.Services.FileSystem();
         }
 
         public CommandStatus Status {
@@ -61,7 +61,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 return;
             }
 
-            _interactiveWorkflow.Shell.UI().SaveFileIfDirty(filePath);
+            _interactiveWorkflow.Services.UI().SaveFileIfDirty(filePath);
             activeWindow.Container.Show(focus: false, immediate: false);
 
             var session = _interactiveWorkflow.RSession;

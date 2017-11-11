@@ -9,8 +9,10 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
@@ -28,7 +30,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly DisposableBag _disposableBag = DisposableBag.Create<RInteractiveEvaluator>();
         private readonly IRSessionProvider _sessionProvider;
         private readonly IConnectionManager _connections;
-        private readonly ICoreShell _coreShell;
+        private readonly IServiceContainer _services;
         private readonly IRSettings _settings;
         private readonly IConsole _console;
         private readonly CountdownDisposable _evaluatorRequest;
@@ -41,17 +43,17 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IRHistory History { get; }
         public IRSession Session { get; }
 
-        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, ICoreShell coreShell, IRSettings settings, IConsole console) {
+        public RInteractiveEvaluator(IRSessionProvider sessionProvider, IRSession session, IRHistory history, IConnectionManager connections, IServiceContainer services, IRSettings settings, IConsole console) {
             History = history;
             Session = session;
 
             _sessionProvider = sessionProvider;
             _connections = connections;
-            _coreShell = coreShell;
+            _services = services;
             _settings = settings;
             _console = console;
             _evaluatorRequest = new CountdownDisposable();
-            _fs = _coreShell.FileSystem();
+            _fs = _services.FileSystem();
 
             _disposableBag
                 .Add(() => Session.Output -= SessionOnOutput)
@@ -86,17 +88,17 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             try {
                 if (!Session.IsHostRunning) {
                     var startupInfo = new RHostStartupInfo(_settings.CranMirror, null, _settings.RCodePage, _terminalWidth, !isResetting, true, true, _settings.GridDynamicEvaluation);
-                    await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell, _fs));
+                    await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _services, _fs));
                 }
                 return ExecutionResult.Success;
             } catch (ComponentBinaryMissingException cbmex) {
-                await _coreShell.ShowErrorMessageAsync(cbmex.Message);
+                await _services.ShowErrorMessageAsync(cbmex.Message);
                 return ExecutionResult.Failure;
             } catch (RHostDisconnectedException ex) {
                 WriteRHostDisconnectedError(ex);
                 return ExecutionResult.Success;
             } catch (Exception ex) {
-                await _coreShell.ShowErrorMessageAsync(ex.Message);
+                await _services.ShowErrorMessageAsync(ex.Message);
                 return ExecutionResult.Failure;
             }
         }
@@ -124,7 +126,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private async Task SaveStateAsync() {
             try {
                 if (_settings.ShowSaveOnResetConfirmationDialog == YesNo.Yes) {
-                    if (MessageButtons.Yes == await _coreShell.ShowMessageAsync(Resources.Warning_SaveOnReset, MessageButtons.YesNo)) {
+                    if (MessageButtons.Yes == await _services.ShowMessageAsync(Resources.Warning_SaveOnReset, MessageButtons.YesNo)) {
                         await Session.ExecuteAsync("rtvs:::save_state()");
                     }
                 }
@@ -181,7 +183,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // Return success cause connection lost doesn't mean that RHost died
                 return ExecutionResult.Success;
             } catch (Exception ex) {
-                await _coreShell.ShowErrorMessageAsync(ex.ToString());
+                await _services.ShowErrorMessageAsync(ex.ToString());
                 return ExecutionResult.Failure;
             } finally {
                 History.AddToHistory(text);
@@ -215,7 +217,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 _currentWindow = value;
                 if (_currentWindow != null) {
                     _currentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-                    _windowWriter = new InteractiveWindowWriter(_coreShell.MainThread(), _currentWindow);
+                    _windowWriter = new InteractiveWindowWriter(_services.MainThread(), _currentWindow);
                 }
             }
         }
@@ -247,7 +249,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
-                _coreShell.MainThread().Post(() => {
+                _services.MainThread().Post(() => {
                     if (CurrentWindow == null || CurrentWindow.IsResetting) {
                         return;
                     }
@@ -263,7 +265,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 return;
             }
 
-            _coreShell.MainThread().Post(() => {
+            _services.MainThread().Post(() => {
                 if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
                 }

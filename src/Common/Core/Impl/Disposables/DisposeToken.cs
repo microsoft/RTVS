@@ -16,11 +16,12 @@ namespace Microsoft.Common.Core.Disposables {
         private DisposeToken(Type type) {
             _type = type;
             _cts = new CancellationTokenSource();
+            CancellationToken = _cts.Token;
         }
 
         public bool IsDisposed => _cts.IsCancellationRequested;
 
-        public CancellationToken CancellationToken => _cts.Token;
+        public CancellationToken CancellationToken { get; }
 
         public void ThrowIfDisposed() {
             if (!_cts.IsCancellationRequested) {
@@ -32,14 +33,14 @@ namespace Microsoft.Common.Core.Disposables {
 
         public IDisposable Link(ref CancellationToken token) {
             if (!token.CanBeCanceled) {
-                token = _cts.Token;
+                token = CancellationToken;
                 token.ThrowIfCancellationRequested();
                 return Disposable.Empty;
             }
 
             CancellationTokenSource linkedCts;
             try {
-                linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, token);
+                linkedCts = CancellationTokenSource.CreateLinkedTokenSource(CancellationToken, token);
             } catch (ObjectDisposedException) {
                 throw CreateException();
             }

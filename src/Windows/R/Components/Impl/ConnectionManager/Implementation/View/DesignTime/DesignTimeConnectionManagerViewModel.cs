@@ -15,6 +15,11 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
             new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "Microsoft R", Path = @"c:\Program Files\Microsoft\R Client\R_SERVER" },
         });
 
+        public ReadOnlyObservableCollection<IConnectionViewModel> LocalDockerConnections { get; } = new ReadOnlyObservableCollection<IConnectionViewModel>(new ObservableCollection<IConnectionViewModel> {
+            new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "Container A", Path = @"c:\Program Files\R\R-3.3.1" },
+            new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "Container B", Path = @"c:\Program Files\Microsoft\R Client\R_SERVER" },
+        });
+
         public ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; } = new ReadOnlyObservableCollection<IConnectionViewModel>(new ObservableCollection<IConnectionViewModel> {
             new DesignTimeConnectionViewModel { IsActive = false, IsRemote = false, IsConnected = false, Name = "Microsoft R", Path = @"c:\Program Files\Microsoft\R Client\R_SERVER" },
             new DesignTimeConnectionViewModel { IsActive = true, IsRemote = false, IsConnected = false, Name = "CRAN R", Path = @"c:\Program Files\R\R-3.3.1", RCommandLineArguments = "--slave" },
@@ -35,6 +40,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.View.DesignTim
         
         public bool TryEditNew() => false;
         public void CancelEdit() { }
+        public void ShowContainers() { }
         public void BrowseLocalPath(IConnectionViewModel connection) { }
         public bool TryEdit(IConnectionViewModel connection) => false;
         public Task TestConnectionAsync(IConnectionViewModel connection) => Task.CompletedTask;

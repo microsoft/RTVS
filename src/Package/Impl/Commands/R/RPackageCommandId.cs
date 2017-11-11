@@ -18,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSendFrown = 404;
         public const int icmdImportRSettings = 405;
         public const int icmdReportIssue = 406;
-        public const int icmdSurveyNews = 407;
         public const int icmdSetupRemote = 408;
 
         // REPL
@@ -103,6 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdShowEditorWindow = 907;
         public const int icmdShowSolutionExplorer = 908;
         public const int icmdShowConnectionsWindow = 909;
+        public const int icmdShowContainersWindow = 910;
 
         // Publishing
         //public const int icmdPublishDialog = 1001;

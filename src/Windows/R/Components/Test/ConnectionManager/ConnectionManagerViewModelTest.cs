@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
-using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ConnectionManager.Implementation.ViewModel;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Test.Fakes.ToolWindows;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
@@ -23,13 +23,13 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
     [Category.Connections]
     public sealed class ConnectionManagerViewModelTest : IDisposable {
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IConnectionManagerVisual _cmvc;
         private readonly ConnectionManagerViewModel _cmvm;
+        private readonly TestToolWindow _cmvc;
 
         public ConnectionManagerViewModelTest(IServiceContainer services) {
             _workflow = services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
-            _cmvc = UIThreadHelper.Instance.Invoke(() => services.GetService<IConnectionManagerVisualProvider>().GetOrCreate(_workflow.Connections));
-            _cmvm = UIThreadHelper.Instance.Invoke(() => (ConnectionManagerViewModel)_cmvc.Control.DataContext);
+            _cmvc = (TestToolWindow)UIThreadHelper.Instance.Invoke(() => ((IRInteractiveWorkflowVisual)_workflow).ToolWindows.Connections());
+            _cmvm = (ConnectionManagerViewModel)_cmvc.ViewModel;
         }
         
         public void Dispose() {
@@ -56,9 +56,6 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             var conn = _cmvm.LocalConnections.First(c => c.Name == connection.Name);
             conn.IsConnected.Should().BeTrue();
             conn.IsRunning.Should().BeTrue();
-
-            conn.IsRunning = false;
-            conn.IsConnected.Should().BeTrue();
         }
 
         [Test(ThreadType.UI)]

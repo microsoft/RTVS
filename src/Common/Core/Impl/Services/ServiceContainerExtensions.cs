@@ -2,8 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
@@ -19,6 +20,8 @@ using Microsoft.Common.Core.UI.Commands;
 
 namespace Microsoft.Common.Core.Services {
     public static class ServiceContainerExtensions {
+        public static IServiceManager Extend(this IServiceContainer serviceContainer) => new ServiceManagerExtension(serviceContainer); 
+
         public static IActionLog Log(this IServiceContainer sc) => sc.GetService<IActionLog>();
         public static IFileSystem FileSystem(this IServiceContainer sc) => sc.GetService<IFileSystem>();
         public static IProcessServices Process(this IServiceContainer sc) => sc.GetService<IProcessServices>();
@@ -28,16 +31,6 @@ namespace Microsoft.Common.Core.Services {
         public static IUIService UI(this IServiceContainer sc) => sc.GetService<IUIService>();
         public static IMainThread MainThread(this IServiceContainer sc) => sc.GetService<IMainThread>();
         public static IIdleTimeService IdleTime(this IServiceContainer sc) => sc.GetService<IIdleTimeService>();
-
-        /// <summary>
-        /// Displays application-specific modal progress window
-        /// </summary>
-        public static IProgressDialog ProgressDialog(this IServiceContainer sc) => sc.UI().ProgressDialog;
-
-        /// <summary>
-        /// Displays platform-specific file selection window
-        /// </summary>
-        public static IFileDialog FileDialog(this IServiceContainer sc) => sc.UI().FileDialog;
 
         /// <summary>
         /// Switches to UI thread asynchonously and then displays the message
@@ -65,10 +58,41 @@ namespace Microsoft.Common.Core.Services {
         public static MessageButtons ShowMessage(this IServiceContainer sc, string message, MessageButtons buttons, MessageType messageType = MessageType.Information)
             => sc.UI().ShowMessage(message, buttons, messageType);
 
-        [Conditional("TRACE")]
-        public static void Assert(this IMainThread mainThread, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0) {
-            if (mainThread.ThreadId != Thread.CurrentThread.ManagedThreadId) {
-                Debug.Fail(FormattableString.Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
+        public static T CreateInstance<T>(this IServiceContainer s) where T : class => InstanceFactory<T>.New(s);
+
+        private static class InstanceFactory<T> where T : class {
+            private static readonly Func<IServiceContainer, T> _factory;
+
+            static InstanceFactory() => _factory = CreateFactory()
+                ?? throw new InvalidOperationException($"Type {typeof(T)} should have either default constructor or constructor that accepts IServiceContainer");
+
+            public static T New(IServiceContainer services) => _factory(services);
+
+            private static Func<IServiceContainer, T> CreateFactory() {
+                var constructors = typeof(T).GetTypeInfo().DeclaredConstructors
+                    .Where(c => c.IsPublic)
+                    .ToList();
+
+                foreach (var constructor in constructors) {
+                    var parameters = constructor.GetParameters();
+                    if (parameters.Length == 1 && typeof(IServiceContainer) == parameters[0].ParameterType) {
+                        var parameter = Expression.Parameter(typeof(IServiceContainer), "services");
+                        return Expression
+                            .Lambda<Func<IServiceContainer, T>>(Expression.New(constructor, parameter), parameter)
+                            .Compile();
+                    }
+                }
+
+                foreach (var constructor in constructors) {
+                    if (constructor.GetParameters().Length == 0) {
+                        var parameter = Expression.Parameter(typeof(IServiceContainer), "services");
+                        return Expression
+                            .Lambda<Func<IServiceContainer, T>>(Expression.New(constructor), parameter)
+                            .Compile();
+                    }
+                }
+
+                return null;
             }
         }
     }

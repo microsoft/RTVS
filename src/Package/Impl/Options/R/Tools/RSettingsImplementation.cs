@@ -15,7 +15,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Common.Wpf.Controls;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
-using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
@@ -30,6 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private int _codePage;
         private ConnectionInfo[] _connections = new ConnectionInfo[0];
         private ConnectionInfo _lastActiveConnection;
+        private string _lastLocalDockerUsername;
+        private string _lastLocalDockerPassword;
 
         private YesNo _showConfirmationDialogWhenSwitch = YesNo.Yes;
         private YesNo _showShowSaveOnResetConfirmationDialog = YesNo.Yes;
@@ -41,10 +42,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private bool _showPackageManagerDisclaimer = true;
         private HelpBrowserType _helpBrowserType = HelpBrowserType.Automatic;
         private bool _showDotPrefixedVariables;
-        private SurveyNewsPolicy _surveyNewsCheck = SurveyNewsPolicy.CheckOnceWeek;
-        private DateTime _surveyNewsLastCheck;
-        private string _surveyNewsFeedUrl = SurveyNewsUrls.Feed;
-        private string _surveyNewsIndexUrl = SurveyNewsUrls.Index;
         private bool _evaluateActiveBindings = true;
         private string _webHelpSearchString = "R site:stackoverflow.com";
         private BrowserType _webHelpSearchBrowserType = BrowserType.Internal;
@@ -126,6 +123,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set => SetProperty(ref _lastActiveConnection, value);
         }
 
+        public string LastLocalDockerUsername {
+            get => _lastLocalDockerUsername;
+            set => SetProperty(ref _lastLocalDockerUsername, value);
+        }
+
+        public string LastLocalDockerPassword {
+            get => _lastLocalDockerPassword;
+            set => SetProperty(ref _lastLocalDockerPassword, value);
+        }
+
         public string WorkingDirectory {
             get => _workingDirectory;
             set {
@@ -155,26 +162,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public bool ShowDotPrefixedVariables {
             get => _showDotPrefixedVariables;
             set => SetProperty(ref _showDotPrefixedVariables, value);
-        }
-
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get => _surveyNewsCheck;
-            set => SetProperty(ref _surveyNewsCheck, value);
-        }
-
-        public DateTime SurveyNewsLastCheck {
-            get => _surveyNewsLastCheck;
-            set => SetProperty(ref _surveyNewsLastCheck, value);
-        }
-
-        public string SurveyNewsFeedUrl {
-            get => _surveyNewsFeedUrl;
-            set => SetProperty(ref _surveyNewsFeedUrl, value);
-        }
-
-        public string SurveyNewsIndexUrl {
-            get => _surveyNewsIndexUrl;
-            set => SetProperty(ref _surveyNewsIndexUrl, value);
         }
 
         public bool EvaluateActiveBindings {
