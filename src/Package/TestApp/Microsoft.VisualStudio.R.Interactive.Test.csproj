@@ -87,6 +87,10 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ProjectSystem\Test\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.csproj">
+      <Project>{8B9B73CB-C7B4-4613-8ADA-5D8C1CF583E2}</Project>
+      <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>

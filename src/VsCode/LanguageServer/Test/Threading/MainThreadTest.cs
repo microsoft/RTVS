@@ -79,7 +79,7 @@ namespace Microsoft.R.LanguageServer.Test.Text {
             _mt.Dispose();
             _mt.Thread.IsAlive.Should().BeFalse();
 
-            Action a1 = () => _mt.Post(() => { }, CancellationToken.None);
+            Action a1 = () => _mt.Post(() => { });
             a1.ShouldThrow<ObjectDisposedException>();
 
             Action a2 = () => _mt.Post(o => { }, null);

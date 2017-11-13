@@ -34,7 +34,6 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             "Microsoft.VisualStudio.Platform.VSEditor.dll",
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Windows.dll",
-            "Microsoft.R.Components.Test.dll",
             "Microsoft.R.Components.Windows.Test.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Windows.dll",

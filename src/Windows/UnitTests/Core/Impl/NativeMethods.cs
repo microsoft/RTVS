@@ -13,6 +13,12 @@ namespace Microsoft.UnitTests.Core.Windows {
         [DllImport("iphlpapi.dll", SetLastError = true)]
         public static extern int GetTcpTable2(IntPtr tcpTable, ref int size, bool bOrder);
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MIB_TCPTABLE2 {
+            public int dwNumEntries;
+            MIB_TCPROW2[] table;
+        }
+
         public enum TCP_CONNECTION_OFFLOAD_STATE : int {
             TcpConnectionOffloadStateInHost = 0,
             TcpConnectionOffloadStateOffloading = 1,

@@ -521,9 +521,9 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             }
             // Most probably tests are running remote broker locally
             var locator = BrokerExecutableLocator.Create(_fileSystem);
-            var hostPath = locator.GetHostExecutablePath();
-            rtvsExists = _fileSystem.FileExists(Path.Combine(hostPath, @"rtvs\NAMESPACE"));
-            return rtvsExists ? hostPath : Path.GetFullPath(Path.Combine(hostPath, @"..\..\.."));
+            var hostDirectory = Path.GetDirectoryName(locator.GetHostExecutablePath());
+            rtvsExists = _fileSystem.FileExists(Path.Combine(hostDirectory, @"rtvs\NAMESPACE"));
+            return rtvsExists ? hostDirectory : Path.GetFullPath(Path.Combine(hostDirectory, @"..\..\.."));
         }
 
         private static Task SuppressUI(IRExpressionEvaluator eval) {
