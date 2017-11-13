@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
@@ -13,15 +14,15 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class InteractiveWindowConsole : IConsole, IDisposable {
-        private readonly IRInteractiveWorkflowVisual _workflow;
+        private readonly IRInteractiveWorkflow _workflow;
         private readonly IMainThread _mainThread;
         private readonly DisposeToken _disposeToken;
         private IInteractiveWindowVisualComponent _component;
 
-        public InteractiveWindowConsole(IRInteractiveWorkflowVisual workflow) {
-            _workflow = workflow;
+        public InteractiveWindowConsole(IServiceContainer services) {
             _disposeToken = DisposeToken.Create<InteractiveWindowConsole>();
-            _mainThread = _workflow.Shell.MainThread();
+            _workflow = services.GetService<IRInteractiveWorkflow>();
+            _mainThread = services.MainThread();
         }
 
         public void WriteError(string text) => WriteAsync(text, true).DoNotWait();
@@ -41,12 +42,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        public void WriteErrorLine(string text) => WriteError(text + Environment.NewLine);
-        public void WriteLine(string text) => Write(text + Environment.NewLine);
-
         public async Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken) {
             using (_disposeToken.Link(ref cancellationToken)) {
-                var result = await _workflow.Shell.ShowMessageAsync(text, MessageButtons.YesNo, cancellationToken);
+                var result = await _workflow.Services.ShowMessageAsync(text, MessageButtons.YesNo, cancellationToken);
                 return result == MessageButtons.Yes;
             }
         }

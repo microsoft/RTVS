@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.VsInteractiveWindow" Version="2.3.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
@@ -30,9 +31,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
+    <ProjectReference Include="..\..\..\..\Containers\Impl\Microsoft.R.Containers.csproj" />
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
+    <ProjectReference Include="..\..\..\Containers\Impl\Microsoft.R.Containers.Windows.csproj" />
     <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj" />
     <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj" />
     <ProjectReference Include="..\..\Platform.Core\Test\Microsoft.R.Platform.Windows.Core.Test.csproj" />

@@ -16,7 +16,11 @@ namespace Microsoft.Common.Core.Threading {
         /// Posts cancellable action on UI thread.
         /// </summary>
         /// <param name="action"></param>
-        /// <param name="cancellationToken"></param>
-        void Post(Action action, CancellationToken cancellationToken = default(CancellationToken));
+        void Post(Action action);
+
+        /// <summary>
+        /// Creates main thread awaiter implementation
+        /// </summary>
+        IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken);
     }
 }

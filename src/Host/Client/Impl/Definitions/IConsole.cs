@@ -3,13 +3,10 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Common.Core.Output;
 
 namespace Microsoft.R.Host.Client {
-    public interface IConsole {
-        void WriteError(string text);
-        void WriteErrorLine(string text);
-        void Write(string text);
-        void WriteLine(string text);
+    public interface IConsole : IOutput {
         Task<bool> PromptYesNoAsync(string text, CancellationToken cancellationToken);
     }
 }

@@ -9,6 +9,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
     [AttributeUsage(AttributeTargets.Assembly)]
     public class VsAssemblyLoaderAttribute : AssemblyLoaderAttribute {
         public VsAssemblyLoaderAttribute(params string[] assembliesToLoad) 
-            : base(new [] { Paths.VsCommonExtensions, Paths.VsPrivateAssemblies, Paths.VsPublicAssemblies }, assembliesToLoad) {}
+            : base(new [] { VsPaths.VsCommonExtensions, VsPaths.VsPrivateAssemblies, VsPaths.VsPublicAssemblies }, assembliesToLoad) {}
     }
 }

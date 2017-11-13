@@ -11,17 +11,10 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Markdown\PreviewTemplate.html" />
-    <None Remove="Preview\Images\Loading.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Markdown\PreviewTemplate.html" />
-    <Content Include="Preview\Images\Loading.gif" />
-  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -93,4 +86,10 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+  <ItemGroup>
+    <PreviewTemplate Include="Markdown\PreviewTemplate.html" />
+  </ItemGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(PreviewTemplate)" DestinationFolder="$(BinDirectory)\$(Configuration)\Markdown" />
+  </Target>
 </Project>

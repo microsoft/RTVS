@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.VS;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
@@ -127,19 +126,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-            CheckSurveyNews();
-        }
-
-        private async void CheckSurveyNews() {
-            // Don't return a task, the caller doesn't want to await on this
-            // and hold up loading of the project.
-            // We do it this way instead of calling DoNotWait extension in order
-            // to handle any non critical exceptions.
-            try {
-                await _coreShell.GetService<ISurveyNewsService>().CheckSurveyNewsAsync(false);
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.Log().Write(LogVerbosity.Normal, MessageCategory.Error, "SurveyNews exception: " + ex.Message);
-            }
         }
 
         private void FileWatcherError(object sender, EventArgs args) {
@@ -180,7 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private void BeforeRSessionsDisposed(object sender, EventArgs args) {
-            _coreShell.Services.Tasks().Wait(ProjectUnloadingAsync(sender, args));
+            _coreShell.Services.Tasks().Wait(() => ProjectUnloadingAsync(sender, args));
         }
 
         private async Task ProjectUnloadingAsync(object sender, EventArgs args) {

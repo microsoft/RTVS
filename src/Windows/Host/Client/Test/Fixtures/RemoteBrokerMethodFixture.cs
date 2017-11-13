@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Stubs.Shell;
@@ -25,7 +26,7 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public Task InitializeAsync(ITestInput testInput, IMessageBus messageBus) {
             _testName = testInput.FileSytemSafeName;
             _assemblyName = testInput.TestClass.Assembly.GetName().Name;
-            return _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName);
+            return _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName, _services);
         }
 
         public Task DisposeAsync(RunSummary result, IMessageBus messageBus) {
@@ -35,11 +36,11 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
         public async Task<bool> ConnectAsync(IRSessionProvider sessionProvider) {
             var securityService = _services.GetService<ISecurityService>();
             if (securityService is SecurityServiceStub securityServiceStub) { 
-                securityServiceStub.GetUserNameHandler = s => UserName;
+                securityServiceStub.ReadUserCredentialsHandler = s => (UserName, _remoteBrokerFixture.Password);
                 securityServiceStub.GetUserCredentialsHandler = (authority, workspaceName) => Credentials.Create(UserName, _remoteBrokerFixture.Password);
             }
 
-            await _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName);
+            await _remoteBrokerFixture.EnsureBrokerStartedAsync(_assemblyName, _services);
 
             var brokerConnectionInfo = BrokerConnectionInfo.Create(securityService, _testName, _remoteBrokerFixture.Address, null, false);
             return await sessionProvider.TrySwitchBrokerAsync(_testName, brokerConnectionInfo);

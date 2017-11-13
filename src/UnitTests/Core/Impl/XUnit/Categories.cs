@@ -71,10 +71,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public ConfigurationAttribute() : base("Configuration") { }
         }
 
-        public class SurveyNewsAttribute : CategoryAttribute {
-            public SurveyNewsAttribute() : base("SurveyNews") { }
-        }
-
         public class HelpAttribute : CategoryAttribute {
             public HelpAttribute() : base("Help") { }
         }

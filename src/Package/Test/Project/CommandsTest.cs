@@ -11,6 +11,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ConnectionManager;
+using Microsoft.R.Components.Containers;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
@@ -32,9 +33,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
         public ProjectCommandsTest() {
             var connectionsProvider = VsAppShell.Current.GetService<IConnectionManagerProvider>();
+            var containerProvider = VsAppShell.Current.GetService<IContainerManagerProvider>();
             var historyProvider = VsAppShell.Current.GetService<IRHistoryProvider>();
             var packagesProvider = VsAppShell.Current.GetService<IRPackageManagerProvider>();
-            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(connectionsProvider, historyProvider, packagesProvider);
+            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(connectionsProvider, containerProvider, historyProvider, packagesProvider);
         }
 
         public void Dispose() {

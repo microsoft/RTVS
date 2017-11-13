@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         protected override void Handle() {
             base.Handle();
 
-            string filePath = _services.FileDialog().ShowOpenFileDialog(Resources.CsvFileFilter, title: Resources.ImportData_EnterTextFileTitle);
+            string filePath = _services.UI().FileDialog.ShowOpenFileDialog(Resources.CsvFileFilter, title: Resources.ImportData_EnterTextFileTitle);
 
             if (!string.IsNullOrEmpty(filePath)) {
                 var dlg = new ImportDataWindow(_services, filePath, null);

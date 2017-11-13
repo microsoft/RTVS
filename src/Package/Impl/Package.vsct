@@ -1313,6 +1313,17 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdShowContainersWindow" priority="0x0900" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="StructurePublic"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Containers</ButtonText>
+          <MenuText>Containers</MenuText>
+          <CommandName>Show Containers Window</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdShowHelpWindow" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="StatusHelp"/>
@@ -1404,17 +1415,6 @@
         <Strings>
           <ButtonText>Set&amp;up Remote R...</ButtonText>
           <CommandName>Setup Remote R</CommandName>
-        </Strings>
-      </Button>
-
-      <!-- Survey/News -->
-      <Button guid="guidRToolsCmdSet" id="icmdSurveyNews" priority="0x600" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
-        <Icon guid="ImageCatalogGuid" id="NotificationHub"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <Strings>
-          <ButtonText>Survey/&amp;News...</ButtonText>
-          <CommandName>Survey News</CommandName>
         </Strings>
       </Button>
 
@@ -2713,7 +2713,6 @@
       <IDSymbol name="icmdSendFrown" value="404" />
       <IDSymbol name="icmdImportRSettings" value="405"/>
       <IDSymbol name="icmdReportIssue" value="406" />
-      <IDSymbol name="icmdSurveyNews" value="407"/>
       <IDSymbol name="icmdSetupRemote" value="408"/>
 
       <!-- REPL-->
@@ -2814,6 +2813,7 @@
       <IDSymbol name="icmdShowEditorWindow" value="907" />
       <IDSymbol name="icmdShowSolutionExplorer" value="908" />
       <IDSymbol name="icmdShowConnectionsWindow" value="909" />
+      <IDSymbol name="icmdShowContainersWindow" value="910" />
 
       <!-- Help -->
       <IDSymbol name="icmdHelpPrevious" value="1100" />

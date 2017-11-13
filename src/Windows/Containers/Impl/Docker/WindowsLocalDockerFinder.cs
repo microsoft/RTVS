@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.ServiceProcess;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -18,6 +19,9 @@ namespace Microsoft.R.Containers.Docker {
         public const string DockerCommand = "docker.exe";
         public const string DockerRegistryPath = @"SOFTWARE\Docker Inc.\Docker";
         public const string DockerRegistryPath2 = @"SYSTEM\CurrentControlSet\Services\com.docker.service";
+        public const string DockerServiceName = "com.docker.service";
+        public const string DockerForWindowsName = "Docker for Windows";
+        public const string DockerUsersGroup = "docker-users";
         private readonly IFileSystem _fs;
         private readonly IRegistry _rs;
         private readonly IProcessServices _ps;
@@ -42,18 +46,28 @@ namespace Microsoft.R.Containers.Docker {
                 throw new ContainerServiceNotInstalledException(Resources.Error_NoDockerCommand.FormatInvariant(docker.DockerCommandPath));
             }
 
+            CheckUserPermissions();
+            CheckIfServiceIsRunning();
             return docker;
         }
 
         public void CheckIfServiceIsRunning() {
-            const string serviceName = "com.docker.service";
-            using (var sc = new ServiceController(serviceName)) {
+            using (var sc = new ServiceController(DockerServiceName)) {
                 if (sc.Status != ServiceControllerStatus.Running) {
-                    throw new ContainerServiceNotRunningException(Resources.Error_DockerServiceNotRunning.FormatInvariant(sc.Status.ToString()));
+                    throw new ContainerServiceNotRunningException(DockerServiceName, Resources.Error_DockerServiceNotRunning.FormatInvariant(sc.Status.ToString()));
                 }
 
-                if (!_ps.IsProcessRunning("Docker for windows")) {
-                    throw new ContainerServiceNotRunningException(Resources.Error_DockerForWindowsNotRunning);
+                if (!_ps.IsProcessRunning(DockerForWindowsName)) {
+                    throw new ContainerServiceNotRunningException(DockerForWindowsName, Resources.Error_DockerForWindowsNotRunning);
+                }
+            }
+        }
+
+        public void CheckUserPermissions() {
+            using (var currentUserIdentity = WindowsIdentity.GetCurrent()) {
+                var principal = new WindowsPrincipal(currentUserIdentity);
+                if (!principal.IsInRole(DockerUsersGroup)) {
+                    throw new ContainerServicePermissionException(Resources.Error_UserNotInDockerUsersGroup.FormatInvariant(currentUserIdentity.Name, DockerUsersGroup));
                 }
             }
         }

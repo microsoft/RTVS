@@ -20,7 +20,7 @@ namespace Microsoft.R.Platform.OS {
         private readonly SafeProcessHandle _processHandle;
         private readonly RegisteredWaitHandle _registeredWait;
         private readonly object _exitCodeLock;
-        private readonly DisposableBag _disposable = new DisposableBag(nameof(Win32Process));
+        private readonly DisposableBag _disposable = DisposableBag.Create<Win32Process>();
         private bool _hasExited;
         private uint _exitCode;
 

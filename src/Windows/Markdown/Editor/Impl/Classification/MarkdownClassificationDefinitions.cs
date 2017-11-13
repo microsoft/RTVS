@@ -45,7 +45,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdBlockquoteClassificationFormat : ClassificationFormatDefinition {
             public MdBlockquoteClassificationFormat() {
-                ForegroundColor = Colors.DarkGreen;
                 DisplayName = Resources.ColorName_MD_Blockquote;
             }
         }
@@ -64,7 +63,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdBoldClassificationFormat : ClassificationFormatDefinition {
             public MdBoldClassificationFormat() {
-                ForegroundColor = Colors.Magenta;
                 IsBold = true;
                 DisplayName = Resources.ColorName_MD_Bold;
             }
@@ -84,7 +82,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdItalicClassificationFormat : ClassificationFormatDefinition {
             public MdItalicClassificationFormat() {
-                ForegroundColor = Colors.Magenta;
                 IsItalic = true;
                 DisplayName = Resources.ColorName_MD_Italic;
             }
@@ -101,7 +98,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdBoldItalicClassificationFormat : ClassificationFormatDefinition {
             public MdBoldItalicClassificationFormat() {
-                ForegroundColor = Colors.Magenta;
                 IsItalic = true;
                 IsBold = true;
                 DisplayName = Resources.ColorName_MD_BoldItalic;
@@ -124,7 +120,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdListItemClassificationFormat : ClassificationFormatDefinition {
             public MdListItemClassificationFormat() {
-                ForegroundColor = Colors.YellowGreen;
                 DisplayName = Resources.ColorName_MD_ListItem;
             }
         }
@@ -179,7 +174,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdCodeBackgroundClassificationFormat : ClassificationFormatDefinition {
             public MdCodeBackgroundClassificationFormat() {
-                BackgroundColor = Colors.WhiteSmoke;
                 DisplayName = Resources.ColorName_MD_CodeBackground;
             }
         }

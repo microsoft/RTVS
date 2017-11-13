@@ -7,9 +7,10 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Common.Wpf.Controls;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
-    internal abstract class ConnectionStatusBaseViewModel : BindableBase, IDisposable {
+    public abstract class ConnectionStatusBaseViewModel : BindableBase, IDisposable {
         private readonly DisposableBag _disposableBag;
 
+        private bool _isContainer;
         private bool _isRemote;
         private bool _isActive;
         private bool _isConnected;
@@ -18,23 +19,27 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         protected IServiceContainer Services { get; }
         protected IConnectionManager ConnectionManager { get; }
 
-        protected ConnectionStatusBaseViewModel(IConnectionManager connectionManager, IServiceContainer services) {
-            ConnectionManager = connectionManager;
+        protected ConnectionStatusBaseViewModel(IServiceContainer services) {
             Services = services;
+            ConnectionManager = services.GetService<IConnectionManager>();
 
             _disposableBag = DisposableBag.Create<ConnectionStatusBarViewModel>()
-                .Add(() => connectionManager.ConnectionStateChanged -= ConnectionStateChanged);
+                .Add(() => ConnectionManager.ConnectionStateChanged -= ConnectionStateChanged)
+                .Add(() => ConnectionManager.RecentConnectionsChanged -= RecentConnectionsChanged);
 
-            connectionManager.ConnectionStateChanged += ConnectionStateChanged;
-            IsConnected = connectionManager.IsConnected;
-            IsRunning = connectionManager.IsRunning;
+            ConnectionManager.ConnectionStateChanged += ConnectionStateChanged;
+            ConnectionManager.RecentConnectionsChanged += RecentConnectionsChanged;
+            IsConnected = ConnectionManager.IsConnected;
+            IsRunning = ConnectionManager.IsRunning;
         }
 
         public virtual void Dispose(bool disposing) => _disposableBag.TryDispose();
         public void Dispose() => Dispose(true);
 
-        protected abstract void ConnectionStateChanged();
+        protected abstract void UpdateConnections();
 
+        private void RecentConnectionsChanged(object sender, EventArgs e)
+            => Services.MainThread().Post(UpdateConnections);
         private void ConnectionStateChanged(object sender, EventArgs e)
             => Services.MainThread().Post(ConnectionStateChangedOnMainThread);
 
@@ -43,8 +48,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             IsRunning = ConnectionManager.IsConnected && ConnectionManager.IsRunning;
             IsActive = ConnectionManager.ActiveConnection != null;
             IsRemote = ConnectionManager.ActiveConnection?.IsRemote ?? false;
-            ConnectionStateChanged();
-            Microsoft.R.Components.ConnectionManager.Implementation.ConnectionManager.Events.Enqueue($"After {nameof(ConnectionStateChanged)} ConnectionManager.IsRunning: {ConnectionManager.IsRunning}, {GetHashCode()}.IsRunning: {IsRunning}");
+            IsContainer = ConnectionManager.ActiveConnection?.IsContainer ?? false;
+            UpdateConnections();
         }
 
         public bool IsConnected {
@@ -65,6 +70,10 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
         public bool IsRemote {
             get => _isRemote;
             set => SetProperty(ref _isRemote, value);
+        }
+        public bool IsContainer {
+            get => _isContainer;
+            set => SetProperty(ref _isContainer, value);
         }
     }
 }

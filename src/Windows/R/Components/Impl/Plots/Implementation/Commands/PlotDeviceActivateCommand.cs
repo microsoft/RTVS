@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -30,7 +30,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     await InteractiveWorkflow.Plots.ActivateDeviceAsync(VisualComponent.Device);
                 }
             } catch (RPlotManagerException ex) {
-                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                InteractiveWorkflow.Services.ShowErrorMessage(ex.Message);
             } catch (OperationCanceledException) {
             }
         }

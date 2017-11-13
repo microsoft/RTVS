@@ -19,6 +19,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
@@ -38,10 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly IVignetteCodeColorBuilder _codeColorBuilder;
         private readonly IServiceContainer _services;
         private readonly IRSession _session;
+        private readonly IIdleTimeService _idleTime;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent(IServiceContainer services) {
             _services = services;
+            _idleTime = _services.GetService<IIdleTimeService>();
 
             _codeColorBuilder = _services.GetService<IVignetteCodeColorBuilder>();
             var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate();
@@ -233,14 +236,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Refresh button clicked. Current document state is 'complete'.
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
-            DisconnectBrowser();
+            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object(), _idleTime);
         }
 
         private void SetThemeColorsWhenReady() {
             if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
-                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), _services.GetService<IIdleTimeService>());
+                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), _idleTime);
             }
         }
 
@@ -252,14 +255,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static bool IsHelpUrl(string url) {
-            Uri uri = new Uri(url);
-            if(uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
+            try {
+                Uri uri = new Uri(url);
+                if (uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
+                    return false;
+                }
+                // dynamicHelp.R (startDynamicHelp function):
+                // # Choose 10 random port numbers between 10000 and 32000
+                // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
+                return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
+            } catch(Exception ex) when (!ex.IsCriticalException()) {
                 return false;
             }
-            // dynamicHelp.R (startDynamicHelp function):
-            // # Choose 10 random port numbers between 10000 and 32000
-            // ports <- 10000 + 22000*((stats::runif(10) + unclass(Sys.time())/300) %% 1)
-            return uri.IsLoopback && uri.Port >= 10000 && uri.Port <= 32000 && !string.IsNullOrEmpty(uri.PathAndQuery);
         }
 
         public void Dispose() {
@@ -291,7 +298,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private bool ConnectBrowser() {
             var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
-            if (doc?.body != null && Browser.ReadyState == WebBrowserReadyState.Complete) {
+            if (doc?.body != null && (Browser.ReadyState == WebBrowserReadyState.Complete || Browser.ReadyState == WebBrowserReadyState.Interactive)) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
                 // Reconnect browser control to the window

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.Common.Core.Testing;
@@ -24,16 +25,16 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         [Category.R.Session]
         public class InteractionEvaluation : IAsyncLifetime {
-            private readonly IServiceContainer _services;
             private readonly TestMethodFixture _testMethod;
             private readonly IBrokerClient _brokerClient;
             private readonly RSession _session;
+            private readonly IFileSystem _fileSystem;
 
             public InteractionEvaluation(IServiceContainer services, TestMethodFixture testMethod) {
-                _services = services;
                 _testMethod = testMethod;
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(InteractionEvaluation));
-                _session = new RSession(0, _testMethod.FileSystemSafeName, services, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _fileSystem = services.FileSystem();
+                _session = new RSession(0, _testMethod.FileSystemSafeName, _fileSystem, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {
@@ -55,7 +56,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 while (runningTasks.Count > 0) {
                     await Task.WhenAny(runningTasks);
 
-                    runningTasks.Split(t => t.Status == TaskStatus.RanToCompletion, out var completedTasks, out runningTasks);
+                    IList<Task<IRSessionInteraction>> completedTasks;
+                    runningTasks.Split(t => t.Status == TaskStatus.RanToCompletion, out completedTasks, out runningTasks);
                     completedTasks.Should().ContainSingle();
                     completedTasks.Single().Result.Dispose();
                 }
@@ -125,7 +127,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
  
             [Test]
             public async Task EvaluateAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _services, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
+                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _fileSystem, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.EvaluateAsync("x <- 1");
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
@@ -162,7 +164,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             [Test]
             public async Task BeginInteractionAsync_DisconnectedFromTheStart() {
-                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _services, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
+                using (var session = new RSession(0, _testMethod.FileSystemSafeName, _fileSystem, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { })) {
                     // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.BeginInteractionAsync();
                     await f.ShouldThrowAsync<RHostDisconnectedException>();

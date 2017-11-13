@@ -84,7 +84,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
 
         public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken)
             => Task.FromResult(
-                    TextView != null && 
+                    TextView != null &&
                     SuggestedActionProviders.Any(a => a.HasSuggestedActions(TextView, TextBuffer, PositionFromRange(range))));
 
         public bool TryGetTelemetryId(out Guid telemetryId) {
@@ -101,7 +101,13 @@ namespace Microsoft.R.Editor.SuggestedActions {
         private static int PositionFromRange(SnapshotSpan range) {
             var text = range.Snapshot.GetText(range);
             var nonWsOffset = text.Length - text.TrimStart().Length;
-            return Math.Min(range.Start + 1 + nonWsOffset, range.End);
+
+            // Take actual positions before making max/mix calculations
+            // so we don't accidentallly +1 on a SnapshotSpan stepping
+            // beyond its end point.
+            var start = range.Start.Position;
+            var end = range.End.Position;
+            return Math.Min(start + 1 + nonWsOffset, end);
         }
     }
 }

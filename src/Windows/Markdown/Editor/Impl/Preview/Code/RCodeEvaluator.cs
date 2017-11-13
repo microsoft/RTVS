@@ -35,7 +35,7 @@ namespace Microsoft.Markdown.Editor.Preview.Code {
             var blocksArray = blocks.ToArray();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            foreach (var block in blocksArray.Where(b => b.State == CodeBlockState.Created)) {
+            foreach (var block in blocksArray.Where(b => b.State == CodeBlockState.Created && b.Eval)) {
                 await EvaluateBlockAsync(block, ct);
             }
         }

@@ -8,6 +8,8 @@
                     xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
                     xmlns:controls="clr-namespace:Microsoft.Common.Wpf.Controls;assembly=Microsoft.R.Common.Wpf"
                     xmlns:rcontrols="clr-namespace:Microsoft.R.Wpf.Controls"
+                    xmlns:imaging="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.Imaging"
+                    xmlns:cwpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
                     mc:Ignorable="d">
     <!--Icons-->
     <PathGeometry FillRule="NonZero" x:Key="ArrowRigth10" Figures="M0,0 L5,5 L0,10 z" />
@@ -200,7 +202,7 @@
     </ControlTemplate>
     
     <!-- Default styles -->
-    <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ThemedComboStyleKey}}"/>
+    <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ComboBoxStyleKey}}"/>
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollBarStyleKey}}"/>
     <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollViewerStyleKey}}"/>
     <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ButtonStyleKey}}"/>
@@ -224,6 +226,20 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="ValidityIndicatorStyle" TargetType="{x:Type imaging:CrispImage}">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="0,0,4,0" />
+        <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOKOutline}"/>
+        <Style.Triggers>
+            <Trigger Property="cwpf:AttachedProperties.IsValid" Value="False">
+                <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusRequiredOutline}"/>        
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="ToolWindowButtonStyle" TargetType="{x:Type Button}">
@@ -454,106 +470,31 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type rcontrols:IconWithOverlay}" x:Key="ConnectionStyle">
-        <Style.Triggers>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
-                    <Condition Binding="{Binding Path=IsRunning}" Value="True" />
-                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
-                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
-                    <Setter Property="OverlayVisibility" Value="Visible"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
-                    <Condition Binding="{Binding Path=IsRunning}" Value="True" />
-                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
-                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusOK}"/>
-                    <Setter Property="OverlayVisibility" Value="Visible"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
-                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
-                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
-                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
-                    <Setter Property="OverlayVisibility" Value="Visible"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
-                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
-                    <Condition Binding="{Binding Path=IsConnected}" Value="True" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
-                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusWarning}"/>
-                    <Setter Property="OverlayVisibility" Value="Visible"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
-                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
-                    <Condition Binding="{Binding Path=IsConnected}" Value="False" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
-                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
-                    <Setter Property="OverlayVisibility" Value="Visible"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
-                    <Condition Binding="{Binding Path=IsRunning}" Value="False" />
-                    <Condition Binding="{Binding Path=IsConnected}" Value="False" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="True" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
-                    <Setter Property="OverlayMoniker" Value="{x:Static imagecatalog:KnownMonikers.StatusError}"/>
-                    <Setter Property="OverlayVisibility" Value="Visible"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="True" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="False" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Cloud}"/>
-                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=IsRemote}" Value="False" />
-                    <Condition Binding="{Binding Path=IsActive}" Value="False" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Computer}"/>
-                    <Setter Property="OverlayVisibility" Value="Collapsed"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-        </Style.Triggers>
+    <Style x:Key="ToolWindowListBoxStyle" TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowBackgroundBrushKey}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="true" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="VirtualizingPanel.CacheLength" Value="1,2" />
+        <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Page"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="ItemTemplateSelector" Value="{StaticResource TypeDataTemplateSelector}"/>
+        <Setter Property="SelectionMode" Value="Multiple"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                        <ScrollViewer Focusable="false">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

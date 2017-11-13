@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -12,7 +13,8 @@ using Microsoft.Common.Core.UI;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.UnitTests.Core.Threading {
-    public class TestMainThread : IProgressDialog, ITestMainThread, IMainThread {
+    [ExcludeFromCodeCoverage]
+    public class TestMainThread : ITaskService, IProgressDialog, ITestMainThread, IMainThread, IDisposable {
         private readonly Action _onDispose;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly AsyncLocal<BlockingLoop> _blockingLoop = new AsyncLocal<BlockingLoop>();
@@ -21,23 +23,21 @@ namespace Microsoft.UnitTests.Core.Threading {
             _onDispose = onDispose;
         }
 
-        #region  IMainThread
         public int ThreadId => UIThreadHelper.Instance.Thread.ManagedThreadId;
 
-        public void Post(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
+        public void Dispose() => _onDispose();
+
+        public void Post(Action action) {
             var bl = _blockingLoop.Value;
             if (bl != null) {
                 bl.Post(action);
             } else {
-                var token = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token, cancellationToken).Token;
-                var registration = token.Register(action, false);
-                var task = UIThreadHelper.Instance.InvokeAsync(action);
-                registration.UnregisterOnCompletion(task);
+                UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
             }
         }
-        #endregion
 
-        public void Dispose() => _onDispose();
+        public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken) =>
+            new TestMainThreadAwaiter(this, cancellationToken);
 
         public void Show(Func<CancellationToken, Task> method, string waitMessage, int delayToShowDialogMs = 0)
             => BlockUntilCompleted(() => method(CancellationToken.None));
@@ -50,6 +50,19 @@ namespace Microsoft.UnitTests.Core.Threading {
 
         public T Show<T>(Func<IProgress<ProgressDialogData>, CancellationToken, Task<T>> method, string waitMessage, int totalSteps = 100, int delayToShowDialogMs = 0)
             => BlockUntilCompleted(() => method(new Progress<ProgressDialogData>(), CancellationToken.None));
+
+        public bool Wait(Func<Task> method, int ms = Timeout.Infinite, CancellationToken cancellationToken = default(CancellationToken)) {
+            var delayTask = Task.Delay(ms, cancellationToken);
+            var resultTask = BlockUntilCompleted(() => Task.WhenAny(method(), delayTask));
+            return resultTask != delayTask;
+        }
+
+        public bool Wait<T>(Func<Task<T>> method, out T result, int ms = Timeout.Infinite, CancellationToken cancellationToken = default(CancellationToken)) {
+            var delayTask = Task.Delay(ms, cancellationToken);
+            var resultTask = BlockUntilCompleted(() => Task.WhenAny(method(), delayTask));
+            result = resultTask is Task<T> task ? task.GetAwaiter().GetResult() : default(T);
+            return resultTask != delayTask;
+        }
 
         private void BlockUntilCompleted(Func<Task> func) => BlockUntilCompletedImpl(func);
 

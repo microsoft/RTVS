@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -47,12 +47,12 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                             Clipboard.Clear();
                         }
                     } catch (RPlotManagerException ex) {
-                        InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                        InteractiveWorkflow.Services.ShowErrorMessage(ex.Message);
                     } catch (OperationCanceledException) {
                     }
                 }
             } catch (ExternalException ex) {
-                InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
+                InteractiveWorkflow.Services.ShowErrorMessage(ex.Message);
             }
         }
     }

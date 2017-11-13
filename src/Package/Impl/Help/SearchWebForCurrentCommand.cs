@@ -4,7 +4,6 @@
 using System;
 using System.Text;
 using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -31,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             IActiveRInteractiveWindowTracker activeReplTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSearchWebForCurrent,
                 workflow, textViewTracker, activeReplTracker, Resources.SearchWebFor) {
-            _settings = workflow.Shell.GetService<IRSettings>();
+            _settings = workflow.Services.GetService<IRSettings>();
         }
 
         protected override void Handle(string item) {
@@ -44,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 sb.Append(Uri.EscapeUriString(t));
             }
 
-            Workflow.Shell.Services.Process().Start(sb.ToString());
+            Workflow.Services.Process().Start(sb.ToString());
         }
     }
 }

@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Threading;
-using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class TaskObserver : IDisposable {

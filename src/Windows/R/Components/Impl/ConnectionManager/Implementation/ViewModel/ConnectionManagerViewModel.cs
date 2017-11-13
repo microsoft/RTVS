@@ -9,44 +9,55 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.ConnectionManager.ViewModel;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Platform.Interpreters;
+using Microsoft.VisualStudio.Imaging;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
     internal sealed class ConnectionManagerViewModel : ConnectionStatusBaseViewModel, IConnectionManagerViewModel {
         private readonly IUIService _ui;
+        private readonly IImageService _images;
         private readonly IRSettings _settings;
         private readonly IRInstallationService _installationService;
         private readonly BatchObservableCollection<IConnectionViewModel> _localConnections;
+        private readonly BatchObservableCollection<IConnectionViewModel> _localDockerConnections;
         private readonly BatchObservableCollection<IConnectionViewModel> _remoteConnections;
         private IConnectionViewModel _editedConnection;
         private IConnectionViewModel _testingConnection;
         private bool _isEditingNew;
         private bool _hasLocalConnections;
 
-        public ConnectionManagerViewModel(IConnectionManager connectionManager, IServiceContainer services) :
-            base(connectionManager, services) {
+        public ConnectionManagerViewModel(IServiceContainer services) :
+            base(services) {
             _ui = services.UI();
+            _images = services.GetService<IImageService>();
             _settings = services.GetService<IRSettings>();
             _installationService = services.GetService<IRInstallationService>();
-
-            _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
-            RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
 
             _localConnections = new BatchObservableCollection<IConnectionViewModel>();
             LocalConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localConnections);
 
-            IsConnected = connectionManager.IsConnected;
+            _localDockerConnections = new BatchObservableCollection<IConnectionViewModel>();
+            LocalDockerConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_localDockerConnections);
+
+            _remoteConnections = new BatchObservableCollection<IConnectionViewModel>();
+            RemoteConnections = new ReadOnlyObservableCollection<IConnectionViewModel>(_remoteConnections);
+
+            IsConnected = ConnectionManager.IsConnected;
             UpdateConnections();
         }
 
         public ReadOnlyObservableCollection<IConnectionViewModel> LocalConnections { get; }
+        public ReadOnlyObservableCollection<IConnectionViewModel> LocalDockerConnections { get; }
         public ReadOnlyObservableCollection<IConnectionViewModel> RemoteConnections { get; }
 
         public IConnectionViewModel EditedConnection {
@@ -95,7 +106,7 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
 
         public bool TryEditNew() {
             Services.MainThread().Assert();
-            IsEditingNew = TryStartEditing(new ConnectionViewModel());
+            IsEditingNew = TryStartEditing(new ConnectionViewModel(_images));
             return IsEditingNew;
         }
 
@@ -105,6 +116,8 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             EditedConnection = null;
             IsEditingNew = false;
         }
+
+        public void ShowContainers() => Services.GetService<IRInteractiveWorkflowToolWindowService>().Containers().Show(true, true);
 
         public void BrowseLocalPath(IConnectionViewModel connection) {
             Services.MainThread().Assert();
@@ -307,18 +320,25 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             UpdateConnections();
         }
 
-        private void UpdateConnections() {
+        protected override void UpdateConnections() {
             var selectedConnectionName = EditedConnection?.Name;
 
-            _localConnections.ReplaceWith(ConnectionManager.RecentConnections
-                .Where(c => !c.IsRemote)
-                .Select(CreateConnectionViewModel)
-                .OrderBy(c => c.Name));
-
-            _remoteConnections.ReplaceWith(ConnectionManager.RecentConnections
-                .Where(c => c.IsRemote)
-                .Select(CreateConnectionViewModel)
-                .OrderBy(c => c.Name));
+            using (_localConnections.StartBatchUpdate())
+            using (_localDockerConnections.StartBatchUpdate())
+            using (_remoteConnections.StartBatchUpdate()) {
+                _localConnections.Clear();
+                _localDockerConnections.Clear();
+                _remoteConnections.Clear();
+                foreach (var connection in ConnectionManager.RecentConnections.OrderBy(c => c.Name)) {
+                    if (connection.IsRemote) {
+                        CreateRemoteConnectionViewModel(connection);
+                    } else if (connection.IsContainer) {
+                        CreateLocalDockerConnectionViewModel(connection);
+                    } else {
+                        CreateLocalConnectionViewModel(connection);
+                    }
+                }
+            }
 
             var editedConnection = RemoteConnections.FirstOrDefault(i => i.Name == selectedConnectionName);
             if (editedConnection != null) {
@@ -328,15 +348,40 @@ namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {
             HasLocalConnections = _localConnections.Count > 0;
         }
 
-        private ConnectionViewModel CreateConnectionViewModel(IConnection connection) {
-            var isActive = connection == ConnectionManager.ActiveConnection;
-            return new ConnectionViewModel(connection) {
-                IsActive = isActive,
-                IsConnected = isActive && ConnectionManager.IsConnected,
-                IsRunning = isActive && ConnectionManager.IsRunning
-            };
+        private void CreateRemoteConnectionViewModel(IConnection connection) {
+            var cvm = new ConnectionViewModel(connection, ConnectionManager, _images);
+            var commandLine = GetConnectionTooltipCommandLine(connection);
+
+            cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatRemote.FormatInvariant(connection.Path, commandLine);
+            cvm.ButtonEditTooltip = Resources.ConnectionManager_EditRemoteTooltip_Format.FormatInvariant(connection.Name);
+            cvm.Icon = _images.GetImage("Cloud");
+            _remoteConnections.Add(cvm);
         }
 
-        protected override void ConnectionStateChanged() => UpdateConnections();
+        private void CreateLocalDockerConnectionViewModel(IConnection connection) {
+            var cvm = new ConnectionViewModel(connection, ConnectionManager, _images);
+            var commandLine = GetConnectionTooltipCommandLine(connection);
+
+            cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatLocalDocker.FormatInvariant(connection.Path, connection.ContainerName, commandLine);
+            cvm.ButtonEditTooltip = Resources.ConnectionManager_EditLocalDockerTooltip_Format.FormatInvariant(connection.Name);
+            cvm.ButtonDeleteDisabledTooltip = Resources.ConnectionManager_DeleteLocalDockerDisabledTooltip;
+            cvm.Icon = _images.GetImage("StructurePublic");
+            _localDockerConnections.Add(cvm);
+        }
+
+        private void CreateLocalConnectionViewModel(IConnection connection) {
+            var cvm = new ConnectionViewModel(connection, ConnectionManager, _images);
+            var commandLine = GetConnectionTooltipCommandLine(connection);
+
+            cvm.ConnectionTooltip = Resources.ConnectionManager_InformationTooltipFormatLocal.FormatInvariant(connection.Path, commandLine);
+            cvm.ButtonEditTooltip = Resources.ConnectionManager_EditLocalTooltip_Format.FormatInvariant(connection.Name);
+            cvm.ButtonDeleteDisabledTooltip = Resources.ConnectionManager_DeleteLocalDisabledTooltip;
+            cvm.Icon = _images.GetImage("Computer");
+            _localConnections.Add(cvm);
+        }
+
+        private static string GetConnectionTooltipCommandLine(IConnectionInfo connection) => !string.IsNullOrWhiteSpace(connection.RCommandLineArguments)
+            ? connection.RCommandLineArguments
+            : Resources.ConnectionManager_None;
     }
 }

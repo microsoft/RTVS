@@ -22,6 +22,8 @@ namespace Microsoft.R.Components.Test.Stubs {
         public bool MultilineHistorySelection { get; set; }
         public ConnectionInfo[] Connections { get; set; }
         public ConnectionInfo LastActiveConnection { get; set; }
+        public string LastLocalDockerUsername { get; set; }
+        public string LastLocalDockerPassword { get; set; }
         public string CranMirror { get; set; }
         public string WorkingDirectory { get; set; }
         public bool ShowPackageManagerDisclaimer { get; set; }
@@ -41,20 +43,6 @@ namespace Microsoft.R.Components.Test.Stubs {
         /// Most recently used directories in REPL
         /// </summary>
         public IEnumerable<string> WorkingDirectoryList { get; set; } = Enumerable.Empty<string>();
-
-        /// <summary>
-        /// The frequency at which to check for updated news. Default is once per week.
-        /// </summary>
-        public SurveyNewsPolicy SurveyNewsCheck { get; set; } = SurveyNewsPolicy.Disabled;
-
-        /// <summary>
-        /// The date/time when the last check for news occurred.
-        /// </summary>
-        public DateTime SurveyNewsLastCheck { get; set; } = DateTime.Now;
-
-        public string SurveyNewsFeedUrl { get; set; }
-
-        public string SurveyNewsIndexUrl { get; set; }
 
         /// <summary>
         /// Site to search in 'Search Web for'... commands

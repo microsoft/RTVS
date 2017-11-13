@@ -51,14 +51,15 @@ namespace Microsoft.R.Editor.Functions {
             var interactiveWorkflowProvider = services.GetService<IRInteractiveWorkflowProvider>();
             var workflow = interactiveWorkflowProvider.GetOrCreate();
 
+            var sessionProvider = workflow.RSessions;
             var interactiveSession = workflow.RSession;
             interactiveSession.Connected += OnSessionConnected;
             interactiveSession.PackagesInstalled += OnPackagesChanged;
             interactiveSession.PackagesRemoved += OnPackagesChanged;
 
-            workflow.RSessions.BrokerStateChanged += OnBrokerStateChanged;
+            sessionProvider.BrokerStateChanged += OnBrokerStateChanged;
 
-            if (workflow.RSession.IsHostRunning) {
+            if (interactiveSession.IsHostRunning) {
                 BuildIndexAsync().DoNotWait();
             }
 
@@ -66,16 +67,17 @@ namespace Microsoft.R.Editor.Functions {
                 .Add(() => interactiveSession.PackagesInstalled -= OnPackagesChanged)
                 .Add(() => interactiveSession.PackagesRemoved -= OnPackagesChanged)
                 .Add(() => interactiveSession.Connected -= OnSessionConnected)
-                .Add(() => workflow.RSessions.BrokerStateChanged -= OnBrokerStateChanged)
+                .Add(() => sessionProvider.BrokerStateChanged -= OnBrokerStateChanged)
                 .Add(_host);
-
         }
 
         private void OnSessionConnected(object sender, RConnectedEventArgs e) => BuildIndexAsync().DoNotWait();
 
         private void OnBrokerStateChanged(object sender, BrokerStateChangedEventArgs e) {
             if (e.IsConnected) {
-                BuildIndexAsync().DoNotWait();
+                UpdateInstalledPackagesAsync().DoNotWait();
+            } else {
+                _updatePending = true;
             }
         }
 
@@ -104,16 +106,19 @@ namespace Microsoft.R.Editor.Functions {
                     Debug.WriteLine("R function host start: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Fetch list of package functions from R session
+                    _disposableBag.ThrowIfDisposed();
                     stopwatch.Reset();
                     await LoadInstalledPackagesIndexAsync(ct);
                     Debug.WriteLine("Fetch list of package functions from R session: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Try load missing functions from cache or explicitly
+                    _disposableBag.ThrowIfDisposed();
                     stopwatch.Reset();
                     await LoadRemainingPackagesFunctions(ct);
                     Debug.WriteLine("Try load missing functions from cache or explicitly: {0} ms", stopwatch.ElapsedMilliseconds);
 
                     // Build index
+                    _disposableBag.ThrowIfDisposed();
                     stopwatch.Reset();
                     await _functionIndex.BuildIndexAsync(this, ct);
                     Debug.WriteLine("R function index build: {0} ms", stopwatch.ElapsedMilliseconds);
@@ -123,7 +128,8 @@ namespace Microsoft.R.Editor.Functions {
             } catch (RHostDisconnectedException ex) {
                 Debug.WriteLine(ex.Message);
                 ScheduleIdleTimeRebuild();
-            } finally {
+            } catch (ObjectDisposedException) { }
+            finally {
                 lockToken.Set();
             }
         }
@@ -179,6 +185,10 @@ namespace Microsoft.R.Editor.Functions {
 
         private async Task LoadInstalledPackagesIndexAsync(CancellationToken ct) {
             var packagesFunctions = await _host.Session.InstalledPackagesFunctionsAsync(REvaluationKind.BaseEnv, ct);
+            if (packagesFunctions == null) {
+                return;
+            }
+
             foreach (var package in packagesFunctions) {
                 ct.ThrowIfCancellationRequested();
 
@@ -212,6 +222,7 @@ namespace Microsoft.R.Editor.Functions {
 
         private async Task LoadRemainingPackagesFunctions(CancellationToken ct) {
             foreach (var pi in _packages.Values.Where(p => !p.Functions.Any())) {
+                _disposableBag.ThrowIfDisposed();
                 await pi.LoadFunctionsIndexAsync(ct);
             }
         }
@@ -250,7 +261,7 @@ namespace Microsoft.R.Editor.Functions {
             // Do not attempt to add new package when index is still being built
             if (packageNames.Any() && _buildIndexLock.IsSet) {
                 try {
-                    var installedPackages = await GetInstalledPackagesAsync();
+                    var installedPackages = await GetInstalledPackagesAsync(ct);
                     var packagesNotInIndex = installedPackages.Where(p => packageNames.Contains(p.Package));
                     info = await AddPackagesToIndexAsync(packagesNotInIndex, ct);
                 } catch (RHostDisconnectedException) { }

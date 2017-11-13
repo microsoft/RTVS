@@ -249,6 +249,7 @@ namespace Microsoft.R.Platform {
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetStdHandle(int nStdHandle);
 
+        [Flags]
         public enum CREATE_PROCESS_FLAGS : uint {
             CREATE_BREAKAWAY_FROM_JOB = 0x01000000,
             CREATE_DEFAULT_ERROR_MODE = 0x04000000,

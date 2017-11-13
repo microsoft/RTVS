@@ -38,7 +38,7 @@ namespace Microsoft.Common.Core.Test.Fixtures {
             serviceManager
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(UIThreadHelper.Instance.MainThread)
-                .AddService(new TestTaskService())
+                .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestIdleTimeService())
                 .AddService(new WindowsFileSystem())
                 .AddService(new WindowsProcessServices())

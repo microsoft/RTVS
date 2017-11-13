@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.DataInspection;
@@ -58,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         sw.Write(functionCode);
                     }
 
-                    await _workflow.Shell.SwitchToMainThreadAsync(cancellationToken);
+                    await _workflow.Services.MainThread().SwitchToAsync(cancellationToken);
 
                     FileViewer.ViewFile(tempFile, functionName);
                     try {
@@ -78,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             } catch (RException) { } catch (OperationCanceledException) { }
 
             if (!string.IsNullOrEmpty(functionCode)) {
-                var formatter = new RFormatter(_workflow.Shell.GetService<IREditorSettings>().FormatOptions);
+                var formatter = new RFormatter(_workflow.Services.GetService<IREditorSettings>().FormatOptions);
                 functionCode = formatter.Format(functionCode);
             }
             return functionCode;

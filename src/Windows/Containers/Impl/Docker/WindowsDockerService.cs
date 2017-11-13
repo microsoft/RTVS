@@ -1,28 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.ServiceProcess;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using static System.FormattableString;
-
 
 namespace Microsoft.R.Containers.Docker {
     public class WindowsDockerService : LocalDockerService, IContainerService {
         const string DockerServiceName = "Docker for Windows";
         private LocalDocker _docker;
-        private readonly IServiceContainer _services;
         private readonly WindowsLocalDockerFinder _dockerFinder;
 
         public WindowsDockerService(IServiceContainer services) : base(services) {
-            _services = services;
             _dockerFinder = new WindowsLocalDockerFinder(services);
         }
 
@@ -35,7 +29,8 @@ namespace Microsoft.R.Containers.Docker {
         public async Task<bool> BuildImageAsync(BuildImageParameters buildParams, CancellationToken ct) {
             var buildOptions = $"-t {buildParams.Image}:{buildParams.Tag} {Path.GetDirectoryName(buildParams.DockerfilePath)}";
             var output = await BuildImageAsync(buildOptions, ct);
-            return output.ContainsIgnoreCase($"Successfully tagged {buildParams.Image}:{buildParams.Tag}");
+            return output.ContainsIgnoreCase($"Successfully tagged {buildParams.Image}:{buildParams.Tag}") ||
+                output.ContainsIgnoreCase($"Successfully built");
         }
 
         public async Task<IContainer> CreateContainerAsync(ContainerCreateParameters createParams, CancellationToken ct) {
@@ -53,8 +48,6 @@ namespace Microsoft.R.Containers.Docker {
                     throw new ContainerException(Resources.Error_ContainerIdInvalid.FormatInvariant(containerId));
                 }
                 return await GetContainerAsync(containerId, ct);
-            } catch (ContainerException cex) {
-                throw cex;
             } finally {
                 if (createParams.ImageSourceCredentials != null) {
                     await RepositoryLogoutAsync(createParams.ImageSourceCredentials, ct);
@@ -62,36 +55,30 @@ namespace Microsoft.R.Containers.Docker {
             }
         }
 
-        async Task IContainerService.DeleteContainerAsync(IContainer container, CancellationToken ct) {
-            var result = await DeleteContainerAsync(container, ct);
-            if (!result.StartsWithIgnoreCase(container.Id)) {
-                throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(container.Id, result));
+        async Task IContainerService.DeleteContainerAsync(string containerId, CancellationToken ct) {
+            var result = await DeleteContainerAsync(containerId, ct);
+            if (!result.StartsWithIgnoreCase(containerId)) {
+                throw new ContainerException(Resources.Error_ContainerDeleteFailed.FormatInvariant(containerId, result));
             }
         }
 
-        async Task IContainerService.StartContainerAsync(IContainer container, CancellationToken ct) {
-            var result = await StartContainerAsync(container, ct);
-            if (!result.StartsWithIgnoreCase(container.Id)) {
-                throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(container.Id, result));
+        async Task IContainerService.StartContainerAsync(string containerId, CancellationToken ct) {
+            var result = await StartContainerAsync(containerId, ct);
+            if (!result.StartsWithIgnoreCase(containerId)) {
+                throw new ContainerException(Resources.Error_ContainerStartFailed.FormatInvariant(containerId, result));
             }
         }
 
-        async Task IContainerService.StopContainerAsync(IContainer container, CancellationToken ct) {
-            var result = await StopContainerAsync(container, ct);
-            if(!result.StartsWithIgnoreCase(container.Id)) {
-                throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(container.Id, result));
+        async Task IContainerService.StopContainerAsync(string containerId, CancellationToken ct) {
+            var result = await StopContainerAsync(containerId, ct);
+            if(!result.StartsWithIgnoreCase(containerId)) {
+                throw new ContainerException(Resources.Error_ContainerStopFailed.FormatInvariant(containerId, result));
             }
         }
 
         protected override LocalDocker GetLocalDocker() {
             _docker = _docker ?? _dockerFinder.GetLocalDocker();
-            _dockerFinder.CheckIfServiceIsRunning();
-
             return _docker;
         }
-
-        
-
-        
     }
 }

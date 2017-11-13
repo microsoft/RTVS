@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Broker.Services {
                 var password = principal.FindFirst(UnixClaims.RPassword).Value;
                 process = Utility.AuthenticateAndRunAsUser(_sessionLogger, _ps, userName, password, profilePath, args, environment);
             } else {
-                process = RunAsCurrentUser(commandLine, GetRHomePath(interpreter), GetLoadLibraryPath(interpreter));
+                process = Utility.RunAsCurrentUser(_sessionLogger, _ps, commandLine, GetRHomePath(interpreter), GetLoadLibraryPath(interpreter));
             }
             process.WaitForExit(250);
             if (process.HasExited && process.ExitCode != 0) {
@@ -45,23 +45,7 @@ namespace Microsoft.R.Host.Broker.Services {
             return process;
         }
 
-        private IProcess RunAsCurrentUser(string arguments, string rHomePath, string loadLibPath) {
-            var psi = new ProcessStartInfo {
-                FileName = GetRHostBinaryPath(),
-                Arguments = arguments,
-                RedirectStandardError = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                WorkingDirectory = Environment.GetEnvironmentVariable("PWD")
-            };
 
-            // All other should be same as the broker environment. Only these are set based on interpreters. 
-            // R_HOME is explictly set on the R-Host.
-            psi.Environment.Add("R_HOME", rHomePath);
-            psi.Environment.Add("LD_LIBRARY_PATH", loadLibPath);
-
-            return _ps.Start(psi);
-        }
 
         private string GetRHomePath(Interpreter interpreter) => interpreter.RInterpreterInfo.InstallPath;
 

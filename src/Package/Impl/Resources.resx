@@ -407,18 +407,6 @@
   <data name="SaveWorkspaceOnProjectUnload" xml:space="preserve">
     <value>Save current workspace image to {0}?</value>
   </data>
-  <data name="SurveyNewsPolicyDisabled" xml:space="preserve">
-    <value>Never</value>
-  </data>
-  <data name="SurveyNewsPolicyCheckOnceDay" xml:space="preserve">
-    <value>Once a day</value>
-  </data>
-  <data name="SurveyNewsPolicyCheckOnceWeek" xml:space="preserve">
-    <value>Once a week</value>
-  </data>
-  <data name="SurveyNewsPolicyCheckOnceMonth" xml:space="preserve">
-    <value>Once a month</value>
-  </data>
   <data name="Settings_WorkspaceCategory" xml:space="preserve">
     <value>Workspace</value>
   </data>
@@ -442,6 +430,9 @@
   </data>
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
+  </data>
+  <data name="ContainersWindowCaption" xml:space="preserve">
+    <value>Containers</value>
   </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
@@ -575,12 +566,6 @@ If you have any screenshots demonstrating the issue, please include them as well
 Additional information:
 
 {0}</value>
-  </data>
-  <data name="Settings_SurveyNewsCheck" xml:space="preserve">
-    <value>Survey/News Check</value>
-  </data>
-  <data name="Settings_SurveyNewsCheck_Description" xml:space="preserve">
-    <value>Specifies how often R Tools should check with the server for news and survey updates.</value>
   </data>
   <data name="Status_WritingCSV" xml:space="preserve">
     <value>Writing data into CSV file...</value>
@@ -1168,7 +1153,7 @@ You can modify Visual Studio installation in Control Panel -&gt; Uninstall Progr
     <value>Flag names longer than the specified limit</value>
   </data>
   <data name="Settings_Lint_MultipleDots" xml:space="preserve">
-    <value>Flas multiple dots</value>
+    <value>Flag multiple dots</value>
   </data>
   <data name="Settings_Lint_MultipleDots_Description" xml:space="preserve">
     <value>Flag objects names with multiple dots</value>

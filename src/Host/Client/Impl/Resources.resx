@@ -245,7 +245,7 @@ is lower than the version of R Tools on the local computer ({1}).
 Please upgrade remote R Services installation to match.</value>
   </data>
   <data name="Error_RemoteUriNotSupported" xml:space="preserve">
-    <value>Remote R requested to open {0}, but only http:// URIs are supported for remote.</value>
+    <value>Remote R requested to open {0}, but only http:// or file:// URIs are supported for remote.</value>
   </data>
   <data name="Message_SuggestMRO" xml:space="preserve">
     <value>Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.
@@ -257,5 +257,8 @@ Please upgrade remote R Services installation to match.</value>
   </data>
   <data name="Trace_SSLPolicyErrors" xml:space="preserve">
     <value>SSL Policy Errors: {0}</value>
+  </data>
+  <data name="Error_UriPathNotFound" xml:space="preserve">
+    <value>Could not find the resource at {0}</value>
   </data>
 </root>

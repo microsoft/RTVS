@@ -123,7 +123,7 @@ namespace Microsoft.R.Components.Test.ConnectionManager {
             };
 
             using (var workflow = _services.GetService<IRInteractiveWorkflowProvider>().GetOrCreate()) {
-                var security = (SecurityServiceStub)workflow.Shell.Security();
+                var security = (SecurityServiceStub)workflow.Services.Security();
                 security.GetUserCredentialsHandler = delegate { throw new RHostDisconnectedException(); };
 
                 var connectionManager = workflow.Connections;

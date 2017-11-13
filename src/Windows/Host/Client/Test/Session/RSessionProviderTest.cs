@@ -318,6 +318,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             await sessionProvider.TrySwitchBrokerAsync(nameof(RSessionProviderTest) + nameof(RemoveBroker)).Should().BeCompletedAsync();
 
+            sessionProvider.IsConnected.Should().BeTrue();
             session1.HostStarted.Should().NotBeCompleted();
             session2.HostStarted.Should().BeCompleted();
 
@@ -325,6 +326,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             await sessionProvider.RemoveBrokerAsync();
 
+            sessionProvider.IsConnected.Should().BeFalse();
             session1.IsHostRunning.Should().BeFalse();
             session2.IsHostRunning.Should().BeFalse();
         }

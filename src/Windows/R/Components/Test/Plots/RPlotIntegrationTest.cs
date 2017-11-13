@@ -25,6 +25,7 @@ using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {
@@ -48,7 +49,7 @@ namespace Microsoft.R.Components.Test.Plots {
             _testMethod = testMethod.MethodInfo;
             _remoteBroker = remoteBroker;
             _testFiles = testFiles;
-            _ui = _workflow.Shell.UI() as TestUIServices;
+            _ui = _workflow.Services.UI() as TestUIServices;
         }
 
         public async Task InitializeAsync() {
@@ -63,7 +64,7 @@ namespace Microsoft.R.Components.Test.Plots {
             return Task.CompletedTask;
         }
 
-        private TestPlotExportDialog ExportDialog => _workflow.Shell.GetService<IRPlotExportDialog>() as TestPlotExportDialog;
+        private TestPlotExportDialog ExportDialog => _workflow.Services.GetService<IRPlotExportDialog>() as TestPlotExportDialog;
 
         [Test(ThreadType.UI)]
         public async Task AllCommandsDisabledWhenNoPlot() {
@@ -771,13 +772,16 @@ namespace Microsoft.R.Components.Test.Plots {
                 // locator mode to end and immediately start again
                 var locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
                 _plotManager.EndLocatorMode(device, LocatorResult.CreateClicked((int)point.X, (int)point.Y));
-                await locatorModeTask;
+                await ParallelTools.When(locatorModeTask, 30000, $"LocatorModeChanged never raised on time for point {point.X}:{point.Y}");
 
                 device.LocatorMode.Should().BeFalse();
                 deviceCommands.EndLocator.Should().BeInvisibleAndDisabled();
 
                 locatorModeTask = EventTaskSources.IRPlotDevice.LocatorModeChanged.Create(device);
-                await locatorModeTask;
+                // Wait for locator only if it isn't started already
+                if (!device.LocatorMode) {
+                    await ParallelTools.When(locatorModeTask, 30000, $"LocatorMode is still {device.LocatorMode}, LocatorModeChanged never raised on time for point {point.X}:{point.Y}");
+                }
             }
 
             // Send a result with a not clicked result, which causes

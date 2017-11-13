@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.ExecutionTracing;
@@ -44,7 +44,7 @@ namespace Microsoft.R.Debugger {
         internal IRSession Session { get; private set; }
         internal IRExecutionTracer Tracer { get; private set; }
         internal AD7Thread MainThread { get; private set; }
-        internal ICoreShell Shell => _workflow.Shell;
+        internal IServiceContainer Services => _workflow.Services;
 
         [Import]
         private IRInteractiveWorkflowProvider WorkflowProvider { get; set; }

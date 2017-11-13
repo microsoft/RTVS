@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
-            var debugger = Workflow.Shell.GetService<IVsDebugger>(typeof(SVsShellDebugger));
+            var debugger = Workflow.Services.GetService<IVsDebugger>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;
             }

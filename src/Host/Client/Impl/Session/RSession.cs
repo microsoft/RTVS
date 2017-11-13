@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
@@ -29,7 +28,6 @@ namespace Microsoft.R.Host.Client.Session {
         private static readonly Task<IRSessionInteraction> CanceledBeginInteractionTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
-        private readonly IServiceContainer _services;
 
         public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         public event EventHandler<RAfterRequestEventArgs> AfterRequest;
@@ -53,6 +51,7 @@ namespace Microsoft.R.Host.Client.Session {
         private RSessionRequestSource _currentRequestSource;
         private TaskCompletionSourceEx<object> _initializedTcs;
         private bool _processingChangeDirectoryCommand;
+        private readonly IFileSystem _fileSystem;
         private readonly Action _onDispose;
         private readonly IExclusiveReaderLock _initializationLock;
         private readonly BinaryAsyncLock _stopHostLock;
@@ -89,12 +88,12 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, string name, IServiceContainer services, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
+        public RSession(int id, string name, IFileSystem fileSystem, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
             Id = id;
             Name = name;
             BrokerClient = brokerClient;
+            _fileSystem = fileSystem;
             _onDispose = onDispose;
-            _services = services;
 
             _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
@@ -484,8 +483,7 @@ namespace Microsoft.R.Host.Client.Session {
                     StopHostAsync().DoNotWait();
                 }
 
-                var oce = ex as OperationCanceledException;
-                if (oce != null) {
+                if (ex is OperationCanceledException oce) {
                     _initializedTcs.SetCanceled(oce);
                 } else {
                     _initializedTcs.SetException(ex);
@@ -522,14 +520,10 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
                 return ".";
             }
             // Most probably tests are running remote broker locally
-            var locator = BrokerExecutableLocator.Create(_services.FileSystem());
-            var hostPath = locator.GetHostExecutablePath();
-            rtvsExists = _services.FileSystem().FileExists(Path.Combine(hostPath, @"rtvs\NAMESPACE"));
-            if(rtvsExists) {
-                return hostPath;
-            }
-            var binPath = Path.GetFullPath(Path.Combine(hostPath, @"..\..\.."));
-            return binPath;
+            var locator = BrokerExecutableLocator.Create(_fileSystem);
+            var hostDirectory = Path.GetDirectoryName(locator.GetHostExecutablePath());
+            rtvsExists = _fileSystem.FileExists(Path.Combine(hostDirectory, @"rtvs\NAMESPACE"));
+            return rtvsExists ? hostDirectory : Path.GetFullPath(Path.Combine(hostDirectory, @"..\..\.."));
         }
 
         private static Task SuppressUI(IRExpressionEvaluator eval) {

@@ -62,6 +62,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to load SSL Certificate: {0}.
+        /// </summary>
+        internal static string Critical_CertificateLoadFailed {
+            get {
+                return ResourceManager.GetString("Critical_CertificateLoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Requested to write &apos;urls&apos; to pipe &apos;{0}&apos;, but it is not a valid pipe handle.
         /// </summary>
         internal static string Critical_InvalidPipeHandle {

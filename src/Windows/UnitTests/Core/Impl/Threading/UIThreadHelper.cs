@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.Threading {
@@ -65,6 +66,7 @@ namespace Microsoft.UnitTests.Core.Threading {
         public ControlledTaskScheduler TaskScheduler => _taskScheduler;
         public IMainThread MainThread => _testMainThread.Value;
         public IProgressDialog ProgressDialog => _testMainThread.Value;
+        public ITaskService TaskService => _testMainThread.Value;
 
         internal TestMainThread CreateTestMainThread() {
             if (_testMainThread.Value != null) {

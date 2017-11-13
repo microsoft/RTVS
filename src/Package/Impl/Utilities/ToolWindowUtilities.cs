@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -21,22 +22,36 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static T ShowWindowPane<T>(int id, bool focus) where T : ToolWindowPane {
             T window = RPackage.Current.FindWindowPane<T>(typeof(T), id, true) as T;
             if (window == null) {
-                return null;
+                return null; 
             }
 
-            var frame = window.Frame as IVsWindowFrame;
+            return TryShowToolWindow(window, focus) ? null : window;
+        }
+
+        public static void ShowToolWindow(ToolWindowPane toolWindow, IMainThread mainThread, bool focus, bool immediate) {
+            if (immediate) {
+                mainThread.Assert();
+                TryShowToolWindow(toolWindow, focus);
+            } else {
+                mainThread.Post(() => TryShowToolWindow(toolWindow, focus));
+            }
+        }
+
+        private static bool TryShowToolWindow(ToolWindowPane toolWindow, bool focus) {
+            var frame = toolWindow.Frame as IVsWindowFrame;
             if (frame == null) {
-                return window;
+                return true;
             }
 
             if (focus) {
                 ErrorHandler.ThrowOnFailure(frame.Show());
-                var content = window.Content as System.Windows.UIElement;
+                var content = toolWindow.Content as System.Windows.UIElement;
                 content?.Focus();
             } else {
                 ErrorHandler.ThrowOnFailure(frame.ShowNoActivate());
             }
-            return window;
+
+            return false;
         }
 
         public static void CreateToolWindow(IVsUIShell vsUiShell, ToolWindowPane toolWindow, int instanceId) {

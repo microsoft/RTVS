@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
@@ -24,9 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
 
         public SaveHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflowVisual interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveHistory, false) {
-            _ui = interactiveWorkflow.Shell.UI();
+            _ui = interactiveWorkflow.Services.UI();
             _interactiveWorkflow = interactiveWorkflow;
-            _settings = _interactiveWorkflow.Shell.GetService<IRSettings>();
+            _settings = _interactiveWorkflow.Services.GetService<IRSettings>();
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 

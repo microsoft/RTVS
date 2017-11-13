@@ -61,7 +61,7 @@ namespace Microsoft.R.Editor.Functions {
                     if (!_fs.DirectoryExists(dir)) {
                         _fs.CreateDirectory(dir);
                     }
-                    using (var file = new FileStream(filePath, FileMode.Truncate, FileAccess.Write)) {
+                    using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write)) {
                         using (var sw = new StreamWriter(file)) {
                             sw.WriteLine(VersionString);
                             foreach (var f in _functions) {

@@ -3,7 +3,8 @@
 
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test;
 
 [assembly: TestFrameworkOverride]
-[assembly: VsAssemblyLoader]
+[assembly: CpsAssemblyLoader]
 [assembly: AssemblyFixtureImport(typeof(TestMainThreadFixture))]

@@ -34,6 +34,8 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter NullOrEmptyIsFalse { get; } = LambdaConverter.Create<IEnumerable>(x => x != null && x.GetEnumerator().MoveNext());
         public static IValueConverter NullOrEmptyIsCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext() ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullOrEmptyIsNotCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext() ? Visibility.Visible : Visibility.Collapsed);
+        public static IValueConverter EmptyIsCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x != null && !x.GetEnumerator().MoveNext() ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter EmptyIsNotCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x != null && !x.GetEnumerator().MoveNext() ? Visibility.Visible : Visibility.Collapsed);
         public static IValueConverter TrueIsCrossCursor { get; } = LambdaConverter.Create<bool>(x => x ? Cursors.Cross : Cursors.Arrow);
         public static IValueConverter TrueIsBold { get; } = LambdaConverter.Create<bool>(x => x ? FontWeights.Bold : FontWeights.Normal);
 

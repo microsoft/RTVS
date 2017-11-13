@@ -43,8 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Settings {
         }
 
         class TestSetting {
-            public string Prop1 { get; set; }
-            public int Prop2 { get; set; }
+            private string Prop1 { get; }
+            private int Prop2 { get; }
 
             public TestSetting(string p1, int p2) {
                 Prop1 = p1;

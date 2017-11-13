@@ -10,6 +10,7 @@ using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Components;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
+using Microsoft.R.Containers;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
@@ -33,7 +34,6 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             "Microsoft.VisualStudio.Platform.VSEditor.dll",
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Windows.dll",
-            "Microsoft.R.Components.Test.dll",
             "Microsoft.R.Components.Windows.Test.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Windows.dll",
@@ -45,6 +45,8 @@ namespace Microsoft.R.Editor.Test.Fixtures {
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             base.SetupServices(serviceManager, testInput);
             serviceManager
+                .AddRComponentsServices()
+                .AddWindowsContainerServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddEditorServices()
@@ -54,7 +56,6 @@ namespace Microsoft.R.Editor.Test.Fixtures {
                 .AddService(new TestRSettings(testInput.FileSytemSafeName))
                 .AddService(new REditorSettings(new TestSettingsStorage()))
                 .AddService<IRInstallationService, RInstallation>();
-            ;
         }
     }
 }

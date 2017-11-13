@@ -214,10 +214,10 @@ namespace Microsoft.R.Editor.Completions {
                         return true;
 
                     case ':':
-                        return TextView.ToEditorView().IsCaretInNamespace();
+                        return TextView.ToEditorView().IsCaretInNamespace(_textBuffer.ToEditorBuffer());
 
                     case '(':
-                        return TextView.ToEditorView().IsCaretInLibraryStatement();
+                        return TextView.ToEditorView().IsCaretInLibraryStatement(_textBuffer.ToEditorBuffer());
 
                     default:
                         if (_settings.ShowCompletionOnFirstChar) {

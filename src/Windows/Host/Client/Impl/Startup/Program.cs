@@ -25,7 +25,7 @@ namespace Microsoft.R.Host.Client {
 
             var programName = "Microsoft.R.Host.Client.Program";
             using (var shell = new CoreShell(programName)) {
-                var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create(null, "local", args[0], null, false), shell.Services, new NullConsole());
+                var localConnector = new LocalBrokerClient(programName, BrokerConnectionInfo.Create(null, "local", args[0], null, false), shell.Services, new NullConsole(), null);
                 var host = localConnector.ConnectAsync(new HostConnectionInfo(programName, new Program())).GetAwaiter().GetResult();
                 _evaluator = host;
                 host.Run().GetAwaiter().GetResult();

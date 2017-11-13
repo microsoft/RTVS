@@ -152,7 +152,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(Services, RContentTypeDefinition.ContentType, Workflow.RSessions)) {
                 var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                var settings = Workflow.Shell.GetService<IRSettings>();
+                var settings = Workflow.Services.GetService<IRSettings>();
                 settings.WorkingDirectory = Path.GetDirectoryName(asmPath);
 
                 script.DoIdle(100);
@@ -255,8 +255,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
-        // Disabled since auto-insertion of braces is off
-        //[Test]
+        [Test(Skip = "Disabled since auto-insertion of braces is off")]
         [Category.Interactive]
         public async Task R_CompletionFunctionBraces01() {
             using (var script = await _editorHost.StartScript(Services, RContentTypeDefinition.ContentType, Workflow.RSessions)) {

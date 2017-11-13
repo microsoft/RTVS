@@ -26,12 +26,11 @@ namespace Microsoft.R.Components.Security {
             _services = services;
         }
 
-        public async Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken) {
-            var creds = ReadSavedCredentials(authority);
-            if (creds != null) {
-                return creds;
-            }
-            return await PromptForWindowsCredentialsAsync(authority, workspaceName, cancellationToken);
+        public Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken) {
+            var (username, password) = ReadUserCredentials(authority);
+            return username != null 
+                ? Task.FromResult(Credentials.Create(username, password)) 
+                : PromptForWindowsCredentialsAsync(authority, workspaceName, cancellationToken);
         }
 
         public bool ValidateX509Certificate(X509Certificate certificate, string message) {
@@ -67,23 +66,38 @@ namespace Microsoft.R.Components.Security {
 
         public bool DeleteUserCredentials(string authority) => NativeMethods.CredDelete(authority, NativeMethods.CRED_TYPE.GENERIC, 0);
 
-        public string GetUserName(string authority) {
+        public (string username, SecureString password) ReadUserCredentials(string authority) {
             using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
-                if (ch != null) {
-                    var credData = ch.GetCredentialData();
-                    return credData.UserName;
+                if (ch == null) {
+                    return (null, null);
                 }
-                return string.Empty;
+
+                var credData = ch.GetCredentialData();
+                return (credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob));
             }
         }
 
-        private Credentials ReadSavedCredentials(string authority) {
-            using (var ch = CredentialHandle.ReadFromCredentialManager(authority)) {
-                if (ch != null) {
-                    var credData = ch.GetCredentialData();
-                    return Credentials.Create(credData.UserName, SecurityUtilities.SecureStringFromNativeBuffer(credData.CredentialBlob));
+        public void SaveUserCredentials(string authority, string userName, SecureString password, bool save) {
+            var creds = default(NativeMethods.CredentialData);
+            try {
+                creds.TargetName = authority;
+                // We have to save the credentials even if user selected NOT to save. Otherwise, user will be asked to enter
+                // credentials for every REPL/intellisense/package/Connection test request. This can provide the best user experience.
+                // We can limit how long the information is saved, in the case whee user selected not to save the credential persistence
+                // is limited to the current log on session. The credentials will not be available if the use logs off and back on.
+                creds.Persist = save ? NativeMethods.CRED_PERSIST.CRED_PERSIST_ENTERPRISE : NativeMethods.CRED_PERSIST.CRED_PERSIST_SESSION;
+                creds.Type = NativeMethods.CRED_TYPE.GENERIC;
+                creds.UserName = userName;
+                creds.CredentialBlob = Marshal.SecureStringToCoTaskMemUnicode(password);
+                creds.CredentialBlobSize = (uint)((password.Length + 1) * sizeof(char)); // unicode password + unicode null
+                if (!NativeMethods.CredWrite(ref creds, 0)) {
+                    var error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error, Resources.Error_CredWriteFailed);
                 }
-                return null;
+            } finally {
+                if (creds.CredentialBlob != IntPtr.Zero) {
+                    Marshal.ZeroFreeCoTaskMemUnicode(creds.CredentialBlob);
+                }
             }
         }
 
@@ -127,7 +141,8 @@ namespace Microsoft.R.Components.Security {
 
                 var userName = userNameBuilder.ToString();
                 var password = SecurityUtilities.SecureStringFromNativeBuffer(passwordStorage);
-                return Save(userName, password, authority, save);
+                SaveUserCredentials(authority, userName, password, save);
+                return Credentials.Create(userName, password);
             } finally {
                 if (inCredBuffer != IntPtr.Zero) {
                     Marshal.FreeCoTaskMem(inCredBuffer);
@@ -141,31 +156,6 @@ namespace Microsoft.R.Components.Security {
                     Marshal.ZeroFreeCoTaskMemUnicode(passwordStorage);
                 }
             }
-        }
-
-        private static Credentials Save(string userName, SecureString password, string authority, bool save) {
-            var creds = default(NativeMethods.CredentialData);
-            try {
-                creds.TargetName = authority;
-                // We have to save the credentials even if user selected NOT to save. Otherwise, user will be asked to enter
-                // credentials for every REPL/intellisense/package/Connection test request. This can provide the best user experience.
-                // We can limit how long the information is saved, in the case whee user selected not to save the credential persistence
-                // is limited to the current log on session. The credentials will not be available if the use logs off and back on.
-                creds.Persist = save ? NativeMethods.CRED_PERSIST.CRED_PERSIST_ENTERPRISE : NativeMethods.CRED_PERSIST.CRED_PERSIST_SESSION;
-                creds.Type = NativeMethods.CRED_TYPE.GENERIC;
-                creds.UserName = userName;
-                creds.CredentialBlob = Marshal.SecureStringToCoTaskMemUnicode(password);
-                creds.CredentialBlobSize = (uint)((password.Length + 1) * sizeof(char)); // unicode password + unicode null
-                if (!NativeMethods.CredWrite(ref creds, 0)) {
-                    var error = Marshal.GetLastWin32Error();
-                    throw new Win32Exception(error, Resources.Error_CredWriteFailed);
-                }
-            } finally {
-                if (creds.CredentialBlob != IntPtr.Zero) {
-                    Marshal.ZeroFreeCoTaskMemUnicode(creds.CredentialBlob);
-                }
-            }
-            return Credentials.Create(userName, password);
         }
 
         private static IntPtr CreatePasswordBuffer()

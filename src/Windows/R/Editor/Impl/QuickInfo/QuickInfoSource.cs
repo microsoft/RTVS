@@ -22,6 +22,7 @@ namespace Microsoft.R.Editor.QuickInfo {
         private readonly ITextBuffer _subjectBuffer;
         private int _lastPosition = -1;
         private IEnumerable<IRFunctionQuickInfo> _infos;
+        private bool _processingRetrigger;
 
         public QuickInfoSource(ITextBuffer subjectBuffer, IServiceContainer services) {
             _services = services;
@@ -127,7 +128,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                         s = Math.Max(s, start);
                         e = Math.Min(e, end);
                         var l = e - s;
-                        if(l < length) {
+                        if (l < length) {
                             applicableSpan = info.ApplicableToRange.As<ITrackingSpan>();
                             length = l;
                         }
@@ -138,19 +139,26 @@ namespace Microsoft.R.Editor.QuickInfo {
         }
 
         private void RetriggerQuickInfoSession(IEnumerable<IRFunctionQuickInfo> infos, IQuickInfoSession session) {
-            if (session == null) {
+            if (session == null || _processingRetrigger) {
                 return;
             }
 
-            var broker = _services.GetService<IQuickInfoBroker>();
-            if (!session.IsDismissed) {
-                session.Dismiss();
-            }
+            _processingRetrigger = true;
+            _services.MainThread().Post(() => {
+                try {
+                    var broker = _services.GetService<IQuickInfoBroker>();
+                    if (!session.IsDismissed) {
+                        session.Dismiss();
+                    }
 
-            _infos = infos;
-            _lastPosition = -1;
+                    _infos = infos;
+                    _lastPosition = -1;
 
-            _services.MainThread().Post(() => broker.TriggerQuickInfo(session.TextView));
+                    broker.TriggerQuickInfo(session.TextView);
+                } finally {
+                    _processingRetrigger = false;
+                }
+            });
         }
 
         #region IDisposable

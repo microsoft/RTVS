@@ -3,16 +3,14 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Settings;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     [Export(typeof(IRPlotManagerProvider))]
     internal class RPlotManagerProvider : IRPlotManagerProvider {
-        public IRPlotManager CreatePlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, IFileSystem fileSystem) {
+        public IRPlotManager CreatePlotManager(IRInteractiveWorkflow interactiveWorkflow) {
             Check.InvalidOperation(() => interactiveWorkflow is IRInteractiveWorkflowVisual);
-            return new RPlotManager(settings, interactiveWorkflow as IRInteractiveWorkflowVisual, fileSystem);
+            return new RPlotManager(interactiveWorkflow as IRInteractiveWorkflowVisual);
         }
     }
 }

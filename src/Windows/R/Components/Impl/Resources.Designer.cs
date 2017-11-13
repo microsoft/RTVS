@@ -241,7 +241,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Add Connection.
         /// </summary>
         public static string ConnectionManager_Add {
             get {
@@ -322,20 +322,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled..
+        /// </summary>
+        public static string ConnectionManager_DeleteLocalDisabledTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteLocalDisabledTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default entry for the running local container cannot be deleted. It will be removed when container is stopped or deleted..
+        /// </summary>
+        public static string ConnectionManager_DeleteLocalDockerDisabledTooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_DeleteLocalDockerDisabledTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete connection &apos;{0}&apos;.
         /// </summary>
         public static string ConnectionManager_DeleteTooltip_Format {
             get {
                 return ResourceManager.GetString("ConnectionManager_DeleteTooltip_Format", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled..
-        /// </summary>
-        public static string ConnectionManager_DeleteTooltipDisabled {
-            get {
-                return ResourceManager.GetString("ConnectionManager_DeleteTooltipDisabled", resourceCulture);
             }
         }
         
@@ -354,6 +363,15 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_EditedConnectionHasChanges {
             get {
                 return ResourceManager.GetString("ConnectionManager_EditedConnectionHasChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit local container connection &apos;{0}&apos;.
+        /// </summary>
+        public static string ConnectionManager_EditLocalDockerTooltip_Format {
+            get {
+                return ResourceManager.GetString("ConnectionManager_EditLocalDockerTooltip_Format", resourceCulture);
             }
         }
         
@@ -382,6 +400,17 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_InformationTooltipFormatLocal {
             get {
                 return ResourceManager.GetString("ConnectionManager_InformationTooltipFormatLocal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host: {0}
+        ///Container name: {1}
+        ///Arguments: {2}.
+        /// </summary>
+        public static string ConnectionManager_InformationTooltipFormatLocalDocker {
+            get {
+                return ResourceManager.GetString("ConnectionManager_InformationTooltipFormatLocalDocker", resourceCulture);
             }
         }
         
@@ -428,6 +457,24 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_LocalConnections_Tooltip {
             get {
                 return ResourceManager.GetString("ConnectionManager_LocalConnections_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Running Containers.
+        /// </summary>
+        public static string ConnectionManager_LocalDockerConnections {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalDockerConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Containers Connections.
+        /// </summary>
+        public static string ConnectionManager_LocalDockerConnections_Tooltip {
+            get {
+                return ResourceManager.GetString("ConnectionManager_LocalDockerConnections_Tooltip", resourceCulture);
             }
         }
         
@@ -565,6 +612,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Containers....
+        /// </summary>
+        public static string ConnectionManager_ShowContainers {
+            get {
+                return ResourceManager.GetString("ConnectionManager_ShowContainers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to switch from &apos;{0}&apos; to &apos;{1}&apos;? Switching will stop your current session, all unsaved data will be lost.
         ///
         ///This prompt can be suppressed in R Tools | Options..
@@ -654,6 +710,431 @@ namespace Microsoft.R.Components {
         public static string ConnectionManager_TestingConnection {
             get {
                 return ResourceManager.GetString("ConnectionManager_TestingConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ContainerManager_Cancel {
+            get {
+                return ResourceManager.GetString("ContainerManager_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker service fails because of the following error:
+        ///.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_FirstPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  when erros is fixed..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_FourthPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_FourthPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///Please click .
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceHasErrors_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceHasErrors_ThirdPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_FifthPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FifthPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t installed. To start working with containers, .
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_FirstPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_FourthPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_FourthPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to install Docker for Windows.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  and click .
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotInstalled_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotInstalled_ThirdPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Docker service isn&apos;t running.
+        ///To start working with containers, run Docker for Windows and click .
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning_FirstPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..
+        /// </summary>
+        public static string ContainerManager_ContainerServiceIsNotRunning_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_ContainerServiceIsNotRunning_ThirdPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_CreationError {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_CreationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading available versions....
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_LoadingVersions {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_LoadingVersions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Name {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Password {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Port.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Port {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Localhost port used to connect to R daemon in the container..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_PortTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_PortTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_UserName {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_Version {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_Version", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No images on docker hub or local images have been found. Please check internet connection and click .
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionsNotFound_FirstPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionsNotFound_FirstPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to refresh.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionsNotFound_SecondPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionsNotFound_SecondPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionsNotFound_ThirdPart {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionsNotFound_ThirdPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version of R that matches Docker image tag..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDocker_VersionTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDocker_VersionTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t download content of the file &apos;{0}&apos;..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_FileAccessError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Http request to &apos;{0}&apos; has failed..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_HttpError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_HttpError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path.
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_Path {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_Path", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t access &apos;{0}&apos;..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_UnauthorizedAccess_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid URI or file path..
+        /// </summary>
+        public static string ContainerManager_CreateLocalDockerFromFile_UriParseError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateLocalDockerFromFile_UriParseError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new Docker container.
+        /// </summary>
+        public static string ContainerManager_CreateTooltip {
+            get {
+                return ResourceManager.GetString("ContainerManager_CreateTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re currently connected to R which is hosted on container &apos;{0}&apos;.
+        ///If you delete this container, current connection will be terminated.
+        ///All data will be lost. Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteActiveWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteActiveWarning_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error deleting &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_DeleteError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Container &apos;{0}&apos; is currently running.
+        ///It has to be stopped before deleting. All data will be lost.
+        ///Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteRunningWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteRunningWarning_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete container &apos;{0}&apos;.
+        /// </summary>
+        public static string ContainerManager_DeleteTooltip_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteTooltip_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re going to delete container &apos;{0}&apos;.
+        ///All data will be lost. Do you wish to proceed?.
+        /// </summary>
+        public static string ContainerManager_DeleteWarning_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_DeleteWarning_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Local Containers.
+        /// </summary>
+        public static string ContainerManager_LocalDocker {
+            get {
+                return ResourceManager.GetString("ContainerManager_LocalDocker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From Template.
+        /// </summary>
+        public static string ContainerManager_LocalDockerFromFile {
+            get {
+                return ResourceManager.GetString("ContainerManager_LocalDockerFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Workspaces....
+        /// </summary>
+        public static string ContainerManager_ShowWorkspaces {
+            get {
+                return ResourceManager.GetString("ContainerManager_ShowWorkspaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t start container &apos;{0}&apos; because its port is taken by container &apos;{1}&apos;.
+        ///Do you want to stop &apos;{1}&apos; and then start &apos;{0}&apos;?
+        ///All unsaved data will be lost!.
+        /// </summary>
+        public static string ContainerManager_Start_ActivePortIsBusy_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_Start_ActivePortIsBusy_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t start container &apos;{0}&apos; because its port is taken by container &apos;{1}&apos;.
+        ///Do you want to stop &apos;{1}&apos; and then start &apos;{0}&apos;?.
+        /// </summary>
+        public static string ContainerManager_Start_PortIsBusy_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_Start_PortIsBusy_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error starting &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_StartError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StartError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start container &apos;{0}&apos;.
+        /// </summary>
+        public static string ContainerManager_StartTooltip_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StartTooltip_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error stopping &apos;{0}&apos; container. Please see R Containers output for details..
+        /// </summary>
+        public static string ContainerManager_StopError_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StopError_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop container &apos;{0}&apos;.
+        /// </summary>
+        public static string ContainerManager_StopTooltip_Format {
+            get {
+                return ResourceManager.GetString("ContainerManager_StopTooltip_Format", resourceCulture);
             }
         }
         

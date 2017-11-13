@@ -69,11 +69,8 @@
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
     <Compile Include="ConnectionManager\Commands\ReconnectCommand.cs" />
     <Compile Include="ConnectionManager\Commands\SwitchToConnectionCommand.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerVisual.cs" />
-    <Compile Include="ConnectionManager\IConnectionManagerVisualProvider.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManager.cs" />
     <Compile Include="ConnectionManager\Implementation\ConnectionManagerProvider.cs" />
-    <Compile Include="ConnectionManager\Implementation\ConnectionManagerVisual.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionManagerViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBaseViewModel.cs" />
@@ -88,12 +85,19 @@
     <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionStatusBarViewModel.cs" />
     <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionViewModel.cs" />
     <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\ContainerManagerViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\ContainerViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\CreateLocalDockerFromFileViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\CreateLocalDockerViewModel.cs" />
+    <Compile Include="ContainerManager\Implementation\ViewModel\CreateLocalDockerViewModelBase.cs" />
+    <Compile Include="ContainerManager\Implementation\View\ContainerManagerControl.xaml.cs">
+      <DependentUpon>ContainerManagerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
     <Compile Include="Documentation\LocalDocumentationPaths.cs" />
     <Compile Include="Documentation\OnlineDocumentationUrls.cs" />
     <Compile Include="Extensions\ClipboardExtensions.cs" />
-    <Compile Include="Extensions\PackageManagerExtensions.cs" />
     <Compile Include="Extensions\PlotManagerExtensions.cs" />
     <Compile Include="Extensions\InteractiveWorkflowExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
@@ -146,9 +150,6 @@
     <Compile Include="Logging\EventLogLoggerProvider.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="OS\Win32MessageBox.cs" />
-    <Compile Include="PackageManager\IRPackageManagerVisual.cs" />
-    <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\ExportArguments.cs" />
     <Compile Include="Plots\ExportImageParameters.cs" />
@@ -219,7 +220,6 @@
     </Compile>
     <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManagerProvider.cs" />
-    <Compile Include="PackageManager\Implementation\RPackageManagerVisualComponent.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\PackageList.xaml.cs">
       <DependentUpon>PackageList.xaml</DependentUpon>
@@ -268,9 +268,11 @@
     <Compile Include="StatusBar\IStatusBar.cs" />
     <Compile Include="StatusBar\IStatusBarProgress.cs" />
     <Compile Include="StatusBar\StatusBarProgressData.cs" />
+    <Compile Include="View\IToolWindow.cs" />
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />
+    <Compile Include="View\IRInteractiveWorkflowToolWindowService.cs" />
     <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -293,6 +295,10 @@
     <ProjectReference Include="..\..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25CD8690-6208-4740-B123-6DBCE6B9444A}</Project>
       <Name>Microsoft.Languages.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Containers\Impl\Microsoft.R.Containers.csproj">
+      <Project>{BAEA19C5-E1F7-4580-AE19-9FB3C890570B}</Project>
+      <Name>Microsoft.R.Containers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
@@ -338,6 +344,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ContainerManager\Implementation\View\ContainerManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Information\HostLoadIndicator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -374,6 +384,7 @@
   <ItemGroup>
     <Resource Include="Resources\packageicon.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

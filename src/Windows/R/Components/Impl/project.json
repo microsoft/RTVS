@@ -9,7 +9,8 @@
     "Microsoft.VisualStudio.Text.Logic": "15.4.27004",
     "Microsoft.VisualStudio.Text.UI": "15.4.27004",
     "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
-    "Newtonsoft.Json": "10.0.3"
+    "Newtonsoft.Json": "10.0.3",
+    "System.ValueTuple": "4.4.0"
   },
   "frameworks": {
     "net461": {}

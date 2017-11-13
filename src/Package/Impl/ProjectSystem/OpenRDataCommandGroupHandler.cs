@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             var workflow = _workflowProvider.GetOrCreate();
-            var services = workflow.Shell.Services;
+            var services = workflow.Services;
             var messageResult = services.ShowMessage(Resources.LoadWorkspaceIntoGlobalEnvironment.FormatCurrent(rDataNode.FilePath), MessageButtons.YesNo);
             if (messageResult == MessageButtons.No) {
                 return true;

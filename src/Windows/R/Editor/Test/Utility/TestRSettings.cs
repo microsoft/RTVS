@@ -37,6 +37,14 @@ namespace Microsoft.R.Editor.Test.Utility {
             get => _connections[0]; set { }
         }
 
+        public string LastLocalDockerUsername {
+            get => string.Empty; set { }
+        }
+
+        public string LastLocalDockerPassword {
+            get => string.Empty; set { }
+        }
+
         public string CranMirror {
             get => string.Empty; set { }
         }
@@ -86,22 +94,6 @@ namespace Microsoft.R.Editor.Test.Utility {
         }
 
         public bool ShowDotPrefixedVariables { get; set; }
-
-        public SurveyNewsPolicy SurveyNewsCheck {
-            get => SurveyNewsPolicy.Disabled; set { }
-        }
-
-        public DateTime SurveyNewsLastCheck {
-            get => DateTime.MinValue; set { }
-        }
-
-        public string SurveyNewsFeedUrl {
-            get => string.Empty; set { }
-        }
-
-        public string SurveyNewsIndexUrl {
-            get => string.Empty; set { }
-        }
 
         public int RCodePage {
             get => 1252; set { }

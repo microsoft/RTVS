@@ -226,6 +226,12 @@ namespace Microsoft.Common.Core {
         public static DateTime ToDateTimeOrDefault(this string value)
             => DateTime.TryParse(value, out DateTime ret) ? ret : default(DateTime);
 
+        public static Guid ToGuid(this string value) {
+            using (var md5 = MD5.Create()) {
+                return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(value)));
+            }
+        }
+
         public static string RemoveLineBreaks(this string s) 
             => s.Replace('\n', ' ').Replace('\r', ' ').Replace("  ", " ");
     }

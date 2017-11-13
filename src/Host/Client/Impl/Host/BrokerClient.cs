@@ -17,7 +17,9 @@ using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Host.Client.BrokerServices;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Transports;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
@@ -33,6 +35,7 @@ namespace Microsoft.R.Host.Client.Host {
             TimeSpan.FromSeconds(5);
 #endif
         private static readonly IReadOnlyDictionary<Type, string> _typeToEndpointMap = new Dictionary<Type, string>() {
+            { typeof(IEnumerable<InterpreterInfo>), "interpreters"},
             { typeof(AboutHost), "info/about"},
             { typeof(HostLoad), "info/load"}
         };
@@ -42,6 +45,7 @@ namespace Microsoft.R.Host.Client.Host {
         private readonly ICredentialsDecorator _credentials;
         private readonly IConsole _console;
         private readonly IServiceContainer _services;
+        private readonly IRSessionProvider _sessionProvider;
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
@@ -50,10 +54,10 @@ namespace Microsoft.R.Host.Client.Host {
 
         public BrokerConnectionInfo ConnectionInfo { get; }
         public string Name { get; }
-        public bool IsRemote => ConnectionInfo.IsRemote;
+        public bool IsRemote => ConnectionInfo.IsUrlBased;
         public bool IsVerified { get; protected set; }
 
-        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IConsole console, IServiceContainer services) {
+        protected BrokerClient(string name, BrokerConnectionInfo connectionInfo, ICredentialsDecorator credentials, IConsole console, IServiceContainer services, IRSessionProvider sessionProvider = null) {
             Name = name;
             Log = services.Log();
 
@@ -63,6 +67,7 @@ namespace Microsoft.R.Host.Client.Host {
             _console = console;
             ConnectionInfo = connectionInfo;
             _services = services;
+            _sessionProvider = sessionProvider;
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
@@ -224,15 +229,33 @@ namespace Microsoft.R.Host.Client.Host {
             return ex.ApiError.ToString();
         }
 
-        public virtual Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
+        public virtual async Task<string> HandleUrlAsync(string url, CancellationToken cancellationToken) {
             var ub = new UriBuilder(url);
             if (ub.Scheme.StartsWithIgnoreCase("file")) {
                 var remotingService = _services.GetService<IRemotingWebServer>();
                 var fs = _services.GetService<IFileSystem>();
-                return remotingService.HandleLocalStaticFileUrlAsync(url, _console, cancellationToken);
+                return await remotingService.HandleLocalStaticFileUrlAsync(url, _console, cancellationToken);
             }
 
-            return Task.FromResult(url);
+            if (!url.StartsWithIgnoreCase("file") && 
+                !url.StartsWithIgnoreCase("http") && 
+                _sessionProvider != null) {
+                try {
+                    IRExpressionEvaluator session = _sessionProvider.GetOrCreate("REPL");
+                    if (await session.FileExistsAsync(url, cancellationToken)) {
+                        var fullPath = await session.NormalizePathAsync(url, cancellationToken);
+                        var remotingService = _services.GetService<IRemotingWebServer>();
+                        var fs = _services.GetService<IFileSystem>();
+                        return await remotingService.HandleLocalStaticFileUrlAsync(fullPath, _console, cancellationToken);
+                    }
+                } catch(Exception ex) when (!ex.IsCriticalException()) {
+                    // This is best effort to find the resource. if it was not found ignore it.
+                    _console.WriteErrorLine(Resources.Error_UriPathNotFound.FormatInvariant(url));
+                    return null;
+                }
+             }
+
+            return url;
         }
     }
 }
