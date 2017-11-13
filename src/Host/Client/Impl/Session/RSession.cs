@@ -523,7 +523,7 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
             var locator = BrokerExecutableLocator.Create(_fileSystem);
             var hostDirectory = Path.GetDirectoryName(locator.GetHostExecutablePath());
             rtvsExists = _fileSystem.FileExists(Path.Combine(hostDirectory, @"rtvs\NAMESPACE"));
-            return rtvsExists ? hostDirectory : Path.GetFullPath(Path.Combine(hostDirectory, @"..\..\.."));
+            return rtvsExists ? hostDirectory : Path.GetFullPath(Path.Combine(hostDirectory, @"..\.."));
         }
 
         private static Task SuppressUI(IRExpressionEvaluator eval) {

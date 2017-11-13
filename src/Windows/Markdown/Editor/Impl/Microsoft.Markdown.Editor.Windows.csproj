@@ -89,6 +89,11 @@
   <ItemGroup>
     <PreviewTemplate Include="Markdown\PreviewTemplate.html" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Markdown\PreviewTemplate.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(PreviewTemplate)" DestinationFolder="$(BinDirectory)\$(Configuration)\Markdown" />
   </Target>
