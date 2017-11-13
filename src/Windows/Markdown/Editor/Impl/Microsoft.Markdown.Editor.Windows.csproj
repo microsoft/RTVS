@@ -66,11 +66,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Markdown\PreviewTemplate.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup> 
-     <ItemGroup>
     <Compile Update="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
