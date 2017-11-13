@@ -151,7 +151,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             public object ToSimpleType() {
                 if (Value != null && !IsSimpleType(Value.GetType())) {
                     // Must escape JSON since VS roaming settings are converted to JSON
-                    return JsonConvert.ToString(JsonConvert.SerializeObject(Value));
+                    var json = JsonConvert.SerializeObject(Value);
+                    return JsonConvert.ToString(json);
                 }
                 return Value;
             }
