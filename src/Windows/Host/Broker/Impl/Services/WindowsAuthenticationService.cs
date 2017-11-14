@@ -15,12 +15,12 @@ using Microsoft.R.Host.Broker.UserProfile;
 using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Services {
-    public class WindowsAuthenticationService : IAuthenticationService {
+    public class WindowsAuthenticationService : IPlatformAuthenticationService {
         private readonly SecurityOptions _options;
-        private readonly ILogger<IAuthenticationService> _logger;
+        private readonly ILogger<IPlatformAuthenticationService> _logger;
         private readonly UserProfileManager _userProfileManager;
 
-        public WindowsAuthenticationService(UserProfileManager userProfileManager, IOptions<SecurityOptions> options, ILogger<IAuthenticationService> logger) {
+        public WindowsAuthenticationService(UserProfileManager userProfileManager, IOptions<SecurityOptions> options, ILogger<IPlatformAuthenticationService> logger) {
             _userProfileManager = userProfileManager;
             _options = options.Value;
             _logger = logger;
@@ -30,29 +30,28 @@ namespace Microsoft.R.Host.Broker.Services {
             var user = new StringBuilder(NativeMethods.CREDUI_MAX_USERNAME_LENGTH + 1);
             var domain = new StringBuilder(NativeMethods.CREDUI_MAX_DOMAIN_LENGTH + 1);
 
-            uint error = NativeMethods.CredUIParseUserName(username, user, user.Capacity, domain, domain.Capacity);
+            var error = NativeMethods.CredUIParseUserName(username, user, user.Capacity, domain, domain.Capacity);
             if (error != 0) {
                 _logger.LogError(Resources.Error_UserNameParse, username, error.ToString("X"));
                 return null;
             }
 
-            IntPtr token;
-            WindowsIdentity winIdentity = null;
-
-            string profilePath = string.Empty;
+            var profilePath = string.Empty;
             _logger.LogTrace(Resources.Trace_LogOnUserBegin, username);
-            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out token)) {
+
+            WindowsIdentity winIdentity = null;
+            if (NativeMethods.LogonUser(user.ToString(), domain.ToString(), password, (int)LogonType.LOGON32_LOGON_NETWORK, (int)LogonProvider.LOGON32_PROVIDER_DEFAULT, out var token)) {
                 _logger.LogTrace(Resources.Trace_LogOnSuccess, username);
                 winIdentity = new WindowsIdentity(token);
 
-                StringBuilder profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
-                uint size = (uint)profileDir.Capacity;
+                var profileDir = new StringBuilder(NativeMethods.MAX_PATH * 2);
+                var size = (uint)profileDir.Capacity;
                 if (NativeMethods.GetUserProfileDirectory(token, profileDir, ref size)) {
                     profilePath = profileDir.ToString();
                     _logger.LogTrace(Resources.Trace_UserProfileDirectory, username, profilePath);
                 } else {
 #if DEBUG
-                    CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+                    var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 #else
                     CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 #endif
@@ -95,7 +94,6 @@ namespace Microsoft.R.Host.Broker.Services {
             var principal = new WindowsPrincipal(winIdentity);
             if (principal.IsInRole(_options.AllowedGroup)) {
                 var claims = new[] {
-                    //new Claim(ClaimTypes.Name, username),
                     new Claim(Claims.RUser, ""),
                     new Claim(Claims.RUserProfileDir, profilePath)
                 };

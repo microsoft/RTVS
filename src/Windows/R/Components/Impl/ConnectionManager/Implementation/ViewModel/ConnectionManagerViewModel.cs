@@ -19,7 +19,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.Imaging;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation.ViewModel {

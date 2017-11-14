@@ -916,4 +916,19 @@ This prompt can be suppressed in R Tools | Options.
   <data name="ContainerManager_CreateLocalDocker_Port" xml:space="preserve">
     <value>Local Port</value>
   </data>
+  <data name="Error_CredentialHandleInvalid" xml:space="preserve">
+    <value>Credential handle is invalid.</value>
+  </data>
+  <data name="Error_CredReadFailed" xml:space="preserve">
+    <value>Reading credentails failed with Win32 error.</value>
+  </data>
+  <data name="Error_CredWriteFailed" xml:space="preserve">
+    <value>Writing credentails failed with Win32 error.</value>
+  </data>
+  <data name="Info_ConnectingTo" xml:space="preserve">
+    <value>Connecting to {0}</value>
+  </data>
+  <data name="MessageBoxTitle" xml:space="preserve">
+    <value>R Tools</value>
+  </data>
 </root>

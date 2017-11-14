@@ -21,7 +21,7 @@ using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
@@ -170,8 +170,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         private async Task SetMirrorToSession() {
-            string mirrorName = _settings.CranMirror;
-            string mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
+            var mirrorName = _settings.CranMirror;
+            var mirrorUrl = CranMirrorList.UrlFromName(mirrorName);
 
             foreach (var s in RSessions.GetSessions()) {
                 try {

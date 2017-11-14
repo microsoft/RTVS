@@ -13,7 +13,7 @@ using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Functions;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;

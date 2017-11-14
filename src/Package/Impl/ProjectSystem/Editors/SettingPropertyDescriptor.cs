@@ -6,9 +6,9 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Drawing.Design;
-using Microsoft.Common.Core.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
+using Microsoft.R.Platform.Composition;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     /// <summary>

@@ -3,8 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio.Text;
 using Microsoft.Languages.Core.Text;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Text {
     /// <summary>

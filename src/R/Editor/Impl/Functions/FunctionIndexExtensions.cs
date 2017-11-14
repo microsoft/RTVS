@@ -18,7 +18,12 @@ namespace Microsoft.R.Editor.Functions {
         /// <param name="packageName">Package name (can be null if not known)</param>
         /// <param name="callback">Callback to invoke when information becomes available</param>
         /// <param name="parameter">User data to pass to the callback method</param>
-        public static void GetFunctionInfoAsync(this IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter = null) {
+        /// <param name="mainThreadRequired">Indicates if callback must be invoked on a UI (main) thread</param>
+        public static void GetFunctionInfoAsync(this IFunctionIndex functionIndex
+            , string functionName
+            , string packageName
+            , Action<IFunctionInfo, object> callback
+            , object parameter = null) {
             var fi = functionIndex.GetFunctionInfo(functionName, packageName);
             if (fi != null) {
                 callback(fi, parameter);
@@ -27,13 +32,16 @@ namespace Microsoft.R.Editor.Functions {
             }
         }
 
-        private static async Task GetFunctionInfoFromPackageAsync(IFunctionIndex functionIndex, string functionName, string packageName, Action<IFunctionInfo, object> callback, object parameter) {
+        private static async Task GetFunctionInfoFromPackageAsync(IFunctionIndex functionIndex
+            , string functionName
+            , string packageName
+            , Action<IFunctionInfo, object> callback
+            , object parameter) {
             IFunctionInfo fi = null;
             packageName = packageName ?? await functionIndex.GetPackageNameAsync(functionName);
             if (!string.IsNullOrEmpty(packageName)) {
                 fi = await functionIndex.GetFunctionInfoAsync(functionName, packageName);
             }
-            await functionIndex.Services.MainThread().SwitchToAsync();
             callback(fi, parameter);
         }
 

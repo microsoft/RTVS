@@ -16,6 +16,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Platform.OS;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -144,7 +145,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public string OpenInCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
-            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, VsAppShell.Current, VsAppShell.Current.FileSystem(), new ProcessServices()).DoNotWait();
+            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation, VsAppShell.Current, VsAppShell.Current.FileSystem(), 
+                new WindowsProcessServices()).DoNotWait();
         }
 
         /// <summary>

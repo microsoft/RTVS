@@ -16,7 +16,8 @@ using Microsoft.R.Containers.Docker;
 using Microsoft.UnitTests.Core.XUnit;
 using System.IO;
 using System;
-using System.Collections.Generic;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using NSubstitute;
 
 namespace Microsoft.R.Containers.Windows.Test {
@@ -27,8 +28,8 @@ namespace Microsoft.R.Containers.Windows.Test {
 
         public WindowsContainerTests() {
             _services = new ServiceManager()
-                .AddService<IFileSystem, FileSystem>()
-                .AddService<IProcessServices, ProcessServices>()
+                .AddService<IFileSystem, WindowsFileSystem>()
+                .AddService<IProcessServices, WindowsProcessServices>()
                 .AddService<IRegistry, RegistryImpl>()
                 .AddService(Substitute.For<IActionLog>())
                 .AddService<IOutputService, TestOutputService>();

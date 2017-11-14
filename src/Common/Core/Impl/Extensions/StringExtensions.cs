@@ -231,5 +231,8 @@ namespace Microsoft.Common.Core {
                 return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(value)));
             }
         }
+
+        public static string RemoveLineBreaks(this string s) 
+            => s.Replace('\n', ' ').Replace('\r', ' ').Replace("  ", " ");
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.Languages.Editor.Settings;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Validation.Lint {
-    public sealed class LintOptions {
+    public sealed class LintOptions: ILintOptions {
         private readonly Func<IEditorSettingsStorage> _storageAccess;
         private IEditorSettingsStorage _storage;
 

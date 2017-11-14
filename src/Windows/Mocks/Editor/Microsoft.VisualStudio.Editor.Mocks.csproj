@@ -1,0 +1,47 @@
+﻿<Project>
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <RootNamespace>Microsoft.VisualStudio.Editor.Mocks</RootNamespace>
+    <AssemblyName>Microsoft.VisualStudio.Editor.Mocks</AssemblyName>
+  </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="..\..\..\R.Settings.props" />
+  <PropertyGroup>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />   
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />   
+    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />   
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />   
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+</Project>

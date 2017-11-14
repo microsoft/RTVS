@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
@@ -21,6 +20,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Host.Client.BrokerServices;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Transports;
 using Microsoft.R.Host.Protocol;
 using static System.FormattableString;
 
@@ -49,7 +49,7 @@ namespace Microsoft.R.Host.Client.Host {
 
         protected DisposableBag DisposableBag { get; } = DisposableBag.Create<BrokerClient>();
         protected IActionLog Log { get; }
-        protected WinHttpHandler HttpClientHandler { get; private set; }
+        protected HttpClientHandler HttpClientHandler { get; private set; }
         protected HttpClient HttpClient { get; private set; }
 
         public BrokerConnectionInfo ConnectionInfo { get; }
@@ -71,9 +71,9 @@ namespace Microsoft.R.Host.Client.Host {
         }
 
         protected void CreateHttpClient(Uri baseAddress) {
-            HttpClientHandler = new WinHttpHandler {
+            HttpClientHandler = new HttpClientHandler {
                 PreAuthenticate = true,
-                ServerCredentials = _credentials
+                Credentials = _credentials
             };
 
             try {
@@ -125,7 +125,7 @@ namespace Microsoft.R.Host.Client.Host {
             DisposableBag.ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var uniqueSessionName = $"{connectionInfo.Name}_{ConnectionInfo.ParametersId}";
+            var uniqueSessionName = $"{connectionInfo.Name}_{ConnectionInfo.ParametersId}_{Guid.NewGuid()}";
             try {
                 var sessionExists = connectionInfo.PreserveSessionData && await IsSessionRunningAsync(uniqueSessionName, cancellationToken);
                 if (sessionExists) {
@@ -142,6 +142,8 @@ namespace Microsoft.R.Host.Client.Host {
                 return CreateRHost(uniqueSessionName, connectionInfo.Callbacks, webSocket);
             } catch (HttpRequestException ex) {
                 throw await HandleHttpRequestExceptionAsync(ex);
+            } catch (WebSocketException wsex) {
+                throw new RHostDisconnectedException(Resources.Error_HostNotResponding.FormatInvariant(Name, wsex.Message), wsex);
             }
         }
 
@@ -177,29 +179,20 @@ namespace Microsoft.R.Host.Client.Host {
 
         private async Task<WebSocket> ConnectToBrokerAsync(string name, CancellationToken cancellationToken) {
             using (Log.Measure(LogVerbosity.Normal, Invariant($"Connect to broker session \"{name}\""))) {
-                var wsClientFactory = _services.GetService<IWebSocketClientService>();
-                var wsClient = wsClientFactory.Create(new List<string> { "Microsoft.R.Host" });
-                wsClient.KeepAliveInterval = HeartbeatTimeout;
-                wsClient.InspectResponse = response => {
-                    if (response.StatusCode == HttpStatusCode.Forbidden) {
-                        throw new UnauthorizedAccessException();
-                    }
-                };
-
                 var pipeUri = new UriBuilder(HttpClient.BaseAddress) {
+                    // Host = "localhost.fiddler",
                     Scheme = HttpClient.BaseAddress.IsHttps() ? "wss" : "ws",
                     Path = $"sessions/{name}/pipe"
                 }.Uri;
 
+                var wsClient = new WebSocketClient(pipeUri, new List<string> { "Microsoft.R.Host" }, HeartbeatTimeout, HttpClientHandler.Credentials);
                 while (true) {
-                    var request = wsClient.CreateRequest(pipeUri, HttpClientHandler.ServerCredentials);
-
                     using (await _credentials.LockCredentialsAsync(cancellationToken)) {
                         try {
-                            return await wsClient.ConnectAsync(request, cancellationToken);
+                            return await wsClient.ConnectAsync(cancellationToken);
                         } catch (UnauthorizedAccessException) {
                             _credentials.InvalidateCredentials();
-                        } catch (Exception ex) when (ex is InvalidOperationException) {
+                        } catch (Exception ex) when (ex is InvalidOperationException || ex is WebSocketException) {
                             throw new RHostDisconnectedException(Resources.HttpErrorCreatingSession.FormatInvariant(Name, ex.Message), ex);
                         }
                     }

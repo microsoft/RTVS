@@ -62,7 +62,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             var content = @"x <- as.Date.character(x)";
 
             var session = await TriggerSessionAsync(content, 21);
-            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 23);
+            var parametersInfo = session.Ast.GetSignatureInfoFromBuffer(session.EditorBuffer.CurrentSnapshot, 20);
 
             session.ApplicableSpan.Should().NotBeNull();
             session.QuickInfoContent.Should().ContainSingle()

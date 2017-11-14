@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Testing;
+using Microsoft.R.Platform.Composition;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
@@ -15,7 +16,7 @@ using VsPackage = Microsoft.VisualStudio.Shell.Package;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsServiceManager : ServiceManager {
         private readonly ICoreShell _shell;
-        private Lazy<IComponentModel> _componentModel = new Lazy<IComponentModel>(() => (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel)));
+        private readonly Lazy<IComponentModel> _componentModel = new Lazy<IComponentModel>(() => (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel)));
         private ICompositionService _compositionService;
         private ExportProvider _exportProvider;
 

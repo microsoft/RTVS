@@ -7,12 +7,10 @@ using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Threading;
-using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     internal class TaskObserver : IDisposable {
+        private readonly ITestMainThreadFixture _testMainThreadFixture;
         private readonly Action _onDispose;
         private readonly Action<Task, object> _afterTaskCompleted;
         private readonly TaskCompletionSource<Exception> _tcs;
@@ -22,7 +20,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         public Task<Exception> Task => _tcs.Task;
 
-        public TaskObserver(Action onDispose) {
+        public TaskObserver(ITestMainThreadFixture testMainThreadFixture, Action onDispose) {
+            _testMainThreadFixture = testMainThreadFixture;
             _onDispose = onDispose;
             _afterTaskCompleted = AfterTaskCompleted;
             _tcs = new TaskCompletionSource<Exception>();
@@ -32,8 +31,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public void Add(Task task) {
             Interlocked.Increment(ref _count);
             _stackTraces.TryAdd(task.Id, new StackTrace(2).ToString());
-
-            var postToMainThread = UIThreadHelper.Instance.MainThread.CheckAccess();
+            var postToMainThread = _testMainThreadFixture.CheckAccess();
             task.ContinueWith(_afterTaskCompleted, postToMainThread, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
@@ -56,7 +54,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
                 var postToMainThread = (bool)state;
                 if (postToMainThread) {
-                    UIThreadHelper.Instance.SyncContext.Post(ReThrowTaskException, exception);
+                    _testMainThreadFixture.Post(ReThrowTaskException, exception);
                 } else {
                     _tcs.TrySetException(exception);
                 }

@@ -12,7 +12,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions;
-using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completions.Providers;
 using Microsoft.R.Editor.Functions;
@@ -49,8 +48,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
             }
 
             // First check file completion - it happens inside strings
-            string directory;
-            if (CanShowFileCompletion(ast, context.Position, out directory)) {
+            if (CanShowFileCompletion(ast, context.Position, out var directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
                     providers.Add(new FilesCompletionProvider(directory, _services));
                 }

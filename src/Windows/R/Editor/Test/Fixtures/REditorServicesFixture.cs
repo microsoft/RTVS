@@ -15,7 +15,8 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Fixtures {
@@ -33,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             "Microsoft.VisualStudio.Platform.VSEditor.dll",
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Windows.dll",
-            "Microsoft.R.Components.Test.dll",
+            "Microsoft.R.Components.Windows.Test.dll",
             "Microsoft.Languages.Editor.dll",
             "Microsoft.Languages.Editor.Windows.dll",
             "Microsoft.R.Editor.dll",
@@ -46,7 +47,6 @@ namespace Microsoft.R.Editor.Test.Fixtures {
             serviceManager
                 .AddRComponentsServices()
                 .AddWindowsContainerServices()
-                .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddEditorServices()
@@ -54,7 +54,8 @@ namespace Microsoft.R.Editor.Test.Fixtures {
                 .AddService(new EditorSupportMock())
                 .AddService(new TestImageService())
                 .AddService(new TestRSettings(testInput.FileSytemSafeName))
-                .AddService(new REditorSettings(new TestSettingsStorage()));
+                .AddService(new REditorSettings(new TestSettingsStorage()))
+                .AddService<IRInstallationService, RInstallation>();
         }
     }
 }

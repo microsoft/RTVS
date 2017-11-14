@@ -20,7 +20,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Containers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Components.ConnectionManager.Implementation {
     internal class ConnectionManager : IConnectionManager {

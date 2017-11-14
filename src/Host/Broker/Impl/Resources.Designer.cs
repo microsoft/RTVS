@@ -242,6 +242,15 @@ namespace Microsoft.R.Host.Broker {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to retrieve certificate for encryption. Exception: {0}..
+        /// </summary>
+        internal static string Error_UnableToGetCertificateForEncryption {
+            get {
+                return ResourceManager.GetString("Error_UnableToGetCertificateForEncryption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pipe already has a client end.
         /// </summary>
         internal static string Exception_PipeHasClientEnd {

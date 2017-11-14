@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.R.Host.Client.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Host.Client.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -46,6 +46,7 @@
     <Compile Include="Fixtures\RemoteBrokerFixture.cs" />
     <Compile Include="Fixtures\RemoteBrokerMethodFixture.cs" />
     <Compile Include="Fixtures\RemoteBrokerProcess.cs" />
+    <Compile Include="Host\BrokerExecutableLocatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
     <Compile Include="Session\RSessionTest.Blobs.cs" />
@@ -78,8 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
@@ -89,6 +90,14 @@
       <Project>{b81d01eb-ad08-4929-be99-6623af523a23}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
+      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
+      <Name>Microsoft.R.Platform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
+      <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
@@ -97,25 +106,17 @@
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01E3D8C2-9C24-492B-B13B-C6D7068B6BF8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Interpreters.Windows</Name>
+    <ProjectReference Include="..\..\..\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>

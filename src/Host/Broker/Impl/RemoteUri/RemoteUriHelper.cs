@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
@@ -22,7 +21,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                     var ub = new UriBuilder(url) { Scheme = "ws" };
                     var clientWebsocket = new ClientWebSocket();
 
-                    foreach(string subProtocol in context.WebSockets.WebSocketRequestedProtocols) {
+                    foreach(var subProtocol in context.WebSockets.WebSocketRequestedProtocols) {
                         clientWebsocket.Options.AddSubProtocol(subProtocol);
                     }
 
@@ -39,7 +38,7 @@ namespace Microsoft.R.Host.Broker.RemoteUri {
                     }
 
                     if (context.Request.ContentLength > 0) {
-                        using (Stream reqStream = await request.Content.ReadAsStreamAsync()) {
+                        using (var reqStream = await request.Content.ReadAsStreamAsync()) {
                             await context.Request.Body.CopyToAsync(reqStream);
                             await reqStream.FlushAsync();
                         }

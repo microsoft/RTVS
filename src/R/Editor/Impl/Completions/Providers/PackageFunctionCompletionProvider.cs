@@ -52,7 +52,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context, string prefixFilter = null) {
             var completions = new List<ICompletionEntry>();
             var infoSource = _snippetInformationSource?.InformationSource;
             var packages = GetPackages(context).ToList();
@@ -65,6 +65,10 @@ namespace Microsoft.R.Editor.Completions.Providers {
                 var functions = pkg.Functions;
                 if (functions == null) {
                     continue;
+                }
+
+                if(!string.IsNullOrEmpty(prefixFilter)) {
+                    functions = functions.Where(f => f.Name.StartsWith(prefixFilter));
                 }
 
                 foreach (var function in functions.Where(f => !f.IsInternal || f.IsInternal == showInternalFunctions)) {

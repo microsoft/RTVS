@@ -4,9 +4,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
@@ -25,19 +23,12 @@ namespace Microsoft.Common.Core.Test.Fixtures {
 
         protected virtual void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
             serviceManager
-                .AddService(UIThreadHelper.Instance.MainThread)
+                .AddService<IOutputService, TestOutputService>()
                 .AddService(new SecurityServiceStub())
                 .AddService(new MaxLoggingPermissions())
                 .AddService(new TelemetryTestService())
-                .AddService(new WindowsFileSystem())
-                .AddService<IOutputService, TestOutputService>()
-                .AddService(new RegistryImpl())
-                .AddService(new ProcessServices())
-                .AddService(UIThreadHelper.Instance.TaskService)
-                .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(new TestPlatformServices())
-                .AddService(new TestApplication())
-                .AddService(new TestIdleTimeService());
+                .AddService(new TestApplication());
         }
 
         protected class TestServiceManager : ServiceManager, IMethodFixture {

@@ -1,0 +1,16 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+test/**
+**/*.map
+*.csproj
+*.user
+*.ps1
+*.log
+*.vsix
+.gitignore
+tsconfig.json
+vsc-extension-quickstart.md
+*.csproj
+*.user
+*.cmd

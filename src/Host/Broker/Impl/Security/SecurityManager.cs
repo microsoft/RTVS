@@ -3,8 +3,6 @@
 
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Services;
 using Odachi.AspNetCore.Authentication.Basic;
@@ -12,28 +10,23 @@ using Odachi.AspNetCore.Authentication.Basic;
 namespace Microsoft.R.Host.Broker.Security {
     public class SecurityManager {
         private readonly SecurityOptions _options;
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IPlatformAuthenticationService _authenticationService;
 
-        public SecurityManager(IAuthenticationService authenticationService, IOptions<SecurityOptions> options) {
+        public SecurityManager(IPlatformAuthenticationService authenticationService, IOptions<SecurityOptions> options) {
             _authenticationService = authenticationService;
             _options = options.Value;
         }
 
         public async Task SignInAsync(BasicSignInContext context) {
-            ClaimsPrincipal principal;
             if (context.IsSignInRequired()) {
-                principal = _options.Secret != null ? SignInUsingSecret(context) : await _authenticationService.SignInAsync(context.Username, context.Password, context.Options.AuthenticationScheme);
+                context.Principal = _options.Secret != null 
+                    ? SignInUsingSecret(context) 
+                    : await _authenticationService.SignInAsync(context.Username, context.Password, context.Scheme.Name);
             } else {
                 var claims = new[] { new Claim(ClaimTypes.Anonymous, "") };
-                var claimsIdentity = new ClaimsIdentity(claims, context.Options.AuthenticationScheme);
-                principal = new ClaimsPrincipal(claimsIdentity);
+                var claimsIdentity = new ClaimsIdentity(claims, context.Scheme.Name);
+                context.Principal = new ClaimsPrincipal(claimsIdentity);
             }
-
-            if (principal != null) {
-                context.Ticket = new AuthenticationTicket(principal, new AuthenticationProperties(), context.Options.AuthenticationScheme);
-            }
-
-            context.HandleResponse();
         }
 
         private ClaimsPrincipal SignInUsingSecret(BasicSignInContext context) {
@@ -43,10 +36,10 @@ namespace Microsoft.R.Host.Broker.Security {
 
             var claims = new[] {
                 new Claim(ClaimTypes.Name, context.Username),
-                new Claim(Claims.RUser, "")
+                new Claim(Claims.RUser, string.Empty)
             };
 
-            var identity = new ClaimsIdentity(claims, context.Options.AuthenticationScheme);
+            var identity = new ClaimsIdentity(claims, context.Scheme.Name);
             return new ClaimsPrincipal(identity);
         }
     }

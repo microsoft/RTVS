@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.IO;
+using System.Reflection;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -10,10 +13,23 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsPlatformServices : IPlatformServices {
         public VsPlatformServices() {
             var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
-            uiShell.GetDialogOwnerHwnd(out IntPtr handle);
+            uiShell.GetDialogOwnerHwnd(out var handle);
             ApplicationWindowHandle = handle;
         }
 
         public IntPtr ApplicationWindowHandle { get; }
+        public string ApplicationDataFolder {
+            get {
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                return Path.Combine(appData, @"Microsoft\RTVS");
+            }
+        }
+
+        public string ApplicationFolder {
+            get {
+                var asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                return Path.GetDirectoryName(asmPath);
+            }
+        }
     }
 }

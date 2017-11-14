@@ -25,7 +25,6 @@ namespace Microsoft.R.Editor.Signatures {
         private readonly IEditorView _view;
         private readonly IEditorBuffer _editorBuffer;
         private readonly IViewSignatureBroker _signatureBroker;
-        private readonly IViewQuickInfoBroker _quickInfoBroker;
 
         private IEditorIntellisenseSession _session;
         private ISignatureParameterHelp _currentParameter;
@@ -82,8 +81,6 @@ namespace Microsoft.R.Editor.Signatures {
 
             _signatureBroker = session.Services.GetService<IViewSignatureBroker>();
             Debug.Assert(_signatureBroker != null);
-            _quickInfoBroker = session.Services.GetService<IViewQuickInfoBroker>();
-            Debug.Assert(_quickInfoBroker != null);
         }
 
         #region IRFunctionSignatureHelp
@@ -100,16 +97,19 @@ namespace Microsoft.R.Editor.Signatures {
 
         public string FunctionName { get; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Content of the signature, including all the characters to be displayed.
         /// </summary>
         public string Content { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Documentation associated with this signature.
         /// </summary>
         public string Documentation { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Span of text in the buffer to which this signature help is applicable.
         /// </summary>
@@ -123,11 +123,13 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
 
+        /// <inheritdoc />
         /// <summary>
         /// List of parameters that this signature knows about.
         /// </summary>
         public ReadOnlyCollection<ISignatureParameterHelp> Parameters { get; private set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Content of the signature, pretty-printed into a form suitable for display on-screen.
         /// </summary>
@@ -138,6 +140,7 @@ namespace Microsoft.R.Editor.Signatures {
         /// </summary>
         public event EventHandler<SignatureParameterChangedEventArgs> CurrentParameterChanged;
 
+        /// <inheritdoc />
         /// <summary>
         /// Current parameter for this signature.
         /// </summary>

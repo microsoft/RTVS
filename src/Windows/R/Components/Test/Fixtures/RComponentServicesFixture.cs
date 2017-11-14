@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Fixtures;
 using Microsoft.R.Components.Plots;
-using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.StubFactories;
@@ -15,7 +14,7 @@ using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Containers;
 using Microsoft.R.Containers.Docker;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Components.Test.Fixtures {
@@ -32,7 +31,7 @@ namespace Microsoft.R.Components.Test.Fixtures {
             "Microsoft.VisualStudio.Platform.VSEditor.dll",
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Windows.dll",
-            "Microsoft.R.Components.Test.dll"
+            "Microsoft.R.Components.Windows.Test.dll"
         };
 
         protected override void SetupServices(IServiceManager serviceManager, ITestInput testInput) {
@@ -40,12 +39,12 @@ namespace Microsoft.R.Components.Test.Fixtures {
             serviceManager
                 .AddRComponentsServices()
                 .AddWindowsContainerServices()
-                .AddWindowsRInterpretersServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddService<IImageService, TestImageService>()
                 .AddService<IStatusBar, TestStatusBar>()
                 .AddService<IRPlotExportDialog, TestPlotExportDialog>()
+                .AddService<IRInstallationService, RInstallation>()
                 .AddService(RSettingsStubFactory.CreateForExistingRPath(testInput.FileSytemSafeName));
         }
     }

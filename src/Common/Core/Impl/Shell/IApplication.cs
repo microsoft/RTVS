@@ -16,16 +16,6 @@ namespace Microsoft.Common.Core.Shell {
         int LocaleId { get; }
 
         /// <summary>
-        /// Application executable folder
-        /// </summary>
-        string ApplicationFolder { get; }
-
-        /// <summary>
-        /// Applicaton data folder to store user data and cached files.
-        /// </summary>
-        string ApplicationDataFolder { get; }
-
-        /// <summary>
         /// Fires when host application has completed it's startup sequence
         /// </summary>
         event EventHandler Started;

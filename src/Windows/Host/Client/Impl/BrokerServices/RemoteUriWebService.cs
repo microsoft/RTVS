@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -33,7 +32,7 @@ namespace Microsoft.R.Host.Client.BrokerServices {
         private Uri PostUri { get; }
 
         public async Task GetResponseAsync(HttpListenerContext context, string localBaseUrl, string remoteBaseUrl, CancellationToken ct) {
-            string postUri = null;
+            string postUri;
 
             if (context.Request.IsWebSocketRequest) {
                 var ub = new UriBuilder(PostUri) { Scheme = "wss" };

@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Threading {
-
     public class DelayedAsyncAction {
         private readonly int _timeout;
         private readonly Timer _timer;

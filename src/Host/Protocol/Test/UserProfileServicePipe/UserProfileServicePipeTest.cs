@@ -9,10 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Json;
 using Microsoft.Common.Core.OS;
 using Microsoft.R.Host.UserProfile;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -24,14 +24,14 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
 
         private async Task<UserProfileResultMock> CreateProfileClientTestWorkerAsync(string input, CancellationToken ct = default(CancellationToken)) {
             string jsonResp = null;
-            using (NamedPipeClientStream client = new NamedPipeClientStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}")) {
+            using (var client = new NamedPipeClientStream("Microsoft.R.Host.UserProfile.Creator{b101cc2d-156e-472e-8d98-b9d999a93c7a}")) {
                 await client.ConnectAsync(ct);
-                byte[] data = Encoding.Unicode.GetBytes(input);
+                var data = Encoding.Unicode.GetBytes(input);
 
                 await client.WriteAsync(data, 0, data.Length, ct);
                 await client.FlushAsync(ct);
 
-                byte[] responseRaw = new byte[1024];
+                var responseRaw = new byte[1024];
                 var bytesRead = await client.ReadAsync(responseRaw, 0, responseRaw.Length, ct);
                 jsonResp = Encoding.Unicode.GetString(responseRaw, 0, bytesRead);
             }
@@ -39,7 +39,7 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         }
 
         private async Task CreateProfileTestRunnerAsync(IUserProfileServices creator, IUserProfileNamedPipeFactory pipeFactory, string input, bool isValidParse, bool isValidAccount, bool isExistingAccount, int serverTimeOut, int clientTimeOut) {
-            ManualResetEventSlim testDone = new ManualResetEventSlim(false);
+            var testDone = new ManualResetEventSlim(false);
             Task.Run(async () => {
                 try {
                     if (isValidParse) {
@@ -54,8 +54,8 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 }
             }).DoNotWait();
 
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(clientTimeOut))) {
-                UserProfileResultMock result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(clientTimeOut))) {
+                var result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
                 if (isValidParse) {
                     result.Error.Should().Be((uint)(isValidAccount ? 0 : 13));
                     result.ProfileExists.Should().Be(isExistingAccount);
@@ -77,8 +77,8 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
                 }
             });
 
-            using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(clientTimeOut))) {
-                UserProfileResultMock result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(clientTimeOut))) {
+                var result = await CreateProfileClientTestWorkerAsync(input, cts.Token);
                 // fuzz test parsing succeeded, the creator always fails for this test.
                 result?.Error.Should().Be(13);
             }
@@ -112,20 +112,20 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         [Test]
         [Category.FuzzTest]
         public async Task CreateProfileFuzzTest() {
-            string inner = "\"Username\": {0}, \"Domain\": {1}, \"Sid\":{2}";
-            for (int i = 0; i < 100000; ++i) {
+            var inner = "\"Username\": {0}, \"Domain\": {1}, \"Sid\":{2}";
+            for (var i = 0; i < 100000; ++i) {
 
-                byte[] usernameBytes = GenerateBytes();
-                byte[] domainBytes = GenerateBytes();
-                byte[] sidBytes = GenerateBytes();
+                var usernameBytes = GenerateBytes();
+                var domainBytes = GenerateBytes();
+                var sidBytes = GenerateBytes();
 
-                string username = Encoding.Unicode.GetString(usernameBytes);
-                string domain = Encoding.Unicode.GetString(domainBytes);
-                string sid = Encoding.Unicode.GetString(sidBytes);
+                var username = Encoding.Unicode.GetString(usernameBytes);
+                var domain = Encoding.Unicode.GetString(domainBytes);
+                var sid = Encoding.Unicode.GetString(sidBytes);
 
-                string json = "{" + string.Format(inner, username, domain, sid) + "}";
+                var json = "{" + string.Format(inner, username, domain, sid) + "}";
                 
-                string testResult = string.Empty;
+                var testResult = string.Empty;
                 var creator = new UserProfileServiceFuzzTestMock();
                 var pipeFactory = new UserProfileTestNamedPipeTestStreamFactory();
                 try {
@@ -140,8 +140,8 @@ namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
         }
 
         private byte[] GenerateBytes() {
-            Random rd = new Random();
-            byte[] data = new byte[rd.Next(0, 1024)];
+            var rd = new Random();
+            var data = new byte[rd.Next(0, 1024)];
             rd.NextBytes(data);
             return data;
         }

@@ -9,7 +9,7 @@ namespace Microsoft.R.Editor.Completions {
     /// <summary>
     /// Completion entry in the R intellisense completion set
     /// </summary>
-    [DebuggerDisplay("{DisplayText}")]
+    [DebuggerDisplay("{" + nameof(DisplayText) + "}")]
     public class EditorCompletionEntry : ICompletionEntry, IComparable<ICompletionEntry> {
         public EditorCompletionEntry(string displayText, string insertionText, string description, object imageSource, string accessibleText = null) {
             DisplayText = displayText;
@@ -26,6 +26,7 @@ namespace Microsoft.R.Editor.Completions {
         public virtual string Description { get; protected set; }
         public virtual string AccessibleText { get; protected set; }
         public virtual object ImageSource { get; protected set; }
+        public object Data { get; set; }
         #endregion
 
         public static int CompareOrdinal(ICompletionEntry completion1, ICompletionEntry completion2) 
@@ -39,9 +40,9 @@ namespace Microsoft.R.Editor.Completions {
                 return -1;
             }
 
-            var value = String.Compare(completion1.DisplayText, completion2.DisplayText, comparison);
+            var value = string.Compare(completion1.DisplayText, completion2.DisplayText, comparison);
             if (0 == value) {
-                value = String.Compare(completion1.AccessibleText, completion2.AccessibleText, comparison);
+                value = string.Compare(completion1.AccessibleText, completion2.AccessibleText, comparison);
             }
             return value;
         }

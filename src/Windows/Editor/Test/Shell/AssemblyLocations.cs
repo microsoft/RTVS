@@ -8,15 +8,15 @@ using Microsoft.UnitTests.Core;
 namespace Microsoft.Languages.Editor.Test.Shell {
     public static class AssemblyLocations {
         public static string EditorPath {
-            get { return Path.Combine(Paths.VsRoot, @"CommonExtensions\Microsoft\Editor"); }
+            get { return Path.Combine(VsPaths.VsRoot, @"CommonExtensions\Microsoft\Editor"); }
         }
 
         public static string PrivatePath {
-            get { return Path.Combine(Paths.VsRoot, @"PrivateAssemblies\"); }
+            get { return Path.Combine(VsPaths.VsRoot, @"PrivateAssemblies\"); }
         }
 
         public static string CpsPath {
-            get { return Path.Combine(Paths.VsRoot, @"CommonExtensions\Microsoft\Project"); }
+            get { return Path.Combine(VsPaths.VsRoot, @"CommonExtensions\Microsoft\Project"); }
         }
 
         public static string SharedPath {

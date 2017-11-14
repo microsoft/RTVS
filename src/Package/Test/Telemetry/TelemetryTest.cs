@@ -69,7 +69,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
             log.Should().Contain("Cran");
             log.Should().Contain("LoadRData");
             log.Should().Contain("SaveRData");
-            log.Should().Contain("RCommandLineArguments");
             log.Should().Contain("MultilineHistorySelection");
             log.Should().Contain("AlwaysSaveHistory");
             log.Should().Contain("AutoFormat");

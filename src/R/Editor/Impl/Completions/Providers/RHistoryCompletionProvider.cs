@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             _glyph = imageService.GetImage("History");
         }
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context, string prefixFilter = null) {
             var snapshot = context.EditorBuffer.CurrentSnapshot;
             var lineStart = snapshot.GetLineFromPosition(context.Position).Start;
             var searchText = snapshot.GetText(new TextRange(lineStart, context.Position - lineStart)).Trim();

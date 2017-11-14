@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Completions.Providers {
             _glyph = imageService.GetImage(ImageType.Keyword);
         }
 
-        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context) {
+        public IReadOnlyCollection<ICompletionEntry> GetEntries(IRIntellisenseContext context, string prefixFilter = null) {
             var completions = new List<ICompletionEntry>();
 
             var line = context.EditorBuffer.CurrentSnapshot.GetLineFromPosition(context.Position);

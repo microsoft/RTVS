@@ -9,8 +9,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Functions;
 using Microsoft.R.Editor.QuickInfo;
 
@@ -20,12 +18,10 @@ namespace Microsoft.R.Editor.Signatures {
     /// given intellisense context (text buffer, position, AST).
     /// </summary>
     public sealed class RFunctionSignatureEngine : IRFunctionSignatureEngine {
-        private readonly IServiceContainer _services;
         private readonly IFunctionIndex _functionIndex;
 
         public RFunctionSignatureEngine(IServiceContainer services) {
-            _services = services;
-            _functionIndex = _services.GetService<IFunctionIndex>();
+            _functionIndex = services.GetService<IFunctionIndex>();
         }
 
         #region IFunctionSignatureEngine
@@ -34,12 +30,16 @@ namespace Microsoft.R.Editor.Signatures {
             // Retrieve parameter positions from the current text buffer snapshot
             var signatureInfo = context.AstRoot.GetSignatureInfoFromBuffer(snapshot, context.Position);
             if (signatureInfo == null) {
+                callback?.Invoke(Enumerable.Empty<IRFunctionSignatureHelp>());
                 return null;
             }
             return GetSignaturesAsync(signatureInfo, context, callback);
         }
 
-        private IEnumerable<IRFunctionSignatureHelp> GetSignaturesAsync(RFunctionSignatureInfo signatureInfo, IRIntellisenseContext context, Action<IEnumerable<IRFunctionSignatureHelp>> callback) {
+        private IEnumerable<IRFunctionSignatureHelp> GetSignaturesAsync(
+              RFunctionSignatureInfo signatureInfo
+            , IRIntellisenseContext context
+            , Action<IEnumerable<IRFunctionSignatureHelp>> callback) {
             var snapshot = context.EditorBuffer.CurrentSnapshot;
             var position = Math.Min(Math.Min(signatureInfo.FunctionCall.SignatureEnd, context.Position), snapshot.Length);
 
@@ -72,7 +72,7 @@ namespace Microsoft.R.Editor.Signatures {
             // when caret or mouse is inside function arguments such as in abc(de|f(x)) 
             // it gives information of the outer function since signature is about help
             // on the function arguments.
-            var functionName = context.AstRoot.GetFunctionName(context.Position, out FunctionCall fc, out Variable fv);
+            var functionName = context.AstRoot.GetFunctionName(context.Position, out var fc, out var fv);
             if (!string.IsNullOrEmpty(functionName) && fc != null) {
                 var signatureInfo = context.AstRoot.GetSignatureInfo(fc, fv, fc.OpenBrace.End);
                 var applicableRange = context.EditorBuffer.CurrentSnapshot.CreateTrackingRange(fv);
@@ -81,8 +81,11 @@ namespace Microsoft.R.Editor.Signatures {
                     return MakeQuickInfos(sigs, applicableRange);
                 }
                 if (callback != null) {
-                    GetSignaturesAsync(signatureInfo, context, signatures => callback(MakeQuickInfos(signatures, applicableRange)));
+                    GetSignaturesAsync(signatureInfo, context,
+                        signatures => callback(MakeQuickInfos(signatures, applicableRange)));
                 }
+            } else {
+                callback?.Invoke(Enumerable.Empty<IRFunctionQuickInfo>());
             }
             return null;
         }
@@ -103,8 +106,10 @@ namespace Microsoft.R.Editor.Signatures {
         private static IEnumerable<IRFunctionSignatureHelp> MakeSignatures(IFunctionInfo functionInfo, ITrackingTextRange applicableToSpan, IRIntellisenseContext context) {
             var signatures = new List<IRFunctionSignatureHelp>();
             if (functionInfo?.Signatures != null) {
-                signatures.AddRange(functionInfo.Signatures.Select(s => RFunctionSignatureHelp.Create(context, functionInfo, s, applicableToSpan)));
-                context.Session.Properties["functionInfo"] = functionInfo;
+                using (context.AstReadLock()) {
+                    signatures.AddRange(functionInfo.Signatures.Select(s => RFunctionSignatureHelp.Create(context, functionInfo, s, applicableToSpan)));
+                    context.Session.Properties["functionInfo"] = functionInfo;
+                }
             }
             return signatures;
         }

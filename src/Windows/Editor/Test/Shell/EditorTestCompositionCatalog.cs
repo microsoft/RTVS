@@ -12,7 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
+using Microsoft.R.Platform.Composition;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
@@ -56,7 +56,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Components.dll",
             "Microsoft.R.Components.Windows.dll",
-            "Microsoft.R.Components.Test.dll",
+            "Microsoft.R.Components.Windows.Test.dll",
             "Microsoft.R.Common.Core.dll",
             "Microsoft.R.Host.Client.Windows.dll",
             "Microsoft.R.Debugger.dll",

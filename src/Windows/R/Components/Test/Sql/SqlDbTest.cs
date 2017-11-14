@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Components.Sql;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.Win32;
 using NSubstitute;
@@ -19,7 +20,7 @@ using Xunit;
 namespace Microsoft.R.Components.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
-    public class ConnectiionStringTest {
+    public class ConnectionStringTest {
         [CompositeTest]
         [InlineData(null, null)]
         [InlineData("Driver={SQL Server};Server=ABC;Database=AdventureWorks2016CTP3;Trusted_Connection=yes",

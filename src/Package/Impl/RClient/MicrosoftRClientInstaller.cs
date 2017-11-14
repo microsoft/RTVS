@@ -6,11 +6,10 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Net;
-using Microsoft.Common.Core.Network;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.UI;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 

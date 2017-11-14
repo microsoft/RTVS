@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.Common.Core.Shell;
+using Microsoft.R.Platform.Composition;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Composition {

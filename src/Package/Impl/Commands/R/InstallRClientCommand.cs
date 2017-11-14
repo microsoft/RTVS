@@ -3,7 +3,7 @@
 
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {

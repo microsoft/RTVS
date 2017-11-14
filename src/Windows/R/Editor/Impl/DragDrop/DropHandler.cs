@@ -12,7 +12,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Editor.Windows;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -82,8 +81,8 @@ namespace Microsoft.R.Editor.DragDrop {
                 textBuffer.Replace(new Span(dropPosition, 0), text);
 
                 if (_settings.FormatOnPaste) {
-                    var formatter = new RangeFormatter(_services);
-                    formatter.FormatRange(_wpfTextView.ToEditorView(), document.EditorBuffer, new TextRange(dropPosition, text.Length));
+                    var formatter = new RangeFormatter(_services, _wpfTextView.ToEditorView(), document.EditorBuffer);
+                    formatter.FormatRange(new TextRange(dropPosition, text.Length));
                 }
 
                 if (_wpfTextView.Selection != null) {

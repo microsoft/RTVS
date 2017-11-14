@@ -40,12 +40,11 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [CompositeTest]
         [InlineData("abs")]
-        [InlineData("zzz")]
         public async Task FunctionInfoTest1(string name) {
-            var functionInfo = await _functionIndex.GetFunctionInfoAsync("abs");
+            var functionInfo = await _functionIndex.GetFunctionInfoAsync(name);
 
             functionInfo.Should().NotBeNull();
-            functionInfo.Name.Should().Be("abs");
+            functionInfo.Name.Should().Be(name);
             functionInfo.Description.Should().NotBeEmpty();
             functionInfo.Signatures.Should().ContainSingle()
                 .Which.Arguments.Should().ContainSingle();

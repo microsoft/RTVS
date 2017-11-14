@@ -4,12 +4,12 @@
 using Microsoft.VisualStudio.Shell;
 using System.Runtime.CompilerServices;
 
-[assembly: ProvideBindingRedirection(AssemblyName = "Microsoft.Win32.Primitives",
+[assembly: ProvideBindingRedirection(AssemblyName = "System.ValueTuple",
     OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.0.2.0", NewVersion = "4.0.2.0")]
-[assembly: ProvideBindingRedirection(AssemblyName = "System.Diagnostics.DiagnosticSource",
-    OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.0.1.0", NewVersion = "4.0.1.0")]
+[assembly: ProvideBindingRedirection(AssemblyName = "Microsoft.Win32.Primitives",
+    OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.0.3.0", NewVersion = "4.0.3.0")]
 [assembly: ProvideBindingRedirection(AssemblyName = "System.Net.Http",
-    OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.1.1.1", NewVersion = "4.1.1.1")]
+    OldVersionLowerBound = "0.0.0.0", OldVersionUpperBound = "4.2.0.0", NewVersion = "4.2.0.0")]
 
 #if SIGN
 [assembly: InternalsVisibleTo("Microsoft.VisualStudio.R.Package.Test, PublicKey=002400000480000094000000060200000024000052534131000400000100010007D1FA57C4AED9F0A32E84AA0FAEFD0DE9E8FD6AEC8F87FB03766C834C99921EB23BE79AD9D5DCC1DD9AD236132102900B723CF980957FC4E177108FC607774F29E8320E92EA05ECE4E821C0A5EFE8F1645C4C0C93C1AB99285D622CAA652C1DFAD63D745D6F2DE5F17E5EAF0FC4963D261C8A12436518206DC093344D5AD293")]

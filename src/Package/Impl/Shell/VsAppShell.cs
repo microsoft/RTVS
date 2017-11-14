@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Testing;
 using Microsoft.VisualStudio.Shell.Interop;

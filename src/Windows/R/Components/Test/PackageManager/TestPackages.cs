@@ -41,7 +41,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             public const string Version = "0.1.0";
             public const string Depends = "R (>= 3.2.0)";
             public const string License = "MIT";
-            public const string Built = "3.2.3";
+            public const string Built = "3.4.0";
             public const string Author = "RTVS Team";
             public const string Title = "The title for rtvslib1";
             public const string Description = "This is a library that is used only for testing package installation. It doesn't do anything.";

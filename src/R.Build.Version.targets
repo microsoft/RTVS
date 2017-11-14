@@ -9,6 +9,12 @@
     <GenerateAssemblyVersionInfo Condition="'$(GenerateAssemblyVersionInfo)' == '' AND !Exists('$(AssemblyVersionInfoPath)')">true</GenerateAssemblyVersionInfo>
   </PropertyGroup>
 
+  <PropertyGroup>
+      <NativeVersionInfoPath>$(MSBuildProjectDirectory)\GeneratedVersion.h</NativeVersionInfoPath>
+      <GenerateNativeVersionInfo Condition="'$(GenerateNativeVersionInfo)' == '' AND Exists('$(NativeVersionInfoPath)')">false</GenerateNativeVersionInfo>
+      <GenerateNativeVersionInfo Condition="'$(GenerateNativeVersionInfo)' == '' AND !Exists('$(NativeVersionInfoPath)')">true</GenerateNativeVersionInfo>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
     <!-- 0.1.YMMDD.HHMM -->
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
@@ -19,7 +25,7 @@
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
     <MajorVersion>1</MajorVersion>
-    <MinorVersion>3</MinorVersion>
+    <MinorVersion>4</MinorVersion>
     <Build>$(LastDigitOfYear)$(Date)</Build>
     <Revision>$(Time)</Revision>
   </PropertyGroup>
@@ -73,17 +79,21 @@
     <CompileDependsOn>GenerateAssemblyInfoFile;$(CompileDependsOn)</CompileDependsOn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(GenerateNativeVersionInfo)">
+      <CompileDependsOn>GenerateNativeVersionInfoFile;$(CompileDependsOn)</CompileDependsOn>
+  </PropertyGroup>
+    
   <Target Name="GenerateAssemblyInfoFileNetCore" BeforeTargets="PreBuildEvent">
     <CallTarget Targets="GenerateAssemblyInfoFile" />
   </Target>
 
   <!-- C++ -->
   <Target Name="GenerateNativeVersionInfoFile"
-          Condition="'$(MSBuildProjectExtension)'=='.vcxproj' AND '$(GenerateAssemblyVersionInfo)' == true"
+          Condition="'$(MSBuildProjectExtension)'=='.vcxproj' AND '$(GenerateNativeVersionInfo)' == true"
           Inputs="$(MSBuildProjectFullPath)"
-          Outputs="$(MSBuildProjectDirectory)\GeneratedVersion.h"
+          Outputs="$(NativeVersionInfoPath)"
           BeforeTargets="PrepareForBuild">
-    <WriteLinesToFile File="$(MSBuildProjectDirectory)\GeneratedVersion.h"
+    <WriteLinesToFile File="$(NativeVersionInfoPath)"
                       Overwrite="true"
                       Lines="#define VER_FILEVERSION $(MajorVersion),$(MinorVersion),$(Build),$(Revision);
                              #define VER_FILEVERSION_STR &quot;$(BuildVersion)\0&quot;;

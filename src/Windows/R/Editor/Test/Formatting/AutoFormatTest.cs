@@ -62,7 +62,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         private ITextView TestAutoFormat(int position, string initialContent = "") {
             var editorView = TextViewTest.MakeTextView(initialContent, position, out AstRoot ast);
             var textView = editorView.As<ITextView>();
-            var af = new AutoFormat(textView, _services);
+            var af = new VsAutoFormat(_services, textView);
             textView.TextBuffer.Changed += (s, e) => {
                 var tc = e.ToTextChange();
                 ast.ReflectTextChange(tc.Start, tc.OldLength, tc.NewLength, tc.NewTextProvider);
@@ -72,7 +72,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     if (af.IsPostProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                        FormatOperations.FormatViewLine(editorView, editorView.EditorBuffer, -1, _services);
+                        var fo = new FormatOperations(_services, editorView, editorView.EditorBuffer);
+                        fo.FormatViewLine(-1);
                     }
                 } else {
                     var line = e.After.GetLineFromPosition(position);

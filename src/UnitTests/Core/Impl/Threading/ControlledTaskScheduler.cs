@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security;
@@ -12,11 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
 
-namespace Microsoft.UnitTests.Core.Threading
-{
-    [ExcludeFromCodeCoverage]
-    public class ControlledTaskScheduler : TaskScheduler
-    {
+namespace Microsoft.UnitTests.Core.Threading {
+    public class ControlledTaskScheduler : TaskScheduler {
         private readonly SynchronizationContext _syncContext;
         private readonly SendOrPostCallback _callback;
         private readonly ConcurrentQueue<Task> _pendingTasks;
@@ -32,8 +28,7 @@ namespace Microsoft.UnitTests.Core.Threading
 
         public int ScheduledTasksCount => _scheduledTasksCount;
 
-        public ControlledTaskScheduler(SynchronizationContext syncContext)
-        {
+        public ControlledTaskScheduler(SynchronizationContext syncContext) {
             _syncContext = syncContext;
             _pendingTasks = new ConcurrentQueue<Task>();
             _callback = obj => Callback((Task)obj);
@@ -44,16 +39,14 @@ namespace Microsoft.UnitTests.Core.Threading
             _emptyQueueTask = Task.CompletedTask;
         }
 
-        public TaskAwaiter GetAwaiter()
-        {
+        public TaskAwaiter GetAwaiter() {
             return _emptyQueueTask.GetAwaiter();
         }
 
         /// <summary>
         /// Waits until scheduler queue is empty
         /// </summary>
-        public void Wait()
-        {
+        public void Wait() {
             _emptyQueueTask.Wait();
         }
 
@@ -66,47 +59,37 @@ namespace Microsoft.UnitTests.Core.Threading
         /// Should be greater than 0.
         /// Default value is 1000ms.
         /// </param>
-        public void WaitForUpcomingTasks(int ms = 1000)
-        {
-            if (ms <= 0)
-            {
+        public void WaitForUpcomingTasks(int ms = 1000) {
+            if (ms <= 0) {
                 throw new ArgumentException(@"Number of milliseconds to wait should be positive", nameof(ms));
             }
 
-            if (!_futureTaskWaitingCompletionSource.Task.Wait(ms))
-            {
+            if (!_futureTaskWaitingCompletionSource.Task.Wait(ms)) {
                 throw new TimeoutException();
             }
 
             _emptyQueueTask.Wait();
         }
 
-        public IDisposable Pause()
-        {
+        public IDisposable Pause() {
             _paused = true;
             return Disposable.Create(Resume);
         }
 
-        private void Resume()
-        {
+        private void Resume() {
             _paused = false;
-            Task task;
-            while (_pendingTasks.TryPeek(out task))
-            {
+            while (_pendingTasks.TryPeek(out var task)) {
                 _syncContext.Post(_callback, task);
                 _pendingTasks.TryDequeue(out task);
             }
         }
 
         [SecurityCritical]
-        protected override void QueueTask(Task task)
-        {
-            if (Interlocked.Increment(ref _scheduledTasksCount) == 1)
-            {
-                SpinWait spinWait = new SpinWait();
+        protected override void QueueTask(Task task) {
+            if (Interlocked.Increment(ref _scheduledTasksCount) == 1) {
+                var spinWait = new SpinWait();
                 var tcs = new TaskCompletionSource<object>();
-                while (Interlocked.CompareExchange(ref _emptyQueueCompletionSource, tcs, null) != null)
-                {
+                while (Interlocked.CompareExchange(ref _emptyQueueCompletionSource, tcs, null) != null) {
                     spinWait.SpinOnce();
                 }
 
@@ -147,7 +130,7 @@ namespace Microsoft.UnitTests.Core.Threading
             if (Interlocked.Decrement(ref _scheduledTasksCount) == 0) {
                 Interlocked.Exchange(ref _futureTaskWaitingCompletionSource, new TaskCompletionSource<object>());
                 var exceptions = Interlocked.Exchange(ref _exceptions, new List<Exception>());
-                TaskCompletionSource<object> tcs = Interlocked.Exchange(ref _emptyQueueCompletionSource, null);
+                var tcs = Interlocked.Exchange(ref _emptyQueueCompletionSource, null);
 
                 if (exceptions.Any()) {
                     tcs.SetException(exceptions);

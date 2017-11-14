@@ -19,8 +19,9 @@ namespace Microsoft.Common.Core.Test.Utility {
             actual = actual.TrimEnd(_whitespace);
 
             var lineNumber = BaselineCompare.CompareLines(expected, actual, out var baseLine, out var actualLine, out var index);
-            if(lineNumber > 0) {
-                actualLine.Should().Be(baseLine);
+            // Fluent does not like HTML
+            if(lineNumber != 0) {
+                actualLine.Should().Be(baseLine, $"Line number:{lineNumber}");
             }
         }
 

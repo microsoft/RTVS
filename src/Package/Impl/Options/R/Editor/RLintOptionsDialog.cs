@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
     public class RLintOptionsDialog: DialogPage {
-        private readonly LintOptions _options;
+        private readonly ILintOptions _options;
 
         public RLintOptionsDialog() {
             SettingsRegistryPath = @"UserSettings\R_Lint";

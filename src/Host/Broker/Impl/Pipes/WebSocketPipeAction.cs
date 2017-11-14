@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Microsoft.R.Host.Broker.Pipes {
 
                 if (!context.WebSockets.IsWebSocketRequest) {
                     httpResponse.ReasonPhrase = "Websocket connection expected";
-                    httpResponse.StatusCode = 401;
+                    httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
                     return;
                 }
 
@@ -47,8 +48,8 @@ namespace Microsoft.R.Host.Broker.Pipes {
                         // so that it can gracefully disconnect from its end.
                         try {
                             await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "", context.RequestAborted);
-                        } catch(OperationCanceledException ocx) {
-                            _logger.LogError(Resources.Error_GracefulDisconnectFailed.FormatInvariant(ocx.Message));
+                        } catch(Exception ex) {
+                            _logger.LogError(Resources.Error_GracefulDisconnectFailed.FormatInvariant(ex.Message));
                         }
                     } else {
                         // If the client disconnected, then just cancel any outstanding reads from the pipe.

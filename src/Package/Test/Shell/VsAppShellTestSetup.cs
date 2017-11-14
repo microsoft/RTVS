@@ -3,11 +3,7 @@
 
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using Microsoft.Common.Core.Extensions;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Services;
@@ -15,13 +11,17 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Common.Core.Test.Logging;
 using Microsoft.Common.Core.Test.Stubs.Shell;
-using Microsoft.R.Interpreters;
 using Microsoft.Language.Editor.Test.Settings;
 using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Components;
+using Microsoft.R.Components.Test.Fakes.StatusBar;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Platform.Composition;
+using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
+using Microsoft.R.Platform.OS;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -31,7 +31,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
 using Microsoft.VisualStudio.TextManager.Interop;
 using NSubstitute;
-using Microsoft.R.Components.Test.Fakes.StatusBar;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
@@ -68,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new WindowsFileSystem())
                 .AddService<IOutputService, TestOutputService>()
                 .AddService(new RegistryImpl())
-                .AddService(new ProcessServices())
+                .AddService(new WindowsProcessServices())
                 .AddService(new TestUIServices(UIThreadHelper.Instance.ProgressDialog))
                 .AddService(UIThreadHelper.Instance.TaskService)
                 .AddService(new TestPlatformServices())
@@ -77,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
                 .AddService(new TestImageService())
                 .AddService(new VsEditorSupport(serviceManager))
                 .AddRComponentsServices()
-                .AddWindowsRInterpretersServices()
+                .AddService(new RInstallation())
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 // OLE and VS specifics

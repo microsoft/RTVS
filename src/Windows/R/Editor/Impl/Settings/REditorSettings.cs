@@ -99,8 +99,9 @@ namespace Microsoft.R.Editor.Settings {
                 _formatOptions.TabSize = TabSize;
                 return _formatOptions;
             }
+            set { }
         }
 
-        public LintOptions LintOptions { get; private set; }
+        public ILintOptions LintOptions { get; set; }
     }
 }

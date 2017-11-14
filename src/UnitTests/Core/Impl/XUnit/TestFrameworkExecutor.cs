@@ -8,7 +8,6 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     internal class TestFrameworkExecutor : XunitTestFrameworkExecutor {
         private readonly XunitTestEnvironment _testEnvironment;
 

@@ -11,7 +11,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]

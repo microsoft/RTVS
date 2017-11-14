@@ -1,143 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RootNamespace>Microsoft.Common.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Common.Core.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-    <Compile Include="Controls\ControlTestScript.cs" />
-    <Compile Include="Controls\ControlWindow.cs" />
-    <Compile Include="Disposables\CountdownDisposableTest.cs" />
-    <Compile Include="Disposables\DisposableTest.cs" />
-    <Compile Include="Disposables\DisposeTokenTest.cs" />
-    <Compile Include="EnumerableExtensionsTest.cs" />
-    <Compile Include="Extensions\IOExtensionsTest.cs" />
-    <Compile Include="Extensions\TaskCompletionSourceExtensionsTest.cs" />
-    <Compile Include="Fakes\Shell\TestApplication.cs" />
-    <Compile Include="Fakes\Shell\TestCompositionCatalog.cs" />
-    <Compile Include="Fakes\Shell\TestFileDialog.cs" />
-    <Compile Include="Fakes\Shell\TestIdleTimeService.cs" />
-    <Compile Include="Fakes\Shell\TestImageService.cs" />
-    <Compile Include="Fakes\Shell\TestOutputService.cs" />
-    <Compile Include="Fakes\Shell\TestUIServices.cs" />
-    <Compile Include="Fixtures\ServiceManagerFixture.cs" />
-    <Compile Include="Fixtures\ServiceManagerWithMefFixture.cs" />
-    <Compile Include="Logging\MaxLoggingPermissions.cs" />
-    <Compile Include="Windows\Logging\PermissionsTest.cs" />
-    <Compile Include="Windows\Registry\RegistryBaseKeyMock.cs" />
-    <Compile Include="Windows\Registry\RegistryKeyMock.cs" />
-    <Compile Include="Windows\Registry\RegistryMocks.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Services\ServiceManagerTests.cs" />
-    <Compile Include="Stubs\Shell\SecurityServiceStub.cs" />
-    <Compile Include="Logging\LoggerTest.cs" />
-    <Compile Include="Match\MatchElements.cs" />
-    <Compile Include="Match\MatchNull.cs" />
-    <Compile Include="Match\MatchRange.cs" />
-    <Compile Include="Match\MatchAny.cs" />
-    <Compile Include="Match\MatchMembers.cs" />
-    <Compile Include="Script\EventsPump.cs" />
-    <Compile Include="Fakes\Shell\TestPlatformServices.cs" />
-    <Compile Include="Fakes\Shell\TestCoreShell.cs" />
-    <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
-    <Compile Include="StubFactories\FileInfoStubFactory.cs" />
-    <Compile Include="Script\TestScript.cs" />
-    <Compile Include="StubFactories\FileSystemStubFactory.cs" />
-    <Compile Include="Tasks\EventTaskSourceTest.cs" />
-    <Compile Include="Tasks\FailOnTimeoutTest.cs" />
-    <Compile Include="Tasks\TaskCompletionSourceExTest.cs" />
-    <Compile Include="Tasks\TaskExtensionsTest.cs" />
-    <Compile Include="Tasks\TaskUtilitiesTest.cs" />
-    <Compile Include="Threading\AsyncManualResetEventTest.cs" />
-    <Compile Include="Threading\AsyncReaderWriterLockTest.cs" />
-    <Compile Include="Threading\BinaryAsyncLockTest.cs" />
-    <Compile Include="Threading\DelayedAsyncActionTest.cs" />
-    <Compile Include="Threading\MainThreadAwaitableTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\CommonTestData.cs" />
-    <Compile Include="Utility\SupportedWpfProperties.cs" />
-    <Compile Include="Utility\TestFiles.cs" />
-    <Compile Include="Utility\VisualTreeWriter.cs" />
-    <Compile Include="StringBuilderExtensionsTest.cs" />
-    <Compile Include="StringExtensionsTest.cs" />
-    <Compile Include="Telemetry\FileTelemetryRecorder.cs" />
-    <Compile Include="Telemetry\ITelemetryTestSupport.cs" />
-    <Compile Include="Telemetry\SimpleTelemetryEvent.cs" />
-    <Compile Include="Telemetry\TestTelemetryRecorder.cs" />
-    <Compile Include="Telemetry\StringTelemetryRecorderTests.cs" />
-    <Compile Include="Telemetry\TelemetryTestService.cs" />
-    <Compile Include="Telemetry\TelemetryTestServiceTests.cs" />
-    <Compile Include="Utility\BaselineCompare.cs" />
-    <Compile Include="Utility\SequentialTestExecutor.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\SubstituteFactories\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="FluentAssertions" Version="4.19.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BlueSquare.png" />
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

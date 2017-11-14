@@ -176,8 +176,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 var line = snapshot.GetLineFromPosition(range.Start);
                 var lineTail = snapshot.GetText(Span.FromBounds(range.End, line.End));
 
-                var formatter = new RangeFormatter(_services);
-                formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
+                var formatter = new RangeFormatter(_services, TextView.ToEditorView(), textBuffer.ToEditorBuffer());
+                formatter.FormatRange(range);
 
                 // Do not trim whitespace after standalone operators
                 if (IsStandaloneOperator(text) && string.IsNullOrEmpty(lineTail)) {

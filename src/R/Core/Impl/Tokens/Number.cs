@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Microsoft.R.Core.Tokens {
     public static class Number {
@@ -8,8 +7,8 @@ namespace Microsoft.R.Core.Tokens {
         private const NumberStyles _doubleStyle = NumberStyles.Number | NumberStyles.AllowExponent;
 
         public static bool TryParse(string text, out double doubleResult, bool allowLSuffix = true) {
-            doubleResult = Double.NaN;
-            int sign = 1;
+            doubleResult = double.NaN;
+            var sign = 1;
 
             if (text.Length == 0) {
                 return false;
@@ -26,17 +25,16 @@ namespace Microsoft.R.Core.Tokens {
                 sign = text[0] == '-' ? -1 : 1;
             }
 
-            int intResult = 0;
-            if (Int32.TryParse(text, _integerStyle, CultureInfo.InvariantCulture, out intResult)) {
+            if (int.TryParse(text, _integerStyle, CultureInfo.InvariantCulture, out var intResult)) {
                 doubleResult = sign * intResult;
             } else {
-                if (Double.TryParse(text, _doubleStyle, CultureInfo.InvariantCulture, out doubleResult)) {
+                if (double.TryParse(text, _doubleStyle, CultureInfo.InvariantCulture, out doubleResult)) {
                     doubleResult = sign * doubleResult;
-                } else if (Int32.TryParse(text, _hexStyle, CultureInfo.InvariantCulture, out intResult)) {
+                } else if (int.TryParse(text, _hexStyle, CultureInfo.InvariantCulture, out intResult)) {
                     doubleResult = sign * intResult;
                 }
             }
-            return doubleResult != Double.NaN;
+            return doubleResult != double.NaN;
         }
     }
 }

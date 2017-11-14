@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.R.Host.Protocol.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Host.Protocol.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -41,8 +41,8 @@
   </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
@@ -52,21 +52,25 @@
       <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
       <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
+    <ProjectReference Include="..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
+      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
+      <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
+    <ProjectReference Include="..\..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Windows\R\Interpreters\Impl\Microsoft.R.Interpreters.Windows.csproj">
-      <Project>{DE1EC50A-C588-45A9-B22C-981419CD7CD4}</Project>
-      <Name>Microsoft.R.Interpreters.Windows</Name>
+    <ProjectReference Include="..\..\..\Windows\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
+      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
+      <Name>Microsoft.UnitTests.Core.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UserProfile\Impl\Microsoft.R.Host.UserProfile.csproj">
+      <Project>{28C3629E-3FD8-4040-9CCE-6D62B9B1A5E3}</Project>
+      <Name>Microsoft.R.Host.UserProfile</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Host.Protocol.csproj">
       <Project>{c46e5f53-4caf-4c65-b173-ca8140fb41e0}</Project>
@@ -82,12 +86,6 @@
     </Compile>
     <Compile Include="..\..\UserProfile\Impl\Resources.Designer.cs">
       <Link>Resources.Designer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\UserProfile\Impl\RUserProfileServices.cs">
-      <Link>RUserProfileServices.cs</Link>
-    </Compile>
-    <Compile Include="..\..\UserProfile\Impl\RUserProfileServicesHelper.cs">
-      <Link>RUserProfileServicesHelper.cs</Link>
     </Compile>
     <Compile Include="ProtocolMessage\ProtocolMessageTest.cs" />
     <Compile Include="RHostPipe\RHostPipeTest.cs" />

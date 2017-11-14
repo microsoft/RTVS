@@ -7,7 +7,6 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     public class CompositeTestDiscoverer : TheoryDiscoverer {
         private readonly IMessageSink _diagnosticMessageSink;
 

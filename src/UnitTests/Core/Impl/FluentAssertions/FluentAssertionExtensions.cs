@@ -8,7 +8,6 @@ using System.Reflection;
 using FluentAssertions;
 
 namespace Microsoft.UnitTests.Core.FluentAssertions {
-    [ExcludeFromCodeCoverage]
     public static class FluentAssertionExtensions {
         private static readonly MethodInfo ShouldThrowActionMethod;
 

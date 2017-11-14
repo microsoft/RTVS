@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -15,7 +14,6 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     internal sealed class AssemblyRunner : XunitTestAssemblyRunner {
         private readonly XunitTestEnvironment _testEnvironment;
         private IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
@@ -35,7 +33,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             var assembly = TestAssembly.Assembly;
-            var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof (AssemblyFixtureImportAttribute))
+            var importedAssemblyFixtureTypes = assembly.GetCustomAttributes(typeof(AssemblyFixtureImportAttribute))
                 .SelectMany(ai => ai.GetConstructorArguments())
                 .OfType<Type[]>()
                 .SelectMany(a => a);
@@ -81,11 +79,17 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 await asyncLifetime.InitializeAsync();
             }
 
+            if (typeof(ITestMainThreadFixture).IsAssignableFrom(fixtureType)) {
+                fixtures[typeof(ITestMainThreadFixture)] = fixture;
+            }
+
             fixtures[fixtureType] = fixture;
             var methodFixtureTypes = MethodFixtureProvider.GetFactoryMethods(fixtureType).Select(mi => mi.ReturnType);
             foreach (var type in methodFixtureTypes) {
                 fixtures[type] = fixture;
             }
         }
+
+        private static bool IsGenericType(Type t) =>  t.GetTypeInfo().IsGenericType;
     }
 }

@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Test.Fakes.Shell;
 using Microsoft.Markdown.Editor.Preview.Browser;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
@@ -24,7 +25,7 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             shell.SetupSessionSubstitute();
 
             shell.ServiceManager.RemoveService(shell.ServiceManager.GetService<IFileSystem>());
-            shell.ServiceManager.AddService(new FileSystem());
+            shell.ServiceManager.AddService(new WindowsFileSystem());
 
             _browser = new BrowserView("file", shell.Services);
         }

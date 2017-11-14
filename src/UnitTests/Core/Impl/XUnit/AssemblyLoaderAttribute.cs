@@ -3,15 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using Xunit.Abstractions;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Common.Core;
-using Xunit.Abstractions;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Assembly)]
     public abstract class AssemblyLoaderAttribute : Attribute, IDisposable {
         private readonly string[] _paths;

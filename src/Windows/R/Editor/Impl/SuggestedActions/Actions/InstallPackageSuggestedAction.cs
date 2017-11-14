@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;

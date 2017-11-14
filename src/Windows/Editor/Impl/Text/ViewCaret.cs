@@ -23,6 +23,7 @@ namespace Microsoft.Languages.Editor.Text {
             }
         }
 
+#pragma warning disable 67
         public event EventHandler PositionChanged;
 
         public void MoveTo(int point, int virtualSpaces)

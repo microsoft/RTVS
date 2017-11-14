@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.R.Host.Client.Host;
+using Microsoft.R.Platform.Host;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -49,6 +51,7 @@ namespace Microsoft.R.Host.Client.Session {
         private RSessionRequestSource _currentRequestSource;
         private TaskCompletionSourceEx<object> _initializedTcs;
         private bool _processingChangeDirectoryCommand;
+        private readonly IFileSystem _fileSystem;
         private readonly Action _onDispose;
         private readonly IExclusiveReaderLock _initializationLock;
         private readonly BinaryAsyncLock _stopHostLock;
@@ -85,10 +88,11 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
-        public RSession(int id, string name, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
+        public RSession(int id, string name, IFileSystem fileSystem, IBrokerClient brokerClient, IExclusiveReaderLock initializationLock, Action onDispose) {
             Id = id;
             Name = name;
             BrokerClient = brokerClient;
+            _fileSystem = fileSystem;
             _onDispose = onDispose;
 
             _disposeToken = DisposeToken.Create<RSession>();
@@ -479,8 +483,7 @@ namespace Microsoft.R.Host.Client.Session {
                     StopHostAsync().DoNotWait();
                 }
 
-                var oce = ex as OperationCanceledException;
-                if (oce != null) {
+                if (ex is OperationCanceledException oce) {
                     _initializedTcs.SetCanceled(oce);
                 } else {
                     _initializedTcs.SetException(ex);
@@ -490,7 +493,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private const int rtvsPackageVersion = 1;
 
-        private static async Task LoadRtvsPackage(IRExpressionEvaluator eval, bool isRemote) {
+        private async Task LoadRtvsPackage(IRExpressionEvaluator eval, bool isRemote) {
             // Load RTVS R package before doing anything in R since the calls
             // below calls may depend on functions exposed from the RTVS package
             var libPath = isRemote ? await GetRemoteRtvsPackagePath(eval) : Path.GetDirectoryName(typeof(RHost).GetTypeInfo().Assembly.GetAssemblyPath());
@@ -505,10 +508,22 @@ if (rtvs:::version != {rtvsPackageVersion}) {{
 "));
         }
 
-        private static async Task<string> GetRemoteRtvsPackagePath(IRExpressionEvaluator eval) {
-            const string windowsPath = ".";
-            const string unixPath = "/usr/share/rtvs";
-            return await eval.IsRSessionPlatformWindowsAsync() ? windowsPath : unixPath;
+        private async Task<string> GetRemoteRtvsPackagePath(IRExpressionEvaluator eval) {
+            var isWindows = await eval.IsRSessionPlatformWindowsAsync();
+            if (!isWindows) {
+                // Remote Linux
+                return "/usr/share/rtvs";
+            }
+            // Check if there is 'rtvs' folder on remote
+            var rtvsExists = await eval.FileExistsAsync("./rtvs/NAMESPACE");
+            if (rtvsExists) {
+                return ".";
+            }
+            // Most probably tests are running remote broker locally
+            var locator = BrokerExecutableLocator.Create(_fileSystem);
+            var hostDirectory = Path.GetDirectoryName(locator.GetHostExecutablePath());
+            rtvsExists = _fileSystem.FileExists(Path.Combine(hostDirectory, @"rtvs\NAMESPACE"));
+            return rtvsExists ? hostDirectory : Path.GetFullPath(Path.Combine(hostDirectory, @"..\.."));
         }
 
         private static Task SuppressUI(IRExpressionEvaluator eval) {

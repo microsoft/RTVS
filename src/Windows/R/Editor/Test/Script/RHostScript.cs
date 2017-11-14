@@ -6,9 +6,9 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Interpreters;
 using Microsoft.Common.Core.Services;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Platform.Interpreters;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]

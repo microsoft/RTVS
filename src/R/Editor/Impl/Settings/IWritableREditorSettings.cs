@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor {
         bool PartialArgumentNameMatch { get; set; }
         bool EnableOutlining { get; set; }
         bool SmartIndentByArgument { get; set; }
-        RFormatOptions FormatOptions { get; }
-        LintOptions LintOptions { get; }
+        RFormatOptions FormatOptions { get; set; }
+        ILintOptions LintOptions { get; set; }
     }
 }

@@ -38,10 +38,8 @@ namespace Microsoft.R.Host.Client.Host {
             // the first prompt should be validated and saved, and then the same credentials will be reused for the second session.
             var token = await _lock.WriterLockAsync(cancellationToken);
 
-            await _services.MainThread().SwitchToAsync(cancellationToken);
-
             try {
-                var credentials = _credentials ?? _services.Security().GetUserCredentials(_authority, _workspaceName);
+                var credentials = _credentials ?? await _services.Security().GetUserCredentialsAsync(_authority, _workspaceName, cancellationToken);
                 _credentials = credentials;
             } catch (Exception ex) when (!ex.IsCriticalException() && !(ex is OperationCanceledException)) {
                 // TODO: provide better error message

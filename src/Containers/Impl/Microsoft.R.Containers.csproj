@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.1;netstandard1.6;net46</TargetFrameworks>
+    <TargetFramework Condition="'$(OS)' != 'Windows_NT'">netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Microsoft.R.Containers</AssemblyName>
   </PropertyGroup>
   <Import Project="..\..\R.Settings.NetCore.props" />
@@ -12,9 +13,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">
+  <ItemGroup Condition=" '$(Desktop)' == 'true' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>

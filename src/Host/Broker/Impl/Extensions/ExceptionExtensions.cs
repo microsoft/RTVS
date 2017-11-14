@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Internal.Networking;
+using Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.Internal.Networking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ namespace Microsoft.R.Host.Broker {
         public static void HandleWebHostStartExceptions(this Exception ex, IServiceProvider services, bool isService) {
             var configuration = services.GetRequiredService<IConfigurationRoot>();
             var lifetime = services.GetRequiredService<IApplicationLifetime>();
-            var logger = services.GetService<ILogger<Startup.Startup>>();
+            var logger = services.GetService<ILogger<StartupBase>>();
 
             switch (ex) {
                 case IOException ioException when (ioException.InnerException as AggregateException).IsPortInUseException():

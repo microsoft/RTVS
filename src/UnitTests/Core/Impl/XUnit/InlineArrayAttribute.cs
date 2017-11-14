@@ -10,7 +10,6 @@ using Xunit.Sdk;
 namespace Microsoft.UnitTests.Core.XUnit {
     [DataDiscoverer("Microsoft.UnitTests.Core.XUnit.InlineArrayDiscoverer", "Microsoft.UnitTests.Core")]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    [ExcludeFromCodeCoverage]
     public sealed class InlineArrayAttribute : DataAttribute {
         private readonly object[] _array;
 

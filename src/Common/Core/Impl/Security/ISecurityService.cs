@@ -3,10 +3,12 @@
 
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Security {
     public interface ISecurityService {
-        Credentials GetUserCredentials(string authority, string workspaceName);
+        Task<Credentials> GetUserCredentialsAsync(string authority, string workspaceName, CancellationToken cancellationToken);
         (string username, SecureString password) ReadUserCredentials(string authority);
         bool ValidateX509Certificate(X509Certificate certificate, string message);
         void SaveUserCredentials(string authority, string userName, SecureString password, bool save);

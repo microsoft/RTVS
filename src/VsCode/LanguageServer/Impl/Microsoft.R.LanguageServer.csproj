@@ -1,0 +1,44 @@
+﻿<Project>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netcoreapp2.0</TargetFrameworks>
+    <AssemblyName>Microsoft.R.LanguageServer</AssemblyName>
+    <RootNamespace>Microsoft.R.LanguageServer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="..\..\..\R.Settings.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="CXuesong.JsonRpc.Standard" Version="0.3.1" />
+    <PackageReference Include="CXuesong.JsonRpc.Streams" Version="0.3.1" />
+    <PackageReference Include="CXuesong.LanguageServer.VsCode" Version="0.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Core\Impl\Microsoft.R.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Editor\Impl\Microsoft.R.Editor.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Broker\Impl\Microsoft.R.Host.Broker.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Host\Client\Impl\Microsoft.R.Host.Client.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Components\Impl\Microsoft.R.Components.csproj" />
+    <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Unix\R\Platform\Impl\Microsoft.R.Platform.Unix.csproj" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
+  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
+</Project>

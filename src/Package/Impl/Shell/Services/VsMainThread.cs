@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Shell;
@@ -18,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _mainThreadDispatcher = Dispatcher.FromThread(_mainThread);
         }
 
+        #region IMainThread
         public int ThreadId => _mainThread.ManagedThreadId;
 
         public void Post(Action action) {
@@ -25,14 +27,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return;
             }
 
-            ThreadHelper.JoinableTaskFactory.RunAsync(() => {
-                action();
-                return Task.CompletedTask;
-            });
+            ThreadHelper.JoinableTaskFactory
+                .SwitchToMainThreadAsync()
+                .GetAwaiter()
+                .OnCompleted(action);
         }
 
         public IMainThreadAwaiter CreateMainThreadAwaiter(CancellationToken cancellationToken) {
             return new VsMainThreadAwaiter(ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken).GetAwaiter());
         }
+        #endregion
     }
 }

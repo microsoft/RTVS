@@ -17,12 +17,12 @@ namespace Microsoft.R.Editor.Commands {
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler {
         private readonly IServiceContainer _services;
-        private readonly AutoFormat _autoFormat;
+        private readonly VsAutoFormat _autoFormat;
 
         public RTypingCommandHandler(ITextView textView, IServiceContainer services)
             : base(textView) {
             _services = services;
-            _autoFormat = new AutoFormat(textView, services);
+            _autoFormat = new VsAutoFormat(services, textView);
         }
 
         #region ICommand
@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
                 if (_autoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
-                    _autoFormat.HandleAutoformat(typedChar);
+                    _autoFormat.HandleTyping(typedChar);
                 }
             }
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -41,9 +41,8 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 var typedChar = GetTypedChar(group, id, inputArg);
                 if (_autoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
-                    _autoFormat.HandleAutoformat(typedChar);
+                    _autoFormat.HandleTyping(typedChar);
                 }
-
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
             }
         }

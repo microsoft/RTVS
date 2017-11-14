@@ -34,8 +34,10 @@ namespace Microsoft.Markdown.Editor.Test.Preview {
             _settings = settings;
         }
 
+        [Test]
         public void AutomaticSync() {
-            var tv = Substitute.For<ITextView>();
+            var tb = new TextBufferMock(string.Empty, "inert");
+            var tv = new TextViewMock(tb);
 
             var command = new AutomaticSyncCommand(tv, _shell.Services);
             command.CommandIds.Count.Should().Be(1);

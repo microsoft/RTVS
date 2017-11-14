@@ -54,11 +54,9 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public IEnumerable<Session> GetSessions(IIdentity user) {
             lock (_sessions) {
-                List<Session> userSessions;
-                if(_sessions.TryGetValue(user.Name, out userSessions)) {
-                    return userSessions.ToArray();
-                }
-                return Enumerable.Empty<Session>();
+                return _sessions.TryGetValue(user.Name, out var userSessions) 
+                    ? userSessions.ToArray() 
+                    : Enumerable.Empty<Session>();
             }
         }
 
@@ -92,11 +90,12 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public Session GetSession(IIdentity user, string id) {
             lock (_sessions) {
-                if (_blockedUsers.Contains(user.Name)) {
+                if (user != null &&_blockedUsers.Contains(user.Name)) {
                     return null;
                 }
-
-                return _sessions.Values.SelectMany(sessions => sessions).FirstOrDefault(session => session.User.Name == user.Name && session.Id == id);
+                return _sessions.Values
+                    .SelectMany(sessions => sessions)
+                    .FirstOrDefault(session => (user == null || session.User.Name == user.Name) && session.Id == id);
             }
         }
 
@@ -114,7 +113,7 @@ namespace Microsoft.R.Host.Broker.Sessions {
 
         public Session CreateSession(ClaimsPrincipal principal, string id, Interpreter interpreter, string commandLineArguments, bool isInteractive) {
             Session session;
-            IIdentity user = principal.Identity;
+            var user = principal.Identity;
             lock (_sessions) {
                 if (_blockedUsers.Contains(user.Name)) {
                     throw new InvalidOperationException(Resources.Error_BlockedByProfileDeletion.FormatInvariant(user.Name));

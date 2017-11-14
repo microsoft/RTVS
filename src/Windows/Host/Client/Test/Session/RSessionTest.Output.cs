@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public Output(IServiceContainer services, TestMethodFixture testMethod) {
                 _brokerClient = CreateLocalBrokerClient(services, nameof(RSessionTest) + nameof(Output));
-                _session = new RSession(0, testMethod.FileSystemSafeName, _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
+                _session = new RSession(0, testMethod.FileSystemSafeName, services.FileSystem(), _brokerClient, new AsyncReaderWriterLock().CreateExclusiveReaderLock(), () => { });
             }
 
             public async Task InitializeAsync() {

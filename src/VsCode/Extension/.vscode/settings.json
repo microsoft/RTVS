@@ -1,0 +1,14 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+  "files.exclude": {
+    "out": false // set this to true to hide the "out" folder with the compiled JS files
+  },
+  "search.exclude": {
+    "out": true // set this to false to include "out" folder in search results
+  },
+  "r.linting.enabled": false,
+  "r.formatting.formatOnSave": false,
+  "r.rPath": "C:\\Program Files\\R\\R-3.4.0",
+  "vscode.editor.tabSize": 2,
+  "vscode.editor.useSpaces": true
+}

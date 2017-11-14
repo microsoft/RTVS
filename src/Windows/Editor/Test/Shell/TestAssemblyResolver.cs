@@ -27,7 +27,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             }
 
             if (asm == null) {
-                path = Path.Combine(Paths.VsRoot, name);
+                path = Path.Combine(VsPaths.VsRoot, name);
                 if (File.Exists(path)) {
                     asm = Assembly.LoadFrom(path);
                 }

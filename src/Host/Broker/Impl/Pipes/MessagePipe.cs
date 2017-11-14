@@ -83,14 +83,14 @@ namespace Microsoft.R.Host.Broker.Pipes {
             public void Write(byte[] message) {
                 _pipe.LogMessage(MessageOrigin.Client, message);
 
-                ulong requestId = MessageParser.GetRequestId(message);
+                var requestId = MessageParser.GetRequestId(message);
 
                 if (requestId == 0) {
                     if (MessageParser.IsNamed(message, _cancelAllMessageName)) {
                         _pipe._sentPendingRequests.Clear();
                     }
                 } else {
-                    _pipe._sentPendingRequests.TryRemove(requestId, out byte[] request);
+                    _pipe._sentPendingRequests.TryRemove(requestId, out var request);
                 }
 
                 _pipe._clientMessages.Post(message);
@@ -123,9 +123,9 @@ namespace Microsoft.R.Host.Broker.Pipes {
                 } else if (handshake == null) {
                     _pipe._handshake = message;
                 } else {
-                    ulong requestId = MessageParser.GetRequestId(message);
+                    var requestId = MessageParser.GetRequestId(message);
                     if (requestId == ulong.MaxValue) {
-                        ulong id = MessageParser.GetId(message);
+                        var id = MessageParser.GetId(message);
                         _pipe._sentPendingRequests.TryAdd(id, message);
                     }
                 }

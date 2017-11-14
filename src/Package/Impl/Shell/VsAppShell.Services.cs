@@ -3,9 +3,7 @@
 
 using System.IO;
 using Microsoft.Common.Core.Imaging;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -17,12 +15,14 @@ using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Common.Core.Output;
 using Microsoft.R.Containers;
 using Microsoft.R.Components;
+using Microsoft.R.Components.Security;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform;
+using Microsoft.R.Platform.Interpreters;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
@@ -42,18 +42,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void ConfigureServices() {
             _services
                 .AddService<IActionLog>(s => new Logger(VsApplication.Name, Path.GetTempPath(), s))
-                .AddService<IFileSystem, WindowsFileSystem>()
-                .AddService<ILoggingPermissions, LoggingPermissions>()
                 .AddService<IMainThread, VsMainThread>()
                 .AddService<IMicrosoftRClientInstaller, MicrosoftRClientInstaller>()
                 .AddService<IOutputService, VsOutputService>()
-                .AddService<IProcessServices, ProcessServices>()
-                .AddService<IRegistry, RegistryImpl>()
                 .AddService<ISettingsStorage, VsSettingsStorage>()
                 .AddService<IRSettings, RSettingsImplementation>()
-                .AddService<ISecurityService, SecurityService>()
                 .AddService<ITaskService, VsTaskService>()
-                .AddService<ITelemetryService, VsTelemetryService>();
+                .AddService<ITelemetryService, VsTelemetryService>()
+                .AddService<ISecurityService, WindowsSecurityService>();
+
         }
 
         private void ConfigurePackageServices() {
@@ -78,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 .AddService<IStatusBar, VsStatusBar>()
                 .AddService<RPackageToolWindowProvider>()
                 .AddRComponentsServices()
-                .AddWindowsRInterpretersServices()
+                .AddWindowsPlatformServices()
                 .AddWindowsHostClientServices()
                 .AddWindowsRComponentsServices()
                 .AddEditorServices()

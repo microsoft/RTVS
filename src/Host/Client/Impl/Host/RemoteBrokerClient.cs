@@ -28,10 +28,8 @@ namespace Microsoft.R.Host.Client.Host {
         private bool? _certificateValidationResult;
 
         static RemoteBrokerClient() {
-#if !NETSTANDARD1_6
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-#endif
         }
 
         public RemoteBrokerClient(string name, IRSessionProvider sessionProvider, BrokerConnectionInfo connectionInfo, IServiceContainer services, IConsole console, CancellationToken cancellationToken)
@@ -42,7 +40,7 @@ namespace Microsoft.R.Host.Client.Host {
             _sessionProvider = sessionProvider;
 
             CreateHttpClient(connectionInfo.Uri);
-            HttpClientHandler.ServerCertificateValidationCallback = ValidateCertificateHttpHandler;
+            HttpClientHandler.ServerCertificateCustomValidationCallback = ValidateCertificateHttpHandler;
         }
 
         public override async Task<RHost> ConnectAsync(HostConnectionInfo connectionInfo, CancellationToken cancellationToken = new CancellationToken()) {

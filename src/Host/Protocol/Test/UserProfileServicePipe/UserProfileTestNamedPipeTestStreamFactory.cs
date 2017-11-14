@@ -3,7 +3,7 @@
 
 using System.IO.Pipes;
 using System.Security.Principal;
-using Microsoft.Common.Core.IO;
+using Microsoft.R.Platform.IO;
 
 namespace Microsoft.R.Host.Protocol.Test.UserProfileServicePipe {
     public class UserProfileTestNamedPipeTestStreamFactory : IUserProfileNamedPipeFactory {

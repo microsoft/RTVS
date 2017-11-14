@@ -129,7 +129,7 @@ namespace Microsoft.R.Editor {
         /// </summary>
         public static RFunctionSignatureInfo GetSignatureInfoFromBuffer(this AstRoot ast, IEditorBufferSnapshot snapshot, int position) {
             // For signatures we want outer function so in abc(d|ef()) helps shows signature for the 'abc'.
-            if (!ast.GetOuterFunction(ref position, out FunctionCall functionCall, out Variable functionVariable)) {
+            if (!ast.GetOuterFunction(ref position, out var functionCall, out var functionVariable)) {
                 return null;
             }
             return GetSignatureInfo(ast, functionCall, functionVariable, position);
@@ -141,7 +141,7 @@ namespace Microsoft.R.Editor {
         /// </summary>
         public static RFunctionSignatureInfo GetSignatureInfo(this AstRoot ast, FunctionCall functionCall, Variable functionVariable, int position) {
             var parameterIndex = functionCall.GetParameterIndex(position);
-            var parameterName = functionCall.GetParameterName(parameterIndex, out bool namedParameter);
+            var parameterName = functionCall.GetParameterName(parameterIndex, out var namedParameter);
 
             string packageName = null;
             if (functionVariable.Parent is Operator op && op.OperatorType == OperatorType.Namespace) {

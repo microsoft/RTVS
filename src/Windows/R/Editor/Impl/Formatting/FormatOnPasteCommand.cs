@@ -77,9 +77,8 @@ namespace Microsoft.R.Editor.Formatting {
                 // Since we don't want to format inside strings.
                 document.EditorTree.EnsureTreeReady();
                 if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint.Value)) {
-                    var formatter = new RangeFormatter(Services);
-                    formatter.FormatRange(TextView.ToEditorView(), editorBuffer,
-                        new TextRange(insertionPoint.Value, text.Length));
+                    var formatter = new RangeFormatter(Services, TextView.ToEditorView(), editorBuffer);
+                    formatter.FormatRange(new TextRange(insertionPoint.Value, text.Length));
                 }
                 return CommandResult.Executed;
             }

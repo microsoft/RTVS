@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Components.PackageManager;
 
@@ -11,7 +12,7 @@ namespace Microsoft.R.Editor.Functions {
         /// <summary>
         /// Creates index of packages available in the provided R session
         /// </summary>
-        Task BuildIndexAsync();
+        Task BuildIndexAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Writes index cache to disk
@@ -27,13 +28,13 @@ namespace Microsoft.R.Editor.Functions {
         /// Retrieves R package information by name. If package is not in the index,
         /// attempts to locate the package in the current R session.
         /// </summary>
-        Task<IPackageInfo> GetPackageInfoAsync(string packageName);
+        Task<IPackageInfo> GetPackageInfoAsync(string packageName, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Retrieves information on multilple R packages. If one of the packages 
         /// is not in the index, attempts to locate the package in the current R session.
         /// </summary>
-        Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames);
+        Task<IEnumerable<IPackageInfo>> GetPackagesInfoAsync(IEnumerable<string> packageNames, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Path to the cache.

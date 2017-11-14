@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Services;
 
@@ -18,8 +19,9 @@ namespace Microsoft.R.Editor.Functions {
         /// Package index, if available. If not available, 
         /// index builder will attempt to obtain it from the service container
         /// </param>
+        /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>Awaitable task</returns>
-        Task BuildIndexAsync(IPackageIndex packageIndex = null);
+        Task BuildIndexAsync(IPackageIndex packageIndex = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Registers all functions from the package in the index

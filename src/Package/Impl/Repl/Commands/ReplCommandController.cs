@@ -153,7 +153,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
-                FormatOperations.FormatCurrentStatement(textView.ToEditorView(), textBuffer.ToEditorBuffer(), Services);
+                var fo = new FormatOperations(Services, textView.ToEditorView(), textBuffer.ToEditorBuffer());
+                fo.FormatCurrentStatement();
             }
         }
 

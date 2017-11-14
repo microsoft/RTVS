@@ -15,7 +15,6 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.Undo;
-using Microsoft.R.Editor.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

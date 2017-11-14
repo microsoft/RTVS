@@ -5,63 +5,42 @@ using System;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.Common.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.R.Host.Broker.Startup;
-using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Security {
-    public sealed class TlsConfiguration : IConfigureOptions<KestrelServerOptions> {
-        private readonly IApplicationLifetime _lifetime;
+    public sealed class TlsConfiguration {
         private readonly ILogger<TlsConfiguration> _logger;
-        private readonly StartupOptions _startupOptions;
         private readonly SecurityOptions _securityOptions;
 
-        public TlsConfiguration(IApplicationLifetime lifetime, ILogger<TlsConfiguration> logger, IOptions<StartupOptions> startupOptions, IOptions<SecurityOptions> securityOptions) {
-            _lifetime = lifetime;
+        public TlsConfiguration(ILogger<TlsConfiguration> logger, SecurityOptions securityOptions) {
             _logger = logger;
-            _startupOptions = startupOptions.Value;
-            _securityOptions = securityOptions.Value;
+            _securityOptions = securityOptions;
         }
 
-        public void Configure(KestrelServerOptions options) {
-            var httpsOptions = GetHttpsOptions();
-            if (httpsOptions == null) {
-                _logger.LogCritical(Resources.Critical_NoTlsCertificate, _securityOptions.X509CertificateName);
-                _lifetime.StopApplication();
-
-                if (!_startupOptions.IsService) {
-                    Environment.Exit((int)BrokerExitCodes.NoCertificate);
-                }
-            }
-
-            options.UseHttps(httpsOptions);
-        }
-
-        private HttpsConnectionFilterOptions GetHttpsOptions() {
-            try {
-                var cert = GetCertificate();
-
-                if (cert != null) {
-                    return new HttpsConnectionFilterOptions {
-                        ServerCertificate = cert,
-                        ClientCertificateValidation = ClientCertificateValidationCallback,
-                        ClientCertificateMode = ClientCertificateMode.NoCertificate,
-                        SslProtocols = SslProtocols.Tls12
-                    };
-                }
-            } catch(Exception ex) {
-                _logger.LogCritical(Resources.Critical_CertificateLoadFailed, ex.Message);
-                throw (ex);
+        public HttpsConnectionAdapterOptions GetHttpsOptions() {
+            var cert = GetCertificate();
+            if (cert != null) {
+                return new HttpsConnectionAdapterOptions {
+                    ServerCertificate = cert,
+                    ClientCertificateValidation = ClientCertificateValidationCallback,
+                    ClientCertificateMode = ClientCertificateMode.NoCertificate,
+                    SslProtocols = SslProtocols.Tls12
+                };
             }
             return null;
         }
 
         private X509Certificate2 GetCertificate() {
-            X509Certificate2 certificate = Certificates.GetCertificateForEncryption(_securityOptions);
+            X509Certificate2 certificate;
+            try {
+                certificate = Certificates.GetCertificateForEncryption(_securityOptions);
+            } catch (Exception ex) {
+                _logger.LogError(Resources.Error_UnableToGetCertificateForEncryption.FormatInvariant(ex.Message));
+                return null;
+            }
+
             if (certificate == null) {
                 return null;
             }
@@ -72,8 +51,7 @@ namespace Microsoft.R.Host.Broker.Security {
             return certificate;
         }
 
-        private static bool ClientCertificateValidationCallback(X509Certificate2 certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
-            return sslPolicyErrors == SslPolicyErrors.None;
-        }
+        private static bool ClientCertificateValidationCallback(X509Certificate2 certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+            => sslPolicyErrors == SslPolicyErrors.None;
     }
 }

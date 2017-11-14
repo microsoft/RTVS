@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.R.Components</RootNamespace>
     <AssemblyName>Microsoft.R.Components.Windows</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -97,6 +97,7 @@
     <Compile Include="Documentation\Commands\OpenDocumentationCommand.cs" />
     <Compile Include="Documentation\LocalDocumentationPaths.cs" />
     <Compile Include="Documentation\OnlineDocumentationUrls.cs" />
+    <Compile Include="Extensions\ClipboardExtensions.cs" />
     <Compile Include="Extensions\PlotManagerExtensions.cs" />
     <Compile Include="Extensions\InteractiveWorkflowExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
@@ -145,6 +146,10 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowVisualProvider.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowVisual.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\InteractiveWindowWriter.cs" />
+    <Compile Include="Logging\EventLogLogger.cs" />
+    <Compile Include="Logging\EventLogLoggerProvider.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="OS\Win32MessageBox.cs" />
     <Compile Include="Plots\Commands\ShowMainPlotWindowCommand.cs" />
     <Compile Include="Plots\ExportArguments.cs" />
     <Compile Include="Plots\ExportImageParameters.cs" />
@@ -247,6 +252,9 @@
     <Compile Include="Resources\Images.cs" />
     <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
+    <Compile Include="Security\CredentialHandle.cs" />
+    <Compile Include="Security\SecurityUtilities.cs" />
+    <Compile Include="Security\WindowsSecurityService.cs" />
     <Compile Include="ServicesExtensions.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorEntry.cs" />
     <Compile Include="Settings\Mirrors\CranMirrorList.cs" />
@@ -269,10 +277,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
-      <Name>Microsoft.Common.Core</Name>
+      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
+      <Name>Microsoft.R.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+    <ProjectReference Include="..\..\..\..\Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj">
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
@@ -300,9 +308,9 @@
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\R\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
-      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
-      <Name>Microsoft.R.Interpreters</Name>
+    <ProjectReference Include="..\..\..\..\R\Platform\Impl\Microsoft.R.Platform.csproj">
+      <Project>{9000d374-e37e-4df2-a703-08d29f3fbe61}</Project>
+      <Name>Microsoft.R.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
       <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
@@ -312,9 +320,9 @@
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Impl\Microsoft.R.Common.Core.Windows.csproj">
-      <Project>{01e3d8c2-9c24-492b-b13b-c6d7068b6bf8}</Project>
-      <Name>Microsoft.R.Common.Core.Windows</Name>
+    <ProjectReference Include="..\..\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj">
+      <Project>{56765882-9963-44b5-9fe1-d66f78fa24de}</Project>
+      <Name>Microsoft.R.Platform.Windows.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,63 @@
+﻿<Project>
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <RootNamespace>Microsoft.VisualStudio.Shell.Mocks</RootNamespace>
+    <AssemblyName>Microsoft.VisualStudio.Shell.Mocks</AssemblyName>
+  </PropertyGroup>
+  <Import Project="..\..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="..\..\..\R.Settings.props" />
+  <PropertyGroup>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.MSXML">
+      <HintPath>..\..\..\..\lib\Microsoft.MSXML.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="EnvDTE" Version="8.0.1" />
+    <PackageReference Include="EnvDTE80" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />   
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />   
+    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />   
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
+    <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.InteractiveWindow" Version="2.3.0" />
+    <PackageReference Include="Microsoft.VisualStudio.ProjectSystem" Version="15.5.293-pre" />
+    <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop.11.0" Version="11.0.61030" />
+    <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop.12.0" Version="12.0.30110" />
+    <PackageReference Include="Microsoft.VisualStudio.VsInteractiveWindow" Version="2.3.0" />
+    <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="$(SourceDirectory)Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
+    <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
+    <ProjectReference Include="..\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rdatanode.png" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
+</Project>

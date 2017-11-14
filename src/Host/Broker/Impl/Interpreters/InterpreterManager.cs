@@ -9,7 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Interpreters;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
             var sb = new StringBuilder(Invariant($"{Interpreters.Count} interpreters configured:"));
             foreach (var interp in Interpreters) {
-                sb.Append(Environment.NewLine + Invariant($"[{interp.Id}] : {interp.Name} at \"{interp.Path}\""));
+                sb.Append(Environment.NewLine + Invariant($"[{interp.Id}] : {interp.Name} at \"{interp.InstallPath}\""));
             }
             _logger.LogInformation(sb.ToString());
         }
@@ -46,8 +46,8 @@ namespace Microsoft.R.Host.Broker.Interpreters {
                 if (engines.Any()) {
                     var interpreterId = 0;
                     foreach (var e in engines) {
-                        var detected = new Interpreter(this, Invariant($"{interpreterId++}"), e);
-                        _logger.LogTrace(Resources.Trace_DetectedR, detected.Version, detected.Path);
+                        var detected = new Interpreter(Invariant($"{interpreterId++}"), e);
+                        _logger.LogTrace(Resources.Trace_DetectedR, detected.Version, detected.InstallPath);
                         yield return detected;
                     }
                 } else {
@@ -56,13 +56,13 @@ namespace Microsoft.R.Host.Broker.Interpreters {
             }
 
             foreach (var kv in _options.Interpreters) {
-                string id = kv.Key;
-                InterpreterOptions options = kv.Value;
+                var id = kv.Key;
+                var options = kv.Value;
 
                 if (!string.IsNullOrEmpty(options.BasePath) && _fs.DirectoryExists(options.BasePath)) {
                     var interpInfo = _installationService.CreateInfo(string.Empty, options.BasePath);
                     if (interpInfo != null && interpInfo.VerifyInstallation()) {
-                        yield return new Interpreter(this, id, options.Name, interpInfo);
+                        yield return new Interpreter(id, options.Name, interpInfo);
                         continue;
                     }
                 }

@@ -12,6 +12,7 @@
     <!-- We do not strong name sign in desktop builds -->
     <MicroBuild_DoNotStrongNameSign>true</MicroBuild_DoNotStrongNameSign>
     <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <LibuvVersion>1.10.0</LibuvVersion>
   </PropertyGroup>
 
   <!--

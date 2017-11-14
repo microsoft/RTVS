@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.R.Host.Protocol;
 using Microsoft.R.Host.Broker.Security;
+using Microsoft.R.Host.Protocol;
 
 namespace Microsoft.R.Host.Broker.Interpreters {
     [Authorize(Policy = Policies.RUser)]
@@ -20,7 +20,14 @@ namespace Microsoft.R.Host.Broker.Interpreters {
 
         [HttpGet]
         public IEnumerable<InterpreterInfo> Get() {
-            return _interpManager.Interpreters.Select(interp => interp.Info);
+            return _interpManager.Interpreters.Select(x => new InterpreterInfo {
+                Id = x.Id,
+                Name = x.Name,
+                Version = x.Version,
+                Path = x.InstallPath,
+                BinPath = x.BinPath,
+                LibPath = x.LibPath,
+            });
         }
     }
 }

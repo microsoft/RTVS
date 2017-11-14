@@ -11,7 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.R.Interpreters;
+using Microsoft.R.Platform.Host;
+using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
 using Microsoft.UnitTests.Core.XUnit;
 
 using static System.FormattableString;
@@ -33,12 +35,11 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
         public async Task RHostPipeFuzzTest(int iteration) {
             var input = GenerateInput();
 
-            var RHostExe = "Microsoft.R.Host.exe";
-            var brokerPath = Path.GetDirectoryName(typeof(RHostPipeTest).Assembly.GetAssemblyPath());
-            var rhostExePath = Path.Combine(brokerPath, RHostExe);
+            var locator = BrokerExecutableLocator.Create(new WindowsFileSystem());
+            var rhostExePath = locator.GetHostExecutablePath();
             var arguments = Invariant($"--rhost-name \"FuzzTest\" --rhost-r-dir \"{_interpreter.BinPath}\"");
 
-            ProcessStartInfo psi = new ProcessStartInfo(rhostExePath) {
+            var psi = new ProcessStartInfo(rhostExePath) {
                 UseShellExecute = false,
                 CreateNoWindow = false,
                 Arguments = arguments,
@@ -47,14 +48,14 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
                 RedirectStandardError = true,
                 LoadUserProfile = true
             };
-            var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
+            var shortHome = new StringBuilder(1024);
             GetShortPathName(_interpreter.Path, shortHome, shortHome.Capacity);
             psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
             psi.EnvironmentVariables["PATH"] = _interpreter.BinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             psi.WorkingDirectory = Path.GetDirectoryName(rhostExePath);
 
-            Process process = new Process {
+            var process = new Process {
                 StartInfo = psi,
                 EnableRaisingEvents = true,
             };
@@ -68,10 +69,10 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
 
                 var killRhostTask = Task.Delay(3000).ContinueWith(t => TryKill(process));
 
-                CancellationTokenSource cts = new CancellationTokenSource(3000);
+                var cts = new CancellationTokenSource(3000);
                 await ReadStartupOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
                 await SendFuzzedInputToRHostAsync(process.StandardInput.BaseStream, input, cts.Token);
-                Task readOutputTask = ReadAnyOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
+                var readOutputTask = ReadAnyOutputFromRHostAsync(process.StandardOutput.BaseStream, cts.Token);
                 // Fuzzed input should not kill the host.
                 process.HasExited.Should().BeFalse();
 
@@ -90,7 +91,7 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
 
         private async Task ReadStartupOutputFromRHostAsync(Stream stream, CancellationToken ct) {
             // Capture R Startup messages.
-            byte[] buffer = new byte[1024*1024];
+            var buffer = new byte[1024*1024];
             var bytesRead = 0;
             do {
                 bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
@@ -104,8 +105,8 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
         private async Task ReadAnyOutputFromRHostAsync(Stream stream, CancellationToken ct) {
             try {
                 // Capture R messages after sending fuzzed input.
-                byte[] buffer = new byte[1024 * 1024];
-                int bytesRead = 0;
+                var buffer = new byte[1024 * 1024];
+                var bytesRead = 0;
                 do {
                     bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, ct);
                 } while (!ct.IsCancellationRequested);
@@ -113,8 +114,8 @@ namespace Microsoft.R.Host.Protocol.Test.RHostPipe {
         }
 
         private byte[] GenerateInput() {
-            using (MemoryStream ms = new MemoryStream())
-            using (BinaryWriter writer = new BinaryWriter(ms)) {
+            using (var ms = new MemoryStream())
+            using (var writer = new BinaryWriter(ms)) {
                 // Id =uint64
                 writer.Write(GenerateUInt64());
                 // Request id = uint64

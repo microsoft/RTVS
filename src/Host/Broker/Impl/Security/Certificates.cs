@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Common.Core;
@@ -24,7 +25,14 @@ namespace Microsoft.R.Host.Broker.Security {
         }
 
         private static X509Certificate2 FindCertificate(string name) {
-            var stores = new[] { StoreName.Root, StoreName.AuthRoot, StoreName.CertificateAuthority, StoreName.My };
+            StoreName[] stores;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                stores = new[] { StoreName.Root, StoreName.AuthRoot, StoreName.CertificateAuthority, StoreName.My };
+            } else {
+                stores = new[] { StoreName.Root, StoreName.CertificateAuthority };
+            }
+
             foreach (StoreName storeName in stores) {
                 using (var store = new X509Store(storeName, StoreLocation.LocalMachine)) {
                     try {

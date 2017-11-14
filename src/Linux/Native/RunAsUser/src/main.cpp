@@ -85,6 +85,22 @@ void write_string(FILE* stream, const std::string &data) {
     }
 }
 
+void logf_waitpid(uint err, pid_t pid, int ws) {
+#if _APPLE
+    logf(log_verbosity::minimal, "Error [waitpid]: %u\n", err);
+#else
+    logf(log_verbosity::minimal, "Error [waitpid]: %s\n", explain_errno_waitpid(err, pid, ws, 0));
+#endif
+}
+
+void logf_fork(uint err) {
+#if _APPLE
+logf(log_verbosity::minimal, "Error [fork]: %u\n", err);
+#else
+logf(log_verbosity::minimal, "Error [fork]: %s\n", explain_errno_fork(err));
+#endif
+}
+
 template<class Arg, class... Args>
 inline void write_json(Arg&& arg, Args&&... args) {
     picojson::array msg;
@@ -190,7 +206,7 @@ T calloc_or_exit(size_t count, size_t size) {
 void start_rhost(const picojson::object& json) {
     logf(log_verbosity::traffic, "Gathering Microsoft.R.Host arguments.\n");
     // construct arguments
-    picojson::array json_args(json[RTVS_JSON_MSG_ARGS].get<picojson::array>());
+    picojson::array json_args(json.at(RTVS_JSON_MSG_ARGS).get<picojson::array>());
 
     // <binary path> <arg 1> <arg 2> ... <explicit null>
     int argc = json_args.size() + 2;
@@ -212,7 +228,7 @@ void start_rhost(const picojson::object& json) {
 
     logf(log_verbosity::traffic, "Building Microsoft.R.Host environment.\n");
     // construct environment
-    picojson::array json_env = json[RTVS_JSON_MSG_ENV].get<picojson::array>();
+    picojson::array json_env = json.at(RTVS_JSON_MSG_ENV).get<picojson::array>();
 
     // <key1=value1> <key2=value2> ... <explicit null>
     int envc = json_env.size() + 1;
@@ -230,7 +246,11 @@ void start_rhost(const picojson::object& json) {
     logf(log_verbosity::traffic, "Starting Microsoft.R.Host Process\n");
     execve(RTVS_RHOST_PATH, argv, envp);
     int err = errno;
+#ifdef _APPLE
+    logf(log_verbosity::minimal, "Error [execve]: %d\n", err);
+#else
     logf(log_verbosity::minimal, "Error [execve]: %s\n", explain_errno_execve(err, RTVS_RHOST_PATH, argv, envp));
+#endif
     _exit(err);
 }
 
@@ -247,12 +267,12 @@ int change_cwd(const char* cwd) {
 
 int run_rhost(const picojson::object& json, const char* user, const gid_t gid, const uid_t uid) {
     int err = 0;
-    std::string cwd(json[RTVS_JSON_MSG_CWD].get<std::string>());
+    std::string cwd(json.at(RTVS_JSON_MSG_CWD).get<std::string>());
 
     int pid = fork();
     if (pid == -1) {
         err = errno;
-        logf(log_verbosity::minimal, "Error [fork]: %s\n", explain_errno_fork(err));
+        logf_fork(err);
         return err;
     } else if (pid == 0) {
         logf(log_verbosity::traffic, "Child process initialization.\n");
@@ -286,7 +306,7 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
         pid_t hpid = waitpid(pid, &ws, 0);
         if (hpid < 0) {
             err = errno;
-            logf(log_verbosity::minimal, "Error [waitpid]: %s\n", explain_errno_waitpid(err, pid, ws, 0));
+            logf_waitpid(err, pid, ws);
         }
 
         if (WIFEXITED(ws)) {
@@ -306,11 +326,11 @@ int run_rhost(const picojson::object& json, const char* user, const gid_t gid, c
 }
 
 int authenticate_and_run(const picojson::object& json) {
-    std::string msg_name(json[RTVS_JSON_MSG_NAME].get<std::string>());
+    std::string msg_name(json.at(RTVS_JSON_MSG_NAME).get<std::string>());
     bool auth_only = msg_name == RTVS_MSG_AUTH_ONLY;
 
-    std::string username(json[RTVS_JSON_MSG_USERNAME].get<std::string>());
-    std::string password(json[RTVS_JSON_MSG_PASSWORD].get<std::string>());
+    std::string username(json.at(RTVS_JSON_MSG_USERNAME).get<std::string>());
+    std::string password(json.at(RTVS_JSON_MSG_PASSWORD).get<std::string>());
 
     if (username.empty() || password.empty()) {
         logf(log_verbosity::minimal, "Error: Username or password missing. %s\n");
@@ -440,7 +460,7 @@ int authenticate_and_run(const picojson::object& json) {
     uid_t user_id = pw->pw_uid;
 
     if (auth_only) {
-        std::string allowed_group(json[RTVS_JSON_MSG_GRP].get<std::string>());
+        std::string allowed_group(json.at(RTVS_JSON_MSG_GRP).get<std::string>());
         if (!allowed_group.empty()) {
             struct group *gp = getgrnam(allowed_group.c_str());
             if (!gp) {
@@ -451,6 +471,9 @@ int authenticate_and_run(const picojson::object& json) {
 
             gid_t allowed_gid = gp->gr_gid;
 
+#ifdef _APPLE
+            std::vector<gid_t> user_groups(NGROUPS_MAX);
+#else
             int ngroups = 1000;
             std::vector<gid_t> user_groups(ngroups);
             if (getgrouplist(user_name, user_gid, user_groups.data(), &ngroups) == -1) {
@@ -458,9 +481,10 @@ int authenticate_and_run(const picojson::object& json) {
                 logf(log_verbosity::minimal, "Error [getgrouplist]:[%d] %s\n", err, strerror(err));
                 return err;
             }
-
             user_groups.resize(ngroups);
-            bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_gid)) != user_groups.end();
+#endif
+
+             bool user_allowed = (std::find(user_groups.begin(), user_groups.end(), allowed_gid)) != user_groups.end();
             if (!user_allowed) {
                 logf(log_verbosity::minimal, "Error: User [%s] is not in the allowed group [%s]\n", user_name, allowed_group.c_str());
                 return EACCES;
@@ -494,14 +518,18 @@ int kill_process(int kill_pid) {
     int pid = fork();
     if (pid == -1) {
         err = errno;
-        logf(log_verbosity::minimal, "Error [fork]: %s\n", explain_errno_fork(err));
+        logf_fork(err);
         return err;
     } 
     
     if (pid == 0) {
         execv(RTVS_KILL_PATH, args);
         int err = errno;
+    #if _APPLE
+        logf(log_verbosity::minimal, "Error [execv]: %u\n", err);
+    #else
         logf(log_verbosity::minimal, "Error [execv]: %s\n", explain_errno_execv(err, RTVS_KILL_PATH, args));
+    #endif
         _exit(err);
     } else {
         logf(log_verbosity::traffic, "Parent waiting for child pid: %d\n", pid);
@@ -509,7 +537,7 @@ int kill_process(int kill_pid) {
         pid_t hpid = waitpid(pid, &ws, 0);
         if (hpid < 0) {
             err = errno;
-            logf(log_verbosity::minimal, "Error [waitpid]: %s\n", explain_errno_waitpid(err, pid, ws, 0));
+            logf_waitpid(err, pid, ws);
         }
 
         if (WIFEXITED(ws)) {

@@ -80,7 +80,9 @@ namespace Microsoft.R.Editor.Validation {
         public bool Visit(IAstNode node, object parameter) {
             var context = (ValidationContext)parameter;
             foreach (var v in _validators) {
-                context.CancellationToken.ThrowIfCancellationRequested();
+                if (context.CancellationToken.IsCancellationRequested) {
+                    return false;
+                }
                 context.Errors.AddRange(v.ValidateElement(node));
             }
             return true;
