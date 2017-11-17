@@ -132,8 +132,9 @@
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
   </Target>
   <!-- VS 2017 15.4 workarounds -->
-  <Target Name="_GenerateRestoreProjectPathWalk" />
+  <Target Name="_IsProjectRestoreSupported" />
   <Target Name="_GenerateRestoreGraphProjectEntry" />
+  <Target Name="_GenerateRestoreProjectPathWalk" />
   <!-- End workarounds -->
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
