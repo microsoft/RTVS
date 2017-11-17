@@ -149,6 +149,11 @@
     <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
   </Target>
+  <!-- VS 2017 15.5 Nuget workarounds -->
+  <Target Name="_IsProjectRestoreSupported" />
+  <Target Name="_GenerateRestoreGraphProjectEntry" />
+  <Target Name="_GenerateRestoreProjectPathWalk" />
+  <!-- End workarounds -->
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>
