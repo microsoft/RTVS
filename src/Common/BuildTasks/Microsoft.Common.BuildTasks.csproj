@@ -59,10 +59,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Wpf\Impl\LambdaConverter\ILambdaConverterProvider.cs">
+    <Compile Include="$(SourceDirectory)\Windows\Wpf\Impl\LambdaConverter\ILambdaConverterProvider.cs">
       <Link>ILambdaConverterProvider.cs</Link>
     </Compile>
-    <Compile Include="..\Wpf\Impl\LambdaConverter\LambdaConverter.cs">
+    <Compile Include="$(SourceDirectory)\Windows\Wpf\Impl\LambdaConverter\LambdaConverter.cs">
       <Link>LambdaConverter.cs</Link>
     </Compile>
     <Compile Include="ExtractLambdasFromXaml.cs" />
