@@ -171,19 +171,25 @@
       </Item>
       <Item ItemId=";Error_RemoteVersionHigher" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
+          <Val><![CDATA[Version of R Services on machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La versión de los servicios de R de la máquina remota ({0})]D;]A;es superior a la versión de Herramientas de R del equipo local ({1}). ]D;]A;Actualice la instalación local de Herramientas de R para que coincida.]]></Val>
+            <Val><![CDATA[La versión de los servicios de R en la máquina ({0})]D;]A;es superior a la versión de Herramientas de R en el equipo local ({1}).]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_RemoteVersionLower" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
+          <Val><![CDATA[Version of R Services on machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[La versión de los servicios de R de la máquina remota ({0})]D;]A;es inferior a la versión de Herramientas de R del equipo local ({1}). ]D;]A;Actualice la instalación remota de los servicios de R para que coincida.]]></Val>
+            <Val><![CDATA[La versión de los servicios de R en la máquina ({0})]D;]A;es inferior a la versión de Herramientas de R en el equipo local ({1}).]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -391,7 +397,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.30927.948]]></Val>
+        <Val><![CDATA[1.3.31108.1213]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -412,7 +418,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.30927.0948]]></Val>
+        <Val><![CDATA[1.3.31108.1213]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -448,7 +454,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.30927.0948]]></Val>
+        <Val><![CDATA[1.3.31108.1213]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>

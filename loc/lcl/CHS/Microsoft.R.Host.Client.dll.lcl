@@ -171,19 +171,25 @@
       </Item>
       <Item ItemId=";Error_RemoteVersionHigher" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
+          <Val><![CDATA[Version of R Services on machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[远程计算机({0})上的 R 服务版本]D;]A;高于本地计算机({1})上的 R 工具版本。]D;]A;请升级本地 R 工具安装以进行匹配。]]></Val>
+            <Val><![CDATA[计算机({0})上的 R Services 版本]D;]A;高于本地计算机({1})上的 R Tools 版本。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";Error_RemoteVersionLower" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
+          <Val><![CDATA[Version of R Services on machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[远程计算机({0})上的 R 服务版本]D;]A;低于本地计算机({1})上的 R 工具版本。]D;]A;请升级远程 R 服务安装以进行匹配。]]></Val>
+            <Val><![CDATA[计算机({0})上的 R Services 版本]D;]A;低于本地计算机({1})上的 R Tools 版本。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -391,7 +397,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.30927.948]]></Val>
+        <Val><![CDATA[1.3.31108.1213]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -412,7 +418,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.30927.0948]]></Val>
+        <Val><![CDATA[1.3.31108.1213]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -448,7 +454,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.30927.0948]]></Val>
+        <Val><![CDATA[1.3.31108.1213]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
