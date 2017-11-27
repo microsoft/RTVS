@@ -9,6 +9,7 @@
     <ProjectGuid>{328906A7-14C1-48C7-BE2D-AF40F5256E49}</ProjectGuid>
     <RootNamespace>Microsoft.VsCode.R.Extension</RootNamespace>
     <AssemblyName>Microsoft.VsCode.R.Extension</AssemblyName>
+    <PackageName>r-0.0.1</PackageName>
     <OutputType>Library</OutputType>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <SccProjectName>SAK</SccProjectName>
@@ -134,7 +135,7 @@
     <Content Include="images\rIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <FilesToSign Include="$(VsCodeOutputPath)$(AssemblyName).vsix">
+    <FilesToSign Include="$(VsCodeOutputPath)$(PackageName).vsix">
       <Authenticode>VSIX</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
@@ -156,6 +157,10 @@
     <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
   </Target>
+  <!-- VS 15.5 nuget workarounds -->
+  <Target Name="_GenerateRestoreGraphProjectEntry" />
+  <Target Name="_GenerateRestoreProjectPathWalk" />
+  <Target Name="_IsProjectRestoreSupported" />
+  <!-- End workarounds -->
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>

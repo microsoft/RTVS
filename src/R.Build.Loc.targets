@@ -7,7 +7,7 @@
     <LocDirectory Condition="'$(LocDirectory)' == ''">$(SourceDirectory)..\loc</LocDirectory>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(DotNetPublish)' == ''">
     <FilesToLocalize Include="$(OutputPath)\$(AssemblyName).$(OutputFileExtension)">
       <!--Required: Files to be localized -->
       <TranslationFile>$(LocDirectory)lcl\{Lang}\$(AssemblyName).$(OutputFileExtension).lcl</TranslationFile>
@@ -21,7 +21,7 @@
     </SignFilesDependsOn>
   </ItemGroup>
 
-  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true'">
+  <Target Name="GatherLocalizedOutputsForSigning" Condition="'$(LocalizationEnabled)' == 'true' AND '$(DotNetPublish)' == ''">
     <ItemGroup>
       <FilesToSign Include="$(OutputPath)\localize\**\$(AssemblyName).resources.dll">
         <Authenticode>Microsoft</Authenticode>
