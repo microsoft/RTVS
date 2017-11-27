@@ -4,8 +4,8 @@
 
 import * as vscode from "vscode";
 import { Disposable } from "vscode";
-import { createDeferred } from "./deferred";
 import { RPReviewSchema } from "./constants";
+import { createDeferred } from "./deferred";
 
 const viewResultsUri = vscode.Uri.parse(RPReviewSchema + "://results");
 
@@ -18,9 +18,9 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         super(() => { });
     }
 
-    dispose() { }
+    public dispose() { }
 
-    provideTextDocumentContent(uri: vscode.Uri, token: vscode.CancellationToken): Thenable<string> {
+    public provideTextDocumentContent(uri: vscode.Uri, token: vscode.CancellationToken): Thenable<string> {
         this.uri = uri;
         return this.generateResultsView();
     }
@@ -29,11 +29,11 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         return this._onDidChange.event;
     }
 
-    clear() {
+    public clear() {
         this.updateBuffer("");
     }
 
-    async append(code: string, result: string) {
+    public async append(code: string, result: string) {
         this.openResultsView();
 
         if (code.length > 64) {
@@ -49,6 +49,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
             const base64 = result.substring(8, result.length);
             breaksAfterCode = breaksAfterCode + "<br/>";
             breaksAfterOutput = "<br/>";
+            // tslint:disable-next-line:max-line-length
             output = `<img src='data:image/gif;base64, ${base64}' style='display:block; margin: 8,0,8,0; text-align: center; width: 90%' />`;
         } else if (result.startsWith("$$ERROR ")) {
             const error = result.substring(8, result.length);
@@ -70,7 +71,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
         vscode.commands.executeCommand("vscode.previewHtml", viewResultsUri, vscode.ViewColumn.Two, "Results")
             .then(() => {
                 def.resolve();
-            }, reason => {
+            }, (reason) => {
                 def.reject(reason);
                 vscode.window.showErrorMessage(reason);
             });
@@ -83,7 +84,7 @@ export class ResultsView extends Disposable implements vscode.TextDocumentConten
                 <!DOCTYPE html>
                 <head>
                     <style type="text/css">
-                        html, body{ height:100%; width:100%; } 
+                        html, body{ height:100%; width:100%; }
                     </style>
                     <script type="text/javascript">
                         function start() {

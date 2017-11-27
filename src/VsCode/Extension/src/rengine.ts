@@ -11,23 +11,23 @@ export class REngine implements IREngine {
         this.client = client;
     }
 
-    getInterpreterPath(): Thenable<string> {
+    public getInterpreterPath(): Thenable<string> {
         return this.client.sendRequest<string>("information/getInterpreterPath");
     }
 
-    execute(code: string): Thenable<string> {
-        return this.client.sendRequest<string>("r/execute", { "code": code });
+    public execute(code: string): Thenable<string> {
+        return this.client.sendRequest<string>("r/execute", { code });
     }
 
-    async interrupt() {
+    public async interrupt() {
         await this.client.sendRequest("r/interrupt");
     }
 
-    async reset() {
+    public async reset() {
         await this.client.sendRequest("r/reset");
     }
 
-    async source(filePath: string) {
+    public async source(filePath: string) {
         await this.client.sendRequest("r/source", filePath);
     }
 }
