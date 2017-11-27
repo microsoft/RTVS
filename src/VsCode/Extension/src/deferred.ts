@@ -23,11 +23,11 @@ class DeferredImpl<T> implements IDeferred<T> {
             this._reject = rej;
         });
     }
-    private resolve(value?: T | PromiseLike<T>) {
+    resolve(value?: T | PromiseLike<T>) {
         this._resolve.apply(this.scope ? this.scope : this, arguments);
         this._resolved = true;
     }
-    private reject(reason?: any) {
+    reject(reason?: any) {
         this._reject.apply(this.scope ? this.scope : this, arguments);
         this._rejected = true;
     }

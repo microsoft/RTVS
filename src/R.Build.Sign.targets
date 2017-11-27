@@ -3,7 +3,7 @@
     <OutputFileExtension Condition="'$(OutputType)' == 'Library'">dll</OutputFileExtension>
     <OutputFileExtension Condition="'$(OutputType)' != 'Library'">exe</OutputFileExtension>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(DOTNET_PUBLISH)' == ''">
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).$(OutputFileExtension)">
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>

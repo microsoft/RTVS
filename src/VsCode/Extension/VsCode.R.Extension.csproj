@@ -76,6 +76,7 @@
     </None>
     <None Include="package.ps1" />
     <None Include="project.json" />
+    <None Include="publish.ps1" />
     <None Include="run-vcse.cmd" />
     <None Include="syntaxes\r.tmLanguage.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -150,8 +151,7 @@
     <CallTarget Targets="_build" />
   </Target>
   <Target Name="_build">
-    <Exec Command="dotnet publish --framework netcoreapp2.0 ..\..\Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
-    <Exec Command="dotnet publish --framework netcoreapp2.0 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
+    <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\publish.ps1 }&quot;" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
