@@ -6,10 +6,10 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as languageClient from "vscode-languageclient";
-import * as deps from "./dependencies";
-import { RLanguage } from "./constants";
-import { REngine } from "./rengine";
 import { Commands } from "./commands";
+import { RLanguage } from "./constants";
+import * as deps from "./dependencies";
+import { REngine } from "./rengine";
 import { ResultsView } from "./resultsView";
 
 let client: languageClient.LanguageClient;
@@ -37,8 +37,8 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions: languageClient.ServerOptions = {
+        debug: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions },
         run: { command: "dotnet", args: [serverModule], options: commandOptions },
-        debug: { command: "dotnet", args: [serverModule, "--debug"], options: commandOptions }
     };
 
     // Options to control the language client
@@ -46,8 +46,8 @@ export async function activateLanguageServer(context: vscode.ExtensionContext) {
         // Register the server for R documents
         documentSelector: [r],
         synchronize: {
-            configurationSection: r
-        }
+            configurationSection: r,
+        },
     };
 
     // Create the language client and start the client.

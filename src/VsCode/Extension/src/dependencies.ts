@@ -2,18 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 "use strict";
 
-import * as vscode from "vscode";
-import * as os from "./os";
 import * as fs from "fs";
 import { getenv } from "getenv";
 import { opn } from "opn";
+import * as vscode from "vscode";
+import * as os from "./os";
 
 export async function getR(r: IREngine): Promise<string> {
     const interpreterPath = await r.getInterpreterPath();
     if (interpreterPath === undefined || interpreterPath === null) {
-        if (await vscode.window.showErrorMessage("Unable to find R interpreter. Would you like to install R now?", "Yes", "No") === "Yes") {
+        if (await vscode.window.showErrorMessage("Unable to find R interpreter. Would you like to install R now?",
+                                                 "Yes", "No") === "Yes") {
             InstallR();
-            vscode.window.showWarningMessage("Please restart VS Code after R installation is complete.")
+            vscode.window.showWarningMessage("Please restart VS Code after R installation is complete.");
         }
         return null;
     }
@@ -22,9 +23,10 @@ export async function getR(r: IREngine): Promise<string> {
 
 export async function checkDotNet(): Promise<boolean> {
     if (!IsDotNetInstalled()) {
-        if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?", "Yes", "No") === "Yes") {
+        if (await vscode.window.showErrorMessage("R Tools require .NET Core Runtime. Would you like to install it now?",
+                                                 "Yes", "No") === "Yes") {
             InstallDotNet();
-            vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.")
+            vscode.window.showWarningMessage("Please restart VS Code after .NET Runtime installation is complete.");
         }
         return false;
     }
@@ -42,8 +44,8 @@ function IsDotNetInstalled() {
         prefix = "/usr/local/share/dotnet/shared/Microsoft.NETCore.App/";
     }
 
-    for (let i = 0; i < versions.length; i++) {
-        if (fs.existsSync(prefix + versions[i])) {
+    for (const version of versions) {
+        if (fs.existsSync(prefix + version)) {
             return true;
         }
     }

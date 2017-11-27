@@ -18,23 +18,22 @@ export class ReplTerminal implements IReplTerminal {
         });
     }
 
-    show() {
+    public show() {
         if (this.terminal === undefined) {
             this.terminal = vscode.window.createTerminal("R", this.interpreterPath);
         }
         this.terminal.show();
     }
 
-    close() {
+    public close() {
         if (this.terminal !== undefined) {
             this.terminal.dispose();
             this.terminal = undefined;
         }
     }
 
-    sendText(text: string) {
+    public sendText(text: string) {
         this.show();
         this.terminal.sendText(text);
     }
 }
-

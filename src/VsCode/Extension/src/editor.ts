@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 "use strict";
 
-import * as vscode from "vscode";
 import { EOL } from "os";
+import * as vscode from "vscode";
 import { RLanguage } from "./constants";
 
 export function getFilePath(fileUri?: vscode.Uri): string {
@@ -45,8 +45,7 @@ export function getSelectedText(): string {
     let code: string;
     if (selection.isEmpty) {
         code = activeEditor.document.lineAt(selection.start.line).text;
-    }
-    else {
+    } else {
         const textRange = new vscode.Range(selection.start, selection.end);
         code = activeEditor.document.getText(textRange);
     }
@@ -56,7 +55,7 @@ export function getSelectedText(): string {
 
 function removeBlankLines(code: string): string {
     const codeLines = code.split(/\r?\n/g);
-    const codeLinesWithoutEmptyLines = codeLines.filter(line => line.trim().length > 0);
+    const codeLinesWithoutEmptyLines = codeLines.filter((line) => line.trim().length > 0);
     const lastLineIsEmpty = codeLines.length > 0 && codeLines[codeLines.length - 1].trim().length === 0;
     if (lastLineIsEmpty) {
         codeLinesWithoutEmptyLines.unshift("");
