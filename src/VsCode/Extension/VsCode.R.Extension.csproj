@@ -15,7 +15,6 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
-  <Import Project="..\..\R.Settings.props" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
@@ -132,12 +131,6 @@
   <ItemGroup>
     <Content Include="images\rIcon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <FilesToSign Include="$(VsCodeOutputPath)\$(AssemblyName).vsix">
-      <Authenticode>VSIX</Authenticode>
-      <StrongName>StrongName</StrongName>
-    </FilesToSign>
-  </ItemGroup>
   <Target Name="Clean" />
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />
@@ -160,6 +153,4 @@
   <Target Name="_GenerateRestoreGraphProjectEntry" />
   <Target Name="_GenerateRestoreProjectPathWalk" />
   <!-- End workarounds -->
-  <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
-  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>
