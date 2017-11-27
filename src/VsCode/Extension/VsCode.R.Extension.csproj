@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\R.Settings.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -74,6 +75,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="package.ps1" />
+    <None Include="project.json" />
     <None Include="run-vcse.cmd" />
     <None Include="syntaxes\r.tmLanguage.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -131,6 +133,12 @@
   <ItemGroup>
     <Content Include="images\rIcon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(VsCodeOutputPath)$(AssemblyName).vsix">
+      <Authenticode>VSIX</Authenticode>
+      <StrongName>StrongName</StrongName>
+    </FilesToSign>
+  </ItemGroup>
   <Target Name="Clean" />
   <Target Name="BeforeBuild">
     <Exec Command="npm install" />
@@ -142,15 +150,12 @@
     <CallTarget Targets="_build" />
   </Target>
   <Target Name="_build">
-    <Exec Command="dotnet publish --framework netcoreapp2.0 $(SourceDirectory)Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
-    <Exec Command="dotnet publish --framework netcoreapp2.0 $(SourceDirectory)LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
+    <Exec Command="dotnet publish --framework netcoreapp2.0 ..\..\Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
+    <Exec Command="dotnet publish --framework netcoreapp2.0 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
   </Target>
-  <!-- VS 2017 15.5 Nuget workarounds -->
-  <Target Name="_IsProjectRestoreSupported" />
-  <Target Name="_GenerateRestoreGraphProjectEntry" />
-  <Target Name="_GenerateRestoreProjectPathWalk" />
-  <!-- End workarounds -->
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>
