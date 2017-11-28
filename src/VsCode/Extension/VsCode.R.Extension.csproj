@@ -78,8 +78,6 @@
     </None>
     <None Include="package.ps1" />
     <None Include="project.json" />
-    <None Include="run-npm-install.cmd" />
-    <None Include="run-vcse.cmd" />
     <None Include="syntaxes\r.tmLanguage.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -160,8 +158,8 @@
     <Exec Command="dotnet publish $(DotNetPublishOptions) ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) -vscSrcPath $(MSBuildThisFileDirectory) }&quot;" />
-    <Exec Command="run-npm-install.cmd &quot;$(VsCodeOutputPath)&quot;" />
-    <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
+    <!--<Exec Command="run-npm-install.cmd &quot;$(VsCodeOutputPath)&quot;" />
+    <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />-->
   </Target>
   <!-- VS 15.5 nuget workarounds -->
   <Target Name="_GenerateRestoreGraphProjectEntry" />

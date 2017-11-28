@@ -11,8 +11,6 @@ $bin = Resolve-Path -Path $binPath
 $vsc = Resolve-Path -Path $vscPath
 $vscSrc = Resolve-Path -Path $vscSrcPath
 
-#&npm install -g vsce
-
 &cd $vsc
 
 &md -Force Broker
@@ -21,3 +19,9 @@ $vscSrc = Resolve-Path -Path $vscSrcPath
 &md -Force Host
 &xcopy /e /y /r /q "$bin\Host" "Host"
 &xcopy /e /y /r /q "$vscSrc\..\..\..\lib\Host" "Host"
+
+$env:Path=$env:Path + ";C:\Program Files\nodejs"
+
+&npm install -g vsce
+&npm install
+&vsce package
