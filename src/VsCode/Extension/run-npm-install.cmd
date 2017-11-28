@@ -1,2 +1,2 @@
 cd %1
-npm install
+"C:\Program Files\nodejs\npm.cmd" install

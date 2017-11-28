@@ -23,6 +23,7 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <VsCodeOutputPath>$(OutputPath)VsCode\</VsCodeOutputPath>
+    <LanguageServerOutputPath>$(VsCodeOutputPath)Server\</LanguageServerOutputPath>
   </PropertyGroup>
   <PropertyGroup>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -151,11 +152,14 @@
   <Target Name="Build">
     <CallTarget Targets="_build" />
   </Target>
+  <PropertyGroup>
+    <DotNetPublishOptions>-p:DotNetPublish=true --framework netcoreapp2.0 -c $(Configuration) -o $(LanguageServerOutputPath)</DotNetPublishOptions>
+  </PropertyGroup>
   <Target Name="_build">
-    <Exec Command="dotnet publish -p:DotNetPublish=true --framework netcoreapp2.0 ..\..\Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
-    <Exec Command="dotnet publish -p:DotNetPublish=true --framework netcoreapp2.0 ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
+    <Exec Command="dotnet publish $(DotNetPublishOptions) ..\..\Unix\Host\Broker\Impl\Microsoft.R.Host.Broker.Unix.csproj" />
+    <Exec Command="dotnet publish $(DotNetPublishOptions) ..\LanguageServer\Impl\Microsoft.R.LanguageServer.csproj" />
     <Exec Command="xcopy /e /y /q /r &quot;$(MSBuildThisFileDirectory)*.*&quot; &quot;$(VsCodeOutputPath)&quot;" />
-    <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) }&quot;" />
+    <Exec Command="powershell -ExecutionPolicy Unrestricted -Command &quot;&amp;{ .\package.ps1 -binPath $(OutputPath) -vscPath $(VsCodeOutputPath) -vscSrcPath $(MSBuildThisFileDirectory) }&quot;" />
     <Exec Command="run-npm-install.cmd &quot;$(VsCodeOutputPath)&quot;" />
     <Exec Command="run-vcse.cmd &quot;$(VsCodeOutputPath)&quot;" />
   </Target>
