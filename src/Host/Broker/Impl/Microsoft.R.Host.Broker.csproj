@@ -61,5 +61,4 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
-  <Import Project="$(SourceDirectory)R.Workarounds.targets" />
 </Project>

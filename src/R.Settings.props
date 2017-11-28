@@ -84,4 +84,10 @@
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='16.0'">VS16;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(DotNetPublish)' != ''">
+    <NonShipping>true</NonShipping>
+    <GenerateLCE>false</GenerateLCE>
+    <MicroBuild_SigningEnabled>false</MicroBuild_SigningEnabled>
+  </PropertyGroup>
 </Project>
