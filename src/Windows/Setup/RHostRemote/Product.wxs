@@ -28,10 +28,10 @@
     <?include "InstallFolder.wxi"?>
     <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="ProductAssemblies" Guid="{AFE50A8E-1F80-409E-A14C-6D940625C78F}" Win64="yes">
-        <File Source="$(var.BinDir)\Microsoft.R.Host.exe" />
-        <File Source="$(var.BinDir)\libwinpthread-1.dll" />
-        <File Source="$(var.BinDir)\libzip-5.dll" />
-        <File Source="$(var.BinDir)\zlib1.dll" />
+        <File Source="$(var.BinDir)\Host\Windows\Microsoft.R.Host.exe" />
+        <File Source="$(var.BinDir)\Host\Windows\libwinpthread-1.dll" />
+        <File Source="$(var.BinDir)\Host\Windows\libzip-5.dll" />
+        <File Source="$(var.BinDir)\Host\Windows\zlib1.dll" />
         <fire:FirewallException Id="RHostFirewallException" Name="Microsoft.R.Host" Program="[INSTALLFOLDER]Microsoft.R.Host.exe" Scope="any" Profile="all"/>
       </Component>
     </DirectoryRef>
