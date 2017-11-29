@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?define BrokerBinDir="$(var.OutDir)\Broker\Windows" ?>
 <Include>
-  <File Source="$(var.BinDir)\Images\RFile.ico" />
-  <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
-  <File Source="$(var.BinDir)\Microsoft.Languages.Core.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Common.Core.Windows.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Host.Broker.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Host.Protocol.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
-  <File Source="$(var.BinDir)\Microsoft.R.Interpreters.Windows.dll" />
+  <File Source="$(var.BrokerBinDir)\RFile.ico" />
+  <File Source="$(var.BrokerBinDir)\Newtonsoft.Json.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.Languages.Core.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Common.Core.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Core.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Host.Broker.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Host.Client.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Host.Protocol.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Platform.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Platform.Windows.Core.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.R.Platform.Windows.Desktop.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.AspNetCore.Antiforgery.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.AspNetCore.Authentication.Abstractions.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.AspNetCore.Authentication.Core.dll" />
@@ -99,6 +100,8 @@
   <File Source="$(var.BrokerBinDir)\Microsoft.Extensions.Options.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Extensions.Primitives.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Extensions.WebEncoders.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.Net.Http.Headers.dll" />
+  <File Source="$(var.BrokerBinDir)\Microsoft.Net.Http.Server.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Win32.Primitives.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Win32.Registry.dll" />
   <File Source="$(var.BrokerBinDir)\System.AppContext.dll" />
@@ -207,4 +210,5 @@
   <File Source="$(var.BrokerBinDir)\System.Xml.XPath.dll" />
   <File Source="$(var.BrokerBinDir)\System.Xml.XPath.XDocument.dll" />
   <File Source="$(var.BrokerBinDir)\libuv.dll" />
+  <File Source="$(var.BrokerBinDir)\netstandard.dll" />
 </Include>
