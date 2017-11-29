@@ -210,27 +210,27 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         // Tibble-like objects are collections that, when sliced with [], always return
         // result of the same shape, even if it's only one row or one column.
         //[Test]
-        public Task TibbleLikeGrid() => Test(@"local({
-                attach(as.environment(list(`[.tibble` = function(x, row, col, drop = TRUE)  {
-                    class(x) <- NULL
-                    h <- if (missing(row)) dim(x)[[1]] else length(row)
-                    w <- if (missing(col)) dim(x)[[2]] else length(col)
-                    x <- x[row, col]
-                    dim(x) <- c(h, w)
-                    class(x) <- 'tibble'
-                    x
-                })))
+        //public Task TibbleLikeGrid() => Test(@"local({
+        //        attach(as.environment(list(`[.tibble` = function(x, row, col, drop = TRUE)  {
+        //            class(x) <- NULL
+        //            h <- if (missing(row)) dim(x)[[1]] else length(row)
+        //            w <- if (missing(col)) dim(x)[[2]] else length(col)
+        //            x <- x[row, col]
+        //            dim(x) <- c(h, w)
+        //            class(x) <- 'tibble'
+        //            x
+        //        })))
 
-                tibble <- 1:12
-                dim(tibble) <- c(4, 3)
-                class(tibble) <- 'tibble'
-                tibble
-            })", 2, 1, new[,] {
-            { null,     "[,1]",     "[,2]" },
-            { "[2,]",    "2",       "6" },
-            { "[3,]",    "3",       "7" },
-            { "[4,]",    "4",       "8" },
-        });
+        //        tibble <- 1:12
+        //        dim(tibble) <- c(4, 3)
+        //        class(tibble) <- 'tibble'
+        //        tibble
+        //    })", 2, 1, new[,] {
+        //    { null,     "[,1]",     "[,2]" },
+        //    { "[2,]",    "2",       "6" },
+        //    { "[3,]",    "3",       "7" },
+        //    { "[4,]",    "4",       "8" },
+        //});
 
         [Test]
         public Task MatrixGrid() => Test("matrix(1:20, 5, 4)", 2, 2, new[,] {
