@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>Microsoft.UnitTests.Core</AssemblyName>
     <RootNamespace>Microsoft.UnitTests.Core</RootNamespace>
   </PropertyGroup>
@@ -9,7 +9,6 @@
   <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
     <DebugType>portable</DebugType>
-    <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
