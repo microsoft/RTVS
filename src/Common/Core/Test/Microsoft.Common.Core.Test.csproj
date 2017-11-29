@@ -9,6 +9,7 @@
   <Import Project="..\..\..\R.Settings.props" />
   <PropertyGroup>
     <DebugType>portable</DebugType>
+    <OutputFileExtension>dll</OutputFileExtension>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
