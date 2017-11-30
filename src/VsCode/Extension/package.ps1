@@ -20,8 +20,11 @@ $vscSrc = Resolve-Path -Path $vscSrcPath
 &xcopy /e /y /r /q "$bin\Host" "Host"
 &xcopy /e /y /r /q "$vscSrc\..\..\..\lib\Host" "Host"
 
-$env:Path=$env:Path + ";C:\Program Files\nodejs"
+$vsce1 = "C:\Users\" + $env:UserName + "." + $env:UserDomain + "\AppData\Roaming\npm"
+$vsce2 = "C:\Users\" + $env:UserName + "\AppData\Roaming\npm"
+$env:Path=$env:Path + ";C:\Program Files\nodejs;" + $vsce1 + ";" + $vsce2
 
 &npm install -g vsce
 &npm install
+
 &vsce package
