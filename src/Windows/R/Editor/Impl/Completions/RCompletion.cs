@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Completions {
         public override string DisplayText => _entry.DisplayText;
         public override string InsertionText => _entry.InsertionText;
         public override ImageSource IconSource => _entry.ImageSource as ImageSource;
-        public override string IconAutomationText => _entry.AccessibleText;
+        public override string IconAutomationText => _entry.AccessibleText ?? string.Empty;
 
         public bool IsVisible { get; set; } = true;
     }

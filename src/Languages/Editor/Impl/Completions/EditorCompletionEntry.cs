@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Completions {
             InsertionText = insertionText;
             Description = description;
             ImageSource = imageSource;
-            AccessibleText = accessibleText;
+            AccessibleText = accessibleText ?? string.Empty;
         }
 
         #region ICompletionEntry
