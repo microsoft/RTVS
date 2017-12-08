@@ -37,8 +37,8 @@ shift $((OPTIND-1))
 
 # Layout of output files as expected by this script
 # ./Release
-# ./Release/netcoreapp1.1/publish
-# ./Release/netcoreapp1.1/rtvsd.config.json
+# ./Release/netcoreapp2.0/publish
+# ./Release/netcoreapp2.0/rtvsd.config.json
 # ./Release/Microsoft.R.Host
 # ./Release/Microsoft.R.Host.RunAsUser
 # ./Release/rtvs.pam
@@ -115,7 +115,7 @@ cp ./rtvs.pam ./pkg/debian/etc/pam.d && \
 mv ./pkg/debian/etc/pam.d/rtvs.pam ./pkg/debian/etc/pam.d/rtvs
 
 echo "copy config file"
-cp ./netcoreapp1.1/rtvsd.config.json ./pkg/debian/etc/rtvs
+cp ./netcoreapp2.0/rtvsd.config.json ./pkg/debian/etc/rtvs
 
 echo "copy systemd file"
 cp ./Setup/rtvsd.service ./pkg/debian/lib/systemd/system
@@ -133,7 +133,7 @@ cp ./Setup/rtvsd ./pkg/debian/usr/bin && \
 fakeroot chmod u+rwx,g+rx,o+x ./pkg/debian/usr/bin/rtvsd
 
 echo "copy lib files and set permissions"
-cp -R ./netcoreapp1.1/publish/* ./pkg/debian/usr/lib/rtvs && \
+cp -R ./netcoreapp2.0/publish/* ./pkg/debian/usr/lib/rtvs && \
 cp ./Microsoft.R.Host ./pkg/debian/usr/lib/rtvs && \
 cp ./Microsoft.R.Host.RunAsUser ./pkg/debian/usr/lib/rtvs && \
 fakeroot chown root:root ./pkg/debian/usr/lib/rtvs/Microsoft.R.Host.RunAsUser && \
