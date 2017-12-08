@@ -13,7 +13,7 @@
     <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
-    <BrokerCS Condition="'$(BrokerCS)' == ''">$(MSBuildThisFileDirectory)Microsoft.R.Host.Broker.Linux.csproj</BrokerCS>
+    <BrokerCS Condition="'$(BrokerCS)' == ''">$(MSBuildThisFileDirectory)Microsoft.R.Host.Broker.Unix.csproj</BrokerCS>
   </PropertyGroup>
 
   <Target Name="Restore">
