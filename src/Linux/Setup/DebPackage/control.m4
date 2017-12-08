@@ -13,6 +13,6 @@ Description: R execution environment for R Tools for Visual Studio
  environment supports popular R distributions such as CRAN R and Microsoft R
  Open (enhanced with multi-threaded math libs, cluster scale computing, and a
  high performance CRAN repo with checkpoint capabilities). This service enables
- R interactive window, debugging, intellisence, plots, history, variable
+ R interactive window, debugging, intellisense, plots, history, variable
  explorer, R package management on linux from Visual Studio 2017 (or greater).
  
