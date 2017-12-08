@@ -17,5 +17,6 @@ namespace Microsoft.Markdown.Editor.Commands {
         public const int icmdRunCurrentChunk = 613;
         public const int icmdRunAllChunksAbove = 614;
         public const int icmdReloadPreview = 615;
+        public const int icmdInsertRCodeBlock = 616;
     }
 }

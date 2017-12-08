@@ -308,6 +308,7 @@
       <Group guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0400" />
       <Group guid="guidRToolsCmdSet" id="markdownAutoSyncGroup" priority="0x0450" />
       <Group guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0500" />
+      <Group guid="guidRToolsCmdSet" id="markdownEditGroup" priority="0x0550" />
 
       <!-- R code editor context menu groups -->
       <!-- R Formatting -->
@@ -494,6 +495,10 @@
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="markdownPreviewGroup" priority="0x0210">
+        <Parent guid="guidRToolsCmdSet" id="markdownSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="markdownEditGroup" priority="0x0215">
         <Parent guid="guidRToolsCmdSet" id="markdownSubMenu"/>
       </Group>
 
@@ -1223,6 +1228,20 @@
           <ToolTipText>Run all code chunks above and update preview pane</ToolTipText>
         </Strings>
       </Button>
+      
+      <Button guid="guidMdToolsCmdSet" id="icmdInsertRCodeBlock" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="markdownEditGroup"/>
+        <Icon guid="ImageCatalogGuid" id="InsertClause"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>I&amp;nsert R Code Block</ButtonText>
+          <CommandName>Insert R Code Block</CommandName>
+          <ToolTipText>Insert R Code Block</ToolTipText>
+        </Strings>
+      </Button>
+
       <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
@@ -2084,8 +2103,12 @@
     <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" priority="0x207">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
-
+    
     <CommandPlacement guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" priority="0x208">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidMdToolsCmdSet" id="icmdInsertRCodeBlock" priority="0x209">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -2162,6 +2185,10 @@
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="markdownSyncGroup" priority="0x0210">
+      <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="markdownEditGroup" priority="0x0215">
       <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
     </CommandPlacement>
 
@@ -2627,6 +2654,7 @@
     <KeyBinding guid="guidMdToolsCmdSet" id="icmdAutomaticSync" editor="RmdEditor" key1="Y" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunCurrentChunk" editor="RmdEditor" key1="R" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="icmdRunAllChunksAbove" editor="RmdEditor" key1="B" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="icmdInsertRCodeBlock" editor="RmdEditor" key1="I" mod1="CONTROL ALT" />
   </KeyBindings>
 
   <UsedCommands>
@@ -2669,6 +2697,7 @@
       <IDSymbol name="icmdRunCurrentChunk" value="613" />
       <IDSymbol name="icmdRunAllChunksAbove" value="614" />
       <IDSymbol name="icmdReloadPreview" value="615"/>
+      <IDSymbol name="icmdInsertRCodeBlock" value="616"/>
     </GuidSymbol>
 
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
@@ -2943,6 +2972,7 @@
       <IDSymbol name="markdownPreviewGroup" value="0x2360"/>
       <IDSymbol name="markdownSyncGroup" value="0x2361"/>
       <IDSymbol name="markdownAutoSyncGroup" value="0x2362"/>
+      <IDSymbol name="markdownEditGroup" value="0x2363"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>
       <IDSymbol name="feedbackSubMenuGroup" value="0x2390"/>
       <IDSymbol name="rtvsDocsSubMenu" value="0x2391"/>

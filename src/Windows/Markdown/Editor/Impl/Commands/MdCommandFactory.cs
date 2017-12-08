@@ -41,7 +41,8 @@ namespace Microsoft.Markdown.Editor.Commands {
                 new RunCurrentChunkCommand(textView, _services),
                 new RunAllChunksAboveCommand(textView, _services),
                 new ReloadPreviewCommand(textView, _services),
-                new FormatDocumentCommand(textView, textBuffer, _services)
+                new FormatDocumentCommand(textView, textBuffer, _services),
+                new InsertRCodeBlock(textView, _services)
             };
             return commands;
         }
