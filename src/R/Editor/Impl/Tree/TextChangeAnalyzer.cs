@@ -7,8 +7,6 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Tokens;
 
@@ -164,7 +162,7 @@ namespace Microsoft.R.Editor.Tree {
             var change = context.PendingChanges;
             positionType = context.EditorTree.AstRoot.GetPositionNode(change.Start, out node);
 
-            if (positionType == PositionType.Token) {
+            if (positionType == PositionType.Token && change.Start > node.Start) {
                 var tokenNode = node as TokenNode;
                 Debug.Assert(tokenNode != null);
 
