@@ -82,12 +82,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false);
+        public Task<ExecutionResult> InitializeAsync() => InitializeAsync(false, null);
 
-        private async Task<ExecutionResult> InitializeAsync(bool isResetting) {
+        private async Task<ExecutionResult> InitializeAsync(bool isResetting, string workingDirectory) {
             try {
                 if (!Session.IsHostRunning) {
-                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, null, _settings.RCodePage, _terminalWidth, !isResetting, true, true, _settings.GridDynamicEvaluation);
+                    var startupInfo = new RHostStartupInfo(_settings.CranMirror, workingDirectory, _settings.RCodePage, _terminalWidth, !isResetting, true, true, _settings.GridDynamicEvaluation);
                     await Session.EnsureHostStartedAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _services, _fs));
                 }
                 return ExecutionResult.Success;
@@ -105,7 +105,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
+                string lastWorkingDirectory = null;
                 if (Session.IsHostRunning) {
+                    // Remember directory in case it is user-initiated reset 
+                    // so we can restore it when host completes the restart.
+                    lastWorkingDirectory = await Session.GetRWorkingDirectoryAsync();
+
                     await SaveStateAsync();
                     WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStopping);
                     await Session.StopHostAsync(true);
@@ -116,7 +121,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 WriteErrorLine(Environment.NewLine + Resources.MicrosoftRHostStarting);
-                return await InitializeAsync(isResetting: true);
+                return await InitializeAsync(isResetting: true, workingDirectory: lastWorkingDirectory);
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
                 return ExecutionResult.Failure;
