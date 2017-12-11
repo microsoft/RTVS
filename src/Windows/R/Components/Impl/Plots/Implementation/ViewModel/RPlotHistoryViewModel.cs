@@ -105,9 +105,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                 // This can happen if an existing plot was resized too small.
                 // Don't overwrite the history image in this case, because the
                 // existing image in history will be better than no image at all.
-                if (plotImage != null) {
-                    entry.PlotImage = plotImage;
-                }
+                entry.PlotImage = plotImage;
             } else {
                 Entries.Add(new RPlotHistoryEntryViewModel(_plotManager, _mainThread, plot, plotImage));
             }
@@ -181,7 +179,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
             _mainThread.Post(() => {
                 var device = (IRPlotDevice)sender;
                 var plot = device.ActivePlot;
-                if (plot != null) {
+                if (plot?.Image != null) {
                     AddOrUpdate(plot, plot.Image);
                 }
             });
