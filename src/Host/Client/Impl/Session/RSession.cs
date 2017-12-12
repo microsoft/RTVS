@@ -48,17 +48,19 @@ namespace Microsoft.R.Host.Client.Session {
         private TaskCompletionSourceEx<object> _hostStartedTcs;
         private RSessionRequestSource _currentRequestSource;
         private TaskCompletionSourceEx<object> _initializedTcs;
-        private bool _processingChangeDirectoryCommand;
+
         private readonly Action _onDispose;
         private readonly IExclusiveReaderLock _initializationLock;
         private readonly BinaryAsyncLock _stopHostLock;
         private readonly CountdownDisposable _disableMutatingOnReadConsole;
         private readonly DisposeToken _disposeToken;
+        private readonly CountdownDisposable _readUserInputReentrancyCounter = new CountdownDisposable();
+
+        private volatile bool _processingChangeDirectoryCommand;
         private volatile bool _isHostRunning;
         private volatile bool _delayedMutatedOnReadConsole;
         private volatile IRSessionCallback _callback;
         private volatile RHostStartupInfo _startupInfo;
-        private readonly CountdownDisposable _readUserInputReentrancyCounter = new CountdownDisposable();
 
         public int Id { get; }
         public string Name { get; }

@@ -55,6 +55,7 @@
     <Compile Include="Commands\MdMainController.cs" />
     <Compile Include="Commands\MdPackageCommandId.cs" />
     <Compile Include="Commands\MdTextViewConnectionListener.cs" />
+    <Compile Include="Commands\InsertRCodeBlock.cs" />
     <Compile Include="Commands\RunRChunkCommand.cs" />
     <Compile Include="ContainedLanguage\IRLanguageBlock.cs" />
     <Compile Include="ContainedLanguage\RContainedLanguageHost.cs" />
