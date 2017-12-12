@@ -24,8 +24,8 @@ namespace Microsoft.R.Editor.Outline {
         public override string DisplayText {
             get {
                 if (_displayText == null) {
-                    _displayText = _textBuffer.CurrentSnapshot.GetText(this.Start, this.Length);
-                    int index = _displayText.IndexOfAny(new char[] { '(', '{' });
+                    _displayText = _textBuffer.CurrentSnapshot.GetText(Start, Length);
+                    var index = _displayText.IndexOfAny(new [] { '(', '{' });
                     if (index >= 0) {
                         _displayText = _displayText.Substring(0, index).Trim() + "...";
                     } else if (_displayText.Length > 50) {
@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Outline {
                     }
                 }
 
-                return _displayText;
+                return _displayText.Replace('\n', ' ').Replace("\r", string.Empty);
             }
         }
     }

@@ -15,7 +15,6 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Settings;
-using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
