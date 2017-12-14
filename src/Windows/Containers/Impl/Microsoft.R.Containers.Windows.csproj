@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <RootNamespace>Microsoft.R.Containers</RootNamespace>
     <AssemblyName>Microsoft.R.Containers.Windows</AssemblyName>
   </PropertyGroup>

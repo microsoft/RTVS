@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <RootNamespace>Microsoft.Markdown.Editor</RootNamespace>
     <AssemblyName>Microsoft.Markdown.Editor.Windows</AssemblyName>
   </PropertyGroup>
@@ -29,12 +29,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.6.241-preview" />
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />

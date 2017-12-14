@@ -11,7 +11,7 @@
     "System.Net.Http": "4.3.3"
   },
   "frameworks": {
-    "net461": {}
+    "net471": {}
   },
   "runtimes": {
     "win": {},

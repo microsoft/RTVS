@@ -102,9 +102,7 @@
   <File Source="$(var.BrokerBinDir)\Microsoft.Extensions.WebEncoders.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Net.Http.Headers.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Net.Http.Server.dll" />
-  <File Source="$(var.BrokerBinDir)\Microsoft.Win32.Primitives.dll" />
   <File Source="$(var.BrokerBinDir)\Microsoft.Win32.Registry.dll" />
-  <File Source="$(var.BrokerBinDir)\System.AppContext.dll" />
   <File Source="$(var.BrokerBinDir)\System.Buffers.dll" />
   <File Source="$(var.BrokerBinDir)\System.Collections.Concurrent.dll" />
   <File Source="$(var.BrokerBinDir)\System.Collections.dll" />
@@ -210,5 +208,4 @@
   <File Source="$(var.BrokerBinDir)\System.Xml.XPath.dll" />
   <File Source="$(var.BrokerBinDir)\System.Xml.XPath.XDocument.dll" />
   <File Source="$(var.BrokerBinDir)\libuv.dll" />
-  <File Source="$(var.BrokerBinDir)\netstandard.dll" />
 </Include>
