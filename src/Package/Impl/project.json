@@ -21,10 +21,10 @@
     "Microsoft.VisualStudio.Shell.Interop.11.0": "11.0.61030",
     "Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime": "15.0.25726-Preview5",
     "Microsoft.VisualStudio.Shell.Interop.15.0.DesignTime": "15.0.26201",
-    "Microsoft.VisualStudio.Text.Data": "15.4.27004",
-    "Microsoft.VisualStudio.Text.Logic": "15.4.27004",
-    "Microsoft.VisualStudio.Text.UI": "15.4.27004",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
+    "Microsoft.VisualStudio.Text.Data": "15.6.241-preview",
+    "Microsoft.VisualStudio.Text.Logic": "15.6.241-preview",
+    "Microsoft.VisualStudio.Text.UI": "15.6.241-preview",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.6.241-preview",
     "Microsoft.VisualStudio.TextManager.Interop.12.0": "12.0.30110",
     "Microsoft.VisualStudio.VsInteractiveWindow": "2.3.0",
     "Microsoft.VSSDK.BuildTools": "15.5.72",
@@ -33,11 +33,10 @@
     "System.IO.Compression.ZipFile": "4.3.0",
     "System.Net.Http.WinHttpHandler": "4.4.0",
     "System.Threading.Tasks.Dataflow": "4.8.0",
-    "System.ValueTuple": "4.4.0",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {
-    "net461": {}
+    "net471": {}
   },
   "runtimes": {
     "win": {}

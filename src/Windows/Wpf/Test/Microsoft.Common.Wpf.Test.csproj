@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <RootNamespace>Microsoft.Common.Wpf.Test</RootNamespace>
     <AssemblyName>Microsoft.Common.Wpf.Test</AssemblyName>
   </PropertyGroup>

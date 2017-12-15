@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <RootNamespace>Microsoft.R.Host.Broker</RootNamespace>
     <AssemblyName>Microsoft.R.Host.Broker.Windows</AssemblyName>
     <OutputType>Exe</OutputType>
@@ -37,7 +37,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />

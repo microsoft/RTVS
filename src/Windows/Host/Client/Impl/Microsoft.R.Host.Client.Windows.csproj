@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <RootNamespace>Microsoft.R.Host.Client</RootNamespace>
     <AssemblyName>Microsoft.R.Host.Client.Windows</AssemblyName>
   </PropertyGroup>

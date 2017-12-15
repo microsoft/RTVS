@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace Microsoft.R.Editor.Test.Roxygen {
 
         public LinterTest(IServiceContainer services) {
             _services = services;
+            Debugger.Launch();
+
             _validator = new ValidatorAggregator(_services);
             _options = _services.GetService<IREditorSettings>().LintOptions;
             _options.Enabled = true;

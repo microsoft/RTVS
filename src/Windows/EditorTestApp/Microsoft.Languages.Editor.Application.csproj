@@ -1,125 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9174C912-E757-4ECD-9D6E-9604BEF74900}</ProjectGuid>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFramework>net471</TargetFramework>
     <RootNamespace>Microsoft.Languages.Editor.Application</RootNamespace>
-    <OutputType>Library</OutputType>
+    <AssemblyName>Microsoft.Languages.Editor.Application</AssemblyName>
   </PropertyGroup>
+  <Import Project="..\..\R.Settings.NetCore.props" />
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="..\..\R.Settings.props" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Microsoft.Languages.Editor.Application\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\AssemblyVersionInfo.cs">
-      <Link>Properties\AssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Composition\ContentTypeLocator.cs" />
-    <Compile Include="Controller\BaseController.cs" />
-    <Compile Include="Controller\BraceCompletionCommandTarget.cs" />
-    <Compile Include="Controller\DefaultKeyStrokeProcessor.cs" />
-    <Compile Include="Controller\DefaultKeyStrokeProcessorProvider.cs" />
-    <Compile Include="Controller\KeyToCommandMapping.cs" />
-    <Compile Include="Core\CoreEditor.cs" />
-    <Compile Include="Core\DefaultTextViewRoleSet.cs" />
-    <Compile Include="Core\TextDataModel.cs" />
-    <Compile Include="Core\TextViewRoleSet.cs" />
-    <Compile Include="Host\EditorViewModelFactory.cs" />
-    <Compile Include="Packages\MarkdownPackage.cs" />
-    <Compile Include="Packages\TextPackage.cs" />
-    <Compile Include="Packages\RPackage.cs" />
-    <Compile Include="Packages\SettingsStorage.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Snippets\SnippetInformationSource.cs" />
-    <Compile Include="Snippets\SnippetInformationSourceProvider.cs" />
+    <Compile Include="$(SourceDirectory)GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+    <Compile Include="$(SourceDirectory)AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj">
-      <Project>{C2A86AAB-A537-418D-A1EF-14540D340CB1}</Project>
-      <Name>Microsoft.R.Common.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
-      <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
-      <Name>Microsoft.Languages.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj">
-      <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
-      <Name>Microsoft.Languages.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{c6648f60-513a-4052-9a34-61b156058ec3}</Project>
-      <Name>Microsoft.R.Components</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
-      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
-      <Name>Microsoft.R.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
-      <Project>{ae67eba1-aff1-4425-8c89-4f0045a6bfd9}</Project>
-      <Name>Microsoft.R.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
-      <Project>{a930b6d8-2d2d-4047-a6ef-2522386877e3}</Project>
-      <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj">
-      <Project>{d1895fa9-65f5-4048-a364-f6ab8d1dc981}</Project>
-      <Name>Microsoft.Languages.Editor.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj">
-      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
-      <Name>Microsoft.Markdown.Editor.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Components\Impl\Microsoft.R.Components.Windows.csproj">
-      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
-      <Name>Microsoft.R.Components.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj">
-      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
-      <Name>Microsoft.R.Editor.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj">
-      <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
-      <Name>Microsoft.UnitTests.Core.Windows</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.Text.Internal.dll">
+    <Reference Include="Microsoft.VisualStudio.Text.Internal">
       <Private>True</Private>
       <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor">
-      <Private>True</Private>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor.Interop">
-      <Private>True</Private>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.Interop.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="project.json" />
+    <PackageReference Include="FluentAssertions" Version="4.19.4" />
+    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Internal" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.6.241-preview" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
+    <ProjectReference Include="..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
+    <ProjectReference Include="..\..\Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
+    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj" />
+    <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj" />
+    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj" />
+    <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
+    <ProjectReference Include="..\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj" />
+    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.Windows.csproj" />
+    <ProjectReference Include="..\R\Components\Impl\Microsoft.R.Components.Windows.csproj" />
+    <ProjectReference Include="..\R\Editor\Impl\Microsoft.R.Editor.Windows.csproj" />
+    <ProjectReference Include="..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.Windows.csproj" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <Import Project="$(SourceDirectory)R.Build.Sign.targets" />
 </Project>
