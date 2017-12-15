@@ -1608,8 +1608,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.DiagnosticSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.StackTrace.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tracing.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Drawing.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Dynamic.Runtime.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.Extensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Compression.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Pipes.AccessControl.dll" />
@@ -1621,7 +1619,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.CompilerServices.Unsafe.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Primitives.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.AccessControl.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Claims.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Algorithms.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Xml.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Principal.Windows.dll" />
