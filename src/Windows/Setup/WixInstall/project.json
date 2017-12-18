@@ -6,7 +6,7 @@
     "WiX": "3.11.0"
   },
   "frameworks": {
-    "net471": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

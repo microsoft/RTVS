@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</RootNamespace>
     <AssemblyName>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</AssemblyName>
   </PropertyGroup>

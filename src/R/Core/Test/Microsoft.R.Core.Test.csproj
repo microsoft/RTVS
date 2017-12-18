@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net471;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RootNamespace>Microsoft.R.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Core.Test</AssemblyName>
   </PropertyGroup>
@@ -29,9 +29,6 @@
     <ProjectReference Include="$(SourceDirectory)Languages\Core\Test\Microsoft.Languages.Core.Test.csproj" />
     <ProjectReference Include="$(SourceDirectory)UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

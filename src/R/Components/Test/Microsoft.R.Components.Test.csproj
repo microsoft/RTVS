@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net471;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <RootNamespace>Microsoft.R.Components.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Components.Test</AssemblyName>
   </PropertyGroup>

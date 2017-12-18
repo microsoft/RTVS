@@ -24,13 +24,14 @@ namespace Microsoft.R.Editor.Validation {
         private TaskCompletionSource<bool> _tcs;
 
         public ValidatorAggregator(IServiceContainer services) {
-            _settings = services.GetService<IREditorSettings>();
+            var services1 = services;
+            _settings = services1.GetService<IREditorSettings>();
 
             // Populate known validators
             var list = new List<IRDocumentValidator>() { new LintValidator() };
 
             // Fetch externally provided ones
-            var locator = services.GetService<IContentTypeServiceLocator>();
+            var locator = services1.GetService<IContentTypeServiceLocator>();
             list.AddRange(locator.GetAllServices<IRDocumentValidator>("R"));
 
             _validators = list;
