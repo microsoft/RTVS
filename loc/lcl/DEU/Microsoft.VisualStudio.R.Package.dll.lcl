@@ -1244,7 +1244,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Current R engine is already set to the Microsoft R Client.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Das aktuelle R-Modul ist bereits auf den Microsoft R-Client festgelegt.]]></Val>
+            <Val><![CDATA[Die aktuelle R-Engine ist bereits auf den Microsoft R-Client festgelegt.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2858,7 +2858,7 @@
         <Str Cat="Text">
           <Val><![CDATA[R Engine]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[R-Modul]]></Val>
+            <Val><![CDATA[R-Engine]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
