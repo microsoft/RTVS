@@ -103,3 +103,5 @@ TestFiles/
 *.ide
 *.ide-journal
 *.lock
+*.ide-wal
+*.ide-shm
