@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
@@ -174,7 +175,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
 
                 var line = snapshot.GetLineFromPosition(range.Start);
-                var lineTail = snapshot.GetText(Span.FromBounds(range.End, line.End));
+                var lineTail = snapshot.GetText(Span.FromBounds(range.End, Math.Max(range.End, line.End)));
 
                 var formatter = new RangeFormatter(_services);
                 formatter.FormatRange(TextView.ToEditorView(), textBuffer.ToEditorBuffer(), range);
