@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
@@ -9,7 +10,6 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
@@ -174,7 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
 
                 var line = snapshot.GetLineFromPosition(range.Start);
-                var lineTail = snapshot.GetText(Span.FromBounds(range.End, line.End));
+                var lineTail = snapshot.GetText(Span.FromBounds(range.End, Math.Max(range.End,line.End)));
 
                 var formatter = new RangeFormatter(_services, TextView.ToEditorView(), textBuffer.ToEditorBuffer());
                 formatter.FormatRange(range);
@@ -305,22 +305,16 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             var snippetSpan = pts[0];
 
             // Convert text span to stream positions
-            int snippetStart, snippetEnd;
             var vsTextLines = GetTargetBuffer().GetBufferAdapter<IVsTextLines>(_services);
-            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out snippetStart));
-            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out snippetEnd));
+            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out int snippetStart));
+            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out int snippetEnd));
 
             var textStream = (IVsTextStream)vsTextLines;
 
-            IVsEnumStreamMarkers enumMarkers;
-            if (VSConstants.S_OK == textStream.EnumMarkers(snippetStart, snippetEnd - snippetStart, 0, (uint)(ENUMMARKERFLAGS.EM_ALLTYPES | ENUMMARKERFLAGS.EM_INCLUDEINVISIBLE | ENUMMARKERFLAGS.EM_CONTAINED), out enumMarkers)) {
-                IVsTextStreamMarker curMarker;
-                while (VSConstants.S_OK == enumMarkers.Next(out curMarker)) {
-                    int curMarkerPos;
-                    int curMarkerLen;
-                    if (VSConstants.S_OK == curMarker.GetCurrentSpan(out curMarkerPos, out curMarkerLen)) {
-                        int markerType;
-                        if (VSConstants.S_OK == curMarker.GetType(out markerType)) {
+            if (VSConstants.S_OK == textStream.EnumMarkers(snippetStart, snippetEnd - snippetStart, 0, (uint)(ENUMMARKERFLAGS.EM_ALLTYPES | ENUMMARKERFLAGS.EM_INCLUDEINVISIBLE | ENUMMARKERFLAGS.EM_CONTAINED), out IVsEnumStreamMarkers enumMarkers)) {
+                while (VSConstants.S_OK == enumMarkers.Next(out IVsTextStreamMarker curMarker)) {
+                    if (VSConstants.S_OK == curMarker.GetCurrentSpan(out int curMarkerPos, out int curMarkerLen)) {
+                        if (VSConstants.S_OK == curMarker.GetType(out int markerType)) {
                             if (markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL || markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL_SELECTED) {
                                 markers.Add(new Marker(curMarker, curMarkerPos, curMarkerLen));
                             }
