@@ -297,7 +297,10 @@ namespace Microsoft.R.Components.ContainerManager.Implementation.ViewModel {
                 await _containers.DeleteAsync(container.Id, cancellationToken);
             } catch (ContainerException) {
                 _ui.ShowMessage(Resources.ContainerManager_DeleteError_Format.FormatInvariant(container.Name), MessageButtons.OK, MessageType.Error);
+                return;
             }
+
+            _security.DeleteUserCredentials(BrokerConnectionInfo.GetCredentialAuthority(container.Name));
         }
 
         private bool IsActiveConnectionToContainer(ContainerViewModel container) 
