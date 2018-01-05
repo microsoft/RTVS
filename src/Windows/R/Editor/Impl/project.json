@@ -2,7 +2,7 @@
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.Editor": "15.3.1709.108",
-    "Microsoft.VisualStudio.ImageCatalog": "15.0.26606",
+    "Microsoft.VisualStudio.ImageCatalog": "15.4.27004",
     "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": {
       "version": "15.0.25726-Preview5",
       "embedInteropTypes": "true"

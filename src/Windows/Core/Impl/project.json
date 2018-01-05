@@ -2,8 +2,10 @@
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
     "Microsoft.Extensions.FileSystemGlobbing": "1.1.0",
-    "Microsoft.Extensions.Logging.Abstractions": "1.1.1",
-    "Newtonsoft.Json": "9.0.1"
+    "Microsoft.Extensions.Logging.Abstractions": "1.1.2",
+    "Newtonsoft.Json": "9.0.1",
+    "System.Runtime.InteropServices.RuntimeInformation": "4.3.0",
+    "System.ValueTuple": "4.3.0"
   },
   "frameworks": {
     "net46": {}
