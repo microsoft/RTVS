@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using Microsoft.Common.Core;
+using Microsoft.VisualStudio.Setup.Configuration;
 
 namespace Microsoft.UnitTests.Core {
     public sealed class VsPaths: Paths {
@@ -19,19 +19,10 @@ namespace Microsoft.UnitTests.Core {
         public static string VsPublicAssemblies => VsPublicAssembliesLazy.Value;
 
         private static string GetVsRoot() {
-            // See https://github.com/Microsoft/vswhere
-            var processPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft Visual Studio", "Installer", "vswhere.exe");
-            var psi = new ProcessStartInfo {
-                FileName = processPath,
-                Arguments = "-latest -property productPath",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true
-            };
-
-            var process = Process.Start(psi);
-            var devenvPath = process.StandardOutput.ReadLine();
-            return Path.GetDirectoryName(devenvPath);
+            var configuration = (ISetupConfiguration2)new SetupConfiguration();
+            var current = (ISetupInstance2)configuration.GetInstanceForCurrentProcess();
+            var path = current.ResolvePath(current.GetProductPath());
+            return Path.GetDirectoryName(path);
         }
     }
 }

@@ -33,7 +33,6 @@
     "System.IO.Compression.ZipFile": "4.3.0",
     "System.Net.Http.WinHttpHandler": "4.4.0",
     "System.Threading.Tasks.Dataflow": "4.8.0",
-    "System.ValueTuple": "4.4.0",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {
