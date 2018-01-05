@@ -11,7 +11,7 @@
     <AssemblyName>Microsoft.VsCode.R.Extension</AssemblyName>
     <PackageName>r-0.0.1</PackageName>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>

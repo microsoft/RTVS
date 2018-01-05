@@ -4,6 +4,7 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 using System.Text;
 using System.Threading;
 using Microsoft.Common.Core;
@@ -59,7 +60,7 @@ namespace Microsoft.R.LanguageServer.Services {
                 var thisAssemblyPath = thisAssembly.GetAssemblyPath();
                 var assemblyLoc = Path.GetDirectoryName(thisAssemblyPath);
                 var platformServicesAssemblyPath = Path.Combine(assemblyLoc, platformAssemblyName);
-                assembly = Assembly.LoadFrom(platformServicesAssemblyPath);
+                assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(platformServicesAssemblyPath);
             }
 
             var classType = assembly.GetType("Microsoft.R.Platform.ServiceProvider");

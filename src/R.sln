@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27107.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Package", "Package\Impl\Microsoft.VisualStudio.R.Package.csproj", "{26035FE3-25AB-45EC-BB45-7FD0B6C1D545}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -114,7 +114,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.VisualStudio.Shel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.R.Debugger", "Windows\Debugger\Impl\Microsoft.R.Debugger.csproj", "{6D62DF0D-D9C3-49A7-A693-ACD0691BA69D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Languages.Editor.Application", "Windows\EditorTestApp\Microsoft.Languages.Editor.Application.csproj", "{9174C912-E757-4ECD-9D6E-9604BEF74900}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Languages.Editor.Application", "Windows\EditorTestApp\Microsoft.Languages.Editor.Application.csproj", "{9174C912-E757-4ECD-9D6E-9604BEF74900}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSCode", "VSCode", "{59FAA332-8D85-4D19-97F2-532A840131C9}"
 EndProject

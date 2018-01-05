@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.NetCore.props" />
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
@@ -17,12 +17,13 @@
     <PackageReference Include="FluentAssertions" Version="4.19.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
     <PackageReference Include="Microsoft.VisualStudio.InteractiveWindow" Version="2.3.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.6.241-preview" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.6.241-preview" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.6.241-preview" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.VsInteractiveWindow" Version="2.3.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />

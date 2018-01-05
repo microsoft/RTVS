@@ -2,17 +2,16 @@
   "dependencies": {
     "FluentAssertions": "4.19.4",
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.VisualStudio.Editor": "15.6.241-preview",
-    "Microsoft.VisualStudio.Text.Data": "15.6.241-preview",
-    "Microsoft.VisualStudio.Text.Logic": "15.6.241-preview",
-    "Microsoft.VisualStudio.Text.UI": "15.6.241-preview",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "15.6.241-preview",
-    "NSubstitute": "3.1.0",
+    "Microsoft.VisualStudio.Editor": "15.4.27004",
+    "Microsoft.VisualStudio.Text.Data": "15.4.27004",
+    "Microsoft.VisualStudio.Text.Logic": "15.4.27004",
+    "Microsoft.VisualStudio.Text.UI": "15.4.27004",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.4.27004",
     "xunit": "2.3.1",
     "xunit.runner.visualstudio": "2.3.1"
   },
   "frameworks": {
-    "net471": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

@@ -12,7 +12,7 @@
     "xunit.runner.visualstudio": "2.3.1"
   },
   "frameworks": {
-    "net471": {}
+    "net461": {}
   },
   "runtimes": {
     "win": {}

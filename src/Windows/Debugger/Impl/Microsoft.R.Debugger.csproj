@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <RootNamespace>Microsoft.R.Debugger</RootNamespace>
     <AssemblyName>Microsoft.R.Debugger</AssemblyName>
   </PropertyGroup>
@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0" Version="10.0.30319" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.6.241-preview" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
