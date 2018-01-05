@@ -1703,7 +1703,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Thread.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.ThreadPool.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Timer.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ValueTuple.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.ReaderWriter.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XmlDocument.dll" />

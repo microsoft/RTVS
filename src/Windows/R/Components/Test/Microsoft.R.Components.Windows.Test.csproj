@@ -23,7 +23,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
     <PackageReference Include="Microsoft.VisualStudio.VsInteractiveWindow" Version="2.3.0" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
