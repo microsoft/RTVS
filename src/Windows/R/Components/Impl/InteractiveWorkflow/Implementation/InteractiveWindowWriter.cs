@@ -26,6 +26,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private volatile bool _disposed;
 
         private int _currentLineStart = -1;
+        private int _lastInteractiveWindowLineCount;
         private string _newText;
 
         public InteractiveWindowWriter(IMainThread mainThread, IInteractiveWindow interactiveWindow) {
@@ -48,6 +49,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 var messages = await _messageQueue.WaitForMessagesAsync(_cts.Token);
                 await _mainThread.SwitchToAsync(_cts.Token);
 
+                // Verify that there was no user activity since the last message.
+                // When user enters new command, output buffer may remain the same
+                // since command goes to a different buffer in the projection.
+                CheckViewChanges();
+
                 foreach (var m in messages) {
                     if (m.IsError) {
                         _interactiveWindow.WriteError(m.Text);
@@ -60,6 +66,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
+        private void CheckViewChanges() {
+            // Check if number of lines in the top level view buffer changed
+            // and if yes, then reset mode to 'initial' .
+            var currentLineCount = _interactiveWindow.TextView.TextBuffer.CurrentSnapshot.LineCount;
+            if (_lastInteractiveWindowLineCount != currentLineCount) {
+                _currentLineStart = -1;
+            }
+        }
 
         private void ProcessCarriageReturn(string message) {
             ITextSnapshot snapshot;
@@ -86,15 +100,19 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // is still writeable.
                 _interactiveWindow.OutputBuffer.Changed += OnBufferChanged;
                 _interactiveWindow.Write(" ");
+                
                 // Must flush so we do get 'buffer changed' immediately.
                 _interactiveWindow.FlushOutput();
             } else {
-                // Locate last end of line
+                // Initial message. Write it and remember current line position.
+                _interactiveWindow.Write(message);
+                _interactiveWindow.FlushOutput();
+
                 snapshot = _interactiveWindow.OutputBuffer.CurrentSnapshot;
                 var line = snapshot.GetLineFromPosition(snapshot.Length);
                 _currentLineStart = line.Start;
-
             }
+            _lastInteractiveWindowLineCount = _interactiveWindow.TextView.TextBuffer.CurrentSnapshot.LineCount;
         }
 
         private void OnBufferChanged(object sender, TextContentChangedEventArgs e) {
