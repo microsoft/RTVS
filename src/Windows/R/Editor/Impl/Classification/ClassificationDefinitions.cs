@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Classification {
             }
         }
 
-        public const string FunctionReferenceClassificationFormatName = "R Function Reference";
+        public const string FunctionReferenceClassificationFormatName = "R Function";
 
         [Export]
         [Name(FunctionReferenceClassificationFormatName)]
@@ -60,7 +60,6 @@ namespace Microsoft.R.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class FunctionReferenceClassificationFormat : ClassificationFormatDefinition {
             public FunctionReferenceClassificationFormat() {
-                ForegroundColor = Colors.Maroon;
                 DisplayName = Windows_Resources.ColorName_R_FunctionReference;
             }
         }

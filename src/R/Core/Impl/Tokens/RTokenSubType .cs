@@ -10,6 +10,13 @@ namespace Microsoft.R.Core.Tokens {
         None,
 
         /// <summary>
+        /// General function name. Primarily user by the colorizer 
+        /// to tell functions from identifiers quickly. Does not guarantee
+        /// that token actually denotes valid function.
+        /// </summary>
+        Function,
+
+        /// <summary>
         /// Function that has dots in the name or that is later 
         /// recognized by the parser as built-in.
         /// </summary>
