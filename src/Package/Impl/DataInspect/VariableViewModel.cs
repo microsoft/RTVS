@@ -31,10 +31,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private IObjectDetailsViewer _detailsViewer;
         private readonly IServiceContainer _services;
         private readonly IRSettings _settings;
-        private string _title;
         private bool _deleted;
 
         public VariableViewModel() { Index = -1; }
+
+        public IRValueInfo Result {get;}
 
         public VariableViewModel(IREvaluationResultInfo evaluation, IServiceContainer services, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, services.GetService<IRSettings>().EvaluateActiveBindings, maxChildrenCount) {
@@ -42,19 +43,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _aggregator = services.GetService<IObjectDetailsViewerAggregator>();
             _settings = services.GetService<IRSettings>();
             Index = index;
-            var result = DebugEvaluation as IRValueInfo;
-            if (result != null) {
-                SetViewButtonStatus(result);
+            Result = DebugEvaluation as IRValueInfo;
+            if (Result != null) {
+                SetViewButtonStatus(Result);
             }
         }
 
         private void SetViewButtonStatus(IRValueInfo result) {
             _detailsViewer = _aggregator.GetViewer(result);
-            _title = result.Name;
 
             CanShowDetail = _detailsViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, _title).DoNotWait(), o => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, Result.Name).DoNotWait(), o => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
