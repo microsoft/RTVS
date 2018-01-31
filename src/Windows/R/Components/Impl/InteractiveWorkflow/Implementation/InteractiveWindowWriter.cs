@@ -32,11 +32,27 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public InteractiveWindowWriter(IMainThread mainThread, IInteractiveWindow interactiveWindow) {
             _mainThread = mainThread;
             _interactiveWindow = interactiveWindow;
+            _interactiveWindow.TextView.TextBuffer.Changed += OnTextViewBufferChanged;
             OutputProcessingTask().DoNotWait();
+        }
+
+        private void OnTextViewBufferChanged(object sender, TextContentChangedEventArgs e) {
+            // Verify that there was no user activity since the last message.
+            // When user enters new command, output buffer may remain the same
+            // since command goes to a different buffer in the projection.
+            // Check if number of lines in the top level view buffer changed
+            // and if yes, then reset mode to 'initial' .
+            var currentLineCount = _interactiveWindow.TextView.TextBuffer.CurrentSnapshot.LineCount;
+            if (_lastInteractiveWindowLineCount != currentLineCount) {
+                _currentLineStart = -1;
+            }
         }
 
         public void Dispose() {
             _cts.Cancel();
+            if (_interactiveWindow.TextView != null && _interactiveWindow.TextView.TextBuffer != null) {
+                _interactiveWindow.TextView.TextBuffer.Changed -= OnTextViewBufferChanged;
+            }
             _messageQueue.Dispose();
             _disposed = true;
         }
@@ -49,11 +65,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 var messages = await _messageQueue.WaitForMessagesAsync(_cts.Token);
                 await _mainThread.SwitchToAsync(_cts.Token);
 
-                // Verify that there was no user activity since the last message.
-                // When user enters new command, output buffer may remain the same
-                // since command goes to a different buffer in the projection.
-                CheckViewChanges();
-
                 foreach (var m in messages) {
                     if (m.IsError) {
                         _interactiveWindow.WriteError(m.Text);
@@ -63,15 +74,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         _interactiveWindow.Write(m.Text);
                     }
                 }
-            }
-        }
-
-        private void CheckViewChanges() {
-            // Check if number of lines in the top level view buffer changed
-            // and if yes, then reset mode to 'initial' .
-            var currentLineCount = _interactiveWindow.TextView.TextBuffer.CurrentSnapshot.LineCount;
-            if (_lastInteractiveWindowLineCount != currentLineCount) {
-                _currentLineStart = -1;
             }
         }
 
@@ -112,6 +114,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 var line = snapshot.GetLineFromPosition(snapshot.Length);
                 _currentLineStart = line.Start;
             }
+            // Store current line count so we can track user command activity
+            // and reset position if user enters new command and number of lines
+            // in the top-level buffer changes.
             _lastInteractiveWindowLineCount = _interactiveWindow.TextView.TextBuffer.CurrentSnapshot.LineCount;
         }
 
@@ -137,10 +142,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private static int GetDifference(string oldText, string newText, out string difference) {
             difference = string.Empty;
-            if (newText.Length < oldText.Length) {
-                return -1;
-            }
-
             var index = -1;
 
             for (var i = 0; i < oldText.Length; i++) {
