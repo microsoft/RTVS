@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly MessageQueue _messageQueue = new MessageQueue();
         private readonly IMainThread _mainThread;
         private readonly IInteractiveWindow _interactiveWindow;
+        private readonly ITextBuffer _viewBuffer;
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private volatile bool _disposed;
 
@@ -32,7 +33,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public InteractiveWindowWriter(IMainThread mainThread, IInteractiveWindow interactiveWindow) {
             _mainThread = mainThread;
             _interactiveWindow = interactiveWindow;
-            _interactiveWindow.TextView.TextBuffer.Changed += OnTextViewBufferChanged;
+            _viewBuffer = interactiveWindow.TextView.TextBuffer;
+            _viewBuffer.Changed += OnTextViewBufferChanged;
             OutputProcessingTask().DoNotWait();
         }
 
@@ -50,8 +52,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public void Dispose() {
             _cts.Cancel();
-            if (_interactiveWindow.TextView != null && _interactiveWindow.TextView.TextBuffer != null) {
-                _interactiveWindow.TextView.TextBuffer.Changed -= OnTextViewBufferChanged;
+            if (_viewBuffer != null) {
+                _viewBuffer.Changed -= OnTextViewBufferChanged;
             }
             _messageQueue.Dispose();
             _disposed = true;
