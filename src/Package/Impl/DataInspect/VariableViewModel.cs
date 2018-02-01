@@ -35,17 +35,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public VariableViewModel() { Index = -1; }
 
-        public IRValueInfo Result {get;}
-
         public VariableViewModel(IREvaluationResultInfo evaluation, IServiceContainer services, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, services.GetService<IRSettings>().EvaluateActiveBindings, maxChildrenCount) {
             _services = services;
             _aggregator = services.GetService<IObjectDetailsViewerAggregator>();
             _settings = services.GetService<IRSettings>();
             Index = index;
-            Result = DebugEvaluation as IRValueInfo;
-            if (Result != null) {
-                SetViewButtonStatus(Result);
+            var result = DebugEvaluation as IRValueInfo;
+            if (result != null) {
+                SetViewButtonStatus(result);
             }
         }
 
@@ -54,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             CanShowDetail = _detailsViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, Result.Name).DoNotWait(), o => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, result.Name).DoNotWait(), o => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
