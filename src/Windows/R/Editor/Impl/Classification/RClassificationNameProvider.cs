@@ -51,15 +51,17 @@ namespace Microsoft.R.Editor.Classification {
                     return "Punctuation";
 
                 case RTokenType.Identifier:
-                    if (t.SubType == RTokenSubType.BuiltinConstant ||
-                        t.SubType == RTokenSubType.BuiltinFunction) {
-                        return PredefinedClassificationTypeNames.Keyword;
-                    } else if (t.SubType == RTokenSubType.TypeFunction) {
-                        return RClassificationTypes.TypeFunction;
+                    switch (t.SubType) {
+                        case RTokenSubType.BuiltinConstant:
+                        case RTokenSubType.BuiltinFunction:
+                            return PredefinedClassificationTypeNames.Keyword;
+                        case RTokenSubType.TypeFunction:
+                            return RClassificationTypes.TypeFunction;
+                        case RTokenSubType.Function:
+                            return RClassificationTypes.Function;
                     }
                     break;
             }
-
             return "Default";
         }
     }

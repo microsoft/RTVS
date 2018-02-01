@@ -222,9 +222,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public long GetColumn(double position) => xIndex(position - HorizontalComputedOffset);
+        public long GetColumn(double position) => xIndex(position + HorizontalComputedOffset);
 
-        public long GetRow(double position) => yIndex(position - VerticalComputedOffset);
+        public long GetRow(double position) => yIndex(position + VerticalComputedOffset);
 
         private double _columnHeaderHeight;
         public double ColumnHeaderHeight {

@@ -31,7 +31,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private IObjectDetailsViewer _detailsViewer;
         private readonly IServiceContainer _services;
         private readonly IRSettings _settings;
-        private string _title;
         private bool _deleted;
 
         public VariableViewModel() { Index = -1; }
@@ -50,11 +49,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void SetViewButtonStatus(IRValueInfo result) {
             _detailsViewer = _aggregator.GetViewer(result);
-            _title = result.Name;
 
             CanShowDetail = _detailsViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, _title).DoNotWait(), o => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, result.Name).DoNotWait(), o => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 

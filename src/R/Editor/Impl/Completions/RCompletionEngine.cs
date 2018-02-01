@@ -109,7 +109,7 @@ namespace Microsoft.R.Editor.Completions.Engine {
                 providers.Add(new PackagesCompletionProvider(packageIndex, _imageService));
             } else {
                 var functionIndex = _services.GetService<IFunctionIndex>();
-                providers.Add(new ParameterNameCompletionProvider(functionIndex, _imageService));
+                providers.Add(new ParameterNameCompletionProvider(_services));
                 providers.Add(new KeywordCompletionProvider(_services));
                 providers.Add(new PackageFunctionCompletionProvider(_services));
                 providers.Add(new UserVariablesCompletionProvider(_imageService));

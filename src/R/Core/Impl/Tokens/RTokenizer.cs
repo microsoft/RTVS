@@ -322,7 +322,12 @@ namespace Microsoft.R.Core.Tokens {
             } else if (Keywords.IsKeyword(s)) {
                 AddToken(RTokenType.Keyword, start, s.Length);
             } else {
-                AddToken(RTokenType.Identifier, start, s.Length);
+                _cs.SkipWhitespace();
+                if (_cs.CurrentChar == '(') {
+                    AddToken(RTokenType.Identifier, RTokenSubType.Function, start, s.Length);
+                } else {
+                    AddToken(RTokenType.Identifier, start, s.Length);
+                }
             }
         }
 

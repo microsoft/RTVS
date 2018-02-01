@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Completions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
@@ -21,10 +22,12 @@ namespace Microsoft.R.Editor.Completions.Providers {
     public class ParameterNameCompletionProvider : IRCompletionListProvider {
         private readonly IFunctionIndex _functionIndex;
         private readonly IImageService _imageService;
+        private readonly IREditorSettings _settings;
 
-        public ParameterNameCompletionProvider(IFunctionIndex functionIndex, IImageService imageService) {
-            _functionIndex = functionIndex;
-            _imageService = imageService;
+        public ParameterNameCompletionProvider(IServiceContainer services) {
+            _functionIndex = services.GetService<IFunctionIndex>();
+            _imageService = services.GetService<IImageService>();
+            _settings = services.GetService<IREditorSettings>();
         }
 
         #region IRCompletionListProvider
@@ -62,8 +65,8 @@ namespace Microsoft.R.Editor.Completions.Providers {
             var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             foreach (var arg in possibleArguments) {
-                var displayText = arg.Key + " =";
-                var insertionText = arg.Key + " = ";
+                var displayText = arg.Key + (_settings.FormatOptions.SpacesAroundEquals ? " =" : "=");
+                var insertionText = arg.Key + (_settings.FormatOptions.SpacesAroundEquals ? " = " : "=");
                 completions.Add(new EditorCompletionEntry(displayText, insertionText, arg.Value.Description, functionGlyph));
             }
 
