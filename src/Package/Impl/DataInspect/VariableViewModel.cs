@@ -34,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _deleted;
 
         public VariableViewModel() { Index = -1; }
+        public IRValueInfo Result { get; }
 
         public VariableViewModel(IREvaluationResultInfo evaluation, IServiceContainer services, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, services.GetService<IRSettings>().EvaluateActiveBindings, maxChildrenCount) {
@@ -41,9 +42,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _aggregator = services.GetService<IObjectDetailsViewerAggregator>();
             _settings = services.GetService<IRSettings>();
             Index = index;
-            var result = DebugEvaluation as IRValueInfo;
-            if (result != null) {
-                SetViewButtonStatus(result);
+            Result = DebugEvaluation as IRValueInfo;
+            if (Result != null) {
+                SetViewButtonStatus(Result);
             }
         }
 
