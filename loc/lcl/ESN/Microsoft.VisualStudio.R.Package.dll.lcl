@@ -5659,7 +5659,7 @@
           <Str Cat="Button">
             <Val><![CDATA[Check For Package Updates]]></Val>
             <Tgt Cat="Button" Stat="Loc" Orig="New">
-              <Val><![CDATA[Buscar actualizaciones de paquetes]]></Val>
+              <Val><![CDATA[Buscar actualizaciones del paquete]]></Val>
             </Tgt>
             <Prev Cat="Button">
               <Val><![CDATA[Check For Updates]]></Val>
