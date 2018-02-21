@@ -4789,7 +4789,7 @@
           <Str Cat="Button" IgnoreHK="true">
             <Val><![CDATA[Source Selected File(s) with &Echo]]></Val>
             <Tgt Cat="Button" IgnoreHK="true" Stat="Loc" Orig="New">
-              <Val><![CDATA[&Obter Arquivo(s) Selecionado(s) com &Eco]]></Val>
+              <Val><![CDATA[Obter Arquivo(s) Selecionado(s) com &Eco]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" Expand="true" />
