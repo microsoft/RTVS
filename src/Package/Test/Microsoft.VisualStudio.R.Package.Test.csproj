@@ -127,7 +127,8 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Broker\Impl\Microsoft.R.Host.Broker.Windows.csproj">
       <Project>{2cc10e50-392e-4b5d-98e4-d38f0061d363}</Project>
-      <Name>Microsoft.R.Host.Broker.Windows</Name>
+      <Name>Microsoft.R.Host.Broker.Windows</Name>      
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Windows\Host\Client\Impl\Microsoft.R.Host.Client.Windows.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
