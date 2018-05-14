@@ -23,7 +23,7 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="websocket-sharp.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Newtonsoft.Json.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Broker.Windows.exe" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Broker\Microsoft.R.Host.Broker.Windows.exe" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Broker.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Protocol.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.Client.dll" />

@@ -20,7 +20,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.R.Host.Client.Host {
     public sealed class LocalBrokerClient : BrokerClient {
-        private const string RHostBrokerExe = "Microsoft.R.Host.Broker.Windows.exe";
+        private const string RHostBrokerExe = "Broker\\Microsoft.R.Host.Broker.Windows.exe";
         private const string RHostExe = "Microsoft.R.Host.exe";
         private const string InterpreterId = "local";
 
@@ -105,9 +105,10 @@ namespace Microsoft.R.Host.Client.Host {
                             $" --startup:writeServerUrlsToPipe {pipeName}" +
                             $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                             $" --security:secret \"{_credentials.Password}\"" +
-                            $" --R:autoDetect false" +
-                            $" --R:interpreters:{InterpreterId}:name \"{Name}\"" +
-                            $" --R:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
+                            $" --r:autoDetect false" +
+                            $" --r:rhostPath \"{rhostExe}\"" +
+                            $" --r:interpreters:{InterpreterId}:name \"{Name}\"" +
+                            $" --r:interpreters:{InterpreterId}:basePath \"{_rHome.TrimTrailingSlash()}\""
                     };
 
                     if (!ShowConsole) {

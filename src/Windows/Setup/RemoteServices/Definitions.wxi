@@ -10,6 +10,7 @@
   <!--<?define LabBuild="1" ?>-->
 
   <?define BinDir="$(var.OutDir)" ?>
+  <?define BrokerDir="$(var.OutDir)\Broker" ?>
   <?define LocDir="$(var.OutDir)\localize" ?>
   <?define SourceDir="..\..\.." ?>
 

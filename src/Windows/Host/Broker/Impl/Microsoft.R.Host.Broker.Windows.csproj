@@ -27,7 +27,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="..\..\..\..\R.Settings.props" />
-  <PropertyGroup>
+  <PropertyGroup> 
+    <OutputPath>$(OutputPath)Broker\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

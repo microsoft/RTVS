@@ -15,7 +15,7 @@ using Microsoft.UnitTests.Core;
 
 namespace Microsoft.R.Host.Client.Test.Fixtures {
     internal class RemoteBrokerProcess {
-        private const string RHostBrokerExe = "Microsoft.R.Host.Broker.Windows.exe";
+        private const string RHostBrokerExe = "Broker\\Microsoft.R.Host.Broker.Windows.exe";
         private const string RHostExe = "Microsoft.R.Host.exe";
 
         //private readonly IServiceContainer _services;
@@ -68,9 +68,10 @@ namespace Microsoft.R.Host.Client.Test.Fixtures {
                         $" --startup:name \"{_name}\"" +
                         $" --lifetime:parentProcessId {Process.GetCurrentProcess().Id}" +
                         $" --security:secret \"{Password}\"" +
-                        $" --R:autoDetect false" +
-                        $" --R:interpreters:test:name \"{_name}\"" +
-                        $" --R:interpreters:test:basePath \"{rHome.TrimTrailingSlash()}\""
+                        $" --r:autoDetect false" +
+                        $" --r:rhostPath \"{rhostExe}\"" +
+                        $" --r:interpreters:test:name \"{_name}\"" +
+                        $" --r:interpreters:test:basePath \"{rHome.TrimTrailingSlash()}\""
                 };
 
                 process = StartBroker(psi);
