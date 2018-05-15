@@ -11,6 +11,7 @@
 
   <?define BinDir="$(var.OutDir)" ?>
   <?define BrokerDir="$(var.OutDir)\Broker" ?>
+  <?define UserProfileDir="$(var.OutDir)\UserProfile" ?>
   <?define LocDir="$(var.OutDir)\localize" ?>
   <?define SourceDir="..\..\.." ?>
 
