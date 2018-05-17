@@ -11,6 +11,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.Shell;
 
@@ -27,7 +28,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public ToolWindowPane CreateToolWindow(Guid toolWindowGuid, int id) 
-            => WorkflowToolWindows.GetOrCreate(toolWindowGuid, id) ?? CreateVisualComponent(toolWindowGuid, id)?.Container as ToolWindowPane;
+            => WorkflowToolWindows.GetOrCreate(toolWindowGuid, id) ?? GetToolWindowFromVisualComponent(toolWindowGuid, id);
+
+        private ToolWindowPane GetToolWindowFromVisualComponent(Guid toolWindowGuid, int id) {
+            var container = CreateVisualComponent(toolWindowGuid, id)?.Container;
+            if (container == null) {
+                return null;
+            }
+
+            if (container is IVisualComponentToolWindowAdapter<IVisualComponent> toolWindowAdapter) {
+                return toolWindowAdapter.ToolWindow;
+            }
+
+            return (ToolWindowPane)container;
+        }
 
         private IVisualComponent CreateVisualComponent(Guid toolWindowGuid, int id) {
             if (toolWindowGuid == RGuidList.ReplInteractiveWindowProviderGuid) {

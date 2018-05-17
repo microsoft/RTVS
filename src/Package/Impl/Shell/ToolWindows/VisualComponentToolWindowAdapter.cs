@@ -10,17 +10,21 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public sealed class VisualComponentToolWindowAdapter<T> : IVisualComponentContainer<T> where T : IVisualComponent {
-        private readonly ToolWindowPane _toolWindowPane;
+    internal interface IVisualComponentToolWindowAdapter<out T> : IVisualComponentContainer<T> {
+        ToolWindowPane ToolWindow { get; }
+    }
+
+    internal sealed class VisualComponentToolWindowAdapter<T> : IVisualComponentToolWindowAdapter<T> where T : IVisualComponent {
         private readonly IServiceContainer _services;
         private IVsWindowFrame _vsWindowFrame;
 
         public VisualComponentToolWindowAdapter(ToolWindowPane toolWindowPane, IServiceContainer services) {
-            _toolWindowPane = toolWindowPane;
+            ToolWindow = toolWindowPane;
             _services = services;
         }
 
         public T Component { get; set; }
+        public ToolWindowPane ToolWindow { get; }
 
         public bool IsOnScreen {
             get {
@@ -28,17 +32,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     return false;
                 }
 
-                int onScreen;
-                return VsWindowFrame.IsOnScreen(out onScreen) == VSConstants.S_OK && onScreen != 0;
+                return VsWindowFrame.IsOnScreen(out var onScreen) == VSConstants.S_OK && onScreen != 0;
             }
         }
 
-        private IVsWindowFrame VsWindowFrame => _vsWindowFrame ?? (_vsWindowFrame = _toolWindowPane.Frame as IVsWindowFrame);
+        private IVsWindowFrame VsWindowFrame => _vsWindowFrame ?? (_vsWindowFrame = ToolWindow.Frame as IVsWindowFrame);
 
         public string CaptionText
         {
-            get => _toolWindowPane.Caption;
-            set => _toolWindowPane.Caption = value;
+            get => ToolWindow.Caption;
+            set => ToolWindow.Caption = value;
         }
 
         public string StatusText
