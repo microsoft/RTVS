@@ -224,7 +224,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Monitoring parent process {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Monitorování nadřazeného procesu {0}]]></Val>
+            <Val><![CDATA[Sledování nadřazeného procesu {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -331,7 +331,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30911.305]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -352,7 +352,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30911.0305]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -388,7 +388,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30911.0305]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
