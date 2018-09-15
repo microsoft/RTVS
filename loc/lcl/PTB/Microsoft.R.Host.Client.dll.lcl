@@ -17,7 +17,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Previous R session terminated unexpectedly, and its global workspace is currently being saved.]D;]A;Do you want to abort this operation and start current session immediately?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A sessão de R anterior foi encerrada inesperadamente e seu espaço de trabalho global está sendo salvo no momento.]D;]A;Deseja anular essa operação e iniciar a sessão atual imediatamente?]]></Val>
+            <Val><![CDATA[A sessão de R anterior foi encerrada inesperadamente e seu workspace global está sendo salvo no momento.]D;]A;Deseja anular essa operação e iniciar a sessão atual imediatamente?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -233,7 +233,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to enable workspace auto-saving: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falha ao habilitar o salvamento automático do espaço de trabalho: {0}]]></Val>
+            <Val><![CDATA[Falha ao habilitar o salvamento automático do workspace: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -368,7 +368,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connecting to R Workspace failed.]D;]A;Reason: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falha ao conectar ao Espaço de Trabalho de R.]D;]A;Motivo: {0}]]></Val>
+            <Val><![CDATA[Falha ao conectar ao Workspace de R.]D;]A;Motivo: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -397,7 +397,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.31108.1213]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -418,7 +418,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.31108.1213]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -454,7 +454,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.3.31108.1213]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
