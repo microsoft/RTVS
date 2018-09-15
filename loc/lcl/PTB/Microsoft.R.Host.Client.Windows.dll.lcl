@@ -17,7 +17,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Previous R session terminated unexpectedly, and its global workspace is currently being saved.]D;]A;Do you want to abort this operation and start current session immediately?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A sessão de R anterior foi encerrada inesperadamente e seu espaço de trabalho global está sendo salvo no momento.]D;]A;Deseja anular essa operação e iniciar a sessão atual imediatamente?]]></Val>
+            <Val><![CDATA[A sessão de R anterior foi encerrada inesperadamente e seu workspace global está sendo salvo no momento.]D;]A;Deseja anular essa operação e iniciar a sessão atual imediatamente?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -27,15 +27,6 @@
           <Val><![CDATA[The security certificate presented by the Remote R Services does not allow us to prove that you are indeed connecting to the machine {0}.]D;]A;]D;]A;This should never happen with a production Remote R Services, so please check with your server administrator.]D;]A;]D;]A;If you are using a test Remote R Server with a self-signed certificate and are certain about the remote machine security, click Yes, otherwise click NO to terminate the connection.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[O certificado de segurança apresentado pelos Serviços de R Remoto não nos permite comprovar se você está se conectando ao computador {0}.]D;]A;]D;]A;Isso nunca deve acontecer com os Serviços Remotos de R de uma produção, então verifique com o administrador do servidor.]D;]A;]D;]A;Se estiver usando um Servidor de R Remoto de teste com um certificado autoassinado e tiver certeza sobre a segurança do computador remoto, clique em Sim. Caso contrário, clique em NÃO para encerrar a conexão.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_BinaryMissing14" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[{0}  is missing from the installation directory.]D;]A;Please reinstall R Tools for Visual Studio 2015]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} não está no diretório de instalação.]D;]A;Reinstale as R Tools para Visual Studio 2015]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -148,33 +139,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Error_RemoteUriNotSupported" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Remote R requested to open {0}, but only http:// URIs are supported for remote.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[O R Remoto solicitou que {0} fosse aberto, mas apenas as URIs http:// têm suporte remoto.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_RemoteVersionHigher" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is higher than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade local R Tools installation to match.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A versão dos Serviços do R no computador remoto ({0})]D;]A;é maior que a versão das R Tools no computador local ({1}). ]D;]A;Atualize a instalação local das R Tools para correspondência.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";Error_RemoteVersionLower" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Version of R Services on the remote machine ({0})]D;]A;is lower than the version of R Tools on the local computer ({1}). ]D;]A;Please upgrade remote R Services installation to match.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[A versão dos Serviços do R no computador remoto ({0})]D;]A;é menor que a versão das R Tools no computador local ({1}). ]D;]A;Atualize a instalação remota dos R Services para correspondência.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";Error_RemoteWebServerCreationFailed" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to create HTTP server for remote {0}.]]></Val>
@@ -215,7 +179,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to enable workspace auto-saving: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falha ao habilitar o salvamento automático do espaço de trabalho: {0}]]></Val>
+            <Val><![CDATA[Falha ao habilitar o salvamento automático do workspace: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -337,15 +301,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";Message_SuggestMRO" ItemType="0" PsrId="211" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Check out Microsoft's enhanced R distribution at https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Confira a distribuição avançada do R da Microsoft em https://aka.ms/mrclient.]D;]A;]D;]A;]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";RHostDisconnected" ItemType="0" PsrId="211" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Interactive Window is disconnected from R session.]]></Val>
@@ -359,7 +314,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connecting to R Workspace failed.]D;]A;Reason: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Falha ao conectar ao Espaço de Trabalho de R.]D;]A;Motivo: {0}]]></Val>
+            <Val><![CDATA[Falha ao conectar ao Workspace de R.]D;]A;Motivo: {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -379,7 +334,7 @@
     <Disp Icon="Ver" Disp="true" LocTbl="false" Path=" \ ;Version \ 8 \ 0" />
     <Item ItemId=";AssemblyVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30811.304]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -400,7 +355,7 @@
     </Item>
     <Item ItemId=";FileVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30811.0304]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
@@ -436,7 +391,7 @@
     </Item>
     <Item ItemId=";ProductVersion" ItemType="0" PsrId="211" Leaf="true">
       <Str Cat="Text" DevLk="true">
-        <Val><![CDATA[1.2.30811.0304]]></Val>
+        <Val><![CDATA[1.3.40517.1016]]></Val>
       </Str>
       <Disp Icon="Str" />
     </Item>
