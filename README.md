@@ -1,17 +1,16 @@
 # R Tools for Visual Studio
 
-THANK YOU for checking out this early version of R Tools for Visual Studio (RTVS). We've decided to make it available
-early, so that we'll have more time to address your feedback. As such, there are bugs and missing features, so please
-beware! This release is meant for evaluation purposes only, and not for production use.
+This project is not actively supported.
+
+R Tools is not available in VS 2019. Pleasee see https://docs.microsoft.com/en-us/visualstudio/porting/port-migrate-upgrade-visual-studio-projects-2019?view=vs-2017.
+
+"R Tools for Visual Studio | R Tools for Visual Studio was removed from the Data Science Workload in Visual Studio 2019 Preview.You can continue using Visual Studio 2017 or alternatives like RStudio."
+
+There are also R extensions to [VS Code](https://code.visualstudio.com/) available at the [VS Code Marketplace](https://marketplace.visualstudio.com/vscode).
 
 ### Installation
 
 Latests RTVS ships with Visual Studio 2017 as part of the Data Science workload.
-You can either install release from https://www.visualstudio.com/downloads/ or
-Preview from the https://www.visualstudio.com/vs/preview/. Preview channel has the latest RTVS.
-
-You can still use older extension with VS 2015 Update 3 but it is no longer being updated. 
-You can install it from https://aka.ms/rtvs-current
 
 ### Documentation
 
@@ -20,26 +19,11 @@ The interim docs are available here:
 
 ### Bugs and feature requests
 
-Please file bugs and feature requests here on GitHub. Check if the same bug or feature request has already been
-made by using search, and if so, then upvote it by
-[adding a "thumbs up" reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments)
-to it. Feel free to comment on any existing issues and feature requests with any additional feedback, clarifications,
-or questions.
-
-You can also submit feedback via VS 2017 feedback tool.
-
-When filing a bug, you can also use the **R Tools | Send Feedback | Send Frown** feature to send us the product
-logs to help us diagnose the problem better. This command will launch your email client with a prepopulated message,
-and will gather the logs and highlight them in Windows Explorer, so that they can be conveniently attached to the
-email. Please *do not* attach these logs to your GitHub issues, since attachments on issues are visible by everyone,
-and the logs may contain private information.
-
-If you need to reach the team directly, email us at rtvsuserfeedback@microsoft.com.
+You can submit feedback via VS 2017 feedback tool.
 
 ### Roadmap
 
-If you install [ZenHub](https://github.com/marketplace/zenhub) extension for Chrome, 
-you should be able to see our milestones, releases and the overall progress.
+This project is not actively supported.
 
 ### Builds and pull requests
 
