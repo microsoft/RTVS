@@ -1,10 +1,10 @@
 # R Tools for Visual Studio
 
-This project is not actively supported.
+## This project is not actively supported.
 
-R Tools is not available in VS 2019. Pleasee see https://docs.microsoft.com/en-us/visualstudio/porting/port-migrate-upgrade-visual-studio-projects-2019?view=vs-2017.
+R Tools is not available in VS 2019. Please see https://docs.microsoft.com/en-us/visualstudio/porting/port-migrate-upgrade-visual-studio-projects-2019?view=vs-2017.
 
-"R Tools for Visual Studio | R Tools for Visual Studio was removed from the Data Science Workload in Visual Studio 2019 Preview.You can continue using Visual Studio 2017 or alternatives like RStudio."
+_"R Tools for Visual Studio | R Tools for Visual Studio was removed from the Data Science Workload in Visual Studio 2019 Preview. You can continue using Visual Studio 2017 or alternatives like RStudio."_
 
 There are also R extensions to [VS Code](https://code.visualstudio.com/) available at the [VS Code Marketplace](https://marketplace.visualstudio.com/vscode).
 
