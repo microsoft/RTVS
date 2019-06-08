@@ -24,17 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static bool TryGetHierarchy(string filePath, out IVsHierarchy vsHierarchy, out uint vsItemId) {
             Dispatcher.CurrentDispatcher.VerifyAccess();
             var result = true;
-            vsHierarchy = null;
-            vsItemId = (uint)VSConstants.VSITEMID.Nil;
-
             var vsUIShellOpenDocument = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
-
-            IOleServiceProvider serviceProviderUnused = null;
-            var docInProject = 0;
-            IVsUIHierarchy uiHier = null;
-
-
-            var hr = vsUIShellOpenDocument.IsDocumentInAProject(filePath, out uiHier, out vsItemId, out serviceProviderUnused, out docInProject);
+            Assumes.Present(vsUIShellOpenDocument);
+            var hr = vsUIShellOpenDocument.IsDocumentInAProject(filePath, out var uiHier, out vsItemId, out var _, out var _);
             if (ErrorHandler.Succeeded(hr) && uiHier != null) {
                 vsHierarchy = uiHier as IVsHierarchy;
             } else {
@@ -47,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static UnconfiguredProject GetUnconfiguredProject(this ITextBuffer textBuffer) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var filePath = textBuffer.GetFileName();
             IVsHierarchy vsHierarchy;
             uint vsItemID;
@@ -55,6 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static ConfiguredProject GetConfiguredProject(this ITextBuffer textBuffer) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var filePath = textBuffer.GetFileName();
             IVsHierarchy vsHierarchy;
             uint vsItemID;

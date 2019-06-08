@@ -68,6 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             }
 
             var menuCommandService = (IMenuCommandService)GetService(typeof(IMenuCommandService));
+            Assumes.Present(menuCommandService);
             foreach (var commmand in CreateMenuCommands()) {
                 menuCommandService.AddCommand(commmand);
             }

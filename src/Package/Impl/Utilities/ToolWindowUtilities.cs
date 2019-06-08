@@ -21,6 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static T ShowWindowPane<T>(int id, bool focus) where T : ToolWindowPane {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             T window = RPackage.Current.FindWindowPane<T>(typeof(T), id, true) as T;
             if (window == null) {
                 return null; 
@@ -31,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public static void ShowToolWindow(ToolWindowPane toolWindow, IMainThread mainThread, bool focus, bool immediate) {
             if (immediate) {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 mainThread.Assert();
                 TryShowToolWindow(toolWindow, focus);
             } else {

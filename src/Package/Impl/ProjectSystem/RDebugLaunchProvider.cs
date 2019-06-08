@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             var targets = new List<IDebugLaunchSettings>();
 
             if (Session.IsHostRunning) {
-                uint pid = RDebugPortSupplier.GetProcessId(Session.Id);
+                var pid = RDebugPortSupplier.GetProcessId(Session.Id);
 
                 var target = new DebugLaunchSettings(launchOptions) {
                     LaunchOperation = DebugLaunchOperation.AlreadyRunning,
@@ -87,9 +87,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _interactiveWorkflow.ActiveWindow?.Container.Show(focus: false, immediate: false);
 
-            bool transferFiles = await _properties.GetTransferProjectOnRunAsync();
-            string remotePath = await _properties.GetRemoteProjectPathAsync();
-            string filterString = await _properties.GetFileFilterAsync();
+            var transferFiles = await _properties.GetTransferProjectOnRunAsync();
+            var remotePath = await _properties.GetRemoteProjectPathAsync();
+            var filterString = await _properties.GetFileFilterAsync();
 
             var activeProject = _pss.GetActiveProject();
             if (transferFiles && Session.IsRemote && activeProject != null) {
@@ -123,7 +123,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task SourceFileAsync(bool transferFiles, string file, string errorMessage) {
-            bool fileExists = false;
+            var fileExists = false;
             if (transferFiles && Session.IsRemote) {
                 try {
                     fileExists = await Session.EvaluateAsync<bool>($"file.exists({file.ToRPath().ToRStringLiteral()})", REvaluationKind.Normal);
@@ -150,7 +150,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             var projectName = Path.GetFileNameWithoutExtension(project.FullName);
 
             string[] filterSplitter = { ";" };
-            Matcher matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
+            var matcher = new Matcher(StringComparison.InvariantCultureIgnoreCase);
             matcher.AddIncludePatterns(filterString.Split(filterSplitter, StringSplitOptions.RemoveEmptyEntries));
 
             Console.WriteLine(Resources.Info_RemoteDestination.FormatInvariant(remotePath));
@@ -159,7 +159,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             var compressedFilePath = FileSystem.CompressDirectory(projectDir, matcher, new Progress<string>((p) => {
                 Console.WriteLine(Resources.Info_LocalFilePath.FormatInvariant(p));
-                string dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
+                var dest = p.MakeRelativePath(projectDir).ProjectRelativePathToRemoteProjectPath(remotePath, projectName);
                 Console.WriteLine(Resources.Info_RemoteFilePath.FormatInvariant(dest));
             }), CancellationToken.None);
             

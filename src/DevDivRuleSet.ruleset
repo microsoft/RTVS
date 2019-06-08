@@ -131,4 +131,25 @@
     <Rule Id="CA905" Action="None" />
     <Rule Id="CA908" Action="None" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.VisualStudio.Threading.Analyzers" RuleNamespace="Microsoft.VisualStudio.Threading.Analyzers">
+    <Rule Id="VSTHRD001" Action="Info" />
+    <Rule Id="VSTHRD002" Action="Info" />
+    <Rule Id="VSTHRD003" Action="Info" />
+    <Rule Id="VSTHRD004" Action="Info" />
+    <Rule Id="VSTHRD010" Action="Info" />
+    <Rule Id="VSTHRD011" Action="Info" />
+    <Rule Id="VSTHRD012" Action="Info" />
+    <Rule Id="VSTHRD100" Action="Info" />
+    <Rule Id="VSTHRD101" Action="Info" />
+    <Rule Id="VSTHRD102" Action="Info" />
+    <Rule Id="VSTHRD103" Action="Info" />
+    <Rule Id="VSTHRD104" Action="Info" />
+    <Rule Id="VSTHRD105" Action="Info" />
+    <Rule Id="VSTHRD106" Action="Info" />
+    <Rule Id="VSTHRD107" Action="Info" />
+    <Rule Id="VSTHRD108" Action="Info" />
+    <Rule Id="VSTHRD109" Action="Info" />
+    <Rule Id="VSTHRD110" Action="Info" />
+    <Rule Id="VSTHRD200" Action="None" />
+  </Rules>
 </RuleSet>

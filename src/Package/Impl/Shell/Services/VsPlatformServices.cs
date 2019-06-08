@@ -15,6 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public VsPlatformServices() {
             Dispatcher.CurrentDispatcher.VerifyAccess();
             var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+            Assumes.Present(uiShell);
             uiShell.GetDialogOwnerHwnd(out var handle);
             ApplicationWindowHandle = handle;
         }

@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public static void Terminate() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _instance?.Dispose();
         }
 
@@ -68,6 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region IDisposable
         public void Dispose() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             DisconnectFromShellEvents();
             _services?.Dispose();
         }

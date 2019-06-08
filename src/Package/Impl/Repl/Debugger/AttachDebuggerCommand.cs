@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;

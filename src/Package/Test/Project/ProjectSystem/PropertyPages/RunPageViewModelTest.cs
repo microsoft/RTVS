@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             dirty.Should().Be(true);
 
             // Save the view model into the model
-            await vm.Save();
+            await vm.SaveAsync();
 
             // Verify model has been updated
             debugConfigProps.ShouldBeEquivalentTo(new TestProjectProperties(true, "script.R", "-debug"));
@@ -78,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             dirty.Should().Be(true);
 
             // Save the view model into the model
-            await vm.Save();
+            await vm.SaveAsync();
 
             // Verify model has been updated
             debugConfigProps.ShouldBeEquivalentTo(new TestProjectProperties(true, "script.R", "-debug"));
@@ -115,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             dirty.Should().Be(true);
 
             // Save the view model into the model
-            await vm.Save();
+            await vm.SaveAsync();
 
             // Verify model has been updated
             debugConfigProps.ShouldBeEquivalentTo(new TestProjectProperties(false, "common.R", "-option"));

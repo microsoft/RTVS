@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
         public abstract Task Initialize();
 
-        public abstract Task<int> Save();
+        public abstract Task<int> SaveAsync();
 
         protected virtual void OnPropertyChanged(string propertyName, bool suppressInvalidation = false) {
             // For some properties we don't want to invalidate the property page

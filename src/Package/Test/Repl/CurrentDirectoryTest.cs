@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Test]
         public async Task SetDirectoryTest() {
             var dir = "c:\\";
-            await _cmd.SetDirectory(dir);
+            await _cmd.SetDirectoryAsync(dir);
             var actual = Workflow.RSession.GetRWorkingDirectoryAsync().Result;
             actual.Should().Be(dir);
         }

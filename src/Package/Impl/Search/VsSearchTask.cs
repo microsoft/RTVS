@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -20,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         public uint Status => (uint)_taskStatus;
 
         public VsSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback, ISearchHandler handler, CancellationTokenSource cts) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             Check.ArgumentNull(nameof(pSearchQuery), pSearchQuery);
             Check.ArgumentNull(nameof(pSearchCallback), pSearchCallback);
             Check.Argument(nameof(dwCookie), () => dwCookie != VSConstants.VSCOOKIE_NIL);
@@ -36,8 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         }
 
         public void Start() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (SetTaskStatus(Started)) {
-                _handler.Search(SearchQuery.SearchString, _cts.Token).ContinueWith(SearchCompleted);
+                _handler
+                    .Search(SearchQuery.SearchString, _cts.Token)
+                    .ContinueWith(SearchCompleted)
+                    .DoNotWait();
             }
         }
 

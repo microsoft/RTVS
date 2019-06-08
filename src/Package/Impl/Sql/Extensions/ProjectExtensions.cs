@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     internal static class ProjectExtensions {
-        public static async Task<IEnumerable<IConfigurationSetting>> GetDatabaseConnections(this ConfiguredProject configuredProject, IProjectConfigurationSettingsProvider provider) {
+        public static async Task<IEnumerable<IConfigurationSetting>> GetDatabaseConnectionsAsync(this ConfiguredProject configuredProject, IProjectConfigurationSettingsProvider provider) {
             var dict = new Dictionary<string, string>();
             if (configuredProject != null) {
                 using (var access = await provider.OpenProjectSettingsAccessAsync(configuredProject)) {

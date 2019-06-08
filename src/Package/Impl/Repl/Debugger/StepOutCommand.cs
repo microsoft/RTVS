@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Windows.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
 
@@ -13,6 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
         }
 
         protected override void SetStatus() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             base.SetStatus();
             Enabled = false;
         }

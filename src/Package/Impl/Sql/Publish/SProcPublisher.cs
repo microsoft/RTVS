@@ -61,6 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Packages stored procedures into a DACPAC.
         /// </summary>
         private void PublishToDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
                 var dacpacPath = Path.ChangeExtension(project.FullName, DacPacExtension);

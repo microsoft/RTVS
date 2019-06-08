@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private uint _vsShellBroadcastEventsCookie;
 
         public VsUIServices(ICoreShell coreShell) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             ProgressDialog = new VsProgressDialog(coreShell.Services);
             FileDialog = new VsFileDialog(coreShell);
 
@@ -64,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     var sp = (IServiceProvider)package;
                     var menuService = (System.ComponentModel.Design.IMenuCommandService)sp
                         .GetService(typeof(System.ComponentModel.Design.IMenuCommandService));
-                    menuService.ShowContextMenu(new System.ComponentModel.Design.CommandID(commandId.Group, commandId.Id), x, y);
+                    menuService?.ShowContextMenu(new System.ComponentModel.Design.CommandID(commandId.Group, commandId.Id), x, y);
                 }
             } else {
                 var target = commandTarget as ICommandTarget;

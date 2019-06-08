@@ -49,11 +49,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             _ignoreEvents = false;
         }
 
-        public async Task<int> Apply() {
+        public async Task<int> ApplyAsync() {
             int result = VSConstants.S_OK;
 
             if (IsDirty) {
-                result = await OnApply();
+                result = await OnApplyAsync();
                 if (result == VSConstants.S_OK) {
                     IsDirty = false;
                 }
@@ -62,8 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             return result;
         }
 
-        protected virtual Task<int> OnApply() {
-            return ViewModel.Save();
+        protected virtual Task<int> OnApplyAsync() {
+            return ViewModel.SaveAsync();
         }
 
         private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) {

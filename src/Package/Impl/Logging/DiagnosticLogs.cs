@@ -11,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
@@ -48,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         private static List<string> _logFiles = new List<string>();
 
         public static string Collect(IActionLog log) {
-            string zipPath = string.Empty;
+            var zipPath = string.Empty;
             _logFiles.Clear();
 
             try {
@@ -81,20 +82,21 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             logs = GetRecentLogFiles(RHostLogPattern);
             _logFiles.AddRange(logs);
 
-            string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string vsActivityLog = Path.Combine(roamingFolder, Invariant($"Microsoft\\VisualStudio\\{Toolset.Version}\\ActivityLog.xml"));
+            var roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var vsActivityLog = Path.Combine(roamingFolder, Invariant($"Microsoft\\VisualStudio\\{Toolset.Version}\\ActivityLog.xml"));
             if (File.Exists(vsActivityLog)) {
                 _logFiles.Add(vsActivityLog);
             }
         }
 
         private static void CollectSystemLogs(object o, CancellationToken ct) {
-            string systemEventsLog = CollectSystemEvents();
+            var systemEventsLog = CollectSystemEvents();
             _logFiles.Add(systemEventsLog);
         }
 
         private static void CollectGeneralLogs(object o, CancellationToken ct) {
-            string generalDataLog = CollectGeneralData();
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            var generalDataLog = CollectGeneralData();
             _logFiles.Add(generalDataLog);
         }
 
@@ -103,11 +105,11 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         }
 
         private static void ZipFiles(IEnumerable<string> files) {
-            string zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
+            var zipPath = Path.Combine(Path.GetTempPath(), RtvsLogZipFile);
 
-            using (FileStream zipStream = File.Create(zipPath)) {
-                using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
-                    foreach (string file in files) {
+            using (var zipStream = File.Create(zipPath)) {
+                using (var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
+                    foreach (var file in files) {
                         using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
                             if (fileStream.Length > MaximumFileSize) {
                                 fileStream.Seek(-MaximumFileSize, SeekOrigin.End);
@@ -125,12 +127,12 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         }
 
         private static IEnumerable<string> GetRecentLogFiles(string pattern) {
-            string tempPath = Path.GetTempPath();
+            var tempPath = Path.GetTempPath();
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
             return logs.Where(file => {
-                DateTime writeTime = File.GetLastWriteTimeUtc(file);
-                TimeSpan difference = DateTime.Now.ToUniversalTime() - writeTime;
+                var writeTime = File.GetLastWriteTimeUtc(file);
+                var difference = DateTime.Now.ToUniversalTime() - writeTime;
                 if (difference.TotalDays < DaysToRetain) {
                     return true;
                 }
@@ -140,7 +142,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         }
 
         private static string CollectSystemEvents() {
-            string systemEventsFile = Path.Combine(Path.GetTempPath(), RtvsSystemEventsFile);
+            var systemEventsFile = Path.Combine(Path.GetTempPath(), RtvsSystemEventsFile);
             using (var sw = new StreamWriter(systemEventsFile)) {
                 try {
                     sw.WriteLine("System events:");
@@ -189,7 +191,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 }
                 writer.WriteLine();
 
-                Assembly thisAssembly = Assembly.GetExecutingAssembly();
+                var thisAssembly = Assembly.GetExecutingAssembly();
                 writer.WriteLine("RTVS Information:");
                 writer.WriteLine("    Assembly: " + thisAssembly.FullName);
                 if (detailed) {
@@ -244,7 +246,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
         }
 
         private static string CollectGeneralData() {
-            string generalDataFile = Path.Combine(Path.GetTempPath(), RtvsGeneralDataFile);
+            var generalDataFile = Path.Combine(Path.GetTempPath(), RtvsGeneralDataFile);
             using (var sw = new StreamWriter(generalDataFile)) {
                 WriteGeneralData(sw, detailed: true);
             }

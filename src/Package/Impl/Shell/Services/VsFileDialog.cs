@@ -17,14 +17,20 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _shell = shell;
         }
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null)
-            => BrowseForFileOpen(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return BrowseForFileOpen(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
+        }
 
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) 
-            => VisualStudioTools.Dialogs.BrowseForDirectory(_shell.GetDialogOwnerWindow(), initialPath, title);
+        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return VisualStudioTools.Dialogs.BrowseForDirectory(_shell.GetDialogOwnerWindow(), initialPath, title);
+        }
 
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
-            => BrowseForFileSave(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return BrowseForFileSave(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
+        }
 
         protected string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
             Dispatcher.CurrentDispatcher.VerifyAccess();

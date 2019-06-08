@@ -15,6 +15,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <TargetFrameworkProfile />
+    <NoWarn>1701;1702$(NoWarn)</NoWarn>
   </PropertyGroup>
   <Import Project="..\..\R.Settings.props" />
   <ItemGroup>
@@ -198,6 +199,7 @@
     <Compile Include="Feedback\FeedbackCommandTest.cs" />
     <Compile Include="Fixtures\DisposeRInteractiveWorkflowFixture.cs" />
     <Compile Include="Fixtures\RPackageServicesFixture.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Mocks\VsApplicationMock.cs" />
     <Compile Include="Options\LogVerbosityTest.cs" />
     <Compile Include="Package\RToolbarTest.cs" />

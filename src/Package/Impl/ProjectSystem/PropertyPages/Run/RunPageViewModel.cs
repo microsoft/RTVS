@@ -23,43 +23,43 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         public string StartupFile {
-            get { return _startupFile; }
-            set { OnPropertyChanged(ref _startupFile, value); }
+            get => _startupFile;
+            set => OnPropertyChanged(ref _startupFile, value);
         }
 
         public string CommandLineArgs {
-            get { return _commandLineArgs; }
-            set { OnPropertyChanged(ref _commandLineArgs, value); }
+            get => _commandLineArgs;
+            set => OnPropertyChanged(ref _commandLineArgs, value);
         }
 
         public bool? ResetReplOnRun {
-            get { return _resetReplOnRun; }
-            set { OnPropertyChanged(ref _resetReplOnRun, value); }
+            get => _resetReplOnRun;
+            set => OnPropertyChanged(ref _resetReplOnRun, value);
         }
 
         public string RemoteProjectPath {
-            get { return _remoteProjectPath; }
-            set { OnPropertyChanged(ref _remoteProjectPath, value); }
+            get => _remoteProjectPath;
+            set => OnPropertyChanged(ref _remoteProjectPath, value);
         }
 
         public string TransferFilesFilter {
-            get { return _transferFilesFilter; }
-            set { OnPropertyChanged(ref _transferFilesFilter, value); }
+            get => _transferFilesFilter;
+            set => OnPropertyChanged(ref _transferFilesFilter, value);
         }
 
         public bool? TransferProjectOnRun {
-            get { return _transferProjectOnRun; }
-            set { OnPropertyChanged(ref _transferProjectOnRun, value); }
+            get => _transferProjectOnRun;
+            set => OnPropertyChanged(ref _transferProjectOnRun, value);
         }
 
         public IEnumerable<string> RFilePaths {
-            get { return _rFilePaths; }
-            set { OnPropertyChanged(ref _rFilePaths, value); }
+            get => _rFilePaths;
+            set => OnPropertyChanged(ref _rFilePaths, value);
         }
 
         public string ProjectName {
-            get { return _projectName; }
-            set { OnPropertyChanged(ref _projectName, value); }
+            get => _projectName;
+            set => OnPropertyChanged(ref _projectName, value);
         }
 
         public async override Task Initialize() {
@@ -85,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             ProjectName = _configuredProjectsProperties.Length > 0 ? _configuredProjectsProperties[0].GetProjectName() : "<project>";
         }
 
-        public async override Task<int> Save() {
+        public async override Task<int> SaveAsync() {
             try {
                 PushIgnoreEvents();
 

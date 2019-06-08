@@ -37,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         private Visual GetRootVisual() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.GetDialogOwnerHwnd(out IntPtr window);
             if (window == IntPtr.Zero) {
@@ -49,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
 
         #region IStatusBar
         public IDisposable AddItem(UIElement element) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _mainThread.CheckAccess();
             EnsureItemsControlCreated();
 
@@ -78,6 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
 
 
         private bool TryAddItemsControlToVisualRoot() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (_itemsControl.Parent != null) {
                 return true;
             }
@@ -138,6 +141,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
         }
 
         private void OnVsIdle(object sender, EventArgs e) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _idleTime.Idle -= OnVsIdle;
             TryAddItemsControlToVisualRoot();
         }

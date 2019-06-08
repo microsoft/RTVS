@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -18,16 +19,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public OpenRDataVsUiHierarchyWindowCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRInteractiveWorkflowProvider workflowProvider)
             : base(unconfiguredProject, workflowProvider, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_DoubleClick, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_EnterKey) {}
 
-        protected override async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
+        protected override async Task<bool> TryHandleCommandAsyncInternalAsync(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            
+
             // Don't do anything for file preview
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var uiShellOpenDocument = VsAppShell.Current.GetService<IVsUIShellOpenDocument3>(typeof(SVsUIShellOpenDocument));
             if (uiShellOpenDocument != null && ((__VSNEWDOCUMENTSTATE) uiShellOpenDocument.NewDocumentState).HasFlag(__VSNEWDOCUMENTSTATE.NDS_Provisional)) {
                 return true;
             }
 
-            return await base.TryHandleCommandAsyncInternal(rDataNode);
+            return await base.TryHandleCommandAsyncInternalAsync(rDataNode);
         }
     }
 }

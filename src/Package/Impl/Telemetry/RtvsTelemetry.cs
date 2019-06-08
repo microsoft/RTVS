@@ -228,6 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
 
         public void ReportWindowLayout(IVsUIShell shell) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (TelemetryService.IsEnabled) {
                 try {
                     var windows = ToolWindowData.GetToolWindowData(shell);

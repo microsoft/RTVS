@@ -45,6 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
             base.Dispose(true);
         }
 
-        public void Show(bool focus, bool immediate) => ToolWindowUtilities.ShowToolWindow(this, Services.MainThread(), focus, immediate);
+        public void Show(bool focus, bool immediate) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            ToolWindowUtilities.ShowToolWindow(this, Services.MainThread(), focus, immediate);
+        }
     }
 }

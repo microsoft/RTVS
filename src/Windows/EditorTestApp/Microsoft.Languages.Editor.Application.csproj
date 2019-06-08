@@ -104,10 +104,6 @@
       <Private>True</Private>
       <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Platform.VSEditor.Interop">
-      <Private>True</Private>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.Platform.VSEditor.Interop.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

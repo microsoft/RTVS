@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Idle;
 using Microsoft.Common.Core.Services;
@@ -134,9 +135,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void AttachStandardStyles() {
             var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
             if (doc != null) {
-                string cssText = GetCssText();
+                var cssText = GetCssText();
                 if (!string.IsNullOrEmpty(cssText)) {
-                    IHTMLStyleSheet ss = doc.createStyleSheet();
+                    var ss = doc.createStyleSheet();
                     if (ss != null) {
                         ss.cssText = cssText;
                     }
@@ -194,8 +195,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {
-                string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                string themePath = Path.Combine(Path.GetDirectoryName(assemblyPath), @"Help\Themes\", cssfileName);
+                var assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                var themePath = Path.Combine(Path.GetDirectoryName(assemblyPath), @"Help\Themes\", cssfileName);
 
                 try {
                     using (var sr = new StreamReader(themePath)) {
@@ -213,7 +214,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // flicker when we change page and element styling.
             DisconnectBrowser();
 
-            string url = e.Url.ToString();
+            var url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
                 _services.Process().Start(url);
@@ -221,6 +222,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             // Page may be loaded, but body may still be null of scripts
             // are running. For example, in 3.2.2 code colorization script
             // tends to damage body content so browser may have to to re-create it.
@@ -228,7 +231,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
-            IVsUIShell shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
+            var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
 
@@ -256,7 +259,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private static bool IsHelpUrl(string url) {
             try {
-                Uri uri = new Uri(url);
+                var uri = new Uri(url);
                 if (uri.AbsoluteUri.EndsWithIgnoreCase(".pdf")) {
                     return false;
                 }

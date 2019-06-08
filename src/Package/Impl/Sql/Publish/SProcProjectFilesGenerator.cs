@@ -50,6 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Create SQL file that defines table template that will hold R code
         /// </summary>
         internal void CreateRCodeTableFile(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var creatTableScriptFile = Path.Combine(targetFolder, CreateRCodeTableScriptName);
 
             var g = new SProcScriptGenerator(_fs);

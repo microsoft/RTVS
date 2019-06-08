@@ -34,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
         public static MdPackage Current {
             get {
                 if(_package == null) {
+                    Dispatcher.CurrentDispatcher.VerifyAccess();
                     VsAppShell.EnsurePackageLoaded(MdGuidList.MdPackageGuid);
                     Debug.Assert(_package != null);
                 }
@@ -67,6 +68,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
         }
 
         private void LoadEditorSettings() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var storage = new LanguageSettingsStorage(this, VsAppShell.Current.Services, MdGuidList.MdLanguageServiceGuid, _editorOptionsPages.Keys);
             LanguageSettingsStorage = storage;
             storage.Load();

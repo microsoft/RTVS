@@ -49,10 +49,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            SaveWorkspace(file).DoNotWait();
+            SaveWorkspaceAsync(file).DoNotWait();
         }
 
-        private async Task SaveWorkspace(string file) {
+        private async Task SaveWorkspaceAsync(string file) {
             try {
                 await _rSession.SaveWorkspaceAsync(file);
             } catch (RException ex) {

@@ -46,6 +46,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public object TranslateToHostCommandTarget(IEditorView editorView, object commandTarget) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             var oleToCommandTargetShim = commandTarget as OleToCommandTargetShim;
             if (oleToCommandTargetShim != null) {
                 return oleToCommandTargetShim.OleTarget;

@@ -46,6 +46,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         public void OnFileChanged(uint grfChange, uint dwFileAttrs) { }
 
         public int OnLoadCompleted(int fReload) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             // Set language service ID as early as possible, since it may change content type of the buffer,
             // e.g. in a weird scenario when someone does "Open With X Editor" on an Y file. Calling this
             // will change content type to the one language service specifies instead of the default one for

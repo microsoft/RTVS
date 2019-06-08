@@ -50,10 +50,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return false;
             }
 
-            return await TryHandleCommandAsyncInternal(rDataNode);
+            return await TryHandleCommandAsyncInternalAsync(rDataNode);
         }
 
-        protected virtual async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
+        protected virtual async Task<bool> TryHandleCommandAsyncInternalAsync(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             var workflow = _workflowProvider.GetOrCreate();

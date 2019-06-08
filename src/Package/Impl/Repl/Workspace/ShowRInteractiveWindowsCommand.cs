@@ -25,7 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
 
             interactiveWorkflow
                 .GetOrCreateVisualComponentAsync()
-                .ContinueOnRanToCompletion(w => w.Container.Show(focus: true, immediate: false));
+                .ContinueOnRanToCompletion(w => w.Container.Show(focus: true, immediate: false))
+                .DoNotWait();
         }
     }
 }

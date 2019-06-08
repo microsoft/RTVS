@@ -5,6 +5,7 @@ using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -16,25 +17,21 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         public override bool PreProcessMessage(ref Message msg) {
             Dispatcher.CurrentDispatcher.VerifyAccess();
             if (msg.Msg >= WM_KEYFIRST && msg.Msg <= WM_KEYLAST) {
-                IVsFilterKeys2 filterKeys = (IVsFilterKeys2)ServiceProvider.GlobalProvider.GetService(typeof(SVsFilterKeys));
-                OLE.Interop.MSG oleMSG = new OLE.Interop.MSG() { hwnd = msg.HWnd, lParam = msg.LParam, wParam = msg.WParam, message = (uint)msg.Msg };
-
-                Guid cmdGuid;
-                uint cmdId;
-                int fTranslated;
-                int fStartsMultiKeyChord;
+                var filterKeys = (IVsFilterKeys2)ServiceProvider.GlobalProvider.GetService(typeof(SVsFilterKeys));
+                Assumes.Present(filterKeys);
+                var oleMSG = new MSG() { hwnd = msg.HWnd, lParam = msg.LParam, wParam = msg.WParam, message = (uint)msg.Msg };
 
                 //Ask the shell to do the command mapping for us and without firing off the command. We need to check if this command is one of the
                 //supported commands first before actually firing the command.
                 filterKeys.TranslateAcceleratorEx(
-                    new OLE.Interop.MSG[] { oleMSG },
+                    new MSG[] { oleMSG },
                     (uint)(__VSTRANSACCELEXFLAGS.VSTAEXF_NoFireCommand | __VSTRANSACCELEXFLAGS.VSTAEXF_UseGlobalKBScope | __VSTRANSACCELEXFLAGS.VSTAEXF_AllowModalState),
                     0 /*scope count*/,
                     new Guid[0] /*scopes*/,
-                    out cmdGuid,
-                    out cmdId,
-                    out fTranslated,
-                    out fStartsMultiKeyChord
+                    out var cmdGuid,
+                    out var cmdId,
+                    out var fTranslated,
+                    out var fStartsMultiKeyChord
                 );
 
                 if (ShouldRouteCommandBackToVS(cmdGuid, cmdId, fTranslated == 1, fStartsMultiKeyChord == 1)) {

@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var funcViewer = await _aggregator.GetViewer(HostScript.Session, REnvironments.GlobalEnv, functionName) as CodeViewer;
             funcViewer.Should().NotBeNull();
 
-            var code = await funcViewer.GetFunctionCode(functionName);
+            var code = await funcViewer.GetFunctionCodeAsync(functionName);
             code.StartsWithOrdinal(expected).Should().BeTrue();
         }
 
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var funcViewer = await _aggregator.GetViewer(HostScript.Session, REnvironments.GlobalEnv, formula) as CodeViewer;
             funcViewer.Should().NotBeNull();
 
-            var code = await funcViewer.GetFunctionCode(formula);
+            var code = await funcViewer.GetFunctionCodeAsync(formula);
             code.StartsWithOrdinal(formula).Should().BeTrue();
         }
 
@@ -118,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [InlineData("as.double")]
         [InlineData("as.character")]
         [InlineData("as.complex")]
-        public async Task GridViewerDimLengthTest(string cast) {
+        public async Task GridViewerDimLengthTestAsync(string cast) {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new GridViewer(Services.GetService<ICoreShell>(), e);
             viewer.CanView(null).Should().BeFalse();

@@ -27,12 +27,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         protected override string PropertyPageName => PageName;
 
-        protected override Task OnDeactivate() => _control.SaveSelectedSettingsFileNameAsync();
+        protected override Task OnDeactivateAsync() => _control.SaveSelectedSettingsFileNameAsync();
 
-        protected override async Task<int> OnApply()
+        protected override async Task<int> OnApplyAsync()
             => await _control.SaveSettingsAsync() ? VSConstants.S_OK : VSConstants.E_FAIL;
 
-        protected override async Task OnSetObjects(bool isClosing) {
+        protected override async Task OnSetObjectsAsync(bool isClosing) {
             if(!isClosing) {
                 Debug.Assert(!string.IsNullOrEmpty(UnconfiguredProject.FullPath));
                 await _control.SetProjectAsync(UnconfiguredProject, ConfiguredProperties[0]);

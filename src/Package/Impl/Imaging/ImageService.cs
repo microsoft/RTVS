@@ -32,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         public object GetImage(ImageType imageType, ImageSubType subType = ImageSubType.Public) {
             StandardGlyphItem qualifier;
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             switch (subType) {
                 case ImageSubType.Internal:
                     qualifier = StandardGlyphItem.GlyphItemInternal;
@@ -74,6 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// such as name from http://glyphlist.azurewebsites.net/knownmonikers
         /// </summary>
         public object GetImage(string name) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var ims = GetImageFromResources(name);
             if (ims == null) {
                 var im = FindKnownMoniker(name);
@@ -86,6 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         /// Given file name returns icon depending on the file extension
         /// </summary>
         public object GetFileIcon(string file) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var ext = Path.GetExtension(file);
             if (_fileExtensionCache.Value.ContainsKey(ext)) {
                 return GetImage(_fileExtensionCache.Value[ext]);

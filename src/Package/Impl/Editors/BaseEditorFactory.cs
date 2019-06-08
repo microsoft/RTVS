@@ -200,6 +200,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             // Init out params
             editorCaption = string.Empty;
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (string.IsNullOrEmpty(physicalView)) {
                 // create code window as default physical view
                 return CreateTextView(textLines, docDataExisting, languageServiceId, out editorCaption);
@@ -222,6 +223,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             ErrorHandler.ThrowOnFailure(window.SetBaseEditorCaption(null));
             ErrorHandler.ThrowOnFailure(window.GetEditorCaption(READONLYSTATUS.ROSTATUS_Unknown, out editorCaption));
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             CreateTextBufferInitializationTracker(textLines, docDataExisting, languageServiceId);
             return Marshal.GetIUnknownForObject(window);
         }
@@ -235,6 +237,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             // view filters we need to create a proxy class which will get called when document 
             // is fully loaded and text buffer is finally populated with content.
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var tracker = new TextBufferInitializationTracker(_services, textLines, languageServiceId, InitializationTrackers);
             if (docDataExisting != IntPtr.Zero) {
                 // When creating a new view for an existing buffer, the tracker object has to clean itself up

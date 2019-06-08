@@ -217,6 +217,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void LoadEditorSettings() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var storage = new LanguageSettingsStorage(this, Services, RGuidList.RLanguageServiceGuid, _editorOptionsPages.Keys);
             LanguageSettingsStorage = storage;
             storage.Load();

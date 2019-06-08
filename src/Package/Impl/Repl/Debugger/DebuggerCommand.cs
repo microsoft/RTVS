@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -35,6 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var mode = new DBGMODE[1];
             if (debugger.GetMode(mode) < 0) {
                 return;

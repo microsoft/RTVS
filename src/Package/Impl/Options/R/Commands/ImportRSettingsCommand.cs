@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
         }
 
         public static void OnCommand(object sender, EventArgs args) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (MessageButtons.Yes == _services.UI().ShowMessage(Resources.Warning_SettingsReset, MessageButtons.YesNo)) {
                 var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 var group = VSConstants.CMDSETID.StandardCommandSet2K_guid;
@@ -43,7 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
                 }
 
                 object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
-                Dispatcher.CurrentDispatcher.VerifyAccess();
                 shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
             }
         }

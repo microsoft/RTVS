@@ -33,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public void OnFrameIsOnScreenChanged(IVsWindowFrame frame, bool newIsOnScreen) { }
 
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var interactiveWindow = GetComponent(oldFrame);
             if (interactiveWindow != null) {
                 UpdateInteractiveWindowIfRequired(interactiveWindow);

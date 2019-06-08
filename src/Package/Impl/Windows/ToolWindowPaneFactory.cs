@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
         }
 
         protected T GetOrCreate(int instanceId, Func<T> factory) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _mainThread.Assert();
             if (_toolWindowPanes.TryGetValue(instanceId, out ToolWindowPaneHolder holder)) {
                 if (holder.ToolWindowPane != null) {

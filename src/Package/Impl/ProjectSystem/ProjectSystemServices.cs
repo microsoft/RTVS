@@ -26,7 +26,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _coreShell = coreShell;
         }
 
-        public EnvDTE.Solution GetSolution() =>_coreShell.GetService<DTE>().Solution;
+        public EnvDTE.Solution GetSolution() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _coreShell.GetService<DTE>().Solution;
+        }
 
         public EnvDTE.Project GetActiveProject() {
             Dispatcher.CurrentDispatcher.VerifyAccess();
@@ -45,6 +48,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Locates project that is currently active in Solution Explorer
         /// </summary>
         public T GetSelectedProject<T>() where T : class {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             var monSel = _coreShell.GetService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
 
@@ -150,12 +155,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Enumerates all files in the project traversing into sub folders
         /// and items that have child elements.
         /// </summary>
-        public IEnumerable<string> GetProjectFiles(EnvDTE.Project project)=> EnumerateProjectFiles(project?.ProjectItems);
+        public IEnumerable<string> GetProjectFiles(EnvDTE.Project project) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return EnumerateProjectFiles(project?.ProjectItems);
+        }
 
         /// <summary>
         /// Locates project by name
         /// </summary>
         public EnvDTE.Project GetProject(string projectName) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var projects = GetSolution()?.Projects;
             if (projects != null) {
                 foreach (EnvDTE.Project p in projects) {

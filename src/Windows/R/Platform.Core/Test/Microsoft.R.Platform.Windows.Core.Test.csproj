@@ -27,6 +27,7 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj" />
     <ProjectReference Include="..\..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Windows\R\Platform.Core\Impl\Microsoft.R.Platform.Windows.Core.csproj" />

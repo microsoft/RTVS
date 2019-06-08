@@ -45,6 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         }
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (commandId == RPackageCommandId.icmdPublishSProc) {
                 if (_dacServicesProvider.GetDacPackageServices(showMessage: true) != null) {
                     Handle();

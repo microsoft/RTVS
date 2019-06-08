@@ -29,10 +29,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             _menuId = menuId;
         }
 
-        public override CommandStatus Status(Guid group, int id)
-            =>  MenuCommandService != null ? CommandStatus.SupportedAndEnabled : CommandStatus.NotSupported;
+        public override CommandStatus Status(Guid group, int id) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return MenuCommandService != null ? CommandStatus.SupportedAndEnabled : CommandStatus.NotSupported;
+        }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (MenuCommandService != null) {
                 var position = (POINTS[])inputArg;
                 var menuCommand = new CommandID(_cmdSetGuid, (int)_menuId);

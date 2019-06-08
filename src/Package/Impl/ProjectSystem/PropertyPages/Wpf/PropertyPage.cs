@@ -48,9 +48,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         private T WaitForAsync<T>(Func<Task<T>> asyncFunc)=> ThreadHandling != null ? ThreadHandling.ExecuteSynchronously<T>(asyncFunc) : default(T);
         private void WaitForAsync(Func<Task> asyncFunc)  => ThreadHandling?.ExecuteSynchronously(asyncFunc);
 
-        protected abstract Task<int> OnApply();
-        protected abstract Task OnDeactivate();
-        protected abstract Task OnSetObjects(bool isClosing);
+        protected abstract Task<int> OnApplyAsync();
+        protected abstract Task OnDeactivateAsync();
+        protected abstract Task OnSetObjectsAsync(bool isClosing);
 
         public void Activate(IntPtr hWndParent, RECT[] pRect, int bModal) {
             Dispatcher.CurrentDispatcher.VerifyAccess();
@@ -63,16 +63,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             this.ResumeLayout();
         }
 
-        public int Apply() => WaitForAsync<int>(OnApply);
+        public int Apply() => WaitForAsync(OnApplyAsync);
 
         public void Deactivate() {
-            WaitForAsync(OnDeactivate);
+            WaitForAsync(OnDeactivateAsync);
             UnadviseDebugger();
             Dispose(true);
         }
 
         public void GetPageInfo(PROPPAGEINFO[] pPageInfo) {
-            PROPPAGEINFO info = new PROPPAGEINFO();
+            var info = new PROPPAGEINFO();
 
             info.cb = (uint)Marshal.SizeOf(typeof(PROPPAGEINFO));
             info.dwHelpContext = 0;
@@ -96,13 +96,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                 throw new ArgumentNullException(nameof(pRect));
             }
 
-            RECT r = pRect[0];
+            var r = pRect[0];
             Location = new Point(r.left, r.top);
             Size = new Size(r.right - r.left, r.bottom - r.top);
         }
 
         internal void SetObjects(bool isClosing) {
-            WaitForAsync(async () => await OnSetObjects(isClosing));
+            WaitForAsync(async () => await OnSetObjectsAsync(isClosing));
         }
 
         public void SetObjects(uint cObjects, object[] ppunk) {
@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             var configuredProjectsProperties = new List<ProjectProperties>();
 
             // Look for an IVsBrowseObject
-            for (int i = 0; i < cObjects; ++i) {
+            for (var i = 0; i < cObjects; ++i) {
                 var browseObj = ppunk[i] as IVsBrowseObject;
                 if (browseObj != null) {
                     IVsHierarchy hier = null;
@@ -174,15 +174,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         public int TranslateAccelerator(MSG[] pMsg) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (pMsg == null) {
                 return VSConstants.E_POINTER;
             }
 
-            Message m = Message.Create(pMsg[0].hwnd, (int)pMsg[0].message, pMsg[0].wParam, pMsg[0].lParam);
-            bool used = false;
+            var m = Message.Create(pMsg[0].hwnd, (int)pMsg[0].message, pMsg[0].wParam, pMsg[0].lParam);
+            var used = false;
 
             // Preprocessing should be passed to the control whose handle the message refers to.
-            Control target = Control.FromChildHandle(m.HWnd);
+            var target = Control.FromChildHandle(m.HWnd);
             if (target != null) {
                 used = target.PreProcessMessage(ref m);
             }
@@ -196,7 +197,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             }
 
             // Returning S_FALSE indicates we have not handled the message
-            int result = 0;
+            var result = 0;
             if (this._site != null) {
                 result = _site.TranslateAccelerator(pMsg);
             }
@@ -206,12 +207,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
         internal void AdviseDebugger() {
             Dispatcher.CurrentDispatcher.VerifyAccess();
-            System.IServiceProvider sp = _site as System.IServiceProvider;
+            var sp = _site as System.IServiceProvider;
             if (sp != null) {
                 _debugger = (IVsDebugger)sp.GetService(typeof(IVsDebugger));
                 if (_debugger != null) {
                     _debugger.AdviseDebuggerEvents(this, out _debuggerCookie);
-                    DBGMODE[] dbgMode = new DBGMODE[1];
+                    var dbgMode = new DBGMODE[1];
                     _debugger.GetMode(dbgMode);
                     ((IVsDebuggerEvents)this).OnModeChange(dbgMode[0]);
                 }

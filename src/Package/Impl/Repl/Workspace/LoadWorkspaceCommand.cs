@@ -49,10 +49,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 return;
             }
 
-            LoadWorkspace(_rSession, file).DoNotWait();
+            LoadWorkspaceAsync(_rSession, file).DoNotWait();
         }
 
-        private async Task LoadWorkspace(IRSession session, string file) {
+        private async Task LoadWorkspaceAsync(IRSession session, string file) {
             try {
                 await session.LoadWorkspaceAsync(file);
             } catch (RException ex) {

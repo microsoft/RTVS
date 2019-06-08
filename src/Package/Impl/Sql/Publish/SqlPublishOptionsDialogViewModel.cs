@@ -286,7 +286,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _noDbConnections = false;
             var connections = new List<DbConnectionData>();
             if (project != null) {
-                var result = await project.GetDatabaseConnections(_pcsp);
+                var result = await project.GetDatabaseConnectionsAsync(_pcsp);
                 foreach (var s in result) {
                     connections.Add(new DbConnectionData { Name = s.Name, ConnectionString = s.Value });
                 }
