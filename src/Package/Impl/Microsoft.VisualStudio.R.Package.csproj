@@ -43,8 +43,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
-    <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(VSCTDefinitions)</VSCTDefinitions>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='16.0'">VS16;$(DefineConstants)</DefineConstants>
+    <VSCTDefinitions Condition="'$(VisualStudioVersion)'=='16.0'">VS16;$(VSCTDefinitions)</VSCTDefinitions>
     <!--<PreBuildEvent>
       "$(MSBuildProjectDirectory)\UpdateReferences.cmd" "$(MSBuildProjectDirectory)" $(VisualStudioVersion)
     </PreBuildEvent>-->
@@ -1475,7 +1475,6 @@
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">
     <ItemGroup>
-      <VSIXSourceItem Include="$(OutputPath)\netstandard.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Markdig.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\YamlDotNet.dll" />
@@ -1509,11 +1508,11 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Config.json" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\libuv.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\Microsoft.R.Host.exe" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libzip-5.dll" />
-      <!-- <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libbz2-1.dll" /> -->
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\zlib1.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Host\Windows\libwinpthread-1.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.exe" />
+      <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
+      <!-- <VSIXSourceItem Include="$(OutputPath)\libbz2-1.dll" /> -->
+      <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Antiforgery.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Abstractions.dll" />
@@ -1561,7 +1560,6 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.WebListener.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebUtilities.dll" />
@@ -1603,113 +1601,27 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Net.Http.Headers.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Net.Http.Server.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Win32.Registry.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Win32.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.AppContext.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Buffers.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.Concurrent.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.Immutable.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.NonGeneric.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Collections.Specialized.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.Annotations.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.EventBasedAsync.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ComponentModel.TypeConverter.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Console.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Data.Common.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Contracts.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Debug.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.DiagnosticSource.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.FileVersionInfo.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Process.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.StackTrace.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.TextWriterTraceListener.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tools.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.Tracing.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Drawing.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Dynamic.Runtime.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.Calendars.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Globalization.Extensions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Compression.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Compression.ZipFile.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.DriveInfo.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.FileSystem.Watcher.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.IsolatedStorage.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.MemoryMappedFiles.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Diagnostics.EventLog.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Pipelines.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Pipes.AccessControl.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.Pipes.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.IO.UnmanagedMemoryStream.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.Expressions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.Parallel.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.linq.Queryable.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Http.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Memory.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Http.WinHttpHandler.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.NameResolution.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.NetworkInformation.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Ping.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Requests.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Security.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.Sockets.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebHeaderCollection.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebSockets.Client.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebSockets.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Net.WebSockets.WebSocketProtocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Numerics.Vectors.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.ObjectModel.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Reflection.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Reflection.Metadata.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Reflection.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Resources.Reader.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Resources.ResourceManager.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Resources.Writer.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.CompilerServices.Unsafe.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Extensions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Handles.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.InteropServices.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.InteropServices.RuntimeInformation.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Numerics.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Formatters.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Json.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Runtime.Serialization.Xml.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.AccessControl.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Claims.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Algorithms.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Csp.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Encoding.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Primitives.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.X509Certificates.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Cng.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Cryptography.Xml.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Principal.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.Principal.Windows.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Security.SecureString.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encoding.CodePages.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encoding.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encoding.Extensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encodings.Web.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.RegularExpressions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Overlapped.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Dataflow.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Extensions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Parallel.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Thread.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.ThreadPool.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Timer.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.ReaderWriter.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XDocument.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XmlDocument.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XmlSerializer.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XPath.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Xml.XPath.XDocument.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
       <VSIXSourceItem Include="$(OutputPath)\Dockerfile">
         <VSIXSubPath>DockerTemplate</VSIXSubPath>
