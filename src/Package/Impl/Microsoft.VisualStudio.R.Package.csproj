@@ -157,7 +157,6 @@
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
       <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Help\HelpVisualComponent.cs" />
     <Compile Include="Help\HelpOnCurrentCommandBase.cs" />
     <Compile Include="Help\IVignetteCodeColorBuilder.cs" />
@@ -538,6 +537,9 @@
     <Content Include="Images\RFile.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="libbz2-1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Profiles\15.0\R.vssettings">
       <SubType>Designer</SubType>
@@ -1511,15 +1513,16 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.exe" />
       <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
-      <!-- <VSIXSourceItem Include="$(OutputPath)\libbz2-1.dll" /> -->
+      <VSIXSourceItem Include="$(OutputPath)\libbz2-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libwinpthread-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Antiforgery.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.Core.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authentication.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authorization.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Authorization.Policy.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Connections.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Cors.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Cryptography.Internal.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.DataProtection.Abstractions.dll" />
@@ -1527,6 +1530,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Diagnostics.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Diagnostics.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.HostFiltering.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Hosting.Abstractions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Hosting.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" />
@@ -1561,8 +1565,10 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Https.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.Server.WebListener.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebSockets.Protocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.AspNetCore.WebUtilities.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.CSharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.CodeAnalysis.dll" />
@@ -1594,6 +1600,7 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.Debug.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.EventLog.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Logging.EventSource.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.ObjectPool.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Options.ConfigurationExtensions.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.Extensions.Options.dll" />
