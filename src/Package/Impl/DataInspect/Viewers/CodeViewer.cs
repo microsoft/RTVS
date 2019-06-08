@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             var functionName = evaluation.Expression;
-            var functionCode = await GetFunctionCode(functionName, cancellationToken);
+            var functionCode = await GetFunctionCodeAsync(functionName, cancellationToken);
             if (!string.IsNullOrEmpty(functionCode)) {
 
                 var tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".r");
@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     }
 
                     using (var sw = new StreamWriter(tempFile)) {
-                        sw.Write(functionCode);
+                        await sw.WriteAsync(functionCode);
                     }
 
                     await _workflow.Services.MainThread().SwitchToAsync(cancellationToken);
@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
         #endregion
 
-        internal async Task<string> GetFunctionCode(string functionName, CancellationToken cancellationToken = default(CancellationToken)) {
+        internal async Task<string> GetFunctionCodeAsync(string functionName, CancellationToken cancellationToken = default) {
             var session = _workflow.RSession;
             string functionCode = null;
             try {

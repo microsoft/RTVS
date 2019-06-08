@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -19,13 +20,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileOpen(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
 
-        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null)
+        public string ShowBrowseDirectoryDialog(string initialPath = null, string title = null) 
             => VisualStudioTools.Dialogs.BrowseForDirectory(_shell.GetDialogOwnerWindow(), initialPath, title);
 
         public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
             => BrowseForFileSave(_shell.GetDialogOwnerWindow(), filter, initialPath, title);
 
         protected string BrowseForFileOpen(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var uiShell = _shell.GetService<IVsUIShell>(typeof(SVsUIShell));
             if (uiShell == null) {
                 return null;
@@ -62,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (string.IsNullOrEmpty(initialPath)) {
                 initialPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar;
             }

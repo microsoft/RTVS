@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InfoBar;
@@ -23,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.InfoBar {
 
         public IDisposable Add(InfoBarItem item) {
             VsAppShell.Current.AssertIsOnMainThread();
+            Dispatcher.CurrentDispatcher.VerifyAccess();
 
             var infoBarModel = new InfoBarModel(item.Text,
                 item.LinkButtons.Select(kvp => new InfoBarHyperlink(kvp.Key, kvp.Value)), 

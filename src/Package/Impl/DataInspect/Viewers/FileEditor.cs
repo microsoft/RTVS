@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -49,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         fs.DeleteFile(fileName);
                     }
                     using (var sw = new StreamWriter(fileName)) {
-                        sw.Write(content);
+                        await sw.WriteAsync(content);
                     }
                 } catch (IOException) { } catch (UnauthorizedAccessException) { }
             } else {
@@ -108,6 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 IVsTextView view;
                 IVsWindowFrame vsWindowFrame;
 
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 try {
                     IVsUIHierarchy hier;
                     uint itemid;
@@ -138,6 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             private void Close() {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 _editorFrame.CloseFrame((uint)__FRAMECLOSE.FRAMECLOSE_NoSave);
             }
 
@@ -150,6 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             private void UnadviseWindowFrameEvents() {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 _services.MainThread().Assert();
                 _uiShell.UnadviseWindowFrameEvents(_cookie);
                 _cookie = 0;

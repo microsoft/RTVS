@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Controllers.Commands;
@@ -22,10 +23,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public override CommandStatus Status(Guid group, int id)=> CommandStatus.SupportedAndEnabled;
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            IVsShell shell = _services.GetService<IVsShell>(typeof(SVsShell));
-            IVsPackage package;
-
-            if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out package)) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            var shell = _services.GetService<IVsShell>(typeof(SVsShell));
+            if (VSConstants.S_OK == shell.LoadPackage(RGuidList.RPackageGuid, out var package)) {
                 ((Microsoft.VisualStudio.Shell.Package)package).ShowOptionPage(typeof(REditorOptionsDialog));
             }
 

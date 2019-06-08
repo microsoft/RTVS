@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Imaging;
 using Microsoft.Common.Core.Services;
@@ -111,6 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
         }
 
         public ImageSource GetIconForImageMoniker(ImageMoniker imageMoniker) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var imageService = _services.GetService<IVsImageService2>(typeof(SVsImageService));
             ImageSource glyph = null;
 

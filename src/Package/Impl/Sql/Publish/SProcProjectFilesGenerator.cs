@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Threading;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
@@ -30,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Writes scripts to files and pushes files into the target database project.
         /// </summary>
         public void Generate(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, EnvDTE.Project targetProject) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var targetFolder = Path.Combine(Path.GetDirectoryName(targetProject.FullName), "R\\");
             if (!_fs.DirectoryExists(targetFolder)) {
                 _fs.CreateDirectory(targetFolder);
@@ -64,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void CreatePostDeploymentScriptFile(SqlSProcPublishSettings settings, 
             string targetFolder, 
             EnvDTE.ProjectItem targetProjectItem, SProcMap sprocMap) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var postDeploymentScript = Path.Combine(targetFolder, PostDeploymentScriptName);
 
             var g = new SProcScriptGenerator(_fs);
@@ -76,8 +79,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private SProcMap CreateStoredProcedureFiles(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var g = new SProcScriptGenerator(_fs);
-
             var sprocMap = g.CreateStoredProcedureScripts(settings, sprocFiles);
 
             foreach (var name in sprocMap) {

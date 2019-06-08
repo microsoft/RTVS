@@ -29,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 return;
             }
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var debugger = _interactiveWorkflow.Services.GetService<IVsDebugger2>(typeof(SVsShellDebugger));
             if (debugger == null) {
                 return;

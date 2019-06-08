@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -47,6 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         }
 
         private void SearchCompleted(Task<int> task) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             switch (task.Status) {
                 case TaskStatus.RanToCompletion:
                     _searchCallback.ReportComplete(this, (uint)task.Result);

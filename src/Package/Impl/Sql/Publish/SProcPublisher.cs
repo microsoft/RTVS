@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
@@ -39,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         public void Publish(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             switch (settings.TargetType) {
                 case PublishTargetType.Project:
                 case PublishTargetType.File:

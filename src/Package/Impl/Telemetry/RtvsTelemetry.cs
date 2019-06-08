@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Markdown.Editor.Settings;
@@ -257,6 +258,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         }
 
         public void Dispose() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _toolWindowTracker?.Dispose();
             _toolWindowTracker = null;
 

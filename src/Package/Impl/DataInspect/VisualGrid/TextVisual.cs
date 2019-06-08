@@ -92,6 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public FormattedText GetFormattedText() {
+#pragma warning disable CS0618 // Type or member is obsolete
             return _formattedText ?? (_formattedText = new FormattedText(
                 Text,
                 CultureInfo.CurrentUICulture,
@@ -101,6 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Typeface,
                 FontSize,
                 IsSelected && IsFocused ? SelectedForeground : Foreground));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public bool Measure() {

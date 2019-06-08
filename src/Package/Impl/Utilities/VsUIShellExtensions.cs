@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     internal static class VsUIShellExtensions {
         public static IEnumerable<IVsWindowFrame> EnumerateWindows(this IVsUIShell4 shell, __WindowFrameTypeFlags flags, Guid? windowGuid = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             IEnumWindowFrames enumerator;
             ErrorHandler.ThrowOnFailure(shell.GetWindowEnum((uint)flags, out enumerator));
 

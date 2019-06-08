@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
 
             if (workflow.ActiveWindow == null) {
                 workflow.GetOrCreateVisualComponentAsync()
-                    .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false));
+                    .ContinueOnRanToCompletion(w => w.Container.Show(focus: false, immediate: false)).DoNotWait();
             }
 
             return new ICommand[] {

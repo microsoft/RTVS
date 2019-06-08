@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -28,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void Initialize() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _vsShell = (IVsShell)VsPackage.GetGlobalService(typeof(SVsShell));
             VsWpfOverrides.Apply();
 
@@ -39,6 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void CheckVsStarted() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _vsShell.GetProperty((int)__VSSPROPID4.VSSPROPID_ShellInitialized, out var value);
             if (value is bool) {
                 if ((bool)value) {
@@ -54,6 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return _instance;
             }
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
@@ -77,6 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void DisconnectFromShellEvents() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (_vsShell != null) {
                 if (_vsShellEventsCookie != 0) {
                     _vsShell.UnadviseShellPropertyChanges(_vsShellEventsCookie);
@@ -85,6 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
         public static IVsPackage EnsurePackageLoaded(Guid guidPackage) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var shell = (IVsShell)VsPackage.GetGlobalService(typeof(IVsShell));
             var guid = guidPackage;
             IVsPackage package;

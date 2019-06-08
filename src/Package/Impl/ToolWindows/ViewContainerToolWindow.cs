@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -23,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.ToolWindows {
         public object ViewModel { get; set; }
 
         public override void OnToolWindowCreated() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var commandUiGuid = VSConstants.GUID_TextEditorFactory;
             ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref commandUiGuid);
             base.OnToolWindowCreated();

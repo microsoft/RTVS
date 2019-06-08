@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InfoBar;
@@ -21,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.InfoBar {
         }
 
         public IInfoBar Create(Decorator host) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             object infoBarHostObject = new InfoBarHostControl();
             host.Child = (UIElement)infoBarHostObject;
             return new VsInfoBar((IVsInfoBarHost)infoBarHostObject, _services);

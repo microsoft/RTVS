@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Drawing.Design;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.Sql;
@@ -30,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
 
         public ConnectionStringEditor() : this(null) { }
         public ConnectionStringEditor(IDbConnectionService dbcs) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _dbcs = dbcs ?? VsAppShell.Current.GetService<IDbConnectionService>();
         }
 

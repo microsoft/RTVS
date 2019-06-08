@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -28,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         public EnvDTE.Solution GetSolution() =>_coreShell.GetService<DTE>().Solution;
 
         public EnvDTE.Project GetActiveProject() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var dte = _coreShell.GetService<DTE>();
             var projects = dte?.Solution?.Projects;
             if (projects != null && projects.Count > 0) {
@@ -67,6 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public void AddNewItem(string templateName, string name, string extension, string destinationPath) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var project = GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
                 // Construct name of the compressed template
@@ -165,6 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private IEnumerable<string> EnumerateProjectFiles(EnvDTE.ProjectItems items) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (items == null) {
                 yield break;
             }

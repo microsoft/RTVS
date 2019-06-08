@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Threading;
 using EnvDTE;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Sql.Publish;
@@ -54,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         }
 
         private void Handle() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
                 var sprocFiles = project.GetSProcFiles(_pss).ToArray();

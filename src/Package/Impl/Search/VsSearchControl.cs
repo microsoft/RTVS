@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -16,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         private CancellationTokenSource _cts;
 
         public VsSearchControl(IVsWindowSearchHost vsWindowSearchHost, ISearchHandler handler, SearchControlSettings settings) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             Category = settings.SearchCategory;
             _settings = settings;
             _handler = handler;
@@ -38,12 +40,14 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         }
 
         public void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             SetDWordBuiltIn(pSearchSettings, "SearchStartType", (uint)VSSEARCHSTARTTYPE.SST_INSTANT);
             SetDWordBuiltInIfSpecified(pSearchSettings, nameof(SearchControlSettings.MinWidth), "ControlMinWidth");
             SetDWordBuiltInIfSpecified(pSearchSettings, nameof(SearchControlSettings.MaxWidth), "ControlMaxWidth");
         }
 
         private void SetDWordBuiltInIfSpecified(IVsUIDataSource pSearchSettings, string propertyName, string vsPropertyName) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             uint value;
             if (_settings.TryGetValue(propertyName, out value)) {
                 SetDWordBuiltIn(pSearchSettings, vsPropertyName, value);
@@ -51,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         }
 
         private static void SetDWordBuiltIn(IVsUIDataSource pSearchSettings, string vsPropertyName, uint value) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             pSearchSettings.SetValue(vsPropertyName, new VsUIObject(value, VsUIObject.DWordType, __VSUIDATAFORMAT.VSDF_BUILTIN));
         }
 
@@ -61,6 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         public IVsEnumWindowSearchOptions SearchOptionsEnum => null;
 
         public void Dispose() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _vsWindowSearchHost.TerminateSearch();
         }
 
@@ -83,11 +89,13 @@ namespace Microsoft.VisualStudio.R.Package.Search {
                 }
 
                 object otherData;
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 Marshal.ThrowExceptionForHR(other.get_Data(out otherData));
                 return object.Equals(otherData, _data);
             }
 
             public int Equals(IVsUIObject pOtherObject, out bool pfAreEqual) {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 pfAreEqual = AreEqual(pOtherObject);
                 return VSConstants.S_OK;
             }

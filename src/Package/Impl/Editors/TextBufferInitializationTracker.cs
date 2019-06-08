@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Text;
@@ -25,6 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
         #region Constructors
         public TextBufferInitializationTracker(IServiceContainer services, IVsTextLines textLines, Guid languageServiceId, List<TextBufferInitializationTracker> trackers) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             _services = services;
             _textLines = textLines;
             _languageServiceGuid = languageServiceId;

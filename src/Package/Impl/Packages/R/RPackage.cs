@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Editor.Settings;
@@ -127,13 +129,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             CranMirrorList.Download();
             base.Initialize();
 
             _fs = Services.FileSystem();
 
             ProjectIconProvider.LoadProjectImages(Services);
-            LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
+            LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain).DoNotWait();
 
             LoadEditorSettings();
             BuildFunctionIndex();
@@ -144,11 +147,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration()).DoNotWait();
             ExpansionsCache.Load(Services);
         }
 
         protected override void Dispose(bool disposing) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             SavePackageIndex();
 
             LogCleanup.Cancel();
@@ -191,16 +195,19 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         #endregion
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var toolWindowFactory = Services.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.CreateToolWindow(toolWindowType, id) != null ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
         protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var toolWindowFactory = Services.GetService<RPackageToolWindowProvider>();
             return toolWindowFactory.CreateToolWindow(toolWindowType.GUID, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
 
         private bool IsCommandLineMode() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var shell = Services.GetService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out object value);

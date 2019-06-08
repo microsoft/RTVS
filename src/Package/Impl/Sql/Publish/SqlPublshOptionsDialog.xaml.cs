@@ -62,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void SaveSettingsAndClose() {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
             _model.Settings.Save(_settings);
 
             // Make sure all files are saved and up to date on disk.

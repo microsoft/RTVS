@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
@@ -29,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             // Note that we go through the VS windows rather than the visual components.
             // Visual components only exist for tool windows that are initialized.
             // Tool windows that have a visible tab but haven't clicked on yet are not initialized.
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             try {
                 var frames = _vsshell.EnumerateWindows(
                     __WindowFrameTypeFlags.WINDOWFRAMETYPE_Tool |

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Settings;
@@ -46,6 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         /// Loads settings via language (editor) tools options page
         /// </summary>
         public void Load() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             LoadLanguagePreferences();
 
             foreach (var curAutomationObjectName in _automationObjectNames) {

@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -30,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         public VsApplication(IServiceContainer services) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var hostLocale = services.GetService<IUIHostLocale>(typeof(SUIHostLocale));
             hostLocale.GetUILocale(out var lcid);
             LocaleId = (int)lcid;

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.ProjectSystem.Properties;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal static class IVsHierarchyExtensions {
@@ -14,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Returns EnvDTE.Project object for the hierarchy
         /// </summary>
         public static EnvDTE.Project GetDTEProject(this IVsHierarchy hierarchy) {
-            VsAppShell.Current.AssertIsOnMainThread();
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             object extObject;
             if (ErrorHandler.Succeeded(hierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out extObject))) {
                 return extObject as EnvDTE.Project;

@@ -40,7 +40,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                     SetupTestInstance();
                 }
 
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
                 return GetInstance();
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
             }
         }
     }

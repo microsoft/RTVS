@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using IMenuCommandService = System.ComponentModel.Design.IMenuCommandService;
 using CommandID = System.ComponentModel.Design.CommandID;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal class ShowContextMenuCommand : ViewCommand {
@@ -33,8 +34,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (MenuCommandService != null) {
-                POINTS[] position = (POINTS[])inputArg;
-                CommandID menuCommand = new CommandID(_cmdSetGuid, (int)_menuId);
+                var position = (POINTS[])inputArg;
+                var menuCommand = new CommandID(_cmdSetGuid, (int)_menuId);
                 MenuCommandService.ShowContextMenu(menuCommand, position[0].x, position[0].y);
 
                 return CommandResult.Executed;
@@ -45,12 +46,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         // IMenuCommandService is null in weird scenarios, such as Open With <non-html editor>, or diff view
         private IMenuCommandService MenuCommandService {
             get {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+
                 if (_menuService == null && !_triedGetMenuService) {
                     _triedGetMenuService = true;
 
-                    IVsShell shell = _services.GetService<IVsShell>(typeof(SVsShell));
-                    IVsPackage package;
-                    shell.LoadPackage(ref _packageGuid, out package);
+                    var shell = _services.GetService<IVsShell>(typeof(SVsShell));
+                    shell.LoadPackage(ref _packageGuid, out var package);
                     if (package != null) {
                         var services = package as IServiceProvider;
                         _menuService = services.GetService(typeof(IMenuCommandService)) as IMenuCommandService;

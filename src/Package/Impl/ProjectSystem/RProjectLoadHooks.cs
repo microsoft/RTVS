@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Logging;
@@ -72,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
-            unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriter;
+            unconfiguredProject.ProjectRenamedOnWriter += ProjectRenamedOnWriterAsync;
             unconfiguredProject.ProjectUnloading += ProjectUnloadingAsync;
 
             _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _coreShell.FileSystem(), new RMsBuildFileSystemFilter(), coreShell.Log());
@@ -116,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             // https://github.com/Microsoft/RTVS/issues/2223
             if (!_session.IsRemote) {
                 var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                bool loadDefaultWorkspace = _coreShell.FileSystem().FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+                bool loadDefaultWorkspace = _coreShell.FileSystem().FileExists(rdataPath) && await GetLoadDefaultWorkspaceAsync(rdataPath);
 
                 if (loadDefaultWorkspace) {
                     await _session.LoadWorkspaceAsync(rdataPath);
@@ -131,6 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private void FileWatcherError(object sender, EventArgs args) {
             _fileWatcher.Error -= FileWatcherError;
             _coreShell.MainThread().Post(() => {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 foreach (var iVsProjectLazy in _cpsIVsProjects) {
                     IVsProject iVsProject;
                     try {
@@ -150,7 +152,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             });
         }
         
-        private async Task ProjectRenamedOnWriter(object sender, ProjectRenamedEventArgs args) {
+        private async Task ProjectRenamedOnWriterAsync(object sender, ProjectRenamedEventArgs args) {
             var oldImportName = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(args.OldFullPath);
             var newImportName = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(args.NewFullPath);
             using (var access = await _projectLockService.WriteLockAsync()) {
@@ -172,7 +174,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private async Task ProjectUnloadingAsync(object sender, EventArgs args) {
             await _coreShell.SwitchToMainThreadAsync(new CancellationTokenSource(10000).Token);
 
-            _unconfiguredProject.ProjectRenamedOnWriter -= ProjectRenamedOnWriter;
+            _unconfiguredProject.ProjectRenamedOnWriter -= ProjectRenamedOnWriterAsync;
             _unconfiguredProject.ProjectUnloading -= ProjectUnloadingAsync;
             _workflow.RSessions.BeforeDisposed -= BeforeRSessionsDisposed;
 
@@ -187,7 +189,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-            var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
+            var saveDefaultWorkspace = await GetSaveDefaultWorkspaceAsync(rdataPath);
             if (!_session.IsHostRunning) {
                 return;
             }
@@ -200,7 +202,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }).SilenceException<RException>().DoNotWait();
         }
 
-        private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {
+        private async Task<bool> GetLoadDefaultWorkspaceAsync(string rdataPath) {
             switch (_settings.LoadRDataOnProjectLoad) {
                 case YesNoAsk.Yes:
                     return true;
@@ -214,7 +216,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
-        private async Task<bool> GetSaveDefaultWorkspace(string rdataPath) {
+        private async Task<bool> GetSaveDefaultWorkspaceAsync(string rdataPath) {
             switch (_settings.SaveRDataOnProjectUnload) {
                 case YesNoAsk.Yes:
                     return true;

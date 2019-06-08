@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.PlatformUI;
@@ -42,12 +43,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _commandTarget = new CommandTargetToOleShim(null, controller);
             base.OnCreate();
         }
-        
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) 
-            => _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) 
-            => _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+        }
+
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+        }
         
         protected override void Dispose(bool disposing) {
             if (disposing) {
@@ -69,6 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             dynamic settings = pSearchSettings;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
             base.ProvideSearchSettings(pSearchSettings);

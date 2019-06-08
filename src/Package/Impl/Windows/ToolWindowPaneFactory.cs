@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
@@ -57,10 +58,14 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
                 _onClose = onClose;
                 ToolWindowPane = toolWindowPane;
 
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 var frame = (IVsWindowFrame2)ToolWindowPane.Frame;
                 uint cookie;
                 ErrorHandler.ThrowOnFailure(frame.Advise(this, out cookie));
-                _subscription = Disposable.Create(() => frame.Unadvise(cookie));
+                _subscription = Disposable.Create(() => {
+                    Dispatcher.CurrentDispatcher.VerifyAccess();
+                    frame.Unadvise(cookie);
+                });
             }
 
             private void OnShow(int fShow) {
@@ -92,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
             int IVsWindowFrameNotify3.OnMove(int x, int y, int w, int h) => VSConstants.S_OK;
             int IVsWindowFrameNotify3.OnSize(int x, int y, int w, int h) => VSConstants.S_OK;
             int IVsWindowFrameNotify3.OnDockableChange(int fDockable, int x, int y, int w, int h) => VSConstants.S_OK;
-            int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions)=> VSConstants.S_OK;
+            int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions) => VSConstants.S_OK;
             int IVsWindowFrameNotify.OnMove() => VSConstants.S_OK;
 
             int IVsWindowFrameNotify3.OnShow(int fShow) {

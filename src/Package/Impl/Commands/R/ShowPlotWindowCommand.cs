@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -26,6 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         public CommandStatus GetStatus(int index) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _windows = GetSortedWindows();
             if (index >= _windows.Length) {
                 return CommandStatus.SupportedAndInvisible;
@@ -35,6 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         public string GetText(int index) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (_windows == null) {
                 _windows = GetSortedWindows();
             }
@@ -53,6 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public int MaxCount { get; } = 20;
 
         private PlotWindowResult[] GetSortedWindows() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var all = GetAllWindows();
             var assigned = all.Where(w => w.HasDevice).OrderBy(w => w.DeviceNum);
             var unassigned = all.Where(w => !w.HasDevice && w.IsVisible);
@@ -60,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         private PlotWindowResult[] GetAllWindows() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var instances = new List<PlotWindowResult>();
             try {
                 var frames = _shell.EnumerateWindows(
@@ -68,11 +73,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
                     typeof(PlotDeviceWindowPane).GUID);
 
                 foreach (var frame in frames) {
-                    bool isVisible = frame.IsVisible() == VSConstants.S_OK;
+                    var isVisible = frame.IsVisible() == VSConstants.S_OK;
 
                     object num;
                     ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_MultiInstanceToolNum, out num));
-                    int instanceId = (int)(uint)num;
+                    var instanceId = (int)(uint)num;
 
                     string text;
                     var visualComponent = _plotManager.GetPlotVisualComponent(instanceId);

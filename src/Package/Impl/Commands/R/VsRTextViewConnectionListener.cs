@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
@@ -63,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
         }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
             OleControllerChain.InitEditorInstance(textBuffer, Services);
             base.OnTextBufferCreated(textView, textBuffer);

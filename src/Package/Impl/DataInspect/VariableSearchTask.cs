@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -20,9 +21,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override void OnStartSearch() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             base.OnStartSearch();
 
-            bool found = false;
+            var found = false;
             var searchString = SearchQuery.SearchString;
             if (_grid?.Items != null && !string.IsNullOrWhiteSpace(searchString)) {
                 found = Find(s => s.StartsWithOrdinal(searchString));
@@ -36,12 +38,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private bool Find(Func<string, bool> match) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             foreach (var itemControl in _grid.Items) {
                 var tn = itemControl as ObservableTreeNode;
                 var model = tn?.Model?.Content as VariableViewModel;
                 if (model != null) {
                     if (match(model.Name)) {
-                        VsAppShell.Current.MainThread().Post(() => _grid.SelectedItem = itemControl);
+                        _grid.SelectedItem = itemControl;
                         _callback.ReportComplete(this, 1);
                         return true;
                     }

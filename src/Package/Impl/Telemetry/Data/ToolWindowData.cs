@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
@@ -21,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<ToolWindowData> GetToolWindowData(IVsUIShell shell) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var data = new List<ToolWindowData>();
             try {
                 IEnumWindowFrames e;

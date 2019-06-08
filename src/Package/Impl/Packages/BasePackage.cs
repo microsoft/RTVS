@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Threading;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core.Disposables;
@@ -38,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         /// Retrieve service local to the package such as IMenuService
         /// </summary>
         public T GetPackageService<T>(Type t = null) where T : class {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             return GetService(t ?? typeof(T)) as T;
         }
         #endregion
@@ -47,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         /// where you can put all the initialization code that relies on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             base.Initialize();
 
             IServiceContainer container = this;
@@ -81,29 +84,38 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
         }
 
         protected void AdviseExportedWindowFrameEvents<T>() where T : class {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var windowFrameEvents = VsAppShell.Current.GetService<T>() as IVsWindowFrameEvents;
             var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
             var cookie = shell.AdviseWindowFrameEvents(windowFrameEvents);
-            Disposables.Add(() => shell.UnadviseWindowFrameEvents(cookie));
+            Disposables.Add(() => {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+                shell.UnadviseWindowFrameEvents(cookie);
+            });
         }
 
         protected void AdviseExportedDebuggerEvents<T>() where T : class {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var debuggerEvents = VsAppShell.Current.GetService<T>() as IVsDebuggerEvents;
             var debugger = (IVsDebugger)GetService(typeof(IVsDebugger));
 
             uint cookie;
             debugger.AdviseDebuggerEvents(debuggerEvents, out cookie);
-            Disposables.Add(() => debugger.UnadviseDebuggerEvents(cookie));
+            Disposables.Add(() => {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+                debugger.UnadviseDebuggerEvents(cookie);
+            });
         }
 
         private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
             if (registerProjectGenerators == null) {
                 throw new InvalidOperationException(typeof(SVsRegisterProjectTypes).FullName);
             }
 
             uint cookie;
-            Guid riid = projectFileGenerator.GetType().GUID;
+            var riid = projectFileGenerator.GetType().GUID;
             registerProjectGenerators.RegisterProjectGenerator(ref riid, projectFileGenerator, out cookie);
 
             if (_projectFileGenerators == null) {
@@ -136,7 +148,8 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
 
         private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators) {
             try {
-                IVsRegisterProjectGenerators registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+                var registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
                 if (registerProjectGenerators != null) {
                     foreach (var projectFileGenerator in projectFileGenerators) {
                         try {

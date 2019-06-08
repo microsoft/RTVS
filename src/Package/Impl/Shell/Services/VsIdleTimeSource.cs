@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -17,6 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private bool _startupComplete;
 
         public VsIdleTimeService(IOleComponentManager oleComponentManager) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             var crinfo = new OLECRINFO[1];
             crinfo[0].cbSize = (uint)Marshal.SizeOf(typeof(OLECRINFO));
             crinfo[0].grfcrf = (uint)_OLECRF.olecrfNeedIdleTime | (uint)_OLECRF.olecrfNeedPeriodicIdleTime;
@@ -61,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region IDisposable
         public void Dispose() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (_componentID != 0) {
                 var oleComponentManager = ServiceProvider.GlobalProvider.GetService(typeof(SOleComponentManager)) as IOleComponentManager;
                 oleComponentManager?.FRevokeComponent(_componentID);

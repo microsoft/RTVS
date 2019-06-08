@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.Extensions;
@@ -147,6 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
 
                 _services?.MainThread().Post(() => {
+                    Dispatcher.CurrentDispatcher.VerifyAccess();
                     var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
                     shell.UpdateCommandUI(1);
                 });

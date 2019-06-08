@@ -3,6 +3,7 @@
 
 using System;
 using System.Timers;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -17,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
         private uint _reportCount;
 
         public ToolWindowTracker(IServiceContainer services) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _services = services;
             _debugger = services.GetService<IVsDebugger>();
             if (_debugger != null) {
@@ -56,7 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Windows {
             _timer?.Dispose();
             _timer = null;
 
-            if(_debuggerEventCookie != 0 && _debugger != null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            if (_debuggerEventCookie != 0 && _debugger != null) {
                 _debugger.UnadviseDebuggerEvents(_debuggerEventCookie);
                 _debuggerEventCookie = 0;
                 _debugger = null;

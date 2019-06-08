@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -19,7 +20,8 @@ namespace Microsoft.VisualStudioTools {
             string initialDirectory = null,
             string title = null
         ) {
-            IVsUIShell uiShell = GetService(typeof(SVsUIShell)) as IVsUIShell;
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            var uiShell = GetService(typeof(SVsUIShell)) as IVsUIShell;
             if (null == uiShell) {
                 using (var ofd = new FolderBrowserDialog()) {
                     ofd.RootFolder = Environment.SpecialFolder.Desktop;
@@ -43,16 +45,16 @@ namespace Microsoft.VisualStudioTools {
                 ErrorHandler.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out owner));
             }
 
-            VSBROWSEINFOW[] browseInfo = new VSBROWSEINFOW[1];
+            var browseInfo = new VSBROWSEINFOW[1];
             browseInfo[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSBROWSEINFOW));
             browseInfo[0].pwzInitialDir = initialDirectory;
             browseInfo[0].pwzDlgTitle = title;
             browseInfo[0].hwndOwner = owner;
             browseInfo[0].nMaxDirName = 260;
-            IntPtr pDirName = IntPtr.Zero;
+            var pDirName = IntPtr.Zero;
             try {
                 browseInfo[0].pwzDirName = pDirName = Marshal.AllocCoTaskMem(520);
-                int hr = uiShell.GetDirectoryViaBrowseDlg(browseInfo);
+                var hr = uiShell.GetDirectoryViaBrowseDlg(browseInfo);
                 if (hr == VSConstants.OLE_E_PROMPTSAVECANCELLED) {
                     return null;
                 }

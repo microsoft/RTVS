@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -17,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             IVsTextView view;
             VsShellUtilities.OpenDocument(RPackage.Current, fileName.FromRPath(), VSConstants.LOGVIEWID.Code_guid, out hier, out itemid, out frame, out view);
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             IVsTextLines textBuffer = null;
             frame?.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, caption);
             view?.GetBuffer(out textBuffer);

@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -13,6 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         private const int WM_KEYLAST = 0x0108;
 
         public override bool PreProcessMessage(ref Message msg) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (msg.Msg >= WM_KEYFIRST && msg.Msg <= WM_KEYLAST) {
                 IVsFilterKeys2 filterKeys = (IVsFilterKeys2)ServiceProvider.GlobalProvider.GetService(typeof(SVsFilterKeys));
                 OLE.Interop.MSG oleMSG = new OLE.Interop.MSG() { hwnd = msg.HWnd, lParam = msg.LParam, wParam = msg.WParam, message = (uint)msg.Msg };

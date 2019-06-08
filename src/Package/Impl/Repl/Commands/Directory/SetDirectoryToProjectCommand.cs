@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.IO;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -28,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void Handle() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             string projectFile = null;
             var project = _pss.GetSelectedProject<IVsProject>();
             if (VSConstants.S_OK == project?.GetMkDocument((uint)VSConstants.VSITEMID.Root, out projectFile)) {

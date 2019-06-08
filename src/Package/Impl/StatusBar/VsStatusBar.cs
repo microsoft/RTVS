@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -57,12 +58,14 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
 
         public async Task<string> GetTextAsync(CancellationToken ct = default(CancellationToken)) {
             await _mainThread.SwitchToAsync(ct);
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _vsStatusBar.GetText(out string text);
             return text ?? string.Empty;
         }
 
         public async Task SetTextAsync(string text, CancellationToken ct = default(CancellationToken)) {
             await _mainThread.SwitchToAsync(ct);
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _vsStatusBar.SetText(text);
         }
 
@@ -148,6 +151,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             private readonly string _originalText;
 
             public VsStatusBarProgress(IVsStatusbar vsStatusbar, IMainThread mainThread, int totalSteps) {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 mainThread.Assert();
 
                 _vsStatusbar = vsStatusbar;
@@ -160,7 +164,10 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             }
 
             public void Report(StatusBarProgressData value) {
-                _mainThread.ExecuteOrPost(() => _vsStatusbar.Progress(ref _progressCookie, 1, value.Message, (uint)value.Step, _totalSteps));
+                _mainThread.ExecuteOrPost(() => {
+                    Dispatcher.CurrentDispatcher.VerifyAccess();
+                    _vsStatusbar.Progress(ref _progressCookie, 1, value.Message, (uint)value.Step, _totalSteps);
+                });
             }
 
             public void Dispose() {
@@ -168,6 +175,7 @@ namespace Microsoft.VisualStudio.R.Package.StatusBar {
             }
 
             private void DisposeOnMainThread() {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 _vsStatusbar.Progress(ref _progressCookie, 0, string.Empty, _totalSteps, _totalSteps);
                 _vsStatusbar.SetText(_originalText);
             }

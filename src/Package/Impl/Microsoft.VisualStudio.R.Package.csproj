@@ -157,6 +157,7 @@
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
       <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Help\HelpVisualComponent.cs" />
     <Compile Include="Help\HelpOnCurrentCommandBase.cs" />
     <Compile Include="Help\IVignetteCodeColorBuilder.cs" />

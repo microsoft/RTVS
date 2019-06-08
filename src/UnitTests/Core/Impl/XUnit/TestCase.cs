@@ -14,13 +14,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public ITestMainThreadFixture MainThreadFixture { get; set; }
 
         public TestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod, TestParameters parameters, object[] testMethodArguments = null) 
-            : base(diagnosticMessageSink, defaultMethodDisplay, testMethod, testMethodArguments) {
+            : base(diagnosticMessageSink, defaultMethodDisplay, TestMethodDisplayOptions.None, testMethod, testMethodArguments) {
             ThreadType = parameters.ThreadType;
         }
 
         /// <summary />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public TestCase() : base(new NullMessageSink(), default(TestMethodDisplay), null, null) { }
+        public TestCase() : base(new NullMessageSink(), default, TestMethodDisplayOptions.None, null, null) { }
 
         protected override void Initialize() {
             base.Initialize();

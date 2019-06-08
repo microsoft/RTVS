@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrollCommands = new BufferBlock<ScrollCommand>();
 
             // silence every exception and don't wait
-            _handlerTask = ScrollCommandsHandler(_cancelSource.Token).SilenceException<Exception>();
+            _handlerTask = ScrollCommandsHandlerAsync(_cancelSource.Token).SilenceException<Exception>();
         }
 
         public GridPoints Points => _owner.Points;
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             HeaderFocusRight
         };
 
-        private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
+        private async Task ScrollCommandsHandlerAsync(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             const int ScrollCommandUpperBound = 100;

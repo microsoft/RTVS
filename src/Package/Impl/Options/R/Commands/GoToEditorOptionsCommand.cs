@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
@@ -17,7 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
             _services = _services ?? services;
         }
 
-        public static void OnCommand(object sender, EventArgs args) { 
+        public static void OnCommand(object sender, EventArgs args) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var shell = _services.GetService<IVsShell>(typeof(SVsShell));
             IVsPackage package;
 

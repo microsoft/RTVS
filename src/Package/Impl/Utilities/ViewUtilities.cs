@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.R.Components.Extensions;
@@ -30,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static IVsWindowFrame GetActiveFrame() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var monitorSelection = ServiceProvider.GlobalProvider.GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
             if (monitorSelection != null) {
                 object value;
@@ -47,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static T GetService<T>(this IVsTextView vsTextView, Type type = null) where T : class {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var ows = vsTextView as IObjectWithSite;
             type = type ?? typeof(T);
 
@@ -63,11 +66,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static T GetViewAdapter<T>(this ITextView textView) where T : class, IVsTextView {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
             return vsTextView as T;
         }
 
         public static bool GetIUnknownProperty(this IVsWindowFrame windowFrame, __VSFPROPID propid, out object result) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             result = null;
             windowFrame?.GetProperty((int)propid, out result);
             return result != null;

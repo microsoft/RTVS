@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf.Collections;
@@ -212,6 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private async Task PopulateTargetsAsync() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var project = _pss.GetSelectedProject<IVsHierarchy>().GetConfiguredProject();
 
             switch (Settings.TargetType) {
@@ -245,6 +247,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void PopulateProjectList() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _targetProjects = GetDatabaseProjects();
             if (_targetProjects.Count > 0) {
                 var index = -1;
@@ -258,6 +261,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private IReadOnlyList<string> GetDatabaseProjects() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             _noDbProjects = false;
             var solution = _pss.GetSolution();
             var projects = new List<string>();

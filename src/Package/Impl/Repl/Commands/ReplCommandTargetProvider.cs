@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -30,6 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             EditorView.Create(textView);
             var target = textView.GetService<IOleCommandTarget>();
             if (target == null) {

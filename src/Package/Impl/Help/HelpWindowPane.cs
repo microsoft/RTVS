@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 using static System.FormattableString;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuidString)]
@@ -46,6 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public override bool SearchEnabled => true;
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             dynamic settings = pSearchSettings;
             settings.SearchWatermark = Resources.HelpSearchWatermark;
             settings.SearchTooltip = Resources.HelpSearchTooltip;
@@ -71,6 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
 
             protected override void OnStartSearch() {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 base.OnStartSearch();
                 _callback.ReportComplete(this, 1);
 

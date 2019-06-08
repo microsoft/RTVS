@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -57,6 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
            out Guid commandUIGuid,
            out int createDocumentWindowFlags) {
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             return CreateEditorInstance(createEditorFlags, documentMoniker, physicalView, hierarchy, itemid, docDataExisting,
                                         LanguageServiceId, out docView, out docData, out editorCaption, out commandUIGuid, out createDocumentWindowFlags);
         }
@@ -80,6 +82,8 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             commandUIGuid = _editorFactoryId;
             createDocumentWindowFlags = 0;
             editorCaption = null;
+
+            Dispatcher.CurrentDispatcher.VerifyAccess();
 
             // Validate inputs
             if ((createEditorFlags & (VSConstants.CEF_OPENFILE | VSConstants.CEF_SILENT)) == 0) {
@@ -153,6 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         private IVsTextLines GetTextBuffer(IntPtr docDataExisting, Guid languageServiceId) {
             IVsTextLines textLines;
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (docDataExisting == IntPtr.Zero) {
                 // Create a new IVsTextLines buffer.
                 var clsid = typeof(VsTextBufferClass).GUID;
@@ -277,6 +282,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
         #endregion
 
         public static void InitKeyBindings(ITextView textView) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var vsTextView = textView.GetViewAdapter<IVsTextView>();
             var os = vsTextView as IObjectWithSite;
             var unkSite = IntPtr.Zero;

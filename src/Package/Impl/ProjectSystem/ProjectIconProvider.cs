@@ -3,6 +3,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -37,9 +38,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// </summary>
         public static void LoadProjectImages(IServiceContainer services) {
             services.MainThread().Assert();
+            Dispatcher.CurrentDispatcher.VerifyAccess();
 
             if (_monikerImageList == null) {
-                IVsImageService2 imageService = services.GetService<IVsImageService2>(typeof(SVsImageService));
+                var imageService = services.GetService<IVsImageService2>(typeof(SVsImageService));
 
                 _imageList = new ImageList();
                 foreach (var b in _bitmaps) {
@@ -49,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 _monikerImageList = imageService.CreateMonikerImageListFromHIMAGELIST(_imageList.Handle);
                 imageService.AddCustomImageList(_monikerImageList);
 
-                ImageMoniker[] monikers = new ImageMoniker[_bitmaps.Length];
+                var monikers = new ImageMoniker[_bitmaps.Length];
                 _monikerImageList.GetImageMonikers(0, _bitmaps.Length, monikers);
 
                 ProjectNodeImage = monikers[0];

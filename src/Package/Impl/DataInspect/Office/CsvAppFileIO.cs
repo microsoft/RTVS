@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
@@ -28,9 +29,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private const string _variableNameReplacement = "variable";
         private static int _busy;
 
-        public static async Task OpenDataCsvApp(IREvaluationResultInfo result, ICoreShell shell, IFileSystem fileSystem, IProcessServices processServices) {
+        public static async Task OpenDataCsvAppAsync(IREvaluationResultInfo result, ICoreShell shell, IFileSystem fileSystem, IProcessServices processServices) {
             await shell.SwitchToMainThreadAsync();
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (Interlocked.Exchange(ref _busy, 1) > 0) {
                 return;
             }
@@ -55,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                shell.ProgressDialog().Show(async (p, ct) => await CreateCsvAndStartProcess(result, session, shell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
+                shell.ProgressDialog().Show(async (p, ct) => await CreateCsvAndStartProcessAsync(result, session, shell, file, fileSystem, p, ct), Resources.Status_WritingCSV, 100, 500);
                 if (fileSystem.FileExists(file)) {
                     processServices.Start(file);
                 }
@@ -68,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(
+        private static async Task CreateCsvAndStartProcessAsync(
             IREvaluationResultInfo result,
             IRSession session,
             ICoreShell coreShell,
@@ -83,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 var csvDataBlobId = await session.EvaluateAsync<ulong>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal, cancellationToken);
-                using (DataTransferSession dts = new DataTransferSession(session, fileSystem)) {
+                using (var dts = new DataTransferSession(session, fileSystem)) {
                     await dts.FetchAndDecompressFileAsync(csvDataBlobId, fileName, progress, Resources.Status_WritingCSV, cancellationToken);
                 }
             } catch (RException) {
@@ -146,7 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private static string MakeFileSystemCompatible(string s) {
             var invalidChars = Path.GetInvalidFileNameChars();
             var sb = new StringBuilder();
-            foreach (char ch in s) {
+            foreach (var ch in s) {
                 if (invalidChars.Contains(ch)) {
                     sb.Append('_');
                 }

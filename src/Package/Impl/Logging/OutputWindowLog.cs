@@ -3,7 +3,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Windows.Threading;
 using EnvDTE;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
@@ -24,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
         private void EnsurePaneVisible() {
             if (_pane == null) {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
                 var outputWindow = _services.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
                 outputWindow?.GetPane(ref _paneGuid, out _pane);

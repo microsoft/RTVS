@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
@@ -38,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         private static bool TryShowToolWindow(ToolWindowPane toolWindow, bool focus) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var frame = toolWindow.Frame as IVsWindowFrame;
             if (frame == null) {
                 return true;
@@ -55,6 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static void CreateToolWindow(IVsUIShell vsUiShell, ToolWindowPane toolWindow, int instanceId) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var clsId = toolWindow.ToolClsid;
             var typeId = toolWindow.GetType().GUID;
             var guidAutoActivate = Guid.Empty;
@@ -83,6 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static void SetToolbarToHost(IVsWindowFrame frame, ToolWindowPane toolWindow) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (toolWindow.ToolBar == null) {
                 return;
             }
@@ -98,6 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static IVsToolWindowToolbarHost3 GetToolbarHost(IVsWindowFrame frame) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             object result;
             ErrorHandler.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_ToolbarHost, out result));
             return (IVsToolWindowToolbarHost3)result;

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI;
@@ -49,12 +50,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays error message in a host-specific UI
         /// </summary>
         public void ShowErrorMessage(string message) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             int result;
             _uiShell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
         public void ShowContextMenu(CommandId commandId, int x, int y, object commandTarget = null) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (commandTarget == null) {
                 var package = VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
                 if (package != null) {
@@ -79,6 +82,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// Displays question in a host-specific UI
         /// </summary>
         public MessageButtons ShowMessage(string message, MessageButtons buttons, MessageType messageType = MessageType.Information) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             int result;
             var oleButtons = GetOleButtonFlags(buttons);
             OLEMSGICON oleIcon;
@@ -109,10 +114,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return MessageButtons.OK;
         }
 
-        public string SaveFileIfDirty(string fullPath) 
+        public string SaveFileIfDirty(string fullPath)
             => new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
-        public void UpdateCommandStatus(bool immediate) 
-            => _coreShell.MainThread().Post(() => { _uiShell.UpdateCommandUI(immediate ? 1 : 0); });
+        public void UpdateCommandStatus(bool immediate)
+            => _coreShell.MainThread().Post(() => {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+                _uiShell.UpdateCommandUI(immediate ? 1 : 0);
+            });
         #endregion
 
         #region IVsBroadcastMessageEvents
@@ -126,6 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region IDisposable
         public void Dispose() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (_vsShell != null) {
                 if (_vsShellBroadcastEventsCookie != 0) {
                     _vsShell.UnadviseBroadcastMessages(_vsShellBroadcastEventsCookie);

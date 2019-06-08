@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             _projectConfigurationSettingsProvider = pcsp;
         }
 
-        protected async Task SaveSetting(string value) {
+        protected async Task SaveSettingAsync(string value) {
             string name = null;
             var hier = _projectSystemServices.GetSelectedProject<IVsHierarchy>();
             var configuredProject = hier?.GetConfiguredProject();

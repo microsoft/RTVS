@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Languages.Editor.Settings;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Editors;
@@ -45,6 +46,7 @@ namespace Microsoft.VisualStudio.R.Packages.Markdown {
         protected override void Initialize() {
             _package = this;
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             VsAppShell.EnsureInitialized();
             LoadEditorSettings();
 

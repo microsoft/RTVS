@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
@@ -66,6 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
         }
 
         protected override void OnTextBufferCreated(ITextView textView, ITextBuffer textBuffer) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             VsAppShell.EnsurePackageLoaded(MdGuidList.MdPackageGuid);
             OleControllerChain.InitEditorInstance(textBuffer, Services);
             base.OnTextBufferCreated(textView, textBuffer);

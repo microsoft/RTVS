@@ -14,14 +14,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
             _diagnosticMessageSink = diagnosticMessageSink;
         }
 
-        public IEnumerable<IXunitTestCase> Discover(ITestFrameworkDiscoveryOptions discoveryOptions, ITestMethod testMethod, IAttributeInfo factAttribute)
-        {
-            TestForTypesParameters parameters = new TestForTypesParameters(testMethod, factAttribute);
+        public IEnumerable<IXunitTestCase> Discover(ITestFrameworkDiscoveryOptions discoveryOptions, ITestMethod testMethod, IAttributeInfo factAttribute) {
+            var parameters = new TestForTypesParameters(testMethod, factAttribute);
             var methodDisplay = discoveryOptions.MethodDisplayOrDefault();
 
             if (testMethod.Method.GetParameters().Count() != 1) {
                 return new[] {
-                    new ExecutionErrorTestCase(_diagnosticMessageSink, methodDisplay, testMethod, "[TestForTypes] can have only one System.Type parameter")
+                    new ExecutionErrorTestCase(_diagnosticMessageSink, methodDisplay, TestMethodDisplayOptions.None, testMethod, "[TestForTypes] can have only one System.Type parameter")
                 };
             }
 

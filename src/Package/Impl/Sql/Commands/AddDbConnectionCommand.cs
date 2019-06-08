@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         protected override void Handle() {
             var connString = _dbcs.EditConnectionString(null);
             if (!string.IsNullOrWhiteSpace(connString)) {
-                SaveSetting(connString).DoNotWait();
+                SaveSettingAsync(connString).DoNotWait();
             }
         }
     }

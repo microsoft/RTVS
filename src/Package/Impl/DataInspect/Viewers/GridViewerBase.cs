@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 using static System.FormattableString;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal abstract class GridViewerBase : ViewerBase, IObjectDetailsViewer {
@@ -32,6 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str(), cancellationToken);
             if (evaluation != null) {
                 await Services.MainThread().SwitchToAsync(cancellationToken);
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+
                 var id = Math.Abs(_toolWindowIdBase + expression.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase));
 
                 var pane = ToolWindowUtilities.FindWindowPane<VariableGridWindowPane>(id);

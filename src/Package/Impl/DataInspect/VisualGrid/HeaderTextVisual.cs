@@ -51,10 +51,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override Size GetRenderSize(FormattedText formattedText, out double offset) {
             var baseSize = base.GetRenderSize(formattedText, out offset);
 
+#pragma warning disable CS0618 // Type or member is obsolete
             var currentArrowGlyph = new FormattedText(_arrowChar.ToString(), CultureInfo.CurrentUICulture,
                                                FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
             var largestArrowGlyph = new FormattedText(ArrowUp.ToString(), CultureInfo.CurrentUICulture,
                                                FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             offset = largestArrowGlyph.Width;
             return new Size(baseSize.Width - currentArrowGlyph.Width + 2* largestArrowGlyph.Width, baseSize.Height);

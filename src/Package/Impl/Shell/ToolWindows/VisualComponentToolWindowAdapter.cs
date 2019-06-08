@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI.Commands;
@@ -29,28 +30,34 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
 
                 int onScreen;
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 return VsWindowFrame.IsOnScreen(out onScreen) == VSConstants.S_OK && onScreen != 0;
             }
         }
 
-        private IVsWindowFrame VsWindowFrame => _vsWindowFrame ?? (_vsWindowFrame = _toolWindowPane.Frame as IVsWindowFrame);
+        private IVsWindowFrame VsWindowFrame {
+            get {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+                return _vsWindowFrame ?? (_vsWindowFrame = _toolWindowPane.Frame as IVsWindowFrame);
+            }
+        }
 
-        public string CaptionText
-        {
+        public string CaptionText {
             get => _toolWindowPane.Caption;
             set => _toolWindowPane.Caption = value;
         }
 
-        public string StatusText
-        {
+        public string StatusText {
             get {
                 _services.MainThread().Assert();
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 string text;
                 var statusBar = _services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
                 return text;
             }
             set {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 _services.MainThread().Assert();
                 var statusBar = _services.GetService<IVsStatusbar>(typeof(SVsStatusbar));
                 statusBar.SetText(value);
@@ -66,7 +73,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             _services.MainThread().Post(() => {
-                var shell = _services.GetService<IVsUIShell>(typeof (SVsUIShell));
+                Dispatcher.CurrentDispatcher.VerifyAccess();
+                var shell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
                 shell.UpdateCommandUI(immediate ? 1 : 0);
             });
         }
@@ -77,6 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
 
             _services.MainThread().Post(() => {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 ErrorHandler.ThrowOnFailure(VsWindowFrame.Hide());
             });
         }
@@ -88,6 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             if (immediate) {
                 _services.MainThread().Assert();
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 if (focus) {
                     ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                     Component.Control?.Focus();
@@ -96,6 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             } else {
                 _services.MainThread().Post(() => {
+                    Dispatcher.CurrentDispatcher.VerifyAccess();
                     if (focus) {
                         ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
                         Component.Control?.Focus();

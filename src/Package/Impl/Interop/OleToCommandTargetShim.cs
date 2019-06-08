@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -22,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         #region ICommandTarget Members
 
         public CommandStatus Status(Guid group, int id) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             OLECMD[] oleCmd = new OLECMD[1];
 
             oleCmd[0].cmdID = (uint)id;
@@ -33,6 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         }
 
         public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             IntPtr variantIn = IntPtr.Zero;
             IntPtr variantOut = IntPtr.Zero;
             bool allocateVariants = false;

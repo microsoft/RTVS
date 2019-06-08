@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
@@ -67,6 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool NavigateToFrame(IServiceContainer services, IVsWindowFrame frame, int start, int length) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var hr = frame.Show();
             if (ErrorHandler.Succeeded(hr)) {
                 var vsTextView = VsShellUtilities.GetTextView(frame);
@@ -79,6 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool NavigateToFile(IServiceContainer services, Uri fileUri, int start, int length, bool allowProvisionalTab) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (fileUri == null || !fileUri.IsAbsoluteUri || !fileUri.IsFile) {
                 Debug.Fail("Invalid fileUri: " + (fileUri != null ? fileUri.ToString() : string.Empty));
                 return false;

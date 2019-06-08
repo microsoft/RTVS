@@ -60,6 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public MatrixView() {
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.VerifyAccess();
             _services = VsAppShell.Current.Services;
 
             ColumnHeader = new VisualGrid {

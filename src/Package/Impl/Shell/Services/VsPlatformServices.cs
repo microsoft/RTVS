@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Shell;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Shell {
     internal sealed class VsPlatformServices : IPlatformServices {
         public VsPlatformServices() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var uiShell = ServiceProvider.GlobalProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
             uiShell.GetDialogOwnerHwnd(out var handle);
             ApplicationWindowHandle = handle;

@@ -3,6 +3,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Windows.Threading;
 using EnvDTE;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
@@ -34,11 +35,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
 
             public void Write(string text) {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 EnsurePane();
                 _pane?.OutputStringThreadSafe(text);
             }
 
             public void WriteError(string text) {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 EnsurePane();
                 // TODO: When IVsOutputWindow3.CreatePane2 is implemented, we should add colorization for errors
                 // See Microsoft.VisualStudio.Editor.Implementation.OutputClassifier.OutputWindowStyleManager
@@ -48,6 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
 
             private void EnsurePane() {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 if (_pane == null) {
                     // TODO: consider using IVsOutputWindow3.CreatePane2 and colorize the output
                     var outputWindow = _services.GetService<IVsOutputWindow>(typeof(SVsOutputWindow));
@@ -65,6 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
 
             private void ActivateWindow() {
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 _pane?.Activate();
 
                 var dte = _services.GetService<DTE>();

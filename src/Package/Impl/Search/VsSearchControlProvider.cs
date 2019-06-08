@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -24,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         public ISearchControl Create(FrameworkElement host, ISearchHandler handler, SearchControlSettings settings) {
             _coreShell.AssertIsOnMainThread();
 
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var vsWindowSearchHost = _factoryLazy.Value.CreateWindowSearchHost(host);
             return new VsSearchControl(vsWindowSearchHost, handler, settings);
         }

@@ -94,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                             outputArg = GetFriendlyDirectoryName(_settings.WorkingDirectory);
                         }
                     } else {
-                        SetDirectory(inputArg as string);
+                        SetDirectoryAsync(inputArg as string).DoNotWait();
                     }
                     break;
             }
@@ -102,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return CommandResult.Executed;
         }
 
-        internal Task SetDirectory(string friendlyName) {
+        internal Task SetDirectoryAsync(string friendlyName) {
             string currentDirectory = GetFullPathName(_settings.WorkingDirectory);
             string newDirectory = GetFullPathName(friendlyName);
 

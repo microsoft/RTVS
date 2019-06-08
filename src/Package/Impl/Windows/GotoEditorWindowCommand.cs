@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
@@ -33,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
             Enabled = _viewTracker.GetLastActiveTextView(_rContentType) != null;
         }
         protected override void Handle() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var view = _viewTracker.GetLastActiveTextView(_rContentType);
             var textDoc = view?.TextBuffer.GetTextDocument();
             var filePath = textDoc?.FilePath;
@@ -43,6 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
         }
 
         private IVsWindowFrame FindDocumentFrame(string filePath) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var uiShell = _services.GetService<IVsUIShell>(typeof(SVsUIShell));
             var frames = new IVsWindowFrame[1];
             IEnumWindowFrames windowEnum;

@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Common.Core.Threading;
+using System.Windows.Threading;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
@@ -37,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator, IRSessionProvider sessionProvider) {
             _shell.MainThread().Assert();
+            Dispatcher.CurrentDispatcher.VerifyAccess();
 
             var vsf2 = _vsInteractiveWindowFactoryLazy.Value;
             var vsWindow2 = vsf2.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, string.Empty, evaluator,
@@ -57,6 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private void RegisterFocusPreservingWindow(ToolWindowPane toolWindow) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var frame = toolWindow.Frame as IVsWindowFrame;
             if (frame != null) {
                 Guid persistenceSlot;

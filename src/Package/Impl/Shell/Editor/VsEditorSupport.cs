@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.UI.Commands;
@@ -34,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if (managedCommandTarget != null) {
                 return managedCommandTarget;
             }
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var oleCommandTarget = commandTarget as IOleCommandTarget;
             if (oleCommandTarget != null) {
                 return new OleToCommandTargetShim(editorView.As<ITextView>(), oleCommandTarget);

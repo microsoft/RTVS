@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (_isExpanded) {
                     if (HasChildren) {
-                        StartUpdatingChildren(Model).DoNotWait();
+                        StartUpdatingChildrenAsync(Model).DoNotWait();
                     }
                 }
 
@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                     HasChildren = newModel.HasChildren;
                     if (IsExpanded) {
-                        StartUpdatingChildren(newModel).SilenceException<Exception>().DoNotWait();
+                        StartUpdatingChildrenAsync(newModel).SilenceException<Exception>().DoNotWait();
                     }
                 }
 
@@ -206,7 +206,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private async Task StartUpdatingChildren(ITreeNode model) {
+        private async Task StartUpdatingChildrenAsync(ITreeNode model) {
             if (model == null) {
                 return;
             }

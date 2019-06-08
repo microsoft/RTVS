@@ -157,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
 
             var cp = GetSelectedValueAsInt(EncodingComboBox);
             PreviewFileContent(FilePathBox.Text, cp);
-            await ConvertToUtf8(FilePathBox.Text, cp, false, MaxPreviewLines);
+            await ConvertToUtf8Async(FilePathBox.Text, cp, false, MaxPreviewLines);
 
             if (!string.IsNullOrEmpty(_utf8FilePath)) {
                 var expression = BuildCommandLine(preview: true);
@@ -264,10 +264,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             InputFilePreview.Text = text;
         }
 
-        private async Task ConvertToUtf8(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
+        private async Task ConvertToUtf8Async(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
             try {
                 DeleteTempFile();
-                await ConvertToUtf8Worker(file, codePage, reportProgress, nRows);
+                await ConvertToUtf8WorkerAsync(file, codePage, reportProgress, nRows);
             } catch (IOException ex) {
                 OnError(ex.Message);
             } catch (UnauthorizedAccessException ex) {
@@ -275,7 +275,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             }
         }
 
-        private async Task ConvertToUtf8Worker(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
+        private async Task ConvertToUtf8WorkerAsync(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var encoding = Encoding.GetEncoding(codePage);
@@ -286,34 +286,34 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
 
             using (var sr = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true)) {
                 if (reportProgress) {
-                    await StartReportProgress(Package.Resources.Converting);
+                    await StartReportProgressAsync(Package.Resources.Converting);
                 }
 
                 long read = 0;
                 using (var sw = new StreamWriter(_utf8FilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
                     string line;
                     while (true) {
-                        line = sr.ReadLine();
+                        line = await sr.ReadLineAsync();
                         lineCount++;
                         if (line == null || lineCount > nRows) {
                             break;
                         }
 
                         read += line.Length;
-                        sw.WriteLine(line);
+                        await sw.WriteLineAsync(line);
 
                         if (reportProgress) {
                             var newProgressValue = 90 * (double)read / sr.BaseStream.Length;
                             if (newProgressValue - progressValue >= 10) {
                                 progressValue = newProgressValue;
-                                await ReportProgress(progressValue);
+                                await ReportProgressAsync(progressValue);
                             }
                         }
                     }
                 }
             }
             if (reportProgress) {
-                await ReportProgress(90);
+                await ReportProgressAsync(90);
             }
         }
 
@@ -325,7 +325,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             } catch (UnauthorizedAccessException) { }
         }
 
-        private async Task DoDefaultAction() {
+        private async Task DoDefaultActionAsync() {
             await _services.MainThread().SwitchToAsync();
             RunButton.IsEnabled = CancelButton.IsEnabled = false;
             var result = false;
@@ -343,7 +343,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
                     nrows++; // for possible header
                 }
 
-                await ConvertToUtf8(FilePathBox.Text, cp, true, nrows);
+                await ConvertToUtf8Async(FilePathBox.Text, cp, true, nrows);
                 ProgressBarText.Text = Package.Resources.Importing;
 
                 var expression = BuildCommandLine(false);
@@ -360,30 +360,28 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport
             }
         }
 
-        private async Task StartReportProgress(string message) {
+        private async Task StartReportProgressAsync(string message) {
             await _services.MainThread().SwitchToAsync();
             ProgressBarText.Text = message;
             ProgressBar.Value = 0;
         }
 
-        private async Task ReportProgress(double value) {
+        private async Task ReportProgressAsync(double value) {
             await _services.MainThread().SwitchToAsync();
             ProgressBar.Value = value;
         }
 
         private void RunButton_Click(object sender, RoutedEventArgs e) {
-            DoDefaultAction().DoNotWait();
+            DoDefaultActionAsync().DoNotWait();
         }
 
         private void RunButton_PreviewKeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter || e.Key == Key.Space) {
-                DoDefaultAction().DoNotWait();
+                DoDefaultActionAsync().DoNotWait();
             }
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e) {
-            Close();
-        }
+        private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
 
         private void CancelButton_PreviewKeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter || e.Key == Key.Space) {

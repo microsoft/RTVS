@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI;
@@ -42,6 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
                 }
 
                 object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
+                Dispatcher.CurrentDispatcher.VerifyAccess();
                 shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
             }
         }

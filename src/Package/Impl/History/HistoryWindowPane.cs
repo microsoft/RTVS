@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.Languages.Editor.Text;
@@ -33,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private IRHistory _history;
         private IRHistoryFiltering _historyFiltering;
 
-        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, IServiceContainer services): base(services) {
+        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, IServiceContainer services) : base(services) {
             _historyTextBuffer = historyTextBuffer;
             _historyProvider = historyProvider;
             _textEditorFactory = services.GetService<ITextEditorFactoryService>();
@@ -55,6 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override bool OnNavigationKeyDown(uint dwNavigationKey, uint dwModifiers) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (dwNavigationKey == (uint)VSConstants.VsSearchNavigationKeys.SNK_Down && dwModifiers == (uint)VSConstants.VsUIAccelModifiers.VSAM_Control) {
                 Component.TextView.VisualElement.Focus();
                 return true;
@@ -63,6 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         }
 
         public override void OnToolWindowCreated() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var commandUiGuid = VSConstants.GUID_TextEditorFactory;
             ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref commandUiGuid);
             base.OnToolWindowCreated();
@@ -78,29 +81,36 @@ namespace Microsoft.VisualStudio.R.Package.History {
             base.Dispose(disposing);
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
-            => _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _commandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+        }
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
-            => _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _commandTarget.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
+        }
 
         public override bool SearchEnabled => true;
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             dynamic settings = pSearchSettings;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
             base.ProvideSearchSettings(pSearchSettings);
         }
 
-        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) 
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
             => new HistorySearchTask(dwCookie, _historyFiltering, pSearchQuery, pSearchCallback, Services);
 
         public override void ClearSearch() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             Services.MainThread().Post(() => _historyFiltering.ClearFilter());
             base.ClearSearch();
         }
 
         private void OnHistoryChanged(object sender, EventArgs e) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var settings = Services.GetService<IRSettings>();
             if (settings.ClearFilterOnAddHistory) {
                 SearchHost.SearchAsync(null);
@@ -119,7 +129,10 @@ namespace Microsoft.VisualStudio.R.Package.History {
 
             protected override void OnStartSearch() {
                 base.OnStartSearch();
-                _services.MainThread().Post(() => _historyFiltering.Filter(SearchQuery.SearchString));
+                _services.MainThread().Post(() => {
+                    Dispatcher.CurrentDispatcher.VerifyAccess();
+                    _historyFiltering.Filter(SearchQuery.SearchString);
+                });
             }
         }
     }

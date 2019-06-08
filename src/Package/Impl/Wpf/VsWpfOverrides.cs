@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Wpf;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -16,14 +17,11 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Brushes = Microsoft.R.Wpf.Brushes;
 
-namespace Microsoft.VisualStudio.R.Package.Wpf
-{
-    public static class VsWpfOverrides
-    {
+namespace Microsoft.VisualStudio.R.Package.Wpf {
+    public static class VsWpfOverrides {
         private static readonly Lazy<Assembly> ExtensionsExplorerUIAssemblyLazy = Lazy.Create(() => AppDomain.CurrentDomain.Load("Microsoft.VisualStudio.ExtensionsExplorer.UI"));
 
-        public static void Apply()
-        {
+        public static void Apply() {
             OverrideBrushes();
             OverrideFontKeys();
             OverrideImageSources();
@@ -159,8 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
             StyleKeys.TextBoxStyleKey = VsResourceKeys.TextBoxStyleKey;
         }
 
-        private static IDictionary<string, ThemeResourceKey> GetColorResources()
-        {
+        private static IDictionary<string, ThemeResourceKey> GetColorResources() {
             // use colors of VisualStudio UI.
             var colorResources = ExtensionsExplorerUIAssemblyLazy.Value.GetType("Microsoft.VisualStudio.ExtensionsExplorer.UI.ColorResources");
 
@@ -170,6 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
         }
 
         private static ImageSource GetImage(IVsImageService2 imageService, ImageMoniker imageMoniker) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             var imageAttributes = new ImageAttributes {
                 ImageType = (uint)_UIImageType.IT_Bitmap,
                 Flags = (uint)_ImageAttributesFlags.IAF_RequiredFlags,
@@ -179,7 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf
                 StructSize = Marshal.SizeOf(typeof(ImageAttributes))
             };
 
-            IVsUIObject uiObject = imageService.GetImage(imageMoniker, imageAttributes);
+            var uiObject = imageService.GetImage(imageMoniker, imageAttributes);
 
             object data;
             if (uiObject.get_Data(out data) != VSConstants.S_OK) {

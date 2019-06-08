@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
+using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
@@ -53,6 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private IInteractiveWindowVisualComponent GetComponent(IVsWindowFrame frame) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (frame == null) {
                 return null;
             }

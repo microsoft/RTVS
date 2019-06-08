@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -37,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                     _isDirty = value;
                     // If dirty, this causes Apply to be called
                     if (_site != null) {
+                        Dispatcher.CurrentDispatcher.VerifyAccess();
                         _site.OnStatusChange((uint)(this._isDirty ? PROPPAGESTATUS.PROPPAGESTATUS_DIRTY : PROPPAGESTATUS.PROPPAGESTATUS_CLEAN));
                     }
                 }
@@ -51,6 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         protected abstract Task OnSetObjects(bool isClosing);
 
         public void Activate(IntPtr hWndParent, RECT[] pRect, int bModal) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             AdviseDebugger();
             this.SuspendLayout();
             // Initialization can cause some events to be fired when we change some values
@@ -103,6 +106,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         public void SetObjects(uint cObjects, object[] ppunk) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+
             // If asked to, release our cached selected Project object(s)
             UnconfiguredProject = null;
             ConfiguredProperties = null;
@@ -200,6 +205,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         internal void AdviseDebugger() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             System.IServiceProvider sp = _site as System.IServiceProvider;
             if (sp != null) {
                 _debugger = (IVsDebugger)sp.GetService(typeof(IVsDebugger));
@@ -212,6 +218,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             }
         }
         private void UnadviseDebugger() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             if (_debuggerCookie != 0 && _debugger != null) {
                 _debugger.UnadviseDebuggerEvents(_debuggerCookie);
             }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows.Threading;
 using Microsoft.Languages.Editor.Document;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -72,16 +73,21 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
             var exprSpan = node.ToSnapshotSpan(doc.TextBuffer().CurrentSnapshot);
             SnapshotPointToLineAndColumnNumber(exprSpan.Start, out pSpan[0].iStartLine, out pSpan[0].iStartIndex);
             SnapshotPointToLineAndColumnNumber(exprSpan.End, out pSpan[0].iEndLine, out pSpan[0].iEndIndex);
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             return _debugger.GetDataTipValue(_vsTextLines, pSpan, null, out pbstrText);
         }
 
         public int GetPairExtents(int iLine, int iIndex, TextSpan[] pSpan) => VSConstants.E_NOTIMPL;
         public int GetWordExtent(int iLine, int iIndex, uint dwFlags, TextSpan[] pSpan) => VSConstants.E_NOTIMPL;
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) 
-            => _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+        }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) 
-            => _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
+            return _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+        }
 
         private static SnapshotPoint LineAndColumnNumberToSnapshotPoint(ITextSnapshot snapshot, int lineNumber, int columnNumber) {
             var line = snapshot.GetLineFromLineNumber(lineNumber);

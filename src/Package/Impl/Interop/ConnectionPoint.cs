@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.OLE.Interop;
 using static System.FormattableString;
 
@@ -32,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         /// which will call on a managed code sink that implements that interface.
         /// </summary>
         public ConnectionPointCookie(object source, object sink, Type eventInterface, bool throwException) {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             Exception ex = null;
 
             if (source is IConnectionPointContainer) {
@@ -90,6 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 #endif
 
         public void Dispose() {
+            Dispatcher.CurrentDispatcher.VerifyAccess();
             try {
                 if (_connectionPoint != null && _cookie != 0) {
                     _connectionPoint.Unadvise(_cookie);
