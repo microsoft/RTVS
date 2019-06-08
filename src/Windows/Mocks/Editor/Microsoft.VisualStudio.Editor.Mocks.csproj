@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Microsoft.VisualStudio.Editor.Mocks</RootNamespace>
     <AssemblyName>Microsoft.VisualStudio.Editor.Mocks</AssemblyName>
   </PropertyGroup>
@@ -22,24 +22,27 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />   
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />   
-    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.12" />   
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.1.89" />   
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.1.28916.169" />   
+    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.27" />   
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />   
-    <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="NSubstitute" Version="4.2.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)Languages\Core\Impl\Microsoft.Languages.Core.csproj" />
     <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
     <ProjectReference Include="$(SourceDirectory)Windows\Editor\Impl\Microsoft.Languages.Editor.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

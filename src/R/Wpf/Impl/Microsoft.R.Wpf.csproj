@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Microsoft.R.Wpf</RootNamespace>
     <AssemblyName>Microsoft.R.Wpf</AssemblyName>
   </PropertyGroup>
@@ -33,11 +33,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.1.28916.169" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="16.1.28917.181" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)\Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />

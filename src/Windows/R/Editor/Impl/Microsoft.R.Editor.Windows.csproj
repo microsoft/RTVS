@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Microsoft.R.Editor</RootNamespace>
     <AssemblyName>Microsoft.R.Editor.Windows</AssemblyName>
   </PropertyGroup>
@@ -26,13 +26,13 @@
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.1.89" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
@@ -60,6 +60,9 @@
       <LastGenOutput>Windows.Resources.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

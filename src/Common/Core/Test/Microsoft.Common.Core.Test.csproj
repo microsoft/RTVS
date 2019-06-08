@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp2.0</TargetFrameworks>
     <RootNamespace>Microsoft.Common.Core.Test</RootNamespace>
     <AssemblyName>Microsoft.R.Common.Core.Test</AssemblyName>
   </PropertyGroup>
@@ -17,12 +17,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="FluentAssertions" Version="4.19.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20171031-01" />
-    <PackageReference Include="NSubstitute" Version="3.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="xunit" Version="2.3.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include="FluentAssertions" Version="5.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    <PackageReference Include="NSubstitute" Version="4.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +34,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj" />
     <ProjectReference Include="..\Impl\Microsoft.R.Common.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

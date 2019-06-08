@@ -1,17 +1,17 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
-    "Microsoft.Extensions.Configuration.Json": "2.0.0",
-    "Microsoft.Extensions.Logging": "2.0.0",
-    "Microsoft.Extensions.Logging.Console": "2.0.0",
-    "Microsoft.Extensions.Logging.Debug": "2.0.0",
-    "Microsoft.Extensions.Logging.EventLog": "2.0.0",
-    "Microsoft.Extensions.Logging.TraceSource": "2.0.0",
-    "Newtonsoft.Json": "10.0.3",
-    "System.Net.Http": "4.3.3"
+    "Microsoft.Extensions.Configuration.Json": "2.2.0",
+    "Microsoft.Extensions.Logging": "2.2.0",
+    "Microsoft.Extensions.Logging.Console": "2.2.0",
+    "Microsoft.Extensions.Logging.Debug": "2.2.0",
+    "Microsoft.Extensions.Logging.EventLog": "2.2.0",
+    "Microsoft.Extensions.Logging.TraceSource": "2.2.0",
+    "Newtonsoft.Json": "12.0.2",
+    "System.Net.Http": "4.3.4"
   },
   "frameworks": {
-    "net461": {}
+    "net472": {}
   },
   "runtimes": {
     "win": {},

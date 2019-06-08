@@ -5,9 +5,9 @@
     "DDWixExt": "14.0.22823.1",
     "WiX": "3.11.0"
   },
-  "frameworks": {
-    "net461": {}
-  },
+    "frameworks": {
+        "net472": {}
+    },
   "runtimes": {
     "win": {}
   }

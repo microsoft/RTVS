@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>Microsoft.Languages.Editor</RootNamespace>
     <AssemblyName>Microsoft.Languages.Editor.Windows</AssemblyName>
   </PropertyGroup>
@@ -24,15 +24,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.1.28916.169" />
     <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="15.4.27004" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.4.27004" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.1.89" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
@@ -40,6 +40,9 @@
     <ProjectReference Include="$(SourceDirectory)Languages\Editor\Impl\Microsoft.Languages.Editor.csproj" />
     <ProjectReference Include="$(SourceDirectory)R\Platform\Impl\Microsoft.R.Platform.csproj" />
     <ProjectReference Include="..\..\R\Platform.Desktop\Impl\Microsoft.R.Platform.Windows.Desktop.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

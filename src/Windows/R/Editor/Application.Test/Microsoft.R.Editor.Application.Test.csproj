@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Microsoft.R.Editor.Application.Test</AssemblyName>
     <RootNamespace>Microsoft.R.Editor.Application.Test</RootNamespace>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>

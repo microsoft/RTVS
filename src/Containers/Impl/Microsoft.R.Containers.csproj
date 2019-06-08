@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <TargetFramework Condition="'$(OS)' != 'Windows_NT'">netstandard2.0</TargetFramework>
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netstandard2.0;net472</TargetFrameworks>
     <AssemblyName>Microsoft.R.Containers</AssemblyName>
   </PropertyGroup>
   <Import Project="..\..\R.Settings.NetCore.props" />
@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Desktop)' == 'true' ">
     <Reference Include="System" />

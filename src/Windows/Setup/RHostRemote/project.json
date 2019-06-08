@@ -2,9 +2,9 @@
   "dependencies": {
     "MicroBuild.Core": "0.2.0"
   },
-  "frameworks": {
-    "net461": {}
-  },
+    "frameworks": {
+        "net472": {}
+    },
   "runtimes": {
     "win": {}
   }

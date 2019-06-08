@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.Internal.Networking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -42,7 +41,7 @@ namespace Microsoft.R.Host.Broker {
             return null;
         }
 
-        private static bool IsPortInUseException(this AggregateException aggex) => 
-            aggex != null && aggex.InnerExceptions.Count == 1 && (aggex.InnerException as UvException)?.StatusCode == -4091;
+        private static bool IsPortInUseException(this AggregateException aggex) =>
+            aggex != null && aggex.InnerExceptions.Count == 1; // && (aggex.InnerException as UvException)?.StatusCode == -4091;
     }
 }

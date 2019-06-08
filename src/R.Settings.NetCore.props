@@ -16,14 +16,14 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
     <Desktop>true</Desktop>
     <DefineConstants>DESKTOP;$(DefineConstants)</DefineConstants>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="NETStandard.Library" Version="2.0.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(DotNetPublish)' != ''">
