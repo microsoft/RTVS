@@ -1,15 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#pragma warning disable VSTHRD004 // Await SwitchToMainThreadAsync
+
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Threading;
 using Microsoft.VisualStudio.Shell;
-using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.VisualStudio.R.Package.Shell {
+namespace Microsoft.VisualStudio.R.Package.Shell
+{
     internal sealed class VsMainThread : IMainThread {
         private readonly Dispatcher _mainThreadDispatcher;
         private readonly Thread _mainThread;

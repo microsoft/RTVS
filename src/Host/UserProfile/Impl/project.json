@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "MicroBuild.Core": "0.2.0",
+    "MicroBuild.Core": "0.3.0",
     "Microsoft.Extensions.Configuration.Json": "2.2.0",
     "Microsoft.Extensions.Logging": "2.2.0",
     "Microsoft.Extensions.Logging.Console": "2.2.0",

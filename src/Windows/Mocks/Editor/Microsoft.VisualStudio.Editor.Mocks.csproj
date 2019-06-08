@@ -21,7 +21,10 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="MicroBuild.Core" Version="0.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.1.89" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />

@@ -26,7 +26,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="MicroBuild.Core" Version="0.3.0" />
     <PackageReference Include="EnvDTE" Version="8.0.2" />
     <PackageReference Include="EnvDTE80" Version="8.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.1.89" />

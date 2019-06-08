@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "5.6.0",
-    "MicroBuild.Core": "0.2.0",
+    "FluentAssertions": "4.19.4",
+    "MicroBuild.Core": "0.3.0",
     "NSubstitute": "4.2.0",
     "xunit": "2.4.1",
     "xunit.runner.visualstudio": "2.4.1"

@@ -18,7 +18,7 @@
     <PackageReference Include="EnvDTE">
       <Version>8.0.2</Version>
     </PackageReference>
-    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="MicroBuild.Core" Version="0.3.0" />
     <PackageReference Include="Microsoft.VisualStudio.ComponentModelHost" Version="16.1.89" />
     <PackageReference Include="Microsoft.VisualStudio.Debugger.Interop.10.0" Version="10.0.30320" />
     <PackageReference Include="Microsoft.VisualStudio.Debugger.Interop.14.0" Version="15.0.25726-Preview5" />

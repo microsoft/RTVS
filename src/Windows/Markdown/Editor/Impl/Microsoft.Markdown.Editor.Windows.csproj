@@ -28,7 +28,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="MicroBuild.Core" Version="0.3.0" />
     <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
     <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />
     <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.1.89" />

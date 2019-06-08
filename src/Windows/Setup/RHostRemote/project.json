@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "MicroBuild.Core": "0.2.0"
+    "MicroBuild.Core": "0.3.0"
   },
     "frameworks": {
         "net472": {}

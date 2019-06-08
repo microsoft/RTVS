@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "MicroBuild.Core": "0.2.0",
+    "MicroBuild.Core": "0.3.0",
     "Microsoft.Build": "16.0.461",
     "Microsoft.Data.ConnectionUI": "16.1.28916.169",
     "Microsoft.VisualStudio.ComponentModelHost": "16.1.89",

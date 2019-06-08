@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <RootNamespace>Microsoft.R.Wpf</RootNamespace>
     <AssemblyName>Microsoft.R.Wpf</AssemblyName>
   </PropertyGroup>
@@ -32,7 +33,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
+    <PackageReference Include="MicroBuild.Core" Version="0.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.1.28916.169" />
     <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="16.1.28917.181" />
   </ItemGroup>

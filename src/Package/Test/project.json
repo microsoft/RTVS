@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "5.6.0",
-    "MicroBuild.Core": "0.2.0",
+    "FluentAssertions": "4.19.4",
+    "MicroBuild.Core": "0.3.0",
     "Microsoft.SqlServer.DacFx.x86": "150.4384.2",
     "Microsoft.VisualStudio.ComponentModelHost": "16.1.89",
     "Microsoft.VisualStudio.Editor": "16.1.89",
