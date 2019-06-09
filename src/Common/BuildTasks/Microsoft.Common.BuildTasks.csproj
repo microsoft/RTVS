@@ -26,6 +26,7 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -37,6 +38,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
@@ -68,8 +70,13 @@
     </Compile>
     <Compile Include="ExtractLambdasFromXaml.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="project.json" />
-  </ItemGroup>
+  <Target Name="CleanNuget" AfterTargets="Clean" Condition="'$(NugetBuild)'==''">       
+    <ItemGroup>
+          <NugetFiles Include="$(BaseIntermediateOutputPath)*.nuget.*" />
+          <NugetFiles Include="$(BaseIntermediateOutputPath)*.assets.json" />
+    </ItemGroup>
+    <Message Text="$(MSBuildProjectName): Cleaning Nuget intermediate files..." Importance="high" />
+    <Delete Files="@(NugetFiles)"  />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
