@@ -1,6 +1,6 @@
 # R Tools for Visual Studio
 
-## This project is not actively supported.
+## This project is not actively supported by Microsoft.
 
 R Tools is not available in VS 2019. Please see https://docs.microsoft.com/en-us/visualstudio/porting/port-migrate-upgrade-visual-studio-projects-2019?view=vs-2017.
 
@@ -11,6 +11,7 @@ There are also R extensions to [VS Code](https://code.visualstudio.com/) availab
 ### Installation
 
 Latests RTVS ships with Visual Studio 2017 as part of the Data Science workload.
+Unofficial, unsigned VSIX for VS 2019 available here: [Download](https://github.com/microsoft/RTVS/tree/2019/vsix)
 
 ### Documentation
 
