@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<UserSettings>
+  <ApplicationIdentity version="15.0"/>
+  <DisplayName>
+    <ResourceID>#8001</ResourceID>
+    <ResourcePackage>{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}</ResourcePackage>
+  </DisplayName>
+  <Description>
+    <ResourceID>#8011</ResourceID>
+    <ResourcePackage>{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}</ResourcePackage>
+  </Description>
+  <ToolsOptions/>
+  <Category name="Environment_Group" RegisteredName="Environment_Group">
+    <Category name="Environment_KeyBindings" Category="{F09035F1-80D2-4312-8EC4-4D354A4BCB4C}" Package="{DA9FB551-C724-11d0-AE1F-00A0C90FFFC3}" RegisteredName="Environment_KeyBindings" PackageName="Visual Studio Environment Package">
+      <Version>15.0.0.0</Version>
+      <KeyboardShortcuts>
+        <ScopeDefinitions>
+          <Scope Name="Global" ID="{5EFC7975-14BC-11CF-9B2B-00AA00573819}"/>
+          <Scope Name="R" ID="{EE606CC0-077A-4FDE-91C3-24EC012C8389}"/>
+          <Scope Name="Text Editor" ID="{8B382828-6202-11D1-8870-0000F87579D2}"/>
+        </ScopeDefinitions>
+        <DefaultShortcuts>
+          <Shortcut Command="File.SaveAll" Scope="Global">Ctrl+Alt+S</Shortcut>
+          <Shortcut Command="File.Close" Scope="Global">Ctrl+W</Shortcut>
+          <Shortcut Command="Window.CloseAllDocuments" Scope="Global">Ctrl+Shift+W</Shortcut>
+          <Shortcut Command="Edit.Replace" Scope="Global">Ctrl+Shift+J</Shortcut>
+          <Shortcut Command="Edit.FormatDocument" Scope="Text Editor">Ctrl+Shift+A</Shortcut>
+          <Shortcut Command="Edit.CommentSelection" Scope="Text Editor">Ctrl+Shift+C</Shortcut>
+          <Shortcut Command="Edit.UncommentSelection" Scope="Text Editor">Ctrl+Shift+U</Shortcut>
+          <Shortcut Command="Edit.CollapseAllOutlining" Scope="Text Editor">Alt+O</Shortcut>
+          <Shortcut Command="Edit.ExpandAllOutlining" Scope="Text Editor">Alt+Shift+O</Shortcut>
+          <Shortcut Command="Edit.CollapseCurrentRegion" Scope="Text Editor">Alt+L</Shortcut>
+          <Shortcut Command="Edit.ExpandCurrentRegion" Scope="Text Editor">Alt+Shift+L</Shortcut>
+          <Shortcut Command="RTools.NextPlot" Scope="Global">Ctrl+Alt+F12</Shortcut>
+          <Shortcut Command="RTools.PreviousPlot" Scope="Global">Ctrl+Alt+F11</Shortcut>
+          <Shortcut Command="RTools.SourceRScript" Scope="Text Editor">Ctrl+Shift+S</Shortcut>
+          <Shortcut Command="View.RInteractive" Scope="Global">Ctrl+2</Shortcut>
+          <Shortcut Command="RTools.Help" Scope="Global">Ctrl+3</Shortcut>
+          <Shortcut Command="RTools.History" Scope="Global">Ctrl+4</Shortcut>
+          <Shortcut Command="View.SolutionExplorer" Scope="Global">Ctrl+5</Shortcut>
+          <Shortcut Command="RTools.Plots" Scope="Global">Ctrl+6</Shortcut>
+          <Shortcut Command="RTools.Packages" Scope="Global">Ctrl+7</Shortcut>
+          <Shortcut Command="RTools.VariableExplorer" Scope="Global">Ctrl+8</Shortcut>
+          <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Global">Ctrl+L</Shortcut>
+          <Shortcut Command="InteractiveConsole.Reset" Scope="Global">Ctrl+Shift+F10</Shortcut>
+          <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Text Editor">Ctrl+L</Shortcut>
+          <Shortcut Command="InteractiveConsole.Reset" Scope="Text Editor">Ctrl+Shift+F10</Shortcut>
+        </DefaultShortcuts>
+      </KeyboardShortcuts>
+    </Category>
+  </Category>
+</UserSettings>

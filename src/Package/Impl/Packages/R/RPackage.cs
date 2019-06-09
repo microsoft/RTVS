@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -123,6 +125,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override void Initialize() {
             Current = this;
+            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
 
             VsAppShell.EnsureInitialized();
             if (IsCommandLineMode()) {
@@ -151,8 +154,19 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ExpansionsCache.Load(Services);
         }
 
+        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
+            if(args.Name.StartsWithOrdinal("Microsoft.R.")) {
+                var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
+                var asmName = args.Name.Substring(0, args.Name.IndexOf(','));
+                return Assembly.LoadFrom(Path.Combine(path, $"{asmName}.dll"));
+            }
+            return null;
+        }
+
         protected override void Dispose(bool disposing) {
             Dispatcher.CurrentDispatcher.VerifyAccess();
+
+            AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
             SavePackageIndex();
 
             LogCleanup.Cancel();

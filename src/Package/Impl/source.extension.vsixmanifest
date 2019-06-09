@@ -3,9 +3,9 @@
                  xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.RTVS" Version="1.5" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.RTVS" Version="1.5" Language="en-US" Publisher="Microsoft, Mikhail Arkhipov" />
     <DisplayName>R Tools for Visual Studio</DisplayName>
-    <Description xml:space="preserve">R Tools for Visual Studio</Description>
+    <Description xml:space="preserve">R Tools for Visual Studio 2019</Description>
     <Preview>true</Preview>
   </Metadata>
   <Installation AllUsers="true">

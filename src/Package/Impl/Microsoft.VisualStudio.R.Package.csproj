@@ -541,6 +541,22 @@
     </Content>
     <Content Include="libbz2-1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Profiles\16.0\R.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Profiles\16.0\RCombined.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Profiles\16.0\RStudioKeyboard.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Profiles\15.0\R.vssettings">
       <SubType>Designer</SubType>
@@ -1499,6 +1515,8 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.Markdown.Editor.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Components.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Components.Windows.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Containers.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Containers.Windows.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Debugger.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Common.Wpf.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Wpf.dll" />
@@ -1631,6 +1649,8 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encodings.Web.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Dataflow.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Extensions.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Help\Themes\Dark.css" />
+      <VSIXSourceItem Include="$(OutputPath)\Help\Themes\Light.css" />
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
       <VSIXSourceItem Include="$(OutputPath)\Dockerfile">
         <VSIXSubPath>DockerTemplate</VSIXSubPath>
@@ -1688,6 +1708,9 @@
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\RTVS\man\*.*">
         <VSIXSubPath>RTVS\man</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Snippets\*.*">
+        <VSIXSubPath>Snippets</VSIXSubPath>
       </VSIXSourceItem>
     </ItemGroup>
   </Target>
