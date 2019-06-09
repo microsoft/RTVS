@@ -9,7 +9,5 @@ namespace Microsoft.R.Components.Documentation {
         public const string CranViews = "https://aka.ms/rtvs-cran-views";
         public const string RtvsDocumentation = "https://aka.ms/rtvs-docs";
         public const string RtvsSamples = "https://aka.ms/rtvs-examples";
-        public const string CheckForRtvsUpdates = "https://aka.ms/rtvs-checkforupdate";
-        public const string MicrosoftRProducts = "https://aka.ms/rtvs-msft-r";
     }
 }

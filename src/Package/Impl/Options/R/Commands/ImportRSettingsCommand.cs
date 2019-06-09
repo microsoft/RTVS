@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
     public sealed class ImportRSettingsCommand : System.ComponentModel.Design.MenuCommand {
         private const string _settingsFileName = "R.vssettings";
-        private const string _profilesFolder = @"Profiles\";
+        private const string _profilesFolder = @"Profiles";
         private static IServiceContainer _services;
 
         public ImportRSettingsCommand(IServiceContainer services) :
@@ -32,19 +32,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Commands {
 
                 var asmDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
                 // Non-versioned setup
-                var settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, _settingsFileName);
-                if (!File.Exists(settingsFilePath)) {
-                    // Typically debug setup launched via F5 with profiles under 14.0/15.0 folder
-                    settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, Toolset.Version, _settingsFileName);
-                    if (!File.Exists(settingsFilePath)) {
-                        // Release setup with settings in the IDE profiles folder
-                        string ideFolder = asmDirectory.Substring(0, asmDirectory.IndexOf(@"\Extensions", StringComparison.OrdinalIgnoreCase));
-                        settingsFilePath = Path.Combine(ideFolder, _profilesFolder, _settingsFileName);
-                    }
+                var settingsFilePath = Path.Combine(asmDirectory, _profilesFolder, Toolset.Version, _settingsFileName);
+                if (File.Exists(settingsFilePath)) {
+                    // Release setup with settings in the IDE profiles folder
+                    object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
+                    shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
                 }
-
-                object arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath);
-                shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
             }
         }
     }

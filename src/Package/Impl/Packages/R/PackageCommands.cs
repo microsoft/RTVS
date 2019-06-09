@@ -10,14 +10,12 @@ using Microsoft.R.Components.Documentation;
 using Microsoft.R.Components.Documentation.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
-using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Plots.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
-using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Commands;
@@ -31,8 +29,8 @@ using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Windows;
-using IServiceContainer = Microsoft.Common.Core.Services.IServiceContainer;
 using static Microsoft.VisualStudio.R.Package.Commands.CommandAsyncToOleMenuCommandShimFactory;
+using IServiceContainer = Microsoft.Common.Core.Services.IServiceContainer;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -54,12 +52,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToOptionsCommand(services),
                 new GoToEditorOptionsCommand(services),
                 new ImportRSettingsCommand(services),
-                new InstallRClientCommand(services),
                 new SetupRemoteCommand(),
-
-                new ReportIssueCommand(services),
-                new SendSmileCommand(services),
-                new SendFrownCommand(services),
 
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsIntroToR, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranIntro, LocalDocumentationPaths.CranIntro)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsDataImportExport, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranData, LocalDocumentationPaths.CranData)),
@@ -67,8 +60,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CreateRCmdSetCommand(RPackageCommandId.icmdRDocsTaskViews, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CranViews)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRtvsDocumentation, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.RtvsDocumentation)),
                 CreateRCmdSetCommand(RPackageCommandId.icmdRtvsSamples, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.RtvsSamples)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdCheckForUpdates, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.CheckForRtvsUpdates)),
-                CreateRCmdSetCommand(RPackageCommandId.icmdMicrosoftRProducts, new OpenDocumentationCommand(interactiveWorkflow, OnlineDocumentationUrls.MicrosoftRProducts)),
 
                 new LoadWorkspaceCommand(shell, interactiveWorkflow, projectServiceAccessor),
                 new SaveWorkspaceCommand(shell, interactiveWorkflow, projectServiceAccessor),

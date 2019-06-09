@@ -3,6 +3,6 @@
 
 namespace Microsoft.Common.Core {
     public static class Toolset {
-        public const string Version = "15.0";
+        public const string Version = "16.0";
     }
 }

@@ -152,11 +152,6 @@
     </Compile>
     <Compile Include="ExportDialog\ExportPdfViewModel.cs" />
     <Compile Include="ExportDialog\PDFPaperSizeConverter.cs" />
-    <Compile Include="Feedback\ReportIssueCommand.cs" />
-    <Compile Include="Commands\R\InstallRClientCommand.cs" />
-    <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
-      <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Help\HelpVisualComponent.cs" />
     <Compile Include="Help\HelpOnCurrentCommandBase.cs" />
@@ -180,9 +175,6 @@
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeNodeCollection.cs" />
-    <Compile Include="Feedback\SendFrownCommand.cs" />
-    <Compile Include="Feedback\SendMailCommand.cs" />
-    <Compile Include="Feedback\SendSmileCommand.cs" />
     <Compile Include="Help\HelpWindowPane.cs" />
     <Compile Include="Help\NativeMethods.cs" />
     <Compile Include="Help\ShowHelpOnCurrentCommand.cs" />
@@ -1452,10 +1444,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Feedback\SendMailFallbackWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="DataInspect\VariableView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1711,6 +1699,9 @@
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\Snippets\*.*">
         <VSIXSubPath>Snippets</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Profiles\*.*">
+        <VSIXSubPath>Profiles</VSIXSubPath>
       </VSIXSourceItem>
     </ItemGroup>
   </Target>

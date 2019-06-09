@@ -1241,7 +1241,6 @@
           <ToolTipText>Insert R Code Block</ToolTipText>
         </Strings>
       </Button>
-
       <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
@@ -1406,26 +1405,6 @@
         </Strings>
       </Button>
 
-      <!-- Install Microsoft R Client -->
-      <Button guid="guidRToolsCmdSet" id="icmdInstallRClient" priority="0x0450" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
-        <Icon guid="ImageCatalogGuid" id="ClientStatistics"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <Strings>
-          <ButtonText>Install Microsoft &amp;R Client...</ButtonText>
-          <CommandName>Install Microsoft R Client</CommandName>
-        </Strings>
-      </Button>
-
-      <!-- Microsoft R Products -->
-      <Button guid="guidRToolsCmdSet" id="icmdMicrosoftRProducts" priority="0x0500" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
-        <Strings>
-          <ButtonText>&amp;Microsoft R Products...</ButtonText>
-          <CommandName>Microsoft R Products</CommandName>
-        </Strings>
-      </Button>
-
       <!-- Setup remote R -->
       <Button guid="guidRToolsCmdSet" id="icmdSetupRemote" priority="0x600" type="Button">
         <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
@@ -1437,42 +1416,6 @@
         </Strings>
       </Button>
 
-      <!-- Feedback flyout -->
-      <Button guid="guidRToolsCmdSet" id="icmdReportIssue" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
-        <Icon guid="ImageCatalogGuid" id="NewBug"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>&amp;Report Issue on GitHub...</ButtonText>
-          <CommandName>Report Issue</CommandName>
-        </Strings>
-      </Button>
-
-      <Button guid="guidRToolsCmdSet" id="icmdSendSmile" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
-        <Icon guid="ImageCatalogGuid" id="FeedbackSmile"/>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Send &amp;Smile via Email...</ButtonText>
-          <CommandName>Send R Smile</CommandName>
-        </Strings>
-      </Button>
-
-      <Button guid="guidRToolsCmdSet" id="icmdSendFrown" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
-        <Icon guid="ImageCatalogGuid" id="FeedbackFrown"/>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <Strings>
-          <ButtonText>Send &amp;Frown via Email...</ButtonText>
-          <CommandName>Send R Frown</CommandName>
-        </Strings>
-      </Button>
       <!-- End Windows flyout -->
 
       <!-- Options... -->
@@ -2741,7 +2684,6 @@
       <IDSymbol name="icmdSendSmile" value="403" />
       <IDSymbol name="icmdSendFrown" value="404" />
       <IDSymbol name="icmdImportRSettings" value="405"/>
-      <IDSymbol name="icmdReportIssue" value="406" />
       <IDSymbol name="icmdSetupRemote" value="408"/>
 
       <!-- REPL-->
@@ -2919,8 +2861,6 @@
       <IDSymbol name="icmdRDocsTaskViews" value="1403" />
       <IDSymbol name="icmdRDocsDataImportExport" value="1404" />
       <IDSymbol name="icmdRDocsWritingRExtensions" value="1405" />
-      <IDSymbol name="icmdMicrosoftRProducts" value="1406" />
-      <IDSymbol name="icmdInstallRClient" value="1408" />
 
       <!-- Project -->
       <IDSymbol name="icmdSetDirectoryHere" value="1500"/>
