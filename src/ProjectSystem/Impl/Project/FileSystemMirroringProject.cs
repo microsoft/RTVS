@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             _dependencyProvider = dependencyProvider;
 
             _log = log;
-            _unloadCancellationToken = _unconfiguredProject.Services.ProjectAsynchronousTasks.UnloadCancellationToken;
+            _unloadCancellationToken = CancellationToken.None;// _unconfiguredProject.Services.ProjectAsynchronousTasks.UnloadCancellationToken;
             _projectDirectory = _unconfiguredProject.GetProjectDirectory();
             _inMemoryImportFullPath = _unconfiguredProject.GetInMemoryTargetsFileFullPath();
             _fileItems = new Dictionary<string, ProjectItemElement>(StringComparer.OrdinalIgnoreCase);

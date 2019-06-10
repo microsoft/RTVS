@@ -22,7 +22,7 @@
     <PackageReference Include="MicroBuild.Core" Version="0.2.0" />
     <PackageReference Include="Microsoft.Build" Version="16.0.461" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.1.0" />
-    <PackageReference Include="Microsoft.VisualStudio.ProjectSystem" Version="15.8.243" />
+    <PackageReference Include="Microsoft.VisualStudio.ProjectSystem" Version="16.0.374-pre" />
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.27" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="16.1.28917.181" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="16.1.28917.181" />
