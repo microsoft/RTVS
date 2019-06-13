@@ -196,7 +196,6 @@
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
-    <Compile Include="Feedback\FeedbackCommandTest.cs" />
     <Compile Include="Fixtures\DisposeRInteractiveWorkflowFixture.cs" />
     <Compile Include="Fixtures\RPackageServicesFixture.cs" />
     <Compile Include="GlobalSuppressions.cs" />

@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -22,6 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private CommandTargetToOleShim _commandTarget;
 
         public VariableWindowPane() {
+            AssemblyResolver.Init();
+
             Caption = Resources.VariableWindowCaption;
             Content = new VariableView(VsAppShell.Current.Services);
 

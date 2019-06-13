@@ -125,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override void Initialize() {
             Current = this;
-            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+            AssemblyResolver.Init();
 
             VsAppShell.EnsureInitialized();
             if (IsCommandLineMode()) {
@@ -154,19 +154,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ExpansionsCache.Load(Services);
         }
 
-        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
-            if(args.Name.StartsWithOrdinal("Microsoft.R.")) {
-                var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
-                var asmName = args.Name.Substring(0, args.Name.IndexOf(','));
-                return Assembly.LoadFrom(Path.Combine(path, $"{asmName}.dll"));
-            }
-            return null;
-        }
-
         protected override void Dispose(bool disposing) {
             Dispatcher.CurrentDispatcher.VerifyAccess();
 
-            AppDomain.CurrentDomain.AssemblyResolve -= OnAssemblyResolve;
+            AssemblyResolver.Close();
             SavePackageIndex();
 
             LogCleanup.Cancel();

@@ -221,6 +221,7 @@
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="Options\R\Commands\SetupRemoteCommand.cs" />
+    <Compile Include="Packages\AssemblyResolver.cs" />
     <Compile Include="Packages\RToolbar.cs" />
     <Compile Include="ProjectSystem\Commands\ProjectCommand.cs" />
     <Compile Include="ProjectSystem\Commands\IncludeInProjectCommand.cs" />
