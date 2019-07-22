@@ -1638,9 +1638,15 @@
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Text.Encodings.Web.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Dataflow.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\System.Threading.Tasks.Extensions.dll" />
-      <VSIXSourceItem Include="$(OutputPath)\Help\Themes\Dark.css" />
-      <VSIXSourceItem Include="$(OutputPath)\Help\Themes\Light.css" />
-      <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html" />
+      <VSIXSourceItem Include="$(OutputPath)\Help\Themes\Dark.css">
+        <VSIXSubPath>Help\Themes</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Help\Themes\Light.css">
+        <VSIXSubPath>Help\Themes</VSIXSubPath>
+      </VSIXSourceItem>
+      <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html">
+      <VSIXSubPath>Markdown</VSIXSubPath>
+      </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\Dockerfile">
         <VSIXSubPath>DockerTemplate</VSIXSubPath>
       </VSIXSourceItem>
