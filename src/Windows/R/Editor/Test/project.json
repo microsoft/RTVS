@@ -2,11 +2,11 @@
   "dependencies": {
     "FluentAssertions": "4.19.4",
     "MicroBuild.Core": "0.3.0",
-    "Microsoft.VisualStudio.Editor": "16.1.89",
-    "Microsoft.VisualStudio.Text.Data": "16.1.89",
-    "Microsoft.VisualStudio.Text.Logic": "16.1.89",
-    "Microsoft.VisualStudio.Text.UI": "16.1.89",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "16.1.89",
+    "Microsoft.VisualStudio.Editor": "16.2.45",
+    "Microsoft.VisualStudio.Text.Data": "16.2.45",
+    "Microsoft.VisualStudio.Text.Logic": "16.2.45",
+    "Microsoft.VisualStudio.Text.UI": "16.2.45",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "16.2.45",
     "xunit": "2.4.1",
     "xunit.runner.visualstudio": "2.4.1"
   },

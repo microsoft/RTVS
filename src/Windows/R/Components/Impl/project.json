@@ -1,15 +1,15 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.3.0",
-    "Microsoft.Data.ConnectionUI": "16.1.28916.169",
-    "Microsoft.VisualStudio.ImageCatalog": "16.1.28916.169",
-    "Microsoft.VisualStudio.Imaging": "16.1.28917.181",
+    "Microsoft.Data.ConnectionUI": "16.3.29316.127",
+    "Microsoft.VisualStudio.ImageCatalog": "16.3.29316.127",
+    "Microsoft.VisualStudio.Imaging": "16.3.29318.209",
     "Microsoft.VisualStudio.InteractiveWindow": "2.8.0",
-    "Microsoft.VisualStudio.Text.Data": "16.1.89",
-    "Microsoft.VisualStudio.Text.Logic": "16.1.89",
-    "Microsoft.VisualStudio.Text.UI": "16.1.89",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "16.1.89",
-    "Microsoft.Win32.Registry": "4.5.0",
+    "Microsoft.VisualStudio.Text.Data": "16.2.45",
+    "Microsoft.VisualStudio.Text.Logic": "16.2.45",
+    "Microsoft.VisualStudio.Text.UI": "16.2.45",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "16.2.45",
+    "Microsoft.Win32.Registry": "4.6.0",
     "Newtonsoft.Json": "12.0.2"
   },
   "frameworks": {

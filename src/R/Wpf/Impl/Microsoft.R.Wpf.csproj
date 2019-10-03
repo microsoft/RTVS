@@ -37,8 +37,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.1.28916.169" />
-    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="16.1.28917.181" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.3.29316.127" />
+    <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="16.3.29318.209" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)\Windows\Wpf\Impl\Microsoft.Common.Wpf.csproj" />

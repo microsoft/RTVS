@@ -29,13 +29,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.1.89" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.2.45" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />

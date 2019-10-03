@@ -29,16 +29,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MicroBuild.Core" Version="0.3.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.1.89" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.1.28916.169" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.3.29316.127" />
     <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.27" />
-    <PackageReference Include="Markdig.Signed" Version="0.17.0" />
+    <PackageReference Include="Markdig.Signed" Version="0.17.1" />
     <PackageReference Include="Unofficial.Microsoft.mshtml">
       <Version>7.0.3300</Version>
     </PackageReference>
