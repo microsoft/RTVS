@@ -5,6 +5,7 @@ using System;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Editor.Utility;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -41,10 +42,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Dispatcher.CurrentDispatcher.VerifyAccess();
             foreach (var itemControl in _grid.Items) {
                 var tn = itemControl as ObservableTreeNode;
-                var model = tn?.Model?.Content as VariableViewModel;
-                if (model != null) {
+                if (tn?.Model?.Content is VariableViewModel model) {
                     if (match(model.Name)) {
-                        _grid.SelectedItem = itemControl;
+                        var a = new Action(() => _grid.SelectedItem = itemControl);
+                        _grid.Dispatcher?.BeginInvoke(DispatcherPriority.Normal, a);
                         _callback.ReportComplete(this, 1);
                         return true;
                     }
