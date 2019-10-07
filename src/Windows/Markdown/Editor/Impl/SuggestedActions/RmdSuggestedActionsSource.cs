@@ -75,7 +75,7 @@ namespace Microsoft.Markdown.Editor.SuggestedActions {
 
             return SuggestedActionProviders
                 .Where(ap => ap.HasSuggestedActions(TextView, TextBuffer, caretPosition))
-                .Select(ap => new SuggestedActionSet(ap.GetSuggestedActions(TextView, TextBuffer, caretPosition), applicableToSpan: applicableSpan));
+                .Select(ap => new SuggestedActionSet(PredefinedSuggestedActionCategoryNames.Any, ap.GetSuggestedActions(TextView, TextBuffer, caretPosition), applicableToSpan: applicableSpan));
         }
 
         public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken)

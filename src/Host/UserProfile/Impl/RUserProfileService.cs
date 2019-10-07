@@ -31,12 +31,12 @@ namespace Microsoft.R.Host.UserProfile {
 
         protected override void OnStart(string[] args) {
             _loggerFactory = new LoggerFactory();
-            _loggerFactory
-                .AddDebug()
-                .AddEventLog(new EventLogSettings {
-                    Filter = (_, logLevel) => logLevel >= LogLevel.Trace,
-                    SourceName = Resources.Text_ServiceName
-                });
+            //_loggerFactory
+            //    //.AddDebug()
+            //    .AddEventLog(new EventLogSettings {
+            //        Filter = (_, logLevel) => logLevel >= LogLevel.Trace,
+            //        SourceName = Resources.Text_ServiceName
+            //    });
             _logger = _loggerFactory.CreateLogger<RUserProfileService>();
 
             _cts = new CancellationTokenSource();

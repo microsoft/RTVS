@@ -1514,12 +1514,14 @@
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Protocol.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Client.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.Client.Windows.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Windows.exe" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Windows.exe.config" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\Microsoft.R.Host.Broker.Config.json" />
       <VSIXSourceItem Include="$(OutputPath)\Broker\Windows\libuv.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.Host.exe" />
+      <VSIXSourceItem Include="$(OutputPath)\System.Collections.Immutable.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libzip-5.dll" />
       <VSIXSourceItem Include="$(OutputPath)\libbz2-1.dll" />
       <VSIXSourceItem Include="$(OutputPath)\zlib1.dll" />
